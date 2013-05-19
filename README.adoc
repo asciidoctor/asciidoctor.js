@@ -1,3 +1,189 @@
-= asciidoctor.js (Asciidoctor on JavaScript)
+= asciidoctor.js, AsciiDoc in JavaScript
+Dan Allen
+:idprefix:
+:idseparator: -
+:sources: https://github.com/mojavelinux/asciidoctor.js
+:license: https://github.com/mojavelinux/asciidoctor.js/blob/master/LICENSE
 
-This repository is a build to generate the asciidoctor.js script using Opal.
+This project uses http://opalrb.org[Opal] to cross-compile http://asciidoctor.org[Asciidoctor], an implementation of AsciiDoc, from Ruby to JavaScript to produce *asciidoctor.js*, which brings http://asciidoc.org[AsciiDoc] to the browser!
+
+== Introduction
+
+The {sources}[asciidoctor.js project] is direct port of http://asciidoctor.org[Asciidoctor] from Ruby to JavaScript using the http://opalrb.org[Opal] Ruby-to-JavaScript cross compiler. It consists of a Rake build script that executes the Opal compiler on the Asciidoctor source code to produce the asciidoctor.js script.
+
+Opal parses the Ruby code and any required libraries, then rewrites the code into JavaScript under the Opal namespace.
+The resulting JavaScript can be executed within any JavaScript runtime environment (such as a browser).
+
+To interact with the generated code, you either invoke the JavaScript APIs directly, or you can invoke native JavaScript objects from within the Ruby code prior to compilation.
+
+== Setup
+
+Start by cloning the source from GitHub:
+
+ $ git clone git://github.com/mojavelinux/asciidoctor.js
+
+Next, switch to the 'asciidoctor.js' directory and run Bundler's +install+ command:
+
+ $ cd asciidoctor.js
+ $ bundle install
+
+You're now ready to build asciidoctor.js.
+
+== Building asciidoctor.js
+
+To build asciidoctor.js, simple run the Rake +dist+ task from the root of the project:
+
+ $ rake dist
+
+This command produces two files in the 'build' directory:
+
+opal.js:: The Ruby runtime in JavaScript
+asciidoctor.js:: The JavaScript port of Asciidoctor
+
+You need to load both files into your JavaScript environment to use Asciidoctor.
+For instance, in an HTML page, add these two +<script>+ tags (ideally at the bottom of the page):
+
+[source,html]
+----
+<script src="opal.js"></script>
+<script src="asciidoctor.js"></script>
+----
+
+You'll see these scripts in action when you run the examples, described next.
+
+== Building and running the examples
+
+To build the examples, simply run the Rake +examples+ task from the root of the project:
+
+ $ rake examples
+
+This command produces another JavaScript file in the 'build' directory, 'asciidoctor_example.js'.
+This script includes:
+
+* a string that contains an AsciiDoc source document
+* a call to the Asciidoctor API to render the content of that string to HTML
+* an event listener that inserts the generated HTML into the page
+
+All the JavaScript in that file was generated from a Ruby script by Opal.
+
+Point your browser at 'build/asciidoctor_example.html'.
+You should see the AsciiDoc Syntax Quick Reference document.
+The content on the page was rendered from AsciiDoc by asciidoctor.js when you loaded the page!
+
+== Using Asciidoctor in JavaScript
+
+There are two ways to use the JavaScript version of Asciidoctor:
+
+. Write code in Ruby that hooks into the native JavaScript environment, which Opal compiles into JavaScript
+. Invoke the JavaScript APIs that Opal generates directly from JavaScript
+
+=== Using Asciidoctor and the native JavaScript environment from Ruby
+
+First, we'll stuff some AsciiDoc data into a variable inside a Ruby script:
+
+[source,ruby]
+----
+data = <<-EOS
+= asciidoctor.js, AsciiDoc in JavaScript
+Doc Writer <docwriter@example.com>
+
+Asciidoctor and Opal come together to bring
+http://asciidoc.org[AsciiDoc] to the browser!.
+
+== Technologies
+
+* AsciiDoc
+* Asciidoctor
+* Opal
+
+NOTE: That's all she wrote!
+EOS
+----
+
+Next, we invoke Asciidoctor in Ruby just as we normally would:
+
+[source,ruby]
+----
+html_doc = Asciidoctor.render(data, :safe => :safe,
+  :attributes => %w(notitle! anchors imagesdir=./images))
+----
+
+We then use the global +$window+ object provided by Opal to register a listener that inserts the rendered HTML document into the page:
+
+[source,ruby]
+----
+$window.addEventListener 'DOMContentLoaded', proc {
+  $document.getElementById('content').innerHTML = html_doc
+}, false
+----
+
+The final step is to compile this Ruby code into JavaScript using the Opal compiler.
+
+[source,ruby]
+----
+env = Opal::Environment.new
+env.append_path 'examples'
+compiled = env['asciidoctor_example'].to_s
+File.open('build/asciidoctor_example.js', 'w') { |f| f << compiled }
+----
+
+When the 'asciidoctor_example.js' script is loaded by the browser, the Ruby code (compiled as JavaScript) is executed, rendering the AsciiDoc document and inserting the result into the page.
+
+You can also invoke Asciidoctor directly from JavaScript.
+
+== Using Asciidoctor from JavaScript
+
+If you choose, you may use the Asciidoctor class that Opal generates directly from Ruby.
+
+All Opal-compiled classes are stored under the Opal namespace.
+Ruby variables and methods on a class or object get prefixed with +$+.
+Thus, where you would execute +Asciidoctor.render+ in Ruby, you execute +Opal.Asciidoctor.$render+ in JavaScript.
+
+[source,javascript]
+----
+var html_doc =Opal.Asciidoctor.$render(
+    "http://asciidoctor.org[*Asciidoctor*] " +
+    "running on http://opalrb.org[_Opal_] " +
+    "brings AsciiDoc to the browser!")
+----
+
+You would insert the rendered document into the page using the normal JavaScript DOM methods:
+
+[source,javascript]
+----
+document.getElementById('content').innerHTML = Opal.Asciidoctor.$render(
+    "http://asciidoctor.org[*Asciidoctor*] " +
+    "running on http://opalrb.org[_Opal_] " +
+    "brings AsciiDoc to the browser!")
+----
+
+Passing the options +Hash+ to the +render+ method requires a little bit of Opal voodoo:
+
+[source,javascript]
+----
+Opal.hash2(['attributes'], {'attributes': ['notitle!']})
+----
+
+== Changes to Asciidoctor (from upstream)
+
+Compiling Asciidoctor to JavaScript currently requires some changes in Asciidoctor.
+That's why the Asciidoctor source is linked into the project as a Git submodule.
+The goal is the eventually eliminate all of these differences so that Asciidoctor can be compiled to JavaScript as is.
+
+Here's a list of some of the changes that are currently needed:
+
+* ERB templates, loaded from the 'asciidoctor/lib/asciidoctor/backends/html5' directory, are used in place of the built-in template classes
+** These templates must be loaded explicitly since Opal doesn't support loading libraries at runtime
+* Named posix groups in regular expressions are replaced with their Ascii equivalent
+** JavaScript doesn't support named posix groups, such as +[[:alpha:]]+)
+* A shim library is needed to implement missing classes in Opal, such as +Set+ and +File+
+* All mutable String operations have been replaced with assignments
+** JavaScript doesn't support mutable strings
+* ...
+
+== Copyright
+
+Copyright (C) 2013 Dan Allen.
+Free use of this software is granted under the terms of the MIT License.
+
+See the {license}[LICENSE] file for details.
