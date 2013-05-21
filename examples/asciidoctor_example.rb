@@ -1646,8 +1646,7 @@ Another bold statement footenoteref:[disclaimer].
 ----
 EOS
 
-html = Asciidoctor.render(data, :safe => :safe, :attributes => %w(notitle! anchors imagesdir=./images))
-
 $window.addEventListener 'DOMContentLoaded', proc {
+  html = Asciidoctor.render(data, :safe => :safe, :attributes => %w(notitle! anchors imagesdir=./images))
   $document.getElementById('content').innerHTML = html
 }, false

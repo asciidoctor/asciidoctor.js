@@ -33,12 +33,12 @@
     def.name = def.body = nil;
 
     def.$initialize = TMP_1 = function(name) {
-      var $a, $b, body;
+      var $a, body;
       body = TMP_1._p || nil, TMP_1._p = null;
       
       this.body = body;
       this.name = name;
-      return (($a = (($b = __scope.Template) == null ? __opal.cm("Template") : $b))['$[]='] || $mm('[]=')).call($a, name, this);
+      return (($a = __scope.Template)['$[]='] || $mm('[]=')).call($a, name, this);
     };
 
     def.$inspect = function() {
@@ -57,7 +57,7 @@
   })(self, null);
 })(Opal);
 (function(__opal) {
-  var $a, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass, __range = __opal.range;
+  var self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass, __range = __opal.range;
   (function(__base, __super){
     function Array() {};
     Array = __klass(__base, __super, "Array", Array);
@@ -78,7 +78,7 @@
     var def = Set.prototype, __scope = Set._scope;
 
     return nil
-  })(self, (($a = __scope.Array) == null ? __opal.cm("Array") : $a));
+  })(self, __scope.Array);
   (function(__base, __super){
     function File() {};
     File = __klass(__base, __super, "File", File);
@@ -95,18 +95,18 @@
     });
 
     File._defs('$join', function(paths) {
-      var $a, $b, $c;paths = __slice.call(arguments, 0);
-      return ($a = paths, $b = (($c = __scope.SEPARATOR) == null ? __opal.cm("SEPARATOR") : $c), typeof($a) === 'number' ? $a * $b : $a['$*']($b))
+      var $a, $b;paths = __slice.call(arguments, 0);
+      return ($a = paths, $b = __scope.SEPARATOR, typeof($a) === 'number' ? $a * $b : $a['$*']($b))
     });
 
     File._defs('$basename', function(path) {
-      var $a, $b, $c, $d, $e, $f, $g;
-      return (($a = path)['$[]'] || $mm('[]')).call($a, __range(($b = (($d = (($e = path).$rindex || $mm('rindex')).call($e, (($f = ((($g = __scope.File) == null ? __opal.cm("File") : $g))._scope).SEPARATOR == null ? $f.cm("SEPARATOR") : $f.SEPARATOR))), $d !== false && $d !== nil ? $d : -1), $c = 1, typeof($b) === 'number' ? $b + $c : $b['$+']($c)), -1, false))
+      var $a, $b, $c, $d, $e;
+      return (($a = path)['$[]'] || $mm('[]')).call($a, __range(($b = (($d = (($e = path).$rindex || $mm('rindex')).call($e, (__scope.File)._scope.SEPARATOR)), $d !== false && $d !== nil ? $d : -1), $c = 1, typeof($b) === 'number' ? $b + $c : $b['$+']($c)), -1, false))
     });
 
     File._defs('$dirname', function(path) {
-      var $a, $b, $c, $d, $e, $f;
-      return (($a = path)['$[]'] || $mm('[]')).call($a, __range(0, ($b = (($d = (($e = path).$rindex || $mm('rindex')).call($e, (($f = __scope.SEPARATOR) == null ? __opal.cm("SEPARATOR") : $f))), $d !== false && $d !== nil ? $d : 0), $c = 1, typeof($b) === 'number' ? $b - $c : $b['$-']($c)), false))
+      var $a, $b, $c, $d, $e;
+      return (($a = path)['$[]'] || $mm('[]')).call($a, __range(0, ($b = (($d = (($e = path).$rindex || $mm('rindex')).call($e, __scope.SEPARATOR)), $d !== false && $d !== nil ? $d : 0), $c = 1, typeof($b) === 'number' ? $b - $c : $b['$-']($c)), false))
     });
 
     File._defs('$extname', function(path) {
@@ -288,10 +288,10 @@
       });
 
       Debug._defs('$show_debug_output?', function() {
-        var $a, $b, $c, $d, $e, $f, $g, $h;
+        var $a, $b, $c, $d, $e, $f, $g;
         if (this.show_debug == null) this.show_debug = nil;
 
-        return (($a = this.show_debug), $a !== false && $a !== nil ? $a : (($b = (($c = (($d = (($e = __scope.ENV) == null ? __opal.cm("ENV") : $e))['$[]'] || $mm('[]')).call($d, "DEBUG"))['$=='] || $mm('==')).call($c, "true")) ? ($e = (($f = (($g = (($h = __scope.ENV) == null ? __opal.cm("ENV") : $h))['$[]'] || $mm('[]')).call($g, "SUPPRESS_DEBUG"))['$=='] || $mm('==')).call($f, "true"), ($e === nil || $e === false)) : $b))
+        return (($a = this.show_debug), $a !== false && $a !== nil ? $a : (($b = (($c = (($d = __scope.ENV)['$[]'] || $mm('[]')).call($d, "DEBUG"))['$=='] || $mm('==')).call($c, "true")) ? ($e = (($f = (($g = __scope.ENV)['$[]'] || $mm('[]')).call($g, "SUPPRESS_DEBUG"))['$=='] || $mm('==')).call($f, "true"), ($e === nil || $e === false)) : $b))
       });
 
       Debug._defs('$puts_indented', function(level, args) {
@@ -325,11 +325,11 @@
     (function(__base){
       function Substituters() {};
       Substituters = __module(__base, "Substituters", Substituters);
-      var def = Substituters.prototype, __scope = Substituters._scope, $a, $b, $c, $d, $e;
+      var def = Substituters.prototype, __scope = Substituters._scope, $a, $b, $c, $d;
 
       __scope.COMPOSITE_SUBS = __hash2(["none", "normal", "verbatim"], {"none": [], "normal": ["specialcharacters", "quotes", "attributes", "replacements", "macros", "post_replacements"], "verbatim": ["specialcharacters", "callouts"]});
 
-      __scope.SUB_OPTIONS = ($a = (($c = (($d = __scope.COMPOSITE_SUBS) == null ? __opal.cm("COMPOSITE_SUBS") : $d)).$keys || $mm('keys')).call($c), $b = (($d = (($e = __scope.COMPOSITE_SUBS) == null ? __opal.cm("COMPOSITE_SUBS") : $e))['$[]'] || $mm('[]')).call($d, "normal"), typeof($a) === 'number' ? $a + $b : $a['$+']($b));
+      __scope.SUB_OPTIONS = ($a = (($c = __scope.COMPOSITE_SUBS).$keys || $mm('keys')).call($c), $b = (($d = __scope.COMPOSITE_SUBS)['$[]'] || $mm('[]')).call($d, "normal"), typeof($a) === 'number' ? $a + $b : $a['$+']($b));
 
       def.$passthroughs = function() {
         
@@ -339,24 +339,24 @@
       }, nil;
 
       def.$apply_subs = function(lines, subs) {
-        var multiline = nil, text = nil, passthroughs = nil, $a, $b, $c, $d, $e, TMP_1, $f, $g, $h, $i, $j, TMP_2, $k, $l, $m, $n, $o;if (subs == null) {
-          subs = (($n = (($o = __scope.COMPOSITE_SUBS) == null ? __opal.cm("COMPOSITE_SUBS") : $o))['$[]'] || $mm('[]')).call($n, "normal")
+        var multiline = nil, text = nil, passthroughs = nil, $a, $b, $c, $d, $e, TMP_1, $f, $g, $h, $i, $j, TMP_2, $k, $l, $m, $n;if (subs == null) {
+          subs = (($n = __scope.COMPOSITE_SUBS)['$[]'] || $mm('[]')).call($n, "normal")
         }
         if (($a = (($b = subs)['$nil?'] || $mm('nil?')).call($b)) !== false && $a !== nil) {
           subs = []
           } else {
-          if (($a = (($c = subs)['$is_a?'] || $mm('is_a?')).call($c, (($d = __scope.Symbol) == null ? __opal.cm("Symbol") : $d))) !== false && $a !== nil) {
+          if (($a = (($c = subs)['$is_a?'] || $mm('is_a?')).call($c, __scope.Symbol)) !== false && $a !== nil) {
             subs = [subs]
           }
         };
         if (($a = ($d = (($e = subs)['$empty?'] || $mm('empty?')).call($e), ($d === nil || $d === false))) !== false && $a !== nil) {
           subs = (($a = ($d = (($f = subs).$map || $mm('map')), $d._p = (TMP_1 = function(key) {
 
-            var self = TMP_1._s || this, $a, $b, $c;
+            var self = TMP_1._s || this, $a, $b;
             if (key == null) key = nil;
 
-            if (($a = (($b = (($c = __scope.COMPOSITE_SUBS) == null ? __opal.cm("COMPOSITE_SUBS") : $c))['$has_key?'] || $mm('has_key?')).call($b, key)) !== false && $a !== nil) {
-              return (($a = (($c = __scope.COMPOSITE_SUBS) == null ? __opal.cm("COMPOSITE_SUBS") : $c))['$[]'] || $mm('[]')).call($a, key)
+            if (($a = (($b = __scope.COMPOSITE_SUBS)['$has_key?'] || $mm('has_key?')).call($b, key)) !== false && $a !== nil) {
+              return (($a = __scope.COMPOSITE_SUBS)['$[]'] || $mm('[]')).call($a, key)
               } else {
               return key
             }
@@ -365,7 +365,7 @@
         if (($d = (($g = subs)['$empty?'] || $mm('empty?')).call($g)) !== false && $d !== nil) {
           return lines
         };
-        multiline = (($d = lines)['$is_a?'] || $mm('is_a?')).call($d, (($h = __scope.Array) == null ? __opal.cm("Array") : $h));
+        multiline = (($d = lines)['$is_a?'] || $mm('is_a?')).call($d, __scope.Array);
         text = (function() { if (multiline !== false && multiline !== nil) {
           return (($h = lines).$join || $mm('join')).call($h, "\n")
           } else {
@@ -414,8 +414,8 @@
       };
 
       def.$apply_normal_subs = function(lines) {
-        var $a, $b, $c, $d;
-        return (($a = this).$apply_subs || $mm('apply_subs')).call($a, (function() { if (($b = (($c = lines)['$is_a?'] || $mm('is_a?')).call($c, (($d = __scope.Array) == null ? __opal.cm("Array") : $d))) !== false && $b !== nil) {
+        var $a, $b, $c;
+        return (($a = this).$apply_subs || $mm('apply_subs')).call($a, (function() { if (($b = (($c = lines)['$is_a?'] || $mm('is_a?')).call($c, __scope.Array)) !== false && $b !== nil) {
           return (($b = lines).$join || $mm('join')).call($b, "\n")
           } else {
           return lines
@@ -428,7 +428,7 @@
       };
 
       def.$apply_literal_subs = function(lines) {
-        var $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u;
+        var $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t;
         if (this.document == null) this.document = nil;
 
         if (($a = (($b = this)['$attr?'] || $mm('attr?')).call($b, "subs")) !== false && $a !== nil) {
@@ -437,7 +437,7 @@
           if (($f = ($g = ($g = (($g = (($h = (($i = (($j = this.document).$attributes || $mm('attributes')).call($j))['$[]'] || $mm('[]')).call($i, "basebackend"))['$=='] || $mm('==')).call($h, "html")) ? (($k = (($l = this).$attr || $mm('attr')).call($l, "style"))['$=='] || $mm('==')).call($k, "source") : $g), $g !== false && $g !== nil ? (($g = (($m = (($n = this.document).$attributes || $mm('attributes')).call($n))['$[]'] || $mm('[]')).call($m, "source-highlighter"))['$=='] || $mm('==')).call($g, "coderay") : $g), $g !== false && $g !== nil ? (($o = this)['$attr?'] || $mm('attr?')).call($o, "language") : $g)) !== false && $f !== nil) {
             return (($f = this).$sub_callouts || $mm('sub_callouts')).call($f, (($p = this).$highlight_source || $mm('highlight_source')).call($p, (($q = lines).$join || $mm('join')).call($q, "\n")))
             } else {
-            return (($r = this).$apply_subs || $mm('apply_subs')).call($r, (($s = lines).$join || $mm('join')).call($s, "\n"), (($t = (($u = __scope.COMPOSITE_SUBS) == null ? __opal.cm("COMPOSITE_SUBS") : $u))['$[]'] || $mm('[]')).call($t, "verbatim"))
+            return (($r = this).$apply_subs || $mm('apply_subs')).call($r, (($s = lines).$join || $mm('join')).call($s, "\n"), (($t = __scope.COMPOSITE_SUBS)['$[]'] || $mm('[]')).call($t, "verbatim"))
           }
         };
       };
@@ -468,7 +468,7 @@
       };
 
       def.$extract_passthroughs = function(text) {
-        var result = nil, $a, $b, $c, $d, $e, $f, $g, TMP_3, $h, $i, TMP_4, $j, $k;
+        var result = nil, $a, $b, $c, $d, $e, $f, $g, TMP_3, $h, $i, TMP_4, $j;
         result = (($a = text).$dup || $mm('dup')).call($a);
         if (($b = ($c = (($d = (($e = (($f = result)['$include?'] || $mm('include?')).call($f, "+++")), $e !== false && $e !== nil ? $e : (($g = result)['$include?'] || $mm('include?')).call($g, "$$"))), $d !== false && $d !== nil ? $d : (($e = result)['$include?'] || $mm('include?')).call($e, "pass:")), ($c === nil || $c === false))) === false || $b === nil) {
           result = ($b = (($c = result).$gsub || $mm('gsub')), $b._p = (TMP_3 = function() {
@@ -493,7 +493,7 @@
             (($m = self.passthroughs)['$<<'] || $mm('<<')).call($m, __hash2(["text", "subs"], {"text": (($n = (($o = m)['$[]'] || $mm('[]')).call($o, 2)), $n !== false && $n !== nil ? $n : (($p = (($q = m)['$[]'] || $mm('[]')).call($q, 4)).$gsub || $mm('gsub')).call($p, "]", "]")), "subs": subs}));
             index = ($n = (($s = self.passthroughs).$size || $mm('size')).call($s), $r = 1, typeof($n) === 'number' ? $n - $r : $n['$-']($r));
             return "x0" + (index) + "x0";
-          }, TMP_3._s = this, TMP_3), $b).call($c, (($d = (($h = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $h))['$[]'] || $mm('[]')).call($d, "pass_macro"))
+          }, TMP_3._s = this, TMP_3), $b).call($c, (($d = __scope.REGEXP)['$[]'] || $mm('[]')).call($d, "pass_macro"))
         };
         if (($b = ($h = (($i = result)['$include?'] || $mm('include?')).call($i, "`"), ($h === nil || $h === false))) === false || $b === nil) {
           result = ($b = (($h = result).$gsub || $mm('gsub')), $b._p = (TMP_4 = function() {
@@ -509,13 +509,13 @@
             (($f = self.passthroughs)['$<<'] || $mm('<<')).call($f, __hash2(["text", "subs", "literal"], {"text": (($g = m)['$[]'] || $mm('[]')).call($g, 3), "subs": ["specialcharacters"], "literal": true}));
             index = ($h = (($j = self.passthroughs).$size || $mm('size')).call($j), $i = 1, typeof($h) === 'number' ? $h - $i : $h['$-']($i));
             return "" + ((($h = m)['$[]'] || $mm('[]')).call($h, 1)) + "x0" + (index) + "x0";
-          }, TMP_4._s = this, TMP_4), $b).call($h, (($j = (($k = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $k))['$[]'] || $mm('[]')).call($j, "pass_lit"))
+          }, TMP_4._s = this, TMP_4), $b).call($h, (($j = __scope.REGEXP)['$[]'] || $mm('[]')).call($j, "pass_lit"))
         };
         return result;
       };
 
       def.$restore_passthroughs = function(text) {
-        var $a, $b, $c, $d, $e, $f, TMP_5, $g;
+        var $a, $b, $c, $d, $e, $f, TMP_5;
         if (this.passthroughs == null) this.passthroughs = nil;
 
         if (($a = (($b = (($c = (($d = this.passthroughs)['$nil?'] || $mm('nil?')).call($d)), $c !== false && $c !== nil ? $c : (($e = this.passthroughs)['$empty?'] || $mm('empty?')).call($e))), $b !== false && $b !== nil ? $b : ($c = (($f = text)['$include?'] || $mm('include?')).call($f, "x0"), ($c === nil || $c === false)))) !== false && $a !== nil) {
@@ -523,41 +523,41 @@
         };
         return ($a = (($b = text).$gsub || $mm('gsub')), $a._p = (TMP_5 = function() {
 
-          var pass = nil, self = TMP_5._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i;
+          var pass = nil, self = TMP_5._s || this, $a, $b, $c, $d, $e, $f, $g, $h;
           if (self.passthroughs == null) self.passthroughs = nil;
 
           
           pass = (($a = self.passthroughs)['$[]'] || $mm('[]')).call($a, (($b = nil).$to_i || $mm('to_i')).call($b));
           text = (($c = self).$apply_subs || $mm('apply_subs')).call($c, (($d = pass)['$[]'] || $mm('[]')).call($d, "text"), (($e = pass).$fetch || $mm('fetch')).call($e, "subs", []));
           if (($f = (($g = pass)['$[]'] || $mm('[]')).call($g, "literal")) !== false && $f !== nil) {
-            return (($f = (($h = (($i = __scope.Inline) == null ? __opal.cm("Inline") : $i)).$new || $mm('new')).call($h, self, "quoted", text, __hash2(["type"], {"type": "monospaced"}))).$render || $mm('render')).call($f)
+            return (($f = (($h = __scope.Inline).$new || $mm('new')).call($h, self, "quoted", text, __hash2(["type"], {"type": "monospaced"}))).$render || $mm('render')).call($f)
             } else {
             return text
           };
-        }, TMP_5._s = this, TMP_5), $a).call($b, (($c = (($g = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $g))['$[]'] || $mm('[]')).call($c, "pass_placeholder"));
+        }, TMP_5._s = this, TMP_5), $a).call($b, (($c = __scope.REGEXP)['$[]'] || $mm('[]')).call($c, "pass_placeholder"));
       };
 
       def.$sub_specialcharacters = function(text) {
-        var TMP_6, $a, $b, $c;
+        var TMP_6, $a, $b;
         return ($a = (($b = text).$gsub || $mm('gsub')), $a._p = (TMP_6 = function() {
 
-          var self = TMP_6._s || this, $a, $b;
+          var self = TMP_6._s || this, $a;
           
-          return (($a = (($b = __scope.SPECIAL_CHARS) == null ? __opal.cm("SPECIAL_CHARS") : $b))['$[]'] || $mm('[]')).call($a, __gvars["&"])
-        }, TMP_6._s = this, TMP_6), $a).call($b, (($c = __scope.SPECIAL_CHARS_PATTERN) == null ? __opal.cm("SPECIAL_CHARS_PATTERN") : $c));
+          return (($a = __scope.SPECIAL_CHARS)['$[]'] || $mm('[]')).call($a, __gvars["&"])
+        }, TMP_6._s = this, TMP_6), $a).call($b, __scope.SPECIAL_CHARS_PATTERN);
       };
 
       def.$sub_quotes = function(text) {
-        var result = nil, $a, TMP_7, $b, $c, $d;
+        var result = nil, $a, TMP_7, $b, $c;
         result = (($a = text).$dup || $mm('dup')).call($a);
-        ($b = (($c = (($d = __scope.QUOTE_SUBS) == null ? __opal.cm("QUOTE_SUBS") : $d)).$each || $mm('each')), $b._p = (TMP_7 = function(type, scope, pattern) {
+        ($b = (($c = __scope.QUOTE_SUBS).$each || $mm('each')), $b._p = (TMP_7 = function(type, scope, pattern) {
 
-          var self = TMP_7._s || this, $a, $b, $c, TMP_8;
+          var self = TMP_7._s || this, $a, $b, TMP_8, $c;
           if (type == null) type = nil;
 if (scope == null) scope = nil;
 if (pattern == null) pattern = nil;
 
-          if (($a = (($b = type)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Array) == null ? __opal.cm("Array") : $c))) !== false && $a !== nil) {
+          if (($a = (($b = type)['$is_a?'] || $mm('is_a?')).call($b, __scope.Array)) !== false && $a !== nil) {
             (($a = type)._isArray ? $a : ($a = [$a])), type = ($a[0] == null ? nil : $a[0]), scope = ($a[1] == null ? nil : $a[1]), pattern = ($a[2] == null ? nil : $a[2])
           };
           return result = ($a = (($c = result).$gsub || $mm('gsub')), $a._p = (TMP_8 = function() {
@@ -571,16 +571,16 @@ if (pattern == null) pattern = nil;
       };
 
       def.$sub_replacements = function(text) {
-        var result = nil, $a, TMP_9, $b, $c, $d;
+        var result = nil, $a, TMP_9, $b, $c;
         result = (($a = text).$dup || $mm('dup')).call($a);
-        ($b = (($c = (($d = __scope.REPLACEMENTS) == null ? __opal.cm("REPLACEMENTS") : $d)).$each || $mm('each')), $b._p = (TMP_9 = function(pattern, replacement, restore) {
+        ($b = (($c = __scope.REPLACEMENTS).$each || $mm('each')), $b._p = (TMP_9 = function(pattern, replacement, restore) {
 
-          var self = TMP_9._s || this, $a, $b, $c, TMP_10;
+          var self = TMP_9._s || this, $a, $b, TMP_10, $c;
           if (pattern == null) pattern = nil;
 if (replacement == null) replacement = nil;
 if (restore == null) restore = nil;
 
-          if (($a = (($b = pattern)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Array) == null ? __opal.cm("Array") : $c))) !== false && $a !== nil) {
+          if (($a = (($b = pattern)['$is_a?'] || $mm('is_a?')).call($b, __scope.Array)) !== false && $a !== nil) {
             (($a = pattern)._isArray ? $a : ($a = [$a])), pattern = ($a[0] == null ? nil : $a[0]), replacement = ($a[1] == null ? nil : $a[1]), restore = ($a[2] == null ? nil : $a[2])
           };
           return result = ($a = (($c = result).$gsub || $mm('gsub')), $a._p = (TMP_10 = function() {
@@ -611,7 +611,7 @@ if (restore == null) restore = nil;
       };
 
       def.$sub_attributes = function(data) {
-        var lines = nil, result = nil, $a, $b, $c, $d, TMP_11, $e, $f, $g, $h;
+        var lines = nil, result = nil, $a, $b, $c, $d, TMP_11, $e, $f, $g;
         if (($a = (($b = (($c = data)['$nil?'] || $mm('nil?')).call($c)), $b !== false && $b !== nil ? $b : (($d = data)['$empty?'] || $mm('empty?')).call($d))) !== false && $a !== nil) {
           return data
         };
@@ -625,7 +625,7 @@ if (restore == null) restore = nil;
           if (($a = (($b = line)['$include?'] || $mm('include?')).call($b, "{")) !== false && $a !== nil) {
             line = ($a = (($c = line).$gsub || $mm('gsub')), $a._p = (TMP_12 = function() {
 
-              var m = nil, key = nil, args = nil, self = TMP_12._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, TMP_13, $ab, $ac;
+              var m = nil, key = nil, args = nil, self = TMP_12._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, TMP_13, $aa, $ab;
               if (self.document == null) self.document = nil;
 
               
@@ -646,10 +646,10 @@ if (restore == null) restore = nil;
                     if (($u = (($v = (($w = self.document).$attributes || $mm('attributes')).call($w))['$has_key?'] || $mm('has_key?')).call($v, key)) !== false && $u !== nil) {
                       return (($u = (($x = self.document).$attributes || $mm('attributes')).call($x))['$[]'] || $mm('[]')).call($u, key)
                       } else {
-                      if (($y = (($z = (($aa = __scope.INTRINSICS) == null ? __opal.cm("INTRINSICS") : $aa))['$has_key?'] || $mm('has_key?')).call($z, key)) !== false && $y !== nil) {
-                        return (($y = (($aa = __scope.INTRINSICS) == null ? __opal.cm("INTRINSICS") : $aa))['$[]'] || $mm('[]')).call($y, key)
+                      if (($y = (($z = __scope.INTRINSICS)['$has_key?'] || $mm('has_key?')).call($z, key)) !== false && $y !== nil) {
+                        return (($y = __scope.INTRINSICS)['$[]'] || $mm('[]')).call($y, key)
                         } else {
-                        ($aa = (($ab = (($ac = __scope.Debug) == null ? __opal.cm("Debug") : $ac)).$debug || $mm('debug')), $aa._p = (TMP_13 = function() {
+                        ($aa = (($ab = __scope.Debug).$debug || $mm('debug')), $aa._p = (TMP_13 = function() {
 
                           var self = TMP_13._s || this, $a;
                           
@@ -662,7 +662,7 @@ if (restore == null) restore = nil;
                   }
                 }
               };
-            }, TMP_12._s = self, TMP_12), $a).call($c, (($d = (($e = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $e))['$[]'] || $mm('[]')).call($d, "attr_ref"))
+            }, TMP_12._s = self, TMP_12), $a).call($c, (($d = __scope.REGEXP)['$[]'] || $mm('[]')).call($d, "attr_ref"))
           };
           if (($a = ($e = reject, ($e === nil || $e === false))) !== false && $a !== nil) {
             return line
@@ -670,7 +670,7 @@ if (restore == null) restore = nil;
             return nil
           };
         }, TMP_11._s = this, TMP_11), $e).call($f)).$compact || $mm('compact')).call($b);
-        if (($e = (($g = data)['$is_a?'] || $mm('is_a?')).call($g, (($h = __scope.String) == null ? __opal.cm("String") : $h))) !== false && $e !== nil) {
+        if (($e = (($g = data)['$is_a?'] || $mm('is_a?')).call($g, __scope.String)) !== false && $e !== nil) {
           return (($e = result).$join || $mm('join')).call($e)
           } else {
           return result
@@ -678,7 +678,7 @@ if (restore == null) restore = nil;
       };
 
       def.$sub_macros = function(text) {
-        var result = nil, found = nil, link_attrs = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, TMP_14, $aa, $ab, $ac, $ad, $ae, TMP_15, $af, $ag, TMP_16, $ah, $ai, TMP_17, $aj, $ak, $al, $am, $an, $ao, TMP_18, $ap, $aq, TMP_19, $ar, $as, $at, $au, TMP_20, $av, $aw, $ax, $ay, $az, TMP_22, $ba, $bb, $bc, TMP_23, $bd, $be, $bf, $bg, TMP_24, $bh, $bi, $bj;
+        var result = nil, found = nil, link_attrs = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, TMP_14, $aa, $ab, $ac, $ad, $ae, TMP_15, $af, TMP_16, $ag, $ah, $ai, TMP_17, $aj, $ak, $al, $am, $an, $ao, TMP_18, $ap, $aq, TMP_19, $ar, $as, $at, $au, TMP_20, $av, $aw, $ax, $ay, $az, TMP_22, $ba, $bb, $bc, TMP_23, $bd, $be, $bf, $bg, TMP_24, $bh, $bi;
         if (this.document == null) this.document = nil;
 
         if (($a = (($b = (($c = text)['$nil?'] || $mm('nil?')).call($c)), $b !== false && $b !== nil ? $b : (($d = text)['$empty?'] || $mm('empty?')).call($d))) !== false && $a !== nil) {
@@ -697,7 +697,7 @@ if (restore == null) restore = nil;
         if (($x = ($y = (($y = found)['$[]'] || $mm('[]')).call($y, "macroish"), $y !== false && $y !== nil ? (($z = result)['$include?'] || $mm('include?')).call($z, "image:") : $y)) !== false && $x !== nil) {
           result = ($x = (($aa = result).$gsub || $mm('gsub')), $x._p = (TMP_14 = function() {
 
-            var m = nil, target = nil, attrs = nil, self = TMP_14._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q;
+            var m = nil, target = nil, attrs = nil, self = TMP_14._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p;
             if (self.document == null) self.document = nil;
 
             
@@ -709,27 +709,27 @@ if (restore == null) restore = nil;
             (($g = self.document).$register || $mm('register')).call($g, "images", target);
             attrs = (($h = self).$parse_attributes || $mm('parse_attributes')).call($h, (($i = self).$unescape_bracketed_text || $mm('unescape_bracketed_text')).call($i, (($j = m)['$[]'] || $mm('[]')).call($j, 2)), ["alt", "width", "height"]);
             if (($k = ($l = (($m = attrs)['$[]'] || $mm('[]')).call($m, "alt"), ($l === nil || $l === false))) !== false && $k !== nil) {
-              (($k = attrs)['$[]='] || $mm('[]=')).call($k, "alt", (($l = (($n = __scope.File) == null ? __opal.cm("File") : $n)).$basename || $mm('basename')).call($l, target, (($n = (($o = __scope.File) == null ? __opal.cm("File") : $o)).$extname || $mm('extname')).call($n, target)))
+              (($k = attrs)['$[]='] || $mm('[]=')).call($k, "alt", (($l = __scope.File).$basename || $mm('basename')).call($l, target, (($n = __scope.File).$extname || $mm('extname')).call($n, target)))
             };
-            return (($o = (($p = (($q = __scope.Inline) == null ? __opal.cm("Inline") : $q)).$new || $mm('new')).call($p, self, "image", nil, __hash2(["target", "attributes"], {"target": target, "attributes": attrs}))).$render || $mm('render')).call($o);
-          }, TMP_14._s = this, TMP_14), $x).call($aa, (($ab = (($ac = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ac))['$[]'] || $mm('[]')).call($ab, "image_macro"))
+            return (($o = (($p = __scope.Inline).$new || $mm('new')).call($p, self, "image", nil, __hash2(["target", "attributes"], {"target": target, "attributes": attrs}))).$render || $mm('render')).call($o);
+          }, TMP_14._s = this, TMP_14), $x).call($aa, (($ab = __scope.REGEXP)['$[]'] || $mm('[]')).call($ab, "image_macro"))
         };
         if (($x = (($ac = (($ad = found)['$[]'] || $mm('[]')).call($ad, "macroish_short_form")), $ac !== false && $ac !== nil ? $ac : (($ae = found)['$[]'] || $mm('[]')).call($ae, "round_bracket"))) !== false && $x !== nil) {
           result = ($x = (($ac = result).$gsub || $mm('gsub')), $x._p = (TMP_15 = function() {
 
-            var m = nil, terms = nil, self = TMP_15._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n;
+            var m = nil, terms = nil, self = TMP_15._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m;
             
             m = __gvars["~"];
             if (($a = (($b = (($c = m)['$[]'] || $mm('[]')).call($c, 0))['$start_with?'] || $mm('start_with?')).call($b, "\\")) !== false && $a !== nil) {
               return (($a = (($d = m)['$[]'] || $mm('[]')).call($d, 0))['$[]'] || $mm('[]')).call($a, __range(1, -1, false));
             };
-            terms = (($e = (($f = self).$unescape_bracketed_text || $mm('unescape_bracketed_text')).call($f, (($g = (($h = m)['$[]'] || $mm('[]')).call($h, 1)), $g !== false && $g !== nil ? $g : (($i = m)['$[]'] || $mm('[]')).call($i, 2)))).$split || $mm('split')).call($e, (($g = (($j = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $j))['$[]'] || $mm('[]')).call($g, "csv_delimiter"));
+            terms = (($e = (($f = self).$unescape_bracketed_text || $mm('unescape_bracketed_text')).call($f, (($g = (($h = m)['$[]'] || $mm('[]')).call($h, 1)), $g !== false && $g !== nil ? $g : (($i = m)['$[]'] || $mm('[]')).call($i, 2)))).$split || $mm('split')).call($e, (($g = __scope.REGEXP)['$[]'] || $mm('[]')).call($g, "csv_delimiter"));
             (($j = (($k = self).$document || $mm('document')).call($k)).$register || $mm('register')).call($j, "indexterms", terms);
-            return (($l = (($m = (($n = __scope.Inline) == null ? __opal.cm("Inline") : $n)).$new || $mm('new')).call($m, self, "indexterm", text, __hash2(["attributes"], {"attributes": __hash2(["terms"], {"terms": terms})}))).$render || $mm('render')).call($l);
-          }, TMP_15._s = this, TMP_15), $x).call($ac, (($af = (($ag = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ag))['$[]'] || $mm('[]')).call($af, "indexterm_macro"));
+            return (($l = (($m = __scope.Inline).$new || $mm('new')).call($m, self, "indexterm", text, __hash2(["attributes"], {"attributes": __hash2(["terms"], {"terms": terms})}))).$render || $mm('render')).call($l);
+          }, TMP_15._s = this, TMP_15), $x).call($ac, (($af = __scope.REGEXP)['$[]'] || $mm('[]')).call($af, "indexterm_macro"));
           result = ($x = (($ag = result).$gsub || $mm('gsub')), $x._p = (TMP_16 = function() {
 
-            var m = nil, self = TMP_16._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l;
+            var m = nil, self = TMP_16._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k;
             
             m = __gvars["~"];
             if (($a = (($b = (($c = m)['$[]'] || $mm('[]')).call($c, 0))['$start_with?'] || $mm('start_with?')).call($b, "\\")) !== false && $a !== nil) {
@@ -737,8 +737,8 @@ if (restore == null) restore = nil;
             };
             text = (($e = self).$unescape_bracketed_text || $mm('unescape_bracketed_text')).call($e, (($f = (($g = m)['$[]'] || $mm('[]')).call($g, 1)), $f !== false && $f !== nil ? $f : (($h = m)['$[]'] || $mm('[]')).call($h, 2)));
             (($f = (($i = self).$document || $mm('document')).call($i)).$register || $mm('register')).call($f, "indexterms", [text]);
-            return (($j = (($k = (($l = __scope.Inline) == null ? __opal.cm("Inline") : $l)).$new || $mm('new')).call($k, self, "indexterm", text, __hash2(["type"], {"type": "visible"}))).$render || $mm('render')).call($j);
-          }, TMP_16._s = this, TMP_16), $x).call($ag, (($ah = (($ai = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ai))['$[]'] || $mm('[]')).call($ah, "indexterm2_macro"));
+            return (($j = (($k = __scope.Inline).$new || $mm('new')).call($k, self, "indexterm", text, __hash2(["type"], {"type": "visible"}))).$render || $mm('render')).call($j);
+          }, TMP_16._s = this, TMP_16), $x).call($ag, (($ah = __scope.REGEXP)['$[]'] || $mm('[]')).call($ah, "indexterm2_macro"));
         };
         if (($x = (($ai = found)['$[]'] || $mm('[]')).call($ai, "uri")) !== false && $x !== nil) {
           result = ($x = (($aj = result).$gsub || $mm('gsub')), $x._p = (TMP_17 = function() {
@@ -783,12 +783,12 @@ if (restore == null) restore = nil;
               } else {
               text = ""
             };
-            return "" + (prefix) + ((($am = (($an = (($ao = __scope.Inline) == null ? __opal.cm("Inline") : $ao)).$new || $mm('new')).call($an, self, "anchor", (function() { if (($ao = ($ap = (($aq = text)['$empty?'] || $mm('empty?')).call($aq), ($ap === nil || $ap === false))) !== false && $ao !== nil) {
+            return "" + (prefix) + ((($am = (($an = __scope.Inline).$new || $mm('new')).call($an, self, "anchor", (function() { if (($ao = ($ap = (($aq = text)['$empty?'] || $mm('empty?')).call($aq), ($ap === nil || $ap === false))) !== false && $ao !== nil) {
               return text
               } else {
               return target
             }; return nil; }).call(self), __hash2(["type", "target", "attributes"], {"type": "link", "target": target, "attributes": attrs}))).$render || $mm('render')).call($am)) + (suffix);
-          }, TMP_17._s = this, TMP_17), $x).call($aj, (($ak = (($al = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $al))['$[]'] || $mm('[]')).call($ak, "link_inline"))
+          }, TMP_17._s = this, TMP_17), $x).call($aj, (($ak = __scope.REGEXP)['$[]'] || $mm('[]')).call($ak, "link_inline"))
         };
         if (($x = ($al = (($al = found)['$[]'] || $mm('[]')).call($al, "macroish"), $al !== false && $al !== nil ? (($am = (($an = result)['$include?'] || $mm('include?')).call($an, "link:")), $am !== false && $am !== nil ? $am : (($ao = result)['$include?'] || $mm('include?')).call($ao, "mailto:")) : $al)) !== false && $x !== nil) {
           result = ($x = (($am = result).$gsub || $mm('gsub')), $x._p = (TMP_18 = function() {
@@ -814,9 +814,9 @@ if (restore == null) restore = nil;
               text = (($p = attrs)['$[]'] || $mm('[]')).call($p, 1);
               if (mailto !== false && mailto !== nil) {
                 if (($q = (($r = attrs)['$has_key?'] || $mm('has_key?')).call($r, 2)) !== false && $q !== nil) {
-                  target = "" + (target) + "?subject=" + ((($q = (($s = __scope.Helpers) == null ? __opal.cm("Helpers") : $s)).$encode_uri || $mm('encode_uri')).call($q, (($s = attrs)['$[]'] || $mm('[]')).call($s, 2)));
+                  target = "" + (target) + "?subject=" + ((($q = __scope.Helpers).$encode_uri || $mm('encode_uri')).call($q, (($s = attrs)['$[]'] || $mm('[]')).call($s, 2)));
                   if (($t = (($u = attrs)['$has_key?'] || $mm('has_key?')).call($u, 3)) !== false && $t !== nil) {
-                    target = "" + (target) + "&amp;body=" + ((($t = (($v = __scope.Helpers) == null ? __opal.cm("Helpers") : $v)).$encode_uri || $mm('encode_uri')).call($t, (($v = attrs)['$[]'] || $mm('[]')).call($v, 3)))
+                    target = "" + (target) + "&amp;body=" + ((($t = __scope.Helpers).$encode_uri || $mm('encode_uri')).call($t, (($v = attrs)['$[]'] || $mm('[]')).call($v, 3)))
                   };
                 }
               };
@@ -824,17 +824,17 @@ if (restore == null) restore = nil;
               text = (($w = self).$sub_attributes || $mm('sub_attributes')).call($w, (($x = (($y = m)['$[]'] || $mm('[]')).call($y, 2)).$gsub || $mm('gsub')).call($x, "]", "]"))
             };
             (($z = self.document).$register || $mm('register')).call($z, "links", target);
-            return (($aa = (($ab = (($ac = __scope.Inline) == null ? __opal.cm("Inline") : $ac)).$new || $mm('new')).call($ab, self, "anchor", (function() { if (($ac = ($ad = (($ae = text)['$empty?'] || $mm('empty?')).call($ae), ($ad === nil || $ad === false))) !== false && $ac !== nil) {
+            return (($aa = (($ab = __scope.Inline).$new || $mm('new')).call($ab, self, "anchor", (function() { if (($ac = ($ad = (($ae = text)['$empty?'] || $mm('empty?')).call($ae), ($ad === nil || $ad === false))) !== false && $ac !== nil) {
               return text
               } else {
               return raw_target
             }; return nil; }).call(self), __hash2(["type", "target", "attributes"], {"type": "link", "target": target, "attributes": attrs}))).$render || $mm('render')).call($aa);
-          }, TMP_18._s = this, TMP_18), $x).call($am, (($ap = (($aq = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $aq))['$[]'] || $mm('[]')).call($ap, "link_macro"))
+          }, TMP_18._s = this, TMP_18), $x).call($am, (($ap = __scope.REGEXP)['$[]'] || $mm('[]')).call($ap, "link_macro"))
         };
         if (($x = (($aq = found)['$[]'] || $mm('[]')).call($aq, "at")) !== false && $x !== nil) {
           result = ($x = (($ar = result).$gsub || $mm('gsub')), $x._p = (TMP_19 = function() {
 
-            var m = nil, address = nil, $case = nil, target = nil, self = TMP_19._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j;
+            var m = nil, address = nil, $case = nil, target = nil, self = TMP_19._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i;
             if (self.document == null) self.document = nil;
 
             
@@ -848,13 +848,13 @@ if (restore == null) restore = nil;
             };
             target = "mailto:" + (address);
             (($g = self.document).$register || $mm('register')).call($g, "links", target);
-            return (($h = (($i = (($j = __scope.Inline) == null ? __opal.cm("Inline") : $j)).$new || $mm('new')).call($i, self, "anchor", address, __hash2(["type", "target"], {"type": "link", "target": target}))).$render || $mm('render')).call($h);
-          }, TMP_19._s = this, TMP_19), $x).call($ar, (($as = (($at = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $at))['$[]'] || $mm('[]')).call($as, "email_inline"))
+            return (($h = (($i = __scope.Inline).$new || $mm('new')).call($i, self, "anchor", address, __hash2(["type", "target"], {"type": "link", "target": target}))).$render || $mm('render')).call($h);
+          }, TMP_19._s = this, TMP_19), $x).call($ar, (($as = __scope.REGEXP)['$[]'] || $mm('[]')).call($as, "email_inline"))
         };
         if (($x = ($at = (($at = found)['$[]'] || $mm('[]')).call($at, "macroish_short_form"), $at !== false && $at !== nil ? (($au = result)['$include?'] || $mm('include?')).call($au, "footnote") : $at)) !== false && $x !== nil) {
           result = ($x = (($av = result).$gsub || $mm('gsub')), $x._p = (TMP_20 = function() {
 
-            var m = nil, id = nil, index = nil, type = nil, target = nil, footnote = nil, self = TMP_20._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, TMP_21, $u, $v, $w, $x, $y, $z, $aa;
+            var m = nil, id = nil, index = nil, type = nil, target = nil, footnote = nil, self = TMP_20._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, TMP_21, $t, $u, $v, $w, $x, $y, $z;
             if (self.document == null) self.document = nil;
 
             
@@ -866,15 +866,15 @@ if (restore == null) restore = nil;
               text = (($g = self).$restore_passthroughs || $mm('restore_passthroughs')).call($g, (($h = m)['$[]'] || $mm('[]')).call($h, 2));
               id = nil;
               index = (($i = self.document).$counter || $mm('counter')).call($i, "footnote-number");
-              (($j = self.document).$register || $mm('register')).call($j, "footnotes", (($k = (($l = __scope.Footnote) == null ? __opal.cm("Footnote") : $l)).$new || $mm('new')).call($k, index, id, text));
+              (($j = self.document).$register || $mm('register')).call($j, "footnotes", (($k = __scope.Footnote).$new || $mm('new')).call($k, index, id, text));
               type = nil;
               target = nil;
               } else {
-              (($l = (($m = (($n = m)['$[]'] || $mm('[]')).call($n, 2)).$split || $mm('split')).call($m, (($o = (($p = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $p))['$[]'] || $mm('[]')).call($o, "csv_delimiter"), 2))._isArray ? $l : ($l = [$l])), id = ($l[0] == null ? nil : $l[0]), text = ($l[1] == null ? nil : $l[1]);
+              (($l = (($m = (($n = m)['$[]'] || $mm('[]')).call($n, 2)).$split || $mm('split')).call($m, (($o = __scope.REGEXP)['$[]'] || $mm('[]')).call($o, "csv_delimiter"), 2))._isArray ? $l : ($l = [$l])), id = ($l[0] == null ? nil : $l[0]), text = ($l[1] == null ? nil : $l[1]);
               if (($l = ($p = (($q = text)['$nil?'] || $mm('nil?')).call($q), ($p === nil || $p === false))) !== false && $l !== nil) {
                 text = (($l = self).$restore_passthroughs || $mm('restore_passthroughs')).call($l, text);
                 index = (($p = self.document).$counter || $mm('counter')).call($p, "footnote-number");
-                (($r = self.document).$register || $mm('register')).call($r, "footnotes", (($s = (($t = __scope.Footnote) == null ? __opal.cm("Footnote") : $t)).$new || $mm('new')).call($s, index, id, text));
+                (($r = self.document).$register || $mm('register')).call($r, "footnotes", (($s = __scope.Footnote).$new || $mm('new')).call($s, index, id, text));
                 type = "ref";
                 target = nil;
                 } else {
@@ -892,23 +892,23 @@ if (restore == null) restore = nil;
                 type = "xref";
               };
             };
-            return (($y = (($z = (($aa = __scope.Inline) == null ? __opal.cm("Inline") : $aa)).$new || $mm('new')).call($z, self, "footnote", text, __hash2(["attributes", "id", "target", "type"], {"attributes": __hash2(["index"], {"index": index}), "id": id, "target": target, "type": type}))).$render || $mm('render')).call($y);
-          }, TMP_20._s = this, TMP_20), $x).call($av, (($aw = (($ax = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ax))['$[]'] || $mm('[]')).call($aw, "footnote_macro"))
+            return (($y = (($z = __scope.Inline).$new || $mm('new')).call($z, self, "footnote", text, __hash2(["attributes", "id", "target", "type"], {"attributes": __hash2(["index"], {"index": index}), "id": id, "target": target, "type": type}))).$render || $mm('render')).call($y);
+          }, TMP_20._s = this, TMP_20), $x).call($av, (($aw = __scope.REGEXP)['$[]'] || $mm('[]')).call($aw, "footnote_macro"))
         };
         if (($x = (($ax = (($ay = found)['$[]'] || $mm('[]')).call($ay, "macroish")), $ax !== false && $ax !== nil ? $ax : (($az = result)['$include?'] || $mm('include?')).call($az, "&lt;&lt;"))) !== false && $x !== nil) {
           result = ($x = (($ax = result).$gsub || $mm('gsub')), $x._p = (TMP_22 = function() {
 
-            var m = nil, id = nil, reftext = nil, self = TMP_22._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u;
+            var m = nil, id = nil, reftext = nil, self = TMP_22._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t;
             
             m = __gvars["~"];
             if (($a = (($b = (($c = m)['$[]'] || $mm('[]')).call($c, 0))['$start_with?'] || $mm('start_with?')).call($b, "\\")) !== false && $a !== nil) {
               return (($a = (($d = m)['$[]'] || $mm('[]')).call($d, 0))['$[]'] || $mm('[]')).call($a, __range(1, -1, false));
             };
             if (($e = ($f = (($g = (($h = m)['$[]'] || $mm('[]')).call($h, 1))['$nil?'] || $mm('nil?')).call($g), ($f === nil || $f === false))) !== false && $e !== nil) {
-              (($e = (($f = (($i = m)['$[]'] || $mm('[]')).call($i, 1)).$split || $mm('split')).call($f, (($j = (($k = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $k))['$[]'] || $mm('[]')).call($j, "csv_delimiter"), 2))._isArray ? $e : ($e = [$e])), id = ($e[0] == null ? nil : $e[0]), reftext = ($e[1] == null ? nil : $e[1]);
-              id = (($e = id).$sub || $mm('sub')).call($e, (($k = (($l = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $l))['$[]'] || $mm('[]')).call($k, "dbl_quoted"), "\\2");
+              (($e = (($f = (($i = m)['$[]'] || $mm('[]')).call($i, 1)).$split || $mm('split')).call($f, (($j = __scope.REGEXP)['$[]'] || $mm('[]')).call($j, "csv_delimiter"), 2))._isArray ? $e : ($e = [$e])), id = ($e[0] == null ? nil : $e[0]), reftext = ($e[1] == null ? nil : $e[1]);
+              id = (($e = id).$sub || $mm('sub')).call($e, (($k = __scope.REGEXP)['$[]'] || $mm('[]')).call($k, "dbl_quoted"), "\\2");
               if (($l = (($m = reftext)['$nil?'] || $mm('nil?')).call($m)) === false || $l === nil) {
-                reftext = (($l = reftext).$sub || $mm('sub')).call($l, (($n = (($o = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $o))['$[]'] || $mm('[]')).call($n, "m_dbl_quoted"), "\\2")
+                reftext = (($l = reftext).$sub || $mm('sub')).call($l, (($n = __scope.REGEXP)['$[]'] || $mm('[]')).call($n, "m_dbl_quoted"), "\\2")
               };
               } else {
               id = (($o = m)['$[]'] || $mm('[]')).call($o, 2);
@@ -918,39 +918,39 @@ if (restore == null) restore = nil;
                 return nil
               }; return nil; }).call(self);
             };
-            return (($q = (($t = (($u = __scope.Inline) == null ? __opal.cm("Inline") : $u)).$new || $mm('new')).call($t, self, "anchor", reftext, __hash2(["type", "target"], {"type": "xref", "target": id}))).$render || $mm('render')).call($q);
-          }, TMP_22._s = this, TMP_22), $x).call($ax, (($ba = (($bb = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $bb))['$[]'] || $mm('[]')).call($ba, "xref_macro"))
+            return (($q = (($t = __scope.Inline).$new || $mm('new')).call($t, self, "anchor", reftext, __hash2(["type", "target"], {"type": "xref", "target": id}))).$render || $mm('render')).call($q);
+          }, TMP_22._s = this, TMP_22), $x).call($ax, (($ba = __scope.REGEXP)['$[]'] || $mm('[]')).call($ba, "xref_macro"))
         };
         if (($x = ($bb = (($bb = found)['$[]'] || $mm('[]')).call($bb, "square_bracket"), $bb !== false && $bb !== nil ? (($bc = result)['$include?'] || $mm('include?')).call($bc, "[[[") : $bb)) !== false && $x !== nil) {
           result = ($x = (($bd = result).$gsub || $mm('gsub')), $x._p = (TMP_23 = function() {
 
-            var m = nil, id = nil, reftext = nil, self = TMP_23._s || this, $a, $b, $c, $d, $e, $f, $g, $h;
+            var m = nil, id = nil, reftext = nil, self = TMP_23._s || this, $a, $b, $c, $d, $e, $f, $g;
             
             m = __gvars["~"];
             if (($a = (($b = (($c = m)['$[]'] || $mm('[]')).call($c, 0))['$start_with?'] || $mm('start_with?')).call($b, "\\")) !== false && $a !== nil) {
               return (($a = (($d = m)['$[]'] || $mm('[]')).call($d, 0))['$[]'] || $mm('[]')).call($a, __range(1, -1, false));
             };
             id = reftext = (($e = m)['$[]'] || $mm('[]')).call($e, 1);
-            return (($f = (($g = (($h = __scope.Inline) == null ? __opal.cm("Inline") : $h)).$new || $mm('new')).call($g, self, "anchor", reftext, __hash2(["type", "target"], {"type": "bibref", "target": id}))).$render || $mm('render')).call($f);
-          }, TMP_23._s = this, TMP_23), $x).call($bd, (($be = (($bf = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $bf))['$[]'] || $mm('[]')).call($be, "biblio_macro"))
+            return (($f = (($g = __scope.Inline).$new || $mm('new')).call($g, self, "anchor", reftext, __hash2(["type", "target"], {"type": "bibref", "target": id}))).$render || $mm('render')).call($f);
+          }, TMP_23._s = this, TMP_23), $x).call($bd, (($be = __scope.REGEXP)['$[]'] || $mm('[]')).call($be, "biblio_macro"))
         };
         if (($x = ($bf = (($bf = found)['$[]'] || $mm('[]')).call($bf, "square_bracket"), $bf !== false && $bf !== nil ? (($bg = result)['$include?'] || $mm('include?')).call($bg, "[[") : $bf)) !== false && $x !== nil) {
           result = ($x = (($bh = result).$gsub || $mm('gsub')), $x._p = (TMP_24 = function() {
 
-            var m = nil, id = nil, reftext = nil, self = TMP_24._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, TMP_25, $n, $o, $p;
+            var m = nil, id = nil, reftext = nil, self = TMP_24._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, TMP_25, $m, $n, $o;
             
             m = __gvars["~"];
             if (($a = (($b = (($c = m)['$[]'] || $mm('[]')).call($c, 0))['$start_with?'] || $mm('start_with?')).call($b, "\\")) !== false && $a !== nil) {
               return (($a = (($d = m)['$[]'] || $mm('[]')).call($d, 0))['$[]'] || $mm('[]')).call($a, __range(1, -1, false));
             };
-            (($e = (($f = (($g = m)['$[]'] || $mm('[]')).call($g, 1)).$split || $mm('split')).call($f, (($h = (($i = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $i))['$[]'] || $mm('[]')).call($h, "csv_delimiter")))._isArray ? $e : ($e = [$e])), id = ($e[0] == null ? nil : $e[0]), reftext = ($e[1] == null ? nil : $e[1]);
-            id = (($e = id).$sub || $mm('sub')).call($e, (($i = (($j = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $j))['$[]'] || $mm('[]')).call($i, "dbl_quoted"), "\\2");
+            (($e = (($f = (($g = m)['$[]'] || $mm('[]')).call($g, 1)).$split || $mm('split')).call($f, (($h = __scope.REGEXP)['$[]'] || $mm('[]')).call($h, "csv_delimiter")))._isArray ? $e : ($e = [$e])), id = ($e[0] == null ? nil : $e[0]), reftext = ($e[1] == null ? nil : $e[1]);
+            id = (($e = id).$sub || $mm('sub')).call($e, (($i = __scope.REGEXP)['$[]'] || $mm('[]')).call($i, "dbl_quoted"), "\\2");
             if (($j = (($k = reftext)['$nil?'] || $mm('nil?')).call($k)) !== false && $j !== nil) {
               reftext = "[" + (id) + "]"
               } else {
-              reftext = (($j = reftext).$sub || $mm('sub')).call($j, (($l = (($m = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $m))['$[]'] || $mm('[]')).call($l, "m_dbl_quoted"), "\\2")
+              reftext = (($j = reftext).$sub || $mm('sub')).call($j, (($l = __scope.REGEXP)['$[]'] || $mm('[]')).call($l, "m_dbl_quoted"), "\\2")
             };
-            ($m = (($n = (($o = __scope.Debug) == null ? __opal.cm("Debug") : $o)).$debug || $mm('debug')), $m._p = (TMP_25 = function() {
+            ($m = (($n = __scope.Debug).$debug || $mm('debug')), $m._p = (TMP_25 = function() {
 
               var self = TMP_25._s || this, $a, $b, $c, $d;
               if (self.document == null) self.document = nil;
@@ -962,14 +962,14 @@ if (restore == null) restore = nil;
                 return "Missing reference for anchor '" + (id) + "'"
               }
             }, TMP_25._s = self, TMP_25), $m).call($n);
-            return (($m = (($o = (($p = __scope.Inline) == null ? __opal.cm("Inline") : $p)).$new || $mm('new')).call($o, self, "anchor", reftext, __hash2(["type", "target"], {"type": "ref", "target": id}))).$render || $mm('render')).call($m);
-          }, TMP_24._s = this, TMP_24), $x).call($bh, (($bi = (($bj = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $bj))['$[]'] || $mm('[]')).call($bi, "anchor_macro"))
+            return (($m = (($o = __scope.Inline).$new || $mm('new')).call($o, self, "anchor", reftext, __hash2(["type", "target"], {"type": "ref", "target": id}))).$render || $mm('render')).call($m);
+          }, TMP_24._s = this, TMP_24), $x).call($bh, (($bi = __scope.REGEXP)['$[]'] || $mm('[]')).call($bi, "anchor_macro"))
         };
         return result;
       };
 
       def.$sub_callouts = function(text) {
-        var TMP_26, $a, $b, $c, $d;
+        var TMP_26, $a, $b, $c;
         return ($a = (($b = text).$gsub || $mm('gsub')), $a._p = (TMP_26 = function() {
 
           var m = nil, self = TMP_26._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i;
@@ -978,12 +978,12 @@ if (restore == null) restore = nil;
           if (($a = (($b = (($c = m)['$[]'] || $mm('[]')).call($c, 0))['$start_with?'] || $mm('start_with?')).call($b, "\\")) !== false && $a !== nil) {
             return "&lt;" + ((($a = m)['$[]'] || $mm('[]')).call($a, 1)) + "&gt;";
           };
-          return (($d = (($e = (($f = __scope.Inline) == null ? __opal.cm("Inline") : $f)).$new || $mm('new')).call($e, self, "callout", (($f = m)['$[]'] || $mm('[]')).call($f, 1), __hash2(["id"], {"id": (($g = (($h = (($i = self).$document || $mm('document')).call($i)).$callouts || $mm('callouts')).call($h)).$read_next_id || $mm('read_next_id')).call($g)}))).$render || $mm('render')).call($d);
-        }, TMP_26._s = this, TMP_26), $a).call($b, (($c = (($d = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $d))['$[]'] || $mm('[]')).call($c, "callout_render"));
+          return (($d = (($e = __scope.Inline).$new || $mm('new')).call($e, self, "callout", (($f = m)['$[]'] || $mm('[]')).call($f, 1), __hash2(["id"], {"id": (($g = (($h = (($i = self).$document || $mm('document')).call($i)).$callouts || $mm('callouts')).call($h)).$read_next_id || $mm('read_next_id')).call($g)}))).$render || $mm('render')).call($d);
+        }, TMP_26._s = this, TMP_26), $a).call($b, (($c = __scope.REGEXP)['$[]'] || $mm('[]')).call($c, "callout_render"));
       };
 
       def.$sub_post_replacements = function(text) {
-        var lines = nil, last = nil, $a, $b, $c, $d, $e, $f, $g, $h, TMP_27, $i, $j, TMP_28, $k;
+        var lines = nil, last = nil, $a, $b, $c, $d, $e, $f, $g, $h, TMP_27, $i, $j, TMP_28;
         if (this.document == null) this.document = nil;
 
         if (($a = (($b = this.document)['$attr?'] || $mm('attr?')).call($b, "hardbreaks")) !== false && $a !== nil) {
@@ -994,18 +994,18 @@ if (restore == null) restore = nil;
           last = (($f = lines).$pop || $mm('pop')).call($f);
           return "" + (($g = ($i = (($j = lines).$map || $mm('map')), $i._p = (TMP_27 = function(line) {
 
-            var self = TMP_27._s || this, $a, $b, $c, $d, $e;
+            var self = TMP_27._s || this, $a, $b, $c, $d;
             if (line == null) line = nil;
 
-            return (($a = (($b = (($c = __scope.Inline) == null ? __opal.cm("Inline") : $c)).$new || $mm('new')).call($b, self, "break", (($c = (($d = line).$rstrip || $mm('rstrip')).call($d)).$chomp || $mm('chomp')).call($c, (($e = __scope.LINE_BREAK) == null ? __opal.cm("LINE_BREAK") : $e)), __hash2(["type"], {"type": "line"}))).$render || $mm('render')).call($a)
+            return (($a = (($b = __scope.Inline).$new || $mm('new')).call($b, self, "break", (($c = (($d = line).$rstrip || $mm('rstrip')).call($d)).$chomp || $mm('chomp')).call($c, __scope.LINE_BREAK), __hash2(["type"], {"type": "line"}))).$render || $mm('render')).call($a)
           }, TMP_27._s = this, TMP_27), $i).call($j), $h = "\n", typeof($g) === 'number' ? $g * $h : $g['$*']($h))) + "\n" + (last);
           } else {
           return ($g = (($h = text).$gsub || $mm('gsub')), $g._p = (TMP_28 = function() {
 
             var self = TMP_28._s || this, $a, $b, $c;
             
-            return (($a = (($b = (($c = __scope.Inline) == null ? __opal.cm("Inline") : $c)).$new || $mm('new')).call($b, self, "break", (($c = __gvars["~"])['$[]'] || $mm('[]')).call($c, 1), __hash2(["type"], {"type": "line"}))).$render || $mm('render')).call($a)
-          }, TMP_28._s = this, TMP_28), $g).call($h, (($i = (($k = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $k))['$[]'] || $mm('[]')).call($i, "line_break"))
+            return (($a = (($b = __scope.Inline).$new || $mm('new')).call($b, self, "break", (($c = __gvars["~"])['$[]'] || $mm('[]')).call($c, 1), __hash2(["type"], {"type": "line"}))).$render || $mm('render')).call($a)
+          }, TMP_28._s = this, TMP_28), $g).call($h, (($i = __scope.REGEXP)['$[]'] || $mm('[]')).call($i, "line_break"))
         };
       };
 
@@ -1015,15 +1015,15 @@ if (restore == null) restore = nil;
           return (($a = (($d = match)['$[]'] || $mm('[]')).call($d, 0))['$[]'] || $mm('[]')).call($a, __range(1, -1, false))
           } else {
           if ((($e = scope)['$=='] || $mm('==')).call($e, "constrained")) {
-            return "" + ((($f = match)['$[]'] || $mm('[]')).call($f, 1)) + ((($g = (($h = (($i = __scope.Inline) == null ? __opal.cm("Inline") : $i)).$new || $mm('new')).call($h, this, "quoted", (($i = match)['$[]'] || $mm('[]')).call($i, 3), __hash2(["type", "attributes"], {"type": type, "attributes": (($j = this).$parse_attributes || $mm('parse_attributes')).call($j, (($k = match)['$[]'] || $mm('[]')).call($k, 2))}))).$render || $mm('render')).call($g))
+            return "" + ((($f = match)['$[]'] || $mm('[]')).call($f, 1)) + ((($g = (($h = __scope.Inline).$new || $mm('new')).call($h, this, "quoted", (($i = match)['$[]'] || $mm('[]')).call($i, 3), __hash2(["type", "attributes"], {"type": type, "attributes": (($j = this).$parse_attributes || $mm('parse_attributes')).call($j, (($k = match)['$[]'] || $mm('[]')).call($k, 2))}))).$render || $mm('render')).call($g))
             } else {
-            return (($l = (($m = (($n = __scope.Inline) == null ? __opal.cm("Inline") : $n)).$new || $mm('new')).call($m, this, "quoted", (($n = match)['$[]'] || $mm('[]')).call($n, 2), __hash2(["type", "attributes"], {"type": type, "attributes": (($o = this).$parse_attributes || $mm('parse_attributes')).call($o, (($p = match)['$[]'] || $mm('[]')).call($p, 1))}))).$render || $mm('render')).call($l)
+            return (($l = (($m = __scope.Inline).$new || $mm('new')).call($m, this, "quoted", (($n = match)['$[]'] || $mm('[]')).call($n, 2), __hash2(["type", "attributes"], {"type": type, "attributes": (($o = this).$parse_attributes || $mm('parse_attributes')).call($o, (($p = match)['$[]'] || $mm('[]')).call($p, 1))}))).$render || $mm('render')).call($l)
           }
         };
       };
 
       def.$parse_attributes = function(attrline, posattrs, opts) {
-        var block = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n;
+        var block = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m;
         if (this.document == null) this.document = nil;
 if (posattrs == null) {
           posattrs = ["role"]
@@ -1047,9 +1047,9 @@ if (posattrs == null) {
           block = this
         };
         if (($g = (($i = opts)['$has_key?'] || $mm('has_key?')).call($i, "into")) !== false && $g !== nil) {
-          return (($g = (($j = (($k = __scope.AttributeList) == null ? __opal.cm("AttributeList") : $k)).$new || $mm('new')).call($j, attrline, block)).$parse_into || $mm('parse_into')).call($g, (($k = opts)['$[]'] || $mm('[]')).call($k, "into"), posattrs)
+          return (($g = (($j = __scope.AttributeList).$new || $mm('new')).call($j, attrline, block)).$parse_into || $mm('parse_into')).call($g, (($k = opts)['$[]'] || $mm('[]')).call($k, "into"), posattrs)
           } else {
-          return (($l = (($m = (($n = __scope.AttributeList) == null ? __opal.cm("AttributeList") : $n)).$new || $mm('new')).call($m, attrline, block)).$parse || $mm('parse')).call($l, posattrs)
+          return (($l = (($m = __scope.AttributeList).$new || $mm('new')).call($m, attrline, block)).$parse || $mm('parse')).call($l, posattrs)
         };
       };
 
@@ -1070,7 +1070,7 @@ if (posattrs == null) {
 
           return (($a = (($b = sub).$strip || $mm('strip')).call($b)).$to_sym || $mm('to_sym')).call($a)
         }, TMP_29._s = this, TMP_29), $a).call($b);
-        resolved = (($a = candidates)['$&'] || $mm('&')).call($a, (($d = __scope.SUB_OPTIONS) == null ? __opal.cm("SUB_OPTIONS") : $d));
+        resolved = (($a = candidates)['$&'] || $mm('&')).call($a, __scope.SUB_OPTIONS);
         if ((($d = (($e = (invalid = ($f = candidates, $g = resolved, typeof($f) === 'number' ? $f - $g : $f['$-']($g)))).$size || $mm('size')).call($e))['$>'] || $mm('>')).call($d, 0)) {
           (($f = this).$puts || $mm('puts')).call($f, "asciidoctor: WARNING: invalid passthrough macro substitution operation" + ((function() { if ((($g = (($h = invalid).$size || $mm('size')).call($h))['$>'] || $mm('>')).call($g, 1)) {
             return "s"
@@ -1085,8 +1085,8 @@ if (posattrs == null) {
         var $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m;
         if (this.document == null) this.document = nil;
 
-        (($a = (($b = __scope.Helpers) == null ? __opal.cm("Helpers") : $b)).$require_library || $mm('require_library')).call($a, "coderay");
-        return (($b = (($c = (($d = (($e = ((($f = __opal.Object._scope.CodeRay) == null ? __opal.cm("CodeRay") : $f))._scope).Duo == null ? $e.cm("Duo") : $e.Duo))['$[]'] || $mm('[]')).call($d, (($e = (($f = this).$attr || $mm('attr')).call($f, "language", "text")).$to_sym || $mm('to_sym')).call($e), "html", __hash2(["css", "line_numbers", "line_number_anchors"], {"css": (($g = (($h = (($i = this.document).$attributes || $mm('attributes')).call($i)).$fetch || $mm('fetch')).call($h, "coderay-css", "class")).$to_sym || $mm('to_sym')).call($g), "line_numbers": (function() { if (($j = (($k = this)['$attr?'] || $mm('attr?')).call($k, "linenums")) !== false && $j !== nil) {
+        (($a = __scope.Helpers).$require_library || $mm('require_library')).call($a, "coderay");
+        return (($b = (($c = (($d = (__opal.Object._scope.CodeRay)._scope.Duo)['$[]'] || $mm('[]')).call($d, (($e = (($f = this).$attr || $mm('attr')).call($f, "language", "text")).$to_sym || $mm('to_sym')).call($e), "html", __hash2(["css", "line_numbers", "line_number_anchors"], {"css": (($g = (($h = (($i = this.document).$attributes || $mm('attributes')).call($i)).$fetch || $mm('fetch')).call($h, "coderay-css", "class")).$to_sym || $mm('to_sym')).call($g), "line_numbers": (function() { if (($j = (($k = this)['$attr?'] || $mm('attr?')).call($k, "linenums")) !== false && $j !== nil) {
           return (($j = (($l = (($m = this.document).$attributes || $mm('attributes')).call($m)).$fetch || $mm('fetch')).call($l, "coderay-linenums-mode", "table")).$to_sym || $mm('to_sym')).call($j)
           } else {
           return nil
@@ -1111,7 +1111,7 @@ if (posattrs == null) {
 
       Helpers._defs('$require_library', function(name) {
         var main_script = nil, main_script_path_segment = nil, $a, $b, $c, $d, $e, $f, TMP_1, $g, $h;
-        if ((($a = (($b = (($c = (($d = __scope.Thread) == null ? __opal.cm("Thread") : $d)).$list || $mm('list')).call($c)).$size || $mm('size')).call($b))['$>'] || $mm('>')).call($a, 1)) {
+        if ((($a = (($b = (($c = __scope.Thread).$list || $mm('list')).call($c)).$size || $mm('size')).call($b))['$>'] || $mm('>')).call($a, 1)) {
           main_script = "" + (name) + ".rb";
           main_script_path_segment = "/" + (name) + ".rb";
           if (($d = ($e = (($f = ($g = (($h = __gvars["LOADED_FEATURES"]).$detect || $mm('detect')), $g._p = (TMP_1 = function(p) {
@@ -1130,7 +1130,7 @@ if (posattrs == null) {
       });
 
       Helpers._defs('$encode_uri', function(str) {
-        var TMP_2, $a, $b, $c, $d;
+        var TMP_2, $a, $b, $c;
         return ($a = (($b = str).$gsub || $mm('gsub')), $a._p = (TMP_2 = function() {
 
           var buf = nil, self = TMP_2._s || this, TMP_3, $a, $b;
@@ -1144,7 +1144,7 @@ if (posattrs == null) {
             return (($a = buf)['$<<'] || $mm('<<')).call($a, (($b = self).$sprintf || $mm('sprintf')).call($b, "%%%02X", c))
           }, TMP_3._s = self, TMP_3), $a).call($b);
           return buf;
-        }, TMP_2._s = this, TMP_2), $a).call($b, (($c = (($d = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $d))['$[]'] || $mm('[]')).call($c, "uri_encode_chars"))
+        }, TMP_2._s = this, TMP_2), $a).call($b, (($c = __scope.REGEXP)['$[]'] || $mm('[]')).call($c, "uri_encode_chars"))
       });
       
     })(Asciidoctor)
@@ -1162,10 +1162,10 @@ if (posattrs == null) {
       function AbstractNode() {};
       AbstractNode = __klass(__base, __super, "AbstractNode", AbstractNode);
 
-      var def = AbstractNode.prototype, __scope = AbstractNode._scope, $a, $b;
+      var def = AbstractNode.prototype, __scope = AbstractNode._scope, $a;
       def.parent = def.document = def.context = def.id = def.attributes = nil;
 
-      (($a = AbstractNode).$include || $mm('include')).call($a, (($b = __scope.Substituters) == null ? __opal.cm("Substituters") : $b));
+      (($a = AbstractNode).$include || $mm('include')).call($a, __scope.Substituters);
 
       def.$parent = function() {
         
@@ -1197,14 +1197,14 @@ if (posattrs == null) {
       }, nil;
 
       def.$initialize = function(parent, context) {
-        var $a, $b, $c, $d, $e;
+        var $a, $b, $c, $d;
         this.parent = (function() { if (($a = ($b = (($c = context)['$=='] || $mm('==')).call($c, "document"), ($b === nil || $b === false))) !== false && $a !== nil) {
           return parent
           } else {
           return nil
         }; return nil; }).call(this);
         if (($a = ($b = (($d = parent)['$nil?'] || $mm('nil?')).call($d), ($b === nil || $b === false))) !== false && $a !== nil) {
-          this.document = (function() { if (($a = (($b = parent)['$is_a?'] || $mm('is_a?')).call($b, (($e = __scope.Document) == null ? __opal.cm("Document") : $e))) !== false && $a !== nil) {
+          this.document = (function() { if (($a = (($b = parent)['$is_a?'] || $mm('is_a?')).call($b, __scope.Document)) !== false && $a !== nil) {
             return parent
             } else {
             return (($a = parent).$document || $mm('document')).call($a)
@@ -1223,7 +1223,7 @@ if (posattrs == null) {
         }if (inherit == null) {
           inherit = true
         }
-        if (($a = (($b = name)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Symbol) == null ? __opal.cm("Symbol") : $c))) !== false && $a !== nil) {
+        if (($a = (($b = name)['$is_a?'] || $mm('is_a?')).call($b, __scope.Symbol)) !== false && $a !== nil) {
           name = (($a = name).$to_s || $mm('to_s')).call($a)
         };
         if ((($c = this)['$=='] || $mm('==')).call($c, this.document)) {
@@ -1250,7 +1250,7 @@ if (posattrs == null) {
         }if (inherit == null) {
           inherit = true
         }
-        if (($a = (($b = name)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Symbol) == null ? __opal.cm("Symbol") : $c))) !== false && $a !== nil) {
+        if (($a = (($b = name)['$is_a?'] || $mm('is_a?')).call($b, __scope.Symbol)) !== false && $a !== nil) {
           name = (($a = name).$to_s || $mm('to_s')).call($a)
         };
         if ((($c = this)['$=='] || $mm('==')).call($c, this.document)) {
@@ -1325,7 +1325,7 @@ if (posattrs == null) {
         var $a, $b, $c, $d, $e, $f, $g;if (asset_dir_key == null) {
           asset_dir_key = "imagesdir"
         }
-        if (($a = ($b = (($b = target)['$include?'] || $mm('include?')).call($b, ":"), $b !== false && $b !== nil ? (($c = target).$match || $mm('match')).call($c, (($d = (($e = ((($f = __scope.Asciidoctor) == null ? __opal.cm("Asciidoctor") : $f))._scope).REGEXP == null ? $e.cm("REGEXP") : $e.REGEXP))['$[]'] || $mm('[]')).call($d, "uri_sniff")) : $b)) !== false && $a !== nil) {
+        if (($a = ($b = (($b = target)['$include?'] || $mm('include?')).call($b, ":"), $b !== false && $b !== nil ? (($c = target).$match || $mm('match')).call($c, (($d = (__scope.Asciidoctor)._scope.REGEXP)['$[]'] || $mm('[]')).call($d, "uri_sniff")) : $b)) !== false && $a !== nil) {
           return target
           } else {
           if (($a = (($e = asset_dir_key !== false && asset_dir_key !== nil) ? (($f = this)['$attr?'] || $mm('attr?')).call($f, asset_dir_key) : $e)) !== false && $a !== nil) {
@@ -1340,10 +1340,10 @@ if (posattrs == null) {
         var $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k;if (asset_dir_key == null) {
           asset_dir_key = "imagesdir"
         }
-        if (($a = ($b = (($b = target_image)['$include?'] || $mm('include?')).call($b, ":"), $b !== false && $b !== nil ? (($c = target_image).$match || $mm('match')).call($c, (($d = (($e = ((($f = __scope.Asciidoctor) == null ? __opal.cm("Asciidoctor") : $f))._scope).REGEXP == null ? $e.cm("REGEXP") : $e.REGEXP))['$[]'] || $mm('[]')).call($d, "uri_sniff")) : $b)) !== false && $a !== nil) {
+        if (($a = ($b = (($b = target_image)['$include?'] || $mm('include?')).call($b, ":"), $b !== false && $b !== nil ? (($c = target_image).$match || $mm('match')).call($c, (($d = (__scope.Asciidoctor)._scope.REGEXP)['$[]'] || $mm('[]')).call($d, "uri_sniff")) : $b)) !== false && $a !== nil) {
           return target_image
           } else {
-          if (($a = (($e = (($f = (($g = this.document).$safe || $mm('safe')).call($g))['$<'] || $mm('<')).call($f, (($h = ((($i = ((($j = __scope.Asciidoctor) == null ? __opal.cm("Asciidoctor") : $j))._scope).SafeMode == null ? $i.cm("SafeMode") : $i.SafeMode))._scope).SECURE == null ? $h.cm("SECURE") : $h.SECURE))) ? (($h = this.document)['$attr?'] || $mm('attr?')).call($h, "data-uri") : $e)) !== false && $a !== nil) {
+          if (($a = (($e = (($f = (($g = this.document).$safe || $mm('safe')).call($g))['$<'] || $mm('<')).call($f, ((__scope.Asciidoctor)._scope.SafeMode)._scope.SECURE)) ? (($h = this.document)['$attr?'] || $mm('attr?')).call($h, "data-uri") : $e)) !== false && $a !== nil) {
             return (($a = this).$generate_data_uri || $mm('generate_data_uri')).call($a, target_image, asset_dir_key)
             } else {
             if (($e = (($i = asset_dir_key !== false && asset_dir_key !== nil) ? (($j = this)['$attr?'] || $mm('attr?')).call($j, asset_dir_key) : $i)) !== false && $e !== nil) {
@@ -1356,25 +1356,25 @@ if (posattrs == null) {
       };
 
       def.$generate_data_uri = function(target_image, asset_dir_key) {
-        var mimetype = nil, image_path = nil, bindata = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, TMP_1, $l, $m, $n;if (asset_dir_key == null) {
+        var mimetype = nil, image_path = nil, bindata = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, TMP_1, $k, $l, $m;if (asset_dir_key == null) {
           asset_dir_key = nil
         }
-        (($a = (($b = __scope.Helpers) == null ? __opal.cm("Helpers") : $b)).$require_library || $mm('require_library')).call($a, "base64");
-        mimetype = ($b = "image/", $c = (($d = (($e = (($f = __scope.File) == null ? __opal.cm("File") : $f)).$extname || $mm('extname')).call($e, target_image))['$[]'] || $mm('[]')).call($d, __range(1, -1, false)), typeof($b) === 'number' ? $b + $c : $b['$+']($c));
+        (($a = __scope.Helpers).$require_library || $mm('require_library')).call($a, "base64");
+        mimetype = ($b = "image/", $c = (($d = (($e = __scope.File).$extname || $mm('extname')).call($e, target_image))['$[]'] || $mm('[]')).call($d, __range(1, -1, false)), typeof($b) === 'number' ? $b + $c : $b['$+']($c));
         if (asset_dir_key !== false && asset_dir_key !== nil) {
           image_path = (($b = this).$normalize_system_path || $mm('normalize_system_path')).call($b, target_image, (($c = this.document).$attr || $mm('attr')).call($c, asset_dir_key), nil, __hash2(["target_name"], {"target_name": "image"}))
           } else {
           image_path = (($f = this).$normalize_system_path || $mm('normalize_system_path')).call($f, target_image)
         };
-        if (($g = ($h = (($i = (($j = __scope.File) == null ? __opal.cm("File") : $j))['$readable?'] || $mm('readable?')).call($i, image_path), ($h === nil || $h === false))) !== false && $g !== nil) {
+        if (($g = ($h = (($i = __scope.File)['$readable?'] || $mm('readable?')).call($i, image_path), ($h === nil || $h === false))) !== false && $g !== nil) {
           (($g = this).$puts || $mm('puts')).call($g, "asciidoctor: WARNING: image to embed not found or not readable: " + (image_path));
           return "data:" + (mimetype) + ":base64,";
         };
         bindata = nil;
-        if (($h = (($j = (($k = __scope.IO) == null ? __opal.cm("IO") : $k))['$respond_to?'] || $mm('respond_to?')).call($j, "binread")) !== false && $h !== nil) {
-          bindata = (($h = (($k = __scope.IO) == null ? __opal.cm("IO") : $k)).$binread || $mm('binread')).call($h, image_path)
+        if (($h = (($j = __scope.IO)['$respond_to?'] || $mm('respond_to?')).call($j, "binread")) !== false && $h !== nil) {
+          bindata = (($h = __scope.IO).$binread || $mm('binread')).call($h, image_path)
           } else {
-          bindata = ($k = (($l = (($m = __scope.File) == null ? __opal.cm("File") : $m)).$open || $mm('open')), $k._p = (TMP_1 = function(file) {
+          bindata = ($k = (($l = __scope.File).$open || $mm('open')), $k._p = (TMP_1 = function(file) {
 
             var self = TMP_1._s || this, $a;
             if (file == null) file = nil;
@@ -1382,15 +1382,15 @@ if (posattrs == null) {
             return (($a = file).$read || $mm('read')).call($a)
           }, TMP_1._s = this, TMP_1), $k).call($l, image_path, "rb")
         };
-        return "data:" + (mimetype) + ";base64," + ((($k = (($m = (($n = __scope.Base64) == null ? __opal.cm("Base64") : $n)).$encode64 || $mm('encode64')).call($m, bindata)).$delete || $mm('delete')).call($k, "\n"));
+        return "data:" + (mimetype) + ";base64," + ((($k = (($m = __scope.Base64).$encode64 || $mm('encode64')).call($m, bindata)).$delete || $mm('delete')).call($k, "\n"));
       };
 
       def.$read_asset = function(path, warn_on_failure) {
         var $a, $b, $c, $d;if (warn_on_failure == null) {
           warn_on_failure = false
         }
-        if (($a = (($b = (($c = __scope.File) == null ? __opal.cm("File") : $c))['$readable?'] || $mm('readable?')).call($b, path)) !== false && $a !== nil) {
-          return (($a = (($c = (($d = __scope.File) == null ? __opal.cm("File") : $d)).$read || $mm('read')).call($c, path)).$chomp || $mm('chomp')).call($a)
+        if (($a = (($b = __scope.File)['$readable?'] || $mm('readable?')).call($b, path)) !== false && $a !== nil) {
+          return (($a = (($c = __scope.File).$read || $mm('read')).call($c, path)).$chomp || $mm('chomp')).call($a)
           } else {
           if (warn_on_failure !== false && warn_on_failure !== nil) {
             (($d = this).$puts || $mm('puts')).call($d, "asciidoctor: WARNING: file does not exist or cannot be read: " + (path))
@@ -1400,14 +1400,14 @@ if (posattrs == null) {
       };
 
       def.$normalize_web_path = function(target, start) {
-        var $a, $b, $c;if (start == null) {
+        var $a, $b;if (start == null) {
           start = nil
         }
-        return (($a = (($b = (($c = __scope.PathResolver) == null ? __opal.cm("PathResolver") : $c)).$new || $mm('new')).call($b)).$web_path || $mm('web_path')).call($a, target, start);
+        return (($a = (($b = __scope.PathResolver).$new || $mm('new')).call($b)).$web_path || $mm('web_path')).call($a, target, start);
       };
 
       def.$normalize_system_path = function(target, start, jail, opts) {
-        var $a, $b, $c, $d, $e, $f, $g, $h, $i;if (start == null) {
+        var $a, $b, $c, $d, $e, $f, $g, $h;if (start == null) {
           start = nil
         }if (jail == null) {
           jail = nil
@@ -1417,10 +1417,10 @@ if (posattrs == null) {
         if (($a = (($b = start)['$nil?'] || $mm('nil?')).call($b)) !== false && $a !== nil) {
           start = (($a = this.document).$base_dir || $mm('base_dir')).call($a)
         };
-        if (($c = ($d = (($d = jail)['$nil?'] || $mm('nil?')).call($d), $d !== false && $d !== nil ? (($e = (($f = this.document).$safe || $mm('safe')).call($f))['$>='] || $mm('>=')).call($e, (($g = ((($h = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $h))._scope).SAFE == null ? $g.cm("SAFE") : $g.SAFE)) : $d)) !== false && $c !== nil) {
+        if (($c = ($d = (($d = jail)['$nil?'] || $mm('nil?')).call($d), $d !== false && $d !== nil ? (($e = (($f = this.document).$safe || $mm('safe')).call($f))['$>='] || $mm('>=')).call($e, (__scope.SafeMode)._scope.SAFE) : $d)) !== false && $c !== nil) {
           jail = (($c = this.document).$base_dir || $mm('base_dir')).call($c)
         };
-        return (($g = (($h = (($i = __scope.PathResolver) == null ? __opal.cm("PathResolver") : $i)).$new || $mm('new')).call($h)).$system_path || $mm('system_path')).call($g, target, start, jail, opts);
+        return (($g = (($h = __scope.PathResolver).$new || $mm('new')).call($h)).$system_path || $mm('system_path')).call($g, target, start, jail, opts);
       };
 
       def.$normalize_asset_path = function(asset_ref, asset_name, autocorrect) {
@@ -1442,7 +1442,7 @@ if (posattrs == null) {
   return (function(__base){
     function Asciidoctor() {};
     Asciidoctor = __module(__base, "Asciidoctor", Asciidoctor);
-    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope, $a;
+    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope;
 
     (function(__base, __super){
       function AbstractBlock() {};
@@ -1472,7 +1472,7 @@ if (posattrs == null) {
 
       super_TMP_1 = def.$initialize;
       def.$initialize = function(parent, context) {
-        var $a, $b, $c, $d, $e, $f;
+        var $a, $b, $c, $d, $e;
         super_TMP_1.apply(this, [parent, context]);
         this.blocks = [];
         this.id = nil;
@@ -1480,7 +1480,7 @@ if (posattrs == null) {
         if ((($a = context)['$=='] || $mm('==')).call($a, "document")) {
           this.level = 0
           } else {
-          if (($b = ($c = ($c = (($d = parent)['$nil?'] || $mm('nil?')).call($d), ($c === nil || $c === false)), $c !== false && $c !== nil ? ($c = (($e = this)['$is_a?'] || $mm('is_a?')).call($e, (($f = __scope.Section) == null ? __opal.cm("Section") : $f)), ($c === nil || $c === false)) : $c)) !== false && $b !== nil) {
+          if (($b = ($c = ($c = (($d = parent)['$nil?'] || $mm('nil?')).call($d), ($c === nil || $c === false)), $c !== false && $c !== nil ? ($c = (($e = this)['$is_a?'] || $mm('is_a?')).call($e, __scope.Section), ($c === nil || $c === false)) : $c)) !== false && $b !== nil) {
             this.level = (($b = parent).$level || $mm('level')).call($b)
             } else {
             this.level = nil
@@ -1519,7 +1519,7 @@ if (posattrs == null) {
 
       def['$<<'] = function(block) {
         var $a, $b, $c;
-        if (($a = (($b = block)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Section) == null ? __opal.cm("Section") : $c))) !== false && $a !== nil) {
+        if (($a = (($b = block)['$is_a?'] || $mm('is_a?')).call($b, __scope.Section)) !== false && $a !== nil) {
           (($a = this).$assign_index || $mm('assign_index')).call($a, block)
         };
         return (($c = this.blocks)['$<<'] || $mm('<<')).call($c, block);
@@ -1549,11 +1549,11 @@ if (posattrs == null) {
         var TMP_2, $a, $b;
         return ($a = (($b = this.blocks).$inject || $mm('inject')), $a._p = (TMP_2 = function(collector, block) {
 
-          var self = TMP_2._s || this, $a, $b, $c;
+          var self = TMP_2._s || this, $a, $b;
           if (collector == null) collector = nil;
 if (block == null) block = nil;
 
-          if (($a = (($b = block)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Section) == null ? __opal.cm("Section") : $c))) !== false && $a !== nil) {
+          if (($a = (($b = block)['$is_a?'] || $mm('is_a?')).call($b, __scope.Section)) !== false && $a !== nil) {
             (($a = collector)['$<<'] || $mm('<<')).call($a, block)
           };
           return collector;
@@ -1605,7 +1605,7 @@ if (block == null) block = nil;
           var self = TMP_3._s || this, $a, $b, $c;
           if (block == null) block = nil;
 
-          if (($a = (($b = block)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Section) == null ? __opal.cm("Section") : $c))) !== false && $a !== nil) {
+          if (($a = (($b = block)['$is_a?'] || $mm('is_a?')).call($b, __scope.Section)) !== false && $a !== nil) {
             (($a = self).$assign_index || $mm('assign_index')).call($a, block);
             return (($c = block).$reindex_sections || $mm('reindex_sections')).call($c);
             } else {
@@ -1615,7 +1615,7 @@ if (block == null) block = nil;
       };
 
       return nil;
-    })(Asciidoctor, (($a = __scope.AbstractNode) == null ? __opal.cm("AbstractNode") : $a))
+    })(Asciidoctor, __scope.AbstractNode)
     
   })(self)
 })(Opal);
@@ -1644,7 +1644,7 @@ if (block == null) block = nil;
       __scope.CSV_SPLIT_PATTERN = /[ \t]*,[ \t]*/;
 
       def.$initialize = function(source, block, quotes, delimiter, escape_char) {
-        var $a, $b;if (block == null) {
+        var $a;if (block == null) {
           block = nil
         }if (quotes == null) {
           quotes = ["'", "\""]
@@ -1653,7 +1653,7 @@ if (block == null) block = nil;
         }if (escape_char == null) {
           escape_char = "\\"
         }
-        this.scanner = (($a = (($b = __opal.Object._scope.StringScanner) == null ? __opal.cm("StringScanner") : $b)).$new || $mm('new')).call($a, source);
+        this.scanner = (($a = __opal.Object._scope.StringScanner).$new || $mm('new')).call($a, source);
         this.block = block;
         this.quotes = quotes;
         this.escape_char = escape_char;
@@ -1686,8 +1686,8 @@ if (block == null) block = nil;
       };
 
       def.$rekey = function(posattrs) {
-        var $a, $b;
-        return (($a = (($b = __scope.AttributeList) == null ? __opal.cm("AttributeList") : $b)).$rekey || $mm('rekey')).call($a, this.attributes, posattrs);
+        var $a;
+        return (($a = __scope.AttributeList).$rekey || $mm('rekey')).call($a, this.attributes, posattrs);
       };
 
       AttributeList._defs('$rekey', function(attributes, pos_attrs) {
@@ -1785,7 +1785,7 @@ if (index == null) index = nil;
           resolved_value = value;
           if (($ak = (($al = (($am = name)['$=='] || $mm('==')).call($am, "options")), $al !== false && $al !== nil ? $al : (($an = name)['$=='] || $mm('==')).call($an, "opts"))) !== false && $ak !== nil) {
             name = "options";
-            ($ak = (($al = (($ao = resolved_value).$split || $mm('split')).call($ao, (($ap = __scope.CSV_SPLIT_PATTERN) == null ? __opal.cm("CSV_SPLIT_PATTERN") : $ap))).$each || $mm('each')), $ak._p = (TMP_2 = function(o) {
+            ($ak = (($al = (($ao = resolved_value).$split || $mm('split')).call($ao, __scope.CSV_SPLIT_PATTERN)).$each || $mm('each')), $ak._p = (TMP_2 = function(o) {
 
               var self = TMP_2._s || this, $a, $b, $c;
               if (self.attributes == null) self.attributes = nil;
@@ -1815,33 +1815,33 @@ if (index == null) index = nil;
           return ($e = quote, $g = (($h = this).$scan_to_delimiter || $mm('scan_to_delimiter')).call($h), typeof($e) === 'number' ? $e + $g : $e['$+']($g))
           } else {
           (($e = this.scanner).$get_byte || $mm('get_byte')).call($e);
-          return (($g = value).$gsub || $mm('gsub')).call($g, (($i = (($j = __scope.UNESCAPE_PATTERNS) == null ? __opal.cm("UNESCAPE_PATTERNS") : $j))['$[]'] || $mm('[]')).call($i, ($j = this.escape_char, $k = quote, typeof($j) === 'number' ? $j + $k : $j['$+']($k))), quote);
+          return (($g = value).$gsub || $mm('gsub')).call($g, (($i = __scope.UNESCAPE_PATTERNS)['$[]'] || $mm('[]')).call($i, ($j = this.escape_char, $k = quote, typeof($j) === 'number' ? $j + $k : $j['$+']($k))), quote);
         };
       };
 
       def.$skip_blank = function() {
-        var $a, $b, $c;
-        return (($a = this.scanner).$skip || $mm('skip')).call($a, (($b = (($c = __scope.SKIP_PATTERNS) == null ? __opal.cm("SKIP_PATTERNS") : $c))['$[]'] || $mm('[]')).call($b, "blank"));
+        var $a, $b;
+        return (($a = this.scanner).$skip || $mm('skip')).call($a, (($b = __scope.SKIP_PATTERNS)['$[]'] || $mm('[]')).call($b, "blank"));
       };
 
       def.$skip_delimiter = function() {
-        var $a, $b, $c;
-        return (($a = this.scanner).$skip || $mm('skip')).call($a, (($b = (($c = __scope.SKIP_PATTERNS) == null ? __opal.cm("SKIP_PATTERNS") : $c))['$[]'] || $mm('[]')).call($b, this.delimiter));
+        var $a, $b;
+        return (($a = this.scanner).$skip || $mm('skip')).call($a, (($b = __scope.SKIP_PATTERNS)['$[]'] || $mm('[]')).call($b, this.delimiter));
       };
 
       def.$scan_name = function() {
-        var $a, $b;
-        return (($a = this.scanner).$scan || $mm('scan')).call($a, (($b = __scope.NAME_PATTERN) == null ? __opal.cm("NAME_PATTERN") : $b));
+        var $a;
+        return (($a = this.scanner).$scan || $mm('scan')).call($a, __scope.NAME_PATTERN);
       };
 
       def.$scan_to_delimiter = function() {
-        var $a, $b, $c;
-        return (($a = this.scanner).$scan || $mm('scan')).call($a, (($b = (($c = __scope.BOUNDARY_PATTERNS) == null ? __opal.cm("BOUNDARY_PATTERNS") : $c))['$[]'] || $mm('[]')).call($b, this.delimiter));
+        var $a, $b;
+        return (($a = this.scanner).$scan || $mm('scan')).call($a, (($b = __scope.BOUNDARY_PATTERNS)['$[]'] || $mm('[]')).call($b, this.delimiter));
       };
 
       def.$scan_to_quote = function(quote) {
-        var $a, $b, $c;
-        return (($a = this.scanner).$scan || $mm('scan')).call($a, (($b = (($c = __scope.BOUNDARY_PATTERNS) == null ? __opal.cm("BOUNDARY_PATTERNS") : $c))['$[]'] || $mm('[]')).call($b, quote));
+        var $a, $b;
+        return (($a = this.scanner).$scan || $mm('scan')).call($a, (($b = __scope.BOUNDARY_PATTERNS)['$[]'] || $mm('[]')).call($b, quote));
       };
 
       return nil;
@@ -1850,155 +1850,11 @@ if (index == null) index = nil;
   })(self)
 })(Opal);
 (function(__opal) {
-  var self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __module = __opal.module, __klass = __opal.klass, __hash2 = __opal.hash2;
-  return (function(__base){
-    function Asciidoctor() {};
-    Asciidoctor = __module(__base, "Asciidoctor", Asciidoctor);
-    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope;
-
-    (function(__base, __super){
-      function BaseTemplate() {};
-      BaseTemplate = __klass(__base, __super, "BaseTemplate", BaseTemplate);
-
-      var def = BaseTemplate.prototype, __scope = BaseTemplate._scope;
-      def.view = def.eruby = nil;
-
-      def.$view = function() {
-        
-        return this.view
-      }, nil;
-
-      def.$eruby = function() {
-        
-        return this.eruby
-      }, nil;
-
-      def.$initialize = function(view, eruby) {
-        
-        this.view = view;
-        return this.eruby = eruby;
-      };
-
-      BaseTemplate._defs('$inherited', function(klass) {
-        var $a;
-        if (this.template_classes == null) this.template_classes = nil;
-
-        (($a = this.template_classes), $a !== false && $a !== nil ? $a : this.template_classes = []);
-        return (($a = this.template_classes)['$<<'] || $mm('<<')).call($a, klass);
-      });
-
-      BaseTemplate._defs('$template_classes', function() {
-        
-        if (this.template_classes == null) this.template_classes = nil;
-
-        return this.template_classes
-      });
-
-      def.$render = function(node, locals) {
-        var tmpl = nil, $case = nil, result = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p;if (node == null) {
-          node = (($m = (($p = __scope.Object) == null ? __opal.cm("Object") : $p)).$new || $mm('new')).call($m)
-        }if (locals == null) {
-          locals = __hash2([], {})
-        }
-        tmpl = (($a = this).$template || $mm('template')).call($a);
-        $case = tmpl;if ((($c = "invoke_result")['$==='] || $mm('===')).call($c, $case)) {
-        return (($b = this).$result || $mm('result')).call($b, node)
-        }
-        else if ((($e = "content")['$==='] || $mm('===')).call($e, $case)) {
-        result = (($d = node).$content || $mm('content')).call($d)
-        }
-        else {result = (($f = tmpl).$result || $mm('result')).call($f, (($g = node).$get_binding || $mm('get_binding')).call($g, this))};
-        if (($h = ($i = ($i = (($i = (($j = this.view)['$=='] || $mm('==')).call($j, "document")), $i !== false && $i !== nil ? $i : (($k = this.view)['$=='] || $mm('==')).call($k, "embedded")), $i !== false && $i !== nil ? (($i = (($l = node).$renderer || $mm('renderer')).call($l)).$compact || $mm('compact')).call($i) : $i), $i !== false && $i !== nil ? ($m = (($n = (($o = node).$document || $mm('document')).call($o))['$nested?'] || $mm('nested?')).call($n), ($m === nil || $m === false)) : $i)) !== false && $h !== nil) {
-          return (($h = this).$compact || $mm('compact')).call($h, result)
-          } else {
-          return result
-        };
-      };
-
-      def.$compact = function(str) {
-        var $a, $b, $c;
-        return (($a = (($b = str).$gsub || $mm('gsub')).call($b, (($c = __scope.BLANK_LINES_PATTERN) == null ? __opal.cm("BLANK_LINES_PATTERN") : $c), "")).$gsub || $mm('gsub')).call($a, (($c = __scope.LINE_FEED_ENTITY) == null ? __opal.cm("LINE_FEED_ENTITY") : $c), "\n");
-      };
-
-      def.$preserve_endlines = function(str, node) {
-        var $a, $b, $c, $d;
-        if (($a = (($b = (($c = node).$renderer || $mm('renderer')).call($c)).$compact || $mm('compact')).call($b)) !== false && $a !== nil) {
-          return (($a = str).$gsub || $mm('gsub')).call($a, "\n", (($d = __scope.LINE_FEED_ENTITY) == null ? __opal.cm("LINE_FEED_ENTITY") : $d))
-          } else {
-          return str
-        };
-      };
-
-      def.$template = function() {
-        var $a;
-        return (($a = this).$raise || $mm('raise')).call($a, "You chilluns need to make your own template");
-      };
-
-      def.$attribute = function(name, key) {
-        var type = nil, $a, $b, $c;
-        type = (function() { if (($a = (($b = key)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Symbol) == null ? __opal.cm("Symbol") : $c))) !== false && $a !== nil) {
-          return "attr"
-          } else {
-          return "var"
-        }; return nil; }).call(this);
-        if ((($a = type)['$=='] || $mm('==')).call($a, "attr")) {
-          return "<% if attr? '" + (key) + "' %> " + (name) + "=\"<%= attr '" + (key) + "' %>\"<% end %>"
-          } else {
-          return "<% if " + (key) + " %> " + (name) + "=\"<%= " + (key) + " %>\"<% end %>"
-        };
-      };
-
-      def.$attrvalue = function(key, sibling, inherit) {
-        var delimiter = nil;if (sibling == null) {
-          sibling = true
-        }if (inherit == null) {
-          inherit = true
-        }
-        delimiter = (function() { if (sibling !== false && sibling !== nil) {
-          return " "
-          } else {
-          return ""
-        }; return nil; }).call(this);
-        if (inherit !== false && inherit !== nil) {
-          return "<% if attr? '" + (key) + "' %>" + (delimiter) + "<%= attr '" + (key) + "' %><% end %>"
-          } else {
-          return "<% if attr? '" + (key) + "', nil, false %>" + (delimiter) + "<%= attr '" + (key) + "', nil, false %><% end %>"
-        };
-      };
-
-      def.$id = function() {
-        var $a;
-        return (($a = this).$attribute || $mm('attribute')).call($a, "id", "@id");
-      };
-
-      return nil;
-    })(Asciidoctor, null);
-
-    (function(__base){
-      function EmptyTemplate() {};
-      EmptyTemplate = __module(__base, "EmptyTemplate", EmptyTemplate);
-      var def = EmptyTemplate.prototype, __scope = EmptyTemplate._scope;
-
-      def.$result = function(node) {
-        
-        return "";
-      };
-
-      def.$template = function() {
-        
-        return "invoke_result";
-      };
-            ;EmptyTemplate._donate(["$result", "$template"]);
-    })(Asciidoctor);
-    
-  })(self)
-})(Opal);
-(function(__opal) {
   var self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __module = __opal.module, __klass = __opal.klass;
   return (function(__base){
     function Asciidoctor() {};
     Asciidoctor = __module(__base, "Asciidoctor", Asciidoctor);
-    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope, $a;
+    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope;
 
     (function(__base, __super){
       function Block() {};
@@ -2039,7 +1895,7 @@ if (index == null) index = nil;
 
       def.$render = function() {
         var out = nil, TMP_2, $a, $b, $c, $d, $e, $f, $g;
-        ($a = (($b = (($c = __scope.Debug) == null ? __opal.cm("Debug") : $c)).$debug || $mm('debug')), $a._p = (TMP_2 = function() {
+        ($a = (($b = __scope.Debug).$debug || $mm('debug')), $a._p = (TMP_2 = function() {
 
           var self = TMP_2._s || this;
           if (self.context == null) self.context = nil;
@@ -2108,7 +1964,7 @@ if (index == null) index = nil;
       };
 
       return nil;
-    })(Asciidoctor, (($a = __scope.AbstractBlock) == null ? __opal.cm("AbstractBlock") : $a))
+    })(Asciidoctor, __scope.AbstractBlock)
     
   })(self)
 })(Opal);
@@ -2208,7 +2064,7 @@ if (element == null) element = nil;
   return (function(__base){
     function Asciidoctor() {};
     Asciidoctor = __module(__base, "Asciidoctor", Asciidoctor);
-    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope, $a;
+    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope;
 
     (function(__base, __super){
       function Footnote() {};
@@ -2348,19 +2204,19 @@ if (element == null) element = nil;
         this.header = nil;
         this.references = __hash2(["ids", "footnotes", "links", "images", "indexterms"], {"ids": __hash2([], {}), "footnotes": [], "links": [], "images": [], "indexterms": []});
         this.counters = __hash2([], {});
-        this.callouts = (($g = (($k = __scope.Callouts) == null ? __opal.cm("Callouts") : $k)).$new || $mm('new')).call($g);
+        this.callouts = (($g = __scope.Callouts).$new || $mm('new')).call($g);
         this.options = options;
         if (($k = ($l = (($l = this.safe)['$nil?'] || $mm('nil?')).call($l), $l !== false && $l !== nil ? ($m = safe_mode = (($n = this.options)['$[]'] || $mm('[]')).call($n, "safe"), ($m === nil || $m === false)) : $l)) !== false && $k !== nil) {
-          this.safe = (($k = ((($m = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $m))._scope).SECURE == null ? $k.cm("SECURE") : $k.SECURE)
+          this.safe = (__scope.SafeMode)._scope.SECURE
           } else {
-          if (($k = (($m = safe_mode)['$is_a?'] || $mm('is_a?')).call($m, (($o = __scope.Fixnum) == null ? __opal.cm("Fixnum") : $o))) !== false && $k !== nil) {
+          if (($k = (($m = safe_mode)['$is_a?'] || $mm('is_a?')).call($m, __scope.Fixnum)) !== false && $k !== nil) {
             this.safe = safe_mode
             } else {
             try {
-              this.safe = (($k = (($o = (($p = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $p)).$const_get || $mm('const_get')).call($o, (($p = (($q = safe_mode).$to_s || $mm('to_s')).call($q)).$upcase || $mm('upcase')).call($p))).$to_i || $mm('to_i')).call($k)
+              this.safe = (($k = (($o = __scope.SafeMode).$const_get || $mm('const_get')).call($o, (($p = (($q = safe_mode).$to_s || $mm('to_s')).call($q)).$upcase || $mm('upcase')).call($p))).$to_i || $mm('to_i')).call($k)
             } catch ($err) {
             if (true) {
-              this.safe = (($r = (($s = ((($t = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $t))._scope).SECURE == null ? $s.cm("SECURE") : $s.SECURE)).$to_i || $mm('to_i')).call($r)}
+              this.safe = (($r = (__scope.SafeMode)._scope.SECURE).$to_i || $mm('to_i')).call($r)}
             else { throw $err; }
             }
           }
@@ -2386,15 +2242,15 @@ if (element == null) element = nil;
         (($ak = this.attributes)['$[]='] || $mm('[]=')).call($ak, "toc-title", "Table of Contents");
         this.attribute_overrides = (($al = (($am = options)['$[]'] || $mm('[]')).call($am, "attributes")), $al !== false && $al !== nil ? $al : __hash2([], {}));
         (($al = this.attribute_overrides)['$[]='] || $mm('[]=')).call($al, "asciidoctor", "");
-        (($an = this.attribute_overrides)['$[]='] || $mm('[]=')).call($an, "asciidoctor-version", (($ao = __scope.VERSION) == null ? __opal.cm("VERSION") : $ao));
-        safe_mode_name = (($ao = (($ap = ($aq = (($ar = (($as = (($at = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $at)).$constants || $mm('constants')).call($as)).$detect || $mm('detect')), $aq._p = (TMP_3 = function(l) {
+        (($an = this.attribute_overrides)['$[]='] || $mm('[]=')).call($an, "asciidoctor-version", __scope.VERSION);
+        safe_mode_name = (($ao = (($ap = ($aq = (($ar = (($as = __scope.SafeMode).$constants || $mm('constants')).call($as)).$detect || $mm('detect')), $aq._p = (TMP_3 = function(l) {
 
-          var self = TMP_3._s || this, $a, $b, $c;
+          var self = TMP_3._s || this, $a, $b;
           if (self.safe == null) self.safe = nil;
 
           if (l == null) l = nil;
 
-          return (($a = (($b = (($c = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $c)).$const_get || $mm('const_get')).call($b, l))['$=='] || $mm('==')).call($a, self.safe)
+          return (($a = (($b = __scope.SafeMode).$const_get || $mm('const_get')).call($b, l))['$=='] || $mm('==')).call($a, self.safe)
         }, TMP_3._s = this, TMP_3), $aq).call($ar)).$to_s || $mm('to_s')).call($ap)).$downcase || $mm('downcase')).call($ao);
         (($aq = this.attribute_overrides)['$[]='] || $mm('[]=')).call($aq, "safe-mode-name", safe_mode_name);
         (($at = this.attribute_overrides)['$[]='] || $mm('[]=')).call($at, "safe-mode-" + (safe_mode_name), "");
@@ -2407,12 +2263,12 @@ if (element == null) element = nil;
         ($aw = "include-depth", $ay = this.attribute_overrides, (($az = (($ba = $ay)['$[]'] || $mm('[]')).call($ba, $aw)), $az !== false && $az !== nil ? $az : (($bb = $ay)['$[]='] || $mm('[]=')).call($bb, $aw, 10)));
         if (($aw = (($ay = (($az = options)['$[]'] || $mm('[]')).call($az, "base_dir"))['$nil?'] || $mm('nil?')).call($ay)) !== false && $aw !== nil) {
           if (($aw = (($bc = this.attribute_overrides)['$[]'] || $mm('[]')).call($bc, "docdir")) !== false && $aw !== nil) {
-            this.base_dir = (($aw = this.attribute_overrides)['$[]='] || $mm('[]=')).call($aw, "docdir", (($bd = (($be = __scope.File) == null ? __opal.cm("File") : $be)).$expand_path || $mm('expand_path')).call($bd, (($be = this.attribute_overrides)['$[]'] || $mm('[]')).call($be, "docdir")))
+            this.base_dir = (($aw = this.attribute_overrides)['$[]='] || $mm('[]=')).call($aw, "docdir", (($bd = __scope.File).$expand_path || $mm('expand_path')).call($bd, (($be = this.attribute_overrides)['$[]'] || $mm('[]')).call($be, "docdir")))
             } else {
-            this.base_dir = (($bf = this.attribute_overrides)['$[]='] || $mm('[]=')).call($bf, "docdir", (($bg = (($bh = __scope.File) == null ? __opal.cm("File") : $bh)).$expand_path || $mm('expand_path')).call($bg, (($bh = (($bi = __scope.Dir) == null ? __opal.cm("Dir") : $bi)).$pwd || $mm('pwd')).call($bh)))
+            this.base_dir = (($bf = this.attribute_overrides)['$[]='] || $mm('[]=')).call($bf, "docdir", (($bg = __scope.File).$expand_path || $mm('expand_path')).call($bg, (($bh = __scope.Dir).$pwd || $mm('pwd')).call($bh)))
           }
           } else {
-          this.base_dir = (($bi = this.attribute_overrides)['$[]='] || $mm('[]=')).call($bi, "docdir", (($bj = (($bk = __scope.File) == null ? __opal.cm("File") : $bk)).$expand_path || $mm('expand_path')).call($bj, (($bk = options)['$[]'] || $mm('[]')).call($bk, "base_dir")))
+          this.base_dir = (($bi = this.attribute_overrides)['$[]='] || $mm('[]=')).call($bi, "docdir", (($bj = __scope.File).$expand_path || $mm('expand_path')).call($bj, (($bk = options)['$[]'] || $mm('[]')).call($bk, "base_dir")))
         };
         if (($bl = (($bm = (($bn = this.options)['$[]'] || $mm('[]')).call($bn, "backend"))['$nil?'] || $mm('nil?')).call($bm)) === false || $bl === nil) {
           (($bl = this.attribute_overrides)['$[]='] || $mm('[]=')).call($bl, "backend", (($bo = this.options)['$[]'] || $mm('[]')).call($bo, "backend"))
@@ -2420,15 +2276,15 @@ if (element == null) element = nil;
         if (($bp = (($bq = (($br = this.options)['$[]'] || $mm('[]')).call($br, "doctype"))['$nil?'] || $mm('nil?')).call($bq)) === false || $bp === nil) {
           (($bp = this.attribute_overrides)['$[]='] || $mm('[]=')).call($bp, "doctype", (($bs = this.options)['$[]'] || $mm('[]')).call($bs, "doctype"))
         };
-        if ((($bt = this.safe)['$>='] || $mm('>=')).call($bt, (($bu = ((($bv = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $bv))._scope).SERVER == null ? $bu.cm("SERVER") : $bu.SERVER))) {
+        if ((($bt = this.safe)['$>='] || $mm('>=')).call($bt, (__scope.SafeMode)._scope.SERVER)) {
           ($bu = "copycss", $bv = this.attribute_overrides, (($bw = (($bx = $bv)['$[]'] || $mm('[]')).call($bx, $bu)), $bw !== false && $bw !== nil ? $bw : (($by = $bv)['$[]='] || $mm('[]=')).call($by, $bu, nil)));
           ($bu = "source-highlighter", $bv = this.attribute_overrides, (($bw = (($bz = $bv)['$[]'] || $mm('[]')).call($bz, $bu)), $bw !== false && $bw !== nil ? $bw : (($ca = $bv)['$[]='] || $mm('[]=')).call($ca, $bu, nil)));
-          ($bu = "backend", $bv = this.attribute_overrides, (($bw = (($cb = $bv)['$[]'] || $mm('[]')).call($cb, $bu)), $bw !== false && $bw !== nil ? $bw : (($cc = $bv)['$[]='] || $mm('[]=')).call($cc, $bu, (($cd = __scope.DEFAULT_BACKEND) == null ? __opal.cm("DEFAULT_BACKEND") : $cd))));
+          ($bu = "backend", $bv = this.attribute_overrides, (($bw = (($cb = $bv)['$[]'] || $mm('[]')).call($cb, $bu)), $bw !== false && $bw !== nil ? $bw : (($cc = $bv)['$[]='] || $mm('[]=')).call($cc, $bu, __scope.DEFAULT_BACKEND)));
           if (($bu = ($bv = (($bv = this.attribute_overrides)['$has_key?'] || $mm('has_key?')).call($bv, "docfile"), $bv !== false && $bv !== nil ? (($bw = this.parent_document)['$nil?'] || $mm('nil?')).call($bw) : $bv)) !== false && $bu !== nil) {
             (($bu = this.attribute_overrides)['$[]='] || $mm('[]=')).call($bu, "docfile", (($cd = (($ce = this.attribute_overrides)['$[]'] || $mm('[]')).call($ce, "docfile"))['$[]'] || $mm('[]')).call($cd, __range(($cf = (($ch = (($ci = this.attribute_overrides)['$[]'] || $mm('[]')).call($ci, "docdir")).$length || $mm('length')).call($ch), $cg = 1, typeof($cf) === 'number' ? $cf + $cg : $cf['$+']($cg)), -1, false)))
           };
           (($cf = this.attribute_overrides)['$[]='] || $mm('[]=')).call($cf, "docdir", "");
-          if ((($cg = this.safe)['$>='] || $mm('>=')).call($cg, (($cj = ((($ck = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $ck))._scope).SECURE == null ? $cj.cm("SECURE") : $cj.SECURE))) {
+          if ((($cg = this.safe)['$>='] || $mm('>=')).call($cg, (__scope.SafeMode)._scope.SECURE)) {
             if (($cj = (($ck = (($cl = (($cm = this.attribute_overrides).$fetch || $mm('fetch')).call($cm, "linkcss", ""))['$nil?'] || $mm('nil?')).call($cl)), $ck !== false && $ck !== nil ? $ck : (($cn = this.attribute_overrides)['$has_key?'] || $mm('has_key?')).call($cn, "linkcss!"))) === false || $cj === nil) {
               (($cj = this.attribute_overrides)['$[]='] || $mm('[]=')).call($cj, "linkcss", "")
             };
@@ -2450,7 +2306,7 @@ if (val == null) val = nil;
             if (($c = (($d = key)['$end_with?'] || $mm('end_with?')).call($d, "!")) !== false && $c !== nil) {
               (($c = self.attributes).$delete || $mm('delete')).call($c, (($e = key)['$[]'] || $mm('[]')).call($e, __range(0, -2, false)))
               } else {
-              if (($f = ($g = (($g = val)['$is_a?'] || $mm('is_a?')).call($g, (($h = __scope.String) == null ? __opal.cm("String") : $h)), $g !== false && $g !== nil ? (($h = val)['$end_with?'] || $mm('end_with?')).call($h, "@") : $g)) !== false && $f !== nil) {
+              if (($f = ($g = (($g = val)['$is_a?'] || $mm('is_a?')).call($g, __scope.String), $g !== false && $g !== nil ? (($h = val)['$end_with?'] || $mm('end_with?')).call($h, "@") : $g)) !== false && $f !== nil) {
                 val = (($f = val).$chop || $mm('chop')).call($f);
                 verdict = true;
               };
@@ -2459,15 +2315,15 @@ if (val == null) val = nil;
           };
           return verdict;
         }, TMP_4._s = this, TMP_4), $ck).call($co);
-        ($ck = "backend", $cp = this.attributes, (($cs = (($ct = $cp)['$[]'] || $mm('[]')).call($ct, $ck)), $cs !== false && $cs !== nil ? $cs : (($cu = $cp)['$[]='] || $mm('[]=')).call($cu, $ck, (($cv = __scope.DEFAULT_BACKEND) == null ? __opal.cm("DEFAULT_BACKEND") : $cv))));
-        ($ck = "doctype", $cp = this.attributes, (($cs = (($cv = $cp)['$[]'] || $mm('[]')).call($cv, $ck)), $cs !== false && $cs !== nil ? $cs : (($cw = $cp)['$[]='] || $mm('[]=')).call($cw, $ck, (($cx = __scope.DEFAULT_DOCTYPE) == null ? __opal.cm("DEFAULT_DOCTYPE") : $cx))));
+        ($ck = "backend", $cp = this.attributes, (($cs = (($ct = $cp)['$[]'] || $mm('[]')).call($ct, $ck)), $cs !== false && $cs !== nil ? $cs : (($cu = $cp)['$[]='] || $mm('[]=')).call($cu, $ck, __scope.DEFAULT_BACKEND)));
+        ($ck = "doctype", $cp = this.attributes, (($cs = (($cv = $cp)['$[]'] || $mm('[]')).call($cv, $ck)), $cs !== false && $cs !== nil ? $cs : (($cw = $cp)['$[]='] || $mm('[]=')).call($cw, $ck, __scope.DEFAULT_DOCTYPE)));
         (($ck = this).$update_backend_attributes || $mm('update_backend_attributes')).call($ck);
         if (($cp = ($cs = (($cx = this.parent_document)['$nil?'] || $mm('nil?')).call($cx), ($cs === nil || $cs === false))) !== false && $cp !== nil) {
-          this.reader = (($cp = (($cs = __scope.Reader) == null ? __opal.cm("Reader") : $cs)).$new || $mm('new')).call($cp, data)
+          this.reader = (($cp = __scope.Reader).$new || $mm('new')).call($cp, data)
           } else {
-          this.reader = ($cy = (($cz = (($da = __scope.Reader) == null ? __opal.cm("Reader") : $da)).$new || $mm('new')), $cy._p = (($cs = block).$to_proc || $mm('to_proc')).call($cs), $cy).call($cz, data, this, true)
+          this.reader = ($cy = (($cz = __scope.Reader).$new || $mm('new')), $cy._p = (($cs = block).$to_proc || $mm('to_proc')).call($cs), $cy).call($cz, data, this, true)
         };
-        now = (($cy = (($da = __scope.Time) == null ? __opal.cm("Time") : $da)).$new || $mm('new')).call($cy);
+        now = (($cy = __scope.Time).$new || $mm('new')).call($cy);
         ($da = "localdate", $db = this.attributes, (($dc = (($dd = $db)['$[]'] || $mm('[]')).call($dd, $da)), $dc !== false && $dc !== nil ? $dc : (($de = $db)['$[]='] || $mm('[]=')).call($de, $da, (($df = now).$strftime || $mm('strftime')).call($df, "%Y-%m-%d"))));
         ($da = "localtime", $db = this.attributes, (($dc = (($dg = $db)['$[]'] || $mm('[]')).call($dg, $da)), $dc !== false && $dc !== nil ? $dc : (($dh = $db)['$[]='] || $mm('[]=')).call($dh, $da, (($di = now).$strftime || $mm('strftime')).call($di, "%H:%M:%S %Z"))));
         ($da = "localdatetime", $db = this.attributes, (($dc = (($dj = $db)['$[]'] || $mm('[]')).call($dj, $da)), $dc !== false && $dc !== nil ? $dc : (($dk = $db)['$[]='] || $mm('[]=')).call($dk, $da, ($dl = [(($dn = this.attributes)['$[]'] || $mm('[]')).call($dn, "localdate"), (($do = this.attributes)['$[]'] || $mm('[]')).call($do, "localtime")], $dm = " ", typeof($dl) === 'number' ? $dl * $dm : $dl['$*']($dm)))));
@@ -2475,8 +2331,8 @@ if (val == null) val = nil;
         ($da = "doctime", $db = this.attributes, (($dc = (($dq = $db)['$[]'] || $mm('[]')).call($dq, $da)), $dc !== false && $dc !== nil ? $dc : (($dr = $db)['$[]='] || $mm('[]=')).call($dr, $da, (($ds = this.attributes)['$[]'] || $mm('[]')).call($ds, "localtime"))));
         ($da = "docdatetime", $db = this.attributes, (($dc = (($dt = $db)['$[]'] || $mm('[]')).call($dt, $da)), $dc !== false && $dc !== nil ? $dc : (($du = $db)['$[]='] || $mm('[]=')).call($du, $da, (($dv = this.attributes)['$[]'] || $mm('[]')).call($dv, "localdatetime"))));
         ($da = "stylesdir", $db = this.attributes, (($dc = (($dw = $db)['$[]'] || $mm('[]')).call($dw, $da)), $dc !== false && $dc !== nil ? $dc : (($dx = $db)['$[]='] || $mm('[]=')).call($dx, $da, ".")));
-        ($da = "iconsdir", $db = this.attributes, (($dc = (($dy = $db)['$[]'] || $mm('[]')).call($dy, $da)), $dc !== false && $dc !== nil ? $dc : (($dz = $db)['$[]='] || $mm('[]=')).call($dz, $da, (($ea = (($eb = __scope.File) == null ? __opal.cm("File") : $eb)).$join || $mm('join')).call($ea, (($eb = this.attributes).$fetch || $mm('fetch')).call($eb, "imagesdir", "./images"), "icons"))));
-        (($da = (($db = __scope.Lexer) == null ? __opal.cm("Lexer") : $db)).$parse || $mm('parse')).call($da, this.reader, this, __hash2(["header_only"], {"header_only": (($db = this.options).$fetch || $mm('fetch')).call($db, "parse_header_only", false)}));
+        ($da = "iconsdir", $db = this.attributes, (($dc = (($dy = $db)['$[]'] || $mm('[]')).call($dy, $da)), $dc !== false && $dc !== nil ? $dc : (($dz = $db)['$[]='] || $mm('[]=')).call($dz, $da, (($ea = __scope.File).$join || $mm('join')).call($ea, (($eb = this.attributes).$fetch || $mm('fetch')).call($eb, "imagesdir", "./images"), "icons"))));
+        (($da = __scope.Lexer).$parse || $mm('parse')).call($da, this.reader, this, __hash2(["header_only"], {"header_only": (($db = this.options).$fetch || $mm('fetch')).call($db, "parse_header_only", false)}));
         return (($dc = this.callouts).$rewind || $mm('rewind')).call($dc);
       };
 
@@ -2506,13 +2362,13 @@ if (val == null) val = nil;
       def.$counter_increment = function(counter_name, block) {
         var val = nil, $a, $b, $c, $d;
         val = (($a = this).$counter || $mm('counter')).call($a, counter_name);
-        (($b = (($c = (($d = __scope.AttributeEntry) == null ? __opal.cm("AttributeEntry") : $d)).$new || $mm('new')).call($c, counter_name, val)).$save_to || $mm('save_to')).call($b, (($d = block).$attributes || $mm('attributes')).call($d));
+        (($b = (($c = __scope.AttributeEntry).$new || $mm('new')).call($c, counter_name, val)).$save_to || $mm('save_to')).call($b, (($d = block).$attributes || $mm('attributes')).call($d));
         return val;
       };
 
       def.$nextval = function(current) {
         var intval = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j;
-        if (($a = (($b = current)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Numeric) == null ? __opal.cm("Numeric") : $c))) !== false && $a !== nil) {
+        if (($a = (($b = current)['$is_a?'] || $mm('is_a?')).call($b, __scope.Numeric)) !== false && $a !== nil) {
           return ($a = current, $c = 1, typeof($a) === 'number' ? $a + $c : $a['$+']($c))
           } else {
           intval = (($a = current).$to_i || $mm('to_i')).call($a);
@@ -2527,7 +2383,7 @@ if (val == null) val = nil;
       def.$register = function(type, value) {
         var $case = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p;
         return (function() { $case = type;if ((($h = "ids")['$==='] || $mm('===')).call($h, $case)) {
-        if (($a = (($b = value)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Array) == null ? __opal.cm("Array") : $c))) !== false && $a !== nil) {
+        if (($a = (($b = value)['$is_a?'] || $mm('is_a?')).call($b, __scope.Array)) !== false && $a !== nil) {
           return (($a = (($c = this.references)['$[]'] || $mm('[]')).call($c, "ids"))['$[]='] || $mm('[]=')).call($a, (($d = value)['$[]'] || $mm('[]')).call($d, 0), (($e = (($f = value)['$[]'] || $mm('[]')).call($f, 1)), $e !== false && $e !== nil ? $e : ($g = ($i = "[", $j = (($k = value)['$[]'] || $mm('[]')).call($k, 0), typeof($i) === 'number' ? $i + $j : $i['$+']($j)), $h = "]", typeof($g) === 'number' ? $g + $h : $g['$+']($h))))
           } else {
           return (($e = (($g = this.references)['$[]'] || $mm('[]')).call($g, "ids"))['$[]='] || $mm('[]=')).call($e, value, ($h = ($j = "[", $l = value, typeof($j) === 'number' ? $j + $l : $j['$+']($l)), $i = "]", typeof($h) === 'number' ? $h + $i : $h['$+']($i)))
@@ -2597,8 +2453,8 @@ if (val == null) val = nil;
       };
 
       def['$title='] = function(title) {
-        var $a, $b, $c;
-        (($a = this.header), $a !== false && $a !== nil ? $a : this.header = (($b = (($c = __scope.Section) == null ? __opal.cm("Section") : $c)).$new || $mm('new')).call($b, this));
+        var $a, $b;
+        (($a = this.header), $a !== false && $a !== nil ? $a : this.header = (($b = __scope.Section).$new || $mm('new')).call($b, this));
         return (($a = this.header)['$title='] || $mm('title=')).call($a, title);
       };
 
@@ -2644,10 +2500,10 @@ if (val == null) val = nil;
           } else {
           return ($a = (($c = (($d = this.blocks), $d !== false && $d !== nil ? $d : [])).$detect || $mm('detect')), $a._p = (TMP_5 = function(e) {
 
-            var self = TMP_5._s || this, $a, $b;
+            var self = TMP_5._s || this, $a;
             if (e == null) e = nil;
 
-            return (($a = e)['$is_a?'] || $mm('is_a?')).call($a, (($b = __scope.Section) == null ? __opal.cm("Section") : $b))
+            return (($a = e)['$is_a?'] || $mm('is_a?')).call($a, __scope.Section)
           }, TMP_5._s = this, TMP_5), $a).call($c)
         };
       };
@@ -2730,7 +2586,7 @@ if (val == null) val = nil;
 
       def.$apply_attribute_value_subs = function(value) {
         var m = nil, subs = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k;
-        if (($a = (($b = value).$match || $mm('match')).call($b, (($c = (($d = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $d))['$[]'] || $mm('[]')).call($c, "pass_macro_basic"))) !== false && $a !== nil) {
+        if (($a = (($b = value).$match || $mm('match')).call($b, (($c = __scope.REGEXP)['$[]'] || $mm('[]')).call($c, "pass_macro_basic"))) !== false && $a !== nil) {
           m = __gvars["~"];
           subs = [];
           if (($a = ($d = (($e = (($f = m)['$[]'] || $mm('[]')).call($f, 1))['$empty?'] || $mm('empty?')).call($e), ($d === nil || $d === false))) !== false && $a !== nil) {
@@ -2749,11 +2605,11 @@ if (val == null) val = nil;
       def.$update_backend_attributes = function() {
         var backend = nil, basebackend = nil, page_width = nil, ext = nil, file_type = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t;
         backend = (($a = this.attributes)['$[]'] || $mm('[]')).call($a, "backend");
-        if (($b = (($c = (($d = __scope.BACKEND_ALIASES) == null ? __opal.cm("BACKEND_ALIASES") : $d))['$has_key?'] || $mm('has_key?')).call($c, backend)) !== false && $b !== nil) {
-          backend = (($b = this.attributes)['$[]='] || $mm('[]=')).call($b, "backend", (($d = (($e = __scope.BACKEND_ALIASES) == null ? __opal.cm("BACKEND_ALIASES") : $e))['$[]'] || $mm('[]')).call($d, backend))
+        if (($b = (($c = __scope.BACKEND_ALIASES)['$has_key?'] || $mm('has_key?')).call($c, backend)) !== false && $b !== nil) {
+          backend = (($b = this.attributes)['$[]='] || $mm('[]=')).call($b, "backend", (($d = __scope.BACKEND_ALIASES)['$[]'] || $mm('[]')).call($d, backend))
         };
         basebackend = (($e = backend).$sub || $mm('sub')).call($e, /[[:digit:]]+$/, "");
-        page_width = (($f = (($g = __scope.DEFAULT_PAGE_WIDTHS) == null ? __opal.cm("DEFAULT_PAGE_WIDTHS") : $g))['$[]'] || $mm('[]')).call($f, basebackend);
+        page_width = (($f = __scope.DEFAULT_PAGE_WIDTHS)['$[]'] || $mm('[]')).call($f, basebackend);
         if (page_width !== false && page_width !== nil) {
           (($g = this.attributes)['$[]='] || $mm('[]=')).call($g, "pagewidth", page_width)
           } else {
@@ -2764,7 +2620,7 @@ if (val == null) val = nil;
         (($k = this.attributes)['$[]='] || $mm('[]=')).call($k, "basebackend-" + (basebackend), "");
         (($l = this.attributes)['$[]='] || $mm('[]=')).call($l, "" + (backend) + "-" + ((($m = this.attributes)['$[]'] || $mm('[]')).call($m, "doctype")), "");
         (($n = this.attributes)['$[]='] || $mm('[]=')).call($n, "" + (basebackend) + "-" + ((($o = this.attributes)['$[]'] || $mm('[]')).call($o, "doctype")), "");
-        ext = (($p = (($q = (($r = __scope.DEFAULT_EXTENSIONS) == null ? __opal.cm("DEFAULT_EXTENSIONS") : $r))['$[]'] || $mm('[]')).call($q, basebackend)), $p !== false && $p !== nil ? $p : ".html");
+        ext = (($p = (($q = __scope.DEFAULT_EXTENSIONS)['$[]'] || $mm('[]')).call($q, basebackend)), $p !== false && $p !== nil ? $p : ".html");
         (($p = this.attributes)['$[]='] || $mm('[]=')).call($p, "outfilesuffix", ext);
         file_type = (($r = ext)['$[]'] || $mm('[]')).call($r, __range(1, -1, false));
         (($s = this.attributes)['$[]='] || $mm('[]=')).call($s, "filetype", file_type);
@@ -2772,7 +2628,7 @@ if (val == null) val = nil;
       };
 
       def.$renderer = function(opts) {
-        var render_options = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n;if (opts == null) {
+        var render_options = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m;if (opts == null) {
           opts = __hash2([], {})
         }
         if (($a = this.renderer) !== false && $a !== nil) {
@@ -2787,7 +2643,7 @@ if (val == null) val = nil;
         (($h = render_options)['$[]='] || $mm('[]=')).call($h, "eruby", (($i = this.options).$fetch || $mm('fetch')).call($i, "eruby", "erb"));
         (($j = render_options)['$[]='] || $mm('[]=')).call($j, "compact", (($k = this.options).$fetch || $mm('fetch')).call($k, "compact", false));
         (($l = render_options)['$merge!'] || $mm('merge!')).call($l, opts);
-        return this.renderer = (($m = (($n = __scope.Renderer) == null ? __opal.cm("Renderer") : $n)).$new || $mm('new')).call($m, render_options);
+        return this.renderer = (($m = __scope.Renderer).$new || $mm('new')).call($m, render_options);
       };
 
       def.$render = function(opts) {
@@ -2819,7 +2675,7 @@ if (val == null) val = nil;
         var $case = nil, content = nil, docinfo = nil, docinfo1 = nil, docinfo2 = nil, docinfo_filename = nil, docinfo_path = nil, content2 = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s;if (ext == null) {
           ext = nil
         }
-        if ((($a = (($b = this).$safe || $mm('safe')).call($b))['$>='] || $mm('>=')).call($a, (($c = ((($d = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $d))._scope).SECURE == null ? $c.cm("SECURE") : $c.SECURE))) {
+        if ((($a = (($b = this).$safe || $mm('safe')).call($b))['$>='] || $mm('>=')).call($a, (__scope.SafeMode)._scope.SECURE)) {
           return ""
           } else {
           if (($c = (($d = ext)['$nil?'] || $mm('nil?')).call($d)) !== false && $c !== nil) {
@@ -2865,7 +2721,7 @@ if (val == null) val = nil;
       };
 
       return nil;
-    })(Asciidoctor, (($a = __scope.AbstractBlock) == null ? __opal.cm("AbstractBlock") : $a));
+    })(Asciidoctor, __scope.AbstractBlock);
     
   })(self)
 })(Opal);
@@ -2874,7 +2730,7 @@ if (val == null) val = nil;
   return (function(__base){
     function Asciidoctor() {};
     Asciidoctor = __module(__base, "Asciidoctor", Asciidoctor);
-    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope, $a;
+    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope;
 
     (function(__base, __super){
       function Inline() {};
@@ -2914,7 +2770,7 @@ if (val == null) val = nil;
         this.id = (($a = opts)['$[]'] || $mm('[]')).call($a, "id");
         this.type = (($b = opts)['$[]'] || $mm('[]')).call($b, "type");
         this.target = (($c = opts)['$[]'] || $mm('[]')).call($c, "target");
-        if (($d = ($e = (($e = opts)['$has_key?'] || $mm('has_key?')).call($e, "attributes"), $e !== false && $e !== nil ? (($f = (attributes = (($g = opts)['$[]'] || $mm('[]')).call($g, "attributes")))['$is_a?'] || $mm('is_a?')).call($f, (($h = __scope.Hash) == null ? __opal.cm("Hash") : $h)) : $e)) !== false && $d !== nil) {
+        if (($d = ($e = (($e = opts)['$has_key?'] || $mm('has_key?')).call($e, "attributes"), $e !== false && $e !== nil ? (($f = (attributes = (($g = opts)['$[]'] || $mm('[]')).call($g, "attributes")))['$is_a?'] || $mm('is_a?')).call($f, __scope.Hash) : $e)) !== false && $d !== nil) {
           if (($d = (($h = attributes)['$empty?'] || $mm('empty?')).call($h)) !== false && $d !== nil) {
             return nil
             } else {
@@ -2931,7 +2787,7 @@ if (val == null) val = nil;
       };
 
       return nil;
-    })(Asciidoctor, (($a = __scope.AbstractNode) == null ? __opal.cm("AbstractNode") : $a))
+    })(Asciidoctor, __scope.AbstractNode)
     
   })(self)
 })(Opal);
@@ -3027,9 +2883,9 @@ if (val == null) val = nil;
           attributes = __hash2([], {})
         }
         preamble = false;
-        if (($a = ($b = ($b = (($b = parent)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Document) == null ? __opal.cm("Document") : $c)), $b !== false && $b !== nil ? (($c = (($d = parent).$blocks || $mm('blocks')).call($d))['$empty?'] || $mm('empty?')).call($c) : $b), $b !== false && $b !== nil ? (($e = (($f = parent)['$has_header?'] || $mm('has_header?')).call($f)), $e !== false && $e !== nil ? $e : ($g = (($h = this)['$is_next_line_section?'] || $mm('is_next_line_section?')).call($h, reader, attributes), ($g === nil || $g === false))) : $b)) !== false && $a !== nil) {
+        if (($a = ($b = ($b = (($b = parent)['$is_a?'] || $mm('is_a?')).call($b, __scope.Document), $b !== false && $b !== nil ? (($c = (($d = parent).$blocks || $mm('blocks')).call($d))['$empty?'] || $mm('empty?')).call($c) : $b), $b !== false && $b !== nil ? (($e = (($f = parent)['$has_header?'] || $mm('has_header?')).call($f)), $e !== false && $e !== nil ? $e : ($g = (($h = this)['$is_next_line_section?'] || $mm('is_next_line_section?')).call($h, reader, attributes), ($g === nil || $g === false))) : $b)) !== false && $a !== nil) {
           if (($a = (($e = parent)['$has_header?'] || $mm('has_header?')).call($e)) !== false && $a !== nil) {
-            preamble = (($a = (($g = __scope.Block) == null ? __opal.cm("Block") : $g)).$new || $mm('new')).call($a, parent, "preamble");
+            preamble = (($a = __scope.Block).$new || $mm('new')).call($a, parent, "preamble");
             (($g = parent)['$<<'] || $mm('<<')).call($g, preamble);
           };
           section = parent;
@@ -3069,7 +2925,7 @@ if (v == null) v = nil;
           if (($ah = (($ai = (($aj = next_level)['$=='] || $mm('==')).call($aj, 0)) ? ($ak = (($al = doctype)['$=='] || $mm('==')).call($al, "book"), ($ak === nil || $ak === false)) : $ai)) !== false && $ah !== nil) {
             (($ah = this).$puts || $mm('puts')).call($ah, "asciidoctor: ERROR: line " + (($ai = (($am = reader).$lineno || $mm('lineno')).call($am), $ak = 1, typeof($ai) === 'number' ? $ai + $ak : $ai['$+']($ak))) + ": only book doctypes can contain level 0 sections")
           };
-          if (($ai = (($ak = (($an = next_level)['$>'] || $mm('>')).call($an, current_level)), $ak !== false && $ak !== nil ? $ak : ($ao = (($ao = section)['$is_a?'] || $mm('is_a?')).call($ao, (($ap = __scope.Document) == null ? __opal.cm("Document") : $ap)), $ao !== false && $ao !== nil ? (($ap = next_level)['$=='] || $mm('==')).call($ap, 0) : $ao))) !== false && $ai !== nil) {
+          if (($ai = (($ak = (($an = next_level)['$>'] || $mm('>')).call($an, current_level)), $ak !== false && $ak !== nil ? $ak : ($ao = (($ao = section)['$is_a?'] || $mm('is_a?')).call($ao, __scope.Document), $ao !== false && $ao !== nil ? (($ap = next_level)['$=='] || $mm('==')).call($ap, 0) : $ao))) !== false && $ai !== nil) {
             if (($ai = (($ak = (($aq = expected_next_levels)['$nil?'] || $mm('nil?')).call($aq)), $ak !== false && $ak !== nil ? $ak : (($ar = expected_next_levels)['$include?'] || $mm('include?')).call($ar, next_level))) === false || $ai === nil) {
               (($ai = this).$puts || $mm('puts')).call($ai, ($ak = ($at = "asciidoctor: WARNING: line " + (($av = (($ax = reader).$lineno || $mm('lineno')).call($ax), $aw = 1, typeof($av) === 'number' ? $av + $aw : $av['$+']($aw))) + ": section title out of sequence: ", $au = "expected " + ((function() { if ((($av = (($aw = expected_next_levels).$size || $mm('size')).call($aw))['$>'] || $mm('>')).call($av, 1)) {
                 return "levels"
@@ -3101,7 +2957,7 @@ if (v == null) v = nil;
       });
 
       Lexer._defs('$next_block', function(reader, parent, attributes, options) {
-        var skipped = nil, parse_metadata = nil, document = nil, parent_context = nil, block = nil, style = nil, explicit_style = nil, this_line = nil, delimited_block = nil, block_context = nil, terminator = nil, delimited_blk_match = nil, match = nil, blk_ctx = nil, posattrs = nil, target = nil, items = nil, expected_index = nil, list_item = nil, coids = nil, marker = nil, float_id = nil, float_title = nil, float_level = nil, _ = nil, tmp_sect = nil, break_at_list = nil, buffer = nil, offset = nil, admonition_match = nil, admonition_name = nil, $case = nil, lang = nil, block_reader = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, $bb, $bc, $bd, $be, $bf, $bg, $bh, $bi, $bj, $bk, $bl, $bm, $bn, $bo, $bp, $bq, $br, $bs, $bt, $bu, $bv, $bw, $bx, $by, $bz, $ca, $cb, $cc, $cd, $ce, $cf, $cg, $ch, $ci, $cj, $ck, $cl, $cm, $cn, $co, $cp, $cq, $cr, $cs, $ct, $cu, $cv, $cw, $cx, $cy, $cz, $da, $db, $dc, $dd, $de, $df, $dg, $dh, $di, $dj, $dk, $dl, $dm, $dn, $do, $dp, $dq, $dr, $ds, $dt, $du, $dv, $dw, $dx, $dy, $dz, $ea, $eb, $ec, $ed, $ee, TMP_2, $ef, $eg, $eh, $ei, $ej, $ek, $el, $em, $en, $eo, $ep, $eq, $er, $es, $et, $eu, $ev, $ew, $ex, $ey, $ez, $fa, $fb, $fc, $fd, $fe, $ff, $fg, $fh, $fi, $fj, $fk, $fl, $fm, $fn, $fo, $fp, $fq, $fr, $fs, $ft, $fu, $fv, $fw, TMP_3, $fx, $fy, $fz, TMP_4, $ga, TMP_5, $gb, $gc, $gd, $ge, $gf, $gg, $gh, $gi, TMP_6, $gj, $gk, $gl, $gm, $gn, $go, $gp, $gq, $gr, $gs, $gt, $gu, $gv, $gw, $gx, $gy, $gz, $ha, $hb, $hc, $hd, $he, $hf, $hg, $hh, $hi, $hj, $hk, $hl, $hm, $hn, $ho, $hp, $hq, $hr, $hs, $ht, $hu, $hv, $hw, $hx, $hy, $hz, $ia, $ib, $ic, $id, $ie, $if, $ig, $ih, $ii, $ij, $ik, $il, $im, $in, $io, $ip, $iq, $ir, $is, $it, $iu, $iv, $iw, $ix, $iy, $iz, $ja, $jb, $jc, $jd, $je, $jf, $jg, $jh, $ji, $jj, $jk, $jl, $jm, $jn, $jo, $jp, $jq, $jr, $js, $jt, $ju, $jv, $jw, $jx, $jy, $jz, $ka;if (attributes == null) {
+        var skipped = nil, parse_metadata = nil, document = nil, parent_context = nil, block = nil, style = nil, explicit_style = nil, this_line = nil, delimited_block = nil, block_context = nil, terminator = nil, delimited_blk_match = nil, match = nil, blk_ctx = nil, posattrs = nil, target = nil, items = nil, expected_index = nil, list_item = nil, coids = nil, marker = nil, float_id = nil, float_title = nil, float_level = nil, _ = nil, tmp_sect = nil, break_at_list = nil, buffer = nil, offset = nil, admonition_match = nil, admonition_name = nil, $case = nil, lang = nil, block_reader = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, $bb, $bc, $bd, $be, $bf, $bg, $bh, $bi, $bj, $bk, $bl, $bm, $bn, $bo, $bp, $bq, $br, $bs, $bt, $bu, $bv, $bw, $bx, $by, $bz, $ca, $cb, $cc, $cd, $ce, $cf, $cg, $ch, $ci, $cj, $ck, $cl, $cm, $cn, $co, $cp, $cq, $cr, $cs, $ct, $cu, $cv, $cw, $cx, $cy, $cz, $da, $db, $dc, $dd, $de, $df, $dg, $dh, $di, $dj, $dk, $dl, $dm, $dn, $do, $dp, $dq, $dr, $ds, $dt, $du, $dv, $dw, $dx, $dy, $dz, $ea, $eb, $ec, $ed, $ee, TMP_2, $ef, $eg, $eh, $ei, $ej, $ek, $el, $em, $en, $eo, $ep, $eq, $er, $es, $et, $eu, $ev, $ew, $ex, $ey, $ez, $fa, $fb, $fc, $fd, $fe, $ff, $fg, $fh, $fi, $fj, $fk, $fl, $fm, $fn, $fo, $fp, $fq, $fr, $fs, $ft, $fu, $fv, TMP_3, $fw, $fx, $fy, $fz, TMP_4, $ga, TMP_5, $gb, $gc, $gd, $ge, $gf, $gg, $gh, $gi, TMP_6, $gj, $gk, $gl, $gm, $gn, $go, $gp, $gq, $gr, $gs, $gt, $gu, $gv, $gw, $gx, $gy, $gz, $ha, $hb, $hc, $hd, $he, $hf, $hg, $hh, $hi, $hj, $hk, $hl, $hm, $hn, $ho, $hp, $hq, $hr, $hs, $ht, $hu, $hv, $hw, $hx, $hy, $hz, $ia, $ib, $ic, $id, $ie, $if, $ig, $ih, $ii, $ij, $ik, $il, $im, $in, $io, $ip, $iq, $ir, $is, $it, $iu, $iv, $iw, $ix, $iy, $iz, $ja, $jb, $jc, $jd, $je, $jf, $jg, $jh, $ji, $jj, $jk, $jl, $jm, $jn, $jo, $jp, $jq, $jr, $js, $jt, $ju, $jv, $jw, $jx, $jy, $jz, $ka;if (attributes == null) {
           attributes = __hash2([], {})
         }if (options == null) {
           options = __hash2([], {})
@@ -3115,7 +2971,7 @@ if (v == null) v = nil;
         };
         parse_metadata = (($f = options).$fetch || $mm('fetch')).call($f, "parse_metadata", true);
         document = (($g = parent).$document || $mm('document')).call($g);
-        parent_context = (function() { if (($h = (($i = parent)['$is_a?'] || $mm('is_a?')).call($i, (($j = __scope.Block) == null ? __opal.cm("Block") : $j))) !== false && $h !== nil) {
+        parent_context = (function() { if (($h = (($i = parent)['$is_a?'] || $mm('is_a?')).call($i, __scope.Block)) !== false && $h !== nil) {
           return (($h = parent).$context || $mm('context')).call($h)
           } else {
           return nil
@@ -3146,7 +3002,7 @@ if (v == null) v = nil;
               if (($y = (($z = (($ac = delimited_blk_match).$masq || $mm('masq')).call($ac))['$include?'] || $mm('include?')).call($z, style)) !== false && $y !== nil) {
                 block_context = (($y = style).$to_sym || $mm('to_sym')).call($y)
                 } else {
-                if (($ad = ($ae = (($ae = (($af = delimited_blk_match).$masq || $mm('masq')).call($af))['$include?'] || $mm('include?')).call($ae, "admonition"), $ae !== false && $ae !== nil ? (($ag = (($ah = __scope.ADMONITION_STYLES) == null ? __opal.cm("ADMONITION_STYLES") : $ah))['$include?'] || $mm('include?')).call($ag, style) : $ae)) !== false && $ad !== nil) {
+                if (($ad = ($ae = (($ae = (($af = delimited_blk_match).$masq || $mm('masq')).call($af))['$include?'] || $mm('include?')).call($ae, "admonition"), $ae !== false && $ae !== nil ? (($ag = __scope.ADMONITION_STYLES)['$include?'] || $mm('include?')).call($ag, style) : $ae)) !== false && $ad !== nil) {
                   block_context = "admonition"
                   } else {
                   (($ad = this).$puts || $mm('puts')).call($ad, "asciidoctor: WARNING: line " + ((($ah = reader).$lineno || $mm('lineno')).call($ah)) + ": invalid style for " + (block_context) + " block: " + (style));
@@ -3157,19 +3013,19 @@ if (v == null) v = nil;
           };
         };
         if (($aj = ($ak = delimited_block, ($ak === nil || $ak === false))) !== false && $aj !== nil) {
-          while (($ak = true) !== false && $ak !== nil){if (($ak = ($al = ($al = ($al = (($am = style)['$nil?'] || $mm('nil?')).call($am), ($al === nil || $al === false)), $al !== false && $al !== nil ? (($al = (($an = __scope.COMPLIANCE) == null ? __opal.cm("COMPLIANCE") : $an))['$[]'] || $mm('[]')).call($al, "strict_verbatim_paragraphs") : $al), $al !== false && $al !== nil ? (($an = (($ao = __scope.VERBATIM_STYLES) == null ? __opal.cm("VERBATIM_STYLES") : $ao))['$include?'] || $mm('include?')).call($an, style) : $al)) !== false && $ak !== nil) {
+          while (($ak = true) !== false && $ak !== nil){if (($ak = ($al = ($al = ($al = (($am = style)['$nil?'] || $mm('nil?')).call($am), ($al === nil || $al === false)), $al !== false && $al !== nil ? (($al = __scope.COMPLIANCE)['$[]'] || $mm('[]')).call($al, "strict_verbatim_paragraphs") : $al), $al !== false && $al !== nil ? (($an = __scope.VERBATIM_STYLES)['$include?'] || $mm('include?')).call($an, style) : $al)) !== false && $ak !== nil) {
             block_context = (($ak = style).$to_sym || $mm('to_sym')).call($ak);
             (($ao = reader).$unshift_line || $mm('unshift_line')).call($ao, this_line);
             break;;
           };
           if (($ap = ($aq = (($ar = options)['$[]'] || $mm('[]')).call($ar, "text"), ($aq === nil || $aq === false))) !== false && $ap !== nil) {
-            if (($ap = match = (($aq = this_line).$match || $mm('match')).call($aq, (($as = (($at = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $at))['$[]'] || $mm('[]')).call($as, "break_line"))) !== false && $ap !== nil) {
-              block = (($ap = (($at = __scope.Block) == null ? __opal.cm("Block") : $at)).$new || $mm('new')).call($ap, parent, (($at = (($au = __scope.BREAK_LINES) == null ? __opal.cm("BREAK_LINES") : $au))['$[]'] || $mm('[]')).call($at, (($au = (($av = match)['$[]'] || $mm('[]')).call($av, 0))['$[]'] || $mm('[]')).call($au, __range(0, 2, false))));
+            if (($ap = match = (($aq = this_line).$match || $mm('match')).call($aq, (($as = __scope.REGEXP)['$[]'] || $mm('[]')).call($as, "break_line"))) !== false && $ap !== nil) {
+              block = (($ap = __scope.Block).$new || $mm('new')).call($ap, parent, (($at = __scope.BREAK_LINES)['$[]'] || $mm('[]')).call($at, (($au = (($av = match)['$[]'] || $mm('[]')).call($av, 0))['$[]'] || $mm('[]')).call($au, __range(0, 2, false))));
               break;;
               } else {
-              if (($aw = match = (($ax = this_line).$match || $mm('match')).call($ax, (($ay = (($az = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $az))['$[]'] || $mm('[]')).call($ay, "media_blk_macro"))) !== false && $aw !== nil) {
+              if (($aw = match = (($ax = this_line).$match || $mm('match')).call($ax, (($ay = __scope.REGEXP)['$[]'] || $mm('[]')).call($ay, "media_blk_macro"))) !== false && $aw !== nil) {
                 blk_ctx = (($aw = (($az = match)['$[]'] || $mm('[]')).call($az, 1)).$to_sym || $mm('to_sym')).call($aw);
-                block = (($ba = (($bb = __scope.Block) == null ? __opal.cm("Block") : $bb)).$new || $mm('new')).call($ba, parent, blk_ctx);
+                block = (($ba = __scope.Block).$new || $mm('new')).call($ba, parent, blk_ctx);
                 if ((($bb = blk_ctx)['$=='] || $mm('==')).call($bb, "image")) {
                   posattrs = ["alt", "width", "height"]
                   } else {
@@ -3197,27 +3053,27 @@ if (v == null) v = nil;
                 };
                 if ((($br = blk_ctx)['$=='] || $mm('==')).call($br, "image")) {
                   (($bs = document).$register || $mm('register')).call($bs, "images", target);
-                  ($bt = "alt", $bu = attributes, (($bv = (($bw = $bu)['$[]'] || $mm('[]')).call($bw, $bt)), $bv !== false && $bv !== nil ? $bv : (($bx = $bu)['$[]='] || $mm('[]=')).call($bx, $bt, (($by = (($bz = __scope.File) == null ? __opal.cm("File") : $bz)).$basename || $mm('basename')).call($by, target, (($bz = (($ca = __scope.File) == null ? __opal.cm("File") : $ca)).$extname || $mm('extname')).call($bz, target)))));
+                  ($bt = "alt", $bu = attributes, (($bv = (($bw = $bu)['$[]'] || $mm('[]')).call($bw, $bt)), $bv !== false && $bv !== nil ? $bv : (($bx = $bu)['$[]='] || $mm('[]=')).call($bx, $bt, (($by = __scope.File).$basename || $mm('basename')).call($by, target, (($bz = __scope.File).$extname || $mm('extname')).call($bz, target)))));
                   (($bt = block).$assign_caption || $mm('assign_caption')).call($bt, (($bu = attributes).$delete || $mm('delete')).call($bu, "caption"), "figure");
                 };
                 break;;
                 } else {
-                if (($bv = match = (($ca = this_line).$match || $mm('match')).call($ca, (($cb = (($cc = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $cc))['$[]'] || $mm('[]')).call($cb, "toc"))) !== false && $bv !== nil) {
-                  block = (($bv = (($cc = __scope.Block) == null ? __opal.cm("Block") : $cc)).$new || $mm('new')).call($bv, parent, "toc");
+                if (($bv = match = (($ca = this_line).$match || $mm('match')).call($ca, (($cb = __scope.REGEXP)['$[]'] || $mm('[]')).call($cb, "toc"))) !== false && $bv !== nil) {
+                  block = (($bv = __scope.Block).$new || $mm('new')).call($bv, parent, "toc");
                   (($cc = block).$parse_attributes || $mm('parse_attributes')).call($cc, (($cd = match)['$[]'] || $mm('[]')).call($cd, 1), [], __hash2(["sub_result", "into"], {"sub_result": false, "into": attributes}));
                   break;;
                 }
               }
             }
           };
-          if (($ce = match = (($cf = this_line).$match || $mm('match')).call($cf, (($cg = (($ch = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ch))['$[]'] || $mm('[]')).call($cg, "colist"))) !== false && $ce !== nil) {
-            block = (($ce = (($ch = __scope.Block) == null ? __opal.cm("Block") : $ch)).$new || $mm('new')).call($ce, parent, "colist");
+          if (($ce = match = (($cf = this_line).$match || $mm('match')).call($cf, (($cg = __scope.REGEXP)['$[]'] || $mm('[]')).call($cg, "colist"))) !== false && $ce !== nil) {
+            block = (($ce = __scope.Block).$new || $mm('new')).call($ce, parent, "colist");
             (($ch = attributes)['$[]='] || $mm('[]=')).call($ch, "style", "arabic");
             items = [];
             (($ci = block)['$buffer='] || $mm('buffer=')).call($ci, items);
             (($cj = reader).$unshift_line || $mm('unshift_line')).call($cj, this_line);
             expected_index = 1;
-            while (($cl = ($cm = (($cm = reader)['$has_more_lines?'] || $mm('has_more_lines?')).call($cm), $cm !== false && $cm !== nil ? match = (($cn = (($co = reader).$peek_line || $mm('peek_line')).call($co)).$match || $mm('match')).call($cn, (($cp = (($cq = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $cq))['$[]'] || $mm('[]')).call($cp, "colist")) : $cm)) !== false && $cl !== nil){if (($cl = ($cq = (($cr = (($cs = (($ct = match)['$[]'] || $mm('[]')).call($ct, 1)).$to_i || $mm('to_i')).call($cs))['$=='] || $mm('==')).call($cr, expected_index), ($cq === nil || $cq === false))) !== false && $cl !== nil) {
+            while (($cl = ($cm = (($cm = reader)['$has_more_lines?'] || $mm('has_more_lines?')).call($cm), $cm !== false && $cm !== nil ? match = (($cn = (($co = reader).$peek_line || $mm('peek_line')).call($co)).$match || $mm('match')).call($cn, (($cp = __scope.REGEXP)['$[]'] || $mm('[]')).call($cp, "colist")) : $cm)) !== false && $cl !== nil){if (($cl = ($cq = (($cr = (($cs = (($ct = match)['$[]'] || $mm('[]')).call($ct, 1)).$to_i || $mm('to_i')).call($cs))['$=='] || $mm('==')).call($cr, expected_index), ($cq === nil || $cq === false))) !== false && $cl !== nil) {
               (($cl = this).$puts || $mm('puts')).call($cl, "asciidoctor: WARNING: line " + (($cq = (($cv = reader).$lineno || $mm('lineno')).call($cv), $cu = 1, typeof($cq) === 'number' ? $cq + $cu : $cq['$+']($cu))) + ": callout list item index: expected " + (expected_index) + " got " + ((($cq = match)['$[]'] || $mm('[]')).call($cq, 1)))
             };
             list_item = (($cu = this).$next_list_item || $mm('next_list_item')).call($cu, reader, block, match);
@@ -3234,32 +3090,32 @@ if (v == null) v = nil;
             (($ck = (($di = document).$callouts || $mm('callouts')).call($di)).$next_list || $mm('next_list')).call($ck);
             break;;
             } else {
-            if (($dj = match = (($dk = this_line).$match || $mm('match')).call($dk, (($dl = (($dm = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $dm))['$[]'] || $mm('[]')).call($dl, "ulist"))) !== false && $dj !== nil) {
+            if (($dj = match = (($dk = this_line).$match || $mm('match')).call($dk, (($dl = __scope.REGEXP)['$[]'] || $mm('[]')).call($dl, "ulist"))) !== false && $dj !== nil) {
               (($dj = reader).$unshift_line || $mm('unshift_line')).call($dj, this_line);
               block = (($dm = this).$next_outline_list || $mm('next_outline_list')).call($dm, reader, "ulist", parent);
               break;;
               } else {
-              if (($dn = match = (($do = this_line).$match || $mm('match')).call($do, (($dp = (($dq = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $dq))['$[]'] || $mm('[]')).call($dp, "olist"))) !== false && $dn !== nil) {
+              if (($dn = match = (($do = this_line).$match || $mm('match')).call($do, (($dp = __scope.REGEXP)['$[]'] || $mm('[]')).call($dp, "olist"))) !== false && $dn !== nil) {
                 (($dn = reader).$unshift_line || $mm('unshift_line')).call($dn, this_line);
                 block = (($dq = this).$next_outline_list || $mm('next_outline_list')).call($dq, reader, "olist", parent);
                 if (($dr = ($ds = ($ds = (($dt = attributes)['$has_key?'] || $mm('has_key?')).call($dt, "style"), ($ds === nil || $ds === false)), $ds !== false && $ds !== nil ? ($ds = (($du = (($dv = block).$attributes || $mm('attributes')).call($dv))['$has_key?'] || $mm('has_key?')).call($du, "style"), ($ds === nil || $ds === false)) : $ds)) !== false && $dr !== nil) {
                   marker = (($dr = (($ds = (($dw = block).$buffer || $mm('buffer')).call($dw)).$first || $mm('first')).call($ds)).$marker || $mm('marker')).call($dr);
                   if (($dx = (($dy = marker)['$start_with?'] || $mm('start_with?')).call($dy, ".")) !== false && $dx !== nil) {
-                    (($dx = attributes)['$[]='] || $mm('[]=')).call($dx, "style", (($dz = (($ea = (($eb = (($ec = __scope.ORDERED_LIST_STYLES) == null ? __opal.cm("ORDERED_LIST_STYLES") : $ec))['$[]'] || $mm('[]')).call($eb, ($ec = (($ee = marker).$length || $mm('length')).call($ee), $ed = 1, typeof($ec) === 'number' ? $ec - $ed : $ec['$-']($ed)))), $ea !== false && $ea !== nil ? $ea : (($ec = (($ed = __scope.ORDERED_LIST_STYLES) == null ? __opal.cm("ORDERED_LIST_STYLES") : $ed)).$first || $mm('first')).call($ec))).$to_s || $mm('to_s')).call($dz))
+                    (($dx = attributes)['$[]='] || $mm('[]=')).call($dx, "style", (($dz = (($ea = (($eb = __scope.ORDERED_LIST_STYLES)['$[]'] || $mm('[]')).call($eb, ($ec = (($ee = marker).$length || $mm('length')).call($ee), $ed = 1, typeof($ec) === 'number' ? $ec - $ed : $ec['$-']($ed)))), $ea !== false && $ea !== nil ? $ea : (($ec = __scope.ORDERED_LIST_STYLES).$first || $mm('first')).call($ec))).$to_s || $mm('to_s')).call($dz))
                     } else {
-                    style = ($ea = (($ed = (($ef = __scope.ORDERED_LIST_STYLES) == null ? __opal.cm("ORDERED_LIST_STYLES") : $ef)).$detect || $mm('detect')), $ea._p = (TMP_2 = function(s) {
+                    style = ($ea = (($ed = __scope.ORDERED_LIST_STYLES).$detect || $mm('detect')), $ea._p = (TMP_2 = function(s) {
 
-                      var self = TMP_2._s || this, $a, $b, $c;
+                      var self = TMP_2._s || this, $a, $b;
                       if (s == null) s = nil;
 
-                      return (($a = marker).$match || $mm('match')).call($a, (($b = (($c = __scope.ORDERED_LIST_MARKER_PATTERNS) == null ? __opal.cm("ORDERED_LIST_MARKER_PATTERNS") : $c))['$[]'] || $mm('[]')).call($b, s))
+                      return (($a = marker).$match || $mm('match')).call($a, (($b = __scope.ORDERED_LIST_MARKER_PATTERNS)['$[]'] || $mm('[]')).call($b, s))
                     }, TMP_2._s = this, TMP_2), $ea).call($ed);
-                    (($ea = attributes)['$[]='] || $mm('[]=')).call($ea, "style", (($ef = (($eg = style), $eg !== false && $eg !== nil ? $eg : (($eh = (($ei = __scope.ORDERED_LIST_STYLES) == null ? __opal.cm("ORDERED_LIST_STYLES") : $ei)).$first || $mm('first')).call($eh))).$to_s || $mm('to_s')).call($ef));
+                    (($ea = attributes)['$[]='] || $mm('[]=')).call($ea, "style", (($ef = (($eg = style), $eg !== false && $eg !== nil ? $eg : (($eh = __scope.ORDERED_LIST_STYLES).$first || $mm('first')).call($eh))).$to_s || $mm('to_s')).call($ef));
                   };
                 };
                 break;;
                 } else {
-                if (($eg = match = (($ei = this_line).$match || $mm('match')).call($ei, (($ej = (($ek = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ek))['$[]'] || $mm('[]')).call($ej, "dlist"))) !== false && $eg !== nil) {
+                if (($eg = match = (($ei = this_line).$match || $mm('match')).call($ei, (($ej = __scope.REGEXP)['$[]'] || $mm('[]')).call($ej, "dlist"))) !== false && $eg !== nil) {
                   (($eg = reader).$unshift_line || $mm('unshift_line')).call($eg, this_line);
                   block = (($ek = this).$next_labeled_list || $mm('next_labeled_list')).call($ek, reader, match, parent);
                   break;;
@@ -3270,9 +3126,9 @@ if (v == null) v = nil;
                     if (($eq = (($es = attributes)['$has_key?'] || $mm('has_key?')).call($es, "id")) !== false && $eq !== nil) {
                       (($eq = float_id), $eq !== false && $eq !== nil ? $eq : float_id = (($et = attributes)['$[]'] || $mm('[]')).call($et, "id"))
                     };
-                    block = (($eq = (($eu = __scope.Block) == null ? __opal.cm("Block") : $eu)).$new || $mm('new')).call($eq, parent, "floating_title");
+                    block = (($eq = __scope.Block).$new || $mm('new')).call($eq, parent, "floating_title");
                     if (($eu = (($ev = (($ew = float_id)['$nil?'] || $mm('nil?')).call($ew)), $ev !== false && $ev !== nil ? $ev : (($ex = float_id)['$empty?'] || $mm('empty?')).call($ex))) !== false && $eu !== nil) {
-                      tmp_sect = (($eu = (($ev = __scope.Section) == null ? __opal.cm("Section") : $ev)).$new || $mm('new')).call($eu, parent);
+                      tmp_sect = (($eu = __scope.Section).$new || $mm('new')).call($eu, parent);
                       (($ev = tmp_sect)['$title='] || $mm('title=')).call($ev, float_title);
                       (($ey = block)['$id='] || $mm('id=')).call($ey, (($ez = tmp_sect).$generate_id || $mm('generate_id')).call($ez));
                       } else {
@@ -3286,12 +3142,12 @@ if (v == null) v = nil;
                     break;;
                     } else {
                     if (($fg = ($fh = ($fh = (($fi = style)['$nil?'] || $mm('nil?')).call($fi), ($fh === nil || $fh === false)), $fh !== false && $fh !== nil ? ($fh = (($fj = style)['$=='] || $mm('==')).call($fj, "normal"), ($fh === nil || $fh === false)) : $fh)) !== false && $fg !== nil) {
-                      if (($fg = (($fh = (($fk = __scope.PARAGRAPH_STYLES) == null ? __opal.cm("PARAGRAPH_STYLES") : $fk))['$include?'] || $mm('include?')).call($fh, style)) !== false && $fg !== nil) {
+                      if (($fg = (($fh = __scope.PARAGRAPH_STYLES)['$include?'] || $mm('include?')).call($fh, style)) !== false && $fg !== nil) {
                         block_context = (($fg = style).$to_sym || $mm('to_sym')).call($fg);
                         (($fk = reader).$unshift_line || $mm('unshift_line')).call($fk, this_line);
                         break;;
                         } else {
-                        if (($fl = (($fm = (($fn = __scope.ADMONITION_STYLES) == null ? __opal.cm("ADMONITION_STYLES") : $fn))['$include?'] || $mm('include?')).call($fm, style)) !== false && $fl !== nil) {
+                        if (($fl = (($fm = __scope.ADMONITION_STYLES)['$include?'] || $mm('include?')).call($fm, style)) !== false && $fl !== nil) {
                           block_context = "admonition";
                           (($fl = reader).$unshift_line || $mm('unshift_line')).call($fl, this_line);
                           break;;
@@ -3307,22 +3163,22 @@ if (v == null) v = nil;
             }
           };
           break_at_list = (($fp = (($fq = skipped)['$=='] || $mm('==')).call($fq, 0)) ? (($fr = (($fs = parent_context).$to_s || $mm('to_s')).call($fs))['$end_with?'] || $mm('end_with?')).call($fr, "list") : $fp);
-          if (($fp = ($ft = ($ft = (($fu = style)['$=='] || $mm('==')).call($fu, "normal"), ($ft === nil || $ft === false)), $ft !== false && $ft !== nil ? (($ft = this_line).$match || $mm('match')).call($ft, (($fv = (($fw = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $fw))['$[]'] || $mm('[]')).call($fv, "lit_par")) : $ft)) !== false && $fp !== nil) {
+          if (($fp = ($ft = ($ft = (($fu = style)['$=='] || $mm('==')).call($fu, "normal"), ($ft === nil || $ft === false)), $ft !== false && $ft !== nil ? (($ft = this_line).$match || $mm('match')).call($ft, (($fv = __scope.REGEXP)['$[]'] || $mm('[]')).call($fv, "lit_par")) : $ft)) !== false && $fp !== nil) {
             (($fp = reader).$unshift_line || $mm('unshift_line')).call($fp, this_line);
             buffer = ($fw = (($fx = reader).$grab_lines_until || $mm('grab_lines_until')), $fw._p = (TMP_3 = function(line) {
 
-              var self = TMP_3._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i;
+              var self = TMP_3._s || this, $a, $b, $c, $d, $e, $f, $g, $h;
               if (line == null) line = nil;
 
-              return (($a = (($b = break_at_list !== false && break_at_list !== nil) ? (($c = line).$match || $mm('match')).call($c, (($d = (($e = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $e))['$[]'] || $mm('[]')).call($d, "any_list")) : $b)), $a !== false && $a !== nil ? $a : ($b = (($b = (($e = __scope.COMPLIANCE) == null ? __opal.cm("COMPLIANCE") : $e))['$[]'] || $mm('[]')).call($b, "block_terminates_paragraph"), $b !== false && $b !== nil ? (($e = (($f = self)['$is_delimited_block?'] || $mm('is_delimited_block?')).call($f, line)), $e !== false && $e !== nil ? $e : (($g = line).$match || $mm('match')).call($g, (($h = (($i = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $i))['$[]'] || $mm('[]')).call($h, "attr_line"))) : $b))
+              return (($a = (($b = break_at_list !== false && break_at_list !== nil) ? (($c = line).$match || $mm('match')).call($c, (($d = __scope.REGEXP)['$[]'] || $mm('[]')).call($d, "any_list")) : $b)), $a !== false && $a !== nil ? $a : ($b = (($b = __scope.COMPLIANCE)['$[]'] || $mm('[]')).call($b, "block_terminates_paragraph"), $b !== false && $b !== nil ? (($e = (($f = self)['$is_delimited_block?'] || $mm('is_delimited_block?')).call($f, line)), $e !== false && $e !== nil ? $e : (($g = line).$match || $mm('match')).call($g, (($h = __scope.REGEXP)['$[]'] || $mm('[]')).call($h, "attr_line"))) : $b))
             }, TMP_3._s = this, TMP_3), $fw).call($fx, __hash2(["break_on_blank_lines", "break_on_list_continuation", "preserve_last_line"], {"break_on_blank_lines": true, "break_on_list_continuation": true, "preserve_last_line": true}));
             if (($fw = ($fy = (($fz = buffer)['$empty?'] || $mm('empty?')).call($fz), ($fy === nil || $fy === false))) !== false && $fw !== nil) {
               offset = (($fw = ($fy = (($ga = buffer).$map || $mm('map')), $fy._p = (TMP_4 = function(line) {
 
-                var self = TMP_4._s || this, $a, $b, $c, $d, $e;
+                var self = TMP_4._s || this, $a, $b, $c, $d;
                 if (line == null) line = nil;
 
-                return (($a = (($b = (($c = line).$match || $mm('match')).call($c, (($d = (($e = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $e))['$[]'] || $mm('[]')).call($d, "leading_blanks")))['$[]'] || $mm('[]')).call($b, 1)).$length || $mm('length')).call($a)
+                return (($a = (($b = (($c = line).$match || $mm('match')).call($c, (($d = __scope.REGEXP)['$[]'] || $mm('[]')).call($d, "leading_blanks")))['$[]'] || $mm('[]')).call($b, 1)).$length || $mm('length')).call($a)
               }, TMP_4._s = this, TMP_4), $fy).call($ga)).$min || $mm('min')).call($fw);
               if ((($fy = offset)['$>'] || $mm('>')).call($fy, 0)) {
                 buffer = ($gb = (($gc = buffer).$map || $mm('map')), $gb._p = (TMP_5 = function(l) {
@@ -3334,8 +3190,8 @@ if (v == null) v = nil;
                 }, TMP_5._s = this, TMP_5), $gb).call($gc)
               };
             };
-            block = (($gb = (($gd = __scope.Block) == null ? __opal.cm("Block") : $gd)).$new || $mm('new')).call($gb, parent, "literal", buffer);
-            if (($gd = (($ge = (($gf = __scope.LIST_CONTEXTS) == null ? __opal.cm("LIST_CONTEXTS") : $gf))['$include?'] || $mm('include?')).call($ge, parent_context)) !== false && $gd !== nil) {
+            block = (($gb = __scope.Block).$new || $mm('new')).call($gb, parent, "literal", buffer);
+            if (($gd = (($ge = __scope.LIST_CONTEXTS)['$include?'] || $mm('include?')).call($ge, parent_context)) !== false && $gd !== nil) {
               ($gd = "options", $gf = attributes, (($gg = (($gh = $gf)['$[]'] || $mm('[]')).call($gh, $gd)), $gg !== false && $gg !== nil ? $gg : (($gi = $gf)['$[]='] || $mm('[]=')).call($gi, $gd, [])));
               (($gd = (($gf = attributes)['$[]'] || $mm('[]')).call($gf, "options"))['$<<'] || $mm('<<')).call($gd, "listparagraph");
             };
@@ -3343,24 +3199,24 @@ if (v == null) v = nil;
             (($gg = reader).$unshift_line || $mm('unshift_line')).call($gg, this_line);
             buffer = ($gj = (($gk = reader).$grab_lines_until || $mm('grab_lines_until')), $gj._p = (TMP_6 = function(line) {
 
-              var self = TMP_6._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i;
+              var self = TMP_6._s || this, $a, $b, $c, $d, $e, $f, $g, $h;
               if (line == null) line = nil;
 
-              return (($a = (($b = break_at_list !== false && break_at_list !== nil) ? (($c = line).$match || $mm('match')).call($c, (($d = (($e = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $e))['$[]'] || $mm('[]')).call($d, "any_list")) : $b)), $a !== false && $a !== nil ? $a : ($b = (($b = (($e = __scope.COMPLIANCE) == null ? __opal.cm("COMPLIANCE") : $e))['$[]'] || $mm('[]')).call($b, "block_terminates_paragraph"), $b !== false && $b !== nil ? (($e = (($f = self)['$is_delimited_block?'] || $mm('is_delimited_block?')).call($f, line)), $e !== false && $e !== nil ? $e : (($g = line).$match || $mm('match')).call($g, (($h = (($i = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $i))['$[]'] || $mm('[]')).call($h, "attr_line"))) : $b))
+              return (($a = (($b = break_at_list !== false && break_at_list !== nil) ? (($c = line).$match || $mm('match')).call($c, (($d = __scope.REGEXP)['$[]'] || $mm('[]')).call($d, "any_list")) : $b)), $a !== false && $a !== nil ? $a : ($b = (($b = __scope.COMPLIANCE)['$[]'] || $mm('[]')).call($b, "block_terminates_paragraph"), $b !== false && $b !== nil ? (($e = (($f = self)['$is_delimited_block?'] || $mm('is_delimited_block?')).call($f, line)), $e !== false && $e !== nil ? $e : (($g = line).$match || $mm('match')).call($g, (($h = __scope.REGEXP)['$[]'] || $mm('[]')).call($h, "attr_line"))) : $b))
             }, TMP_6._s = this, TMP_6), $gj).call($gk, __hash2(["break_on_blank_lines", "break_on_list_continuation", "preserve_last_line", "skip_line_comments"], {"break_on_blank_lines": true, "break_on_list_continuation": true, "preserve_last_line": true, "skip_line_comments": true}));
             if (($gj = (($gl = buffer)['$empty?'] || $mm('empty?')).call($gl)) !== false && $gj !== nil) {
               (($gj = reader).$get_line || $mm('get_line')).call($gj);
               return nil;
             };
             (($gm = this).$catalog_inline_anchors || $mm('catalog_inline_anchors')).call($gm, (($gn = buffer).$join || $mm('join')).call($gn, "\n"), document);
-            if (($go = ($gp = ($gp = (($gq = options)['$[]'] || $mm('[]')).call($gq, "text"), ($gp === nil || $gp === false)), $gp !== false && $gp !== nil ? admonition_match = (($gp = (($gr = buffer).$first || $mm('first')).call($gr)).$match || $mm('match')).call($gp, (($gs = (($gt = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $gt))['$[]'] || $mm('[]')).call($gs, "admonition_inline")) : $gp)) !== false && $go !== nil) {
+            if (($go = ($gp = ($gp = (($gq = options)['$[]'] || $mm('[]')).call($gq, "text"), ($gp === nil || $gp === false)), $gp !== false && $gp !== nil ? admonition_match = (($gp = (($gr = buffer).$first || $mm('first')).call($gr)).$match || $mm('match')).call($gp, (($gs = __scope.REGEXP)['$[]'] || $mm('[]')).call($gs, "admonition_inline")) : $gp)) !== false && $go !== nil) {
               (($go = buffer)['$[]='] || $mm('[]=')).call($go, 0, (($gt = (($gu = admonition_match).$post_match || $mm('post_match')).call($gu)).$lstrip || $mm('lstrip')).call($gt));
-              block = (($gv = (($gw = __scope.Block) == null ? __opal.cm("Block") : $gw)).$new || $mm('new')).call($gv, parent, "admonition", buffer);
+              block = (($gv = __scope.Block).$new || $mm('new')).call($gv, parent, "admonition", buffer);
               (($gw = attributes)['$[]='] || $mm('[]=')).call($gw, "style", (($gx = admonition_match)['$[]'] || $mm('[]')).call($gx, 1));
               (($gy = attributes)['$[]='] || $mm('[]=')).call($gy, "name", admonition_name = (($gz = (($ha = admonition_match)['$[]'] || $mm('[]')).call($ha, 1)).$downcase || $mm('downcase')).call($gz));
               ($hb = "caption", $hc = attributes, (($hd = (($he = $hc)['$[]'] || $mm('[]')).call($he, $hb)), $hd !== false && $hd !== nil ? $hd : (($hf = $hc)['$[]='] || $mm('[]=')).call($hf, $hb, (($hg = (($hh = document).$attributes || $mm('attributes')).call($hh))['$[]'] || $mm('[]')).call($hg, "" + (admonition_name) + "-caption"))));
               } else {
-              block = (($hb = (($hc = __scope.Block) == null ? __opal.cm("Block") : $hc)).$new || $mm('new')).call($hb, parent, "paragraph", buffer)
+              block = (($hb = __scope.Block).$new || $mm('new')).call($hb, parent, "paragraph", buffer)
             };
           };
           break;;}
@@ -3393,7 +3249,7 @@ if (v == null) v = nil;
             };
             } else {
             if ((($ie = block_context)['$=='] || $mm('==')).call($ie, "source")) {
-              (($if = (($ig = __scope.AttributeList) == null ? __opal.cm("AttributeList") : $ig)).$rekey || $mm('rekey')).call($if, attributes, [nil, "language", "linenums"])
+              (($if = __scope.AttributeList).$rekey || $mm('rekey')).call($if, attributes, [nil, "language", "linenums"])
             }
           };
           block = (($ig = this).$build_block || $mm('build_block')).call($ig, "listing", "verbatim", terminator, parent, reader, attributes, true);
@@ -3408,11 +3264,11 @@ if (v == null) v = nil;
           block = (($io = this).$build_block || $mm('build_block')).call($io, block_context, "complex", terminator, parent, reader, attributes)
           }
           else if ((($iu = "table")['$==='] || $mm('===')).call($iu, $case)) {
-          block_reader = (($ir = (($is = __scope.Reader) == null ? __opal.cm("Reader") : $is)).$new || $mm('new')).call($ir, (($is = reader).$grab_lines_until || $mm('grab_lines_until')).call($is, __hash2(["terminator", "skip_line_comments"], {"terminator": terminator, "skip_line_comments": true})));
+          block_reader = (($ir = __scope.Reader).$new || $mm('new')).call($ir, (($is = reader).$grab_lines_until || $mm('grab_lines_until')).call($is, __hash2(["terminator", "skip_line_comments"], {"terminator": terminator, "skip_line_comments": true})));
           block = (($it = this).$next_table || $mm('next_table')).call($it, block_reader, parent, attributes);
           }
           else if ((($iy = "quote")['$==='] || $mm('===')).call($iy, $case) || (($iz = "verse")['$==='] || $mm('===')).call($iz, $case)) {
-          (($iv = (($iw = __scope.AttributeList) == null ? __opal.cm("AttributeList") : $iw)).$rekey || $mm('rekey')).call($iv, attributes, [nil, "attribution", "citetitle"]);
+          (($iv = __scope.AttributeList).$rekey || $mm('rekey')).call($iv, attributes, [nil, "attribution", "citetitle"]);
           block = (($iw = this).$build_block || $mm('build_block')).call($iw, block_context, (function() { if ((($ix = block_context)['$=='] || $mm('==')).call($ix, "verse")) {
             return "verbatim"
             } else {
@@ -3428,7 +3284,7 @@ if (v == null) v = nil;
           if (($j = (($je = block)['$title?'] || $mm('title?')).call($je)) === false || $j === nil) {
             (($j = block)['$title='] || $mm('title=')).call($j, (($ji = attributes)['$[]'] || $mm('[]')).call($ji, "title"))
           };
-          if (($jj = (($jk = block)['$is_a?'] || $mm('is_a?')).call($jk, (($jl = __scope.Section) == null ? __opal.cm("Section") : $jl))) === false || $jj === nil) {
+          if (($jj = (($jk = block)['$is_a?'] || $mm('is_a?')).call($jk, __scope.Section)) === false || $jj === nil) {
             ($jj = block, (($jl = (($jm = $jj).$caption || $mm('caption')).call($jm)), $jl !== false && $jl !== nil ? $jl : (($jn = $jj)['$caption='] || $mm('caption=')).call($jn, (($jo = attributes)['$[]'] || $mm('[]')).call($jo, "caption"))))
           };
           if (($jj = ($jl = ($jl = (($jl = block).$id || $mm('id')).call($jl), $jl !== false && $jl !== nil ? (($jp = block)['$title?'] || $mm('title?')).call($jp) : $jl), $jl !== false && $jl !== nil ? ($jq = (($jr = attributes)['$has_key?'] || $mm('has_key?')).call($jr, "reftext"), ($jq === nil || $jq === false)) : $jl)) !== false && $jj !== nil) {
@@ -3460,19 +3316,19 @@ if (v == null) v = nil;
               tl = 3;
             };
           };
-          if (($f = (($g = (($j = __scope.DELIMITED_BLOCKS) == null ? __opal.cm("DELIMITED_BLOCKS") : $j))['$has_key?'] || $mm('has_key?')).call($g, tip)) !== false && $f !== nil) {
+          if (($f = (($g = __scope.DELIMITED_BLOCKS)['$has_key?'] || $mm('has_key?')).call($g, tip)) !== false && $f !== nil) {
             if ((($f = tl)['$=='] || $mm('==')).call($f, line_len)) {
               if (return_match_data !== false && return_match_data !== nil) {
-                ($j = (($k = (($l = __scope.DELIMITED_BLOCKS) == null ? __opal.cm("DELIMITED_BLOCKS") : $l))['$[]'] || $mm('[]')).call($k, tip))['$to_a'] ? ($j = $j['$to_a']()) : ($j)._isArray ? $j : ($j = [$j]), context = ($j[0] == null ? nil : $j[0]), masq = ($j[1] == null ? nil : $j[1]);
-                return (($j = (($l = __scope.BlockMatchData) == null ? __opal.cm("BlockMatchData") : $l)).$new || $mm('new')).call($j, context, masq, tip, tip);
+                ($j = (($k = __scope.DELIMITED_BLOCKS)['$[]'] || $mm('[]')).call($k, tip))['$to_a'] ? ($j = $j['$to_a']()) : ($j)._isArray ? $j : ($j = [$j]), context = ($j[0] == null ? nil : $j[0]), masq = ($j[1] == null ? nil : $j[1]);
+                return (($j = __scope.BlockMatchData).$new || $mm('new')).call($j, context, masq, tip, tip);
                 } else {
                 return true
               }
               } else {
-              if (($l = match = (($m = line).$match || $mm('match')).call($m, (($n = (($o = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $o))['$[]'] || $mm('[]')).call($n, "any_blk"))) !== false && $l !== nil) {
+              if (($l = match = (($m = line).$match || $mm('match')).call($m, (($n = __scope.REGEXP)['$[]'] || $mm('[]')).call($n, "any_blk"))) !== false && $l !== nil) {
                 if (return_match_data !== false && return_match_data !== nil) {
-                  ($l = (($o = (($p = __scope.DELIMITED_BLOCKS) == null ? __opal.cm("DELIMITED_BLOCKS") : $p))['$[]'] || $mm('[]')).call($o, tip))['$to_a'] ? ($l = $l['$to_a']()) : ($l)._isArray ? $l : ($l = [$l]), context = ($l[0] == null ? nil : $l[0]), masq = ($l[1] == null ? nil : $l[1]);
-                  return (($l = (($p = __scope.BlockMatchData) == null ? __opal.cm("BlockMatchData") : $p)).$new || $mm('new')).call($l, context, masq, tip, (($p = match)['$[]'] || $mm('[]')).call($p, 0));
+                  ($l = (($o = __scope.DELIMITED_BLOCKS)['$[]'] || $mm('[]')).call($o, tip))['$to_a'] ? ($l = $l['$to_a']()) : ($l)._isArray ? $l : ($l = [$l]), context = ($l[0] == null ? nil : $l[0]), masq = ($l[1] == null ? nil : $l[1]);
+                  return (($l = __scope.BlockMatchData).$new || $mm('new')).call($l, context, masq, tip, (($p = match)['$[]'] || $mm('[]')).call($p, 0));
                   } else {
                   return true
                 }
@@ -3498,10 +3354,10 @@ if (v == null) v = nil;
             } else {
             buffer = ($d = (($e = reader).$grab_lines_until || $mm('grab_lines_until')), $d._p = (TMP_7 = function(line) {
 
-              var self = TMP_7._s || this, $a, $b, $c, $d, $e, $f;
+              var self = TMP_7._s || this, $a, $b, $c, $d, $e;
               if (line == null) line = nil;
 
-              return ($a = (($a = (($b = __scope.COMPLIANCE) == null ? __opal.cm("COMPLIANCE") : $b))['$[]'] || $mm('[]')).call($a, "block_terminates_paragraph"), $a !== false && $a !== nil ? (($b = (($c = self)['$is_delimited_block?'] || $mm('is_delimited_block?')).call($c, line)), $b !== false && $b !== nil ? $b : (($d = line).$match || $mm('match')).call($d, (($e = (($f = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $f))['$[]'] || $mm('[]')).call($e, "attr_line"))) : $a)
+              return ($a = (($a = __scope.COMPLIANCE)['$[]'] || $mm('[]')).call($a, "block_terminates_paragraph"), $a !== false && $a !== nil ? (($b = (($c = self)['$is_delimited_block?'] || $mm('is_delimited_block?')).call($c, line)), $b !== false && $b !== nil ? $b : (($d = line).$match || $mm('match')).call($d, (($e = __scope.REGEXP)['$[]'] || $mm('[]')).call($e, "attr_line"))) : $a)
             }, TMP_7._s = this, TMP_7), $d).call($e, __hash2(["break_on_blank_lines", "break_on_list_continuation", "preserve_last_line", "skip_line_comments"], {"break_on_blank_lines": true, "break_on_list_continuation": true, "preserve_last_line": true, "skip_line_comments": true}))
           }
           } else {
@@ -3509,10 +3365,10 @@ if (v == null) v = nil;
             buffer = (($d = reader).$grab_lines_until || $mm('grab_lines_until')).call($d, __hash2(["terminator", "chomp_last_line"], {"terminator": terminator, "chomp_last_line": true}))
             } else {
             buffer = nil;
-            block_reader = (($f = (($h = __scope.Reader) == null ? __opal.cm("Reader") : $h)).$new || $mm('new')).call($f, (($h = reader).$grab_lines_until || $mm('grab_lines_until')).call($h, __hash2(["terminator"], {"terminator": terminator})));
+            block_reader = (($f = __scope.Reader).$new || $mm('new')).call($f, (($h = reader).$grab_lines_until || $mm('grab_lines_until')).call($h, __hash2(["terminator"], {"terminator": terminator})));
           }
         };
-        block = (($i = (($j = __scope.Block) == null ? __opal.cm("Block") : $j)).$new || $mm('new')).call($i, parent, block_context, buffer);
+        block = (($i = __scope.Block).$new || $mm('new')).call($i, parent, block_context, buffer);
         if (supports_caption !== false && supports_caption !== nil) {
           if (($j = (($k = attributes)['$has_key?'] || $mm('has_key?')).call($k, "title")) !== false && $j !== nil) {
             (($j = block)['$title='] || $mm('title=')).call($j, (($l = attributes).$delete || $mm('delete')).call($l, "title"))
@@ -3530,7 +3386,7 @@ if (v == null) v = nil;
 
       Lexer._defs('$next_outline_list', function(reader, list_type, parent) {
         var list_block = nil, items = nil, match = nil, marker = nil, this_item_level = nil, p = nil, list_item = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as;
-        list_block = (($a = (($b = __scope.Block) == null ? __opal.cm("Block") : $b)).$new || $mm('new')).call($a, parent, list_type);
+        list_block = (($a = __scope.Block).$new || $mm('new')).call($a, parent, list_type);
         items = [];
         (($b = list_block)['$buffer='] || $mm('buffer=')).call($b, items);
         if ((($c = (($d = parent).$context || $mm('context')).call($d))['$=='] || $mm('==')).call($c, list_type)) {
@@ -3538,7 +3394,7 @@ if (v == null) v = nil;
           } else {
           (($f = list_block)['$level='] || $mm('level=')).call($f, 1)
         };
-        while (($i = ($j = (($j = reader)['$has_more_lines?'] || $mm('has_more_lines?')).call($j), $j !== false && $j !== nil ? match = (($k = (($l = reader).$peek_line || $mm('peek_line')).call($l)).$match || $mm('match')).call($k, (($m = (($n = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $n))['$[]'] || $mm('[]')).call($m, list_type)) : $j)) !== false && $i !== nil){marker = (($i = this).$resolve_list_marker || $mm('resolve_list_marker')).call($i, list_type, (($n = match)['$[]'] || $mm('[]')).call($n, 1));
+        while (($i = ($j = (($j = reader)['$has_more_lines?'] || $mm('has_more_lines?')).call($j), $j !== false && $j !== nil ? match = (($k = (($l = reader).$peek_line || $mm('peek_line')).call($l)).$match || $mm('match')).call($k, (($m = __scope.REGEXP)['$[]'] || $mm('[]')).call($m, list_type)) : $j)) !== false && $i !== nil){marker = (($i = this).$resolve_list_marker || $mm('resolve_list_marker')).call($i, list_type, (($n = match)['$[]'] || $mm('[]')).call($n, 1));
         if (($o = (($p = (($q = (($r = items).$size || $mm('size')).call($r))['$>'] || $mm('>')).call($q, 0)) ? ($s = (($t = marker)['$=='] || $mm('==')).call($t, (($u = (($v = items).$first || $mm('first')).call($v)).$marker || $mm('marker')).call($u)), ($s === nil || $s === false)) : $p)) !== false && $o !== nil) {
           this_item_level = ($o = (($s = list_block).$level || $mm('level')).call($s), $p = 1, typeof($o) === 'number' ? $o + $p : $o['$+']($p));
           p = parent;
@@ -3570,7 +3426,7 @@ if (v == null) v = nil;
       });
 
       Lexer._defs('$catalog_callouts', function(text, document) {
-        var TMP_8, $a, $b, $c, $d;
+        var TMP_8, $a, $b, $c;
         return ($a = (($b = text).$scan || $mm('scan')), $a._p = (TMP_8 = function() {
 
           var m = nil, self = TMP_8._s || this, $a, $b, $c, $d, $e;
@@ -3580,11 +3436,11 @@ if (v == null) v = nil;
             return nil;
           };
           return (($a = (($d = document).$callouts || $mm('callouts')).call($d)).$register || $mm('register')).call($a, (($e = m)['$[]'] || $mm('[]')).call($e, 1));
-        }, TMP_8._s = this, TMP_8), $a).call($b, (($c = (($d = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $d))['$[]'] || $mm('[]')).call($c, "callout_scan"))
+        }, TMP_8._s = this, TMP_8), $a).call($b, (($c = __scope.REGEXP)['$[]'] || $mm('[]')).call($c, "callout_scan"))
       });
 
       Lexer._defs('$catalog_inline_anchors', function(text, document) {
-        var TMP_9, $a, $b, $c, $d;
+        var TMP_9, $a, $b, $c;
         ($a = (($b = text).$scan || $mm('scan')), $a._p = (TMP_9 = function() {
 
           var m = nil, id = nil, reftext = nil, self = TMP_9._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j;
@@ -3594,21 +3450,21 @@ if (v == null) v = nil;
             return nil;
           };
           (($a = (($d = (($e = m)['$[]'] || $mm('[]')).call($e, 1)).$split || $mm('split')).call($d, ","))._isArray ? $a : ($a = [$a])), id = ($a[0] == null ? nil : $a[0]), reftext = ($a[1] == null ? nil : $a[1]);
-          id = (($a = id).$sub || $mm('sub')).call($a, (($f = (($g = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $g))['$[]'] || $mm('[]')).call($f, "dbl_quoted"), "\\2");
+          id = (($a = id).$sub || $mm('sub')).call($a, (($f = __scope.REGEXP)['$[]'] || $mm('[]')).call($f, "dbl_quoted"), "\\2");
           if (($g = ($h = (($i = reftext)['$nil?'] || $mm('nil?')).call($i), ($h === nil || $h === false))) !== false && $g !== nil) {
-            reftext = (($g = reftext).$sub || $mm('sub')).call($g, (($h = (($j = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $j))['$[]'] || $mm('[]')).call($h, "m_dbl_quoted"), "\\2")
+            reftext = (($g = reftext).$sub || $mm('sub')).call($g, (($h = __scope.REGEXP)['$[]'] || $mm('[]')).call($h, "m_dbl_quoted"), "\\2")
           };
           return (($j = document).$register || $mm('register')).call($j, "ids", [id, reftext]);
-        }, TMP_9._s = this, TMP_9), $a).call($b, (($c = (($d = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $d))['$[]'] || $mm('[]')).call($c, "anchor_macro"));
+        }, TMP_9._s = this, TMP_9), $a).call($b, (($c = __scope.REGEXP)['$[]'] || $mm('[]')).call($c, "anchor_macro"));
         return nil;
       });
 
       Lexer._defs('$next_labeled_list', function(reader, match, parent) {
         var pairs = nil, block = nil, sibling_pattern = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k;
         pairs = [];
-        block = (($a = (($b = __scope.Block) == null ? __opal.cm("Block") : $b)).$new || $mm('new')).call($a, parent, "dlist");
+        block = (($a = __scope.Block).$new || $mm('new')).call($a, parent, "dlist");
         (($b = block)['$buffer='] || $mm('buffer=')).call($b, pairs);
-        sibling_pattern = (($c = (($d = (($e = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $e))['$[]'] || $mm('[]')).call($d, "dlist_siblings"))['$[]'] || $mm('[]')).call($c, (($e = match)['$[]'] || $mm('[]')).call($e, 2));
+        sibling_pattern = (($c = (($d = __scope.REGEXP)['$[]'] || $mm('[]')).call($d, "dlist_siblings"))['$[]'] || $mm('[]')).call($c, (($e = match)['$[]'] || $mm('[]')).call($e, 2));
         while (($g = ($h = (($h = reader)['$has_more_lines?'] || $mm('has_more_lines?')).call($h), $h !== false && $h !== nil ? match = (($i = (($j = reader).$peek_line || $mm('peek_line')).call($j)).$match || $mm('match')).call($i, sibling_pattern) : $h)) !== false && $g !== nil){(($g = pairs)['$<<'] || $mm('<<')).call($g, (($k = this).$next_list_item || $mm('next_list_item')).call($k, reader, block, match, sibling_pattern))};
         return block;
       });
@@ -3619,11 +3475,11 @@ if (v == null) v = nil;
         }
         list_type = (($a = list_block).$context || $mm('context')).call($a);
         if ((($b = list_type)['$=='] || $mm('==')).call($b, "dlist")) {
-          list_term = (($c = (($d = __scope.ListItem) == null ? __opal.cm("ListItem") : $d)).$new || $mm('new')).call($c, list_block, (($d = match)['$[]'] || $mm('[]')).call($d, 1));
-          list_item = (($e = (($f = __scope.ListItem) == null ? __opal.cm("ListItem") : $f)).$new || $mm('new')).call($e, list_block, (($f = match)['$[]'] || $mm('[]')).call($f, 3));
+          list_term = (($c = __scope.ListItem).$new || $mm('new')).call($c, list_block, (($d = match)['$[]'] || $mm('[]')).call($d, 1));
+          list_item = (($e = __scope.ListItem).$new || $mm('new')).call($e, list_block, (($f = match)['$[]'] || $mm('[]')).call($f, 3));
           has_text = ($g = (($h = (($i = (($j = match)['$[]'] || $mm('[]')).call($j, 3)).$to_s || $mm('to_s')).call($i))['$empty?'] || $mm('empty?')).call($h), ($g === nil || $g === false));
           } else {
-          list_item = (($g = (($k = __scope.ListItem) == null ? __opal.cm("ListItem") : $k)).$new || $mm('new')).call($g, list_block, (($k = match)['$[]'] || $mm('[]')).call($k, 2));
+          list_item = (($g = __scope.ListItem).$new || $mm('new')).call($g, list_block, (($k = match)['$[]'] || $mm('[]')).call($k, 2));
           if (($l = ($m = sibling_trait, ($m === nil || $m === false))) !== false && $l !== nil) {
             sibling_trait = (($l = this).$resolve_list_marker || $mm('resolve_list_marker')).call($l, list_type, (($m = match)['$[]'] || $mm('[]')).call($m, 1), (($n = (($o = list_block).$buffer || $mm('buffer')).call($o)).$size || $mm('size')).call($n), true)
           };
@@ -3631,7 +3487,7 @@ if (v == null) v = nil;
           has_text = true;
         };
         (($q = reader).$get_line || $mm('get_line')).call($q);
-        list_item_reader = (($r = (($s = __scope.Reader) == null ? __opal.cm("Reader") : $s)).$new || $mm('new')).call($r, (($s = this).$grab_lines_for_list_item || $mm('grab_lines_for_list_item')).call($s, reader, list_type, sibling_trait, has_text));
+        list_item_reader = (($r = __scope.Reader).$new || $mm('new')).call($r, (($s = this).$grab_lines_for_list_item || $mm('grab_lines_for_list_item')).call($s, reader, list_type, sibling_trait, has_text));
         if (($t = (($u = list_item_reader)['$has_more_lines?'] || $mm('has_more_lines?')).call($u)) !== false && $t !== nil) {
           comment_lines = (($t = list_item_reader).$consume_line_comments || $mm('consume_line_comments')).call($t);
           subsequent_line = (($v = list_item_reader).$peek_line || $mm('peek_line')).call($v);
@@ -3666,7 +3522,7 @@ if (v == null) v = nil;
       });
 
       Lexer._defs('$grab_lines_for_list_item', function(reader, list_type, sibling_trait, has_text) {
-        var buffer = nil, continuation = nil, within_nested_list = nil, detached_continuation = nil, this_line = nil, prev_line = nil, match = nil, nested_list_type = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, TMP_10, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, TMP_11, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, $bb, $bc, $bd, $be, $bf, $bg, $bh, $bi, $bj, TMP_12, $bk, $bl, $bm, TMP_13, $bn, $bo, $bp, $bq, $br, $bs, $bt, $bu, $bv, $bw, $bx, TMP_14, $by, $bz, $ca, $cb, $cc, $cd, $ce, $cf, $cg, $ch, $ci, $cj, $ck, $cl, $cm, $cn, $co;if (sibling_trait == null) {
+        var buffer = nil, continuation = nil, within_nested_list = nil, detached_continuation = nil, this_line = nil, prev_line = nil, match = nil, nested_list_type = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, TMP_10, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, TMP_11, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, $bb, $bc, $bd, $be, $bf, $bg, $bh, $bi, $bj, TMP_12, $bk, $bl, $bm, TMP_13, $bn, $bo, $bp, $bq, $br, $bs, $bt, $bu, $bv, $bw, $bx, TMP_14, $by, $bz, $ca, $cb, $cc, $cd, $ce, $cf, $cg, $ch, $ci, $cj, $ck, $cl, $cm, $cn;if (sibling_trait == null) {
           sibling_trait = nil
         }if (has_text == null) {
           has_text = true
@@ -3684,7 +3540,7 @@ if (v == null) v = nil;
           } else {
           return (($d = (($g = buffer).$last || $mm('last')).call($g)).$chomp || $mm('chomp')).call($d)
         }; return nil; }).call(this);
-        if ((($h = prev_line)['$=='] || $mm('==')).call($h, (($i = __scope.LIST_CONTINUATION) == null ? __opal.cm("LIST_CONTINUATION") : $i))) {
+        if ((($h = prev_line)['$=='] || $mm('==')).call($h, __scope.LIST_CONTINUATION)) {
           if ((($i = continuation)['$=='] || $mm('==')).call($i, "inactive")) {
             continuation = "active";
             has_text = true;
@@ -3692,7 +3548,7 @@ if (v == null) v = nil;
               (($j = buffer)['$[]='] || $mm('[]=')).call($j, -1, "")
             };
           };
-          if ((($k = (($l = this_line).$chomp || $mm('chomp')).call($l))['$=='] || $mm('==')).call($k, (($m = __scope.LIST_CONTINUATION) == null ? __opal.cm("LIST_CONTINUATION") : $m))) {
+          if ((($k = (($l = this_line).$chomp || $mm('chomp')).call($l))['$=='] || $mm('==')).call($k, __scope.LIST_CONTINUATION)) {
             if (($m = ($n = (($o = continuation)['$=='] || $mm('==')).call($o, "frozen"), ($n === nil || $n === false))) !== false && $m !== nil) {
               continuation = "frozen";
               (($m = buffer)['$<<'] || $mm('<<')).call($m, this_line);
@@ -3710,11 +3566,11 @@ if (v == null) v = nil;
             break;
           }
           } else {
-          if (($u = ($v = (($v = (($w = list_type)['$=='] || $mm('==')).call($w, "dlist")) ? ($x = (($y = continuation)['$=='] || $mm('==')).call($y, "active"), ($x === nil || $x === false)) : $v), $v !== false && $v !== nil ? (($v = this_line).$match || $mm('match')).call($v, (($x = (($z = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $z))['$[]'] || $mm('[]')).call($x, "attr_line")) : $v)) !== false && $u !== nil) {
+          if (($u = ($v = (($v = (($w = list_type)['$=='] || $mm('==')).call($w, "dlist")) ? ($x = (($y = continuation)['$=='] || $mm('==')).call($y, "active"), ($x === nil || $x === false)) : $v), $v !== false && $v !== nil ? (($v = this_line).$match || $mm('match')).call($v, (($x = __scope.REGEXP)['$[]'] || $mm('[]')).call($x, "attr_line")) : $v)) !== false && $u !== nil) {
             break;
             } else {
             if (($u = (($z = (($aa = continuation)['$=='] || $mm('==')).call($aa, "active")) ? ($ab = (($ac = (($ad = this_line).$chomp || $mm('chomp')).call($ad))['$empty?'] || $mm('empty?')).call($ac), ($ab === nil || $ab === false)) : $z)) !== false && $u !== nil) {
-              if (($u = (($z = this_line).$match || $mm('match')).call($z, (($ab = (($ae = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ae))['$[]'] || $mm('[]')).call($ab, "lit_par"))) !== false && $u !== nil) {
+              if (($u = (($z = this_line).$match || $mm('match')).call($z, (($ab = __scope.REGEXP)['$[]'] || $mm('[]')).call($ab, "lit_par"))) !== false && $u !== nil) {
                 (($u = reader).$unshift_line || $mm('unshift_line')).call($u, this_line);
                 (($ae = buffer).$concat || $mm('concat')).call($ae, ($af = (($ag = reader).$grab_lines_until || $mm('grab_lines_until')), $af._p = (TMP_10 = function(line) {
 
@@ -3725,19 +3581,19 @@ if (v == null) v = nil;
                 }, TMP_10._s = this, TMP_10), $af).call($ag, __hash2(["preserve_last_line", "break_on_blank_lines", "break_on_list_continuation"], {"preserve_last_line": true, "break_on_blank_lines": true, "break_on_list_continuation": true})));
                 continuation = "inactive";
                 } else {
-                if (($af = (($ah = (($ai = (($aj = this_line).$match || $mm('match')).call($aj, (($ak = (($al = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $al))['$[]'] || $mm('[]')).call($ak, "blk_title"))), $ai !== false && $ai !== nil ? $ai : (($al = this_line).$match || $mm('match')).call($al, (($am = (($an = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $an))['$[]'] || $mm('[]')).call($am, "attr_line")))), $ah !== false && $ah !== nil ? $ah : (($ai = this_line).$match || $mm('match')).call($ai, (($an = (($ao = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ao))['$[]'] || $mm('[]')).call($an, "attr_entry")))) !== false && $af !== nil) {
+                if (($af = (($ah = (($ai = (($aj = this_line).$match || $mm('match')).call($aj, (($ak = __scope.REGEXP)['$[]'] || $mm('[]')).call($ak, "blk_title"))), $ai !== false && $ai !== nil ? $ai : (($al = this_line).$match || $mm('match')).call($al, (($am = __scope.REGEXP)['$[]'] || $mm('[]')).call($am, "attr_line")))), $ah !== false && $ah !== nil ? $ah : (($ai = this_line).$match || $mm('match')).call($ai, (($an = __scope.REGEXP)['$[]'] || $mm('[]')).call($an, "attr_entry")))) !== false && $af !== nil) {
                   (($af = buffer)['$<<'] || $mm('<<')).call($af, this_line)
                   } else {
                   if (($ah = nested_list_type = ($ao = (($ap = (function() { if (within_nested_list !== false && within_nested_list !== nil) {
                     return ["dlist"]
                     } else {
-                    return (($aq = __scope.NESTABLE_LIST_CONTEXTS) == null ? __opal.cm("NESTABLE_LIST_CONTEXTS") : $aq)
+                    return __scope.NESTABLE_LIST_CONTEXTS
                   }; return nil; }).call(this)).$detect || $mm('detect')), $ao._p = (TMP_11 = function(ctx) {
 
-                    var self = TMP_11._s || this, $a, $b, $c;
+                    var self = TMP_11._s || this, $a, $b;
                     if (ctx == null) ctx = nil;
 
-                    return (($a = this_line).$match || $mm('match')).call($a, (($b = (($c = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $c))['$[]'] || $mm('[]')).call($b, ctx))
+                    return (($a = this_line).$match || $mm('match')).call($a, (($b = __scope.REGEXP)['$[]'] || $mm('[]')).call($b, ctx))
                   }, TMP_11._s = this, TMP_11), $ao).call($ap)) !== false && $ah !== nil) {
                     within_nested_list = true;
                     if (($ah = (($ao = (($aq = nested_list_type)['$=='] || $mm('==')).call($aq, "dlist")) ? (($ar = (($as = (($at = __gvars["~"])['$[]'] || $mm('[]')).call($at, 3)).$to_s || $mm('to_s')).call($as))['$empty?'] || $mm('empty?')).call($ar) : $ao)) !== false && $ah !== nil) {
@@ -3757,12 +3613,12 @@ if (v == null) v = nil;
                     break;
                   };
                 };
-                if ((($ba = (($bb = this_line).$chomp || $mm('chomp')).call($bb))['$=='] || $mm('==')).call($ba, (($be = __scope.LIST_CONTINUATION) == null ? __opal.cm("LIST_CONTINUATION") : $be))) {
+                if ((($ba = (($bb = this_line).$chomp || $mm('chomp')).call($bb))['$=='] || $mm('==')).call($ba, __scope.LIST_CONTINUATION)) {
                   detached_continuation = (($be = buffer).$size || $mm('size')).call($be);
                   (($bf = buffer)['$<<'] || $mm('<<')).call($bf, this_line);
                   } else {
                   if (has_text !== false && has_text !== nil) {
-                    if (($bg = (($bh = this_line).$match || $mm('match')).call($bh, (($bi = (($bj = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $bj))['$[]'] || $mm('[]')).call($bi, "lit_par"))) !== false && $bg !== nil) {
+                    if (($bg = (($bh = this_line).$match || $mm('match')).call($bh, (($bi = __scope.REGEXP)['$[]'] || $mm('[]')).call($bi, "lit_par"))) !== false && $bg !== nil) {
                       (($bg = reader).$unshift_line || $mm('unshift_line')).call($bg, this_line);
                       (($bj = buffer).$concat || $mm('concat')).call($bj, ($bk = (($bl = reader).$grab_lines_until || $mm('grab_lines_until')), $bk._p = (TMP_12 = function(line) {
 
@@ -3775,12 +3631,12 @@ if (v == null) v = nil;
                       if (($bk = (($bm = this)['$is_sibling_list_item?'] || $mm('is_sibling_list_item?')).call($bm, this_line, list_type, sibling_trait)) !== false && $bk !== nil) {
                         break;
                         } else {
-                        if (($bk = nested_list_type = ($bn = (($bo = (($bp = __scope.NESTABLE_LIST_CONTEXTS) == null ? __opal.cm("NESTABLE_LIST_CONTEXTS") : $bp)).$detect || $mm('detect')), $bn._p = (TMP_13 = function(ctx) {
+                        if (($bk = nested_list_type = ($bn = (($bo = __scope.NESTABLE_LIST_CONTEXTS).$detect || $mm('detect')), $bn._p = (TMP_13 = function(ctx) {
 
-                          var self = TMP_13._s || this, $a, $b, $c;
+                          var self = TMP_13._s || this, $a, $b;
                           if (ctx == null) ctx = nil;
 
-                          return (($a = this_line).$match || $mm('match')).call($a, (($b = (($c = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $c))['$[]'] || $mm('[]')).call($b, ctx))
+                          return (($a = this_line).$match || $mm('match')).call($a, (($b = __scope.REGEXP)['$[]'] || $mm('[]')).call($b, ctx))
                         }, TMP_13._s = this, TMP_13), $bn).call($bo)) !== false && $bk !== nil) {
                           (($bk = buffer)['$<<'] || $mm('<<')).call($bk, this_line);
                           within_nested_list = true;
@@ -3807,13 +3663,13 @@ if (v == null) v = nil;
                 if (($bu = nested_list_type = ($bv = (($by = (function() { if (within_nested_list !== false && within_nested_list !== nil) {
                   return ["dlist"]
                   } else {
-                  return (($bz = __scope.NESTABLE_LIST_CONTEXTS) == null ? __opal.cm("NESTABLE_LIST_CONTEXTS") : $bz)
+                  return __scope.NESTABLE_LIST_CONTEXTS
                 }; return nil; }).call(this)).$detect || $mm('detect')), $bv._p = (TMP_14 = function(ctx) {
 
-                  var self = TMP_14._s || this, $a, $b, $c;
+                  var self = TMP_14._s || this, $a, $b;
                   if (ctx == null) ctx = nil;
 
-                  return (($a = this_line).$match || $mm('match')).call($a, (($b = (($c = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $c))['$[]'] || $mm('[]')).call($b, ctx))
+                  return (($a = this_line).$match || $mm('match')).call($a, (($b = __scope.REGEXP)['$[]'] || $mm('[]')).call($b, ctx))
                 }, TMP_14._s = this, TMP_14), $bv).call($by)) !== false && $bu !== nil) {
                   within_nested_list = true;
                   if (($bu = (($bv = (($bz = nested_list_type)['$=='] || $mm('==')).call($bz, "dlist")) ? (($ca = (($cb = (($cc = __gvars["~"])['$[]'] || $mm('[]')).call($cc, 3)).$to_s || $mm('to_s')).call($cb))['$empty?'] || $mm('empty?')).call($ca) : $bv)) !== false && $bu !== nil) {
@@ -3833,7 +3689,7 @@ if (v == null) v = nil;
           (($bv = buffer).$delete_at || $mm('delete_at')).call($bv, detached_continuation)
         };
         while (($cf = ($cg = ($cg = (($ch = buffer)['$empty?'] || $mm('empty?')).call($ch), ($cg === nil || $cg === false)), $cg !== false && $cg !== nil ? (($cg = (($ci = (($cj = buffer).$last || $mm('last')).call($cj)).$chomp || $mm('chomp')).call($ci))['$empty?'] || $mm('empty?')).call($cg) : $cg)) !== false && $cf !== nil){(($cf = buffer).$pop || $mm('pop')).call($cf)};
-        if (($ce = ($ck = ($ck = (($cl = buffer)['$empty?'] || $mm('empty?')).call($cl), ($ck === nil || $ck === false)), $ck !== false && $ck !== nil ? (($ck = (($cm = (($cn = buffer).$last || $mm('last')).call($cn)).$chomp || $mm('chomp')).call($cm))['$=='] || $mm('==')).call($ck, (($co = __scope.LIST_CONTINUATION) == null ? __opal.cm("LIST_CONTINUATION") : $co)) : $ck)) !== false && $ce !== nil) {
+        if (($ce = ($ck = ($ck = (($cl = buffer)['$empty?'] || $mm('empty?')).call($cl), ($ck === nil || $ck === false)), $ck !== false && $ck !== nil ? (($ck = (($cm = (($cn = buffer).$last || $mm('last')).call($cn)).$chomp || $mm('chomp')).call($cm))['$=='] || $mm('==')).call($ck, __scope.LIST_CONTINUATION) : $ck)) !== false && $ce !== nil) {
           (($ce = buffer).$pop || $mm('pop')).call($ce)
         };
         return buffer;
@@ -3843,7 +3699,7 @@ if (v == null) v = nil;
         var section = nil, parts = nil, document = nil, number = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap;if (attributes == null) {
           attributes = __hash2([], {})
         }
-        section = (($a = (($b = __scope.Section) == null ? __opal.cm("Section") : $b)).$new || $mm('new')).call($a, parent);
+        section = (($a = __scope.Section).$new || $mm('new')).call($a, parent);
         parts = (($b = this).$parse_section_title || $mm('parse_section_title')).call($b, reader, (($c = section).$document || $mm('document')).call($c));
         (($d = section)['$id='] || $mm('id=')).call($d, (($e = parts)['$[]'] || $mm('[]')).call($e, 0));
         (($f = section)['$title='] || $mm('title=')).call($f, (($g = parts)['$[]'] || $mm('[]')).call($g, 1));
@@ -3863,7 +3719,7 @@ if (v == null) v = nil;
           if (($ab = ($ac = (($ac = (($ad = (($ae = section).$sectname || $mm('sectname')).call($ae))['$=='] || $mm('==')).call($ad, "appendix")) ? ($af = (($ag = attributes)['$has_key?'] || $mm('has_key?')).call($ag, "caption"), ($af === nil || $af === false)) : $ac), $ac !== false && $ac !== nil ? ($ac = (($af = (($ah = document).$attributes || $mm('attributes')).call($ah))['$has_key?'] || $mm('has_key?')).call($af, "caption"), ($ac === nil || $ac === false)) : $ac)) !== false && $ab !== nil) {
             number = (($ab = document).$counter || $mm('counter')).call($ab, "appendix-number", "A");
             (($ac = attributes)['$[]='] || $mm('[]=')).call($ac, "caption", "" + ((($ai = (($aj = document).$attributes || $mm('attributes')).call($aj))['$[]'] || $mm('[]')).call($ai, "appendix-caption")) + " " + (number) + ": ");
-            (($ak = (($al = (($am = __scope.AttributeEntry) == null ? __opal.cm("AttributeEntry") : $am)).$new || $mm('new')).call($al, "appendix-number", number)).$save_to || $mm('save_to')).call($ak, attributes);
+            (($ak = (($al = __scope.AttributeEntry).$new || $mm('new')).call($al, "appendix-number", number)).$save_to || $mm('save_to')).call($ak, attributes);
           };
           } else {
           (($am = section)['$sectname='] || $mm('sectname=')).call($am, "sect" + ((($an = section).$level || $mm('level')).call($an)))
@@ -3875,7 +3731,7 @@ if (v == null) v = nil;
 
       Lexer._defs('$section_level', function(line) {
         var $a, $b;
-        return (($a = (($b = __scope.SECTION_LEVELS) == null ? __opal.cm("SECTION_LEVELS") : $b))['$[]'] || $mm('[]')).call($a, (($b = line)['$[]'] || $mm('[]')).call($b, __range(0, 0, false)))
+        return (($a = __scope.SECTION_LEVELS)['$[]'] || $mm('[]')).call($a, (($b = line)['$[]'] || $mm('[]')).call($b, __range(0, 0, false)))
       });
 
       Lexer._defs('$single_line_section_level', function(line) {
@@ -3921,7 +3777,7 @@ if (v == null) v = nil;
 
       Lexer._defs('$is_single_line_section_title?', function(line1) {
         var match = nil, $a, $b, $c, $d, $e;
-        if (($a = ($b = ($b = (($c = line1)['$nil?'] || $mm('nil?')).call($c), ($b === nil || $b === false)), $b !== false && $b !== nil ? match = (($b = line1).$match || $mm('match')).call($b, (($d = (($e = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $e))['$[]'] || $mm('[]')).call($d, "section_title")) : $b)) !== false && $a !== nil) {
+        if (($a = ($b = ($b = (($c = line1)['$nil?'] || $mm('nil?')).call($c), ($b === nil || $b === false)), $b !== false && $b !== nil ? match = (($b = line1).$match || $mm('match')).call($b, (($d = __scope.REGEXP)['$[]'] || $mm('[]')).call($d, "section_title")) : $b)) !== false && $a !== nil) {
           return (($a = this).$single_line_section_level || $mm('single_line_section_level')).call($a, (($e = match)['$[]'] || $mm('[]')).call($e, 1))
           } else {
           return false
@@ -3930,7 +3786,7 @@ if (v == null) v = nil;
 
       Lexer._defs('$is_two_line_section_title?', function(line1, line2) {
         var $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o;
-        if (($a = ($b = ($b = ($b = ($b = ($b = (($c = line1)['$nil?'] || $mm('nil?')).call($c), ($b === nil || $b === false)), $b !== false && $b !== nil ? ($b = (($d = line2)['$nil?'] || $mm('nil?')).call($d), ($b === nil || $b === false)) : $b), $b !== false && $b !== nil ? (($b = line1).$match || $mm('match')).call($b, (($e = (($f = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $f))['$[]'] || $mm('[]')).call($e, "section_name")) : $b), $b !== false && $b !== nil ? (($f = line2).$match || $mm('match')).call($f, (($g = (($h = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $h))['$[]'] || $mm('[]')).call($g, "section_underline")) : $b), $b !== false && $b !== nil ? (($h = (($i = ($j = (($l = (($m = line1).$chomp || $mm('chomp')).call($m)).$size || $mm('size')).call($l), $k = (($n = (($o = line2).$chomp || $mm('chomp')).call($o)).$size || $mm('size')).call($n), typeof($j) === 'number' ? $j - $k : $j['$-']($k))).$abs || $mm('abs')).call($i))['$<='] || $mm('<=')).call($h, 1) : $b)) !== false && $a !== nil) {
+        if (($a = ($b = ($b = ($b = ($b = ($b = (($c = line1)['$nil?'] || $mm('nil?')).call($c), ($b === nil || $b === false)), $b !== false && $b !== nil ? ($b = (($d = line2)['$nil?'] || $mm('nil?')).call($d), ($b === nil || $b === false)) : $b), $b !== false && $b !== nil ? (($b = line1).$match || $mm('match')).call($b, (($e = __scope.REGEXP)['$[]'] || $mm('[]')).call($e, "section_name")) : $b), $b !== false && $b !== nil ? (($f = line2).$match || $mm('match')).call($f, (($g = __scope.REGEXP)['$[]'] || $mm('[]')).call($g, "section_underline")) : $b), $b !== false && $b !== nil ? (($h = (($i = ($j = (($l = (($m = line1).$chomp || $mm('chomp')).call($m)).$size || $mm('size')).call($l), $k = (($n = (($o = line2).$chomp || $mm('chomp')).call($o)).$size || $mm('size')).call($n), typeof($j) === 'number' ? $j - $k : $j['$-']($k))).$abs || $mm('abs')).call($i))['$<='] || $mm('<=')).call($h, 1) : $b)) !== false && $a !== nil) {
           return (($a = this).$section_level || $mm('section_level')).call($a, line2)
           } else {
           return false
@@ -3944,14 +3800,14 @@ if (v == null) v = nil;
         sect_title = nil;
         sect_level = -1;
         single_line = true;
-        if (($b = match = (($c = line1).$match || $mm('match')).call($c, (($d = (($e = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $e))['$[]'] || $mm('[]')).call($d, "section_title"))) !== false && $b !== nil) {
+        if (($b = match = (($c = line1).$match || $mm('match')).call($c, (($d = __scope.REGEXP)['$[]'] || $mm('[]')).call($d, "section_title"))) !== false && $b !== nil) {
           sect_id = (($b = match)['$[]'] || $mm('[]')).call($b, 3);
           sect_title = (($e = match)['$[]'] || $mm('[]')).call($e, 2);
           sect_level = (($f = this).$single_line_section_level || $mm('single_line_section_level')).call($f, (($g = match)['$[]'] || $mm('[]')).call($g, 1));
           } else {
           line2 = (($h = reader).$peek_line || $mm('peek_line')).call($h);
-          if (($i = ($j = ($j = ($j = ($j = (($k = line2)['$nil?'] || $mm('nil?')).call($k), ($j === nil || $j === false)), $j !== false && $j !== nil ? name_match = (($j = line1).$match || $mm('match')).call($j, (($l = (($m = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $m))['$[]'] || $mm('[]')).call($l, "section_name")) : $j), $j !== false && $j !== nil ? (($m = line2).$match || $mm('match')).call($m, (($n = (($o = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $o))['$[]'] || $mm('[]')).call($n, "section_underline")) : $j), $j !== false && $j !== nil ? (($o = (($p = ($q = (($s = (($t = line1).$chomp || $mm('chomp')).call($t)).$size || $mm('size')).call($s), $r = (($u = (($v = line2).$chomp || $mm('chomp')).call($v)).$size || $mm('size')).call($u), typeof($q) === 'number' ? $q - $r : $q['$-']($r))).$abs || $mm('abs')).call($p))['$<='] || $mm('<=')).call($o, 1) : $j)) !== false && $i !== nil) {
-            if (($i = anchor_match = (($q = (($r = name_match)['$[]'] || $mm('[]')).call($r, 1)).$match || $mm('match')).call($q, (($w = (($x = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $x))['$[]'] || $mm('[]')).call($w, "anchor_embedded"))) !== false && $i !== nil) {
+          if (($i = ($j = ($j = ($j = ($j = (($k = line2)['$nil?'] || $mm('nil?')).call($k), ($j === nil || $j === false)), $j !== false && $j !== nil ? name_match = (($j = line1).$match || $mm('match')).call($j, (($l = __scope.REGEXP)['$[]'] || $mm('[]')).call($l, "section_name")) : $j), $j !== false && $j !== nil ? (($m = line2).$match || $mm('match')).call($m, (($n = __scope.REGEXP)['$[]'] || $mm('[]')).call($n, "section_underline")) : $j), $j !== false && $j !== nil ? (($o = (($p = ($q = (($s = (($t = line1).$chomp || $mm('chomp')).call($t)).$size || $mm('size')).call($s), $r = (($u = (($v = line2).$chomp || $mm('chomp')).call($v)).$size || $mm('size')).call($u), typeof($q) === 'number' ? $q - $r : $q['$-']($r))).$abs || $mm('abs')).call($p))['$<='] || $mm('<=')).call($o, 1) : $j)) !== false && $i !== nil) {
+            if (($i = anchor_match = (($q = (($r = name_match)['$[]'] || $mm('[]')).call($r, 1)).$match || $mm('match')).call($q, (($w = __scope.REGEXP)['$[]'] || $mm('[]')).call($w, "anchor_embedded"))) !== false && $i !== nil) {
               sect_id = (($i = anchor_match)['$[]'] || $mm('[]')).call($i, 2);
               sect_title = (($x = anchor_match)['$[]'] || $mm('[]')).call($x, 1);
               } else {
@@ -3978,7 +3834,7 @@ if (v == null) v = nil;
           author_metadata = __hash2([], {});
           keys = ["author", "authorinitials", "firstname", "middlename", "lastname", "email"];
           author_line = (($b = reader).$get_line || $mm('get_line')).call($b);
-          ($d = (($h = (($i = author_line).$split || $mm('split')).call($i, (($j = (($k = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $k))['$[]'] || $mm('[]')).call($j, "semicolon_delim"))).$each_with_index || $mm('each_with_index')), $d._p = (TMP_15 = function(author_entry, idx) {
+          ($d = (($h = (($i = author_line).$split || $mm('split')).call($i, (($j = __scope.REGEXP)['$[]'] || $mm('[]')).call($j, "semicolon_delim"))).$each_with_index || $mm('each_with_index')), $d._p = (TMP_15 = function(author_entry, idx) {
 
             var map = nil, match = nil, fname = nil, mname = nil, lname = nil, self = TMP_15._s || this, $a, $b, $c, $d, TMP_16, $e, TMP_17, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, $bb, $bc, $bd, $be, $bf, $bg, $bh, $bi, $bj, $bk, $bl, $bm, $bn, $bo, $bp, $bq, $br, TMP_18, $bs, $bt, $bu, $bv, $bw, $bx, $by, $bz;
             if (author_entry == null) author_entry = nil;
@@ -4006,7 +3862,7 @@ if (idx == null) idx = nil;
                 return (($a = map)['$[]='] || $mm('[]=')).call($a, (($b = key).$to_sym || $mm('to_sym')).call($b), "" + (key) + "_" + (($c = idx, $d = 1, typeof($c) === 'number' ? $c + $d : $c['$+']($d))))
               }, TMP_17._s = self, TMP_17), $b).call($f)
             };
-            if (($b = match = (($g = author_entry).$match || $mm('match')).call($g, (($h = (($i = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $i))['$[]'] || $mm('[]')).call($h, "author_info"))) !== false && $b !== nil) {
+            if (($b = match = (($g = author_entry).$match || $mm('match')).call($g, (($h = __scope.REGEXP)['$[]'] || $mm('[]')).call($h, "author_info"))) !== false && $b !== nil) {
               (($b = author_metadata)['$[]='] || $mm('[]=')).call($b, (($i = map)['$[]'] || $mm('[]')).call($i, "firstname"), fname = (($j = (($k = match)['$[]'] || $mm('[]')).call($k, 1)).$tr || $mm('tr')).call($j, "_", " "));
               (($l = author_metadata)['$[]='] || $mm('[]=')).call($l, (($m = map)['$[]'] || $mm('[]')).call($m, "author"), fname);
               (($n = author_metadata)['$[]='] || $mm('[]=')).call($n, (($o = map)['$[]'] || $mm('[]')).call($o, "authorinitials"), (($p = fname)['$[]'] || $mm('[]')).call($p, 0, 1));
@@ -4056,7 +3912,7 @@ if (idx == null) idx = nil;
               if (key == null) key = nil;
 if (val == null) val = nil;
 
-              val = (function() { if (($a = (($b = val)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.String) == null ? __opal.cm("String") : $c))) !== false && $a !== nil) {
+              val = (function() { if (($a = (($b = val)['$is_a?'] || $mm('is_a?')).call($b, __scope.String)) !== false && $a !== nil) {
                 return (($a = document).$apply_header_subs || $mm('apply_header_subs')).call($a, val)
                 } else {
                 return val
@@ -4072,7 +3928,7 @@ if (val == null) val = nil;
           rev_metadata = __hash2([], {});
           if (($n = ($o = (($o = reader)['$has_more_lines?'] || $mm('has_more_lines?')).call($o), $o !== false && $o !== nil ? ($p = (($q = (($r = (($s = reader).$peek_line || $mm('peek_line')).call($s)).$chomp || $mm('chomp')).call($r))['$empty?'] || $mm('empty?')).call($q), ($p === nil || $p === false)) : $o)) !== false && $n !== nil) {
             rev_line = (($n = reader).$get_line || $mm('get_line')).call($n);
-            if (($p = match = (($t = rev_line).$match || $mm('match')).call($t, (($u = (($v = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $v))['$[]'] || $mm('[]')).call($u, "revision_info"))) !== false && $p !== nil) {
+            if (($p = match = (($t = rev_line).$match || $mm('match')).call($t, (($u = __scope.REGEXP)['$[]'] || $mm('[]')).call($u, "revision_info"))) !== false && $p !== nil) {
               (($p = rev_metadata)['$[]='] || $mm('[]=')).call($p, "revdate", (($v = (($w = match)['$[]'] || $mm('[]')).call($w, 2)).$strip || $mm('strip')).call($v));
               if (($x = (($y = (($z = match)['$[]'] || $mm('[]')).call($z, 1))['$nil?'] || $mm('nil?')).call($y)) === false || $x === nil) {
                 (($x = rev_metadata)['$[]='] || $mm('[]=')).call($x, "revnumber", (($aa = (($ab = match)['$[]'] || $mm('[]')).call($ab, 1)).$rstrip || $mm('rstrip')).call($aa))
@@ -4131,15 +3987,15 @@ if (v == null) v = nil;
           return false
         };
         next_line = (($a = reader).$peek_line || $mm('peek_line')).call($a);
-        if (($b = ($d = commentish = (($d = next_line)['$start_with?'] || $mm('start_with?')).call($d, "//"), $d !== false && $d !== nil ? match = (($e = next_line).$match || $mm('match')).call($e, (($f = (($g = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $g))['$[]'] || $mm('[]')).call($f, "comment_blk")) : $d)) !== false && $b !== nil) {
+        if (($b = ($d = commentish = (($d = next_line)['$start_with?'] || $mm('start_with?')).call($d, "//"), $d !== false && $d !== nil ? match = (($e = next_line).$match || $mm('match')).call($e, (($f = __scope.REGEXP)['$[]'] || $mm('[]')).call($f, "comment_blk")) : $d)) !== false && $b !== nil) {
           terminator = (($b = match)['$[]'] || $mm('[]')).call($b, 0);
           (($g = reader).$grab_lines_until || $mm('grab_lines_until')).call($g, __hash2(["skip_first_line", "preserve_last_line", "terminator", "preprocess"], {"skip_first_line": true, "preserve_last_line": true, "terminator": terminator, "preprocess": false}));
           } else {
-          if (($h = (($i = commentish !== false && commentish !== nil) ? (($j = next_line).$match || $mm('match')).call($j, (($k = (($l = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $l))['$[]'] || $mm('[]')).call($k, "comment")) : $i)) === false || $h === nil) {
-            if (($h = ($i = ($i = (($l = options)['$[]'] || $mm('[]')).call($l, "text"), ($i === nil || $i === false)), $i !== false && $i !== nil ? match = (($i = next_line).$match || $mm('match')).call($i, (($m = (($n = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $n))['$[]'] || $mm('[]')).call($m, "attr_entry")) : $i)) !== false && $h !== nil) {
+          if (($h = (($i = commentish !== false && commentish !== nil) ? (($j = next_line).$match || $mm('match')).call($j, (($k = __scope.REGEXP)['$[]'] || $mm('[]')).call($k, "comment")) : $i)) === false || $h === nil) {
+            if (($h = ($i = ($i = (($l = options)['$[]'] || $mm('[]')).call($l, "text"), ($i === nil || $i === false)), $i !== false && $i !== nil ? match = (($i = next_line).$match || $mm('match')).call($i, (($m = __scope.REGEXP)['$[]'] || $mm('[]')).call($m, "attr_entry")) : $i)) !== false && $h !== nil) {
               (($h = this).$process_attribute_entry || $mm('process_attribute_entry')).call($h, reader, parent, attributes, match)
               } else {
-              if (($n = match = (($o = next_line).$match || $mm('match')).call($o, (($p = (($q = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $q))['$[]'] || $mm('[]')).call($p, "anchor"))) !== false && $n !== nil) {
+              if (($n = match = (($o = next_line).$match || $mm('match')).call($o, (($p = __scope.REGEXP)['$[]'] || $mm('[]')).call($p, "anchor"))) !== false && $n !== nil) {
                 (($n = (($q = (($r = match)['$[]'] || $mm('[]')).call($r, 1)).$split || $mm('split')).call($q, ","))._isArray ? $n : ($n = [$n])), id = ($n[0] == null ? nil : $n[0]), reftext = ($n[1] == null ? nil : $n[1]);
                 (($n = attributes)['$[]='] || $mm('[]=')).call($n, "id", id);
                 if (reftext !== false && reftext !== nil) {
@@ -4147,10 +4003,10 @@ if (v == null) v = nil;
                   (($t = (($u = parent).$document || $mm('document')).call($u)).$register || $mm('register')).call($t, "ids", [id, reftext]);
                 };
                 } else {
-                if (($v = match = (($w = next_line).$match || $mm('match')).call($w, (($x = (($y = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $y))['$[]'] || $mm('[]')).call($x, "blk_attr_list"))) !== false && $v !== nil) {
+                if (($v = match = (($w = next_line).$match || $mm('match')).call($w, (($x = __scope.REGEXP)['$[]'] || $mm('[]')).call($x, "blk_attr_list"))) !== false && $v !== nil) {
                   (($v = (($y = parent).$document || $mm('document')).call($y)).$parse_attributes || $mm('parse_attributes')).call($v, (($z = match)['$[]'] || $mm('[]')).call($z, 1), [], __hash2(["sub_input", "into"], {"sub_input": true, "into": attributes}))
                   } else {
-                  if (($aa = ($ab = ($ab = (($ac = options)['$[]'] || $mm('[]')).call($ac, "text"), ($ab === nil || $ab === false)), $ab !== false && $ab !== nil ? match = (($ab = next_line).$match || $mm('match')).call($ab, (($ad = (($ae = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ae))['$[]'] || $mm('[]')).call($ad, "blk_title")) : $ab)) !== false && $aa !== nil) {
+                  if (($aa = ($ab = ($ab = (($ac = options)['$[]'] || $mm('[]')).call($ac, "text"), ($ab === nil || $ab === false)), $ab !== false && $ab !== nil ? match = (($ab = next_line).$match || $mm('match')).call($ab, (($ad = __scope.REGEXP)['$[]'] || $mm('[]')).call($ad, "blk_title")) : $ab)) !== false && $aa !== nil) {
                     (($aa = attributes)['$[]='] || $mm('[]=')).call($aa, "title", (($ae = match)['$[]'] || $mm('[]')).call($ae, 1))
                     } else {
                     return false
@@ -4173,13 +4029,13 @@ if (v == null) v = nil;
       });
 
       Lexer._defs('$process_attribute_entry', function(reader, parent, attributes, match) {
-        var name = nil, value = nil, next_line = nil, accessible = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae;if (attributes == null) {
+        var name = nil, value = nil, next_line = nil, accessible = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad;if (attributes == null) {
           attributes = nil
         }if (match == null) {
           match = nil
         }
         (($a = match), $a !== false && $a !== nil ? $a : match = (function() { if (($b = (($c = reader)['$has_more_lines?'] || $mm('has_more_lines?')).call($c)) !== false && $b !== nil) {
-          return (($b = (($d = reader).$peek_line || $mm('peek_line')).call($d)).$match || $mm('match')).call($b, (($e = (($f = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $f))['$[]'] || $mm('[]')).call($e, "attr_entry"))
+          return (($b = (($d = reader).$peek_line || $mm('peek_line')).call($d)).$match || $mm('match')).call($b, (($e = __scope.REGEXP)['$[]'] || $mm('[]')).call($e, "attr_entry"))
           } else {
           return nil
         }; return nil; }).call(this));
@@ -4190,13 +4046,13 @@ if (v == null) v = nil;
             } else {
             return (($f = match)['$[]'] || $mm('[]')).call($f, 2)
           }; return nil; }).call(this);
-          if (($i = (($j = value)['$end_with?'] || $mm('end_with?')).call($j, (($k = __scope.LINE_BREAK) == null ? __opal.cm("LINE_BREAK") : $k))) !== false && $i !== nil) {
+          if (($i = (($j = value)['$end_with?'] || $mm('end_with?')).call($j, __scope.LINE_BREAK)) !== false && $i !== nil) {
             value = (($i = (($k = value).$chop || $mm('chop')).call($k)).$rstrip || $mm('rstrip')).call($i);
             while (($m = (($n = reader).$advance || $mm('advance')).call($n)) !== false && $m !== nil){next_line = (($m = (($o = reader).$peek_line || $mm('peek_line')).call($o)).$strip || $mm('strip')).call($m);
             if (($p = (($q = next_line)['$empty?'] || $mm('empty?')).call($q)) !== false && $p !== nil) {
               break;
             };
-            if (($p = (($r = next_line)['$end_with?'] || $mm('end_with?')).call($r, (($s = __scope.LINE_BREAK) == null ? __opal.cm("LINE_BREAK") : $s))) !== false && $p !== nil) {
+            if (($p = (($r = next_line)['$end_with?'] || $mm('end_with?')).call($r, __scope.LINE_BREAK)) !== false && $p !== nil) {
               value = "" + (value) + " " + ((($p = (($s = next_line).$chop || $mm('chop')).call($s)).$rstrip || $mm('rstrip')).call($p))
               } else {
               value = "" + (value) + " " + (next_line);
@@ -4218,7 +4074,7 @@ if (v == null) v = nil;
           };
           if (($ab = ($ac = (($ad = attributes)['$nil?'] || $mm('nil?')).call($ad), ($ac === nil || $ac === false))) !== false && $ab !== nil) {
             if (accessible !== false && accessible !== nil) {
-              (($ab = (($ac = (($ae = __scope.AttributeEntry) == null ? __opal.cm("AttributeEntry") : $ae)).$new || $mm('new')).call($ac, name, value)).$save_to || $mm('save_to')).call($ab, attributes)
+              (($ab = (($ac = __scope.AttributeEntry).$new || $mm('new')).call($ac, name, value)).$save_to || $mm('save_to')).call($ab, attributes)
             }
           };
           return true;
@@ -4250,12 +4106,12 @@ if (v == null) v = nil;
         }if (validate == null) {
           validate = false
         }
-        number_style = ($a = (($b = (($c = __scope.ORDERED_LIST_STYLES) == null ? __opal.cm("ORDERED_LIST_STYLES") : $c)).$detect || $mm('detect')), $a._p = (TMP_22 = function(s) {
+        number_style = ($a = (($b = __scope.ORDERED_LIST_STYLES).$detect || $mm('detect')), $a._p = (TMP_22 = function(s) {
 
-          var self = TMP_22._s || this, $a, $b, $c;
+          var self = TMP_22._s || this, $a, $b;
           if (s == null) s = nil;
 
-          return (($a = marker).$match || $mm('match')).call($a, (($b = (($c = __scope.ORDERED_LIST_MARKER_PATTERNS) == null ? __opal.cm("ORDERED_LIST_MARKER_PATTERNS") : $c))['$[]'] || $mm('[]')).call($b, s))
+          return (($a = marker).$match || $mm('match')).call($a, (($b = __scope.ORDERED_LIST_MARKER_PATTERNS)['$[]'] || $mm('[]')).call($b, s))
         }, TMP_22._s = this, TMP_22), $a).call($b);
         expected = actual = nil;
         $case = number_style;if ((($c = "arabic")['$==='] || $mm('===')).call($c, $case)) {
@@ -4301,11 +4157,11 @@ if (v == null) v = nil;
 
       Lexer._defs('$is_sibling_list_item?', function(line, list_type, sibling_trait) {
         var matcher = nil, expected_marker = nil, m = nil, $a, $b, $c, $d, $e, $f;
-        if (($a = (($b = sibling_trait)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Regexp) == null ? __opal.cm("Regexp") : $c))) !== false && $a !== nil) {
+        if (($a = (($b = sibling_trait)['$is_a?'] || $mm('is_a?')).call($b, __scope.Regexp)) !== false && $a !== nil) {
           matcher = sibling_trait;
           expected_marker = false;
           } else {
-          matcher = (($a = (($c = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $c))['$[]'] || $mm('[]')).call($a, list_type);
+          matcher = (($a = __scope.REGEXP)['$[]'] || $mm('[]')).call($a, list_type);
           expected_marker = sibling_trait;
         };
         if (($c = m = (($d = line).$match || $mm('match')).call($d, matcher)) !== false && $c !== nil) {
@@ -4321,7 +4177,7 @@ if (v == null) v = nil;
 
       Lexer._defs('$next_table', function(table_reader, parent, attributes) {
         var table = nil, explicit_col_specs = nil, parser_ctx = nil, line = nil, next_cell_spec = nil, m = nil, cell_text = nil, even_width = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, $bb, $bc, $bd, $be, $bf, $bg, $bh, $bi, $bj, $bk, $bl, $bm, $bn, $bo, $bp, $bq, $br, $bs, $bt, TMP_23, $bu;
-        table = (($a = (($b = __scope.Table) == null ? __opal.cm("Table") : $b)).$new || $mm('new')).call($a, parent, attributes);
+        table = (($a = __scope.Table).$new || $mm('new')).call($a, parent, attributes);
         if (($b = (($c = attributes)['$has_key?'] || $mm('has_key?')).call($c, "title")) !== false && $b !== nil) {
           (($b = table)['$title='] || $mm('title=')).call($b, (($d = attributes).$delete || $mm('delete')).call($d, "title"))
         };
@@ -4333,7 +4189,7 @@ if (v == null) v = nil;
           explicit_col_specs = false
         };
         (($k = table_reader).$skip_blank_lines || $mm('skip_blank_lines')).call($k);
-        parser_ctx = (($l = (($m = ((($n = __scope.Table) == null ? __opal.cm("Table") : $n))._scope).ParserContext == null ? $m.cm("ParserContext") : $m.ParserContext)).$new || $mm('new')).call($l, table, attributes);
+        parser_ctx = (($l = (__scope.Table)._scope.ParserContext).$new || $mm('new')).call($l, table, attributes);
         while (($n = (($o = table_reader)['$has_more_lines?'] || $mm('has_more_lines?')).call($o)) !== false && $n !== nil){line = (($n = table_reader).$get_line || $mm('get_line')).call($n);
         if ((($p = (($q = parser_ctx).$format || $mm('format')).call($q))['$=='] || $mm('==')).call($p, "psv")) {
           line = "" + (line) + "\n"
@@ -4404,9 +4260,9 @@ if (v == null) v = nil;
       });
 
       Lexer._defs('$parse_col_specs', function(records) {
-        var specs = nil, m = nil, $a, $b, $c, $d, TMP_24, $e, $f, TMP_25, $g, $h;
+        var specs = nil, m = nil, $a, $b, $c, TMP_24, $d, $e, $f, TMP_25, $g, $h;
         specs = [];
-        if (($a = m = (($b = records).$match || $mm('match')).call($b, (($c = (($d = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $d))['$[]'] || $mm('[]')).call($c, "digits"))) !== false && $a !== nil) {
+        if (($a = m = (($b = records).$match || $mm('match')).call($b, (($c = __scope.REGEXP)['$[]'] || $mm('[]')).call($c, "digits"))) !== false && $a !== nil) {
           ($a = (($d = (1)).$upto || $mm('upto')), $a._p = (TMP_24 = function() {
 
             var self = TMP_24._s || this, $a;
@@ -4420,15 +4276,15 @@ if (v == null) v = nil;
           var spec = nil, colspec = nil, rowspec = nil, repeat = nil, self = TMP_25._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, TMP_26, $ai, $aj;
           if (record == null) record = nil;
 
-          if (($a = m = (($b = record).$match || $mm('match')).call($b, (($c = (($d = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $d))['$[]'] || $mm('[]')).call($c, "table_colspec"))) !== false && $a !== nil) {
+          if (($a = m = (($b = record).$match || $mm('match')).call($b, (($c = __scope.REGEXP)['$[]'] || $mm('[]')).call($c, "table_colspec"))) !== false && $a !== nil) {
             spec = __hash2([], {});
             if (($a = (($d = m)['$[]'] || $mm('[]')).call($d, 2)) !== false && $a !== nil) {
               (($a = (($e = (($f = m)['$[]'] || $mm('[]')).call($f, 2)).$split || $mm('split')).call($e, "."))._isArray ? $a : ($a = [$a])), colspec = ($a[0] == null ? nil : $a[0]), rowspec = ($a[1] == null ? nil : $a[1]);
-              if (($a = ($g = ($g = (($h = (($i = colspec).$to_s || $mm('to_s')).call($i))['$empty?'] || $mm('empty?')).call($h), ($g === nil || $g === false)), $g !== false && $g !== nil ? (($g = (($j = (($k = ((($l = __scope.Table) == null ? __opal.cm("Table") : $l))._scope).ALIGNMENTS == null ? $k.cm("ALIGNMENTS") : $k.ALIGNMENTS))['$[]'] || $mm('[]')).call($j, "h"))['$has_key?'] || $mm('has_key?')).call($g, colspec) : $g)) !== false && $a !== nil) {
-                (($a = spec)['$[]='] || $mm('[]=')).call($a, "halign", (($k = (($l = (($m = ((($n = __scope.Table) == null ? __opal.cm("Table") : $n))._scope).ALIGNMENTS == null ? $m.cm("ALIGNMENTS") : $m.ALIGNMENTS))['$[]'] || $mm('[]')).call($l, "h"))['$[]'] || $mm('[]')).call($k, colspec))
+              if (($a = ($g = ($g = (($h = (($i = colspec).$to_s || $mm('to_s')).call($i))['$empty?'] || $mm('empty?')).call($h), ($g === nil || $g === false)), $g !== false && $g !== nil ? (($g = (($j = (__scope.Table)._scope.ALIGNMENTS)['$[]'] || $mm('[]')).call($j, "h"))['$has_key?'] || $mm('has_key?')).call($g, colspec) : $g)) !== false && $a !== nil) {
+                (($a = spec)['$[]='] || $mm('[]=')).call($a, "halign", (($k = (($l = (__scope.Table)._scope.ALIGNMENTS)['$[]'] || $mm('[]')).call($l, "h"))['$[]'] || $mm('[]')).call($k, colspec))
               };
-              if (($m = ($n = ($n = (($o = (($p = rowspec).$to_s || $mm('to_s')).call($p))['$empty?'] || $mm('empty?')).call($o), ($n === nil || $n === false)), $n !== false && $n !== nil ? (($n = (($q = (($r = ((($s = __scope.Table) == null ? __opal.cm("Table") : $s))._scope).ALIGNMENTS == null ? $r.cm("ALIGNMENTS") : $r.ALIGNMENTS))['$[]'] || $mm('[]')).call($q, "v"))['$has_key?'] || $mm('has_key?')).call($n, rowspec) : $n)) !== false && $m !== nil) {
-                (($m = spec)['$[]='] || $mm('[]=')).call($m, "valign", (($r = (($s = (($t = ((($u = __scope.Table) == null ? __opal.cm("Table") : $u))._scope).ALIGNMENTS == null ? $t.cm("ALIGNMENTS") : $t.ALIGNMENTS))['$[]'] || $mm('[]')).call($s, "v"))['$[]'] || $mm('[]')).call($r, rowspec))
+              if (($m = ($n = ($n = (($o = (($p = rowspec).$to_s || $mm('to_s')).call($p))['$empty?'] || $mm('empty?')).call($o), ($n === nil || $n === false)), $n !== false && $n !== nil ? (($n = (($q = (__scope.Table)._scope.ALIGNMENTS)['$[]'] || $mm('[]')).call($q, "v"))['$has_key?'] || $mm('has_key?')).call($n, rowspec) : $n)) !== false && $m !== nil) {
+                (($m = spec)['$[]='] || $mm('[]=')).call($m, "valign", (($r = (($s = (__scope.Table)._scope.ALIGNMENTS)['$[]'] || $mm('[]')).call($s, "v"))['$[]'] || $mm('[]')).call($r, rowspec))
               };
             };
             (($t = spec)['$[]='] || $mm('[]=')).call($t, "width", (function() { if (($u = ($v = (($w = (($x = m)['$[]'] || $mm('[]')).call($x, 3))['$nil?'] || $mm('nil?')).call($w), ($v === nil || $v === false))) !== false && $u !== nil) {
@@ -4436,8 +4292,8 @@ if (v == null) v = nil;
               } else {
               return 1
             }; return nil; }).call(self));
-            if (($y = ($z = (($z = m)['$[]'] || $mm('[]')).call($z, 4), $z !== false && $z !== nil ? (($aa = (($ab = ((($ac = __scope.Table) == null ? __opal.cm("Table") : $ac))._scope).TEXT_STYLES == null ? $ab.cm("TEXT_STYLES") : $ab.TEXT_STYLES))['$has_key?'] || $mm('has_key?')).call($aa, (($ab = m)['$[]'] || $mm('[]')).call($ab, 4)) : $z)) !== false && $y !== nil) {
-              (($y = spec)['$[]='] || $mm('[]=')).call($y, "style", (($ac = (($ad = ((($ae = __scope.Table) == null ? __opal.cm("Table") : $ae))._scope).TEXT_STYLES == null ? $ad.cm("TEXT_STYLES") : $ad.TEXT_STYLES))['$[]'] || $mm('[]')).call($ac, (($ad = m)['$[]'] || $mm('[]')).call($ad, 4)))
+            if (($y = ($z = (($z = m)['$[]'] || $mm('[]')).call($z, 4), $z !== false && $z !== nil ? (($aa = (__scope.Table)._scope.TEXT_STYLES)['$has_key?'] || $mm('has_key?')).call($aa, (($ab = m)['$[]'] || $mm('[]')).call($ab, 4)) : $z)) !== false && $y !== nil) {
+              (($y = spec)['$[]='] || $mm('[]=')).call($y, "style", (($ac = (__scope.Table)._scope.TEXT_STYLES)['$[]'] || $mm('[]')).call($ac, (($ad = m)['$[]'] || $mm('[]')).call($ad, 4)))
             };
             repeat = (function() { if (($ae = ($af = (($ag = (($ah = m)['$[]'] || $mm('[]')).call($ah, 1))['$nil?'] || $mm('nil?')).call($ag), ($af === nil || $af === false))) !== false && $ae !== nil) {
               return (($ae = (($af = m)['$[]'] || $mm('[]')).call($af, 1)).$to_i || $mm('to_i')).call($ae)
@@ -4458,7 +4314,7 @@ if (v == null) v = nil;
       });
 
       Lexer._defs('$parse_cell_spec', function(line, pos) {
-        var spec = nil, rest = nil, m = nil, colspec = nil, rowspec = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba;if (pos == null) {
+        var spec = nil, rest = nil, m = nil, colspec = nil, rowspec = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az;if (pos == null) {
           pos = "start"
         }
         spec = (function() { if ((($a = pos)['$=='] || $mm('==')).call($a, "end")) {
@@ -4467,7 +4323,7 @@ if (v == null) v = nil;
           return nil
         }; return nil; }).call(this);
         rest = line;
-        if (($b = m = (($c = line).$match || $mm('match')).call($c, (($d = (($e = (($f = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $f))['$[]'] || $mm('[]')).call($e, "table_cellspec"))['$[]'] || $mm('[]')).call($d, pos))) !== false && $b !== nil) {
+        if (($b = m = (($c = line).$match || $mm('match')).call($c, (($d = (($e = __scope.REGEXP)['$[]'] || $mm('[]')).call($e, "table_cellspec"))['$[]'] || $mm('[]')).call($d, pos))) !== false && $b !== nil) {
           spec = __hash2([], {});
           if (($b = (($f = (($g = (($h = m)['$[]'] || $mm('[]')).call($h, 0)).$chomp || $mm('chomp')).call($g))['$empty?'] || $mm('empty?')).call($f)) !== false && $b !== nil) {
             return [spec, line]
@@ -4506,23 +4362,23 @@ if (v == null) v = nil;
           };
           if (($ad = (($ae = m)['$[]'] || $mm('[]')).call($ae, 3)) !== false && $ad !== nil) {
             (($ad = (($af = (($ag = m)['$[]'] || $mm('[]')).call($ag, 3)).$split || $mm('split')).call($af, "."))._isArray ? $ad : ($ad = [$ad])), colspec = ($ad[0] == null ? nil : $ad[0]), rowspec = ($ad[1] == null ? nil : $ad[1]);
-            if (($ad = ($ah = ($ah = (($ai = (($aj = colspec).$to_s || $mm('to_s')).call($aj))['$empty?'] || $mm('empty?')).call($ai), ($ah === nil || $ah === false)), $ah !== false && $ah !== nil ? (($ah = (($ak = (($al = ((($am = __scope.Table) == null ? __opal.cm("Table") : $am))._scope).ALIGNMENTS == null ? $al.cm("ALIGNMENTS") : $al.ALIGNMENTS))['$[]'] || $mm('[]')).call($ak, "h"))['$has_key?'] || $mm('has_key?')).call($ah, colspec) : $ah)) !== false && $ad !== nil) {
-              (($ad = spec)['$[]='] || $mm('[]=')).call($ad, "halign", (($al = (($am = (($an = ((($ao = __scope.Table) == null ? __opal.cm("Table") : $ao))._scope).ALIGNMENTS == null ? $an.cm("ALIGNMENTS") : $an.ALIGNMENTS))['$[]'] || $mm('[]')).call($am, "h"))['$[]'] || $mm('[]')).call($al, colspec))
+            if (($ad = ($ah = ($ah = (($ai = (($aj = colspec).$to_s || $mm('to_s')).call($aj))['$empty?'] || $mm('empty?')).call($ai), ($ah === nil || $ah === false)), $ah !== false && $ah !== nil ? (($ah = (($ak = (__scope.Table)._scope.ALIGNMENTS)['$[]'] || $mm('[]')).call($ak, "h"))['$has_key?'] || $mm('has_key?')).call($ah, colspec) : $ah)) !== false && $ad !== nil) {
+              (($ad = spec)['$[]='] || $mm('[]=')).call($ad, "halign", (($al = (($am = (__scope.Table)._scope.ALIGNMENTS)['$[]'] || $mm('[]')).call($am, "h"))['$[]'] || $mm('[]')).call($al, colspec))
             };
-            if (($an = ($ao = ($ao = (($ap = (($aq = rowspec).$to_s || $mm('to_s')).call($aq))['$empty?'] || $mm('empty?')).call($ap), ($ao === nil || $ao === false)), $ao !== false && $ao !== nil ? (($ao = (($ar = (($as = ((($at = __scope.Table) == null ? __opal.cm("Table") : $at))._scope).ALIGNMENTS == null ? $as.cm("ALIGNMENTS") : $as.ALIGNMENTS))['$[]'] || $mm('[]')).call($ar, "v"))['$has_key?'] || $mm('has_key?')).call($ao, rowspec) : $ao)) !== false && $an !== nil) {
-              (($an = spec)['$[]='] || $mm('[]=')).call($an, "valign", (($as = (($at = (($au = ((($av = __scope.Table) == null ? __opal.cm("Table") : $av))._scope).ALIGNMENTS == null ? $au.cm("ALIGNMENTS") : $au.ALIGNMENTS))['$[]'] || $mm('[]')).call($at, "v"))['$[]'] || $mm('[]')).call($as, rowspec))
+            if (($an = ($ao = ($ao = (($ap = (($aq = rowspec).$to_s || $mm('to_s')).call($aq))['$empty?'] || $mm('empty?')).call($ap), ($ao === nil || $ao === false)), $ao !== false && $ao !== nil ? (($ao = (($ar = (__scope.Table)._scope.ALIGNMENTS)['$[]'] || $mm('[]')).call($ar, "v"))['$has_key?'] || $mm('has_key?')).call($ao, rowspec) : $ao)) !== false && $an !== nil) {
+              (($an = spec)['$[]='] || $mm('[]=')).call($an, "valign", (($as = (($at = (__scope.Table)._scope.ALIGNMENTS)['$[]'] || $mm('[]')).call($at, "v"))['$[]'] || $mm('[]')).call($as, rowspec))
             };
           };
-          if (($au = ($av = (($av = m)['$[]'] || $mm('[]')).call($av, 4), $av !== false && $av !== nil ? (($aw = (($ax = ((($ay = __scope.Table) == null ? __opal.cm("Table") : $ay))._scope).TEXT_STYLES == null ? $ax.cm("TEXT_STYLES") : $ax.TEXT_STYLES))['$has_key?'] || $mm('has_key?')).call($aw, (($ax = m)['$[]'] || $mm('[]')).call($ax, 4)) : $av)) !== false && $au !== nil) {
-            (($au = spec)['$[]='] || $mm('[]=')).call($au, "style", (($ay = (($az = ((($ba = __scope.Table) == null ? __opal.cm("Table") : $ba))._scope).TEXT_STYLES == null ? $az.cm("TEXT_STYLES") : $az.TEXT_STYLES))['$[]'] || $mm('[]')).call($ay, (($az = m)['$[]'] || $mm('[]')).call($az, 4)))
+          if (($au = ($av = (($av = m)['$[]'] || $mm('[]')).call($av, 4), $av !== false && $av !== nil ? (($aw = (__scope.Table)._scope.TEXT_STYLES)['$has_key?'] || $mm('has_key?')).call($aw, (($ax = m)['$[]'] || $mm('[]')).call($ax, 4)) : $av)) !== false && $au !== nil) {
+            (($au = spec)['$[]='] || $mm('[]=')).call($au, "style", (($ay = (__scope.Table)._scope.TEXT_STYLES)['$[]'] || $mm('[]')).call($ay, (($az = m)['$[]'] || $mm('[]')).call($az, 4)))
           };
         };
         return [spec, rest];
       });
 
       Lexer._defs('$sanitize_attribute_name', function(name) {
-        var $a, $b, $c, $d;
-        return (($a = (($b = name).$gsub || $mm('gsub')).call($b, (($c = (($d = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $d))['$[]'] || $mm('[]')).call($c, "illegal_attr_name_chars"), "")).$downcase || $mm('downcase')).call($a)
+        var $a, $b, $c;
+        return (($a = (($b = name).$gsub || $mm('gsub')).call($b, (($c = __scope.REGEXP)['$[]'] || $mm('[]')).call($c, "illegal_attr_name_chars"), "")).$downcase || $mm('downcase')).call($a)
       });
 
       Lexer._defs('$roman_numeral_to_int', function(value) {
@@ -4555,7 +4411,7 @@ if (v == null) v = nil;
   return (function(__base){
     function Asciidoctor() {};
     Asciidoctor = __module(__base, "Asciidoctor", Asciidoctor);
-    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope, $a;
+    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope;
 
     (function(__base, __super){
       function ListItem() {};
@@ -4589,8 +4445,8 @@ if (v == null) v = nil;
       };
 
       def.$text = function() {
-        var $a, $b, $c;
-        return (($a = (($b = (($c = __scope.Block) == null ? __opal.cm("Block") : $c)).$new || $mm('new')).call($b, this, nil, [this.text])).$content || $mm('content')).call($a);
+        var $a, $b;
+        return (($a = (($b = __scope.Block).$new || $mm('new')).call($b, this, nil, [this.text])).$content || $mm('content')).call($a);
       };
 
       def.$content = function() {
@@ -4614,7 +4470,7 @@ if (v == null) v = nil;
         }if (content_adjacent == null) {
           content_adjacent = false
         }
-        if (($a = ($b = ($b = ($b = (($c = (($d = this).$blocks || $mm('blocks')).call($d))['$empty?'] || $mm('empty?')).call($c), ($b === nil || $b === false)), $b !== false && $b !== nil ? (($b = (($e = (($f = this).$blocks || $mm('blocks')).call($f)).$first || $mm('first')).call($e))['$is_a?'] || $mm('is_a?')).call($b, (($g = __scope.Block) == null ? __opal.cm("Block") : $g)) : $b), $b !== false && $b !== nil ? (($g = (($h = (($i = (($j = (($k = (($l = this).$blocks || $mm('blocks')).call($l)).$first || $mm('first')).call($k)).$context || $mm('context')).call($j))['$=='] || $mm('==')).call($i, "paragraph")) ? ($m = continuation_connects_first_block, ($m === nil || $m === false)) : $h)), $g !== false && $g !== nil ? $g : ($h = ($h = (($h = content_adjacent), $h !== false && $h !== nil ? $h : ($m = continuation_connects_first_block, ($m === nil || $m === false))), $h !== false && $h !== nil ? (($h = (($m = (($n = (($o = this).$blocks || $mm('blocks')).call($o)).$first || $mm('first')).call($n)).$context || $mm('context')).call($m))['$=='] || $mm('==')).call($h, "literal") : $h), $h !== false && $h !== nil ? (($p = (($q = (($r = (($s = this).$blocks || $mm('blocks')).call($s)).$first || $mm('first')).call($r)).$attr || $mm('attr')).call($q, "options", []))['$include?'] || $mm('include?')).call($p, "listparagraph") : $h)) : $b)) !== false && $a !== nil) {
+        if (($a = ($b = ($b = ($b = (($c = (($d = this).$blocks || $mm('blocks')).call($d))['$empty?'] || $mm('empty?')).call($c), ($b === nil || $b === false)), $b !== false && $b !== nil ? (($b = (($e = (($f = this).$blocks || $mm('blocks')).call($f)).$first || $mm('first')).call($e))['$is_a?'] || $mm('is_a?')).call($b, __scope.Block) : $b), $b !== false && $b !== nil ? (($g = (($h = (($i = (($j = (($k = (($l = this).$blocks || $mm('blocks')).call($l)).$first || $mm('first')).call($k)).$context || $mm('context')).call($j))['$=='] || $mm('==')).call($i, "paragraph")) ? ($m = continuation_connects_first_block, ($m === nil || $m === false)) : $h)), $g !== false && $g !== nil ? $g : ($h = ($h = (($h = content_adjacent), $h !== false && $h !== nil ? $h : ($m = continuation_connects_first_block, ($m === nil || $m === false))), $h !== false && $h !== nil ? (($h = (($m = (($n = (($o = this).$blocks || $mm('blocks')).call($o)).$first || $mm('first')).call($n)).$context || $mm('context')).call($m))['$=='] || $mm('==')).call($h, "literal") : $h), $h !== false && $h !== nil ? (($p = (($q = (($r = (($s = this).$blocks || $mm('blocks')).call($s)).$first || $mm('first')).call($r)).$attr || $mm('attr')).call($q, "options", []))['$include?'] || $mm('include?')).call($p, "listparagraph") : $h)) : $b)) !== false && $a !== nil) {
           block = (($a = (($g = this).$blocks || $mm('blocks')).call($g)).$shift || $mm('shift')).call($a);
           if (($t = (($u = (($v = this.text).$to_s || $mm('to_s')).call($v))['$empty?'] || $mm('empty?')).call($u)) === false || $t === nil) {
             (($t = (($w = block).$buffer || $mm('buffer')).call($w)).$unshift || $mm('unshift')).call($t, this.text)
@@ -4631,7 +4487,7 @@ if (v == null) v = nil;
       };
 
       return nil;
-    })(Asciidoctor, (($a = __scope.AbstractBlock) == null ? __opal.cm("AbstractBlock") : $a))
+    })(Asciidoctor, __scope.AbstractBlock)
     
   })(self)
 })(Opal);
@@ -4680,33 +4536,33 @@ if (v == null) v = nil;
       }, nil;
 
       def.$initialize = function(file_separator, working_dir) {
-        var $a, $b, $c, $d, $e, $f, $g;if (file_separator == null) {
+        var $a, $b, $c, $d, $e, $f;if (file_separator == null) {
           file_separator = nil
         }if (working_dir == null) {
           working_dir = nil
         }
         this.file_separator = (function() { if (($a = (($b = file_separator)['$nil?'] || $mm('nil?')).call($b)) !== false && $a !== nil) {
-          return (($a = (($c = ((($d = __scope.File) == null ? __opal.cm("File") : $d))._scope).ALT_SEPARATOR == null ? $c.cm("ALT_SEPARATOR") : $c.ALT_SEPARATOR)), $a !== false && $a !== nil ? $a : (($c = ((($d = __scope.File) == null ? __opal.cm("File") : $d))._scope).SEPARATOR == null ? $c.cm("SEPARATOR") : $c.SEPARATOR))
+          return (($a = (__scope.File)._scope.ALT_SEPARATOR), $a !== false && $a !== nil ? $a : (__scope.File)._scope.SEPARATOR)
           } else {
           return file_separator
         }; return nil; }).call(this);
         if (($a = (($c = working_dir)['$nil?'] || $mm('nil?')).call($c)) !== false && $a !== nil) {
-          return this.working_dir = (($a = (($d = __scope.File) == null ? __opal.cm("File") : $d)).$expand_path || $mm('expand_path')).call($a, (($d = (($e = __scope.Dir) == null ? __opal.cm("Dir") : $e)).$pwd || $mm('pwd')).call($d))
+          return this.working_dir = (($a = __scope.File).$expand_path || $mm('expand_path')).call($a, (($d = __scope.Dir).$pwd || $mm('pwd')).call($d))
           } else {
           return this.working_dir = (function() { if (($e = (($f = this)['$is_root?'] || $mm('is_root?')).call($f, working_dir)) !== false && $e !== nil) {
             return working_dir
             } else {
-            return (($e = (($g = __scope.File) == null ? __opal.cm("File") : $g)).$expand_path || $mm('expand_path')).call($e, working_dir)
+            return (($e = __scope.File).$expand_path || $mm('expand_path')).call($e, working_dir)
           }; return nil; }).call(this)
         };
       };
 
       def['$is_root?'] = function(path) {
-        var $a, $b, $c, $d, $e;
-        if (($a = (($b = (($c = this.file_separator)['$=='] || $mm('==')).call($c, (($d = __scope.BACKSLASH) == null ? __opal.cm("BACKSLASH") : $d))) ? (($d = path).$match || $mm('match')).call($d, (($e = __scope.WIN_ROOT_RE) == null ? __opal.cm("WIN_ROOT_RE") : $e)) : $b)) !== false && $a !== nil) {
+        var $a, $b, $c, $d;
+        if (($a = (($b = (($c = this.file_separator)['$=='] || $mm('==')).call($c, __scope.BACKSLASH)) ? (($d = path).$match || $mm('match')).call($d, __scope.WIN_ROOT_RE) : $b)) !== false && $a !== nil) {
           return true
           } else {
-          if (($a = (($b = path)['$start_with?'] || $mm('start_with?')).call($b, (($e = __scope.SLASH) == null ? __opal.cm("SLASH") : $e))) !== false && $a !== nil) {
+          if (($a = (($b = path)['$start_with?'] || $mm('start_with?')).call($b, __scope.SLASH)) !== false && $a !== nil) {
             return true
             } else {
             return false
@@ -4715,17 +4571,17 @@ if (v == null) v = nil;
       };
 
       def['$is_web_root?'] = function(path) {
-        var $a, $b;
-        return (($a = path)['$start_with?'] || $mm('start_with?')).call($a, (($b = __scope.SLASH) == null ? __opal.cm("SLASH") : $b));
+        var $a;
+        return (($a = path)['$start_with?'] || $mm('start_with?')).call($a, __scope.SLASH);
       };
 
       def.$posixfy = function(path) {
-        var $a, $b, $c, $d, $e;
+        var $a, $b, $c, $d;
         if (($a = (($b = (($c = path).$to_s || $mm('to_s')).call($c))['$empty?'] || $mm('empty?')).call($b)) !== false && $a !== nil) {
           return ""
         };
-        if (($a = (($d = path)['$include?'] || $mm('include?')).call($d, (($e = __scope.BACKSLASH) == null ? __opal.cm("BACKSLASH") : $e))) !== false && $a !== nil) {
-          return (($a = path).$tr || $mm('tr')).call($a, (($e = __scope.BACKSLASH) == null ? __opal.cm("BACKSLASH") : $e), (($e = __scope.SLASH) == null ? __opal.cm("SLASH") : $e))
+        if (($a = (($d = path)['$include?'] || $mm('include?')).call($d, __scope.BACKSLASH)) !== false && $a !== nil) {
+          return (($a = path).$tr || $mm('tr')).call($a, __scope.BACKSLASH, __scope.SLASH)
           } else {
           return path
         };
@@ -4747,13 +4603,13 @@ if (v == null) v = nil;
           } else {
           return (($c = this)['$is_root?'] || $mm('is_root?')).call($c, posix_path)
         }; return nil; }).call(this);
-        path_segments = (($d = posix_path).$split || $mm('split')).call($d, (($e = __scope.PARTITION_RE) == null ? __opal.cm("PARTITION_RE") : $e));
-        root = (function() { if ((($e = (($f = path_segments).$first || $mm('first')).call($f))['$=='] || $mm('==')).call($e, (($g = __scope.DOT) == null ? __opal.cm("DOT") : $g))) {
-          return (($g = __scope.DOT) == null ? __opal.cm("DOT") : $g)
+        path_segments = (($d = posix_path).$split || $mm('split')).call($d, __scope.PARTITION_RE);
+        root = (function() { if ((($e = (($f = path_segments).$first || $mm('first')).call($f))['$=='] || $mm('==')).call($e, __scope.DOT)) {
+          return __scope.DOT
           } else {
           return nil
         }; return nil; }).call(this);
-        (($g = path_segments).$delete || $mm('delete')).call($g, (($h = __scope.DOT) == null ? __opal.cm("DOT") : $h));
+        (($g = path_segments).$delete || $mm('delete')).call($g, __scope.DOT);
         root = (function() { if (is_root !== false && is_root !== nil) {
           return (($h = path_segments).$shift || $mm('shift')).call($h)
           } else {
@@ -4763,13 +4619,13 @@ if (v == null) v = nil;
       };
 
       def.$join_path = function(segments, root) {
-        var $a, $b, $c;if (root == null) {
+        var $a, $b;if (root == null) {
           root = nil
         }
         if (root !== false && root !== nil) {
-          return "" + (root) + ((($a = __scope.SLASH) == null ? __opal.cm("SLASH") : $a)) + (($a = segments, $b = (($c = __scope.SLASH) == null ? __opal.cm("SLASH") : $c), typeof($a) === 'number' ? $a * $b : $a['$*']($b)))
+          return "" + (root) + (__scope.SLASH) + (($a = segments, $b = __scope.SLASH, typeof($a) === 'number' ? $a * $b : $a['$*']($b)))
           } else {
-          return ($a = segments, $b = (($c = __scope.SLASH) == null ? __opal.cm("SLASH") : $c), typeof($a) === 'number' ? $a * $b : $a['$*']($b))
+          return ($a = segments, $b = __scope.SLASH, typeof($a) === 'number' ? $a * $b : $a['$*']($b))
         };
       };
 
@@ -4782,7 +4638,7 @@ if (v == null) v = nil;
         recover = (($a = opts).$fetch || $mm('fetch')).call($a, "recover", true);
         if (($b = (($c = jail)['$nil?'] || $mm('nil?')).call($c)) === false || $b === nil) {
           if (($b = (($d = this)['$is_root?'] || $mm('is_root?')).call($d, jail)) === false || $b === nil) {
-            (($b = this).$raise || $mm('raise')).call($b, (($e = __scope.SecurityError) == null ? __opal.cm("SecurityError") : $e), "Jail is not an absolute path: " + (jail))
+            (($b = this).$raise || $mm('raise')).call($b, __scope.SecurityError, "Jail is not an absolute path: " + (jail))
           };
           jail = (($e = this).$posixfy || $mm('posixfy')).call($e, jail);
         };
@@ -4808,7 +4664,7 @@ if (v == null) v = nil;
             }
           }
         };
-        if (($q = (($r = target_root !== false && target_root !== nil) ? ($s = (($t = target_root)['$=='] || $mm('==')).call($t, (($u = __scope.DOT) == null ? __opal.cm("DOT") : $u)), ($s === nil || $s === false)) : $r)) !== false && $q !== nil) {
+        if (($q = (($r = target_root !== false && target_root !== nil) ? ($s = (($t = target_root)['$=='] || $mm('==')).call($t, __scope.DOT), ($s === nil || $s === false)) : $r)) !== false && $q !== nil) {
           resolved_target = (($q = this).$join_path || $mm('join_path')).call($q, target_segments, target_root);
           if (($r = (($s = (($u = jail)['$nil?'] || $mm('nil?')).call($u)), $s !== false && $s !== nil ? $s : (($v = resolved_target)['$start_with?'] || $mm('start_with?')).call($v, jail))) !== false && $r !== nil) {
             return resolved_target
@@ -4833,7 +4689,7 @@ if (v == null) v = nil;
           } else {
           if (($ad = ($ae = (($af = jail)['$nil?'] || $mm('nil?')).call($af), ($ae === nil || $ae === false))) !== false && $ad !== nil) {
             if (($ad = ($ae = (($ag = start)['$start_with?'] || $mm('start_with?')).call($ag, jail), ($ae === nil || $ae === false))) !== false && $ad !== nil) {
-              (($ad = this).$raise || $mm('raise')).call($ad, (($ae = __scope.SecurityError) == null ? __opal.cm("SecurityError") : $ae), "" + ((($ae = (($ah = opts)['$[]'] || $mm('[]')).call($ah, "target_name")), $ae !== false && $ae !== nil ? $ae : "Start path")) + " " + (start) + " is outside of jail: " + (jail) + " (disallowed in safe mode)")
+              (($ad = this).$raise || $mm('raise')).call($ad, __scope.SecurityError, "" + ((($ae = (($ah = opts)['$[]'] || $mm('[]')).call($ah, "target_name")), $ae !== false && $ae !== nil ? $ae : "Start path")) + " " + (start) + " is outside of jail: " + (jail) + " (disallowed in safe mode)")
             };
             (($ae = (($ai = this).$partition_path || $mm('partition_path')).call($ai, start))._isArray ? $ae : ($ae = [$ae])), start_segments = ($ae[0] == null ? nil : $ae[0]), start_root = ($ae[1] == null ? nil : $ae[1]), _ = ($ae[2] == null ? nil : $ae[2]);
             (($ae = (($aj = this).$partition_path || $mm('partition_path')).call($aj, jail))._isArray ? $ae : ($ae = [$ae])), jail_segments = ($ae[0] == null ? nil : $ae[0]), jail_root = ($ae[1] == null ? nil : $ae[1]), _ = ($ae[2] == null ? nil : $ae[2]);
@@ -4849,13 +4705,13 @@ if (v == null) v = nil;
           var self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l;
           if (segment == null) segment = nil;
 
-          if ((($a = segment)['$=='] || $mm('==')).call($a, (($b = __scope.DOT_DOT) == null ? __opal.cm("DOT_DOT") : $b))) {
+          if ((($a = segment)['$=='] || $mm('==')).call($a, __scope.DOT_DOT)) {
             if (($b = ($c = (($d = jail)['$nil?'] || $mm('nil?')).call($d), ($c === nil || $c === false))) !== false && $b !== nil) {
               if ((($b = (($c = resolved_segments).$length || $mm('length')).call($c))['$>'] || $mm('>')).call($b, (($e = jail_segments).$length || $mm('length')).call($e))) {
                 return (($f = resolved_segments).$pop || $mm('pop')).call($f)
                 } else {
                 if (($g = ($h = recover, ($h === nil || $h === false))) !== false && $g !== nil) {
-                  return (($g = self).$raise || $mm('raise')).call($g, (($h = __scope.SecurityError) == null ? __opal.cm("SecurityError") : $h), "" + ((($h = (($i = opts)['$[]'] || $mm('[]')).call($i, "target_name")), $h !== false && $h !== nil ? $h : "path")) + " " + (target) + " refers to location outside jail: " + (jail) + " (disallowed in safe mode)")
+                  return (($g = self).$raise || $mm('raise')).call($g, __scope.SecurityError, "" + ((($h = (($i = opts)['$[]'] || $mm('[]')).call($i, "target_name")), $h !== false && $h !== nil ? $h : "path")) + " " + (target) + " refers to location outside jail: " + (jail) + " (disallowed in safe mode)")
                   } else {
                   if (($h = ($j = warned, ($j === nil || $j === false))) !== false && $h !== nil) {
                     (($h = self).$puts || $mm('puts')).call($h, "asciidoctor: WARNING: " + ((($j = (($k = opts)['$[]'] || $mm('[]')).call($k, "target_name")), $j !== false && $j !== nil ? $j : "path")) + " has illegal reference to ancestor of jail, auto-recovering");
@@ -4882,7 +4738,7 @@ if (v == null) v = nil;
         target = (($a = this).$posixfy || $mm('posixfy')).call($a, target);
         start = (($b = this).$posixfy || $mm('posixfy')).call($b, start);
         if (($c = (($d = (($e = this)['$is_web_root?'] || $mm('is_web_root?')).call($e, target)), $d !== false && $d !== nil ? $d : (($f = start)['$empty?'] || $mm('empty?')).call($f))) === false || $c === nil) {
-          target = "" + (start) + ((($c = __scope.SLASH) == null ? __opal.cm("SLASH") : $c)) + (target)
+          target = "" + (start) + (__scope.SLASH) + (target)
         };
         (($c = (($d = this).$partition_path || $mm('partition_path')).call($d, target, true))._isArray ? $c : ($c = [$c])), target_segments = ($c[0] == null ? nil : $c[0]), target_root = ($c[1] == null ? nil : $c[1]), _ = ($c[2] == null ? nil : $c[2]);
         resolved_segments = ($c = (($g = target_segments).$inject || $mm('inject')), $c._p = (TMP_2 = function(accum, segment) {
@@ -4891,13 +4747,13 @@ if (v == null) v = nil;
           if (accum == null) accum = nil;
 if (segment == null) segment = nil;
 
-          if ((($a = segment)['$=='] || $mm('==')).call($a, (($b = __scope.DOT_DOT) == null ? __opal.cm("DOT_DOT") : $b))) {
+          if ((($a = segment)['$=='] || $mm('==')).call($a, __scope.DOT_DOT)) {
             if (($b = (($c = accum)['$empty?'] || $mm('empty?')).call($c)) !== false && $b !== nil) {
-              if (($b = (($d = target_root !== false && target_root !== nil) ? ($e = (($f = target_root)['$=='] || $mm('==')).call($f, (($g = __scope.DOT) == null ? __opal.cm("DOT") : $g)), ($e === nil || $e === false)) : $d)) === false || $b === nil) {
+              if (($b = (($d = target_root !== false && target_root !== nil) ? ($e = (($f = target_root)['$=='] || $mm('==')).call($f, __scope.DOT), ($e === nil || $e === false)) : $d)) === false || $b === nil) {
                 (($b = accum).$push || $mm('push')).call($b, segment)
               }
               } else {
-              if ((($d = (($e = accum)['$[]'] || $mm('[]')).call($e, -1))['$=='] || $mm('==')).call($d, (($g = __scope.DOT_DOT) == null ? __opal.cm("DOT_DOT") : $g))) {
+              if ((($d = (($e = accum)['$[]'] || $mm('[]')).call($e, -1))['$=='] || $mm('==')).call($d, __scope.DOT_DOT)) {
                 (($g = accum).$push || $mm('push')).call($g, segment)
                 } else {
                 (($h = accum).$pop || $mm('pop')).call($h)
@@ -4955,7 +4811,7 @@ if (segment == null) segment = nil;
         };
         this.lineno = 0;
         if (($a = ($c = preprocess, ($c === nil || $c === false))) !== false && $a !== nil) {
-          this.lines = (function() { if (($a = (($c = data)['$is_a?'] || $mm('is_a?')).call($c, (($d = __scope.String) == null ? __opal.cm("String") : $d))) !== false && $a !== nil) {
+          this.lines = (function() { if (($a = (($c = data)['$is_a?'] || $mm('is_a?')).call($c, __scope.String)) !== false && $a !== nil) {
             return (($a = (($d = data).$lines || $mm('lines')).call($d)).$entries || $mm('entries')).call($a)
             } else {
             return (($e = data).$dup || $mm('dup')).call($e)
@@ -4970,7 +4826,7 @@ if (segment == null) segment = nil;
               } else {
               return nil
             }; return nil; }).call(this);
-            (($f = this).$normalize_data || $mm('normalize_data')).call($f, (function() { if (($g = (($i = data)['$is_a?'] || $mm('is_a?')).call($i, (($j = __scope.String) == null ? __opal.cm("String") : $j))) !== false && $g !== nil) {
+            (($f = this).$normalize_data || $mm('normalize_data')).call($f, (function() { if (($g = (($i = data)['$is_a?'] || $mm('is_a?')).call($i, __scope.String)) !== false && $g !== nil) {
               return (($g = (($j = data).$lines || $mm('lines')).call($j)).$entries || $mm('entries')).call($g)
               } else {
               return data
@@ -5032,7 +4888,7 @@ if (segment == null) segment = nil;
       };
 
       def.$consume_comments = function(options) {
-        var comment_lines = nil, preprocess = nil, next_line = nil, commentish = nil, match = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t;if (options == null) {
+        var comment_lines = nil, preprocess = nil, next_line = nil, commentish = nil, match = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s;if (options == null) {
           options = __hash2([], {})
         }
         comment_lines = [];
@@ -5040,11 +4896,11 @@ if (segment == null) segment = nil;
         while (($c = ($d = (($e = (next_line = (($f = this).$get_line || $mm('get_line')).call($f, preprocess)))['$nil?'] || $mm('nil?')).call($e), ($d === nil || $d === false))) !== false && $c !== nil){if (($c = ($d = (($d = options)['$[]'] || $mm('[]')).call($d, "include_blank_lines"), $d !== false && $d !== nil ? (($g = (($h = next_line).$chomp || $mm('chomp')).call($h))['$empty?'] || $mm('empty?')).call($g) : $d)) !== false && $c !== nil) {
           (($c = comment_lines)['$<<'] || $mm('<<')).call($c, next_line)
           } else {
-          if (($i = ($j = commentish = (($j = next_line)['$start_with?'] || $mm('start_with?')).call($j, "//"), $j !== false && $j !== nil ? match = (($k = next_line).$match || $mm('match')).call($k, (($l = (($m = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $m))['$[]'] || $mm('[]')).call($l, "comment_blk")) : $j)) !== false && $i !== nil) {
+          if (($i = ($j = commentish = (($j = next_line)['$start_with?'] || $mm('start_with?')).call($j, "//"), $j !== false && $j !== nil ? match = (($k = next_line).$match || $mm('match')).call($k, (($l = __scope.REGEXP)['$[]'] || $mm('[]')).call($l, "comment_blk")) : $j)) !== false && $i !== nil) {
             (($i = comment_lines)['$<<'] || $mm('<<')).call($i, next_line);
             (($m = comment_lines).$push || $mm('push')).apply($m, [].concat((($n = this).$grab_lines_until || $mm('grab_lines_until')).call($n, __hash2(["terminator", "grab_last_line", "preprocess"], {"terminator": (($o = match)['$[]'] || $mm('[]')).call($o, 0), "grab_last_line": true, "preprocess": false}))));
             } else {
-            if (($p = (($q = commentish !== false && commentish !== nil) ? (($r = next_line).$match || $mm('match')).call($r, (($s = (($t = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $t))['$[]'] || $mm('[]')).call($s, "comment")) : $q)) !== false && $p !== nil) {
+            if (($p = (($q = commentish !== false && commentish !== nil) ? (($r = next_line).$match || $mm('match')).call($r, (($s = __scope.REGEXP)['$[]'] || $mm('[]')).call($s, "comment")) : $q)) !== false && $p !== nil) {
               (($p = comment_lines)['$<<'] || $mm('<<')).call($p, next_line)
               } else {
               (($q = this).$unshift_line || $mm('unshift_line')).call($q, next_line);
@@ -5060,7 +4916,7 @@ if (segment == null) segment = nil;
       def.$consume_line_comments = function() {
         var comment_lines = nil, next_line = nil, $a, $b, $c, $d, $e, $f, $g;
         comment_lines = [];
-        while (($b = ($c = (($d = (next_line = (($e = this).$get_line || $mm('get_line')).call($e)))['$nil?'] || $mm('nil?')).call($d), ($c === nil || $c === false))) !== false && $b !== nil){if (($b = (($c = next_line).$match || $mm('match')).call($c, (($f = (($g = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $g))['$[]'] || $mm('[]')).call($f, "comment"))) !== false && $b !== nil) {
+        while (($b = ($c = (($d = (next_line = (($e = this).$get_line || $mm('get_line')).call($e)))['$nil?'] || $mm('nil?')).call($d), ($c === nil || $c === false))) !== false && $b !== nil){if (($b = (($c = next_line).$match || $mm('match')).call($c, (($f = __scope.REGEXP)['$[]'] || $mm('[]')).call($f, "comment"))) !== false && $b !== nil) {
           (($b = comment_lines)['$<<'] || $mm('<<')).call($b, next_line)
           } else {
           (($g = this).$unshift_line || $mm('unshift_line')).call($g, next_line);
@@ -5162,7 +5018,7 @@ if (segment == null) segment = nil;
         if (($a = (($b = this.eof), $b !== false && $b !== nil ? $b : (($c = (next_line = (($d = this.lines).$first || $mm('first')).call($d)))['$nil?'] || $mm('nil?')).call($c))) !== false && $a !== nil) {
           return nil
         };
-        if (($a = ($b = ($b = (($b = next_line)['$include?'] || $mm('include?')).call($b, "::"), $b !== false && $b !== nil ? (($e = (($f = next_line)['$include?'] || $mm('include?')).call($f, "if")), $e !== false && $e !== nil ? $e : (($g = next_line)['$include?'] || $mm('include?')).call($g, "endif")) : $b), $b !== false && $b !== nil ? match = (($e = next_line).$match || $mm('match')).call($e, (($h = (($i = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $i))['$[]'] || $mm('[]')).call($h, "ifdef_macro")) : $b)) !== false && $a !== nil) {
+        if (($a = ($b = ($b = (($b = next_line)['$include?'] || $mm('include?')).call($b, "::"), $b !== false && $b !== nil ? (($e = (($f = next_line)['$include?'] || $mm('include?')).call($f, "if")), $e !== false && $e !== nil ? $e : (($g = next_line)['$include?'] || $mm('include?')).call($g, "endif")) : $b), $b !== false && $b !== nil ? match = (($e = next_line).$match || $mm('match')).call($e, (($h = __scope.REGEXP)['$[]'] || $mm('[]')).call($h, "ifdef_macro")) : $b)) !== false && $a !== nil) {
           if (($a = (($i = next_line)['$start_with?'] || $mm('start_with?')).call($i, "\\")) !== false && $a !== nil) {
             this.next_line_preprocessed = true;
             this.unescape_next_line = true;
@@ -5180,7 +5036,7 @@ if (segment == null) segment = nil;
               return true
             };
             } else {
-            if (($m = ($p = (($p = next_line)['$include?'] || $mm('include?')).call($p, "include::"), $p !== false && $p !== nil ? match = (($q = next_line).$match || $mm('match')).call($q, (($r = (($s = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $s))['$[]'] || $mm('[]')).call($r, "include_macro")) : $p)) !== false && $m !== nil) {
+            if (($m = ($p = (($p = next_line)['$include?'] || $mm('include?')).call($p, "include::"), $p !== false && $p !== nil ? match = (($q = next_line).$match || $mm('match')).call($q, (($r = __scope.REGEXP)['$[]'] || $mm('[]')).call($r, "include_macro")) : $p)) !== false && $m !== nil) {
               if (($m = (($s = next_line)['$start_with?'] || $mm('start_with?')).call($s, "\\")) !== false && $m !== nil) {
                 this.next_line_preprocessed = true;
                 this.unescape_next_line = true;
@@ -5283,7 +5139,7 @@ if (segment == null) segment = nil;
           }
           }
           else if ((($az = "ifeval")['$==='] || $mm('===')).call($az, $case)) {
-          if (($aq = (($ar = ($as = (($at = target)['$empty?'] || $mm('empty?')).call($at), ($as === nil || $as === false))), $ar !== false && $ar !== nil ? $ar : ($as = expr_match = (($au = (($av = text).$strip || $mm('strip')).call($av)).$match || $mm('match')).call($au, (($aw = (($ax = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ax))['$[]'] || $mm('[]')).call($aw, "eval_expr")), ($as === nil || $as === false)))) !== false && $aq !== nil) {
+          if (($aq = (($ar = ($as = (($at = target)['$empty?'] || $mm('empty?')).call($at), ($as === nil || $as === false))), $ar !== false && $ar !== nil ? $ar : ($as = expr_match = (($au = (($av = text).$strip || $mm('strip')).call($av)).$match || $mm('match')).call($au, (($aw = __scope.REGEXP)['$[]'] || $mm('[]')).call($aw, "eval_expr")), ($as === nil || $as === false)))) !== false && $aq !== nil) {
             this.next_line_preprocessed = true;
             return false;
           };
@@ -5313,8 +5169,8 @@ if (segment == null) segment = nil;
       };
 
       def.$preprocess_include = function(target, raw_attributes) {
-        var include_file = nil, inc_lines = nil, tags = nil, attributes = nil, selected = nil, f = nil, active_tag = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, TMP_7, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, TMP_8, $ai, $aj, $ak, $al, $am, $an, $ao, TMP_9, $ap, $aq, $ar, $as, $at, $au;
-        if ((($a = (($b = this.document).$safe || $mm('safe')).call($b))['$>='] || $mm('>=')).call($a, (($c = ((($d = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $d))._scope).SECURE == null ? $c.cm("SECURE") : $c.SECURE))) {
+        var include_file = nil, inc_lines = nil, tags = nil, attributes = nil, selected = nil, f = nil, active_tag = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, TMP_7, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, TMP_8, $ai, $aj, $ak, $al, $am, $an, $ao, TMP_9, $ap, $aq, $ar, $as, $at;
+        if ((($a = (($b = this.document).$safe || $mm('safe')).call($b))['$>='] || $mm('>=')).call($a, (__scope.SafeMode)._scope.SECURE)) {
           (($c = this.lines)['$[]='] || $mm('[]=')).call($c, 0, "link:" + (target) + "[" + (target) + "]");
           this.next_line_preprocessed = true;
           return false;
@@ -5326,17 +5182,17 @@ if (segment == null) segment = nil;
             if ((($h = (($i = (($j = (($k = this.document).$attributes || $mm('attributes')).call($k)).$fetch || $mm('fetch')).call($j, "include-depth", 0)).$to_i || $mm('to_i')).call($i))['$>'] || $mm('>')).call($h, 0)) {
               (($l = this).$advance || $mm('advance')).call($l);
               include_file = (($m = this.document).$normalize_system_path || $mm('normalize_system_path')).call($m, target, nil, nil, __hash2(["target_name"], {"target_name": "include file"}));
-              if (($n = ($o = (($p = (($q = __scope.File) == null ? __opal.cm("File") : $q))['$file?'] || $mm('file?')).call($p, include_file), ($o === nil || $o === false))) !== false && $n !== nil) {
+              if (($n = ($o = (($p = __scope.File)['$file?'] || $mm('file?')).call($p, include_file), ($o === nil || $o === false))) !== false && $n !== nil) {
                 (($n = this).$puts || $mm('puts')).call($n, "asciidoctor: WARNING: line " + (this.lineno) + ": include file not found: " + (include_file));
                 return true;
               };
               inc_lines = nil;
               tags = nil;
               if (($o = ($q = (($r = raw_attributes)['$empty?'] || $mm('empty?')).call($r), ($q === nil || $q === false))) !== false && $o !== nil) {
-                attributes = (($o = (($q = (($s = __scope.AttributeList) == null ? __opal.cm("AttributeList") : $s)).$new || $mm('new')).call($q, raw_attributes)).$parse || $mm('parse')).call($o);
+                attributes = (($o = (($q = __scope.AttributeList).$new || $mm('new')).call($q, raw_attributes)).$parse || $mm('parse')).call($o);
                 if (($s = (($t = attributes)['$has_key?'] || $mm('has_key?')).call($t, "lines")) !== false && $s !== nil) {
                   inc_lines = [];
-                  ($s = (($u = (($v = (($w = attributes)['$[]'] || $mm('[]')).call($w, "lines")).$split || $mm('split')).call($v, (($x = (($y = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $y))['$[]'] || $mm('[]')).call($x, "scsv_csv_delim"))).$each || $mm('each')), $s._p = (TMP_7 = function(linedef) {
+                  ($s = (($u = (($v = (($w = attributes)['$[]'] || $mm('[]')).call($w, "lines")).$split || $mm('split')).call($v, (($x = __scope.REGEXP)['$[]'] || $mm('[]')).call($x, "scsv_csv_delim"))).$each || $mm('each')), $s._p = (TMP_7 = function(linedef) {
 
                     var from = nil, to = nil, self = TMP_7._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l;
                     if (linedef == null) linedef = nil;
@@ -5347,7 +5203,7 @@ if (segment == null) segment = nil;
                         (($d = inc_lines)['$<<'] || $mm('<<')).call($d, from);
                         return (($g = inc_lines)['$<<'] || $mm('<<')).call($g, ($h = 1.0, $i = 0.0, typeof($h) === 'number' ? $h / $i : $h['$/']($i)));
                         } else {
-                        return (($h = inc_lines).$concat || $mm('concat')).call($h, (($i = (($j = (($k = __scope.Range) == null ? __opal.cm("Range") : $k)).$new || $mm('new')).call($j, from, to)).$to_a || $mm('to_a')).call($i))
+                        return (($h = inc_lines).$concat || $mm('concat')).call($h, (($i = (($j = __scope.Range).$new || $mm('new')).call($j, from, to)).$to_a || $mm('to_a')).call($i))
                       };
                       } else {
                       return (($k = inc_lines)['$<<'] || $mm('<<')).call($k, (($l = linedef).$to_i || $mm('to_i')).call($l))
@@ -5356,21 +5212,21 @@ if (segment == null) segment = nil;
                   inc_lines = (($s = (($y = inc_lines).$sort || $mm('sort')).call($y)).$uniq || $mm('uniq')).call($s);
                   } else {
                   if (($z = (($aa = attributes)['$has_key?'] || $mm('has_key?')).call($aa, "tags")) !== false && $z !== nil) {
-                    tags = (($z = (($ab = (($ac = attributes)['$[]'] || $mm('[]')).call($ac, "tags")).$split || $mm('split')).call($ab, (($ad = (($ae = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ae))['$[]'] || $mm('[]')).call($ad, "scsv_csv_delim"))).$uniq || $mm('uniq')).call($z)
+                    tags = (($z = (($ab = (($ac = attributes)['$[]'] || $mm('[]')).call($ac, "tags")).$split || $mm('split')).call($ab, (($ad = __scope.REGEXP)['$[]'] || $mm('[]')).call($ad, "scsv_csv_delim"))).$uniq || $mm('uniq')).call($z)
                   }
                 };
               };
               if (($ae = ($af = (($ag = inc_lines)['$nil?'] || $mm('nil?')).call($ag), ($af === nil || $af === false))) !== false && $ae !== nil) {
                 if (($ae = ($af = (($ah = inc_lines)['$empty?'] || $mm('empty?')).call($ah), ($af === nil || $af === false))) !== false && $ae !== nil) {
                   selected = [];
-                  f = (($ae = (($af = __scope.File) == null ? __opal.cm("File") : $af)).$new || $mm('new')).call($ae, include_file);
+                  f = (($ae = __scope.File).$new || $mm('new')).call($ae, include_file);
                   ($af = (($ai = f).$each_line || $mm('each_line')), $af._p = (TMP_8 = function(l) {
 
                     var take = nil, self = TMP_8._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j;
                     if (l == null) l = nil;
 
                     take = (($a = inc_lines).$first || $mm('first')).call($a);
-                    if (($b = ($c = (($c = take)['$is_a?'] || $mm('is_a?')).call($c, (($d = __scope.Float) == null ? __opal.cm("Float") : $d)), $c !== false && $c !== nil ? (($d = take)['$infinite?'] || $mm('infinite?')).call($d) : $c)) !== false && $b !== nil) {
+                    if (($b = ($c = (($c = take)['$is_a?'] || $mm('is_a?')).call($c, __scope.Float), $c !== false && $c !== nil ? (($d = take)['$infinite?'] || $mm('infinite?')).call($d) : $c)) !== false && $b !== nil) {
                       return (($b = selected).$push || $mm('push')).call($b, l)
                       } else {
                       if ((($e = (($f = f).$lineno || $mm('lineno')).call($f))['$=='] || $mm('==')).call($e, take)) {
@@ -5393,14 +5249,14 @@ if (segment == null) segment = nil;
                   if (($al = ($am = (($ao = tags)['$empty?'] || $mm('empty?')).call($ao), ($am === nil || $am === false))) !== false && $al !== nil) {
                     selected = [];
                     active_tag = nil;
-                    f = (($al = (($am = __scope.File) == null ? __opal.cm("File") : $am)).$new || $mm('new')).call($al, include_file);
+                    f = (($al = __scope.File).$new || $mm('new')).call($al, include_file);
                     ($am = (($ap = f).$each_line || $mm('each_line')), $am._p = (TMP_9 = function(l) {
 
                       var self = TMP_9._s || this, $a, $b, $c, $d, $e, TMP_10, $f, $g;
                       if (l == null) l = nil;
 
-                      if (($a = (($b = ((($c = __opal.Object._scope.Asciidoctor) == null ? __opal.cm("Asciidoctor") : $c))._scope).FORCE_ENCODING == null ? $b.cm("FORCE_ENCODING") : $b.FORCE_ENCODING)) !== false && $a !== nil) {
-                        (($a = l).$force_encoding || $mm('force_encoding')).call($a, (($b = ((($c = __opal.Object._scope.Encoding) == null ? __opal.cm("Encoding") : $c))._scope).UTF_8 == null ? $b.cm("UTF_8") : $b.UTF_8))
+                      if (($a = (__opal.Object._scope.Asciidoctor)._scope.FORCE_ENCODING) !== false && $a !== nil) {
+                        (($a = l).$force_encoding || $mm('force_encoding')).call($a, (__opal.Object._scope.Encoding)._scope.UTF_8)
                       };
                       if (($b = ($c = (($d = active_tag)['$nil?'] || $mm('nil?')).call($d), ($c === nil || $c === false))) !== false && $b !== nil) {
                         if (($b = (($c = l)['$include?'] || $mm('include?')).call($c, "end::" + (active_tag) + "[]")) !== false && $b !== nil) {
@@ -5428,7 +5284,7 @@ if (segment == null) segment = nil;
                     };
                   }
                   } else {
-                  (($ar = this.lines).$unshift || $mm('unshift')).apply($ar, [].concat((($as = this).$normalize_include_data || $mm('normalize_include_data')).call($as, (($at = (($au = __scope.File) == null ? __opal.cm("File") : $au)).$readlines || $mm('readlines')).call($at, include_file))))
+                  (($ar = this.lines).$unshift || $mm('unshift')).apply($ar, [].concat((($as = this).$normalize_include_data || $mm('normalize_include_data')).call($as, (($at = __scope.File).$readlines || $mm('readlines')).call($at, include_file))))
                 }
               };
               return true;
@@ -5499,7 +5355,7 @@ if (segment == null) segment = nil;
         if (($l = (($o = break_on_blank_lines !== false && break_on_blank_lines !== nil) ? (($r = (($s = this_line).$strip || $mm('strip')).call($s))['$empty?'] || $mm('empty?')).call($r) : $o)) !== false && $l !== nil) {
           return true;
         };
-        if (($l = ($o = (($o = break_on_list_continuation !== false && break_on_list_continuation !== nil) ? ($t = buffer_empty, ($t === nil || $t === false)) : $o), $o !== false && $o !== nil ? (($o = (($t = this_line).$chomp || $mm('chomp')).call($t))['$=='] || $mm('==')).call($o, (($u = __scope.LIST_CONTINUATION) == null ? __opal.cm("LIST_CONTINUATION") : $u)) : $o)) !== false && $l !== nil) {
+        if (($l = ($o = (($o = break_on_list_continuation !== false && break_on_list_continuation !== nil) ? ($t = buffer_empty, ($t === nil || $t === false)) : $o), $o !== false && $o !== nil ? (($o = (($t = this_line).$chomp || $mm('chomp')).call($t))['$=='] || $mm('==')).call($o, __scope.LIST_CONTINUATION) : $o)) !== false && $l !== nil) {
           (($l = options)['$[]='] || $mm('[]=')).call($l, "preserve_last_line", true);
           return true;;
         };
@@ -5520,7 +5376,7 @@ if (segment == null) segment = nil;
           };
           return buffer;
         };
-        if (($aa = (($ab = skip_line_comments !== false && skip_line_comments !== nil) ? (($ac = this_line).$match || $mm('match')).call($ac, (($ad = (($ae = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $ae))['$[]'] || $mm('[]')).call($ad, "comment")) : $ab)) === false || $aa === nil) {
+        if (($aa = (($ab = skip_line_comments !== false && skip_line_comments !== nil) ? (($ac = this_line).$match || $mm('match')).call($ac, (($ad = __scope.REGEXP)['$[]'] || $mm('[]')).call($ad, "comment")) : $ab)) === false || $aa === nil) {
           (($aa = buffer)['$<<'] || $mm('<<')).call($aa, this_line);
           buffer_empty = false;
         };};
@@ -5531,8 +5387,8 @@ if (segment == null) segment = nil;
       };
 
       def.$sanitize_attribute_name = function(name) {
-        var $a, $b;
-        return (($a = (($b = __scope.Lexer) == null ? __opal.cm("Lexer") : $b)).$sanitize_attribute_name || $mm('sanitize_attribute_name')).call($a, name);
+        var $a;
+        return (($a = __scope.Lexer).$sanitize_attribute_name || $mm('sanitize_attribute_name')).call($a, name);
       };
 
       def.$resolve_expr_val = function(str) {
@@ -5569,14 +5425,14 @@ if (segment == null) segment = nil;
       };
 
       def.$normalize_include_data = function(data) {
-        var $a, $b, $c, TMP_12, TMP_13;
-        if (($a = (($b = ((($c = __opal.Object._scope.Asciidoctor) == null ? __opal.cm("Asciidoctor") : $c))._scope).FORCE_ENCODING == null ? $b.cm("FORCE_ENCODING") : $b.FORCE_ENCODING)) !== false && $a !== nil) {
+        var $a, TMP_12, $b, TMP_13, $c;
+        if (($a = (__opal.Object._scope.Asciidoctor)._scope.FORCE_ENCODING) !== false && $a !== nil) {
           return ($a = (($b = data).$map || $mm('map')), $a._p = (TMP_12 = function(line) {
 
-            var self = TMP_12._s || this, $a, $b, $c, $d;
+            var self = TMP_12._s || this, $a, $b;
             if (line == null) line = nil;
 
-            return (($a = (($b = line).$rstrip || $mm('rstrip')).call($b)).$force_encoding || $mm('force_encoding')).call($a, (($c = ((($d = __opal.Object._scope.Encoding) == null ? __opal.cm("Encoding") : $d))._scope).UTF_8 == null ? $c.cm("UTF_8") : $c.UTF_8))
+            return (($a = (($b = line).$rstrip || $mm('rstrip')).call($b)).$force_encoding || $mm('force_encoding')).call($a, (__opal.Object._scope.Encoding)._scope.UTF_8)
           }, TMP_12._s = this, TMP_12), $a).call($b)
           } else {
           return ($a = (($c = data).$map || $mm('map')), $a._p = (TMP_13 = function(line) {
@@ -5590,14 +5446,14 @@ if (segment == null) segment = nil;
       };
 
       def.$normalize_data = function(data) {
-        var $a, $b, $c, TMP_14, TMP_15, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p;
-        if (($a = (($b = ((($c = __opal.Object._scope.Asciidoctor) == null ? __opal.cm("Asciidoctor") : $c))._scope).FORCE_ENCODING == null ? $b.cm("FORCE_ENCODING") : $b.FORCE_ENCODING)) !== false && $a !== nil) {
+        var $a, TMP_14, $b, TMP_15, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p;
+        if (($a = (__opal.Object._scope.Asciidoctor)._scope.FORCE_ENCODING) !== false && $a !== nil) {
           this.lines = ($a = (($b = data).$map || $mm('map')), $a._p = (TMP_14 = function(line) {
 
-            var self = TMP_14._s || this, $a, $b, $c, $d;
+            var self = TMP_14._s || this, $a, $b;
             if (line == null) line = nil;
 
-            return (($a = (($b = line).$rstrip || $mm('rstrip')).call($b)).$force_encoding || $mm('force_encoding')).call($a, (($c = ((($d = __opal.Object._scope.Encoding) == null ? __opal.cm("Encoding") : $d))._scope).UTF_8 == null ? $c.cm("UTF_8") : $c.UTF_8))
+            return (($a = (($b = line).$rstrip || $mm('rstrip')).call($b)).$force_encoding || $mm('force_encoding')).call($a, (__opal.Object._scope.Encoding)._scope.UTF_8)
           }, TMP_14._s = this, TMP_14), $a).call($b)
           } else {
           this.lines = ($a = (($c = data).$map || $mm('map')), $a._p = (TMP_15 = function(line) {
@@ -5638,29 +5494,29 @@ if (segment == null) segment = nil;
       }, nil;
 
       def.$initialize = function(options) {
-        var backend = nil, $case = nil, eruby = nil, template_dir = nil, template_glob = nil, engine = nil, view_opts = nil, slim_loaded = nil, helpers = nil, $a, $b, $c, $d, $e, TMP_1, $f, $g, $h, $i, TMP_2, $j, $k, TMP_3, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, TMP_4, $ac, $ad, TMP_5, $ae, $af, $ag, $ah, $ai;if (options == null) {
+        var backend = nil, $case = nil, eruby = nil, template_dir = nil, template_glob = nil, engine = nil, view_opts = nil, slim_loaded = nil, helpers = nil, $a, $b, $c, $d, TMP_1, $e, $f, $g, $h, $i, TMP_2, $j, $k, TMP_3, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, TMP_4, $ac, $ad, TMP_5, $ae, $af, $ag, $ah;if (options == null) {
           options = __hash2([], {})
         }
         this.debug = ($a = ($b = (($c = options)['$[]'] || $mm('[]')).call($c, "debug"), ($b === nil || $b === false)), ($a === nil || $a === false));
         this.views = __hash2([], {});
         this.compact = (($a = options)['$[]'] || $mm('[]')).call($a, "compact");
         backend = (($b = options)['$[]'] || $mm('[]')).call($b, "backend");
-        if (($d = (($e = __scope.OPAL) == null ? __opal.cm("OPAL") : $e)) !== false && $d !== nil) {
+        if (($d = __scope.OPAL) !== false && $d !== nil) {
           ($d = (($e = ["block_admonition", "block_audio", "block_colist", "block_dlist", "block_example", "block_floating_title", "block_image", "block_listing", "block_literal", "block_olist", "block_open", "block_page_break", "block_paragraph", "block_pass", "block_preamble", "block_quote", "block_ruler", "block_sidebar", "block_table", "block_ulist", "block_verse", "block_video", "embedded", "inline_anchor", "inline_break", "inline_callout", "inline_footnote", "inline_image", "inline_indexterm", "inline_quoted", "section"]).$each || $mm('each')), $d._p = (TMP_1 = function(name) {
 
-            var self = TMP_1._s || this, $a, $b, $c;
+            var self = TMP_1._s || this, $a, $b;
             if (self.views == null) self.views = nil;
 
             if (name == null) name = nil;
 
-            return (($a = self.views)['$[]='] || $mm('[]=')).call($a, name, (($b = (($c = __opal.Object._scope.Template) == null ? __opal.cm("Template") : $c))['$[]'] || $mm('[]')).call($b, "asciidoctor/backends/html5/" + (name)))
+            return (($a = self.views)['$[]='] || $mm('[]=')).call($a, name, (($b = __opal.Object._scope.Template)['$[]'] || $mm('[]')).call($b, "asciidoctor/backends/html5/" + (name)))
           }, TMP_1._s = this, TMP_1), $d).call($e);
           return nil;
         };
         $case = backend;if ((($h = "html5")['$==='] || $mm('===')).call($h, $case) || (($k = "docbook45")['$==='] || $mm('===')).call($k, $case)) {
         eruby = (($d = this).$load_eruby || $mm('load_eruby')).call($d, (($f = options)['$[]'] || $mm('[]')).call($f, "eruby"));
-        (($g = (($h = __scope.Helpers) == null ? __opal.cm("Helpers") : $h)).$require_library || $mm('require_library')).call($g, ($h = "asciidoctor/backends/", $i = backend, typeof($h) === 'number' ? $h + $i : $h['$+']($i)));
-        ($h = (($i = (($j = (($k = __scope.BaseTemplate) == null ? __opal.cm("BaseTemplate") : $k)).$template_classes || $mm('template_classes')).call($j)).$each || $mm('each')), $h._p = (TMP_2 = function(tc) {
+        (($g = __scope.Helpers).$require_library || $mm('require_library')).call($g, ($h = "asciidoctor/backends/", $i = backend, typeof($h) === 'number' ? $h + $i : $h['$+']($i)));
+        ($h = (($i = (($j = __scope.BaseTemplate).$template_classes || $mm('template_classes')).call($j)).$each || $mm('each')), $h._p = (TMP_2 = function(tc) {
 
           var view_name = nil, view_backend = nil, self = TMP_2._s || this, $a, $b, $c, $d, $e, $f, $g, $h;
           if (self.views == null) self.views = nil;
@@ -5679,23 +5535,23 @@ if (segment == null) segment = nil;
           }
         }, TMP_2._s = this, TMP_2), $h).call($i);
         }
-        else {($l = (($m = (($n = __scope.Debug) == null ? __opal.cm("Debug") : $n)).$debug || $mm('debug')), $l._p = (TMP_3 = function() {
+        else {($l = (($m = __scope.Debug).$debug || $mm('debug')), $l._p = (TMP_3 = function() {
 
           var self = TMP_3._s || this;
           
           return "No built-in templates for backend: " + (backend)
         }, TMP_3._s = this, TMP_3), $l).call($m)};
         if (($l = template_dir = (($n = options).$delete || $mm('delete')).call($n, "template_dir")) !== false && $l !== nil) {
-          (($l = (($o = __scope.Helpers) == null ? __opal.cm("Helpers") : $o)).$require_library || $mm('require_library')).call($l, "tilt");
+          (($l = __scope.Helpers).$require_library || $mm('require_library')).call($l, "tilt");
           template_glob = "*";
           if (($o = engine = (($p = options)['$[]'] || $mm('[]')).call($p, "template_engine")) !== false && $o !== nil) {
             template_glob = "*." + (engine);
-            if (($o = (($q = (($r = __scope.File) == null ? __opal.cm("File") : $r))['$directory?'] || $mm('directory?')).call($q, (($r = (($s = __scope.File) == null ? __opal.cm("File") : $s)).$join || $mm('join')).call($r, template_dir, engine))) !== false && $o !== nil) {
-              template_dir = (($o = (($s = __scope.File) == null ? __opal.cm("File") : $s)).$join || $mm('join')).call($o, template_dir, engine)
+            if (($o = (($q = __scope.File)['$directory?'] || $mm('directory?')).call($q, (($r = __scope.File).$join || $mm('join')).call($r, template_dir, engine))) !== false && $o !== nil) {
+              template_dir = (($o = __scope.File).$join || $mm('join')).call($o, template_dir, engine)
             };
           };
-          if (($s = (($t = (($u = __scope.File) == null ? __opal.cm("File") : $u))['$directory?'] || $mm('directory?')).call($t, (($u = (($v = __scope.File) == null ? __opal.cm("File") : $v)).$join || $mm('join')).call($u, template_dir, (($v = options)['$[]'] || $mm('[]')).call($v, "backend")))) !== false && $s !== nil) {
-            template_dir = (($s = (($w = __scope.File) == null ? __opal.cm("File") : $w)).$join || $mm('join')).call($s, template_dir, (($w = options)['$[]'] || $mm('[]')).call($w, "backend"))
+          if (($s = (($t = __scope.File)['$directory?'] || $mm('directory?')).call($t, (($u = __scope.File).$join || $mm('join')).call($u, template_dir, (($v = options)['$[]'] || $mm('[]')).call($v, "backend")))) !== false && $s !== nil) {
+            template_dir = (($s = __scope.File).$join || $mm('join')).call($s, template_dir, (($w = options)['$[]'] || $mm('[]')).call($w, "backend"))
           };
           view_opts = __hash2(["erb", "haml", "slim"], {"erb": __hash2(["trim"], {"trim": "<>"}), "haml": __hash2(["attr_wrapper", "ugly", "escape_attrs"], {"attr_wrapper": "\"", "ugly": true, "escape_attrs": false}), "slim": __hash2(["disable_escape", "sort_attrs", "pretty"], {"disable_escape": true, "sort_attrs": false, "pretty": false})});
           if ((($x = backend)['$=='] || $mm('==')).call($x, "html5")) {
@@ -5703,12 +5559,12 @@ if (segment == null) segment = nil;
           };
           slim_loaded = false;
           helpers = nil;
-          ($ac = (($ad = ($ae = (($af = (($ag = (($ah = __scope.Dir) == null ? __opal.cm("Dir") : $ah)).$glob || $mm('glob')).call($ag, (($ah = (($ai = __scope.File) == null ? __opal.cm("File") : $ai)).$join || $mm('join')).call($ah, template_dir, template_glob))).$select || $mm('select')), $ae._p = (TMP_5 = function(f) {
+          ($ac = (($ad = ($ae = (($af = (($ag = __scope.Dir).$glob || $mm('glob')).call($ag, (($ah = __scope.File).$join || $mm('join')).call($ah, template_dir, template_glob))).$select || $mm('select')), $ae._p = (TMP_5 = function(f) {
 
-            var self = TMP_5._s || this, $a, $b;
+            var self = TMP_5._s || this, $a;
             if (f == null) f = nil;
 
-            return (($a = (($b = __scope.File) == null ? __opal.cm("File") : $b))['$file?'] || $mm('file?')).call($a, f)
+            return (($a = __scope.File)['$file?'] || $mm('file?')).call($a, f)
           }, TMP_5._s = this, TMP_5), $ae).call($af)).$each || $mm('each')), $ac._p = (TMP_4 = function(template) {
 
             var basename = nil, name_parts = nil, view_name = nil, ext_name = nil, self = TMP_4._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n;
@@ -5716,7 +5572,7 @@ if (segment == null) segment = nil;
 
             if (template == null) template = nil;
 
-            basename = (($a = (($b = __scope.File) == null ? __opal.cm("File") : $b)).$basename || $mm('basename')).call($a, template);
+            basename = (($a = __scope.File).$basename || $mm('basename')).call($a, template);
             if ((($b = basename)['$=='] || $mm('==')).call($b, "helpers.rb")) {
               helpers = template;
               return nil;;
@@ -5728,12 +5584,12 @@ if (segment == null) segment = nil;
             view_name = (($f = name_parts).$first || $mm('first')).call($f);
             ext_name = (($g = name_parts).$last || $mm('last')).call($g);
             if (($h = (($i = (($j = ext_name)['$=='] || $mm('==')).call($j, "slim")) ? ($k = slim_loaded, ($k === nil || $k === false)) : $i)) !== false && $h !== nil) {
-              (($h = (($i = __scope.Helpers) == null ? __opal.cm("Helpers") : $i)).$require_library || $mm('require_library')).call($h, "slim")
+              (($h = __scope.Helpers).$require_library || $mm('require_library')).call($h, "slim")
             };
-            if (($i = (($k = (($l = __scope.Tilt) == null ? __opal.cm("Tilt") : $l))['$registered?'] || $mm('registered?')).call($k, ext_name)) === false || $i === nil) {
+            if (($i = (($k = __scope.Tilt)['$registered?'] || $mm('registered?')).call($k, ext_name)) === false || $i === nil) {
               return nil;
             };
-            return (($i = self.views)['$[]='] || $mm('[]=')).call($i, view_name, (($l = (($m = __scope.Tilt) == null ? __opal.cm("Tilt") : $m)).$new || $mm('new')).call($l, template, nil, (($m = view_opts)['$[]'] || $mm('[]')).call($m, (($n = ext_name).$to_sym || $mm('to_sym')).call($n))));
+            return (($i = self.views)['$[]='] || $mm('[]=')).call($i, view_name, (($l = __scope.Tilt).$new || $mm('new')).call($l, template, nil, (($m = view_opts)['$[]'] || $mm('[]')).call($m, (($n = ext_name).$to_sym || $mm('to_sym')).call($n))));
           }, TMP_4._s = this, TMP_4), $ac).call($ad);
           if (($ac = (($ae = helpers)['$nil?'] || $mm('nil?')).call($ae)) !== false && $ac !== nil) {
             return nil
@@ -5763,19 +5619,19 @@ if (segment == null) segment = nil;
       };
 
       def.$load_eruby = function(name) {
-        var $a, $b, $c, $d, $e, $f, $g;
-        if (($a = (($b = __scope.OPAL) == null ? __opal.cm("OPAL") : $b)) !== false && $a !== nil) {
+        var $a, $b, $c, $d, $e;
+        if (($a = __scope.OPAL) !== false && $a !== nil) {
           return nil
         };
         if (($a = (($b = (($c = name)['$nil?'] || $mm('nil?')).call($c)), $b !== false && $b !== nil ? $b : ($d = (($e = ["erb", "erubis"])['$include?'] || $mm('include?')).call($e, name), ($d === nil || $d === false)))) !== false && $a !== nil) {
           name = "erb"
         };
-        (($a = (($b = __scope.Helpers) == null ? __opal.cm("Helpers") : $b)).$require_library || $mm('require_library')).call($a, name);
+        (($a = __scope.Helpers).$require_library || $mm('require_library')).call($a, name);
         if ((($b = name)['$=='] || $mm('==')).call($b, "erb")) {
-          return (($d = __opal.Object._scope.ERB) == null ? __opal.cm("ERB") : $d)
+          return __opal.Object._scope.ERB
           } else {
           if ((($d = name)['$=='] || $mm('==')).call($d, "erubis")) {
-            return (($f = ((($g = __opal.Object._scope.Erubis) == null ? __opal.cm("Erubis") : $g))._scope).FastEruby == null ? $f.cm("FastEruby") : $f.FastEruby)
+            return (__opal.Object._scope.Erubis)._scope.FastEruby
             } else {
             return nil
           }
@@ -5807,7 +5663,7 @@ if (segment == null) segment = nil;
   return (function(__base){
     function Asciidoctor() {};
     Asciidoctor = __module(__base, "Asciidoctor", Asciidoctor);
-    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope, $a;
+    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope;
 
     (function(__base, __super){
       function Section() {};
@@ -5854,7 +5710,7 @@ if (segment == null) segment = nil;
         if (($a = ($b = (($b = level)['$nil?'] || $mm('nil?')).call($b), $b !== false && $b !== nil ? ($c = (($d = parent)['$nil?'] || $mm('nil?')).call($d), ($c === nil || $c === false)) : $b)) !== false && $a !== nil) {
           this.level = ($a = (($e = parent).$level || $mm('level')).call($e), $c = 1, typeof($a) === 'number' ? $a + $c : $a['$+']($c))
         };
-        if (($a = ($c = (($c = parent)['$is_a?'] || $mm('is_a?')).call($c, (($f = __scope.Section) == null ? __opal.cm("Section") : $f)), $c !== false && $c !== nil ? (($f = parent).$special || $mm('special')).call($f) : $c)) !== false && $a !== nil) {
+        if (($a = ($c = (($c = parent)['$is_a?'] || $mm('is_a?')).call($c, __scope.Section), $c !== false && $c !== nil ? (($f = parent).$special || $mm('special')).call($f) : $c)) !== false && $a !== nil) {
           this.special = true
           } else {
           this.special = false
@@ -5885,7 +5741,7 @@ if (segment == null) segment = nil;
 
       def.$render = function() {
         var TMP_2, $a, $b, $c, $d;
-        ($a = (($b = (($c = __scope.Debug) == null ? __opal.cm("Debug") : $c)).$debug || $mm('debug')), $a._p = (TMP_2 = function() {
+        ($a = (($b = __scope.Debug).$debug || $mm('debug')), $a._p = (TMP_2 = function() {
 
           var self = TMP_2._s || this;
           
@@ -5917,7 +5773,7 @@ if (segment == null) segment = nil;
           } else {
           return delimiter
         }; return nil; }).call(this));
-        if (($a = ($c = ($c = ($c = (($d = this.level)['$nil?'] || $mm('nil?')).call($d), ($c === nil || $c === false)), $c !== false && $c !== nil ? (($c = this.level)['$>'] || $mm('>')).call($c, 1) : $c), $c !== false && $c !== nil ? (($e = this.parent)['$is_a?'] || $mm('is_a?')).call($e, (($f = __scope.Section) == null ? __opal.cm("Section") : $f)) : $c)) !== false && $a !== nil) {
+        if (($a = ($c = ($c = ($c = (($d = this.level)['$nil?'] || $mm('nil?')).call($d), ($c === nil || $c === false)), $c !== false && $c !== nil ? (($c = this.level)['$>'] || $mm('>')).call($c, 1) : $c), $c !== false && $c !== nil ? (($e = this.parent)['$is_a?'] || $mm('is_a?')).call($e, __scope.Section) : $c)) !== false && $a !== nil) {
           return "" + ((($a = this.parent).$sectnum || $mm('sectnum')).call($a, delimiter)) + (($f = this.index, $g = 1, typeof($f) === 'number' ? $f + $g : $f['$+']($g))) + (append)
           } else {
           return "" + (($f = this.index, $g = 1, typeof($f) === 'number' ? $f + $g : $f['$+']($g))) + (append)
@@ -5939,7 +5795,7 @@ if (segment == null) segment = nil;
       };
 
       return nil;
-    })(Asciidoctor, (($a = __scope.AbstractBlock) == null ? __opal.cm("AbstractBlock") : $a))
+    })(Asciidoctor, __scope.AbstractBlock)
     
   })(self)
 })(Opal);
@@ -5948,7 +5804,7 @@ if (segment == null) segment = nil;
   return (function(__base){
     function Asciidoctor() {};
     Asciidoctor = __module(__base, "Asciidoctor", Asciidoctor);
-    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope, $a;
+    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope;
 
     (function(__base, __super){
       function Table() {};
@@ -6057,7 +5913,7 @@ if (segment == null) segment = nil;
         var pcwidth = nil, pcwidth_intval = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w;
         super_TMP_1.apply(this, [parent, "table"]);
         this.caption = nil;
-        this.rows = (($a = (($b = __scope.Rows) == null ? __opal.cm("Rows") : $b)).$new || $mm('new')).call($a, [], [], []);
+        this.rows = (($a = __scope.Rows).$new || $mm('new')).call($a, [], [], []);
         this.columns = [];
         if (($b = (($c = this.attributes)['$has_key?'] || $mm('has_key?')).call($c, "tablepcwidth")) === false || $b === nil) {
           pcwidth = (($b = attributes)['$[]'] || $mm('[]')).call($b, "width");
@@ -6084,7 +5940,7 @@ if (segment == null) segment = nil;
 if (col_spec == null) col_spec = nil;
 
           total_width = (($a = total_width)['$+'] || $mm('+')).call($a, (($b = col_spec)['$[]'] || $mm('[]')).call($b, "width"));
-          (($c = collector)['$<<'] || $mm('<<')).call($c, (($d = (($e = __scope.Column) == null ? __opal.cm("Column") : $e)).$new || $mm('new')).call($d, self, (($e = collector).$size || $mm('size')).call($e), col_spec));
+          (($c = collector)['$<<'] || $mm('<<')).call($c, (($d = __scope.Column).$new || $mm('new')).call($d, self, (($e = collector).$size || $mm('size')).call($e), col_spec));
           return collector;
         }, TMP_2._s = this, TMP_2), $a).call($b, []);
         if (($a = ($c = (($d = this.columns)['$empty?'] || $mm('empty?')).call($d), ($c === nil || $c === false))) !== false && $a !== nil) {
@@ -6123,7 +5979,7 @@ if (col_spec == null) col_spec = nil;
 
       def.$render = function() {
         var TMP_5, $a, $b, $c, $d;
-        ($a = (($b = (($c = __scope.Debug) == null ? __opal.cm("Debug") : $c)).$debug || $mm('debug')), $a._p = (TMP_5 = function() {
+        ($a = (($b = __scope.Debug).$debug || $mm('debug')), $a._p = (TMP_5 = function() {
 
           var self = TMP_5._s || this;
           
@@ -6134,7 +5990,7 @@ if (col_spec == null) col_spec = nil;
       };
 
       return nil;
-    })(Asciidoctor, (($a = __scope.AbstractBlock) == null ? __opal.cm("AbstractBlock") : $a));
+    })(Asciidoctor, __scope.AbstractBlock);
 
     (function(__base, __super){
       function Column() {};
@@ -6171,7 +6027,7 @@ if (col_spec == null) col_spec = nil;
       };
 
       return nil;
-    })((($a = __scope.Table) == null ? __opal.cm("Table") : $a), (($a = __scope.AbstractNode) == null ? __opal.cm("AbstractNode") : $a));
+    })(__scope.Table, __scope.AbstractNode);
 
     (function(__base, __super){
       function Cell() {};
@@ -6232,7 +6088,7 @@ if (col_spec == null) col_spec = nil;
         return nil
         }
         else if ((($p = "asciidoc")['$==='] || $mm('===')).call($p, $case)) {
-        return this.inner_document = (($o = (($p = __scope.Document) == null ? __opal.cm("Document") : $p)).$new || $mm('new')).call($o, this.text, __hash2(["header_footer", "parent"], {"header_footer": false, "parent": this.document}))
+        return this.inner_document = (($o = __scope.Document).$new || $mm('new')).call($o, this.text, __hash2(["header_footer", "parent"], {"header_footer": false, "parent": this.document}))
         }
         else {return this.text = (($q = this.text).$tr || $mm('tr')).call($q, "\n", " ")} }).call(this);
       };
@@ -6243,12 +6099,12 @@ if (col_spec == null) col_spec = nil;
       };
 
       def.$content = function() {
-        var style = nil, $a, $b, $c, TMP_8, $d, $e, $f, $g, $h, $i;
+        var style = nil, $a, $b, $c, TMP_8, $d, $e, $f, $g;
         style = (($a = this).$attr || $mm('attr')).call($a, "style", nil, false);
         if ((($b = style)['$=='] || $mm('==')).call($b, "asciidoc")) {
           return (($c = this.inner_document).$render || $mm('render')).call($c)
           } else {
-          return ($d = (($e = (($f = (($g = this).$text || $mm('text')).call($g)).$split || $mm('split')).call($f, (($h = ((($i = __scope.Table) == null ? __opal.cm("Table") : $i))._scope).BLANK_LINE_PATTERN == null ? $h.cm("BLANK_LINE_PATTERN") : $h.BLANK_LINE_PATTERN))).$map || $mm('map')), $d._p = (TMP_8 = function(p) {
+          return ($d = (($e = (($f = (($g = this).$text || $mm('text')).call($g)).$split || $mm('split')).call($f, (__scope.Table)._scope.BLANK_LINE_PATTERN)).$map || $mm('map')), $d._p = (TMP_8 = function(p) {
 
             var self = TMP_8._s || this, $a, $b, $c, $d;
             if (p == null) p = nil;
@@ -6256,7 +6112,7 @@ if (col_spec == null) col_spec = nil;
             if (($a = (($b = ($c = style, ($c === nil || $c === false))), $b !== false && $b !== nil ? $b : (($c = style)['$=='] || $mm('==')).call($c, "header"))) !== false && $a !== nil) {
               return p
               } else {
-              return (($a = (($b = (($d = __scope.Inline) == null ? __opal.cm("Inline") : $d)).$new || $mm('new')).call($b, (($d = self).$parent || $mm('parent')).call($d), "quoted", p, __hash2(["type"], {"type": style}))).$render || $mm('render')).call($a)
+              return (($a = (($b = __scope.Inline).$new || $mm('new')).call($b, (($d = self).$parent || $mm('parent')).call($d), "quoted", p, __hash2(["type"], {"type": style}))).$render || $mm('render')).call($a)
             }
           }, TMP_8._s = this, TMP_8), $d).call($e)
         };
@@ -6269,7 +6125,7 @@ if (col_spec == null) col_spec = nil;
       };
 
       return nil;
-    })((($a = __scope.Table) == null ? __opal.cm("Table") : $a), (($a = __scope.AbstractNode) == null ? __opal.cm("AbstractNode") : $a));
+    })(__scope.Table, __scope.AbstractNode);
 
     (function(__base, __super){
       function ParserContext() {};
@@ -6327,18 +6183,18 @@ if (col_spec == null) col_spec = nil;
         this.table = table;
         if (($a = (($b = attributes)['$has_key?'] || $mm('has_key?')).call($b, "format")) !== false && $a !== nil) {
           this.format = (($a = attributes)['$[]'] || $mm('[]')).call($a, "format");
-          if (($c = ($d = (($e = (($f = ((($g = __scope.Table) == null ? __opal.cm("Table") : $g))._scope).DATA_FORMATS == null ? $f.cm("DATA_FORMATS") : $f.DATA_FORMATS))['$include?'] || $mm('include?')).call($e, this.format), ($d === nil || $d === false))) !== false && $c !== nil) {
+          if (($c = ($d = (($e = (__scope.Table)._scope.DATA_FORMATS)['$include?'] || $mm('include?')).call($e, this.format), ($d === nil || $d === false))) !== false && $c !== nil) {
             (($c = this).$raise || $mm('raise')).call($c, "Illegal table format: " + (this.format))
           };
           } else {
-          this.format = (($d = ((($f = __scope.Table) == null ? __opal.cm("Table") : $f))._scope).DEFAULT_DATA_FORMAT == null ? $d.cm("DEFAULT_DATA_FORMAT") : $d.DEFAULT_DATA_FORMAT)
+          this.format = (__scope.Table)._scope.DEFAULT_DATA_FORMAT
         };
         if (($d = ($f = (($f = (($g = this.format)['$=='] || $mm('==')).call($g, "psv")) ? ($h = (($i = attributes)['$has_key?'] || $mm('has_key?')).call($i, "separator"), ($h === nil || $h === false)) : $f), $f !== false && $f !== nil ? (($f = (($h = table).$document || $mm('document')).call($h))['$nested?'] || $mm('nested?')).call($f) : $f)) !== false && $d !== nil) {
           this.delimiter = "!"
           } else {
-          this.delimiter = (($d = attributes).$fetch || $mm('fetch')).call($d, "separator", (($j = (($k = ((($l = __scope.Table) == null ? __opal.cm("Table") : $l))._scope).DEFAULT_DELIMITERS == null ? $k.cm("DEFAULT_DELIMITERS") : $k.DEFAULT_DELIMITERS))['$[]'] || $mm('[]')).call($j, this.format))
+          this.delimiter = (($d = attributes).$fetch || $mm('fetch')).call($d, "separator", (($j = (__scope.Table)._scope.DEFAULT_DELIMITERS)['$[]'] || $mm('[]')).call($j, this.format))
         };
-        this.delimiter_re = (new RegExp("" + (($k = (($l = __scope.Regexp) == null ? __opal.cm("Regexp") : $l)).$escape || $mm('escape')).call($k, this.delimiter)));
+        this.delimiter_re = (new RegExp("" + (($k = __scope.Regexp).$escape || $mm('escape')).call($k, this.delimiter)));
         this.col_count = (function() { if (($l = (($m = (($n = table).$columns || $mm('columns')).call($n))['$empty?'] || $mm('empty?')).call($m)) !== false && $l !== nil) {
           return -1
           } else {
@@ -6476,12 +6332,12 @@ if (col_spec == null) col_spec = nil;
           if (i == null) i = nil;
 
           if ((($a = self.col_count)['$=='] || $mm('==')).call($a, -1)) {
-            (($b = (($c = self.table).$columns || $mm('columns')).call($c))['$<<'] || $mm('<<')).call($b, (($d = (($e = ((($f = __scope.Table) == null ? __opal.cm("Table") : $f))._scope).Column == null ? $e.cm("Column") : $e.Column)).$new || $mm('new')).call($d, self.table, ($e = ($g = (($i = self.current_row).$size || $mm('size')).call($i), $h = i, typeof($g) === 'number' ? $g + $h : $g['$+']($h)), $f = 1, typeof($e) === 'number' ? $e - $f : $e['$-']($f))));
+            (($b = (($c = self.table).$columns || $mm('columns')).call($c))['$<<'] || $mm('<<')).call($b, (($d = (__scope.Table)._scope.Column).$new || $mm('new')).call($d, self.table, ($e = ($g = (($i = self.current_row).$size || $mm('size')).call($i), $h = i, typeof($g) === 'number' ? $g + $h : $g['$+']($h)), $f = 1, typeof($e) === 'number' ? $e - $f : $e['$-']($f))));
             column = (($e = (($f = self.table).$columns || $mm('columns')).call($f)).$last || $mm('last')).call($e);
             } else {
             column = (($g = (($h = self.table).$columns || $mm('columns')).call($h))['$[]'] || $mm('[]')).call($g, (($j = self.current_row).$size || $mm('size')).call($j))
           };
-          cell = (($k = (($l = ((($m = __scope.Table) == null ? __opal.cm("Table") : $m))._scope).Cell == null ? $l.cm("Cell") : $l.Cell)).$new || $mm('new')).call($k, column, cell_text, cell_spec);
+          cell = (($k = (__scope.Table)._scope.Cell).$new || $mm('new')).call($k, column, cell_text, cell_spec);
           if (($l = (($m = (($n = (($o = cell).$rowspan || $mm('rowspan')).call($o))['$nil?'] || $mm('nil?')).call($n)), $m !== false && $m !== nil ? $m : (($p = (($q = cell).$rowspan || $mm('rowspan')).call($q))['$=='] || $mm('==')).call($p, 1))) === false || $l === nil) {
             (($l = self).$activate_rowspan || $mm('activate_rowspan')).call($l, (($m = cell).$rowspan || $mm('rowspan')).call($m), (($r = (($s = cell).$colspan || $mm('colspan')).call($s)), $r !== false && $r !== nil ? $r : 1))
           };
@@ -6541,7 +6397,7 @@ if (col_spec == null) col_spec = nil;
       };
 
       return nil;
-    })((($a = __scope.Table) == null ? __opal.cm("Table") : $a), null);
+    })(__scope.Table, null);
     
   })(self)
 })(Opal);
@@ -6557,8 +6413,8 @@ if (col_spec == null) col_spec = nil;
   })(self)
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag;
     if (self.id == null) self.id = nil;
@@ -6602,8 +6458,8 @@ if (col_spec == null) col_spec = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_admonition")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae;
     if (self.id == null) self.id = nil;
@@ -6655,8 +6511,8 @@ if (col_spec == null) col_spec = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_audio")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, TMP_2, $r, $s, $t, $u, TMP_3, $v, $w, $x, $y, $z;
     if (self.id == null) self.id = nil;
@@ -6727,8 +6583,8 @@ if (i == null) i = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_colist")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, TMP_2, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, TMP_3, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, $bb, $bc, $bd, $be, $bf, $bg, $bh, TMP_4, $bi, $bj, $bk, $bl, $bm;
     if (self.id == null) self.id = nil;
@@ -6909,8 +6765,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_dlist")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r;
     if (self.id == null) self.id = nil;
@@ -6944,8 +6800,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_example")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i;
     if (self.level == null) self.level = nil;
@@ -6961,8 +6817,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_floating_title")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, $bb, $bc, $bd, $be, $bf, $bg, $bh, $bi, $bj, $bk, $bl, $bm, $bn, $bo, $bp, $bq, $br, $bs, $bt, $bu, $bv;
     if (self.id == null) self.id = nil;
@@ -7062,8 +6918,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_image")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa;
     if (self.id == null) self.id = nil;
@@ -7107,8 +6963,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_listing")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o;
     if (self.id == null) self.id = nil;
@@ -7138,8 +6994,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_literal")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, TMP_2, $w, $x, $y, $z;
     if (self.id == null) self.id = nil;
@@ -7197,8 +7053,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_olist")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar;
     if (self.parent == null) self.parent = nil;
@@ -7261,8 +7117,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_open")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b;
     
@@ -7272,8 +7128,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_page_break")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o;
     if (self.id == null) self.id = nil;
@@ -7303,8 +7159,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_paragraph")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f;
     
@@ -7317,8 +7173,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_pass")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g;
     
@@ -7331,8 +7187,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_preamble")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai;
     if (self.id == null) self.id = nil;
@@ -7382,8 +7238,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_quote")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b;
     
@@ -7393,8 +7249,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_ruler")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p;
     if (self.id == null) self.id = nil;
@@ -7424,8 +7280,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_sidebar")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, TMP_2, $al, $am, $an, TMP_3, $ao, $ap, $aq, TMP_4, $ar, $as, TMP_9, $at, $au, $av;
     if (self.id == null) self.id = nil;
@@ -7611,8 +7467,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_table")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, TMP_2, $p, $q, $r, $s;
     if (self.id == null) self.id = nil;
@@ -7662,8 +7518,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_ulist")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah;
     if (self.id == null) self.id = nil;
@@ -7713,8 +7569,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_verse")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at;
     if (self.id == null) self.id = nil;
@@ -7784,8 +7640,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/block_video")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, TMP_2, $t, $u, $v, $w;
     if (self.id == null) self.id = nil;
@@ -7823,8 +7679,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/embedded")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, $case = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y;
     if (self.type == null) self.type = nil;
@@ -7863,8 +7719,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/inline_anchor")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d;
     if (self.text == null) self.text = nil;
@@ -7878,8 +7734,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/inline_break")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g;
     if (self.text == null) self.text = nil;
@@ -7898,8 +7754,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/inline_callout")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, idx = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l;
     if (self.type == null) self.type = nil;
@@ -7924,8 +7780,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/inline_footnote")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad;
     if (self.target == null) self.target = nil;
@@ -7970,8 +7826,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/inline_image")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f;
     if (self.type == null) self.type = nil;
@@ -7991,8 +7847,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/inline_indexterm")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, text_span = nil, $case = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al;
     if (self.text == null) self.text = nil;
@@ -8051,8 +7907,8 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/inline_quoted")
 })(Opal);
 (function(__opal) {
-  var TMP_1, $a, $b, $c, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
-  return ($a = (($b = (($c = __scope.ERB) == null ? __opal.cm("ERB") : $c)).$new || $mm('new')), $a._p = (TMP_1 = function() {
+  var TMP_1, $a, $b, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice;
+  return ($a = (($b = __scope.ERB).$new || $mm('new')), $a._p = (TMP_1 = function() {
 
     var out = nil, title_html = nil, self = TMP_1._s || this, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au;
     if (self.level == null) self.level = nil;
@@ -8111,23 +7967,23 @@ if (dd == null) dd = nil;
   }, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/html5/section")
 })(Opal);
 (function(__opal) {
-  var $a, $b, $c, $d, $e, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __gvars = __opal.gvars, __module = __opal.module, __hash2 = __opal.hash2;
+  var $a, $b, $c, $d, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __gvars = __opal.gvars, __module = __opal.module, __hash2 = __opal.hash2;
   if (($a = (__scope.RUBY_ENGINE != null)) === false || $a === nil) {
     __scope.RUBY_ENGINE = "unknown"
   };
-  __scope.OPAL = (($a = (($b = __scope.RUBY_ENGINE) == null ? __opal.cm("RUBY_ENGINE") : $b))['$=='] || $mm('==')).call($a, "opal");
-  if (($b = (($c = __scope.OPAL) == null ? __opal.cm("OPAL") : $c)) !== false && $b !== nil) {
+  __scope.OPAL = (($a = __scope.RUBY_ENGINE)['$=='] || $mm('==')).call($a, "opal");
+  if (($b = __scope.OPAL) !== false && $b !== nil) {
     
     } else {
-    if ((($b = (($c = __scope.RUBY_VERSION) == null ? __opal.cm("RUBY_VERSION") : $c))['$<'] || $mm('<')).call($b, "1.9")) {
+    if ((($b = __scope.RUBY_VERSION)['$<'] || $mm('<')).call($b, "1.9")) {
       
     };
   };
-  (($c = __gvars[":"]).$unshift || $mm('unshift')).call($c, (($d = (($e = __scope.File) == null ? __opal.cm("File") : $e)).$dirname || $mm('dirname')).call($d, "asciidoctor"));
+  (($c = __gvars[":"]).$unshift || $mm('unshift')).call($c, (($d = __scope.File).$dirname || $mm('dirname')).call($d, "asciidoctor"));
   return (function(__base){
     function Asciidoctor() {};
     Asciidoctor = __module(__base, "Asciidoctor", Asciidoctor);
-    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, TMP_1, $ac, $ad, $ae, TMP_2, TMP_5, TMP_6, TMP_8, $af;
+    var def = Asciidoctor.prototype, __scope = Asciidoctor._scope, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, TMP_1, $ab, $ac, $ad, TMP_2, TMP_5, TMP_6, TMP_8, $ae;
 
     (function(__base){
       function SafeMode() {};
@@ -8144,19 +8000,19 @@ if (dd == null) dd = nil;
       
     })(Asciidoctor);
 
-    __scope.ROOT_PATH = (($a = (($b = __scope.File) == null ? __opal.cm("File") : $b)).$expand_path || $mm('expand_path')).call($a, (($b = (($c = __scope.File) == null ? __opal.cm("File") : $c)).$join || $mm('join')).call($b, (($c = (($d = __scope.File) == null ? __opal.cm("File") : $d)).$dirname || $mm('dirname')).call($c, "asciidoctor"), ".."));
+    __scope.ROOT_PATH = (($a = __scope.File).$expand_path || $mm('expand_path')).call($a, (($b = __scope.File).$join || $mm('join')).call($b, (($c = __scope.File).$dirname || $mm('dirname')).call($c, "asciidoctor"), ".."));
 
-    __scope.FORCE_ENCODING = ($d = ($d = ($d = (($e = __scope.OPAL) == null ? __opal.cm("OPAL") : $e), ($d === nil || $d === false)), $d !== false && $d !== nil ? (($d = (($e = __scope.RUBY_VERSION) == null ? __opal.cm("RUBY_VERSION") : $e))['$>'] || $mm('>')).call($d, "1.9") : $d), $d !== false && $d !== nil ? ($e = (($f = (($g = (($h = __scope.Encoding) == null ? __opal.cm("Encoding") : $h)).$default_external || $mm('default_external')).call($g))['$=='] || $mm('==')).call($f, (($h = ((($i = __scope.Encoding) == null ? __opal.cm("Encoding") : $i))._scope).UTF_8 == null ? $h.cm("UTF_8") : $h.UTF_8)), ($e === nil || $e === false)) : $d);
+    __scope.FORCE_ENCODING = ($d = ($d = ($d = __scope.OPAL, ($d === nil || $d === false)), $d !== false && $d !== nil ? (($d = __scope.RUBY_VERSION)['$>'] || $mm('>')).call($d, "1.9") : $d), $d !== false && $d !== nil ? ($e = (($f = (($g = __scope.Encoding).$default_external || $mm('default_external')).call($g))['$=='] || $mm('==')).call($f, (__scope.Encoding)._scope.UTF_8), ($e === nil || $e === false)) : $d);
 
     __scope.DEFAULT_DOCTYPE = "article";
 
     __scope.DEFAULT_BACKEND = "html5";
 
-    __scope.DEFAULT_STYLESHEET_PATH = (($e = (($h = __scope.File) == null ? __opal.cm("File") : $h)).$join || $mm('join')).call($e, (($h = __scope.ROOT_PATH) == null ? __opal.cm("ROOT_PATH") : $h), "stylesheets", "asciidoctor.css");
+    __scope.DEFAULT_STYLESHEET_PATH = (($e = __scope.File).$join || $mm('join')).call($e, __scope.ROOT_PATH, "stylesheets", "asciidoctor.css");
 
     __scope.DEFAULT_STYLESHEET_KEYS = (($h = ["", "DEFAULT"]).$to_set || $mm('to_set')).call($h);
 
-    __scope.DEFAULT_STYLESHEET_NAME = (($i = (($j = __scope.File) == null ? __opal.cm("File") : $j)).$basename || $mm('basename')).call($i, (($j = __scope.DEFAULT_STYLESHEET_PATH) == null ? __opal.cm("DEFAULT_STYLESHEET_PATH") : $j));
+    __scope.DEFAULT_STYLESHEET_NAME = (($i = __scope.File).$basename || $mm('basename')).call($i, __scope.DEFAULT_STYLESHEET_PATH);
 
     __scope.BACKEND_ALIASES = __hash2(["html", "docbook"], {"html": "html5", "docbook": "docbook45"});
 
@@ -8172,7 +8028,7 @@ if (dd == null) dd = nil;
 
     __scope.VERBATIM_STYLES = (($l = ["literal", "listing", "source", "verse"]).$to_set || $mm('to_set')).call($l);
 
-    __scope.DELIMITED_BLOCKS = __hash2(["--", "----", "....", "====", "****", "____", "++++", "|===", "!===", "////", "```", "~~~"], {"--": ["open", (($m = ["comment", "example", "literal", "listing", "pass", "quote", "sidebar", "source", "verse", "admonition", "abstract", "partintro"]).$to_set || $mm('to_set')).call($m)], "----": ["listing", (($n = ["literal", "source"]).$to_set || $mm('to_set')).call($n)], "....": ["literal", (($o = ["listing", "source"]).$to_set || $mm('to_set')).call($o)], "====": ["example", (($p = ["admonition"]).$to_set || $mm('to_set')).call($p)], "****": ["sidebar", (($q = (($r = __scope.Set) == null ? __opal.cm("Set") : $r)).$new || $mm('new')).call($q)], "____": ["quote", (($r = ["verse"]).$to_set || $mm('to_set')).call($r)], "++++": ["pass", (($s = (($t = __scope.Set) == null ? __opal.cm("Set") : $t)).$new || $mm('new')).call($s)], "|===": ["table", (($t = (($u = __scope.Set) == null ? __opal.cm("Set") : $u)).$new || $mm('new')).call($t)], "!===": ["table", (($u = (($v = __scope.Set) == null ? __opal.cm("Set") : $v)).$new || $mm('new')).call($u)], "////": ["comment", (($v = (($w = __scope.Set) == null ? __opal.cm("Set") : $w)).$new || $mm('new')).call($v)], "```": ["fenced_code", (($w = (($x = __scope.Set) == null ? __opal.cm("Set") : $x)).$new || $mm('new')).call($w)], "~~~": ["fenced_code", (($x = (($y = __scope.Set) == null ? __opal.cm("Set") : $y)).$new || $mm('new')).call($x)]});
+    __scope.DELIMITED_BLOCKS = __hash2(["--", "----", "....", "====", "****", "____", "++++", "|===", "!===", "////", "```", "~~~"], {"--": ["open", (($m = ["comment", "example", "literal", "listing", "pass", "quote", "sidebar", "source", "verse", "admonition", "abstract", "partintro"]).$to_set || $mm('to_set')).call($m)], "----": ["listing", (($n = ["literal", "source"]).$to_set || $mm('to_set')).call($n)], "....": ["literal", (($o = ["listing", "source"]).$to_set || $mm('to_set')).call($o)], "====": ["example", (($p = ["admonition"]).$to_set || $mm('to_set')).call($p)], "****": ["sidebar", (($q = __scope.Set).$new || $mm('new')).call($q)], "____": ["quote", (($r = ["verse"]).$to_set || $mm('to_set')).call($r)], "++++": ["pass", (($s = __scope.Set).$new || $mm('new')).call($s)], "|===": ["table", (($t = __scope.Set).$new || $mm('new')).call($t)], "!===": ["table", (($u = __scope.Set).$new || $mm('new')).call($u)], "////": ["comment", (($v = __scope.Set).$new || $mm('new')).call($v)], "```": ["fenced_code", (($w = __scope.Set).$new || $mm('new')).call($w)], "~~~": ["fenced_code", (($x = __scope.Set).$new || $mm('new')).call($x)]});
 
     __scope.BREAK_LINES = __hash2(["'''", "<<<"], {"'''": "ruler", "<<<": "page_break"});
 
@@ -8194,38 +8050,38 @@ if (dd == null) dd = nil;
 
     __scope.COMPLIANCE = __hash2(["block_terminates_paragraph", "strict_verbatim_paragraphs", "congruent_block_delimiters"], {"block_terminates_paragraph": true, "strict_verbatim_paragraphs": true, "congruent_block_delimiters": true});
 
-    __scope.REGEXP = __hash2(["admonition_inline", "anchor", "anchor_embedded", "anchor_macro", "any_blk", "any_list", "attr_entry", "attr_conditional", "attr_continue", "attr_delete", "blk_attr_list", "attr_line", "attr_ref", "author_info", "biblio_macro", "callout_render", "callout_scan", "colist", "comment_blk", "comment", "csv_delimiter", "semicolon_delim", "scsv_csv_delim", "space_delim", "escaped_space", "digits", "dlist", "dlist_siblings", "footnote_macro", "media_blk_macro", "image_macro", "indexterm_macro", "indexterm2_macro", "leading_blanks", "leading_parent_dirs", "line_break", "link_inline", "link_macro", "email_inline", "lit_par", "olist", "break_line", "pass_macro", "pass_macro_basic", "pass_lit", "pass_placeholder", "revision_info", "single_quote_esc", "illegal_attr_name_chars", "table_colspec", "table_cellspec", "blk_title", "dbl_quoted", "m_dbl_quoted", "section_title", "section_name", "section_underline", "toc", "ulist", "xref_macro", "ifdef_macro", "eval_expr", "include_macro", "uri_sniff", "uri_encode_chars"], {"admonition_inline": (new RegExp("^(" + ($y = (($aa = (($ab = __scope.ADMONITION_STYLES) == null ? __opal.cm("ADMONITION_STYLES") : $ab)).$to_a || $mm('to_a')).call($aa), $z = "|", typeof($y) === 'number' ? $y * $z : $y['$*']($z)) + "):\\s")), "anchor": /^\[\[([^\s\[\]]+)\]\]$/, "anchor_embedded": /^(.*?)\s*\[\[([^\[\]]+)\]\]$/, "anchor_macro": /\\?\[\[([\w":].*?)\]\]/, "any_blk": /^(?:--|(?:-|\.|=|\*|_|\+|\/){4,}|[\|!]={3,}|(?:`|~){3,}.*)$/i, "any_list": /^(?:<?\d+>[ \t]+[\x21-\x7E]|[ \t]*(?:(?:-|\*|\.){1,5}|\d+\.|[A-Za-z]\.|[IVXivx]+\))[ \t]+[\x21-\x7E]|[ \t]*.*?(?::{2,4}|;;)(?:[ \t]+[\x21-\x7E]|$))/, "attr_entry": /^:(\w.*?):(?:[ \t]+(.*))?$/, "attr_conditional": /^\s*\{([^\?]+)\?\s*([^\}]+)\s*\}/, "attr_continue": /^[ \t]*(.*)[ \t]\+[ \t]*$/, "attr_delete": /^:([^:]+)!:$/, "blk_attr_list": /^\[(|[ \t]*[\w\{,"'].*)\]$/, "attr_line": /^\[(|[ \t]*[\w\{,"'].*|\[[^\[\]]*\])\]$/, "attr_ref": /(\\?)\{(\w+(?:[\-:]\w+)*)(\\?)\}/, "author_info": /^(\w[\w\-'.]*)(?: +(\w[\w\-'.]*))?(?: +(\w[\w\-'.]*))?(?: +<([^>]+)>)?$/, "biblio_macro": /\\?\[\[\[([\w:][\w:.-]*?)\]\]\]/, "callout_render": /\\?&lt;(\d+)&gt;/, "callout_scan": /\\?<(\d+)>/, "colist": /^<?(\d+)>[ \t]+(.*)/, "comment_blk": /^\/{4,}$/i, "comment": /^\/\/(?:[^\/]|$)/i, "csv_delimiter": /[ \t]*,[ \t]*/, "semicolon_delim": /[ \t]*;[ \t]*/, "scsv_csv_delim": /[ \t]*[,;][ \t]*/, "space_delim": /([^\\])[ \t]+/, "escaped_space": /\\([ \t])/, "digits": /^\d+$/, "dlist": /^[ \t]*(.*?)(:{2,4}|;;)(?:[ \t]+(.*))?$/, "dlist_siblings": __hash2(["::", ":::", "::::", ";;"], {"::": /^[ \t]*((?:.*[^:])?)(::)(?:[ \t]+(.*))?$/, ":::": /^[ \t]*((?:.*[^:])?)(:::)(?:[ \t]+(.*))?$/, "::::": /^[ \t]*((?:.*[^:])?)(::::)(?:[ \t]+(.*))?$/, ";;": /^[ \t]*(.*)(;;)(?:[ \t]+(.*))?$/}), "footnote_macro": /\\?(footnote|footnoteref):\[((?:\\\]|[^\]])*?)\]/, "media_blk_macro": /^(image|video|audio)::(\S+?)\[((?:\\\]|[^\]])*?)\]$/, "image_macro": /\\?image:([^:\[]+)\[((?:\\\]|[^\]])*?)\]/, "indexterm_macro": /\\?(?:indexterm:(?:\[((?:\\\]|[^\]])*?)\])|\(\(\((.*?)\)\)\)(?!\)))/i, "indexterm2_macro": /\\?(?:indexterm2:(?:\[((?:\\\]|[^\]])*?)\])|\(\((.*?)\)\)(?!\)))/i, "leading_blanks": /^([ \t]*)/, "leading_parent_dirs": /^(?:\.\.\/)*/, "line_break": (($y = (($z = __scope.Regexp) == null ? __opal.cm("Regexp") : $z)).$new || $mm('new')).call($y, "^(.*)[ \\t]\\+$", "m"), "link_inline": /(^|link:|\s|>|&lt;|[\(\)\[\]])(\\?(?:https?|ftp):\/\/[^\s\[<]*[^\s.,\[<])(?:\[((?:\\\]|[^\]])*?)\])?/i, "link_macro": /\\?(?:link|mailto):([^\s\[]+)(?:\[((?:\\\]|[^\]])*?)\])/, "email_inline": /[\\>:]?\w[\w.%+-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,4}\b/, "lit_par": /^([ \t]+.*)$/, "olist": /^[ \t]*(\.{1,5}|\d+\.|[A-Za-z]\.|[IVXivx]+\))[ \t]+(.*)$/, "break_line": /^('|<){3,}$/, "pass_macro": /\\?(?:(\+{3}|\${2})(.*?)\1|pass:([a-z,]*)\[((?:\\\]|[^\]])*?)\])/i, "pass_macro_basic": /^pass:([a-z,]*)\[(.*)\]$/, "pass_lit": /(^|[^`\w])(\\?`([^`\s]|[^`\s].*?\S)`)(?![`\w])/i, "pass_placeholder": /\x0(\d+)\x0/, "revision_info": /^(?:\D*(.*?),)?(?:\s*(?!:)(.*?))(?:\s*(?!^):\s*(.*))?$/, "single_quote_esc": /(\w)\\'(\w)/, "illegal_attr_name_chars": /[^\w\-]/, "table_colspec": /^(?:(\d+)\*)?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?(\d+)?([a-z])?$/, "table_cellspec": __hash2(["start", "end"], {"start": /^[ \t]*(?:(\d+(?:\.\d*)?|(?:\d*\.)?\d+)([*+]))?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?([a-z])?\|/, "end": /[ \t]+(?:(\d+(?:\.\d*)?|(?:\d*\.)?\d+)([*+]))?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?([a-z])?$/}), "blk_title": /^\.([^\s.].*)$/, "dbl_quoted": /^("|)(.*)\1$/, "m_dbl_quoted": /^("|)(.*)\1$/i, "section_title": /^(={1,5})\s+(\S.*?)(?:\s*\[\[([^\[]+)\]\])?(?:\s+\1)?$/, "section_name": /^((?=.*\w+.*)[^.].*?)$/, "section_underline": /^(?:=|-|~|\^|\+)+$/, "toc": /^toc::\[(.*?)\]$/, "ulist": /^[ \t]*(-|\*{1,5})[ \t]+(.*)$/, "xref_macro": /\\?(?:&lt;&lt;([\w":].*?)&gt;&gt;|xref:([\w":].*?)\[(.*?)\])/i, "ifdef_macro": /^[\\]?(ifdef|ifndef|ifeval|endif)::(\S*?(?:([,\+])\S+?)?)\[(.+)?\]$/, "eval_expr": /^(\S.*?)[ \t]*(==|!=|<=|>=|<|>)[ \t]*(\S.*)$/, "include_macro": /^\\?include::([^\[]+)\[(.*?)\]$/, "uri_sniff": /^[a-zA-Z][a-zA-Z0-9.+-]*:/i, "uri_encode_chars": /[^\w\-.!~*';:@=+$,()\[\]]/});
+    __scope.REGEXP = __hash2(["admonition_inline", "anchor", "anchor_embedded", "anchor_macro", "any_blk", "any_list", "attr_entry", "attr_conditional", "attr_continue", "attr_delete", "blk_attr_list", "attr_line", "attr_ref", "author_info", "biblio_macro", "callout_render", "callout_scan", "colist", "comment_blk", "comment", "csv_delimiter", "semicolon_delim", "scsv_csv_delim", "space_delim", "escaped_space", "digits", "dlist", "dlist_siblings", "footnote_macro", "media_blk_macro", "image_macro", "indexterm_macro", "indexterm2_macro", "leading_blanks", "leading_parent_dirs", "line_break", "link_inline", "link_macro", "email_inline", "lit_par", "olist", "break_line", "pass_macro", "pass_macro_basic", "pass_lit", "pass_placeholder", "revision_info", "single_quote_esc", "illegal_attr_name_chars", "table_colspec", "table_cellspec", "blk_title", "dbl_quoted", "m_dbl_quoted", "section_title", "section_name", "section_underline", "toc", "ulist", "xref_macro", "ifdef_macro", "eval_expr", "include_macro", "uri_sniff", "uri_encode_chars"], {"admonition_inline": (new RegExp("^(" + ($y = (($aa = __scope.ADMONITION_STYLES).$to_a || $mm('to_a')).call($aa), $z = "|", typeof($y) === 'number' ? $y * $z : $y['$*']($z)) + "):\\s")), "anchor": /^\[\[([^\s\[\]]+)\]\]$/, "anchor_embedded": /^(.*?)\s*\[\[([^\[\]]+)\]\]$/, "anchor_macro": /\\?\[\[([\w":].*?)\]\]/, "any_blk": /^(?:--|(?:-|\.|=|\*|_|\+|\/){4,}|[\|!]={3,}|(?:`|~){3,}.*)$/i, "any_list": /^(?:<?\d+>[ \t]+[\x21-\x7E]|[ \t]*(?:(?:-|\*|\.){1,5}|\d+\.|[A-Za-z]\.|[IVXivx]+\))[ \t]+[\x21-\x7E]|[ \t]*.*?(?::{2,4}|;;)(?:[ \t]+[\x21-\x7E]|$))/, "attr_entry": /^:(\w.*?):(?:[ \t]+(.*))?$/, "attr_conditional": /^\s*\{([^\?]+)\?\s*([^\}]+)\s*\}/, "attr_continue": /^[ \t]*(.*)[ \t]\+[ \t]*$/, "attr_delete": /^:([^:]+)!:$/, "blk_attr_list": /^\[(|[ \t]*[\w\{,"'].*)\]$/, "attr_line": /^\[(|[ \t]*[\w\{,"'].*|\[[^\[\]]*\])\]$/, "attr_ref": /(\\?)\{(\w+(?:[\-:]\w+)*)(\\?)\}/, "author_info": /^(\w[\w\-'.]*)(?: +(\w[\w\-'.]*))?(?: +(\w[\w\-'.]*))?(?: +<([^>]+)>)?$/, "biblio_macro": /\\?\[\[\[([\w:][\w:.-]*?)\]\]\]/, "callout_render": /\\?&lt;(\d+)&gt;/, "callout_scan": /\\?<(\d+)>/, "colist": /^<?(\d+)>[ \t]+(.*)/, "comment_blk": /^\/{4,}$/i, "comment": /^\/\/(?:[^\/]|$)/i, "csv_delimiter": /[ \t]*,[ \t]*/, "semicolon_delim": /[ \t]*;[ \t]*/, "scsv_csv_delim": /[ \t]*[,;][ \t]*/, "space_delim": /([^\\])[ \t]+/, "escaped_space": /\\([ \t])/, "digits": /^\d+$/, "dlist": /^[ \t]*(.*?)(:{2,4}|;;)(?:[ \t]+(.*))?$/, "dlist_siblings": __hash2(["::", ":::", "::::", ";;"], {"::": /^[ \t]*((?:.*[^:])?)(::)(?:[ \t]+(.*))?$/, ":::": /^[ \t]*((?:.*[^:])?)(:::)(?:[ \t]+(.*))?$/, "::::": /^[ \t]*((?:.*[^:])?)(::::)(?:[ \t]+(.*))?$/, ";;": /^[ \t]*(.*)(;;)(?:[ \t]+(.*))?$/}), "footnote_macro": /\\?(footnote|footnoteref):\[((?:\\\]|[^\]])*?)\]/, "media_blk_macro": /^(image|video|audio)::(\S+?)\[((?:\\\]|[^\]])*?)\]$/, "image_macro": /\\?image:([^:\[]+)\[((?:\\\]|[^\]])*?)\]/, "indexterm_macro": /\\?(?:indexterm:(?:\[((?:\\\]|[^\]])*?)\])|\(\(\((.*?)\)\)\)(?!\)))/i, "indexterm2_macro": /\\?(?:indexterm2:(?:\[((?:\\\]|[^\]])*?)\])|\(\((.*?)\)\)(?!\)))/i, "leading_blanks": /^([ \t]*)/, "leading_parent_dirs": /^(?:\.\.\/)*/, "line_break": (($y = __scope.Regexp).$new || $mm('new')).call($y, "^(.*)[ \\t]\\+$", "m"), "link_inline": /(^|link:|\s|>|&lt;|[\(\)\[\]])(\\?(?:https?|ftp):\/\/[^\s\[<]*[^\s.,\[<])(?:\[((?:\\\]|[^\]])*?)\])?/i, "link_macro": /\\?(?:link|mailto):([^\s\[]+)(?:\[((?:\\\]|[^\]])*?)\])/, "email_inline": /[\\>:]?\w[\w.%+-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,4}\b/, "lit_par": /^([ \t]+.*)$/, "olist": /^[ \t]*(\.{1,5}|\d+\.|[A-Za-z]\.|[IVXivx]+\))[ \t]+(.*)$/, "break_line": /^('|<){3,}$/, "pass_macro": /\\?(?:(\+{3}|\${2})(.*?)\1|pass:([a-z,]*)\[((?:\\\]|[^\]])*?)\])/i, "pass_macro_basic": /^pass:([a-z,]*)\[(.*)\]$/, "pass_lit": /(^|[^`\w])(\\?`([^`\s]|[^`\s].*?\S)`)(?![`\w])/i, "pass_placeholder": /\x0(\d+)\x0/, "revision_info": /^(?:\D*(.*?),)?(?:\s*(?!:)(.*?))(?:\s*(?!^):\s*(.*))?$/, "single_quote_esc": /(\w)\\'(\w)/, "illegal_attr_name_chars": /[^\w\-]/, "table_colspec": /^(?:(\d+)\*)?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?(\d+)?([a-z])?$/, "table_cellspec": __hash2(["start", "end"], {"start": /^[ \t]*(?:(\d+(?:\.\d*)?|(?:\d*\.)?\d+)([*+]))?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?([a-z])?\|/, "end": /[ \t]+(?:(\d+(?:\.\d*)?|(?:\d*\.)?\d+)([*+]))?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?([a-z])?$/}), "blk_title": /^\.([^\s.].*)$/, "dbl_quoted": /^("|)(.*)\1$/, "m_dbl_quoted": /^("|)(.*)\1$/i, "section_title": /^(={1,5})\s+(\S.*?)(?:\s*\[\[([^\[]+)\]\])?(?:\s+\1)?$/, "section_name": /^((?=.*\w+.*)[^.].*?)$/, "section_underline": /^(?:=|-|~|\^|\+)+$/, "toc": /^toc::\[(.*?)\]$/, "ulist": /^[ \t]*(-|\*{1,5})[ \t]+(.*)$/, "xref_macro": /\\?(?:&lt;&lt;([\w":].*?)&gt;&gt;|xref:([\w":].*?)\[(.*?)\])/i, "ifdef_macro": /^[\\]?(ifdef|ifndef|ifeval|endif)::(\S*?(?:([,\+])\S+?)?)\[(.+)?\]$/, "eval_expr": /^(\S.*?)[ \t]*(==|!=|<=|>=|<|>)[ \t]*(\S.*)$/, "include_macro": /^\\?include::([^\[]+)\[(.*?)\]$/, "uri_sniff": /^[a-zA-Z][a-zA-Z0-9.+-]*:/i, "uri_encode_chars": /[^\w\-.!~*';:@=+$,()\[\]]/});
 
-    __scope.INTRINSICS = (($z = ($ab = (($ac = (($ad = __scope.Hash) == null ? __opal.cm("Hash") : $ad)).$new || $mm('new')), $ab._p = (TMP_1 = function(h, k) {
+    __scope.INTRINSICS = (($z = ($ab = (($ac = __scope.Hash).$new || $mm('new')), $ab._p = (TMP_1 = function(h, k) {
 
       var self = TMP_1._s || this, $a, $b;
       if (h == null) h = nil;
 if (k == null) k = nil;
 
-      (($a = (($b = __scope.STDERR) == null ? __opal.cm("STDERR") : $b)).$puts || $mm('puts')).call($a, "Missing intrinsic: " + ((($b = k).$inspect || $mm('inspect')).call($b)));
+      (($a = __scope.STDERR).$puts || $mm('puts')).call($a, "Missing intrinsic: " + ((($b = k).$inspect || $mm('inspect')).call($b)));
       return "{" + (k) + "}";
     }, TMP_1._s = Asciidoctor, TMP_1), $ab).call($ac)).$merge || $mm('merge')).call($z, __hash2(["startsb", "endsb", "brvbar", "caret", "asterisk", "tilde", "plus", "apostrophe", "backslash", "backtick", "empty", "sp", "space", "two-colons", "two-semicolons", "nbsp", "deg", "zwsp", "quot", "apos", "lsquo", "rsquo", "ldquo", "rdquo", "wj", "amp", "lt", "gt"], {"startsb": "[", "endsb": "]", "brvbar": "|", "caret": "^", "asterisk": "*", "tilde": "~", "plus": "&#43;", "apostrophe": "'", "backslash": "\\", "backtick": "`", "empty": "", "sp": " ", "space": " ", "two-colons": "::", "two-semicolons": ";;", "nbsp": "&#160;", "deg": "&#176;", "zwsp": "&#8203;", "quot": "&#34;", "apos": "&#39;", "lsquo": "&#8216;", "rsquo": "&#8217;", "ldquo": "&#8220;", "rdquo": "&#8221;", "wj": "&#8288;", "amp": "&", "lt": "<", "gt": ">"}));
 
     __scope.SPECIAL_CHARS = __hash2(["<", ">", "&"], {"<": "&lt;", ">": "&gt;", "&": "&amp;"});
 
-    __scope.SPECIAL_CHARS_PATTERN = (new RegExp("[" + (($ab = (($ad = (($ae = __scope.SPECIAL_CHARS) == null ? __opal.cm("SPECIAL_CHARS") : $ae)).$keys || $mm('keys')).call($ad)).$join || $mm('join')).call($ab) + "]"));
+    __scope.SPECIAL_CHARS_PATTERN = (new RegExp("[" + (($ab = (($ad = __scope.SPECIAL_CHARS).$keys || $mm('keys')).call($ad)).$join || $mm('join')).call($ab) + "]"));
 
     __scope.QUOTE_SUBS = [["strong", "unconstrained", /\\?(?:\[([^\]]+?)\])?\*\*(.+?)\*\*/i], ["strong", "constrained", /(^|[^\w;:}])(?:\[([^\]]+?)\])?\*(\S|\S.*?\S)\*(?=\W|$)/i], ["double", "constrained", /(^|[^\w;:}])(?:\[([^\]]+?)\])?``(\S|\S.*?\S)''(?=\W|$)/i], ["emphasis", "constrained", /(^|[^\w;:}])(?:\[([^\]]+?)\])?'(\S|\S.*?\S)'(?=\W|$)/i], ["single", "constrained", /(^|[^\w;:}])(?:\[([^\]]+?)\])?`(\S|\S.*?\S)'(?=\W|$)/i], ["monospaced", "unconstrained", /\\?(?:\[([^\]]+?)\])?\+\+(.+?)\+\+/i], ["monospaced", "constrained", /(^|[^\w;:}])(?:\[([^\]]+?)\])?\+(\S|\S.*?\S)\+(?=\W|$)/i], ["emphasis", "unconstrained", /\\?(?:\[([^\]]+?)\])?\_\_(.+?)\_\_/i], ["emphasis", "constrained", /(^|[^\w;:}])(?:\[([^\]]+?)\])?_(\S|\S.*?\S)_(?=\W|$)/i], ["none", "unconstrained", /\\?(?:\[([^\]]+?)\])?##(.+?)##/i], ["none", "constrained", /(^|[^\w;:}])(?:\[([^\]]+?)\])?#(\S|\S.*?\S)#(?=\W|$)/i], ["superscript", "unconstrained", /\\?(?:\[([^\]]+?)\])?\^(.+?)\^/i], ["subscript", "unconstrained", /\\?(?:\[([^\]]+?)\])?\~(.+?)\~/i]];
 
     __scope.REPLACEMENTS = [[/\\?\(C\)/, "&#169;", "none"], [/\\?\(R\)/, "&#174;", "none"], [/\\?\(TM\)/, "&#8482;", "none"], [/(^|\n| |\\)--( |\n|$)/, "&#8201;&#8212;&#8201;", "none"], [/(\w)\\?--(?=\w)/, "&#8212;", "leading"], [/\\?\.\.\./, "&#8230;", "leading"], [/(\w)\\?'(\w)/, "&#8217;", "bounding"], [/\\?-&gt;/, "&#8594;", "none"], [/\\?=&gt;/, "&#8658;", "none"], [/\\?&lt;-/, "&#8592;", "none"], [/\\?&lt;=/, "&#8656;", "none"], [/\\?(&)amp;((?:[a-zA-Z]+|#\d+|#x[a-zA-Z0-9]+);)/, "", "bounding"]];
 
     Asciidoctor._defs('$load', TMP_2 = function(input, options) {
-      var monitor = nil, start = nil, attrs = nil, lines = nil, input_mtime = nil, input_path = nil, read_time = nil, doc = nil, parse_time = nil, $a, $b, $c, $d, $e, $f, $g, $h, TMP_3, $i, $j, $k, $l, $m, $n, TMP_4, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, $bb, $bc, block;
+      var monitor = nil, start = nil, attrs = nil, lines = nil, input_mtime = nil, input_path = nil, read_time = nil, doc = nil, parse_time = nil, $a, $b, $c, $d, $e, $f, $g, TMP_3, $h, $i, $j, $k, $l, $m, $n, TMP_4, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, $bb, $bc, block;
       block = TMP_2._p || nil, TMP_2._p = null;
       if (options == null) {
         options = __hash2([], {})
       }
       if (($a = monitor = (($b = options).$fetch || $mm('fetch')).call($b, "monitor", false)) !== false && $a !== nil) {
-        start = (($a = (($c = __scope.Time) == null ? __opal.cm("Time") : $c)).$now || $mm('now')).call($a)
+        start = (($a = __scope.Time).$now || $mm('now')).call($a)
       };
       attrs = ($c = "attributes", $d = options, (($e = (($f = $d)['$[]'] || $mm('[]')).call($f, $c)), $e !== false && $e !== nil ? $e : (($g = $d)['$[]='] || $mm('[]=')).call($g, $c, __hash2([], {}))));
-      if (($c = (($d = attrs)['$is_a?'] || $mm('is_a?')).call($d, (($e = __scope.Hash) == null ? __opal.cm("Hash") : $e))) === false || $c === nil) {
-        if (($c = (($e = attrs)['$is_a?'] || $mm('is_a?')).call($e, (($h = __scope.Array) == null ? __opal.cm("Array") : $h))) !== false && $c !== nil) {
+      if (($c = (($d = attrs)['$is_a?'] || $mm('is_a?')).call($d, __scope.Hash)) === false || $c === nil) {
+        if (($c = (($e = attrs)['$is_a?'] || $mm('is_a?')).call($e, __scope.Array)) !== false && $c !== nil) {
           attrs = (($c = options)['$[]='] || $mm('[]=')).call($c, "attributes", ($h = (($i = attrs).$inject || $mm('inject')), $h._p = (TMP_3 = function(accum, entry) {
 
             var k = nil, v = nil, self = TMP_3._s || this, $a, $b, $c;
@@ -8237,8 +8093,8 @@ if (entry == null) entry = nil;
             return accum;
           }, TMP_3._s = this, TMP_3), $h).call($i, __hash2([], {})))
           } else {
-          if (($h = (($j = attrs)['$is_a?'] || $mm('is_a?')).call($j, (($k = __scope.String) == null ? __opal.cm("String") : $k))) !== false && $h !== nil) {
-            attrs = (($h = (($k = attrs).$gsub || $mm('gsub')).call($k, (($l = (($m = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $m))['$[]'] || $mm('[]')).call($l, "space_delim"), "\\10")).$gsub || $mm('gsub')).call($h, (($m = (($n = __scope.REGEXP) == null ? __opal.cm("REGEXP") : $n))['$[]'] || $mm('[]')).call($m, "escaped_space"), "1");
+          if (($h = (($j = attrs)['$is_a?'] || $mm('is_a?')).call($j, __scope.String)) !== false && $h !== nil) {
+            attrs = (($h = (($k = attrs).$gsub || $mm('gsub')).call($k, (($l = __scope.REGEXP)['$[]'] || $mm('[]')).call($l, "space_delim"), "\\10")).$gsub || $mm('gsub')).call($h, (($m = __scope.REGEXP)['$[]'] || $mm('[]')).call($m, "escaped_space"), "1");
             attrs = (($n = options)['$[]='] || $mm('[]=')).call($n, "attributes", ($o = (($p = (($q = attrs).$split || $mm('split')).call($q, "0")).$inject || $mm('inject')), $o._p = (TMP_4 = function(accum, entry) {
 
               var k = nil, v = nil, self = TMP_4._s || this, $a, $b, $c;
@@ -8250,18 +8106,18 @@ if (entry == null) entry = nil;
               return accum;
             }, TMP_4._s = this, TMP_4), $o).call($p, __hash2([], {})));
             } else {
-            (($o = this).$raise || $mm('raise')).call($o, (($r = __scope.ArgumentError) == null ? __opal.cm("ArgumentError") : $r), "illegal type for attributes option")
+            (($o = this).$raise || $mm('raise')).call($o, __scope.ArgumentError, "illegal type for attributes option")
           }
         }
       };
       lines = nil;
-      if (($r = (($s = input)['$is_a?'] || $mm('is_a?')).call($s, (($t = __scope.File) == null ? __opal.cm("File") : $t))) !== false && $r !== nil) {
+      if (($r = (($s = input)['$is_a?'] || $mm('is_a?')).call($s, __scope.File)) !== false && $r !== nil) {
         lines = (($r = input).$readlines || $mm('readlines')).call($r);
         input_mtime = (($t = input).$mtime || $mm('mtime')).call($t);
-        input_path = (($u = (($v = __scope.File) == null ? __opal.cm("File") : $v)).$expand_path || $mm('expand_path')).call($u, (($v = input).$path || $mm('path')).call($v));
+        input_path = (($u = __scope.File).$expand_path || $mm('expand_path')).call($u, (($v = input).$path || $mm('path')).call($v));
         (($w = attrs)['$[]='] || $mm('[]=')).call($w, "docfile", input_path);
-        (($x = attrs)['$[]='] || $mm('[]=')).call($x, "docdir", (($y = (($z = __scope.File) == null ? __opal.cm("File") : $z)).$dirname || $mm('dirname')).call($y, input_path));
-        (($z = attrs)['$[]='] || $mm('[]=')).call($z, "docname", (($aa = (($ab = __scope.File) == null ? __opal.cm("File") : $ab)).$basename || $mm('basename')).call($aa, input_path, (($ab = (($ac = __scope.File) == null ? __opal.cm("File") : $ac)).$extname || $mm('extname')).call($ab, input_path)));
+        (($x = attrs)['$[]='] || $mm('[]=')).call($x, "docdir", (($y = __scope.File).$dirname || $mm('dirname')).call($y, input_path));
+        (($z = attrs)['$[]='] || $mm('[]=')).call($z, "docname", (($aa = __scope.File).$basename || $mm('basename')).call($aa, input_path, (($ab = __scope.File).$extname || $mm('extname')).call($ab, input_path)));
         (($ac = attrs)['$[]='] || $mm('[]=')).call($ac, "docdate", (($ad = input_mtime).$strftime || $mm('strftime')).call($ad, "%Y-%m-%d"));
         (($ae = attrs)['$[]='] || $mm('[]=')).call($ae, "doctime", (($af = input_mtime).$strftime || $mm('strftime')).call($af, "%H:%M:%S %Z"));
         (($ag = attrs)['$[]='] || $mm('[]=')).call($ag, "docdatetime", ($ah = [(($aj = attrs)['$[]'] || $mm('[]')).call($aj, "docdate"), (($ak = attrs)['$[]'] || $mm('[]')).call($ak, "doctime")], $ai = " ", typeof($ah) === 'number' ? $ah * $ai : $ah['$*']($ai)));
@@ -8270,10 +8126,10 @@ if (entry == null) entry = nil;
           (($ah = input).$rewind || $mm('rewind')).call($ah);
           lines = (($al = input).$readlines || $mm('readlines')).call($al);
           } else {
-          if (($am = (($an = input)['$is_a?'] || $mm('is_a?')).call($an, (($ao = __scope.String) == null ? __opal.cm("String") : $ao))) !== false && $am !== nil) {
+          if (($am = (($an = input)['$is_a?'] || $mm('is_a?')).call($an, __scope.String)) !== false && $am !== nil) {
             lines = (($am = (($ao = input).$lines || $mm('lines')).call($ao)).$entries || $mm('entries')).call($am)
             } else {
-            if (($ap = (($aq = input)['$is_a?'] || $mm('is_a?')).call($aq, (($ar = __scope.Array) == null ? __opal.cm("Array") : $ar))) !== false && $ap !== nil) {
+            if (($ap = (($aq = input)['$is_a?'] || $mm('is_a?')).call($aq, __scope.Array)) !== false && $ap !== nil) {
               lines = (($ap = input).$dup || $mm('dup')).call($ap)
               } else {
               (($ar = this).$raise || $mm('raise')).call($ar, "Unsupported input type: " + ((($as = input).$class || $mm('class')).call($as)))
@@ -8282,12 +8138,12 @@ if (entry == null) entry = nil;
         }
       };
       if (monitor !== false && monitor !== nil) {
-        read_time = ($at = (($av = (($aw = __scope.Time) == null ? __opal.cm("Time") : $aw)).$now || $mm('now')).call($av), $au = start, typeof($at) === 'number' ? $at - $au : $at['$-']($au));
-        start = (($at = (($au = __scope.Time) == null ? __opal.cm("Time") : $au)).$now || $mm('now')).call($at);
+        read_time = ($at = (($av = __scope.Time).$now || $mm('now')).call($av), $au = start, typeof($at) === 'number' ? $at - $au : $at['$-']($au));
+        start = (($at = __scope.Time).$now || $mm('now')).call($at);
       };
-      doc = ($aw = (($ax = (($ay = __scope.Document) == null ? __opal.cm("Document") : $ay)).$new || $mm('new')), $aw._p = (($au = block).$to_proc || $mm('to_proc')).call($au), $aw).call($ax, lines, options);
+      doc = ($aw = (($ax = __scope.Document).$new || $mm('new')), $aw._p = (($au = block).$to_proc || $mm('to_proc')).call($au), $aw).call($ax, lines, options);
       if (monitor !== false && monitor !== nil) {
-        parse_time = ($aw = (($az = (($ba = __scope.Time) == null ? __opal.cm("Time") : $ba)).$now || $mm('now')).call($az), $ay = start, typeof($aw) === 'number' ? $aw - $ay : $aw['$-']($ay));
+        parse_time = ($aw = (($az = __scope.Time).$now || $mm('now')).call($az), $ay = start, typeof($aw) === 'number' ? $aw - $ay : $aw['$-']($ay));
         (($aw = monitor)['$[]='] || $mm('[]=')).call($aw, "read", read_time);
         (($ay = monitor)['$[]='] || $mm('[]=')).call($ay, "parse", parse_time);
         (($ba = monitor)['$[]='] || $mm('[]=')).call($ba, "load", ($bb = read_time, $bc = parse_time, typeof($bb) === 'number' ? $bb + $bc : $bb['$+']($bc)));
@@ -8296,16 +8152,16 @@ if (entry == null) entry = nil;
     });
 
     Asciidoctor._defs('$load_file', TMP_5 = function(filename, options) {
-      var $a, $b, $c, $d, $e, block;
+      var $a, $b, $c, $d, block;
       block = TMP_5._p || nil, TMP_5._p = null;
       if (options == null) {
         options = __hash2([], {})
       }
-      return ($b = (($c = (($d = __scope.Asciidoctor) == null ? __opal.cm("Asciidoctor") : $d)).$load || $mm('load')), $b._p = (($a = block).$to_proc || $mm('to_proc')).call($a), $b).call($c, (($d = (($e = __scope.File) == null ? __opal.cm("File") : $e)).$new || $mm('new')).call($d, filename), options)
+      return ($b = (($c = __scope.Asciidoctor).$load || $mm('load')), $b._p = (($a = block).$to_proc || $mm('to_proc')).call($a), $b).call($c, (($d = __scope.File).$new || $mm('new')).call($d, filename), options)
     });
 
     Asciidoctor._defs('$render', TMP_6 = function(input, options) {
-      var in_place = nil, to_file = nil, to_dir = nil, mkdirs = nil, monitor = nil, write_in_place = nil, write_to_target = nil, stream_output = nil, doc = nil, working_dir = nil, jail = nil, start = nil, output = nil, render_time = nil, outfile = nil, write_time = nil, outdir = nil, stylesdir = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, TMP_7, $bb, $bc, $bd, $be, $bf, $bg, $bh, $bi, $bj, $bk, $bl, $bm, $bn, $bo, $bp, $bq, $br, $bs, $bt, $bu, $bv, $bw, $bx, $by, block;
+      var in_place = nil, to_file = nil, to_dir = nil, mkdirs = nil, monitor = nil, write_in_place = nil, write_to_target = nil, stream_output = nil, doc = nil, working_dir = nil, jail = nil, start = nil, output = nil, render_time = nil, outfile = nil, write_time = nil, outdir = nil, stylesdir = nil, $a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z, $aa, $ab, $ac, $ad, $ae, $af, $ag, $ah, $ai, $aj, $ak, $al, $am, $an, $ao, $ap, $aq, $ar, $as, $at, $au, $av, $aw, $ax, $ay, $az, $ba, TMP_7, $bb, $bc, $bd, $be, $bf, $bg, $bh, $bi, $bj, $bk, $bl, $bm, $bn, $bo, $bp, $bq, $br, $bs, $bt, $bu, $bv, $bw, $bx, block;
       block = TMP_6._p || nil, TMP_6._p = null;
       if (options == null) {
         options = __hash2([], {})
@@ -8315,29 +8171,29 @@ if (entry == null) entry = nil;
       to_dir = (($c = options).$delete || $mm('delete')).call($c, "to_dir");
       mkdirs = (($d = (($e = options).$delete || $mm('delete')).call($e, "mkdirs")), $d !== false && $d !== nil ? $d : false);
       monitor = (($d = options).$fetch || $mm('fetch')).call($d, "monitor", false);
-      write_in_place = (($f = in_place !== false && in_place !== nil) ? (($g = input)['$is_a?'] || $mm('is_a?')).call($g, (($h = __scope.File) == null ? __opal.cm("File") : $h)) : $f);
+      write_in_place = (($f = in_place !== false && in_place !== nil) ? (($g = input)['$is_a?'] || $mm('is_a?')).call($g, __scope.File) : $f);
       write_to_target = (($f = to_file), $f !== false && $f !== nil ? $f : to_dir);
       stream_output = ($f = ($f = (($h = to_file)['$nil?'] || $mm('nil?')).call($h), ($f === nil || $f === false)), $f !== false && $f !== nil ? (($f = to_file)['$respond_to?'] || $mm('respond_to?')).call($f, "write") : $f);
       if (($i = (($j = write_in_place !== false && write_in_place !== nil) ? write_to_target : $j)) !== false && $i !== nil) {
-        (($i = this).$raise || $mm('raise')).call($i, (($j = __scope.ArgumentError) == null ? __opal.cm("ArgumentError") : $j), "the option :in_place cannot be used with either the :to_dir or :to_file option")
+        (($i = this).$raise || $mm('raise')).call($i, __scope.ArgumentError, "the option :in_place cannot be used with either the :to_dir or :to_file option")
       };
       if (($j = ($k = ($k = (($l = options)['$has_key?'] || $mm('has_key?')).call($l, "header_footer"), ($k === nil || $k === false)), $k !== false && $k !== nil ? (($k = write_in_place), $k !== false && $k !== nil ? $k : write_to_target) : $k)) !== false && $j !== nil) {
         (($j = options)['$[]='] || $mm('[]=')).call($j, "header_footer", true)
       };
-      doc = ($m = (($n = (($o = __scope.Asciidoctor) == null ? __opal.cm("Asciidoctor") : $o)).$load || $mm('load')), $m._p = (($k = block).$to_proc || $mm('to_proc')).call($k), $m).call($n, input, options);
+      doc = ($m = (($n = __scope.Asciidoctor).$load || $mm('load')), $m._p = (($k = block).$to_proc || $mm('to_proc')).call($k), $m).call($n, input, options);
       if ((($m = to_file)['$=='] || $mm('==')).call($m, "/dev/null")) {
         return doc
         } else {
         if (write_in_place !== false && write_in_place !== nil) {
-          to_file = (($o = (($p = __scope.File) == null ? __opal.cm("File") : $p)).$join || $mm('join')).call($o, (($p = (($q = __scope.File) == null ? __opal.cm("File") : $q)).$dirname || $mm('dirname')).call($p, (($q = input).$path || $mm('path')).call($q)), "" + ((($r = (($s = doc).$attributes || $mm('attributes')).call($s))['$[]'] || $mm('[]')).call($r, "docname")) + ((($t = (($u = doc).$attributes || $mm('attributes')).call($u))['$[]'] || $mm('[]')).call($t, "outfilesuffix")))
+          to_file = (($o = __scope.File).$join || $mm('join')).call($o, (($p = __scope.File).$dirname || $mm('dirname')).call($p, (($q = input).$path || $mm('path')).call($q)), "" + ((($r = (($s = doc).$attributes || $mm('attributes')).call($s))['$[]'] || $mm('[]')).call($r, "docname")) + ((($t = (($u = doc).$attributes || $mm('attributes')).call($u))['$[]'] || $mm('[]')).call($t, "outfilesuffix")))
           } else {
           if (($v = ($w = ($w = stream_output, ($w === nil || $w === false)), $w !== false && $w !== nil ? write_to_target : $w)) !== false && $v !== nil) {
             working_dir = (function() { if (($v = (($w = options)['$has_key?'] || $mm('has_key?')).call($w, "base_dir")) !== false && $v !== nil) {
-              return (($v = (($x = __scope.File) == null ? __opal.cm("File") : $x)).$expand_path || $mm('expand_path')).call($v, (($x = (($y = this).$opts || $mm('opts')).call($y))['$[]'] || $mm('[]')).call($x, "base_dir"))
+              return (($v = __scope.File).$expand_path || $mm('expand_path')).call($v, (($x = (($y = this).$opts || $mm('opts')).call($y))['$[]'] || $mm('[]')).call($x, "base_dir"))
               } else {
-              return (($z = (($aa = __scope.File) == null ? __opal.cm("File") : $aa)).$expand_path || $mm('expand_path')).call($z, (($aa = (($ab = __scope.Dir) == null ? __opal.cm("Dir") : $ab)).$pwd || $mm('pwd')).call($aa))
+              return (($z = __scope.File).$expand_path || $mm('expand_path')).call($z, (($aa = __scope.Dir).$pwd || $mm('pwd')).call($aa))
             }; return nil; }).call(this);
-            jail = (function() { if ((($ab = (($ac = doc).$safe || $mm('safe')).call($ac))['$>='] || $mm('>=')).call($ab, (($ad = ((($ae = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $ae))._scope).SAFE == null ? $ad.cm("SAFE") : $ad.SAFE))) {
+            jail = (function() { if ((($ab = (($ac = doc).$safe || $mm('safe')).call($ac))['$>='] || $mm('>=')).call($ab, (__scope.SafeMode)._scope.SAFE)) {
               return working_dir
               } else {
               return nil
@@ -8346,69 +8202,69 @@ if (entry == null) entry = nil;
               to_dir = (($ad = doc).$normalize_system_path || $mm('normalize_system_path')).call($ad, to_dir, working_dir, jail, __hash2(["target_name", "recover"], {"target_name": "to_dir", "recover": false}));
               if (to_file !== false && to_file !== nil) {
                 to_file = (($ae = doc).$normalize_system_path || $mm('normalize_system_path')).call($ae, to_file, to_dir, nil, __hash2(["target_name", "recover"], {"target_name": "to_dir", "recover": false}));
-                to_dir = (($af = (($ag = __scope.File) == null ? __opal.cm("File") : $ag)).$dirname || $mm('dirname')).call($af, to_file);
+                to_dir = (($af = __scope.File).$dirname || $mm('dirname')).call($af, to_file);
                 } else {
-                to_file = (($ag = (($ah = __scope.File) == null ? __opal.cm("File") : $ah)).$join || $mm('join')).call($ag, to_dir, "" + ((($ah = (($ai = doc).$attributes || $mm('attributes')).call($ai))['$[]'] || $mm('[]')).call($ah, "docname")) + ((($aj = (($ak = doc).$attributes || $mm('attributes')).call($ak))['$[]'] || $mm('[]')).call($aj, "outfilesuffix")))
+                to_file = (($ag = __scope.File).$join || $mm('join')).call($ag, to_dir, "" + ((($ah = (($ai = doc).$attributes || $mm('attributes')).call($ai))['$[]'] || $mm('[]')).call($ah, "docname")) + ((($aj = (($ak = doc).$attributes || $mm('attributes')).call($ak))['$[]'] || $mm('[]')).call($aj, "outfilesuffix")))
               };
               } else {
               if (to_file !== false && to_file !== nil) {
                 to_file = (($al = doc).$normalize_system_path || $mm('normalize_system_path')).call($al, to_file, working_dir, jail, __hash2(["target_name", "recover"], {"target_name": "to_dir", "recover": false}));
-                to_dir = (($am = (($an = __scope.File) == null ? __opal.cm("File") : $an)).$dirname || $mm('dirname')).call($am, to_file);
+                to_dir = (($am = __scope.File).$dirname || $mm('dirname')).call($am, to_file);
               }
             };
-            if (($an = ($ao = (($ap = (($aq = __scope.File) == null ? __opal.cm("File") : $aq))['$directory?'] || $mm('directory?')).call($ap, to_dir), ($ao === nil || $ao === false))) !== false && $an !== nil) {
+            if (($an = ($ao = (($ap = __scope.File)['$directory?'] || $mm('directory?')).call($ap, to_dir), ($ao === nil || $ao === false))) !== false && $an !== nil) {
               if (mkdirs !== false && mkdirs !== nil) {
-                (($an = (($ao = __scope.Helpers) == null ? __opal.cm("Helpers") : $ao)).$require_library || $mm('require_library')).call($an, "fileutils");
-                (($ao = (($aq = __scope.FileUtils) == null ? __opal.cm("FileUtils") : $aq)).$mkdir_p || $mm('mkdir_p')).call($ao, to_dir);
+                (($an = __scope.Helpers).$require_library || $mm('require_library')).call($an, "fileutils");
+                (($ao = __scope.FileUtils).$mkdir_p || $mm('mkdir_p')).call($ao, to_dir);
                 } else {
-                (($aq = this).$raise || $mm('raise')).call($aq, (($ar = __scope.IOError) == null ? __opal.cm("IOError") : $ar), "target directory does not exist: " + (to_dir))
+                (($aq = this).$raise || $mm('raise')).call($aq, __scope.IOError, "target directory does not exist: " + (to_dir))
               }
             };
           }
         }
       };
       if (monitor !== false && monitor !== nil) {
-        start = (($ar = (($as = __scope.Time) == null ? __opal.cm("Time") : $as)).$now || $mm('now')).call($ar)
+        start = (($ar = __scope.Time).$now || $mm('now')).call($ar)
       };
       output = (($as = doc).$render || $mm('render')).call($as);
       if (monitor !== false && monitor !== nil) {
-        render_time = ($at = (($av = (($aw = __scope.Time) == null ? __opal.cm("Time") : $aw)).$now || $mm('now')).call($av), $au = start, typeof($at) === 'number' ? $at - $au : $at['$-']($au));
+        render_time = ($at = (($av = __scope.Time).$now || $mm('now')).call($av), $au = start, typeof($at) === 'number' ? $at - $au : $at['$-']($au));
         (($at = monitor)['$[]='] || $mm('[]=')).call($at, "render", render_time);
         (($au = monitor)['$[]='] || $mm('[]=')).call($au, "load_render", ($aw = (($ay = monitor)['$[]'] || $mm('[]')).call($ay, "load"), $ax = render_time, typeof($aw) === 'number' ? $aw + $ax : $aw['$+']($ax)));
       };
       if (to_file !== false && to_file !== nil) {
         if (monitor !== false && monitor !== nil) {
-          start = (($aw = (($ax = __scope.Time) == null ? __opal.cm("Time") : $ax)).$now || $mm('now')).call($aw)
+          start = (($aw = __scope.Time).$now || $mm('now')).call($aw)
         };
         if (stream_output !== false && stream_output !== nil) {
           (($ax = to_file).$write || $mm('write')).call($ax, (($az = output).$rstrip || $mm('rstrip')).call($az));
           (($ba = to_file).$write || $mm('write')).call($ba, "\n");
           } else {
-          ($bb = (($bc = (($bd = __scope.File) == null ? __opal.cm("File") : $bd)).$open || $mm('open')), $bb._p = (TMP_7 = function(file) {
+          ($bb = (($bc = __scope.File).$open || $mm('open')), $bb._p = (TMP_7 = function(file) {
 
             var self = TMP_7._s || this, $a;
             if (file == null) file = nil;
 
             return (($a = file).$write || $mm('write')).call($a, output)
           }, TMP_7._s = this, TMP_7), $bb).call($bc, to_file, "w");
-          (($bb = (($bd = doc).$attributes || $mm('attributes')).call($bd))['$[]='] || $mm('[]=')).call($bb, "outfile", outfile = (($be = (($bf = __scope.File) == null ? __opal.cm("File") : $bf)).$expand_path || $mm('expand_path')).call($be, to_file));
-          (($bf = (($bg = doc).$attributes || $mm('attributes')).call($bg))['$[]='] || $mm('[]=')).call($bf, "outdir", (($bh = (($bi = __scope.File) == null ? __opal.cm("File") : $bi)).$dirname || $mm('dirname')).call($bh, outfile));
+          (($bb = (($bd = doc).$attributes || $mm('attributes')).call($bd))['$[]='] || $mm('[]=')).call($bb, "outfile", outfile = (($be = __scope.File).$expand_path || $mm('expand_path')).call($be, to_file));
+          (($bf = (($bg = doc).$attributes || $mm('attributes')).call($bg))['$[]='] || $mm('[]=')).call($bf, "outdir", (($bh = __scope.File).$dirname || $mm('dirname')).call($bh, outfile));
         };
         if (monitor !== false && monitor !== nil) {
-          write_time = ($bi = (($bk = (($bl = __scope.Time) == null ? __opal.cm("Time") : $bl)).$now || $mm('now')).call($bk), $bj = start, typeof($bi) === 'number' ? $bi - $bj : $bi['$-']($bj));
+          write_time = ($bi = (($bk = __scope.Time).$now || $mm('now')).call($bk), $bj = start, typeof($bi) === 'number' ? $bi - $bj : $bi['$-']($bj));
           (($bi = monitor)['$[]='] || $mm('[]=')).call($bi, "write", write_time);
           (($bj = monitor)['$[]='] || $mm('[]=')).call($bj, "total", ($bl = (($bn = monitor)['$[]'] || $mm('[]')).call($bn, "load_render"), $bm = write_time, typeof($bl) === 'number' ? $bl + $bm : $bl['$+']($bm)));
         };
-        if (($bl = ($bm = ($bm = ($bm = ($bm = stream_output, ($bm === nil || $bm === false)), $bm !== false && $bm !== nil ? (($bm = doc)['$attr?'] || $mm('attr?')).call($bm, "copycss") : $bm), $bm !== false && $bm !== nil ? (($bo = doc)['$attr?'] || $mm('attr?')).call($bo, "linkcss") : $bm), $bm !== false && $bm !== nil ? (($bp = (($bq = __scope.DEFAULT_STYLESHEET_KEYS) == null ? __opal.cm("DEFAULT_STYLESHEET_KEYS") : $bq))['$include?'] || $mm('include?')).call($bp, (($bq = doc).$attr || $mm('attr')).call($bq, "stylesheet")) : $bm)) !== false && $bl !== nil) {
-          (($bl = (($br = __scope.Helpers) == null ? __opal.cm("Helpers") : $br)).$require_library || $mm('require_library')).call($bl, "fileutils");
+        if (($bl = ($bm = ($bm = ($bm = ($bm = stream_output, ($bm === nil || $bm === false)), $bm !== false && $bm !== nil ? (($bm = doc)['$attr?'] || $mm('attr?')).call($bm, "copycss") : $bm), $bm !== false && $bm !== nil ? (($bo = doc)['$attr?'] || $mm('attr?')).call($bo, "linkcss") : $bm), $bm !== false && $bm !== nil ? (($bp = __scope.DEFAULT_STYLESHEET_KEYS)['$include?'] || $mm('include?')).call($bp, (($bq = doc).$attr || $mm('attr')).call($bq, "stylesheet")) : $bm)) !== false && $bl !== nil) {
+          (($bl = __scope.Helpers).$require_library || $mm('require_library')).call($bl, "fileutils");
           outdir = (($br = doc).$attr || $mm('attr')).call($br, "outdir");
-          stylesdir = (($bs = doc).$normalize_system_path || $mm('normalize_system_path')).call($bs, (($bt = doc).$attr || $mm('attr')).call($bt, "stylesdir"), outdir, (function() { if ((($bu = (($bv = doc).$safe || $mm('safe')).call($bv))['$>='] || $mm('>=')).call($bu, (($bw = ((($bx = __scope.SafeMode) == null ? __opal.cm("SafeMode") : $bx))._scope).SAFE == null ? $bw.cm("SAFE") : $bw.SAFE))) {
+          stylesdir = (($bs = doc).$normalize_system_path || $mm('normalize_system_path')).call($bs, (($bt = doc).$attr || $mm('attr')).call($bt, "stylesdir"), outdir, (function() { if ((($bu = (($bv = doc).$safe || $mm('safe')).call($bv))['$>='] || $mm('>=')).call($bu, (__scope.SafeMode)._scope.SAFE)) {
             return outdir
             } else {
             return nil
           }; return nil; }).call(this));
-          (($bw = (($bx = __scope.FileUtils) == null ? __opal.cm("FileUtils") : $bx)).$mkdir_p || $mm('mkdir_p')).call($bw, stylesdir);
-          (($bx = (($by = __scope.FileUtils) == null ? __opal.cm("FileUtils") : $by)).$cp || $mm('cp')).call($bx, (($by = __scope.DEFAULT_STYLESHEET_PATH) == null ? __opal.cm("DEFAULT_STYLESHEET_PATH") : $by), stylesdir, __hash2(["preserve"], {"preserve": true}));
+          (($bw = __scope.FileUtils).$mkdir_p || $mm('mkdir_p')).call($bw, stylesdir);
+          (($bx = __scope.FileUtils).$cp || $mm('cp')).call($bx, __scope.DEFAULT_STYLESHEET_PATH, stylesdir, __hash2(["preserve"], {"preserve": true}));
         };
         return doc;
         } else {
@@ -8417,15 +8273,15 @@ if (entry == null) entry = nil;
     });
 
     Asciidoctor._defs('$render_file', TMP_8 = function(filename, options) {
-      var $a, $b, $c, $d, $e, block;
+      var $a, $b, $c, $d, block;
       block = TMP_8._p || nil, TMP_8._p = null;
       if (options == null) {
         options = __hash2([], {})
       }
-      return ($b = (($c = (($d = __scope.Asciidoctor) == null ? __opal.cm("Asciidoctor") : $d)).$render || $mm('render')), $b._p = (($a = block).$to_proc || $mm('to_proc')).call($a), $b).call($c, (($d = (($e = __scope.File) == null ? __opal.cm("File") : $e)).$new || $mm('new')).call($d, filename), options)
+      return ($b = (($c = __scope.Asciidoctor).$render || $mm('render')), $b._p = (($a = block).$to_proc || $mm('to_proc')).call($a), $b).call($c, (($d = __scope.File).$new || $mm('new')).call($d, filename), options)
     });
 
-    if (($ae = (($af = __scope.OPAL) == null ? __opal.cm("OPAL") : $af)) !== false && $ae !== nil) {
+    if (($ae = __scope.OPAL) !== false && $ae !== nil) {
       
     };
     

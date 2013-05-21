@@ -493,10 +493,10 @@
     var def = Class.prototype, __scope = Class._scope, TMP_1, TMP_2, TMP_3, TMP_4;
 
     Class._defs('$new', TMP_1 = function(sup) {
-      var $a, block;
+      var block;
       block = TMP_1._p || nil, TMP_1._p = null;
       if (sup == null) {
-        sup = (($a = __scope.Object) == null ? __opal.cm("Object") : $a)
+        sup = __scope.Object
       }
       
       function AnonClass(){};
@@ -672,11 +672,11 @@
     };
 
     def['$const_defined?'] = function(name, inherit) {
-      var $a, $b, $c;if (inherit == null) {
+      var $a, $b;if (inherit == null) {
         inherit = true
       }
       if (($a = (($b = name)['$=~'] || $mm('=~')).call($b, /^[A-Z]\w+$/)) === false || $a === nil) {
-        (($a = this).$raise || $mm('raise')).call($a, (($c = __scope.NameError) == null ? __opal.cm("NameError") : $c), "wrong constant name " + (name))
+        (($a = this).$raise || $mm('raise')).call($a, __scope.NameError, "wrong constant name " + (name))
       };
       
       scopes = [this._scope];
@@ -703,7 +703,7 @@
         inherit = true
       }
       if (($a = (($b = name)['$=~'] || $mm('=~')).call($b, /^[A-Z]\w+$/)) === false || $a === nil) {
-        (($a = this).$raise || $mm('raise')).call($a, (($c = __scope.NameError) == null ? __opal.cm("NameError") : $c), "wrong constant name " + (name))
+        (($a = this).$raise || $mm('raise')).call($a, __scope.NameError, "wrong constant name " + (name))
       };
       
       var scopes = [this._scope];
@@ -726,21 +726,21 @@
     };
 
     def.$const_missing = function(const$) {
-      var name = nil, $a, $b;
+      var name = nil, $a;
       name = this._name;
-      return (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.NameError) == null ? __opal.cm("NameError") : $b), "uninitialized constant " + (name) + "::" + (const$));
+      return (($a = this).$raise || $mm('raise')).call($a, __scope.NameError, "uninitialized constant " + (name) + "::" + (const$));
     };
 
     def.$const_set = function(name, value) {
-      var $a, $b, $c, $d, $e;
+      var $a, $b, $c, $d;
       if (($a = (($b = name)['$=~'] || $mm('=~')).call($b, /^[A-Z]\w+$/)) === false || $a === nil) {
-        (($a = this).$raise || $mm('raise')).call($a, (($c = __scope.NameError) == null ? __opal.cm("NameError") : $c), "wrong constant name " + (name))
+        (($a = this).$raise || $mm('raise')).call($a, __scope.NameError, "wrong constant name " + (name))
       };
       try {
         name = (($c = name).$to_str || $mm('to_str')).call($c)
       } catch ($err) {
       if (true) {
-        (($d = this).$raise || $mm('raise')).call($d, (($e = __scope.TypeError) == null ? __opal.cm("TypeError") : $e), "conversion with #to_str failed")}
+        (($d = this).$raise || $mm('raise')).call($d, __scope.TypeError, "conversion with #to_str failed")}
       else { throw $err; }
       };
       
@@ -880,12 +880,21 @@
       block = TMP_4._p || nil, TMP_4._p = null;
       args = __slice.call(arguments, 0);
       
-      var obj = new this;
-      obj._id = Opal.uid();
+      if (this.prototype.$initialize) {
+        var obj = new this;
+        obj._id = Opal.uid();
 
-      obj.$initialize._p = block;
-      obj.$initialize.apply(obj, args);
-      return obj;
+        obj.$initialize._p = block;
+        obj.$initialize.apply(obj, args);
+        return obj;
+      }
+      else {
+        var cons = function() {};
+        cons.prototype = this.prototype;
+        var obj = new cons;
+        this.apply(obj, args);
+        return obj;
+      }
     
     };
 
@@ -990,10 +999,10 @@
     };
 
     def.$method_missing = TMP_4 = function(symbol, args) {
-      var $a, $b, block;
+      var $a, block;
       block = TMP_4._p || nil, TMP_4._p = null;
       args = __slice.call(arguments, 1);
-      return (($a = (($b = __scope.Kernel) == null ? __opal.cm("Kernel") : $b)).$raise || $mm('raise')).call($a, (($b = __scope.NoMethodError) == null ? __opal.cm("NoMethodError") : $b), "undefined method `" + (symbol) + "' for BasicObject instance");
+      return (($a = __scope.Kernel).$raise || $mm('raise')).call($a, __scope.NoMethodError, "undefined method `" + (symbol) + "' for BasicObject instance");
     };
 
     return nil;
@@ -1024,7 +1033,7 @@
       var $a, $b, block;
       block = TMP_1._p || nil, TMP_1._p = null;
       args = __slice.call(arguments, 1);
-      return (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.NoMethodError) == null ? __opal.cm("NoMethodError") : $b), "undefined method `" + (symbol) + "' for " + ((($b = this).$inspect || $mm('inspect')).call($b)));
+      return (($a = this).$raise || $mm('raise')).call($a, __scope.NoMethodError, "undefined method `" + (symbol) + "' for " + ((($b = this).$inspect || $mm('inspect')).call($b)));
     };
 
     def['$=~'] = function(obj) {
@@ -1043,7 +1052,7 @@
     };
 
     def.$method = function(name) {
-      var $a, $b;
+      var $a;
       
       var recv = this,
           meth = recv['$' + name],
@@ -1052,10 +1061,10 @@
           };
 
       if (!meth) {
-        (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.NameError) == null ? __opal.cm("NameError") : $b));
+        (($a = this).$raise || $mm('raise')).call($a, __scope.NameError);
       }
 
-      func._klass = (($b = __scope.Method) == null ? __opal.cm("Method") : $b);
+      func._klass = __scope.Method;
       return func;
     
     };
@@ -1125,10 +1134,10 @@
     };
 
     def.$enum_for = function(method, args) {
-      var $a, $b;if (method == null) {
+      var $a;if (method == null) {
         method = "each"
       }args = __slice.call(arguments, 1);
-      return (($a = (($b = __scope.Enumerator) == null ? __opal.cm("Enumerator") : $b)).$new || $mm('new')).apply($a, [this, method].concat(args));
+      return (($a = __scope.Enumerator).$new || $mm('new')).apply($a, [this, method].concat(args));
     };
 
     def['$equal?'] = function(other) {
@@ -1382,12 +1391,12 @@
     };
 
     def.$proc = TMP_5 = function() {
-      var $a, $b, block;
+      var $a, block;
       block = TMP_5._p || nil, TMP_5._p = null;
       
       
       if (block === nil) {
-        (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.ArgumentError) == null ? __opal.cm("ArgumentError") : $b), "no block given");
+        (($a = this).$raise || $mm('raise')).call($a, __scope.ArgumentError, "no block given");
       }
       block.is_lambda = false;
       return block;
@@ -1426,9 +1435,9 @@
       }
       
       if (typeof(exception) === 'string') {
-        exception = (($a = (($b = __scope.RuntimeError) == null ? __opal.cm("RuntimeError") : $b)).$new || $mm('new')).call($a, exception);
+        exception = (($a = __scope.RuntimeError).$new || $mm('new')).call($a, exception);
       }
-      else if (!(($b = exception)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Exception) == null ? __opal.cm("Exception") : $c))) {
+      else if (!(($b = exception)['$is_a?'] || $mm('is_a?')).call($b, __scope.Exception)) {
         exception = (($c = exception).$new || $mm('new')).call($c, string);
       }
 
@@ -1556,8 +1565,8 @@
     };
 
     def.$dup = function() {
-      var $a, $b;
-      return (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.TypeError) == null ? __opal.cm("TypeError") : $b));
+      var $a;
+      return (($a = this).$raise || $mm('raise')).call($a, __scope.TypeError);
     };
 
     def.$inspect = function() {
@@ -1571,8 +1580,8 @@
     };
 
     def.$singleton_class = function() {
-      var $a;
-      return (($a = __scope.NilClass) == null ? __opal.cm("NilClass") : $a);
+      
+      return __scope.NilClass;
     };
 
     def.$to_a = function() {
@@ -1611,7 +1620,7 @@
   })(self, null)
 })(Opal);
 (function(__opal) {
-  var $a, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass;
+  var self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass;
   (function(__base, __super){
     function Boolean() {};
     Boolean = __klass(__base, __super, "Boolean", Boolean);
@@ -1659,11 +1668,11 @@
 
     return nil;
   })(self, Boolean);
-  __scope.TrueClass = (($a = __scope.Boolean) == null ? __opal.cm("Boolean") : $a);
-  return __scope.FalseClass = (($a = __scope.Boolean) == null ? __opal.cm("Boolean") : $a);
+  __scope.TrueClass = __scope.Boolean;
+  return __scope.FalseClass = __scope.Boolean;
 })(Opal);
 (function(__opal) {
-  var $a, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass;
+  var self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass;
   (function(__base, __super){
     function Exception() {};
     Exception = __klass(__base, __super, "Exception", Exception);
@@ -1718,7 +1727,7 @@
     var def = StandardError.prototype, __scope = StandardError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function RuntimeError() {};
     RuntimeError = __klass(__base, __super, "RuntimeError", RuntimeError);
@@ -1726,7 +1735,7 @@
     var def = RuntimeError.prototype, __scope = RuntimeError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function LocalJumpError() {};
     LocalJumpError = __klass(__base, __super, "LocalJumpError", LocalJumpError);
@@ -1734,7 +1743,7 @@
     var def = LocalJumpError.prototype, __scope = LocalJumpError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function TypeError() {};
     TypeError = __klass(__base, __super, "TypeError", TypeError);
@@ -1742,7 +1751,7 @@
     var def = TypeError.prototype, __scope = TypeError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function NameError() {};
     NameError = __klass(__base, __super, "NameError", NameError);
@@ -1750,7 +1759,7 @@
     var def = NameError.prototype, __scope = NameError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function NoMethodError() {};
     NoMethodError = __klass(__base, __super, "NoMethodError", NoMethodError);
@@ -1758,7 +1767,7 @@
     var def = NoMethodError.prototype, __scope = NoMethodError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function ArgumentError() {};
     ArgumentError = __klass(__base, __super, "ArgumentError", ArgumentError);
@@ -1766,7 +1775,7 @@
     var def = ArgumentError.prototype, __scope = ArgumentError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function IndexError() {};
     IndexError = __klass(__base, __super, "IndexError", IndexError);
@@ -1774,7 +1783,7 @@
     var def = IndexError.prototype, __scope = IndexError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function KeyError() {};
     KeyError = __klass(__base, __super, "KeyError", KeyError);
@@ -1782,7 +1791,7 @@
     var def = KeyError.prototype, __scope = KeyError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function RangeError() {};
     RangeError = __klass(__base, __super, "RangeError", RangeError);
@@ -1790,7 +1799,7 @@
     var def = RangeError.prototype, __scope = RangeError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function StopIteration() {};
     StopIteration = __klass(__base, __super, "StopIteration", StopIteration);
@@ -1798,7 +1807,7 @@
     var def = StopIteration.prototype, __scope = StopIteration._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   (function(__base, __super){
     function SyntaxError() {};
     SyntaxError = __klass(__base, __super, "SyntaxError", SyntaxError);
@@ -1806,7 +1815,7 @@
     var def = SyntaxError.prototype, __scope = SyntaxError._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
   return (function(__base, __super){
     function SystemExit() {};
     SystemExit = __klass(__base, __super, "SystemExit", SystemExit);
@@ -1814,7 +1823,7 @@
     var def = SystemExit.prototype, __scope = SystemExit._scope;
 
     return nil
-  })(self, (($a = __scope.Exception) == null ? __opal.cm("Exception") : $a));
+  })(self, __scope.Exception);
 })(Opal);
 (function(__opal) {
   var self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass, __gvars = __opal.gvars;
@@ -1842,7 +1851,7 @@
     def['$==='] = def.test;
 
     def['$=~'] = function(string) {
-      var $a, $b;
+      var $a;
       
       var re = this;
       if (re.global) {
@@ -1857,7 +1866,7 @@
       var result = re.exec(string);
 
       if (result) {
-        __gvars["~"] = (($a = (($b = __scope.MatchData) == null ? __opal.cm("MatchData") : $b)).$new || $mm('new')).call($a, re, result);
+        __gvars["~"] = (($a = __scope.MatchData).$new || $mm('new')).call($a, re, result);
       }
       else {
         __gvars["~"] = __gvars["`"] = __gvars["'"] = nil;
@@ -1872,7 +1881,7 @@
     def.$inspect = def.toString;
 
     def.$match = function(string, pos) {
-      var $a, $b;
+      var $a;
       
       var re = this;
       if (re.global) {
@@ -1886,7 +1895,7 @@
       var result = re.exec(string);
 
       if (result) {
-        return __gvars["~"] = (($a = (($b = __scope.MatchData) == null ? __opal.cm("MatchData") : $b)).$new || $mm('new')).call($a, re, result);
+        return __gvars["~"] = (($a = __scope.MatchData).$new || $mm('new')).call($a, re, result);
       }
       else {
         return __gvars["~"] = __gvars["`"] = __gvars["'"] = nil;
@@ -2422,10 +2431,10 @@
     };
 
     def.$group_by = TMP_14 = function() {
-      var hash = nil, TMP_15, $a, $b, $c, TMP_16, block;
+      var hash = nil, TMP_15, $a, $b, TMP_16, $c, block;
       block = TMP_14._p || nil, TMP_14._p = null;
       
-      hash = ($a = (($b = (($c = __scope.Hash) == null ? __opal.cm("Hash") : $c)).$new || $mm('new')), $a._p = (TMP_15 = function(h, k) {
+      hash = ($a = (($b = __scope.Hash).$new || $mm('new')), $a._p = (TMP_15 = function(h, k) {
 
         var self = TMP_15._s || this, $a;
         if (h == null) h = nil;
@@ -2446,7 +2455,7 @@ if (k == null) k = nil;
     def.$map = def.$collect;
 
     def.$max = TMP_17 = function() {
-      var $a, $b, block;
+      var $a, block;
       block = TMP_17._p || nil, TMP_17._p = null;
       
       
@@ -2486,7 +2495,7 @@ if (k == null) k = nil;
       this.$each();
 
       if (arg_error) {
-        (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.ArgumentError) == null ? __opal.cm("ArgumentError") : $b), "Array#max");
+        (($a = this).$raise || $mm('raise')).call($a, __scope.ArgumentError, "Array#max");
       }
 
       return (result == undefined ? nil : result);
@@ -2494,7 +2503,7 @@ if (k == null) k = nil;
     };
 
     def.$min = TMP_18 = function() {
-      var $a, $b, block;
+      var $a, block;
       block = TMP_18._p || nil, TMP_18._p = null;
       
       
@@ -2534,7 +2543,7 @@ if (k == null) k = nil;
       this.$each();
 
       if (arg_error) {
-        (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.ArgumentError) == null ? __opal.cm("ArgumentError") : $b), "Array#min");
+        (($a = this).$raise || $mm('raise')).call($a, __scope.ArgumentError, "Array#min");
       }
 
       return (result == undefined ? nil : result);
@@ -2557,10 +2566,10 @@ if (k == null) k = nil;
     function Enumerator() {};
     Enumerator = __klass(__base, __super, "Enumerator", Enumerator);
 
-    var def = Enumerator.prototype, __scope = Enumerator._scope, $a, $b, TMP_1;
+    var def = Enumerator.prototype, __scope = Enumerator._scope, $a, TMP_1;
     def.object = def.method = def.args = def.cache = nil;
 
-    (($a = Enumerator).$include || $mm('include')).call($a, (($b = __scope.Enumerable) == null ? __opal.cm("Enumerable") : $b));
+    (($a = Enumerator).$include || $mm('include')).call($a, __scope.Enumerable);
 
     def.$initialize = function(obj, method, args) {
       if (method == null) {
@@ -2591,7 +2600,7 @@ if (k == null) k = nil;
       var $a, $b, $c, $d;
       (($a = this.cache), $a !== false && $a !== nil ? $a : this.cache = (($b = this).$to_a || $mm('to_a')).call($b));
       if (($a = (($c = this.cache)['$empty?'] || $mm('empty?')).call($c)) !== false && $a !== nil) {
-        (($a = this).$raise || $mm('raise')).call($a, (($d = __scope.StopIteration) == null ? __opal.cm("StopIteration") : $d), "end of enumeration")
+        (($a = this).$raise || $mm('raise')).call($a, __scope.StopIteration, "end of enumeration")
       };
       return (($d = this.cache).$shift || $mm('shift')).call($d);
     };
@@ -2611,9 +2620,9 @@ if (k == null) k = nil;
     function Array() {};
     Array = __klass(__base, __super, "Array", Array);
 
-    var def = Array.prototype, __scope = Array._scope, $a, $b, TMP_1, TMP_2, TMP_3, TMP_4, TMP_5, TMP_6, TMP_7, TMP_8, TMP_9, TMP_10, TMP_11, TMP_12, TMP_13, TMP_14, TMP_15, TMP_16, TMP_17, TMP_18, TMP_19, TMP_20;
+    var def = Array.prototype, __scope = Array._scope, $a, TMP_1, TMP_2, TMP_3, TMP_4, TMP_5, TMP_6, TMP_7, TMP_8, TMP_9, TMP_10, TMP_11, TMP_12, TMP_13, TMP_14, TMP_15, TMP_16, TMP_17, TMP_18, TMP_19, TMP_20;
 
-    (($a = Array).$include || $mm('include')).call($a, (($b = __scope.Enumerable) == null ? __opal.cm("Enumerable") : $b));
+    (($a = Array).$include || $mm('include')).call($a, __scope.Enumerable);
 
     def._isArray = true;
 
@@ -2719,7 +2728,7 @@ if (k == null) k = nil;
     };
 
     def['$-'] = function(other) {
-      var $a, $b, $c, $d, $e;
+      var $a, $b, $c, $d;
       
       var a = this,
           b = other,
@@ -2730,10 +2739,10 @@ if (k == null) k = nil;
         if (b['$to_ary'] && typeof(b['$to_ary']) == "function") {
           b = b['$to_ary']();
         } else {
-          (($a = this).$raise || $mm('raise')).call($a, (($b = (($c = __scope.TypeError) == null ? __opal.cm("TypeError") : $c)).$new || $mm('new')).call($b, "can't convert to Array. Array#-"));
+          (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.TypeError).$new || $mm('new')).call($b, "can't convert to Array. Array#-"));
         }
       }else if ((typeof(b) != "object")) {
-        (($c = this).$raise || $mm('raise')).call($c, (($d = (($e = __scope.TypeError) == null ? __opal.cm("TypeError") : $e)).$new || $mm('new')).call($d, "can't convert to Array. Array#-")); 
+        (($c = this).$raise || $mm('raise')).call($c, (($d = __scope.TypeError).$new || $mm('new')).call($d, "can't convert to Array. Array#-")); 
       }      
 
       if (a.length == 0)
@@ -3113,7 +3122,7 @@ if (k == null) k = nil;
     };
 
     def.$fetch = TMP_7 = function(index, defaults) {
-      var $a, $b, block;
+      var $a, block;
       block = TMP_7._p || nil, TMP_7._p = null;
       
       
@@ -3135,7 +3144,7 @@ if (k == null) k = nil;
         return block(original);
       }
 
-      (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.IndexError) == null ? __opal.cm("IndexError") : $b), "Array#fetch");
+      (($a = this).$raise || $mm('raise')).call($a, __scope.IndexError, "Array#fetch");
     
     };
 
@@ -3254,14 +3263,14 @@ if (k == null) k = nil;
     };
 
     def.$insert = function(index, objects) {
-      var $a, $b;objects = __slice.call(arguments, 1);
+      var $a;objects = __slice.call(arguments, 1);
       
       if (objects.length > 0) {
         if (index < 0) {
           index += this.length + 1;
 
           if (index < 0) {
-            (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.IndexError) == null ? __opal.cm("IndexError") : $b), "" + (index) + " is out of bounds");
+            (($a = this).$raise || $mm('raise')).call($a, __scope.IndexError, "" + (index) + " is out of bounds");
           }
         }
         if (index > this.length) {
@@ -3334,12 +3343,12 @@ if (k == null) k = nil;
     };
 
     def.$last = function(count) {
-      var $a, $b, $c, $d;
+      var $a, $b, $c;
       
       var length = this.length;
       
       if (count === nil || typeof(count) == 'string') { 
-        (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.TypeError) == null ? __opal.cm("TypeError") : $b), "no implicit conversion to integer");
+        (($a = this).$raise || $mm('raise')).call($a, __scope.TypeError, "no implicit conversion to integer");
       }
         
       if (typeof(count) == 'object') {
@@ -3347,7 +3356,7 @@ if (k == null) k = nil;
           count = count['$to_int']();
         } 
         else {
-          (($b = this).$raise || $mm('raise')).call($b, (($c = __scope.TypeError) == null ? __opal.cm("TypeError") : $c), "no implicit conversion to integer");
+          (($b = this).$raise || $mm('raise')).call($b, __scope.TypeError, "no implicit conversion to integer");
         }
       }
       
@@ -3355,7 +3364,7 @@ if (k == null) k = nil;
         return length === 0 ? nil : this[length - 1];
       }
       else if (count < 0) {
-        (($c = this).$raise || $mm('raise')).call($c, (($d = __scope.ArgumentError) == null ? __opal.cm("ArgumentError") : $d), "negative count given");
+        (($c = this).$raise || $mm('raise')).call($c, __scope.ArgumentError, "negative count given");
       }
 
       if (count > length) {
@@ -3585,7 +3594,7 @@ if (k == null) k = nil;
     };
 
     def.$sort = TMP_17 = function() {
-      var $a, $b, $c, block;
+      var $a, $b, block;
       block = TMP_17._p || nil, TMP_17._p = null;
       
       
@@ -3614,7 +3623,7 @@ if (k == null) k = nil;
         if (t_break.length > 0)
           return t_break[0];
         if (t_arg_error)
-          (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.ArgumentError) == null ? __opal.cm("ArgumentError") : $b), "Array#sort");
+          (($a = this).$raise || $mm('raise')).call($a, __scope.ArgumentError, "Array#sort");
 
         return result;
       }
@@ -3639,7 +3648,7 @@ if (k == null) k = nil;
       });
       
       if (t_arg_error)
-        (($b = this).$raise || $mm('raise')).call($b, (($c = __scope.ArgumentError) == null ? __opal.cm("ArgumentError") : $c), "Array#sort");
+        (($b = this).$raise || $mm('raise')).call($b, __scope.ArgumentError, "Array#sort");
 
       return result;
     
@@ -3838,10 +3847,10 @@ if (k == null) k = nil;
     function Hash() {};
     Hash = __klass(__base, __super, "Hash", Hash);
 
-    var def = Hash.prototype, __scope = Hash._scope, $a, $b, TMP_1, TMP_2, TMP_3, TMP_4, TMP_5, TMP_6, TMP_7, TMP_8, TMP_9, TMP_10, TMP_11, TMP_12;
+    var def = Hash.prototype, __scope = Hash._scope, $a, TMP_1, TMP_2, TMP_3, TMP_4, TMP_5, TMP_6, TMP_7, TMP_8, TMP_9, TMP_10, TMP_11, TMP_12;
     def.proc = def.none = nil;
 
-    (($a = Hash).$include || $mm('include')).call($a, (($b = __scope.Enumerable) == null ? __opal.cm("Enumerable") : $b));
+    (($a = Hash).$include || $mm('include')).call($a, __scope.Enumerable);
 
     
     __hash = Opal.hash = function() {
@@ -4159,7 +4168,7 @@ if (k == null) k = nil;
     def['$eql?'] = def['$=='];
 
     def.$fetch = TMP_6 = function(key, defaults) {
-      var $a, $b, block;
+      var $a, block;
       block = TMP_6._p || nil, TMP_6._p = null;
       
       
@@ -4183,7 +4192,7 @@ if (k == null) k = nil;
         return defaults;
       }
 
-      (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.KeyError) == null ? __opal.cm("KeyError") : $b), "key not found");
+      (($a = this).$raise || $mm('raise')).call($a, __scope.KeyError, "key not found");
     
     };
 
@@ -4662,14 +4671,14 @@ if (k == null) k = nil;
   })(self, null)
 })(Opal);
 (function(__opal) {
-  var $a, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass, __gvars = __opal.gvars;
+  var self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass, __gvars = __opal.gvars;
   (function(__base, __super){
     function String() {};
     String = __klass(__base, __super, "String", String);
 
-    var def = String.prototype, __scope = String._scope, $a, $b, TMP_1, TMP_2, TMP_3, TMP_4, TMP_5, TMP_6;
+    var def = String.prototype, __scope = String._scope, $a, TMP_1, TMP_2, TMP_3, TMP_4, TMP_5, TMP_6;
 
-    (($a = String).$include || $mm('include')).call($a, (($b = __scope.Comparable) == null ? __opal.cm("Comparable") : $b));
+    (($a = String).$include || $mm('include')).call($a, __scope.Comparable);
 
     def._isString = true;
 
@@ -4695,7 +4704,7 @@ if (k == null) k = nil;
 
     def['$%'] = function(data) {
       var $a, $b, $c;
-      if (($a = (($b = data)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.Array) == null ? __opal.cm("Array") : $c))) !== false && $a !== nil) {
+      if (($a = (($b = data)['$is_a?'] || $mm('is_a?')).call($b, __scope.Array)) !== false && $a !== nil) {
         return (($a = this).$format || $mm('format')).apply($a, [this].concat(data))
         } else {
         return (($c = this).$format || $mm('format')).call($c, this, data)
@@ -5016,11 +5025,11 @@ if (k == null) k = nil;
     def.$getbyte = def.charCodeAt;
 
     def.$gsub = TMP_3 = function(pattern, replace) {
-      var $a, $b, $c, block;
+      var $a, $b, block;
       block = TMP_3._p || nil, TMP_3._p = null;
       
-      if (($a = (($b = pattern)['$is_a?'] || $mm('is_a?')).call($b, (($c = __scope.String) == null ? __opal.cm("String") : $c))) !== false && $a !== nil) {
-        pattern = (new RegExp("" + (($a = (($c = __scope.Regexp) == null ? __opal.cm("Regexp") : $c)).$escape || $mm('escape')).call($a, pattern)))
+      if (($a = (($b = pattern)['$is_a?'] || $mm('is_a?')).call($b, __scope.String)) !== false && $a !== nil) {
+        pattern = (new RegExp("" + (($a = __scope.Regexp).$escape || $mm('escape')).call($a, pattern)))
       };
       
       var pattern = pattern.toString(),
@@ -5058,7 +5067,7 @@ if (k == null) k = nil;
           offset = this.length - offset;
         }
 
-        if ((($a = what)['$is_a?'] || $mm('is_a?')).call($a, (($b = __scope.Regexp) == null ? __opal.cm("Regexp") : $b))) {
+        if ((($a = what)['$is_a?'] || $mm('is_a?')).call($a, __scope.Regexp)) {
           result = (($b = (($c = what)['$=~'] || $mm('=~')).call($c, this.substr(offset))), $b !== false && $b !== nil ? $b : -1)
         }
         else {
@@ -5070,7 +5079,7 @@ if (k == null) k = nil;
         }
       }
       else {
-        if ((($b = what)['$is_a?'] || $mm('is_a?')).call($b, (($d = __scope.Regexp) == null ? __opal.cm("Regexp") : $d))) {
+        if ((($b = what)['$is_a?'] || $mm('is_a?')).call($b, __scope.Regexp)) {
           result = (($d = (($e = what)['$=~'] || $mm('=~')).call($e, this)), $d !== false && $d !== nil ? $d : -1)
         }
         else {
@@ -5120,10 +5129,10 @@ if (k == null) k = nil;
     };
 
     def.$ljust = function(integer, padstr) {
-      var $a, $b;if (padstr == null) {
+      var $a;if (padstr == null) {
         padstr = " "
       }
-      return (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.NotImplementedError) == null ? __opal.cm("NotImplementedError") : $b));
+      return (($a = this).$raise || $mm('raise')).call($a, __scope.NotImplementedError);
     };
 
     def.$lstrip = function() {
@@ -5132,13 +5141,13 @@ if (k == null) k = nil;
     };
 
     def.$match = TMP_4 = function(pattern, pos) {
-      var $a, $b, $c, $d, $e, $f, block;
+      var $a, $b, $c, $d, $e, block;
       block = TMP_4._p || nil, TMP_4._p = null;
       
-      return ($b = (($c = (function() { if (($d = (($e = pattern)['$is_a?'] || $mm('is_a?')).call($e, (($f = __scope.Regexp) == null ? __opal.cm("Regexp") : $f))) !== false && $d !== nil) {
+      return ($b = (($c = (function() { if (($d = (($e = pattern)['$is_a?'] || $mm('is_a?')).call($e, __scope.Regexp)) !== false && $d !== nil) {
         return pattern
         } else {
-        return (new RegExp("" + (($d = (($f = __scope.Regexp) == null ? __opal.cm("Regexp") : $f)).$escape || $mm('escape')).call($d, pattern)))
+        return (new RegExp("" + (($d = __scope.Regexp).$escape || $mm('escape')).call($d, pattern)))
       }; return nil; }).call(this)).$match || $mm('match')), $b._p = (($a = block).$to_proc || $mm('to_proc')).call($a), $b).call($c, this, pos);
     };
 
@@ -5177,12 +5186,12 @@ if (k == null) k = nil;
     };
 
     def.$rindex = function(search, offset) {
-      var $a, $b, $c;
+      var $a, $b;
       
       var search_type = (search == null ? Opal.NilClass : search.$class());
       if (search_type != String && search_type != RegExp) {
         var msg = "type mismatch: " + search_type + " given";
-        (($a = this).$raise || $mm('raise')).call($a, (($b = (($c = __scope.TypeError) == null ? __opal.cm("TypeError") : $c)).$new || $mm('new')).call($b, msg));
+        (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.TypeError).$new || $mm('new')).call($b, msg));
       }
 
       if (this.length == 0) {
@@ -5227,7 +5236,7 @@ if (k == null) k = nil;
     };
 
     def.$scan = TMP_5 = function(pattern) {
-      var $a, $b, block;
+      var $a, block;
       block = TMP_5._p || nil, TMP_5._p = null;
       
       
@@ -5244,7 +5253,7 @@ if (k == null) k = nil;
       var match;
 
       while ((match = pattern.exec(this)) != null) {
-        var match_data = (($a = (($b = __scope.MatchData) == null ? __opal.cm("MatchData") : $b)).$new || $mm('new')).call($a, pattern, match);
+        var match_data = (($a = __scope.MatchData).$new || $mm('new')).call($a, pattern, match);
         if (block === nil) {
           match.length == 1 ? result.push(match[0]) : result.push(match.slice(1));
         }
@@ -5324,7 +5333,7 @@ if (k == null) k = nil;
         });
       }
       else if (replace !== undefined) {
-        if ((($a = replace)['$is_a?'] || $mm('is_a?')).call($a, (($b = __scope.Hash) == null ? __opal.cm("Hash") : $b))) {
+        if ((($a = replace)['$is_a?'] || $mm('is_a?')).call($a, __scope.Hash)) {
           return this.replace(pattern, function(str) {
             var value = (($b = replace)['$[]'] || $mm('[]')).call($b, (($c = this).$str || $mm('str')).call($c));
 
@@ -5332,10 +5341,10 @@ if (k == null) k = nil;
           });
         }
         else {
-          replace = (($f = (($g = __scope.String) == null ? __opal.cm("String") : $g)).$try_convert || $mm('try_convert')).call($f, replace);
+          replace = (($f = __scope.String).$try_convert || $mm('try_convert')).call($f, replace);
 
           if (replace == null) {
-            (($g = this).$raise || $mm('raise')).call($g, (($h = __scope.TypeError) == null ? __opal.cm("TypeError") : $h), "can't convert " + ((($h = replace).$class || $mm('class')).call($h)) + " into String");
+            (($g = this).$raise || $mm('raise')).call($g, __scope.TypeError, "can't convert " + ((($h = replace).$class || $mm('class')).call($h)) + " into String");
           }
 
           return this.replace(pattern, replace);
@@ -5736,7 +5745,7 @@ if (k == null) k = nil;
 
     return def.$upcase = def.toUpperCase;
   })(self, String);
-  __scope.Symbol = (($a = __scope.String) == null ? __opal.cm("String") : $a);
+  __scope.Symbol = __scope.String;
   return (function(__base, __super){
     function MatchData() {};
     MatchData = __klass(__base, __super, "MatchData", MatchData);
@@ -5784,13 +5793,13 @@ if (k == null) k = nil;
     });
 
     def.$begin = function(pos) {
-      var $a, $b;
+      var $a;
       
       if (pos == 0 || pos == 1) {
         return this._begin;
       }
       else {
-        (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.ArgumentError) == null ? __opal.cm("ArgumentError") : $b), "MatchData#begin only supports 0th element");
+        (($a = this).$raise || $mm('raise')).call($a, __scope.ArgumentError, "MatchData#begin only supports 0th element");
       }
     
     };
@@ -5843,17 +5852,17 @@ if (k == null) k = nil;
     };
 
     return nil;
-  })(self, (($a = __scope.Array) == null ? __opal.cm("Array") : $a));
+  })(self, __scope.Array);
 })(Opal);
 (function(__opal) {
-  var $a, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass;
+  var self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass;
   (function(__base, __super){
     function Numeric() {};
     Numeric = __klass(__base, __super, "Numeric", Numeric);
 
-    var def = Numeric.prototype, __scope = Numeric._scope, $a, $b, TMP_1, TMP_2, TMP_3;
+    var def = Numeric.prototype, __scope = Numeric._scope, $a, TMP_1, TMP_2, TMP_3;
 
-    (($a = Numeric).$include || $mm('include')).call($a, (($b = __scope.Comparable) == null ? __opal.cm("Comparable") : $b));
+    (($a = Numeric).$include || $mm('include')).call($a, __scope.Comparable);
 
     def._isNumber = true;
 
@@ -6113,10 +6122,10 @@ if (k == null) k = nil;
 
     return nil;
   })(self, Number);
-  return __scope.Fixnum = (($a = __scope.Numeric) == null ? __opal.cm("Numeric") : $a);
+  return __scope.Fixnum = __scope.Numeric;
 })(Opal);
 (function(__opal) {
-  var $a, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass;
+  var self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass;
   (function(__base, __super){
     function Proc() {};
     Proc = __klass(__base, __super, "Proc", Proc);
@@ -6175,7 +6184,7 @@ if (k == null) k = nil;
     var def = Method.prototype, __scope = Method._scope;
 
     return nil
-  })(self, (($a = __scope.Proc) == null ? __opal.cm("Proc") : $a));
+  })(self, __scope.Proc);
 })(Opal);
 (function(__opal) {
   var self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, __breaker = __opal.breaker, __slice = __opal.slice, __klass = __opal.klass;
@@ -6183,10 +6192,10 @@ if (k == null) k = nil;
     function Range() {};
     Range = __klass(__base, __super, "Range", Range);
 
-    var def = Range.prototype, __scope = Range._scope, $a, $b, TMP_1;
+    var def = Range.prototype, __scope = Range._scope, $a, TMP_1;
     def.begin = def.end = nil;
 
-    (($a = Range).$include || $mm('include')).call($a, (($b = __scope.Enumerable) == null ? __opal.cm("Enumerable") : $b));
+    (($a = Range).$include || $mm('include')).call($a, __scope.Enumerable);
 
     
     Range.prototype._isRange = true;
@@ -6260,7 +6269,7 @@ if (k == null) k = nil;
 
     def['$eql?'] = function(other) {
       var $a, $b, $c, $d, $e, $f, $g, $h;
-      if (($a = (($b = (($c = __scope.Range) == null ? __opal.cm("Range") : $c))['$==='] || $mm('===')).call($b, other)) === false || $a === nil) {
+      if (($a = (($b = __scope.Range)['$==='] || $mm('===')).call($b, other)) === false || $a === nil) {
         return false
       };
       return ($a = (($a = (($c = (($d = this)['$exclude_end?'] || $mm('exclude_end?')).call($d))['$=='] || $mm('==')).call($c, (($e = other)['$exclude_end?'] || $mm('exclude_end?')).call($e))) ? (($f = (this.begin))['$eql?'] || $mm('eql?')).call($f, (($g = other).$begin || $mm('begin')).call($g)) : $a), $a !== false && $a !== nil ? (($a = (this.end))['$eql?'] || $mm('eql?')).call($a, (($h = other).$end || $mm('end')).call($h)) : $a);
@@ -6283,10 +6292,10 @@ if (k == null) k = nil;
     def['$member?'] = def['$include?'];
 
     def.$step = function(n) {
-      var $a, $b;if (n == null) {
+      var $a;if (n == null) {
         n = 1
       }
-      return (($a = this).$raise || $mm('raise')).call($a, (($b = __scope.NotImplementedError) == null ? __opal.cm("NotImplementedError") : $b));
+      return (($a = this).$raise || $mm('raise')).call($a, __scope.NotImplementedError);
     };
 
     def.$to_s = function() {
@@ -6307,9 +6316,9 @@ if (k == null) k = nil;
     function Time() {};
     Time = __klass(__base, __super, "Time", Time);
 
-    var def = Time.prototype, __scope = Time._scope, $a, $b;
+    var def = Time.prototype, __scope = Time._scope, $a;
 
-    (($a = Time).$include || $mm('include')).call($a, (($b = __scope.Comparable) == null ? __opal.cm("Comparable") : $b));
+    (($a = Time).$include || $mm('include')).call($a, __scope.Comparable);
 
     Time._defs('$at', function(seconds, frac) {
       if (frac == null) {
@@ -6354,12 +6363,12 @@ if (k == null) k = nil;
 
     def['$+'] = function(other) {
       var $a, $b, $c, $d, $e;
-      return (($a = (($b = __scope.Time) == null ? __opal.cm("Time") : $b)).$allocate || $mm('allocate')).call($a, ($b = (($d = this).$to_f || $mm('to_f')).call($d), $c = (($e = other).$to_f || $mm('to_f')).call($e), typeof($b) === 'number' ? $b + $c : $b['$+']($c)));
+      return (($a = __scope.Time).$allocate || $mm('allocate')).call($a, ($b = (($d = this).$to_f || $mm('to_f')).call($d), $c = (($e = other).$to_f || $mm('to_f')).call($e), typeof($b) === 'number' ? $b + $c : $b['$+']($c)));
     };
 
     def['$-'] = function(other) {
       var $a, $b, $c, $d, $e;
-      return (($a = (($b = __scope.Time) == null ? __opal.cm("Time") : $b)).$allocate || $mm('allocate')).call($a, ($b = (($d = this).$to_f || $mm('to_f')).call($d), $c = (($e = other).$to_f || $mm('to_f')).call($e), typeof($b) === 'number' ? $b - $c : $b['$-']($c)));
+      return (($a = __scope.Time).$allocate || $mm('allocate')).call($a, ($b = (($d = this).$to_f || $mm('to_f')).call($d), $c = (($e = other).$to_f || $mm('to_f')).call($e), typeof($b) === 'number' ? $b - $c : $b['$-']($c)));
     };
 
     def['$<=>'] = function(other) {
@@ -6371,7 +6380,7 @@ if (k == null) k = nil;
 
     def['$eql?'] = function(other) {
       var $a, $b, $c;
-      return ($a = (($a = other)['$is_a?'] || $mm('is_a?')).call($a, (($b = __scope.Time) == null ? __opal.cm("Time") : $b)), $a !== false && $a !== nil ? (($b = (($c = this)['$<=>'] || $mm('<=>')).call($c, other))['$zero?'] || $mm('zero?')).call($b) : $a);
+      return ($a = (($a = other)['$is_a?'] || $mm('is_a?')).call($a, __scope.Time), $a !== false && $a !== nil ? (($b = (($c = this)['$<=>'] || $mm('<=>')).call($c, other))['$zero?'] || $mm('zero?')).call($b) : $a);
     };
 
     def['$friday?'] = function() {
@@ -6535,19 +6544,19 @@ if (k == null) k = nil;
   return __gvars["document"] = (($a = __gvars["window"]).$document || $mm('document')).call($a);
 })(Opal);
 (function(__opal) {
-  var $a, $b, $c, $d, $e, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, def = self._klass.prototype, __breaker = __opal.breaker, __slice = __opal.slice, __gvars = __opal.gvars, __hash2 = __opal.hash2;
+  var $a, $b, $c, $d, self = __opal.top, __scope = __opal, nil = __opal.nil, $mm = __opal.mm, def = self._klass.prototype, __breaker = __opal.breaker, __slice = __opal.slice, __gvars = __opal.gvars, __hash2 = __opal.hash2;
   __gvars["&"] = __gvars["~"] = __gvars["`"] = __gvars["'"] = nil;
   __gvars[":"] = [];
   __gvars["/"] = "\n";
   __scope.ARGV = [];
-  __scope.ARGF = (($a = (($b = __scope.Object) == null ? __opal.cm("Object") : $b)).$new || $mm('new')).call($a);
+  __scope.ARGF = (($a = __scope.Object).$new || $mm('new')).call($a);
   __scope.ENV = __hash2([], {});
   __scope.TRUE = true;
   __scope.FALSE = false;
   __scope.NIL = nil;
-  __scope.STDERR = __gvars["stderr"] = (($b = (($c = __scope.Object) == null ? __opal.cm("Object") : $c)).$new || $mm('new')).call($b);
-  __scope.STDIN = __gvars["stdin"] = (($c = (($d = __scope.Object) == null ? __opal.cm("Object") : $d)).$new || $mm('new')).call($c);
-  __scope.STDOUT = __gvars["stdout"] = (($d = (($e = __scope.Object) == null ? __opal.cm("Object") : $e)).$new || $mm('new')).call($d);
+  __scope.STDERR = __gvars["stderr"] = (($b = __scope.Object).$new || $mm('new')).call($b);
+  __scope.STDIN = __gvars["stdin"] = (($c = __scope.Object).$new || $mm('new')).call($c);
+  __scope.STDOUT = __gvars["stdout"] = (($d = __scope.Object).$new || $mm('new')).call($d);
   __scope.RUBY_PLATFORM = "opal";
   __scope.RUBY_ENGINE = "opal";
   __scope.RUBY_VERSION = "1.9.3";
@@ -6557,7 +6566,7 @@ if (k == null) k = nil;
     return "main";
   };
   return self.$include = function(mod) {
-    var $a, $b;
-    return (($a = (($b = __scope.Object) == null ? __opal.cm("Object") : $b)).$include || $mm('include')).call($a, mod);
+    var $a;
+    return (($a = __scope.Object).$include || $mm('include')).call($a, mod);
   };
 })(Opal);
