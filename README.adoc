@@ -20,7 +20,7 @@ To interact with the generated code, you either invoke the JavaScript APIs direc
 
 Start by cloning the source from GitHub:
 
- $ git clone git://github.com/asciidoctor/asciidoctor.js
+ $ git clone --recurse-submodules git://github.com/asciidoctor/asciidoctor.js
 
 Next, switch to the 'asciidoctor.js' directory and run Bundler's +install+ command:
 
