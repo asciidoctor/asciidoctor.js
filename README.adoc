@@ -173,7 +173,7 @@ Opal.hash2(['attributes'], {'attributes': ['notitle!']})
 
 Compiling Asciidoctor to JavaScript currently requires some changes in Asciidoctor.
 That's why the Asciidoctor source is linked into the project as a Git submodule.
-The goal is the eventually eliminate all of these differences so that Asciidoctor can be compiled to JavaScript as is.
+The goal is to eventually eliminate all of these differences so that Asciidoctor can be compiled to JavaScript as is.
 
 Here's a list of some of the changes that are currently needed:
 
