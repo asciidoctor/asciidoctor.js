@@ -40,6 +40,11 @@ This command produces two files in the 'build' directory:
 opal.js:: The Ruby runtime in JavaScript
 asciidoctor.js:: The JavaScript port of Asciidoctor
 
+NOTE: You may notice that these files are not an ideal size for loading in a browser.
+They gzip rather nicely, bringing the size of asciidoctor.js down from 550K to 90K.
+There are options in Opal to generate more efficient code, but they are causing problems at the moment.
+Once we sort out those issues, the size of the generated files should be quite acceptable.
+
 You need to load both files into your JavaScript environment to use Asciidoctor.
 For instance, in an HTML page, add these two +<script>+ tags (ideally at the bottom of the page):
 
