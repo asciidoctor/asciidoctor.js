@@ -1646,7 +1646,7 @@ Another bold statement footenoteref:[disclaimer].
 ----
 EOS
 
-$window.addEventListener 'DOMContentLoaded', proc {
+$global.addEventListener 'DOMContentLoaded', proc {
   html = Asciidoctor.render(data, :safe => :safe, :attributes => %w(notitle! anchors imagesdir=./images))
   $document.getElementById('content').innerHTML = html
 }, false

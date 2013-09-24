@@ -1,4 +1,5 @@
 require 'opal'
+require 'opal-sprockets'
 
 task :default => :dist
 
