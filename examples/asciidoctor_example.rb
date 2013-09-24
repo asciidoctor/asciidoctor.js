@@ -1648,5 +1648,5 @@ EOS
 
 $global.addEventListener 'DOMContentLoaded', proc {
   html = Asciidoctor.render(data, :safe => :safe, :attributes => %w(notitle! anchors imagesdir=./images))
-  $document.getElementById('content').innerHTML = html
+  Native($global.document.getElementById('content')).innerHTML = html
 }, false
