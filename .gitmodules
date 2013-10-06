@@ -1,3 +1,3 @@
 [submodule "asciidoctor"]
 	path = asciidoctor
-	url = git://github.com/mojavelinux/asciidoctor.git
+	url = git@github.com:Mogztter/asciidoctor.git
