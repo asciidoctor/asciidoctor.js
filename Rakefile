@@ -21,6 +21,13 @@ task :dist do
 
   Dir.mkdir 'build' unless File.directory? 'build'
 
+  # Replace sub! and gsub! because String are immutable in Javascript
+  Dir.glob("asciidoctor/lib/**/*.rb") do |ruby_file|
+    text = File.read(ruby_file)
+    replace = text.gsub(/([a-z]+).(sub|gsub)!/, '\1 = \1.\2')
+    File.open(ruby_file, "w") {|file| file.puts replace}
+  end
+
   env = Opal::Environment.new
   env.js_compressor = Sprockets::ClosureCompressor if minify
   env['opal'].write_to "build/opal.js#{compress ? '.gz' : nil}"

@@ -35,6 +35,10 @@ To build asciidoctor.js, simple run the Rake +dist+ task from the root of the pr
 
  $ rake dist
 
+NOTE: The build task will make some minor code changes on the asciidoctor submodule.
+As you may know String are immutable in Javascript, so we need to replace +gsub!+ and +sub!+ methods.
+These changes are made at build time to keep the Ruby code as fast as possible.
+
 This command produces two files in the 'build' directory:
 
 opal.js:: The Ruby runtime in JavaScript
