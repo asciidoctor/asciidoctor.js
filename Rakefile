@@ -33,6 +33,7 @@ task :dist do
   env['opal'].write_to "build/opal.js#{compress ? '.gz' : nil}"
 
   env.append_path 'asciidoctor/lib'
+  env.append_path 'templates'
   env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
 end
 
