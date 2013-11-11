@@ -2453,6 +2453,7 @@ To learn more about Asciidoctor and its capabilities, check out the other {docre
 Also, don't forget to join the {mailinglist}[Asciidoctor mailing list], where you can ask questions and leave comments.
 EOS
 
+require "native"
 $global.addEventListener 'DOMContentLoaded', proc {
   ENV['HOME'] = File.dirname $global.window.location.href
   monitor = {}
@@ -2460,5 +2461,5 @@ $global.addEventListener 'DOMContentLoaded', proc {
   puts %(Time to parse: #{"%0.5f" % monitor[:parse]})
   puts %(Time to render: #{"%0.5f" % monitor[:render]})
   puts %(Total time elapsed: #{"%0.5f" % monitor[:load_render]})
-  Native($global.document.getElementById('content')).innerHTML = html
+  $global.document.getElementById('content').innerHTML = html
 }, false
