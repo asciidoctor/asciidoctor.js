@@ -1,30 +1,64 @@
-data = <<-EOS
+data = <<EOS
 = AsciiDoc Syntax Quick Reference
 Dan Allen; Sarah White
 v1.0.3, 2013-08-27
+:awestruct-layout: base
+:awestruct-javascripts: [view-result]
 :description: This guide is a quick reference for the common formatting markup and document elements in the AsciiDoc syntax.
 :keywords: AsciiDoc, Asciidoctor, syntax, reference, cheatsheet
-:toc:
-:toc-placement!:
+:imagesdir: ../images
+:includedir: _includes
+//:toc:
+//:toc-placement!:
 :experimental:
-ifndef::awestruct[]
+:table-caption!:
+:example-caption!:
+:figure-caption!:
 :idprefix:
 :idseparator: -
-endif::awestruct[]
 :linkattrs:
-:fontawesome-ref: http://fortawesome.github.io/Font-Awesome
-:icon-inline: http://asciidoctor.org/docs/user-manual/#inline-icons
-:icon-attribute: http://asciidoctor.org/docs/user-manual/#size-rotate-and-flip
-:video-ref: http://asciidoctor.org/docs/user-manual/#video
-:checklist-ref: http://asciidoctor.org/docs/user-manual/#checklists
-:list-marker: http://asciidoctor.org/docs/user-manual/#custom-markers
-:list-number: http://asciidoctor.org/docs/user-manual/#numbering-styles
-:imagesdir-ref: http://asciidoctor.org/docs/user-manual/#imagesdir
-:image-attributes: http://asciidoctor.org/docs/user-manual/#put-images-in-their-place
-:toc-ref: http://asciidoctor.org/docs/user-manual/#table-of-contents
 :docref: http://asciidoctor.org/docs
-:user-ref: http://asciidoctor.org/docs/user-manual
+:user-ref: {docref}/user-manual
+:fontawesome-ref: http://fortawesome.github.io/Font-Awesome
+:icon-inline: {user-ref}/#inline-icons
+:icon-attribute: {user-ref}/#size-rotate-and-flip
+:video-ref: {user-ref}/#video
+:checklist-ref: {user-ref}/#checklists
+:list-marker: {user-ref}/#custom-markers
+:list-number: {user-ref}/#numbering-styles
+:imagesdir-ref: {user-ref}/#imagesdir
+:image-attributes: {user-ref}/#put-images-in-their-place
+:toc-ref: {user-ref}/#table-of-contents
+:para-ref: {user-ref}/#paragraph
+:literal-ref: {user-ref}/#literal-text-and-blocks
+:admon-ref: {user-ref}/#admonition
+:bold-ref: {user-ref}/#bold-and-italic
+:quote-ref: {user-ref}/#quotation-marks-and-apostrophes
+:sub-ref: {user-ref}/#subscript-and-superscript
+:mono-ref: {user-ref}/#monospace
+:css-ref: {user-ref}/#custom-styling-with-attributes
+:pass-ref: {user-ref}/#passthrough-macros
 :mailinglist: http://discuss.asciidoctor.org
+
+////
+Syntax to cover:
+- preface
+- index terms
+- built-in attributes (such as {author}, {revision}, etc)
+- start=n for ordered lists
+- horizontal labeled list
+- anchor for any block element
+- block metadata (missing example of normal attributes)
+- command line reference? perhaps another doc? yes
+
+PDF TODO:
+- add license on title page (legalnotice tag)
+- table cell bg
+- show example of section levels
+- syntax highlight ruby code (requires switch to https://code.google.com/p/java-syntax-highlighter)
+- style sidebar block
+////
+
 
 AsciiDoc is a mature, lightweight markup language for authoring notes, articles, documentation, books, web pages, slide decks and man pages in plain text.
 {description}
@@ -37,7 +71,7 @@ AsciiDoc produces complementary output when generating DocBook.
 Most features labeled ``Asciidoctor only'' can be made available to the native AsciiDoc processor by using https://github.com/asciidoctor/asciidoctor/blob/master/compat/asciidoc.conf[this AsciiDoc configuration file] from the Asciidoctor project.
 ====
 
-//toc::[]
+toc::[]
 
 == Paragraphs
 
@@ -47,7 +81,6 @@ Paragraphs don't require any special markup in AsciiDoc.
 A paragraph is just one or more lines of consecutive text.
 
 To begin a new paragraph, separate it by at least one blank line.
-Consecutive lines of text are joined to form a single paragraph.
 ----
 
 [.result]
@@ -56,32 +89,25 @@ Paragraphs don't require any special markup in AsciiDoc.
 A paragraph is just one or more lines of consecutive text.
 
 To begin a new paragraph, separate it by at least one blank line.
-Consecutive lines of text are joined to form a single paragraph.
 ====
 
 .Line breaks
 ----
-To make a line break, end the line in a space followed by a plus. +
-This results in a visible line break (e.g., <br>) between the lines.
-
-Rubies are red. +
-Sapphires are blue.
+To preserve a line break, end the line in a space followed by a plus sign. +
+This results in a visible line break (e.g., +<br>+) between the lines.
 ----
 
 [.result]
 ====
-To make a line break, end the line in a space followed by a plus. +
-This results in a visible line break (e.g., <br>) between the lines.
-
-Rubies are red. +
-Sapphires are blue.
+To preserve a line break, end the line in a space followed by a plus sign. +
+This results in a visible line break (e.g., +<br>+) between the lines.
 ====
 
 .Literal
 ----
 A normal paragraph.
 
- A line that begins with one or more spaces is a literal paragraph.
+ A sequence of lines that begin with at least one space is a literal paragraph.
  Literal paragraphs are treated as preformatted text.
  The text is shown in a fixed-width font
  and endlines are preserved.
@@ -93,7 +119,7 @@ Another normal paragraph.
 ====
 A normal paragraph.
 
- A line that begins with one or more spaces is a literal paragraph.
+ A sequence of lines that begin with at least one space is a literal paragraph.
  Literal paragraphs are treated as preformatted text.
  The text is shown in a fixed-width font
  and endlines are preserved.
@@ -101,16 +127,12 @@ A normal paragraph.
 Another normal paragraph.
 ====
 
-TIP: Use one or two spaces to offset a literal paragraph, but no more.
-*Be frugal!*
-
 .Admonition
 ----
 NOTE: An admonition paragraph draws the reader's attention to
-auxiliary information. Its purpose is determined by the label
-at the beginning of the paragraph. The admonition is set apart
-from the main content and displayed next to its label or
-corresponding icon.
+auxiliary information.
+Its purpose is determined by the label
+at the beginning of the paragraph.
 
 Here are the other built-in admonition types:
 
@@ -126,10 +148,9 @@ CAUTION: Ensure that...
 [.result]
 ====
 NOTE: An admonition paragraph draws the reader's attention to
-auxiliary information. Its purpose is determined by the label
-at the beginning of the paragraph. The admonition is set apart
-from the main content and displayed next to its label or
-corresponding icon.
+auxiliary information.
+Its purpose is determined by the label
+at the beginning of the paragraph.
 
 Here are the other built-in admonition types:
 
@@ -142,27 +163,36 @@ WARNING: Watch out for...
 CAUTION: Ensure that...
 ====
 
-NOTE: You can also create admonition blocks, which are covered later.
+NOTE: You can also create <<admon-bl,admonition blocks>>.
 
-.Lead paragraph (default Asciidoctor stylesheet)
+.Lead paragraph
 ----
-[role="lead"]
+[.lead]
 This text will be styled as a lead paragraph (i.e., larger font).
 ----
 
 [.result]
 ====
-[role="lead"]
+[.lead]
 This text will be styled as a lead paragraph (i.e., larger font).
 ====
 
-NOTE: The first paragraph of the preamble is automatically styled as a lead paragraph when using the default Asciidoctor stylesheet.
+NOTE: The default Asciidoctor stylesheet automatically styles the first paragraph of the preamble as a lead paragraph.
+
+.More Paragraph, Admonition and Literal Block Examples
+****
+See these sections in the Asciidoctor User Manual for more information and examples.
+
+* {para-ref}[Paragraphs]
+* {literal-ref}[Literal Text and Blocks]
+* {admon-ref}[Admonitions]
+****
 
 == Formatted Text
 
-.Emphasis
+.Bold, Italic, and Monospace
 ----
-_italic phrase_ (or 'italic phrase')
+_italic phrase_
 
 __i__talic le__tt__ers
 
@@ -173,25 +203,7 @@ __i__talic le__tt__ers
 *_bold italic phrase_*
 
 **__b__**old italic le**__tt__**ers
-----
 
-[.result]
-====
-_italic phrase_ (or 'italic phrase')
-
-__i__talic le__tt__ers
-
-*bold phrase*
-
-**b**old le**tt**ers
-
-*_bold italic phrase_*
-
-**__b__**old italic le**__tt__**ers
-====
-
-.Monospace
-----
 +monospace phrase+ and le++tt++ers
 
 +_monospace italic phrase_+ and le++__tt__++ers
@@ -205,6 +217,18 @@ __i__talic le__tt__ers
 
 [.result]
 ====
+_italic phrase_
+
+__i__talic le__tt__ers
+
+*bold phrase*
+
+**b**old le**tt**ers
+
+*_bold italic phrase_*
+
+**__b__**old italic le**__tt__**ers
+
 +monospace phrase+ and le++tt++ers
 
 +_monospace italic phrase_+ and le++__tt__++ers
@@ -216,43 +240,35 @@ __i__talic le__tt__ers
 `inline literal passthrough` (monospace text without substitutions)
 ====
 
-.Custom styling
+.Custom Styling
 ----
-[small]#phrase styled by CSS class .small#
+Do werewolves believe in [small]#small print#?
 
-[big]##O##nce upon a time...
-----
-
-[.result]
-====
-[small]#phrase styled by CSS class .small#
-
-[big]##O##nce upon a time...
-====
-
-.Superiors and inferiors
-----
-^superscript phrase^
-
-e = mc^2^
-
-~subscript phrase~
-
-H~2~O
+[big]##O##nce upon an infinite loop.
 ----
 
 [.result]
 ====
-^superscript phrase^
+Do werewolves believe in [small]#small print#?
 
-e = mc^2^
-
-~subscript phrase~
-
-H~2~O
+[big]##O##nce upon an infinite loop.
 ====
 
-.Quotes
+.Superscript and Subscript
+----
+^super^script phrase
+
+~sub~script phrase
+----
+
+[.result]
+====
+^super^script phrase
+
+~sub~script phrase
+====
+
+.Curved Quotes
 ----
 `single smart quotes'
 
@@ -266,49 +282,62 @@ H~2~O
 ``double smart quotes''
 ====
 
-== Document Header (Optional)
+.More Text Formatting Examples
+****
+See these sections in the Asciidoctor User Manual for more information and examples.
+
+* {bold-ref}[Bold and Italic Formatting]
+* {quote-ref}[Quotation Marks and Apostrophes]
+* {sub-ref}[Subscript and Superscript]
+* {mono-ref}[Monospace Formatting]
+* {css-ref}[Custom Styling with Attributes]
+* {pass-ref}[Passthrough Macros]
+****
+
+== Document Header
+
+IMPORTANT: A header is optional.
+When you do add a header to your document, the only required element is a title.
+
+CAUTION: The header may not contain blank lines and must be offset from the content by at least one blank line.
 
 .Title only
 ----
-= AsciiDoc Writer's Guide
+= My Document's Title
 
-This guide provides...
+My document provides...
 ----
-
-TIP: The title is the only required element in the document header.
 
 .Title and author line
 ----
-= AsciiDoc Writer's Guide
-Doc Writer <doc.writer@asciidoc.org>
+= My Document's Title
+Doc Writer <doc.writer@asciidoctor.org>
 
-This guide provides...
+My document provides...
 ----
 
 .Title, author line and revision line
 ----
-= AsciiDoc Writer's Guide
-Doc Writer <doc.writer@asciidoc.org>
-v1.0, 2013-01-01
+= My Document's Title
+Doc Writer <doc.writer@asciidoctor.org>
+v1.0, 2014-01-01
 
-This guide provides...
+My document provides...
 ----
 
 IMPORTANT: You cannot have a revision line without an author line.
 
 .Document header with attributes
 ----
-= AsciiDoc Writer's Guide
-Doc Writer <doc.writer@asciidoc.org>
-v1.0, 2013-01-01
+= My Document's Title
+Doc Writer <doc.writer@asciidoctor.org>
+v1.0, 2014-01-01
 :toc:
 :imagesdir: assets/images
-:homepage: http://asciidoc.org 
+:homepage: http://asciidoctor.org
 
-This guide provides...
+My document provides...
 ----
-
-CAUTION: The header may not contain blank lines and must be offset from the content by at least one blank line.
 
 [[section-titles]]
 == Section Titles (Headers)
@@ -317,15 +346,17 @@ CAUTION: The header may not contain blank lines and must be offset from the cont
 ----
 = Document Title (Level 0)
 
-== Section Level 1
+== Level 1 Section
 
-=== Section Level 2
+=== Level 2 Section
 
-==== Section Level 3
+==== Level 3 Section
 
-===== Section Level 4
+===== Level 4 Section
 
-====== Section Level 5 (Asciidoctor only)
+====== Level 5 Section
+
+== Another Level 1 Section
 ----
 
 [.result]
@@ -347,7 +378,7 @@ CAUTION: The header may not contain blank lines and must be offset from the cont
 ===== Section Level 4
 
 [float]
-====== Section Level 5 (Asciidoctor only)
+====== Section Level 5
 ====
 
 WARNING: When using the article doctype (the default), you can only have one level-0 section title (i.e., the document title) and it must be in the document header.
@@ -367,7 +398,7 @@ For example, _Section Level 1_ becomes an +<h2>+ heading.
 
 ===== Section Level 4
 
-====== Section Level 5 (Asciidoctor only)
+====== Section Level 5
 
 = Section Level 0
 ----
@@ -391,18 +422,20 @@ For example, _Section Level 1_ becomes an +<h2>+ heading.
 ===== Section Level 4
 
 [float]
-====== Section Level 5 (Asciidoctor only)
+====== Section Level 5
 
 [float]
 = Section Level 0
 ====
 
+////
 IMPORTANT: There are two other ways to define a section title.
 _Their omission is intentional_.
 They both require more markup and are therefore unnecessary.
 The http://en.wikipedia.org/wiki/Setext[setext] title syntax (underlined text) is especially wasteful, hard to remember, hard to maintain and error prone.
 The reader never sees the extra markup, so why type it?
 *Be frugal!*
+////
 
 .Explicit id
 ----
@@ -436,15 +469,8 @@ This is documentation for project X.
 \\include::example.adoc[]
 ----
 
-CAUTION: AsciiDoc does not insert blank lines between adjacent include statements to keep the content separated.
+CAUTION: Asciidoctor does not insert blank lines between adjacent include statements to keep the content separated.
 Be sure to add a blank line in the source document to avoid unexpected results, such as a section title being swallowed.
-
-.Common text
-----
-== About the author
-
-\\include::author-bio.adoc[]
-----
 
 .Include content from a URI
 ----
@@ -453,22 +479,10 @@ Be sure to add a blank line in the source document to avoid unexpected results, 
 \\include::{asciidoctor-source}/README.adoc[]
 ----
 
-NOTE: Including content from a URI is a potentially dangerous feature, so it's disabled if the safe mode is SECURE or greater.
+NOTE: Including content from a URI is potentially dangerous, so it's disabled if the safe mode is SECURE or greater.
 Assuming the safe mode is less than SECURE, you must also set the +allow-uri-read+ attribute to permit Asciidoctor to read content from a URI.
 
-== Breaks
-
-.Line break
-----
-Rubies are red. +
-Sapphires are blue.
-----
-
-[.result]
-====
-Rubies are red. +
-Sapphires are blue.
-====
+== Horizontal Rules and Page Breaks
 
 .Horizontal rule
 ----
@@ -489,54 +503,22 @@ Sapphires are blue.
 
 .Unordered, basic
 ----
-- Apples
-- Oranges
-- Bananas
-
-//^
-
-* Apples
-* Oranges
-* Bananas
+* Edgar Allen Poe
+* Sheri S. Tepper
+* Bill Bryson
 ----
 
 [.result]
 ====
-- Apples
-- Oranges
-- Bananas
-
-//^
-
-* Apples
-* Oranges
-* Bananas
+* Edgar Allen Poe
+* Sheri S. Tepper
+* Bill Bryson
 ====
 
-NOTE: Blank lines are required before and after a list and are permitted, but not required, between list items.
+NOTE: Blank lines are required before and after a list.
 
 TIP: You can force two lists apart with a line comment, as the previous example demonstrates.
 The text in the comment, (`^`), is optional, but serves as a hint to other authors that this line serves as an "end of list" marker.
-
-.Unordered, nested
-----
-* Apples
-** Rome
-** Empire
-* Oranges
-** Navel
-** Temple
-----
-
-[.result]
-====
-* Apples
-** Rome
-** Empire
-* Oranges
-** Navel
-** Temple
-====
 
 .Unordered, max nesting
 ----
@@ -560,7 +542,7 @@ The text in the comment, (`^`), is optional, but serves as a hint to other autho
 
 TIP: The unordered list marker can be changed using {list-marker}[block styles].
 
-.Unordered, checklist
+.Checklist
 ----
 - [*] checked
 - [x] also checked
@@ -630,7 +612,7 @@ TIP: Checklists can use {checklist-ref}[font-based icons and be interactive].
 . level 1
 ====
 
-TIP: For ordered lists, Asciidoctor supports {list-number}[numeration styles] such as lowergreek and decimal-leading-zero.
+TIP: For ordered lists, Asciidoctor supports {list-number}[numeration styles] such as +lowergreek+ and +decimal-leading-zero+.
 
 .Labeled, single-line
 ----
@@ -673,7 +655,7 @@ What is the answer to the Ultimate Question?:: 42
 [qanda]
 What is Asciidoctor?::
   An implementation of the AsciiDoc processor in Ruby.
-What's the answer to the Ultimate Question?:: 42
+What is the answer to the Ultimate Question?:: 42
 ====
 
 .Mixed
@@ -720,7 +702,8 @@ Cloud Providers::
     . Rackspace
 ====
 
-TIP: Lists can be indented. Leading whitespace is not significant.
+TIP: Lists can be indented.
+Leading whitespace is not significant.
 
 .Complex content in outline lists
 ----
@@ -765,7 +748,7 @@ list continuation:: a plus sign (+) on a line by itself
 
  $ gem install asciidoctor
 
-* AsciiDoc lists may contain any complex content, even tables.
+* AsciiDoc lists may contain any complex content.
 +
 [cols="2", options="header"]
 |===
@@ -784,18 +767,18 @@ list continuation:: a plus sign (+) on a line by itself
 
 .External
 ----
-http://asciidoc.org - automatic!
+http://asciidoctor.org - automatic!
 
-http://asciidoc.org[AsciiDoc]
+http://asciidoctor.org[Asciidoctor]
 
 https://github.com/asciidoctor[Asciidoctor @ *GitHub*]
 ----
 
 [.result]
 ====
-http://asciidoc.org - automatic!
+http://asciidoctor.org - automatic!
 
-http://asciidoc.org[AsciiDoc]
+http://asciidoctor.org[Asciidoctor]
 
 https://github.com/asciidoctor[Asciidoctor @ *GitHub*]
 ====
@@ -810,31 +793,25 @@ link:index.html[Docs]
 link:index.html[Docs]
 ====
 
-.Email
+.Email and IRC
 ----
 devel@discuss.arquillian.org
 
 mailto:devel@discuss.arquillian.org[Discuss Arquillian]
 
 mailto:devel-join@discuss.arquillian.org[Subscribe, Subscribe me, I want to join!]
-----
 
-[.result]
-====
-devel@discuss.arquillian.org
-
-mailto:devel@discuss.arquillian.org[Discuss Arquillian]
-
-mailto:devel-join@discuss.arquillian.org[Subscribe, Subscribe me, I want to join!]
-====
-
-.IRC
-----
 irc://irc.freenode.org/#asciidoctor
 ----
 
 [.result]
 ====
+devel@discuss.arquillian.org
+
+mailto:devel@discuss.arquillian.org[Discuss Arquillian]
+
+mailto:devel-join@discuss.arquillian.org[Subscribe, Subscribe me, I want to join!]
+
 irc://irc.freenode.org/#asciidoctor
 ====
 
@@ -849,7 +826,7 @@ http://search.example.com["Google, Yahoo, Bing^", role="teal"]
 
 [.result]
 ====
-http://discuss.asciidoctor.org[Discuss Asciidoctor, role="big", window="_blank"]
+http://discuss.asciidoctor.org[Discuss Asciidoctor, role="external", window="_blank"]
 
 http://discuss.asciidoctor.org[Discuss Asciidoctor^]
 
@@ -859,6 +836,20 @@ http://search.example.com["Google, Yahoo, Bing^", role="teal"]
 NOTE: Links with attributes (including the subject and body segments on mailto links) are a feature unique to Asciidoctor.
 To enable them, you must set the +linkattrs+ attribute on the document.
 When they are enabled, you must quote the link text if it contains a comma.
+
+.Inline anchors
+----
+[[bookmark-a]]Inline anchors make arbitrary content referenceable.
+
+anchor:bookmark-b[]Use a cross reference to link to this location.
+----
+
+[.result]
+====
+[[bookmark-a]]Inline anchors make arbitrary content referenceable.
+
+anchor:bookmark-b[]Use a cross reference to link to this location.
+====
 
 .Internal cross references
 ----
@@ -889,7 +880,8 @@ image::sunset.jpg[]
 
 image::sunset.jpg[Sunset]
 
-.A sunset feast!
+[[img-sunset]]
+.A mountain sunset
 image::sunset.jpg[Sunset, 300, 200, link="http://www.flickr.com/photos/javh/5448336655"]
 
 image::http://asciidoctor.org/images/octocat.jpg[GitHub mascot]
@@ -901,7 +893,8 @@ image::sunset.jpg[]
 
 image::sunset.jpg[Sunset]
 
-.What a sunset!
+[[img-sunset]]
+.A mountain sunset
 image::sunset.jpg[Sunset, 300, 200, link="http://www.flickr.com/photos/javh/5448336655"]
 
 image::http://asciidoctor.org/images/octocat.jpg[GitHub mascot]
@@ -915,28 +908,26 @@ TIP: You should use the +imagesdir+ attribute to avoid hard coding the shared pa
 
 .Image macro using positioning role
 ----
-image:sunset.jpg[Sunset,150,150,role="right"]
-What a beautiful sunset!
+image:sunset.jpg[Sunset,150,150,role="right"] What a beautiful sunset!
 ----
 
 [.result]
 ====
-image:sunset.jpg[Sunset,150,150,role="right"]
-What a beautiful sunset!
+image:sunset.jpg[Sunset,150,150,role="right"] What a beautiful sunset!
 ====
 
 TIP: There are a variety of attributes available to {image-attributes}[position and frame images].
 
 .Inline
 ----
-Click image:icons/play.png[] to get the party started.
+Click image:icons/play.png[Play, title="Play"] to get the party started.
 
 Click image:icons/pause.png[title="Pause"] when you need a break.
 ----
 
 [.result]
 ====
-Click image:icons/play.png[] to get the party started.
+Click image:icons/play.png[Play, title="Play"] to get the party started.
 
 Click image:icons/pause.png[title="Pause"] when you need a break.
 ====
@@ -976,41 +967,39 @@ TIP: You can control the video settings using {video-ref}[additional attributes 
 
 .Inline
 ----
-Reference code like +types+ or `methods` inline.
+Reference code like +types+ or +methods+ inline.
 ----
 
 [.result]
 ====
-Reference code like +types+ or `methods` inline.
+Reference code like +types+ or +methods+ inline.
 ====
 
 .Literal line
 ----
- Indent one space to insert a one-liner.
+ Indent the line one space to insert a code snippet
 ----
 
 [.result]
 ====
- Indent one space to insert a one-liner.
+ Indent the line one space to insert a code snippet
 ====
 
 .Literal block
 ----
 ....
-Copyright (C) 2013 Acme Corporation.
-
-This work is licensed as CC BY-SA, which is the
-Creative Commons Attribution 3.0 Unported License.
+error: The requested operation returned error: 1954 Forbidden search for defensive operations manual
+absolutely fatal: operation initiation lost in the dodecahedron of doom
+would you like to die again? y/n
 ....
 ----
 
 [.result]
 ====
 ....
-Copyright (C) 2013 Acme Corporation.
-
-This work is licensed as CC BY-SA, which is the
-Creative Commons Attribution 3.0 Unported License.
+error: The requested operation returned error: 1954 Forbidden search for defensive operations manual
+absolutely fatal: operation initiation lost in the dodecahedron of doom
+would you like to die again? y/n
 ....
 ====
 
@@ -1022,13 +1011,13 @@ Creative Commons Attribution 3.0 Unported License.
 GEM
   remote: https://rubygems.org/
   specs:
-    asciidoctor (0.1.1)
+    asciidoctor (0.1.4)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  asciidoctor (~> 0.1.1)
+  asciidoctor (~> 0.1.4)
 ----
 ....
 
@@ -1039,13 +1028,13 @@ DEPENDENCIES
 GEM
   remote: https://rubygems.org/
   specs:
-    asciidoctor (0.1.1)
+    asciidoctor (0.1.4)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  asciidoctor (~> 0.1.1)
+  asciidoctor (~> 0.1.4)
 ----
 ====
 
@@ -1095,7 +1084,6 @@ end
 [.result]
 ====
 [source,ruby]
-.app.rb
 ----
 require 'sinatra' <1>
 
@@ -1112,9 +1100,9 @@ end
 .Code block with non-selectable callouts
 ....
 ----
-line of code  // \\<1>
-line of code   # \\<2>
-line of code  ;; \\<3>
+line of code  // <1>
+line of code  # <2>
+line of code  ;; <3>
 ----
 <1> A callout behind a line comment for C-style languages.
 <2> A callout behind a line comment for Ruby, Python, Perl, etc.
@@ -1125,7 +1113,7 @@ line of code  ;; \\<3>
 ====
 ----
 line of code  // <1>
-line of code   # <2>
+line of code  # <2>
 line of code  ;; <3>
 ----
 <1> A callout behind a line comment for C-style languages.
@@ -1139,7 +1127,7 @@ line of code  ;; <3>
 [source,xml]
 ----
 <section>
-  <title>Section Title</title>  \\<!--1-->
+  <title>Section Title</title> <!--1-->
 </section>
 ----
 <1> The section title is required.
@@ -1150,7 +1138,7 @@ line of code  ;; <3>
 [source,xml]
 ----
 <section>
-  <title>Section Title</title>  <!--1-->
+  <title>Section Title</title> <!--1-->
 </section>
 ----
 <1> The section title is required.
@@ -1212,10 +1200,7 @@ Syntax highlighting is enabled by setting the +source-highlighter+ attribute in 
 
  :source-highlighter: pygments
 
-The valid options for each implementation are as follows:
-
-AsciiDoc:: pygments, source-highlighter, highlight (default)
-Asciidoctor:: coderay, highlightjs, prettify, pygments
+The valid options for are +coderay+, +highlightjs+, +prettify+, and +pygments+.
 ====
 
 == More Delimited Blocks
@@ -1252,8 +1237,8 @@ Here's a sample AsciiDoc document:
 
 [listing]
 ....
-= AsciiDoc Writer's Guide
-Dan Allen
+= Title of Document
+Doc Writer
 :toc:
 
 This guide provides...
@@ -1271,8 +1256,8 @@ Here's a sample AsciiDoc document:
 
 [listing]
 ....
-= AsciiDoc Writer's Guide
-Dan Allen
+= Title of Document
+Doc Writer
 :toc:
 
 This guide provides...
@@ -1282,6 +1267,7 @@ The document header is useful, but not required.
 ====
 --
 
+[[admon-bl]]
 .Admonition
 ----
 [NOTE]
@@ -1313,7 +1299,7 @@ Another paragraph.
 =====
 
 [TIP]
-.Dynamic admonition and callout icons
+.Admonition and callout icons
 ====
 Asciidoctor can "draw" icons using {fontawesome-ref}[Font Awesome^] and CSS.
 
@@ -1325,33 +1311,33 @@ Icons can also be used {icon-inline}[inline] and {icon-attribute}[styled].
 
 .Blockquote
 ----
+[quote, Abraham Lincoln, Soldiers' National Cemetery Dedication]
 ____
-A person who never made a mistake never tried anything new.
+Four score and seven years ago our fathers brought forth
+on this continent a new nation...
 ____
 
 [quote, Albert Einstein]
 A person who never made a mistake never tried anything new.
 
-[quote, Abraham Lincoln, Soldiers' National Cemetery Dedication]
 ____
-Four score and seven years ago our fathers brought forth
-on this continent a new nation...
+A person who never made a mistake never tried anything new.
 ____
 ----
 
 [.result]
 ====
+[quote, Abraham Lincoln, Soldiers' National Cemetery Dedication]
 ____
-A person who never made a mistake never tried anything new.
+Four score and seven years ago our fathers brought forth
+on this continent a new nation...
 ____
 
 [quote, Albert Einstein]
 A person who never made a mistake never tried anything new.
 
-[quote, Abraham Lincoln, Soldiers' National Cemetery Dedication]
 ____
-Four score and seven years ago our fathers brought forth
-on this continent a new nation...
+A person who never made a mistake never tried anything new.
 ____
 ====
 
@@ -1444,7 +1430,7 @@ puts "I'm a source block!"
 [listing]
 .Custom substitutions
 ....
-:version: 0.1.3
+:version: 0.1.4
 
 [source,xml]
 [subs="verbatim,attributes"]
@@ -1466,7 +1452,7 @@ puts "I'm a source block!"
 <dependency>
   <groupId>org.asciidoctor</groupId>
   <artifactId>asciidoctor-java-integration</artifactId>
-  <version>0.1.3</version>
+  <version>0.1.4</version>
 </dependency>
 ----
 ====
@@ -1545,22 +1531,19 @@ Notice it's a delimited block.
 
 == Tables
 
-.Table with four columns, a header, and two rows of content
+.Table with a title, three columns, a header, and two rows of content
 ----
-.Table of contents attributes and values
+.Table Title
 |===
-|Attribute |Value(s) |Example Syntax |Comments <1>
+|Name of Column 1 |Name of Column 2 |Name of Column 3 <1>
 <2>
-|toc
-|auto
-|+:toc:+
-|DocBook backend uses it by default.
-Disable the TOC with +:toc!:+.
+|Cell in column 1, row 1
+|Cell in column 2, row 1
+|Cell in column 3, row 1
 
-|toc2
-|auto
-|+:toc2:+
-|-
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+|Cell in column 3, row 2
 |===
 ----
 <1> Unless the +cols+ attribute is specified, the number of columns is equal to the number of vertical bars on the first non-blank line inside the block delimiters.
@@ -1568,68 +1551,48 @@ Disable the TOC with +:toc!:+.
 
 [.result]
 ====
-.Table of contents attributes and values
+.Table Title
 |===
-|Attribute |Value(s) |Example Syntax |Comments
+|Name of Column 1 |Name of Column 2 |Name of Column 3
 
-|toc
-|auto
-|+:toc:+
-|DocBook backend uses it by default.
-Disable the TOC with +:toc!:+.
+|Cell in column 1, row 1
+|Cell in column 2, row 1
+|Cell in column 3, row 1
 
-|toc2
-|auto
-|+:toc2:+
-|-
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+|Cell in column 3, row 2
 |===
 ====
 
-.Table with four columns, a header, and two rows of content
+.Table with two columns, a header, and two rows of content
 ----
-[cols="4*", options="header"] <1>
-.Table of contents attributes and values
+[cols="2*", options="header"] <1>
 |===
-|Attribute 
-|Value(s) 
-|Example Syntax 
-|Comments
+|Name of Column 1
+|Name of Column 2
 
-|toc
-|auto
-|+:toc:+
-|DocBook backend uses it by default.
-Disable the TOC with +:toc!:+.
+|Cell in column 1, row 1
+|Cell in column 2, row 1
 
-|toc2
-|auto
-|+:toc2:+
-|-
+|Cell in column 1, row 2
+|Cell in column 2, row 2
 |===
 ----
 <1> The +*+ in the +cols+ attribute is the repeat operator. It means repeat the column specification for the remainder of columns. In this case, it means to repeat the default formatting across 4 columns. When the header row is not defined on a single line, you must use the +cols+ attribute to set the number of columns and +options+ attributes to make the first row a header.
 
 [.result]
 ====
-[cols="4*", options="header"]
-.Table of contents attributes and values
+[cols="2*", options="header"]
 |===
-|Attribute 
-|Value(s) 
-|Example Syntax 
-|Comments
+|Name of Column 1
+|Name of Column 2
 
-|toc
-|none
-|+:toc:+
-|DocBook backend uses it by default.
-Disable the TOC with +:toc!:+.
+|Cell in column 1, row 1
+|Cell in column 2, row 1
 
-|toc2
-|none, left or right
-|+:toc2:+
-|By default, +:toc2:+ puts the table of contents on the left side of the page.
-Set the value to right to move it to the right side.
+|Cell in column 1, row 2
+|Cell in column 2, row 2
 |===
 ====
 
@@ -1678,7 +1641,7 @@ Empowers developers to easily create real, automated tests.
 |===
 ====
 
-.Table with cell containing AsciiDoc content
+.Table with column containing AsciiDoc content
 ----
 [cols="2,2,5a"]
 |===
@@ -1736,21 +1699,19 @@ The Lumineers,Ho Hey,Folk Rock
 
 .Table from CSV data using shorthand (Asciidoctor only)
 ----
-[options="header"]
 ,===
 Artist,Track,Genre
+
 Baauer,Harlem Shake,Hip Hop
-The Lumineers,Ho Hey,Folk Rock
 ,===
 ----
 
 [.result]
 ====
-[options="header"]
 ,===
 Artist,Track,Genre
+
 Baauer,Harlem Shake,Hip Hop
-The Lumineers,Ho Hey,Folk Rock
 ,===
 ====
 
@@ -1763,21 +1724,19 @@ The Lumineers,Ho Hey,Folk Rock
 
 .Table from DSV data using shorthand (Asciidoctor only)
 ----
-[options="header"]
 :===
 Artist:Track:Genre
-Baauer:Harlem Shake:Hip Hop
-The Lumineers:Ho Hey:Folk Rock
+
+Robyn:Indestructable:Dance
 :===
 ----
 
 [.result]
 ====
-[options="header"]
 :===
 Artist:Track:Genre
-Baauer:Harlem Shake:Hip Hop
-The Lumineers:Ho Hey:Folk Rock
+
+Robyn:Indestructable:Dance
 :===
 ====
 
@@ -1809,8 +1768,6 @@ IMPORTANT: You *must* set the +experimental+ attribute in the document header to
 
 .Keyboard shortcuts (inline +kbd+ macro)
 ----
-[caption=""]
-.Common browser keyboard shortcuts
 |===
 |Shortcut |Purpose
 
@@ -1830,8 +1787,6 @@ IMPORTANT: You *must* set the +experimental+ attribute in the document header to
 
 [.result]
 ====
-[caption=""]
-.Common browser keyboard shortcuts
 |===
 |Shortcut |Purpose
 
@@ -1881,20 +1836,20 @@ Select a file in the file navigator and click btn:[Open].
 
 .Attribute declaration and usage
 ----
-:homepage: http://asciidoc.org
-:homepagelink: http://asciidoctor.org[Asciidoctor]
-:desc: AsciiDoc is a mature, plain-text document format for +
+:homepage: http://asciidoctor.org
+:docslink: http://asciidoctor.org/docs[Asciidoctor's Docs]
+:desc: Asciidoctor is a mature, plain-text document format for +
        writing notes, articles, documentation, books, and more. +
        It's also a text processor & toolchain for translating +
        documents into various output formats (i.e., backends), +
        including HTML, DocBook, PDF and ePub.
 :checkedbox: pass:normal[+[&#10004;]+]
 
-Check out {homepage}[AsciiDoc]!
+Check out {homepage}[Asciidoctor]!
 
 {desc}
 
-Check out {homepagelink} too!
+Check out {docslink} too!
 
 {checkedbox} That's done!
 ----
@@ -1905,20 +1860,20 @@ Check out {homepagelink} too!
 [.unstyled]
 |===
 a|
-:homepage: http://asciidoc.org
-:homepagelink: http://asciidoctor.org[Asciidoctor]
-:desc: AsciiDoc is a mature, plain-text document format for +
+:homepage: http://asciidoctor.org
+:docslink: http://asciidoctor.org/docs[Asciidoctor's Docs]
+:desc: Asciidoctor is a mature, plain-text document format for +
        writing notes, articles, documentation, books, and more. +
        It's also a text processor & toolchain for translating +
        documents into various output formats (i.e., backends), +
        including HTML, DocBook, PDF and ePub.
 :checkedbox: pass:normal[+[&#10004;]+]
 
-Check out {homepage}[AsciiDoc]!
+Check out {homepage}[Asciidoctor]!
 
 {desc}
 
-Check out {homepagelink} too!
+Check out {docslink} too!
 
 {checkedbox} That's done!
 |===
@@ -1932,64 +1887,81 @@ Check out {homepagelink} too!
 
 TIP: To make an attribute value that is passed to the API or CLI have a lower precedence than an assignment in the document, add an +@+ symbol to the end of the attribute value.
 
-[width="50%", cols="1m,1"]
+// Table of literal character attributes
 .Built-in literal attributes
+[width="70%", cols="^1l,^1l,^1"]
 |===
-|Source |Resolves{nbsp}To
+|Attribute reference |Replacement |Rendered
 
 |\\{lt}
+|<
 |<
 
 |\\{gt}
 |>
+|>
 
 |\\{amp}
+|&
 |&
 
 |\\{startsb}
 |[
+|[
 
 |\\{endsb}
 |]
+|]
 
-|\\{brvbar}
+|\\{vbar}
+|\\|
 |\\|
 
 |\\{caret}
 |^
+|^
 
 |\\{asterisk}
+|*
 |*
 
 |\\{tilde}
 |~
+|~
 
 |\\{apostrophe}
+|'
 |'
 
 |\\{backslash}
 |\\
+|\\
+
+|\\{backtick}
+|`
+|`
 
 |\\{two-colons}
+|::
 |::
 
 |\\{two-semicolons}
 |;;
+|;;
+
 |===
 
-[width="50%", cols="1m,1,1", options="header"]
+// Table of character reference attributes
 .Built-in entity attributes
+[width="70%", cols="^1l,^1l,^1"]
 |===
-|Source
-|Resolves{nbsp}To +
-(e.g.,{nbsp}++\\{empty}++)
-|As{nbsp}Rendered
+|Attribute reference |Replacement |Rendered
 
 |\\{empty}
 |_nothing_
 |{empty}
 
-|\\{sp}
+|\\{sp}, \\{space}
 |_single space_
 |{sp}
 
@@ -1998,7 +1970,7 @@ TIP: To make an attribute value that is passed to the API or CLI have a lower pr
 |{nbsp}
 
 |\\{zwsp}
-|\\&zwsp;
+|\\&#8203;
 |{zwsp}
 
 |\\{wj}
@@ -2006,11 +1978,11 @@ TIP: To make an attribute value that is passed to the API or CLI have a lower pr
 |{wj}
 
 |\\{apos}
-|\\&apos;
+|\\&#39;
 |{apos}
 
 |\\{quot}
-|\\&quot;
+|\\&#34;
 |{quot}
 
 |\\{lsquo}
@@ -2036,54 +2008,77 @@ TIP: To make an attribute value that is passed to the API or CLI have a lower pr
 |\\{plus}
 |\\&#43;
 |{plus}
+
+|\\{brvbar}
+|\\&#166;
+|{brvbar}
 |===
 
+// Table of built-in data attributes
 .Built-in data attributes
-asciidoc (or asciidoctor):: _blank_
+[width="70%",cols="1m,3"]
+|===
+|Attribute |Description
 
-asciidoc-version (or asciidoctor-version):: Version of the processor
+|asciidoctor
+|Calls the processor
 
-doctype:: Document's doctype (e.g., article)
+|asciidoctor-version
+|Version of the processor
 
-backend:: Backend used to render document
+|backend
+|Backend used to render document
 
-localdate:: Local date when rendered
+|docdate
+|Last modified date
 
-localtime:: Local time when rendered
+|docdatetime
+|Last modified date and time
 
-localdatetime:: Local date & time when rendered
+|docdir
+|Name of document directory
 
-docdate:: Last modified date
+|docfile
+|Name of document file
 
-doctime:: Last modified time
+|doctime
+|Last modified time
 
-docdatetime:: Last modified date & time
+|doctitle
+|The title of the document
 
-docfile:: Name of document file
+|doctype
+|Document's doctype (e.g., article)
 
-docdir:: Name of document directory
+|localdate
+|Local date when rendered
 
-doctitle:: The title of the document
+|localdatetime
+|Local date and time when rendered
 
-[width="50%", cols="2"]
+|localtime
+|Local time when rendered
+|===
+
 .Named substitutions
-none:: Disables substitutions
+[horizontal]
++none+:: Disables substitutions
 
-normal:: Performs all substitutions except for callouts
++normal+:: Performs all substitutions except for callouts
 
-verbatim:: Escapes special characters and processes callouts
++verbatim+:: Replaces special characters and processes callouts
 
-specialcharacters:: Escapes special XML characters (e.g., <, >, &)
++specialcharacters+:: Replaces +<+, +>+, and +&+ with their corresponding entities
 
-quotes:: Applies text formatting
++quotes+:: Applies text formatting
 
-attributes:: Replaces attribute references
++attributes+:: Replaces attribute references
 
-replacements:: Substitutes text replacements
++replacements+:: Substitutes textual and character reference replacements
 
-macros:: Process macros
++macros+:: Processes macros
 
-post_replacements:: Replaces the line break character
++post_replacements+:: Replaces the line break character (+{plus}+)
 
 .Counter attributes
 ----
@@ -2117,62 +2112,78 @@ post_replacements:: Replaces the line break character
 
 ==  Text Replacement
 
-[width="50%", cols="1m,1,1"]
-.Text replacements
-|===
-|Source |Resolves{nbsp}To |As{nbsp}Rendered
+// Table of text replacements performed during replacements substitution
+////
+Included in:
 
+- user-manual: Text Substitutions: Replacements
+- quick-ref
+////
+
+[cols="2,^1l,^1l,^1,2"]
+.Textual symbol replacements
+|===
+|Name |Syntax |Unicode Replacement |Rendered |Notes
+
+|Copyright
 |\\(C)
 |\\&#169;
 |(C)
+|
 
+|Registered
 |\\(R)
 |\\&#174;
 |(R)
+|
 
+|Trademark
 |\\(TM)
 |\\&#8482;
 |(TM)
+|
 
+|Em dash
 |\\--
 |\\&#8212;
 |{empty}--{empty}
+|When space is detected on either side of the em dash, the thin space numeric character entity (+\\&#8201;+) is also substituted into the document.
 
+|ellipses
 |\\...
 |\\&#8230;
 |...
+|
 
+|right single arrow
 |\\->
 |\\&#8594;
 |->
+|
 
+|right double arrow
 |\\=>
 |\\&#8658;
 |=>
+|
 
+|left single arrow
 |\\<-
 |\\&#8592;
 |<-
+|
 
+|left double arrow
 |\\<=
 |\\&#8656;
 |<=
+|
 
+|apostrophe
 |Sam\\'s
 |Sam\\&#8217;s
 |Sam's
-
-|\\&euro;
-|\\&euro;
-|&euro;
-
-|\\&#8364;
-|\\&#8364;
-|&#8364;
-
-|\\&#x20ac;
-|\\&#x20ac;
-|&#x20ac;
+|The vertical form apostrophe is replaced with the curved form apostrophe.
 |===
 
 TIP: Any named, numeric or hex http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references[XML entity reference] is supported.
@@ -2212,7 +2223,7 @@ $$&amp;$$ renders as an XML entity instead of &.
 [.result]
 ====
 $$*Stars*$$ is not rendered as bold text.
-The astericks around the word are preserved.
+The asterisks around the word are preserved.
 
 $$&amp;$$ renders as an XML entity instead of &.
 ====
@@ -2233,13 +2244,13 @@ pass:[<u>underline me</u>] also renders as underlined text.
 
 .Backticks
 ----
-`Text in {backticks}` renders exactly as entered, in monospace.
+`Text in {backticks}` renders exactly as entered, in `monospace`.
 The attribute reference is not resolved.
 ----
 
 [.result]
 ====
-`Text in {backticks}` renders exactly as entered, in monospace.
+`Text in {backticks}` renders exactly as entered, in `monospace`.
 The attribute reference is not resolved.
 ====
 
@@ -2310,7 +2321,7 @@ A statement.footnote:[Clarification about this statement.]
 
 A bold statement.footnoteref:[disclaimer,These opinions are my own.]
 
-Another bold statement.footnoteref:[disclaimer]
+Another bold statement.footenoteref:[disclaimer]
 |===
 ====
 
@@ -2357,7 +2368,7 @@ You can configure AsciiDoc (Python) to recognize this syntax by putting https://
 
 .Fenced code block with syntax highlighting
 ----
-```ruby 
+```ruby
 require 'sinatra'
 
 get '/hi' do
@@ -2368,7 +2379,7 @@ end
 
 [.result]
 ====
-```ruby 
+```ruby
 require 'sinatra'
 
 get '/hi' do

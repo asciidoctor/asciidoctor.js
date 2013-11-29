@@ -213,6 +213,10 @@ If you want to inspect the state, add a breakpoint and refresh the page.
 Chrome tends to cache the JavaScript files too aggressively when running local scripts.
 Make a habit of holding down kbd:[Ctrl] when you click refresh to force Chrome to reload the JavaScript.
 
+Another option is to start Chrome with the application cache disabled.
+
+ $ chrome --disable-application-cache
+
 === Firefox
 
 Firefox also has a JavaScript console.

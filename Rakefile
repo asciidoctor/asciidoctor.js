@@ -22,10 +22,12 @@ task :dist do
   Dir.mkdir 'build' unless File.directory? 'build'
 
   # Replace sub! and gsub! because String are immutable in Javascript
-  Dir.glob("asciidoctor/lib/**/*.rb") do |ruby_file|
-    text = File.read(ruby_file)
-    replace = text.gsub(/([a-z]+).(sub|gsub)!/, '\1 = \1.\2')
-    File.open(ruby_file, "w") {|file| file.puts replace}
+  Dir.glob("asciidoctor/lib/**/*.rb") do |source_file|
+    original = File.read source_file
+    replacement = original.gsub(/([a-z]+).(sub|gsub)!/, '\1 = \1.\2')
+    if replacement.length > original.length
+      File.open(source_file, 'w') {|file| file.puts replacement}
+    end
   end
 
   env = Opal::Environment.new
@@ -52,8 +54,9 @@ task :examples => :dist do
   File.copy_stream 'examples/asciidoctor.css', 'build/asciidoctor.css'
 
   Dir.mkdir 'build/images' unless File.directory? 'build/images'
+  Dir.mkdir 'build/images/icons' unless File.directory? 'build/images/icons'
 
   File.copy_stream 'examples/images/sunset.jpg', 'build/images/sunset.jpg'
-  File.copy_stream 'examples/images/pause.png', 'build/images/pause.png'
-  File.copy_stream 'examples/images/play.png', 'build/images/play.png'
+  File.copy_stream 'examples/images/icons/pause.png', 'build/images/icons/pause.png'
+  File.copy_stream 'examples/images/icons/play.png', 'build/images/icons/play.png'
 end
