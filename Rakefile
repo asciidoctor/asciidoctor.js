@@ -22,10 +22,12 @@ task :dist do
   Dir.mkdir 'build' unless File.directory? 'build'
 
   # Replace sub! and gsub! because String are immutable in Javascript
-  Dir.glob("asciidoctor/lib/**/*.rb") do |ruby_file|
-    text = File.read(ruby_file)
-    replace = text.gsub(/([a-z]+).(sub|gsub)!/, '\1 = \1.\2')
-    File.open(ruby_file, "w") {|file| file.puts replace}
+  Dir.glob("asciidoctor/lib/**/*.rb") do |source_file|
+    original = File.read source_file
+    replacement = original.gsub(/([a-z]+).(sub|gsub)!/, '\1 = \1.\2')
+    if replacement.length > original.length
+      File.open(source_file, 'w') {|file| file.puts replacement}
+    end
   end
 
   env = Opal::Environment.new
