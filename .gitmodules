@@ -1,6 +1,6 @@
 [submodule "asciidoctor"]
 	path = asciidoctor
-	url = git@github.com:Mogztter/asciidoctor.git
+	url = https://github.com/asciidoctor/asciidoctor.git
 [submodule "templates/asciidoctor/backends"]
 	path = templates/asciidoctor/backends
-	url = git@github.com:asciidoctor/asciidoctor-backends.git
+	url = https://github.com/asciidoctor/asciidoctor-backends.git
