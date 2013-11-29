@@ -52,8 +52,9 @@ task :examples => :dist do
   File.copy_stream 'examples/asciidoctor.css', 'build/asciidoctor.css'
 
   Dir.mkdir 'build/images' unless File.directory? 'build/images'
+  Dir.mkdir 'build/images/icons' unless File.directory? 'build/images/icons'
 
   File.copy_stream 'examples/images/sunset.jpg', 'build/images/sunset.jpg'
-  File.copy_stream 'examples/images/pause.png', 'build/images/pause.png'
-  File.copy_stream 'examples/images/play.png', 'build/images/play.png'
+  File.copy_stream 'examples/images/icons/pause.png', 'build/images/icons/pause.png'
+  File.copy_stream 'examples/images/icons/play.png', 'build/images/icons/play.png'
 end
