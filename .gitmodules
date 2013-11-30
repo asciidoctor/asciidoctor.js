@@ -1,3 +1,6 @@
 [submodule "asciidoctor"]
 	path = asciidoctor
-	url = git://github.com/mojavelinux/asciidoctor.git
+	url = https://github.com/asciidoctor/asciidoctor.git
+[submodule "templates/asciidoctor/backends"]
+	path = templates/asciidoctor/backends
+	url = https://github.com/asciidoctor/asciidoctor-backends.git

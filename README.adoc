@@ -35,6 +35,10 @@ To build asciidoctor.js, simple run the Rake +dist+ task from the root of the pr
 
  $ rake dist
 
+NOTE: The build task will make some minor code changes on the asciidoctor submodule.
+As you may know String are immutable in Javascript, so we need to replace +gsub!+ and +sub!+ methods.
+These changes are made at build time to keep the Ruby code as fast as possible.
+
 This command produces two files in the 'build' directory:
 
 opal.js:: The Ruby runtime in JavaScript
@@ -185,6 +189,51 @@ Here's a list of some of the changes that are currently needed:
 * All mutable String operations have been replaced with assignments
 ** JavaScript doesn't support mutable strings
 * ...
+
+== Debugging
+
+Compiling a Ruby application to JavaScript and getting it to run is a process of eliminating fatal errors.
+When the JavaScript fails, the message isn't always clear or even close to where things went wrong.
+The key to working through these failures is to use the browser's JavaScript console.
+
+=== Chrome / Chromium
+
+Chrome (and Chromium) has a very intuitive JavaScript console.
+To open it, press kbd:[Ctrl+Shift+J] or right-click on the page, select "Inspect Element" from the context menu and click the "Console" tab.
+
+When an error occurs in the JavaScript, Chrome will print the error message to the console.
+The error message is interactive.
+Click on the arrow at the start of the line to expand the call trace, as shown here:
+
+image::error-in-chrome-console.png[]
+
+When you identify the entry you want to inspect, click the link to the source location.
+If you want to inspect the state, add a breakpoint and refresh the page.
+
+Chrome tends to cache the JavaScript files too aggressively when running local scripts.
+Make a habit of holding down kbd:[Ctrl] when you click refresh to force Chrome to reload the JavaScript.
+
+Another option is to start Chrome with the application cache disabled.
+
+ $ chrome --disable-application-cache
+
+=== Firefox
+
+Firefox also has a JavaScript console.
+To open it, press kbd:[Ctrl+Shift+J] or right-click on the page, select "Inspect Element" from the context menu and click the "Web Console" tab.
+
+When an error occurs in the JavaScript, Firefox will print the error message to the console.
+Unlike Chrome, the error message is not interactive.
+Its power, instead, lies under the hood.
+
+To see the call trace when an exception occurs, you need to configure the Debugger to pause on an exception.
+Click the "Debugger" tab, click the configuration gear icon in the upper right corner of that tab and click "Pause on exceptions".
+Refresh the page and you'll notice that the debugger has paused at the location in the source where the exception is thrown.
+
+image::error-in-javascript-debugger.png[]
+
+The call trace is displayed as breadcrumb navigation, which you can use to jump through the stack.
+You can inspect the state at any location by looking through the panels on the right.
 
 == Copyright
 
