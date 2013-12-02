@@ -1,6 +1,3 @@
-[submodule "asciidoctor"]
-	path = asciidoctor
-	url = https://github.com/asciidoctor/asciidoctor.git
 [submodule "templates/asciidoctor/backends"]
 	path = templates/asciidoctor/backends
 	url = https://github.com/asciidoctor/asciidoctor-backends.git
