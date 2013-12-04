@@ -434,7 +434,7 @@ if (o == null) o = nil;
     var self = $module($base, 'Asciidoctor');
 
     var def = self._proto, $scope = self._scope;
-    $opal.cdecl($scope, 'VERSION', "1.5.0.preview")
+    $opal.cdecl($scope, 'VERSION', "1.5.0.preview.1")
     
   })(self)
 })(Opal);
@@ -4293,8 +4293,8 @@ if (entry == null) entry = nil;
       });
 
       $opal.defs(self, '$is_next_line_section?', function(reader, attributes) {
-        var $a, $b, $c, self = this, val = nil;
-        if (($a = ($b = ($c = ((val = attributes['$[]'](1)))['$nil?'](), ($c === nil || $c === false)), $b !== false && $b !== nil ?["float", "discrete"]['$include?'](val) : $b)) !== false && $a !== nil) {
+        var $a, $b, $c, $d, self = this, val = nil, ord_0 = nil;
+        if (($a = ($b = ($c = ($d = ((val = attributes['$[]'](1)))['$nil?'](), ($d === nil || $d === false)), $c !== false && $c !== nil ?(((($d = ((ord_0 = val['$[]'](0).$ord()))['$=='](100)) !== false && $d !== nil) ? $d : ord_0['$=='](102))) : $c), $b !== false && $b !== nil ?(val.$match($scope.REGEXP['$[]']("section_float_style"))) : $b)) !== false && $a !== nil) {
           return false};
         if (($a = ($b = reader['$has_more_lines?'](), ($b === nil || $b === false))) !== false && $a !== nil) {
           return false};
@@ -6391,7 +6391,7 @@ if (name == null) name = nil;
       var self = $Renderer = $klass($base, $super, 'Renderer', $Renderer);
 
       var def = $Renderer._proto, $scope = $Renderer._scope;
-      def.views = nil;
+      def.views = def.chomp_result = nil;
       $opal.cdecl($scope, 'RE_ASCIIDOCTOR_NAMESPACE', /^Asciidoctor::/);
 
       $opal.cdecl($scope, 'RE_TEMPLATE_CLASS_SUFFIX', /Template$/);
@@ -6415,6 +6415,7 @@ if (name == null) name = nil;
         self.views = $hash2([], {});
         self.compact = options['$[]']("compact");
         self.cache = nil;
+        self.chomp_result = false;
         backend = options['$[]']("backend");
         if (($a = (($b = $opal.Object._scope.RUBY_ENGINE_OPAL) == null ? $opal.cm('RUBY_ENGINE_OPAL') : $b)) !== false && $a !== nil) {
           ($a = ($b = (($c = $opal.Object._scope.Template) == null ? $opal.cm('Template') : $c).$instance_variable_get("@_cache")).$each, $a._p = (TMP_1 = function(path, tmpl){var self = TMP_1._s || this;
@@ -6441,11 +6442,12 @@ if (tc == null) tc = nil;
         return "No built-in templates for backend: " + (backend)}, TMP_3._s = self, TMP_3), $a).call($d)};
         if (($a = (template_dirs = options.$delete("template_dirs"))) !== false && $a !== nil) {
           $scope.Helpers.$require_library("tilt");
+          self.chomp_result = true;
           if (($a = ((template_cache = options['$[]']("template_cache")))['$==='](true)) !== false && $a !== nil) {
             self.cache = (((($a = (($e = $opal.cvars['@@global_cache']) == null ? nil : $e)) !== false && $a !== nil) ? $a : ($opal.cvars['@@global_cache'] = $scope.TemplateCache.$new())))
           } else if (template_cache !== false && template_cache !== nil) {
             self.cache = template_cache};
-          view_opts = $hash2(["erb", "haml", "slim"], {"erb": $hash2(["trim"], {"trim": "<>"}), "haml": $hash2(["format", "attr_wrapper", "ugly", "escape_attrs"], {"format": "xhtml", "attr_wrapper": "\"", "ugly": true, "escape_attrs": false}), "slim": $hash2(["disable_escape", "sort_attrs", "pretty"], {"disable_escape": true, "sort_attrs": false, "pretty": false})});
+          view_opts = $hash2(["erb", "haml", "slim"], {"erb": $hash2(["trim"], {"trim": "<"}), "haml": $hash2(["format", "attr_wrapper", "ugly", "escape_attrs"], {"format": "xhtml", "attr_wrapper": "\"", "ugly": true, "escape_attrs": false}), "slim": $hash2(["disable_escape", "sort_attrs", "pretty"], {"disable_escape": true, "sort_attrs": false, "pretty": false})});
           if (options['$[]']("htmlsyntax")['$==']("html")) {
             view_opts['$[]']("haml")['$[]=']("format", view_opts['$[]']("slim")['$[]=']("format", "html5"))};
           slim_loaded = false;
@@ -6512,7 +6514,11 @@ if (template == null) template = nil;
         }
         if (($a = ($b = self.views['$has_key?'](view), ($b === nil || $b === false))) !== false && $a !== nil) {
           self.$raise("Couldn't find a view in @views for " + (view))};
-        return self.views['$[]'](view).$render(object, locals);
+        if (($a = self.chomp_result) !== false && $a !== nil) {
+          return self.views['$[]'](view).$render(object, locals).$chomp()
+          } else {
+          return self.views['$[]'](view).$render(object, locals)
+        };
       };
 
       def.$views = function() {
@@ -7340,7 +7346,7 @@ if (output_buffer == null) output_buffer = nil;
       output_buffer['$append=']((self.$attr("name")));
       output_buffer.$append("\" title=\"");
       output_buffer['$append=']((self.caption));
-      output_buffer.$append("\">");
+      output_buffer.$append("\"></i>");
     } else if (($a = self.document['$attr?']("icons")) !== false && $a !== nil) {
       output_buffer.$append("\n<img src=\"");
       output_buffer['$append=']((self.$icon_uri(self.$attr("name"))));
@@ -7494,13 +7500,13 @@ if (output_buffer == null) output_buffer = nil;
     if (($a = ((($c = (self['$attr?']("labelwidth"))) !== false && $c !== nil) ? $c : (self['$attr?']("itemwidth")))) !== false && $a !== nil) {
       output_buffer.$append("\n<colgroup>\n<col");
       output_buffer['$append='](((function() {if (($a = (self['$attr?']("labelwidth"))) !== false && $a !== nil) {
-        return " style=\"width:" + ((self.$attr("labelwidth")).$chomp("%")) + "%\""
+        return " style=\"width: " + ((self.$attr("labelwidth")).$chomp("%")) + "%;\""
         } else {
         return nil
       }; return nil; })()));
       output_buffer.$append(">\n<col");
       output_buffer['$append='](((function() {if (($a = (self['$attr?']("itemwidth"))) !== false && $a !== nil) {
-        return " style=\"width:" + ((self.$attr("itemwidth")).$chomp("%")) + "%\""
+        return " style=\"width: " + ((self.$attr("itemwidth")).$chomp("%")) + "%;\""
         } else {
         return nil
       }; return nil; })()));
@@ -7555,9 +7561,9 @@ if (dt == null) dt = nil;
           } else {
           return nil
         }; return nil; })()));
-        output_buffer.$append(">\n");
+        output_buffer.$append(">");
         output_buffer['$append=']((dt.$text()));
-        return output_buffer.$append("\n</dt>");}, TMP_7._s = self, TMP_7), $a).call($b);
+        return output_buffer.$append("</dt>");}, TMP_7._s = self, TMP_7), $a).call($b);
       if (($a = dd['$nil?']()) !== false && $a !== nil) {
         return nil
         } else {
@@ -7630,14 +7636,14 @@ if (output_buffer == null) output_buffer = nil;
     if (($a = ((($b = (self['$attr?']("align"))) !== false && $b !== nil) ? $b : (self['$attr?']("float")))) !== false && $a !== nil) {
       output_buffer.$append(" style=\"");
       output_buffer['$append='](([((function() {if (($a = self['$attr?']("align")) !== false && $a !== nil) {
-        return "text-align:" + (self.$attr("align"))
+        return "text-align: " + (self.$attr("align")) + ";"
         } else {
         return nil
       }; return nil; })()), ((function() {if (($a = self['$attr?']("float")) !== false && $a !== nil) {
-        return "float:" + (self.$attr("float"))
+        return "float: " + (self.$attr("float")) + ";"
         } else {
         return nil
-      }; return nil; })())].$compact()['$*']("; ")));
+      }; return nil; })())].$compact()['$*'](" ")));
       output_buffer.$append("\"");};
     output_buffer.$append(">\n<div class=\"content\">");
     if (($a = self['$attr?']("link")) !== false && $a !== nil) {
@@ -7888,7 +7894,7 @@ if (output_buffer == null) output_buffer = nil;
   var $a, $b, TMP_1, self = $opal.top, $scope = $opal, nil = $opal.nil, $breaker = $opal.breaker, $slice = $opal.slice;
   $opal.add_stubs(['$new', '$append', '$join']);
   return ($a = ($b = $scope.Template).$new, $a._p = (TMP_1 = function(output_buffer){var self = TMP_1._s || this;if (output_buffer == null) output_buffer = nil;
-  output_buffer.$append("<div style=\"page-break-after: always\"></div>\n");
+  output_buffer.$append("<div style=\"page-break-after: always;\"></div>\n");
     return output_buffer.$join();}, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/erb/html5/block_page_break")
 })(Opal);
 /* Generated by Opal 0.5.5 */
@@ -7974,7 +7980,7 @@ if (output_buffer == null) output_buffer = nil;
         output_buffer.$append("</cite>");};
       if (($a = self['$attr?']("attribution")) !== false && $a !== nil) {
         if (($a = self['$attr?']("citetitle")) !== false && $a !== nil) {
-          output_buffer.$append("\n<br>")};
+          output_buffer.$append("<br>")};
         output_buffer.$append("\n");
         output_buffer['$append='](("&#8212; " + (self.$attr("attribution"))));
         output_buffer.$append("");};
@@ -8015,8 +8021,8 @@ if (output_buffer == null) output_buffer = nil;
 /* Generated by Opal 0.5.5 */
 (function($opal) {
   var $a, $b, TMP_1, self = $opal.top, $scope = $opal, nil = $opal.nil, $breaker = $opal.breaker, $slice = $opal.slice;
-  $opal.add_stubs(['$new', '$append', '$append=', '$*', '$compact', '$attr', '$role', '$option?', '$attr?', '$title?', '$captioned_title', '$zero?', '$times', '$size', '$each', '$==', '$text', '$style', '$===', '$content', '$colspan', '$rowspan', '$[]', '$select', '$empty?', '$join']);
-  return ($a = ($b = $scope.Template).$new, $a._p = (TMP_1 = function(output_buffer){var self = TMP_1._s || this, $a, $b, TMP_2, $c, TMP_3, $d, TMP_4, $e, $f, TMP_9;
+  $opal.add_stubs(['$new', '$append', '$append=', '$*', '$compact', '$attr', '$role', '$attr?', '$option?', '$title?', '$captioned_title', '$zero?', '$times', '$size', '$each', '$==', '$text', '$style', '$===', '$content', '$colspan', '$rowspan', '$[]', '$select', '$empty?', '$join']);
+  return ($a = ($b = $scope.Template).$new, $a._p = (TMP_1 = function(output_buffer){var self = TMP_1._s || this, $a, $b, $c, TMP_2, TMP_3, $d, TMP_4, $e, $f, TMP_9;
     if (self.id == null) self.id = nil;
     if (self.columns == null) self.columns = nil;
 if (output_buffer == null) output_buffer = nil;
@@ -8025,17 +8031,20 @@ if (output_buffer == null) output_buffer = nil;
     output_buffer['$append=']((($a = self.id, $a !== false && $a !== nil ?" id=\"" + (self.id) + "\"" : $a)));
     output_buffer.$append(" class=\"");
     output_buffer['$append=']((["tableblock", "frame-" + (self.$attr("frame", "all")), "grid-" + (self.$attr("grid", "all")), self.$role()].$compact()['$*'](" ")));
-    output_buffer.$append("\" style=\"");
-    output_buffer['$append='](([((function() {if (($a = self['$option?']("autowidth")) !== false && $a !== nil) {
-      return nil
-      } else {
-      return "width:" + (self.$attr("tablepcwidth")) + "%"
-    }; return nil; })()), ((function() {if (($a = self['$attr?']("float")) !== false && $a !== nil) {
-      return "float:" + (self.$attr("float"))
-      } else {
-      return nil
-    }; return nil; })())].$compact()['$*']("; ")));
-    output_buffer.$append("\">");
+    output_buffer.$append("\"");
+    if (($a = ((($b = (self['$attr?']("float"))) !== false && $b !== nil) ? $b : ($c = (self['$option?']("autowidth")), ($c === nil || $c === false)))) !== false && $a !== nil) {
+      output_buffer.$append(" style=\"");
+      output_buffer['$append='](([((function() {if (($a = self['$option?']("autowidth")) !== false && $a !== nil) {
+        return nil
+        } else {
+        return "width: " + (self.$attr("tablepcwidth")) + "%;"
+      }; return nil; })()), ((function() {if (($a = self['$attr?']("float")) !== false && $a !== nil) {
+        return "float: " + (self.$attr("float")) + ";"
+        } else {
+        return nil
+      }; return nil; })())].$compact()['$*'](" ")));
+      output_buffer.$append("\"");};
+    output_buffer.$append(">");
     if (($a = self['$title?']()) !== false && $a !== nil) {
       output_buffer.$append("\n<caption class=\"title\">");
       output_buffer['$append=']((self.$captioned_title()));
@@ -8047,7 +8056,7 @@ if (output_buffer == null) output_buffer = nil;
         return output_buffer.$append("\n<col>")}, TMP_2._s = self, TMP_2), $a).call($b)
         } else {
         ($a = ($c = self.columns).$each, $a._p = (TMP_3 = function(col){var self = TMP_3._s || this;if (col == null) col = nil;
-        output_buffer.$append("\n<col style=\"width:");
+        output_buffer.$append("\n<col style=\"width: ");
           output_buffer['$append=']((col.$attr("colpcwidth")));
           return output_buffer.$append("%;\">");}, TMP_3._s = self, TMP_3), $a).call($c)
       };
@@ -8072,7 +8081,7 @@ if (cell == null) cell = nil;
               $case = cell.$style();if ("verse"['$===']($case) || "literal"['$===']($case)) {cell_content = cell.$text()}else {cell_content = cell.$content()}
             };
             cell_css_style = (function() {if (($a = (self.document['$attr?']("cellbgcolor"))) !== false && $a !== nil) {
-              return "background-color:" + (self.document.$attr("cellbgcolor")) + ";"
+              return "background-color: " + (self.document.$attr("cellbgcolor")) + ";"
               } else {
               return nil
             }; return nil; })();
@@ -8274,7 +8283,7 @@ if (output_buffer == null) output_buffer = nil;
         output_buffer.$append("</cite>");};
       if (($a = self['$attr?']("attribution")) !== false && $a !== nil) {
         if (($a = self['$attr?']("citetitle")) !== false && $a !== nil) {
-          output_buffer.$append("\n<br>")};
+          output_buffer.$append("<br>")};
         output_buffer.$append("\n");
         output_buffer['$append='](("&#8212; " + (self.$attr("attribution"))));
         output_buffer.$append("");};
@@ -8398,7 +8407,7 @@ if (output_buffer == null) output_buffer = nil;
 /* Generated by Opal 0.5.5 */
 (function($opal) {
   var $a, $b, TMP_1, self = $opal.top, $scope = $opal, nil = $opal.nil, $breaker = $opal.breaker, $slice = $opal.slice, $hash2 = $opal.hash2, $range = $opal.range;
-  $opal.add_stubs(['$new', '$append', '$append=', '$attr?', '$attr', '$each', '$doctitle', '$include?', '$>=', '$normalize_web_path', '$default_asciidoctor_stylesheet', '$read_asset', '$normalize_system_path', '$nil?', '$===', '$==', '$default_coderay_stylesheet', '$pygments_stylesheet', '$[]', '$empty?', '$docinfo', '$*', '$compact', '$noheader', '$doctype', '$outline', '$to_i', '$has_header?', '$notitle', '$title', '$sub_macros', '$>', '$downcase', '$content', '$footnotes?', '$index', '$text', '$footnotes', '$join']);
+  $opal.add_stubs(['$new', '$append', '$append=', '$attr?', '$attr', '$each', '$doctitle', '$include?', '$>=', '$normalize_web_path', '$default_asciidoctor_stylesheet', '$read_asset', '$normalize_system_path', '$nil?', '$===', '$==', '$default_coderay_stylesheet', '$pygments_stylesheet', '$[]', '$empty?', '$docinfo', '$*', '$compact', '$noheader', '$doctype', '$outline', '$to_i', '$has_header?', '$notitle', '$title', '$sub_macros', '$>', '$downcase', '$content', '$footnotes?', '$index', '$text', '$footnotes', '$nofooter', '$join']);
   return ($a = ($b = $scope.Template).$new, $a._p = (TMP_1 = function(output_buffer){var self = TMP_1._s || this, $a, $b, TMP_2, $c, $d, TMP_3, $e, TMP_4, $case = nil, docinfo_content = nil, authorcount = nil;
     if (self.safe == null) self.safe = nil;
     if (self.id == null) self.id = nil;
@@ -8547,21 +8556,21 @@ if (output_buffer == null) output_buffer = nil;
             output_buffer['$append=']((self.header.$title()));
             output_buffer.$append("</h1>");};
           if (($a = self['$attr?']("author")) !== false && $a !== nil) {
-            output_buffer.$append("\n<span id=\"author\">");
+            output_buffer.$append("\n<span id=\"author\" class=\"author\">");
             output_buffer['$append=']((self.$attr("author")));
             output_buffer.$append("</span><br>");
             if (($a = self['$attr?']("email")) !== false && $a !== nil) {
-              output_buffer.$append("\n<span id=\"email\">");
+              output_buffer.$append("\n<span id=\"email\" class=\"email\">");
               output_buffer['$append=']((self.$sub_macros(self.$attr("email"))));
               output_buffer.$append("</span><br>");};
             if (((authorcount = (self.$attr("authorcount")).$to_i()))['$>'](1)) {
               ($a = ($c = ($range(2, authorcount, false))).$each, $a._p = (TMP_3 = function(idx){var self = TMP_3._s || this, $a;if (idx == null) idx = nil;
-              output_buffer.$append("<span id=\"author");
+              output_buffer.$append("\n<span id=\"author");
                 output_buffer['$append=']((idx));
                 output_buffer.$append("\" class=\"author\">");
                 output_buffer['$append=']((self.$attr("author_" + (idx))));
                 output_buffer.$append("</span><br>");
-                if (($a = self['$attr?']("\"email_" + (idx) + "\"")) !== false && $a !== nil) {
+                if (($a = self['$attr?']("email_" + (idx))) !== false && $a !== nil) {
                   output_buffer.$append("\n<span id=\"email");
                   output_buffer['$append=']((idx));
                   output_buffer.$append("\" class=\"email\">");
@@ -8616,22 +8625,25 @@ if (output_buffer == null) output_buffer = nil;
         output_buffer['$append=']((fn.$text()));
         return output_buffer.$append("\n</div>");}, TMP_4._s = self, TMP_4), $a).call($d);
       output_buffer.$append("\n</div>");};
-    output_buffer.$append("\n<div id=\"footer\">\n<div id=\"footer-text\">");
-    if (($a = self['$attr?']("revnumber")) !== false && $a !== nil) {
-      output_buffer.$append("\n");
-      output_buffer['$append='](("" + (self.$attr("version-label")) + " " + (self.$attr("revnumber"))));
-      output_buffer.$append("<br>");};
-    if (($a = self['$attr?']("last-update-label")) !== false && $a !== nil) {
-      output_buffer.$append("\n");
-      output_buffer['$append='](("" + (self.$attr("last-update-label")) + " " + (self.$attr("docdatetime"))));
-      output_buffer.$append("");};
     output_buffer.$append("");
-    output_buffer['$append='](((function() {if (($a = ((docinfo_content = (self.$docinfo("footer"))))['$empty?']()) !== false && $a !== nil) {
-      return nil
-      } else {
-      return "\n" + (docinfo_content)
-    }; return nil; })()));
-    output_buffer.$append("\n</div>\n</div>\n</body>\n</html>\n");
+    if (($a = self.$nofooter()) === false || $a === nil) {
+      output_buffer.$append("\n<div id=\"footer\">\n<div id=\"footer-text\">");
+      if (($a = self['$attr?']("revnumber")) !== false && $a !== nil) {
+        output_buffer.$append("\n");
+        output_buffer['$append='](("" + (self.$attr("version-label")) + " " + (self.$attr("revnumber"))));
+        output_buffer.$append("<br>");};
+      if (($a = self['$attr?']("last-update-label")) !== false && $a !== nil) {
+        output_buffer.$append("\n");
+        output_buffer['$append='](("" + (self.$attr("last-update-label")) + " " + (self.$attr("docdatetime"))));
+        output_buffer.$append("");};
+      output_buffer.$append("");
+      output_buffer['$append='](((function() {if (($a = ((docinfo_content = (self.$docinfo("footer"))))['$empty?']()) !== false && $a !== nil) {
+        return nil
+        } else {
+        return "\n" + (docinfo_content)
+      }; return nil; })()));
+      output_buffer.$append("\n</div>\n</div>");};
+    output_buffer.$append("\n</body>\n</html>\n");
     return output_buffer.$join();}, TMP_1._s = self, TMP_1), $a).call($b, "asciidoctor/backends/erb/html5/document")
 })(Opal);
 /* Generated by Opal 0.5.5 */
@@ -8788,7 +8800,7 @@ if (output_buffer == null) output_buffer = nil;
     output_buffer['$append='](([self.type, self.$role()].$compact()['$*'](" ")));
     output_buffer.$append("\"");
     output_buffer['$append='](((function() {if (($a = (self['$attr?']("float"))) !== false && $a !== nil) {
-      return " style=\"float: " + (self.$attr("float")) + "\""
+      return " style=\"float: " + (self.$attr("float")) + ";\""
       } else {
       return nil
     }; return nil; })()));
@@ -8981,13 +8993,14 @@ if (output_buffer == null) output_buffer = nil;
 /* Generated by Opal 0.5.5 */
 (function($opal) {
   var $a, $b, TMP_1, self = $opal.top, $scope = $opal, nil = $opal.nil, $breaker = $opal.breaker, $slice = $opal.slice;
-  $opal.add_stubs(['$new', '$append', '$zero?', '$attr?', '$append=', '$title', '$content', '$sectnum', '$+', '$*', '$compact', '$role', '$captioned_title', '$==', '$join']);
-  return ($a = ($b = $scope.Template).$new, $a._p = (TMP_1 = function(output_buffer){var self = TMP_1._s || this, $a, $b, slevel = nil, anchor = nil, link_start = nil, link_end = nil, snum = nil, hlevel = nil;
+  $opal.add_stubs(['$new', '$append', '$zero?', '$attr?', '$append=', '$title', '$content', '$nil?', '$<=', '$to_i', '$attr', '$sectnum', '$+', '$*', '$compact', '$role', '$captioned_title', '$==', '$join']);
+  return ($a = ($b = $scope.Template).$new, $a._p = (TMP_1 = function(output_buffer){var self = TMP_1._s || this, $a, $b, $c, slevel = nil, anchor = nil, link_start = nil, link_end = nil, snum = nil, hlevel = nil;
     if (self.level == null) self.level = nil;
     if (self.special == null) self.special = nil;
     if (self.id == null) self.id = nil;
     if (self.document == null) self.document = nil;
     if (self.numbered == null) self.numbered = nil;
+    if (self.caption == null) self.caption = nil;
 if (output_buffer == null) output_buffer = nil;
   output_buffer.$append("");
     output_buffer.$append("");
@@ -9012,7 +9025,7 @@ if (output_buffer == null) output_buffer = nil;
       output_buffer['$append=']((self.$content()));
       output_buffer.$append("");
       } else {
-      snum = (function() {if (($a = self.numbered) !== false && $a !== nil) {
+      snum = (function() {if (($a = ($b = ($c = self.numbered, $c !== false && $c !== nil ?self.caption['$nil?']() : $c), $b !== false && $b !== nil ?slevel['$<=']((self.document.$attr("sectnumlevels", 3)).$to_i()) : $b)) !== false && $a !== nil) {
         return "" + (self.$sectnum()) + " "
         } else {
         return nil
@@ -9293,7 +9306,7 @@ if (output_buffer == null) output_buffer = nil;
       return "u0097"
     }; return nil; })(), "match": /\u0096(\d+)\u0097/, "match_syn": /<span[^>]*>\u0096<\/span>[^\d]*(\d+)[^\d]*<span[^>]*>\u0097<\/span>/}));
 
-    $opal.cdecl($scope, 'REGEXP', $hash2(["admonition_inline", "anchor", "anchor_embedded", "anchor_macro", "any_blk", "any_list", "attr_entry", "blk_attr_list", "attr_line", "attr_ref", "author_info", "biblio_macro", "callout_render", "callout_quick_scan", "callout_scan", "colist", "comment_blk", "comment", "ssv_or_csv_delim", "space_delim", "kbd_delim", "escaped_space", "digits", "dlist", "dlist_siblings", "illegal_sectid_chars", "footnote_macro", "generic_blk_macro", "kbd_btn_macro", "menu_macro", "menu_inline_macro", "media_blk_macro", "image_macro", "indexterm_macro", "leading_blanks", "leading_parent_dirs", "line_break", "link_inline", "link_macro", "email_inline", "lit_par", "olist", "break_line", "break_line_plus", "pass_macro", "inline_math_macro", "pass_macro_basic", "pass_lit", "revision_info", "single_quote_esc", "illegal_attr_name_chars", "table_colspec", "table_cellspec", "trailing_digit", "blk_title", "dbl_quoted", "m_dbl_quoted", "section_title", "section_name", "section_underline", "toc", "ulist", "xref_macro", "ifdef_macro", "eval_expr", "include_macro", "uri_sniff", "uri_encode_chars", "mantitle_manvolnum", "manname_manpurpose"], {"admonition_inline": (new RegExp("^(" + $scope.ADMONITION_STYLES.$to_a()['$*']("|") + "):" + $scope.CC_BLANK)), "anchor": (new RegExp("^\\[\\[(?:|([" + $scope.CC_ALPHA + ":_][\\w:.-]*)(?:," + $scope.CC_BLANK + "*(\\S.*))?)\\]\\]$")), "anchor_embedded": (new RegExp("^(.*?)" + $scope.CC_BLANK + "+(\\\\)?\\[\\[([" + $scope.CC_ALPHA + ":_][\\w:.-]*)(?:," + $scope.CC_BLANK + "*(\\S.*?))?\\]\\]$")), "anchor_macro": (new RegExp("\\\\?(?:\\[\\[([" + $scope.CC_ALPHA + ":_][\\w:.-]*)(?:," + $scope.CC_BLANK + "*(\\S.*?))?\\]\\]|anchor:(\\S+)\\[(.*?[^\\\\])?\\])")), "any_blk": /^(?:(?:-|\.|=|\*|_|\+|\/){4,}|[\|,;!]={3,}|(?:`|~){3,}.*)$/, "any_list": (new RegExp("^(?:<?\\d+>" + $scope.CC_BLANK + "+" + $scope.CC_GRAPH + "|" + $scope.CC_BLANK + "*(?:-|(?:\\*|\\.){1,5}|\\d+\\.|[a-zA-Z]\\.|[IVXivx]+\\))" + $scope.CC_BLANK + "+" + $scope.CC_GRAPH + "|" + $scope.CC_BLANK + "*.*?(?::{2,4}|;;)(?:" + $scope.CC_BLANK + "+" + $scope.CC_GRAPH + "|$))")), "attr_entry": (new RegExp("^:(!?\\w.*?):(?:" + $scope.CC_BLANK + "+(.*))?$")), "blk_attr_list": (new RegExp("^\\[(|" + $scope.CC_BLANK + "*[\\w\\{,.#\"'%].*)\\]$")), "attr_line": (new RegExp("^\\[(|" + $scope.CC_BLANK + "*[\\w\\{,.#\"'%].*|\\[(?:|[" + $scope.CC_ALPHA + ":_][\\w:.-]*(?:," + $scope.CC_BLANK + "*\\S.*)?)\\])\\]$")), "attr_ref": /(\\)?\{((set|counter2?):.+?|\w+(?:[\-]\w+)*)(\\)?\}/, "author_info": /^(\w[\w\-'.]*)(?: +(\w[\w\-'.]*))?(?: +(\w[\w\-'.]*))?(?: +<([^>]+)>)?$/, "biblio_macro": /\\?\[\[\[([\w:][\w:.-]*?)\]\]\]/, "callout_render": (new RegExp("(?:(?:\\/\\/|#|;;) ?)?(\\\\)?&lt;!?(--|)(\\d+)\\2&gt;(?=(?: ?\\\\?&lt;!?\\2\\d+\\2&gt;)*" + $scope.CC_EOL + ")")), "callout_quick_scan": (new RegExp("\\\\?<!?(--|)(\\d+)\\1>(?=(?: ?\\\\?<!?\\1\\d+\\1>)*" + $scope.CC_EOL + ")")), "callout_scan": (new RegExp("(?:(?:\\/\\/|#|;;) ?)?(\\\\)?<!?(--|)(\\d+)\\2>(?=(?: ?\\\\?<!?\\2\\d+\\2>)*" + $scope.CC_EOL + ")")), "colist": (new RegExp("^<?(\\d+)>" + $scope.CC_BLANK + "+(.*)")), "comment_blk": /^\/{4,}$/, "comment": /^\/\/(?:[^\/]|$)/, "ssv_or_csv_delim": /,|;/, "space_delim": (new RegExp("([^\\\\])" + $scope.CC_BLANK + "+")), "kbd_delim": (new RegExp("(?:\\+|,)(?=" + $scope.CC_BLANK + "*[^\\1])")), "escaped_space": (new RegExp("\\\\(" + $scope.CC_BLANK + ")")), "digits": /^\d+$/, "dlist": (new RegExp("^(?!\\/\\/)" + $scope.CC_BLANK + "*(.*?)(:{2,4}|;;)(?:" + $scope.CC_BLANK + "+(.*))?$")), "dlist_siblings": $hash2(["::", ":::", "::::", ";;"], {"::": (new RegExp("^(?!\\/\\/)" + $scope.CC_BLANK + "*((?:.*[^:])?)(::)(?:" + $scope.CC_BLANK + "+(.*))?$")), ":::": (new RegExp("^(?!\\/\\/)" + $scope.CC_BLANK + "*((?:.*[^:])?)(:::)(?:" + $scope.CC_BLANK + "+(.*))?$")), "::::": (new RegExp("^(?!\\/\\/)" + $scope.CC_BLANK + "*((?:.*[^:])?)(::::)(?:" + $scope.CC_BLANK + "+(.*))?$")), ";;": (new RegExp("^(?!\\/\\/)" + $scope.CC_BLANK + "*(.*)(;;)(?:" + $scope.CC_BLANK + "+(.*))?$"))}), "illegal_sectid_chars": /&(?:[a-zA-Z]{2,}|#\d{2,4}|#x[a-fA-F0-9]{2,4});|\W+?/, "footnote_macro": /\\?(footnote(?:ref)?):\[(.*?[^\\])\]/i, "generic_blk_macro": /^(\w[\w\-]*)::(\S+?)\[((?:\\\]|[^\]])*?)\]$/, "kbd_btn_macro": /\\?(?:kbd|btn):\[((?:\\\]|[^\]])+?)\]/, "menu_macro": (new RegExp("\\\\?menu:(\\w|\\w.*?\\S)\\[" + $scope.CC_BLANK + "*(.+?)?\\]")), "menu_inline_macro": (new RegExp("\\\\?\"(\\w[^\"]*?" + $scope.CC_BLANK + "*&gt;" + $scope.CC_BLANK + "*[^\" \\t][^\"]*)\"")), "media_blk_macro": /^(image|video|audio)::(\S+?)\[((?:\\\]|[^\]])*?)\]$/, "image_macro": /\\?(?:image|icon):([^:\[][^\[]*)\[((?:\\\]|[^\]])*?)\]/, "indexterm_macro": /\\?(?:(indexterm2?):\[(.*?[^\\])\]|\(\((.+?)\)\)(?!\)))/i, "leading_blanks": (new RegExp("^(" + $scope.CC_BLANK + "*)")), "leading_parent_dirs": /^(?:\.\.\/)*/, "line_break": (new RegExp("^(.*)" + $scope.CC_BLANK + "\\+" + $scope.CC_EOL)), "link_inline": /(^|link:|\s|>|&lt;|[\(\)\[\]])(\\?(?:https?|ftp|irc):\/\/[^\s\[\]<]*[^\s.,\[\]<])(?:\[((?:\\\]|[^\]])*?)\])?/, "link_macro": /\\?(?:link|mailto):([^\s\[]+)(?:\[((?:\\\]|[^\]])*?)\])/, "email_inline": (new RegExp("[\\\\>:]?\\w[\\w.%+-]*@[" + $scope.CC_ALNUM + "][" + $scope.CC_ALNUM + ".-]*\\.[" + $scope.CC_ALPHA + "]{2,4}\\b")), "lit_par": (new RegExp("^(" + $scope.CC_BLANK + "+.*)$")), "olist": (new RegExp("^" + $scope.CC_BLANK + "*(\\.{1,5}|\\d+\\.|[a-zA-Z]\\.|[IVXivx]+\\))" + $scope.CC_BLANK + "+(.*)$")), "break_line": /^('|<){3,}$/, "break_line_plus": /^(?:'|<){3,}$|^ {0,3}([-\*_])( *)\1\2\1$/, "pass_macro": /\\?(?:(\+{3}|\${2})(.*?)\1|pass:([a-z,]*)\[(.*?[^\\])\])/i, "inline_math_macro": /\\?((?:latex|ascii)?math):([a-z,]*)\[(.*?[^\\])\]/i, "pass_macro_basic": /^pass:([a-z,]*)\[(.*)\]$/, "pass_lit": /(^|[^`\w])(?:\[([^\]]+?)\])?(\\?`([^`\s]|[^`\s].*?\S)`)(?![`\w])/i, "revision_info": /^(?:\D*(.*?),)?(?:\s*(?!:)(.*?))(?:\s*(?!^):\s*(.*))?$/, "single_quote_esc": /(\w)\\'(\w)/, "illegal_attr_name_chars": /[^\w\-]/, "table_colspec": /^(?:(\d+)\*)?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?(\d+%?)?([a-z])?$/, "table_cellspec": $hash2(["start", "end"], {"start": (new RegExp("^" + $scope.CC_BLANK + "*(?:(\\d+(?:\\.\\d*)?|(?:\\d*\\.)?\\d+)([*+]))?([<^>](?:\\.[<^>]?)?|(?:[<^>]?\\.)?[<^>])?([a-z])?\\|")), "end": (new RegExp("" + $scope.CC_BLANK + "+(?:(\\d+(?:\\.\\d*)?|(?:\\d*\\.)?\\d+)([*+]))?([<^>](?:\\.[<^>]?)?|(?:[<^>]?\\.)?[<^>])?([a-z])?$"))}), "trailing_digit": /\d+$/, "blk_title": /^\.([^\s.].*)$/, "dbl_quoted": /^("|)(.*)\1$/, "m_dbl_quoted": /^("|)(.*)\1$/i, "section_title": (new RegExp("^((?:=|#){1,6})" + $scope.CC_BLANK + "+(\\S.*?)(?:" + $scope.CC_BLANK + "+\\1)?$")), "section_name": /^((?=.*\w+.*)[^.].*?)$/, "section_underline": /^(?:=|-|~|\^|\+)+$/, "toc": /^toc::\[(.*?)\]$/, "ulist": (new RegExp("^" + $scope.CC_BLANK + "*(-|\\*{1,5})" + $scope.CC_BLANK + "+(.*)$")), "xref_macro": /\\?(?:&lt;&lt;([\w":].*?)&gt;&gt;|xref:([\w":].*?)\[(.*?)\])/i, "ifdef_macro": /^[\\]?(ifdef|ifndef|ifeval|endif)::(\S*?(?:([,\+])\S+?)?)\[(.+)?\]$/, "eval_expr": (new RegExp("^(\\S.*?)" + $scope.CC_BLANK + "*(==|!=|<=|>=|<|>)" + $scope.CC_BLANK + "*(\\S.*)$")), "include_macro": /^\\?include::([^\[]+)\[(.*?)\]$/, "uri_sniff": (new RegExp("^[" + $scope.CC_ALPHA + "][" + $scope.CC_ALNUM + ".+-]*:/{0,2}")), "uri_encode_chars": /[^\w\-.!~*';:@=+$,()\[\]]/, "mantitle_manvolnum": /^(.*)\((.*)\)$/, "manname_manpurpose": (new RegExp("^(.*?)" + $scope.CC_BLANK + "+-" + $scope.CC_BLANK + "+(.*)$"))}));
+    $opal.cdecl($scope, 'REGEXP', $hash2(["admonition_inline", "anchor", "anchor_embedded", "anchor_macro", "any_blk", "any_list", "attr_entry", "blk_attr_list", "attr_line", "attr_ref", "author_info", "biblio_macro", "callout_render", "callout_quick_scan", "callout_scan", "colist", "comment_blk", "comment", "ssv_or_csv_delim", "space_delim", "kbd_delim", "escaped_space", "digits", "dlist", "dlist_siblings", "illegal_sectid_chars", "footnote_macro", "generic_blk_macro", "kbd_btn_macro", "menu_macro", "menu_inline_macro", "media_blk_macro", "image_macro", "indexterm_macro", "leading_blanks", "leading_parent_dirs", "line_break", "link_inline", "link_macro", "email_inline", "lit_par", "olist", "break_line", "break_line_plus", "pass_macro", "inline_math_macro", "pass_macro_basic", "pass_lit", "revision_info", "single_quote_esc", "illegal_attr_name_chars", "table_colspec", "table_cellspec", "trailing_digit", "blk_title", "dbl_quoted", "m_dbl_quoted", "section_float_style", "section_title", "section_name", "section_underline", "toc", "ulist", "xref_macro", "ifdef_macro", "eval_expr", "include_macro", "uri_sniff", "uri_encode_chars", "mantitle_manvolnum", "manname_manpurpose"], {"admonition_inline": (new RegExp("^(" + $scope.ADMONITION_STYLES.$to_a()['$*']("|") + "):" + $scope.CC_BLANK)), "anchor": (new RegExp("^\\[\\[(?:|([" + $scope.CC_ALPHA + ":_][\\w:.-]*)(?:," + $scope.CC_BLANK + "*(\\S.*))?)\\]\\]$")), "anchor_embedded": (new RegExp("^(.*?)" + $scope.CC_BLANK + "+(\\\\)?\\[\\[([" + $scope.CC_ALPHA + ":_][\\w:.-]*)(?:," + $scope.CC_BLANK + "*(\\S.*?))?\\]\\]$")), "anchor_macro": (new RegExp("\\\\?(?:\\[\\[([" + $scope.CC_ALPHA + ":_][\\w:.-]*)(?:," + $scope.CC_BLANK + "*(\\S.*?))?\\]\\]|anchor:(\\S+)\\[(.*?[^\\\\])?\\])")), "any_blk": /^(?:(?:-|\.|=|\*|_|\+|\/){4,}|[\|,;!]={3,}|(?:`|~){3,}.*)$/, "any_list": (new RegExp("^(?:<?\\d+>" + $scope.CC_BLANK + "+" + $scope.CC_GRAPH + "|" + $scope.CC_BLANK + "*(?:-|(?:\\*|\\.){1,5}|\\d+\\.|[a-zA-Z]\\.|[IVXivx]+\\))" + $scope.CC_BLANK + "+" + $scope.CC_GRAPH + "|" + $scope.CC_BLANK + "*.*?(?::{2,4}|;;)(?:" + $scope.CC_BLANK + "+" + $scope.CC_GRAPH + "|$))")), "attr_entry": (new RegExp("^:(!?\\w.*?):(?:" + $scope.CC_BLANK + "+(.*))?$")), "blk_attr_list": (new RegExp("^\\[(|" + $scope.CC_BLANK + "*[\\w\\{,.#\"'%].*)\\]$")), "attr_line": (new RegExp("^\\[(|" + $scope.CC_BLANK + "*[\\w\\{,.#\"'%].*|\\[(?:|[" + $scope.CC_ALPHA + ":_][\\w:.-]*(?:," + $scope.CC_BLANK + "*\\S.*)?)\\])\\]$")), "attr_ref": /(\\)?\{((set|counter2?):.+?|\w+(?:[\-]\w+)*)(\\)?\}/, "author_info": /^(\w[\w\-'.]*)(?: +(\w[\w\-'.]*))?(?: +(\w[\w\-'.]*))?(?: +<([^>]+)>)?$/, "biblio_macro": /\\?\[\[\[([\w:][\w:.-]*?)\]\]\]/, "callout_render": (new RegExp("(?:(?:\\/\\/|#|;;) ?)?(\\\\)?&lt;!?(--|)(\\d+)\\2&gt;(?=(?: ?\\\\?&lt;!?\\2\\d+\\2&gt;)*" + $scope.CC_EOL + ")")), "callout_quick_scan": (new RegExp("\\\\?<!?(--|)(\\d+)\\1>(?=(?: ?\\\\?<!?\\1\\d+\\1>)*" + $scope.CC_EOL + ")")), "callout_scan": (new RegExp("(?:(?:\\/\\/|#|;;) ?)?(\\\\)?<!?(--|)(\\d+)\\2>(?=(?: ?\\\\?<!?\\2\\d+\\2>)*" + $scope.CC_EOL + ")")), "colist": (new RegExp("^<?(\\d+)>" + $scope.CC_BLANK + "+(.*)")), "comment_blk": /^\/{4,}$/, "comment": /^\/\/(?:[^\/]|$)/, "ssv_or_csv_delim": /,|;/, "space_delim": (new RegExp("([^\\\\])" + $scope.CC_BLANK + "+")), "kbd_delim": (new RegExp("(?:\\+|,)(?=" + $scope.CC_BLANK + "*[^\\1])")), "escaped_space": (new RegExp("\\\\(" + $scope.CC_BLANK + ")")), "digits": /^\d+$/, "dlist": (new RegExp("^(?!\\/\\/)" + $scope.CC_BLANK + "*(.*?)(:{2,4}|;;)(?:" + $scope.CC_BLANK + "+(.*))?$")), "dlist_siblings": $hash2(["::", ":::", "::::", ";;"], {"::": (new RegExp("^(?!\\/\\/)" + $scope.CC_BLANK + "*((?:.*[^:])?)(::)(?:" + $scope.CC_BLANK + "+(.*))?$")), ":::": (new RegExp("^(?!\\/\\/)" + $scope.CC_BLANK + "*((?:.*[^:])?)(:::)(?:" + $scope.CC_BLANK + "+(.*))?$")), "::::": (new RegExp("^(?!\\/\\/)" + $scope.CC_BLANK + "*((?:.*[^:])?)(::::)(?:" + $scope.CC_BLANK + "+(.*))?$")), ";;": (new RegExp("^(?!\\/\\/)" + $scope.CC_BLANK + "*(.*)(;;)(?:" + $scope.CC_BLANK + "+(.*))?$"))}), "illegal_sectid_chars": /&(?:[a-zA-Z]{2,}|#\d{2,4}|#x[a-fA-F0-9]{2,4});|\W+?/, "footnote_macro": /\\?(footnote(?:ref)?):\[(.*?[^\\])\]/i, "generic_blk_macro": /^(\w[\w\-]*)::(\S+?)\[((?:\\\]|[^\]])*?)\]$/, "kbd_btn_macro": /\\?(?:kbd|btn):\[((?:\\\]|[^\]])+?)\]/, "menu_macro": (new RegExp("\\\\?menu:(\\w|\\w.*?\\S)\\[" + $scope.CC_BLANK + "*(.+?)?\\]")), "menu_inline_macro": (new RegExp("\\\\?\"(\\w[^\"]*?" + $scope.CC_BLANK + "*&gt;" + $scope.CC_BLANK + "*[^\" \\t][^\"]*)\"")), "media_blk_macro": /^(image|video|audio)::(\S+?)\[((?:\\\]|[^\]])*?)\]$/, "image_macro": /\\?(?:image|icon):([^:\[][^\[]*)\[((?:\\\]|[^\]])*?)\]/, "indexterm_macro": /\\?(?:(indexterm2?):\[(.*?[^\\])\]|\(\((.+?)\)\)(?!\)))/i, "leading_blanks": (new RegExp("^(" + $scope.CC_BLANK + "*)")), "leading_parent_dirs": /^(?:\.\.\/)*/, "line_break": (new RegExp("^(.*)" + $scope.CC_BLANK + "\\+" + $scope.CC_EOL)), "link_inline": /(^|link:|&lt;|[\s>\(\)\[\];])(\\?(?:https?|ftp|irc):\/\/[^\s\[\]<]*[^\s.,\[\]<])(?:\[((?:\\\]|[^\]])*?)\])?/, "link_macro": /\\?(?:link|mailto):([^\s\[]+)(?:\[((?:\\\]|[^\]])*?)\])/, "email_inline": (new RegExp("[\\\\>:]?\\w[\\w.%+-]*@[" + $scope.CC_ALNUM + "][" + $scope.CC_ALNUM + ".-]*\\.[" + $scope.CC_ALPHA + "]{2,4}\\b")), "lit_par": (new RegExp("^(" + $scope.CC_BLANK + "+.*)$")), "olist": (new RegExp("^" + $scope.CC_BLANK + "*(\\.{1,5}|\\d+\\.|[a-zA-Z]\\.|[IVXivx]+\\))" + $scope.CC_BLANK + "+(.*)$")), "break_line": /^('|<){3,}$/, "break_line_plus": /^(?:'|<){3,}$|^ {0,3}([-\*_])( *)\1\2\1$/, "pass_macro": /\\?(?:(\+{3}|\${2})(.*?)\1|pass:([a-z,]*)\[(.*?[^\\])\])/i, "inline_math_macro": /\\?((?:latex|ascii)?math):([a-z,]*)\[(.*?[^\\])\]/i, "pass_macro_basic": /^pass:([a-z,]*)\[(.*)\]$/, "pass_lit": /(^|[^`\w])(?:\[([^\]]+?)\])?(\\?`([^`\s]|[^`\s].*?\S)`)(?![`\w])/i, "revision_info": /^(?:\D*(.*?),)?(?:\s*(?!:)(.*?))(?:\s*(?!^):\s*(.*))?$/, "single_quote_esc": /(\w)\\'(\w)/, "illegal_attr_name_chars": /[^\w\-]/, "table_colspec": /^(?:(\d+)\*)?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?(\d+%?)?([a-z])?$/, "table_cellspec": $hash2(["start", "end"], {"start": (new RegExp("^" + $scope.CC_BLANK + "*(?:(\\d+(?:\\.\\d*)?|(?:\\d*\\.)?\\d+)([*+]))?([<^>](?:\\.[<^>]?)?|(?:[<^>]?\\.)?[<^>])?([a-z])?\\|")), "end": (new RegExp("" + $scope.CC_BLANK + "+(?:(\\d+(?:\\.\\d*)?|(?:\\d*\\.)?\\d+)([*+]))?([<^>](?:\\.[<^>]?)?|(?:[<^>]?\\.)?[<^>])?([a-z])?$"))}), "trailing_digit": /\d+$/, "blk_title": /^\.([^\s.].*)$/, "dbl_quoted": /^("|)(.*)\1$/, "m_dbl_quoted": /^("|)(.*)\1$/i, "section_float_style": /^(?:float|discrete)\b/, "section_title": (new RegExp("^((?:=|#){1,6})" + $scope.CC_BLANK + "+(\\S.*?)(?:" + $scope.CC_BLANK + "+\\1)?$")), "section_name": /^((?=.*\w+.*)[^.].*?)$/, "section_underline": /^(?:=|-|~|\^|\+)+$/, "toc": /^toc::\[(.*?)\]$/, "ulist": (new RegExp("^" + $scope.CC_BLANK + "*(-|\\*{1,5})" + $scope.CC_BLANK + "+(.*)$")), "xref_macro": /\\?(?:&lt;&lt;([\w":].*?)&gt;&gt;|xref:([\w":].*?)\[(.*?)\])/i, "ifdef_macro": /^[\\]?(ifdef|ifndef|ifeval|endif)::(\S*?(?:([,\+])\S+?)?)\[(.+)?\]$/, "eval_expr": (new RegExp("^(\\S.*?)" + $scope.CC_BLANK + "*(==|!=|<=|>=|<|>)" + $scope.CC_BLANK + "*(\\S.*)$")), "include_macro": /^\\?include::([^\[]+)\[(.*?)\]$/, "uri_sniff": (new RegExp("^[" + $scope.CC_ALPHA + "][" + $scope.CC_ALNUM + ".+-]*:/{0,2}")), "uri_encode_chars": /[^\w\-.!~*';:@=+$,()\[\]]/, "mantitle_manvolnum": /^(.*)\((.*)\)$/, "manname_manpurpose": (new RegExp("^(.*?)" + $scope.CC_BLANK + "+-" + $scope.CC_BLANK + "+(.*)$"))}));
 
     $opal.cdecl($scope, 'INTRINSICS', ($a = ($c = (($d = $opal.Object._scope.Hash) == null ? $opal.cm('Hash') : $d)).$new, $a._p = (TMP_2 = function(h, k){var self = TMP_2._s || this;if (h == null) h = nil;if (k == null) k = nil;
     $scope.STDERR.$puts("Missing intrinsic: " + (k.$inspect()));
