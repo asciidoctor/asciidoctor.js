@@ -22,6 +22,15 @@ Start by cloning the source from GitHub:
 
  $ git clone --recurse-submodules git://github.com/asciidoctor/asciidoctor.js
 
+[TIP]
+====
+If you need to update the submodule with the latest code from upstream, use the following command:
+
+ $ git submodule foreach git pull origin master
+
+To make the update persistent, run +git commit+ afterwards.
+====
+
 Next, switch to the 'asciidoctor.js' directory and run Bundler's +install+ command:
 
  $ cd asciidoctor.js
@@ -188,7 +197,10 @@ Here's a list of some of the changes that are currently needed:
 * A shim library is needed to implement missing classes in Opal, such as +Set+ and +File+
 * All mutable String operations have been replaced with assignments
 ** JavaScript doesn't support mutable strings
+* `$~[0]` used in place of `$&` and `$~[n]` in place of `$n` after running a regular expression (where n is 1, 2, 3...)
+* +Set+ is missing difference and union operations
 * ...
+* Opal doesn't recognize modifiers on a regular expression (e.g., multiline)
 
 == Debugging
 
