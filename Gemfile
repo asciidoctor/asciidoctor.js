@@ -4,8 +4,8 @@ source 'https://rubygems.org'
 gem 'opal', '0.5.5'
 #gem 'opal-sprockets', :github => 'opal/opal-sprockets'
 gem 'opal-sprockets', '0.3.0'
-#gem 'asciidoctor', :github => 'asciidoctor'
-gem 'asciidoctor', '1.5.0.preview.1'
+gem 'asciidoctor', :github => 'asciidoctor', :ref => '9d630bcc24fc46590c5484ec6d10c9555a86b2d6'
+#gem 'asciidoctor', '1.5.0.preview.2'
 gem 'rake'
 # to minify JavaScript:
 # 1. uncomment closure-compiler dependency

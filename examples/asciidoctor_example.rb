@@ -2,14 +2,9 @@ data = <<EOS
 = AsciiDoc Syntax Quick Reference
 Dan Allen; Sarah White
 v1.0.3, 2013-08-27
-:awestruct-layout: base
-:awestruct-javascripts: [view-result]
 :description: This guide is a quick reference for the common formatting markup and document elements in the AsciiDoc syntax.
 :keywords: AsciiDoc, Asciidoctor, syntax, reference, cheatsheet
 :imagesdir: ../images
-:includedir: _includes
-//:toc:
-//:toc-placement!:
 :experimental:
 :table-caption!:
 :example-caption!:
@@ -506,6 +501,11 @@ Assuming the safe mode is less than SECURE, you must also set the +allow-uri-rea
 * Edgar Allen Poe
 * Sheri S. Tepper
 * Bill Bryson
+
+//^
+
+* Kevin Spacey
+* Jeremy Piven
 ----
 
 [.result]
@@ -513,6 +513,11 @@ Assuming the safe mode is less than SECURE, you must also set the +allow-uri-rea
 * Edgar Allen Poe
 * Sheri S. Tepper
 * Bill Bryson
+
+//^
+
+* Kevin Spacey
+* Jeremy Piven
 ====
 
 NOTE: Blank lines are required before and after a list.
@@ -1717,10 +1722,17 @@ Baauer,Harlem Shake,Hip Hop
 
 .Table from CSV data in file
 ----
-|===
+,===
 \\include::customers.csv[]
-|===
+,===
 ----
+
+[.result]
+====
+,===
+include::customers.csv[]
+,===
+====
 
 .Table from DSV data using shorthand (Asciidoctor only)
 ----
@@ -2464,11 +2476,11 @@ To learn more about Asciidoctor and its capabilities, check out the other {docre
 Also, don't forget to join the {mailinglist}[Asciidoctor mailing list], where you can ask questions and leave comments.
 EOS
 
-require "native"
+require 'native'
 $global.addEventListener 'DOMContentLoaded', proc {
-  ENV['HOME'] = File.dirname $global.window.location.href
-  monitor = {}
-  html = Asciidoctor.render(data, :safe => :safe, :attributes => %w(showtitle sectanchors imagesdir=./images), :monitor => monitor)
+  base_dir = File.dirname $global.window.location.href
+  ENV['HOME'] = base_dir
+  html = Asciidoctor.render data, :safe => :safe, :attributes => %w(showtitle sectanchors imagesdir=./images), :monitor => (monitor = {})
   puts %(Time to parse: #{"%0.5f" % monitor[:parse]})
   puts %(Time to render: #{"%0.5f" % monitor[:render]})
   puts %(Total time elapsed: #{"%0.5f" % monitor[:load_render]})
