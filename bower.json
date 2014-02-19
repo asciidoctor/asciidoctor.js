@@ -3,7 +3,7 @@
   "version": "1.5.0-preview.1",
   "main": [
     "./dist/asciidoctor.js",
-    "../dist/opal.js"
+    "./dist/opal.js"
   ],
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "authors": [
