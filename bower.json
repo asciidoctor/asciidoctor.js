@@ -18,11 +18,11 @@
   "license": "MIT",
   "ignore": [
     "**/.*",
-    "examples"
+    "examples",
     "templates",
     "Gemfile",
     "Rakefile",
-    "error-in-chrome-console.png"
+    "error-in-chrome-console.png",
     "error-in-javascript-debugger.png"
   ]
 }
