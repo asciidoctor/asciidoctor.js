@@ -1,8 +1,9 @@
 {
   "name": "asciidoctor.js",
-  "version": "1.5.0-preview.1",
+  "version": "1.5.0-preview4",
   "main": [
     "./dist/asciidoctor.js",
+    "./dist/asciidoctor_extensions.js",
     "./dist/opal.js"
   ],
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
@@ -18,11 +19,11 @@
   "license": "MIT",
   "ignore": [
     "**/.*",
-    "examples"
+    "examples",
     "templates",
     "Gemfile",
     "Rakefile",
-    "error-in-chrome-console.png"
+    "error-in-chrome-console.png",
     "error-in-javascript-debugger.png"
   ]
 }

@@ -30,6 +30,7 @@ task :dist do
   #env.append_path 'asciidoctor'
   env.append_path 'templates'
   env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
+  env['asciidoctor/extensions'].write_to "build/asciidoctor_extensions.js#{compress ? '.gz' : nil}"
 end
 
 desc 'Build asciidoctor_example.js to build/'
