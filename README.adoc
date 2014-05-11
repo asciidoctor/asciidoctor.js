@@ -201,6 +201,7 @@ Here's a list of some of the changes that are currently needed:
 * +Set+ is missing difference and union operations
 * ...
 * Opal doesn't recognize modifiers on a regular expression (e.g., multiline)
+* Optional regexp match groups resolve as empty string when not matched in some browsers (notably Firefox)
 
 == Debugging
 

@@ -2321,7 +2321,7 @@ A statement.footnote:[Clarification about this statement.]
 
 A bold statement.footnoteref:[disclaimer,These opinions are my own.]
 
-Another bold statement.footenoteref:[disclaimer]
+Another bold statement.footnoteref:[disclaimer]
 ----
 
 [.result]
@@ -2333,7 +2333,7 @@ A statement.footnote:[Clarification about this statement.]
 
 A bold statement.footnoteref:[disclaimer,These opinions are my own.]
 
-Another bold statement.footenoteref:[disclaimer]
+Another bold statement.footnoteref:[disclaimer]
 |===
 ====
 
@@ -2480,9 +2480,8 @@ require 'native'
 $global.addEventListener 'DOMContentLoaded', proc {
   base_dir = File.dirname $global.window.location.href
   ENV['HOME'] = base_dir
-  html = Asciidoctor.render data, :safe => :safe, :attributes => %w(showtitle sectanchors imagesdir=./images), :monitor => (monitor = {})
-  puts %(Time to parse: #{"%0.5f" % monitor[:parse]})
-  puts %(Time to render: #{"%0.5f" % monitor[:render]})
-  puts %(Total time elapsed: #{"%0.5f" % monitor[:load_render]})
+  timings = Asciidoctor::Timings.new
+  html = Asciidoctor.convert data, :safe => :safe, :attributes => %w(showtitle sectanchors imagesdir=./images), :timings => timings
+  timings.print_report
   $global.document.getElementById('content').innerHTML = html
 }, false
