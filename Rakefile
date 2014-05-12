@@ -31,7 +31,11 @@ task :dist do
   # Use append_path if you want to build against a local checkout
   #env.append_path 'asciidoctor/lib'
 
-  env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
+  #env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
+  asciidoctor = env['asciidoctor']
+  asciidoctor.instance_variable_set :@source, (asciidoctor.instance_variable_get :@source)
+      .sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
+  asciidoctor.write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
   env['asciidoctor/extensions'].write_to "build/asciidoctor_extensions.js#{compress ? '.gz' : nil}"
 end
 

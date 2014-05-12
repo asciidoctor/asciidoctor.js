@@ -561,7 +561,7 @@ if (o == null) o = nil;
     var self = $module($base, 'Asciidoctor');
 
     var def = self._proto, $scope = self._scope;
-    $opal.cdecl($scope, 'VERSION', "1.5.0.preview")
+    $opal.cdecl($scope, 'VERSION', "1.5.0-preview.5")
     
   })(self)
 })(Opal);
