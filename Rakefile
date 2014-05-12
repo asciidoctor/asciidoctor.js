@@ -25,11 +25,18 @@ task :dist do
   env.js_compressor = Sprockets::ClosureCompressor if minify
   env['opal'].write_to "build/opal.js#{compress ? '.gz' : nil}"
 
+  # Use use_gem if you want to build against a release
   env.use_gem 'asciidoctor'
+  # If the Gemfile points to a git repo or local directory, be sure to use `bundle exec rake ...`
   # Use append_path if you want to build against a local checkout
-  #env.append_path 'asciidoctor'
-  env.append_path 'templates'
-  env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
+  #env.append_path 'asciidoctor/lib'
+
+  #env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
+  asciidoctor = env['asciidoctor']
+  asciidoctor.instance_variable_set :@source, (asciidoctor.instance_variable_get :@source)
+      .sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
+  asciidoctor.write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
+  env['asciidoctor/extensions'].write_to "build/asciidoctor_extensions.js#{compress ? '.gz' : nil}"
 end
 
 desc 'Build asciidoctor_example.js to build/'
@@ -45,6 +52,8 @@ task :examples => :dist do
 
   File.copy_stream 'examples/asciidoctor_example.html', 'build/asciidoctor_example.html'
   File.copy_stream 'examples/asciidoctor.css', 'build/asciidoctor.css'
+
+  File.copy_stream 'examples/customers.csv', 'build/customers.csv'
 
   Dir.mkdir 'build/images' unless File.directory? 'build/images'
   Dir.mkdir 'build/images/icons' unless File.directory? 'build/images/icons'
