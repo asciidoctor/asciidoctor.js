@@ -1,0 +1,29 @@
+{
+  "name": "asciidoctor.js",
+  "version": "1.5.0-preview4",
+  "main": [
+    "./dist/asciidoctor.js",
+    "./dist/asciidoctor_extensions.js",
+    "./dist/opal.js"
+  ],
+  "homepage": "https://github.com/asciidoctor/asciidoctor.js",
+  "authors": [
+    "Dan Allen @mojavelinux"
+  ],
+  "description": "This project uses Opal to cross-compile Asciidoctor, an implementation of AsciiDoc, from Ruby to JavaScript to produce asciidoctor.js, which brings AsciiDoc to the browser!",
+  "keywords": [
+    "AsciiDoctor",
+    "Opal",
+    "Javascript"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "examples",
+    "templates",
+    "Gemfile",
+    "Rakefile",
+    "error-in-chrome-console.png",
+    "error-in-javascript-debugger.png"
+  ]
+}
