@@ -1,11 +1,10 @@
 require 'opal'
-require 'opal-sprockets'
 
+# NOTE we're no longer using ERB templates in Asciidoctor.js by default
 # make Opal recognize .html.erb as valid ERB templates
-# is there a better way?
-Tilt.register 'erb', Opal::ERB::Processor
-Sprockets.register_engine '.erb', Opal::ERB::Processor
-Sprockets.register_mime_type 'application/javascript', '.html'
+#Tilt.register 'erb', Opal::ERB::Processor
+#Sprockets.register_engine '.erb', Opal::ERB::Processor
+#Sprockets.register_mime_type 'application/javascript', '.html'
 
 minify   = ENV['MINIFY'] == '1'
 compress = ENV['COMPRESS'] == '1'
@@ -28,11 +27,12 @@ task :dist do
   # Use use_gem if you want to build against a release
   env.use_gem 'asciidoctor'
   # If the Gemfile points to a git repo or local directory, be sure to use `bundle exec rake ...`
-  # Use append_path if you want to build against a local checkout
+  # Use append_path if you want to build against a local clone
   #env.append_path 'asciidoctor/lib'
 
   #env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
   asciidoctor = env['asciidoctor']
+  # NOTE hack to make version compliant with semver
   asciidoctor.instance_variable_set :@source, (asciidoctor.instance_variable_get :@source)
       .sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
   asciidoctor.write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
