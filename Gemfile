@@ -4,8 +4,8 @@ source 'https://rubygems.org'
 
 gem 'opal', '0.6.2'
 #gem 'opal', :github => 'opal'
-gem 'asciidoctor', '1.5.0.preview.6'
-#gem 'asciidoctor', :github => 'asciidoctor', :ref => 'a98099037e426a55d2c3ed98ef6267ab6560df58'
+gem 'asciidoctor', '1.5.0.preview.7'
+#gem 'asciidoctor', :github => 'asciidoctor', :ref => '...'
 #gem 'asciidoctor', :path => 'asciidoctor'
 gem 'rake'
 
