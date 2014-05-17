@@ -190,18 +190,20 @@ The goal is to eventually eliminate all of these differences so that Asciidoctor
 
 Here's a list of some of the changes that are currently needed:
 
-* ERB templates, loaded from the 'asciidoctor/lib/asciidoctor/backends/html5' directory, are used in place of the built-in template classes
-** These templates must be loaded explicitly since Opal doesn't support loading libraries at runtime
-* Named posix groups in regular expressions are replaced with their Ascii equivalent
-** JavaScript doesn't support named posix groups, such as +[[:alpha:]]+)
-* A shim library is needed to implement missing classes in Opal, such as +Set+ and +File+
+* Named posix groups in regular expressions are replaced with their ASCII equivalent
+  - JavaScript doesn't support named posix groups, such as +[[:alpha:]]+)
+* A shim library is needed to implement missing classes in Opal, such as +Set+, +File+ and +Dir+
 * All mutable String operations have been replaced with assignments
-** JavaScript doesn't support mutable strings
+  - JavaScript doesn't support mutable strings
 * `$~[0]` used in place of `$&` and `$~[n]` in place of `$n` after running a regular expression (where n is 1, 2, 3...)
 * +Set+ is missing difference and union operations
-* ...
 * Opal doesn't recognize modifiers on a regular expression (e.g., multiline)
-* Optional regexp match groups resolve as empty string when not matched in some browsers (notably Firefox)
+* Optional, non-matching capture groups resolve to empty string in gsub block in Firefox (see http://www.bennadel.com/blog/1916-different-browsers-use-different-non-matching-captured-regex-pattern-values.htm)
+* Assignments without a matching value are set to empty string instead of nil (in the following example, +b+ is set to empty string)
+
+  a, b = "value".split ',', 2
+
+* ...
 
 == Debugging
 
