@@ -913,12 +913,18 @@ TIP: You should use the +imagesdir+ attribute to avoid hard coding the shared pa
 
 .Image macro using positioning role
 ----
+[.float-group]
+--
 image:sunset.jpg[Sunset,150,150,role="right"] What a beautiful sunset!
+--
 ----
 
 [.result]
 ====
+[.float-group]
+--
 image:sunset.jpg[Sunset,150,150,role="right"] What a beautiful sunset!
+--
 ====
 
 TIP: There are a variety of attributes available to {image-attributes}[position and frame images].
