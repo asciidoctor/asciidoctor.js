@@ -35,7 +35,8 @@
     "examples",
     "Gemfile",
     "Rakefile",
-    "dist/npm",
+    "spec",
+    "src",
     "error-in-chrome-console.png",
     "error-in-javascript-debugger.png"
   ]
