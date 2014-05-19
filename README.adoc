@@ -18,6 +18,13 @@ To interact with the generated code, you either invoke the JavaScript APIs direc
 
 == Setup
 
+To build *asciidoctor.js*, you need some tools :
+
+* Npm and Node
+* Bower
+* Rake and Bundle
+
+
 Start by cloning the source from GitHub:
 
  $ git clone --recurse-submodules git://github.com/asciidoctor/asciidoctor.js
@@ -31,32 +38,42 @@ If you need to update the submodule with the latest code from upstream, use the 
 To make the update persistent, run +git commit+ afterwards.
 ====
 
-Next, switch to the 'asciidoctor.js' directory and run Bundler's +install+ command:
+Next, switch to the 'asciidoctor.js' directory and run Npm's +install+ command and Bower's +install+ command:
 
  $ cd asciidoctor.js
- $ bundle install
+ $ npm install
+ $ bower install
 
 You're now ready to build asciidoctor.js.
 
+[TIP]
+====
+Opal.js, The Ruby runtime in JavaScript is available in +bower_components/opal/opal/current/opal.min.js+
+====
+
 == Building asciidoctor.js
 
-To build asciidoctor.js, simple run the Rake +dist+ task from the root of the project:
+To build asciidoctor.js, simple run the Grunt +dist+ task from the root of the project:
 
- $ rake dist
+ $ grunt dist
 
 NOTE: The build task will make some minor code changes on the asciidoctor submodule.
 As you may know String are immutable in Javascript, so we need to replace +gsub!+ and +sub!+ methods.
 These changes are made at build time to keep the Ruby code as fast as possible.
 
-This command produces two files in the 'build' directory:
+This command produces some files in the 'dist' directory:
 
-opal.js:: The Ruby runtime in JavaScript
-asciidoctor.js:: The JavaScript port of Asciidoctor
+* *dist/*
+- *asciidoctor.js* (includes core and extensions)
+- *asciidoctor-core.js* (no extensions API)
+- *asciidoctor-extensions.js* (extensions API only)
+- *asciidoctor-all.js* (core, extension and Opal)
 
-NOTE: You may notice that these files are not an ideal size for loading in a browser.
-They gzip rather nicely, bringing the size of asciidoctor.js down from 550K to 90K.
-There are options in Opal to generate more efficient code, but they are causing problems at the moment.
-Once we sort out those issues, the size of the generated files should be quite acceptable.
+* *dist/npm* (to use with npm)
+- *asciidoctor-core.js* (no extensions API)
+- *asciidoctor-extensions.js* (extensions API only)
+
+Each file has a +minified+ and +gz+ version.
 
 You need to load both files into your JavaScript environment to use Asciidoctor.
 For instance, in an HTML page, add these two +<script>+ tags (ideally at the bottom of the page):
@@ -73,7 +90,7 @@ You'll see these scripts in action when you run the examples, described next.
 
 To build the examples, simply run the Rake +examples+ task from the root of the project:
 
- $ rake examples
+ $ grunt examples
 
 This command produces another JavaScript file in the 'build' directory, 'asciidoctor_example.js'.
 This script includes:
