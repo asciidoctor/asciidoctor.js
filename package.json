@@ -4,13 +4,15 @@
   "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
   "main": "dist/npm/asciidoctor-core.min.js",
   "files": [
-    "dist/npm/**/*",
+    "dist/npm/asciidoctor-core.gz.js",
+    "dist/npm/asciidoctor-core.js",
+    "dist/npm/asciidoctor-core.min.js",
+    "dist/npm/asciidoctor-extensions.gz.js",
+    "dist/npm/asciidoctor-extensions.js",
+    "dist/npm/asciidoctor-extensions.min.js",
     "LICENSE",
     "README.adoc"
   ],
-  "directories": {
-    "example": "examples"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
