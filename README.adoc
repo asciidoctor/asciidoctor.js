@@ -20,7 +20,7 @@ To interact with the generated code, you either invoke the JavaScript APIs direc
 
 To build *asciidoctor.js*, you need some tools :
 
-* Npm and Node
+* NPM and Node
 * Bower
 * Rake and Bundle
 
@@ -38,10 +38,10 @@ If you need to update the submodule with the latest code from upstream, use the 
 To make the update persistent, run +git commit+ afterwards.
 ====
 
-Next, switch to the 'asciidoctor.js' directory and run Npm's +install+ command and Bower's +install+ command:
+Next, switch to the 'asciidoctor.js' directory and run NPM's +install+ command and Bower's +install+ command:
 
  $ cd asciidoctor.js
- $ npm install
+ $ NPM install
  $ bower install
 
 You're now ready to build asciidoctor.js.
@@ -69,20 +69,11 @@ This command produces some files in the 'dist' directory:
 - *asciidoctor-extensions.js* (extensions API only)
 - *asciidoctor-all.js* (core, extension and Opal)
 
-* *dist/npm* (to use with npm)
+* *dist/NPM* (to use with NPM)
 - *asciidoctor-core.js* (no extensions API)
 - *asciidoctor-extensions.js* (extensions API only)
 
 Each file has a +minified+ and +gz+ version.
-
-You need to load both files into your JavaScript environment to use Asciidoctor.
-For instance, in an HTML page, add these two +<script>+ tags (ideally at the bottom of the page):
-
-[source,html]
-----
-<script src="opal.js"></script>
-<script src="asciidoctor.js"></script>
-----
 
 You'll see these scripts in action when you run the examples, described next.
 
@@ -170,6 +161,35 @@ You can also invoke Asciidoctor directly from JavaScript.
 
 If you choose, you may use the Asciidoctor class that Opal generates directly from Ruby.
 
+=== Front-end development
+
+*Asciidoctor.js* gives you its files using http://bower.io[Bower].
+
+Start by install *asciidoctor.js* component :
+[source, shell]
+----
+bower install asciidoctor.js --save
+----
+
+NOTE: Asciidoctor.js has a dependency with *opal* and when you run the install command, *Opal* is automatically downloaded in +bower_components/opal/+
+
+
+You need to load file(s) into your JavaScript environment to use Asciidoctor.
+For instance, in an HTML page, add these +<script>+ tag (ideally at the bottom of the page):
+
+[source,html]
+----
+<script src="bower_components/asciidoctor.js/dist/asciidoctor-all.min.js"></script>
+----
+
+If you don't want to use *extensions*, you can load files separately :
+
+[source,html]
+----
+<script src="bower_components/opal/opal/current/opal.min.js"></script>
+<script src="bower_components/asciidoctor.js/dist/asciidoctor-core.min.js"></script>
+----
+
 All Opal-compiled classes are stored under the Opal namespace.
 Ruby variables and methods on a class or object get prefixed with +$+.
 Thus, where you would execute +Asciidoctor.render+ in Ruby, you execute +Opal.Asciidoctor.$render+ in JavaScript.
@@ -198,6 +218,48 @@ Passing the options +Hash+ to the +render+ method requires a little bit of Opal 
 ----
 Opal.hash2(['attributes'], {'attributes': ['notitle!']})
 ----
+
+=== Back-end development
+
+For back-end development, we use *NPM*.
+
+Start by install *asciidoctor.js* module:
+
+[source, javascript]
+----
+npm install asciidoctor.js --save
+----
+
+You need to load file into your application. For instance, in a Javascript file, add these line :
+[source, javascript]
+----
+var asciidoctorObject = require('asciidoctor.js')();
+
+// You can get Opal
+var opal = asciidoctorObject.Opal;
+
+// You can get Asciidoctor with Extensions ...
+var asciidoctorWithExtensions = asciidoctorObject.Asciidoctor(true);
+// ... or without extensions
+var asciidoctorWithoutExtensions = asciidoctorObject.Asciidoctor();
+
+// Now you can use it
+var html = Asciidoctor.$convert('== Test', opal.hash2(['attributes'], {'attributes': ['notitle!']}));
+
+// And for example log it
+console.log(html);
+
+/*
+// Should return
+<div class="sect1">
+<h2 id="_test">Test</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+*/
+----
+
 
 == Changes to Asciidoctor (from upstream)
 
