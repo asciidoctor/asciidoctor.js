@@ -2388,7 +2388,7 @@ if (arg == null) arg = nil;
 
     var def = self._proto, $scope = self._scope;
 
-    $opal.cdecl($scope, 'VERSION', "1.5.0-preview.7")
+    $opal.cdecl($scope, 'VERSION', "1.5.0-preview.8")
     
   })(self)
 })(Opal);
@@ -2438,9 +2438,9 @@ if (arg == null) arg = nil;
       };
 
       def.$convert = function() {
-        var self = this;
+        var $a, self = this;
 
-        return self.log['$[]']("convert");
+        return ((($a = self.log['$[]']("convert")) !== false && $a !== nil) ? $a : 0);
       };
 
       def.$read_parse_convert = function() {
@@ -5473,11 +5473,11 @@ if (f == null) f = nil;
             } else {
             result['$<<'](self.stylesheets.$embed_coderay_stylesheet())
           }}}else if ("pygments"['$===']($case)) {if ((node.$attr("pygments-css", "class"))['$==']("class")) {
-          pygments_style = (self.$doc().$attr("pygments-style", "pastie"));
+          pygments_style = (node.$attr("pygments-style", "pastie"));
           if (linkcss !== false && linkcss !== nil) {
             result['$<<']("<link rel=\"stylesheet\" href=\"" + (node.$normalize_web_path(self.stylesheets.$pygments_stylesheet_name(pygments_style), (node.$attr("stylesdir", "")))) + "\"" + (slash) + ">")
             } else {
-            result['$<<']((self.stylesheets.$instance().$embed_pygments_stylesheet(pygments_style)))
+            result['$<<']((self.stylesheets.$embed_pygments_stylesheet(pygments_style)))
           };}}else if ("highlightjs"['$===']($case) || "highlight.js"['$===']($case)) {result['$<<']("<link rel=\"stylesheet\" href=\"" + (node.$attr("highlightjsdir", "http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4")) + "/styles/" + (node.$attr("highlightjs-theme", "googlecode")) + ".min.css\"" + (slash) + ">\n<script src=\"" + (node.$attr("highlightjsdir", "http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4")) + "/highlight.min.js\"></script>\n<script src=\"" + (node.$attr("highlightjsdir", "http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4")) + "/lang/common.min.js\"></script>\n<script>hljs.initHighlightingOnLoad()</script>")}else if ("prettify"['$===']($case)) {result['$<<']("<link rel=\"stylesheet\" href=\"" + (node.$attr("prettifydir", "http://cdnjs.cloudflare.com/ajax/libs/prettify/r298")) + "/" + (node.$attr("prettify-theme", "prettify")) + ".min.css\"" + (slash) + ">\n<script src=\"" + (node.$attr("prettifydir", "http://cdnjs.cloudflare.com/ajax/libs/prettify/r298")) + "/prettify.min.js\"></script>\n<script>document.addEventListener('DOMContentLoaded', prettyPrint)</script>")};
         if ((($a = node['$attr?']("math")) !== nil && (!$a._isBoolean || $a == true))) {
           result['$<<']("<script type=\"text/x-mathjax-config\">\nMathJax.Hub.Config({\n  tex2jax: {\n    inlineMath: [" + ($scope.INLINE_MATH_DELIMITERS['$[]']("latexmath")) + "],\n    displayMath: [" + ($scope.BLOCK_MATH_DELIMITERS['$[]']("latexmath")) + "],\n    ignoreClass: \"nomath|nolatexmath\"\n  },\n  asciimath2jax: {\n    delimiters: [" + ($scope.BLOCK_MATH_DELIMITERS['$[]']("asciimath")) + "],\n    ignoreClass: \"nomath|noasciimath\"\n  }\n});\n</script>\n<script type=\"text/javascript\" src=\"http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML\"></script>\n<script>document.addEventListener('DOMContentLoaded', MathJax.Hub.TypeSet)</script>")};
@@ -6602,7 +6602,7 @@ if (item == null) item = nil;
       };
 
       def.$inline_anchor = function(node) {
-        var $a, $b, self = this, target = nil, $case = nil, refid = nil, text = nil, class_attr = nil, role = nil, window_attr = nil;
+        var $a, $b, self = this, target = nil, $case = nil, refid = nil, text = nil, class_attr = nil, role = nil, id_attr = nil, window_attr = nil;
 
         target = node.$target();
         return (function() {$case = node.$type();if ("xref"['$===']($case)) {refid = ((($a = (node.$attr("refid"))) !== false && $a !== nil) ? $a : target);
@@ -6612,12 +6612,17 @@ if (item == null) item = nil;
           } else {
           return nil
         }; return nil; })();
+        id_attr = (function() {if ((($a = (node['$attr?']("id"))) !== nil && (!$a._isBoolean || $a == true))) {
+          return " id=\"" + (node.$attr("id")) + "\""
+          } else {
+          return nil
+        }; return nil; })();
         window_attr = (function() {if ((($a = (node['$attr?']("window"))) !== nil && (!$a._isBoolean || $a == true))) {
           return " target=\"" + (node.$attr("window")) + "\""
           } else {
           return nil
         }; return nil; })();
-        return "<a href=\"" + (target) + "\"" + (class_attr) + (window_attr) + ">" + (node.$text()) + "</a>";}else if ("bibref"['$===']($case)) {return "<a id=\"" + (target) + "\"></a>[" + (target) + "]"}else {return self.$warn("asciidoctor: WARNING: unknown anchor type: " + (node.$type().$inspect()))}})();
+        return "<a href=\"" + (target) + "\"" + (id_attr) + (class_attr) + (window_attr) + ">" + (node.$text()) + "</a>";}else if ("bibref"['$===']($case)) {return "<a id=\"" + (target) + "\"></a>[" + (target) + "]"}else {return self.$warn("asciidoctor: WARNING: unknown anchor type: " + (node.$type().$inspect()))}})();
       };
 
       def.$inline_break = function(node) {
@@ -6641,7 +6646,7 @@ if (item == null) item = nil;
           src = node.$icon_uri("callouts/" + (node.$text()));
           return "<img src=\"" + (src) + "\" alt=\"" + (node.$text()) + "\"" + (self.void_element_slash) + ">";
           } else {
-          return "<b>(" + (node.$text()) + ")</b>"
+          return "<b class=\"conum\">(" + (node.$text()) + ")</b>"
         };
       };
 
@@ -7973,7 +7978,7 @@ if (f == null) f = nil;
           if (name_section.$level()['$=='](1)) {
             name_section_buffer = reader.$read_lines_until($hash2(["break_on_blank_lines"], {"break_on_blank_lines": true})).$join(" ").$tr_s(" ", " ");
             if ((($a = (m = $scope.ManpageNamePurposeRx.$match(name_section_buffer))) !== nil && (!$a._isBoolean || $a == true))) {
-              document.$attributes()['$[]=']("manname", m['$[]'](1));
+              document.$attributes()['$[]=']("manname", document.$sub_attributes(m['$[]'](1)));
               document.$attributes()['$[]=']("manpurpose", m['$[]'](2));
               if (document.$backend()['$==']("manpage")) {
                 document.$attributes()['$[]=']("docname", document.$attributes()['$[]']("manname"));
@@ -8003,7 +8008,7 @@ if (f == null) f = nil;
         intro = false;
         if ((($a = ($b = (($c = parent.$context()['$==']("document")) ? parent.$blocks()['$empty?']() : $c), $b !== false && $b !== nil ?(((($c = ((($d = (has_header = parent['$has_header?']())) !== false && $d !== nil) ? $d : attributes.$delete("invalid-header"))) !== false && $c !== nil) ? $c : self['$is_next_line_section?'](reader, attributes)['$!']())) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
           doctype = parent.$doctype();
-          if (has_header !== false && has_header !== nil) {
+          if ((($a = ((($b = has_header) !== false && $b !== nil) ? $b : ((($c = doctype['$==']("book")) ? attributes['$[]'](1)['$==']("abstract")['$!']() : $c)))) !== nil && (!$a._isBoolean || $a == true))) {
             preamble = intro = $scope.Block.$new(parent, "preamble", $hash2(["content_model"], {"content_model": "compound"}));
             parent['$<<'](preamble);};
           section = parent;
@@ -8098,7 +8103,7 @@ if (f == null) f = nil;
         } else if (preamble !== false && preamble !== nil) {
           document = parent;
           if ((($a = preamble['$blocks?']()) !== nil && (!$a._isBoolean || $a == true))) {
-            if ((($a = ($b = ($c = $scope.Compliance.$unwrap_standalone_preamble(), $c !== false && $c !== nil ?document.$blocks().$size()['$=='](1) : $c), $b !== false && $b !== nil ?(((($c = doctype['$==']("book")['$!']()) !== false && $c !== nil) ? $c : preamble.$blocks()['$[]'](0).$style()['$==']("abstract")['$!']())) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+            if ((($a = ($b = ($c = $scope.Compliance.$unwrap_standalone_preamble(), $c !== false && $c !== nil ?document.$blocks().$size()['$=='](1) : $c), $b !== false && $b !== nil ?doctype['$==']("book")['$!']() : $b)) !== nil && (!$a._isBoolean || $a == true))) {
               document.$blocks().$shift();
               while ((($b = (child_block = preamble.$blocks().$shift())) !== nil && (!$b._isBoolean || $b == true))) {
               child_block['$parent='](document);
@@ -8465,6 +8470,7 @@ if (k == null) k = nil;if (v == null) v = nil;
             resolved_target = attributes['$[]']("target");
             block.$document().$register("images", resolved_target);
             ($a = "alt", $b = attributes, ((($j = $b['$[]']($a)) !== false && $j !== nil) ? $j : $b['$[]=']($a, (($k = $opal.Object._scope.File) == null ? $opal.cm('File') : $k).$basename(resolved_target, (($k = $opal.Object._scope.File) == null ? $opal.cm('File') : $k).$extname(resolved_target)).$tr("_-", " "))));
+            attributes['$[]=']("alt", block.$sub_specialcharacters(attributes['$[]']("alt")));
             block.$assign_caption(attributes.$delete("caption"), "figure");
             if ((($a = (scaledwidth = attributes['$[]']("scaledwidth"))) !== nil && (!$a._isBoolean || $a == true))) {
               if ((($a = ($range(48, 57, false))['$include?']((((($b = scaledwidth['$[]'](-1)) !== false && $b !== nil) ? $b : 0)).$ord())) !== nil && (!$a._isBoolean || $a == true))) {
