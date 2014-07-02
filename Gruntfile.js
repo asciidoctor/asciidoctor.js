@@ -1,15 +1,14 @@
 module.exports = function(grunt) {
-
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-		// Define clean task
-		clean: {
-			options: {
-				dot: true
-			},
-			dist: ['build', 'dist/*']
-		},
+    // Define clean task
+    clean: {
+      options: {
+        dot: true
+      },
+      dist: ['build', 'dist/*']
+    },
 
     /**
     * Build Asciidoctor.js with bundle and rake
@@ -89,32 +88,32 @@ module.exports = function(grunt) {
     /**
     * Minify all js
     */
-		uglify: {
-			dist: {
-				files: {
+    uglify: {
+      dist: {
+        files: {
           'dist/npm/asciidoctor-core.min.js': ['build/npm/asciidoctor-core-min.js'],
           'dist/npm/asciidoctor-extensions.min.js': ['build/npm/asciidoctor-extensions.js'],
           'dist/asciidoctor-core.min.js': ['build/asciidoctor-core.js'],
           'dist/asciidoctor-extensions.min.js': ['build/asciidoctor-extensions.js'],
           'dist/asciidoctor-all.min.js': ['build/asciidoctor-all.js']
-				}
-			}
-		},
+        }
+      }
+    },
 
-		/**
+    /**
     * Copy unminified files
     */
-		copy: {
-			dist: {
-				files: [{
-					expand: true,
-					cwd: 'build/',
-					src: ['**/*.js', '!**/*-min.js'],
-					dest: 'dist/',
-					filter: 'isFile'
-				}]
-			}
-		},
+    copy: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: 'build/',
+          src: ['**/*.js', '!**/*-min.js'],
+          dest: 'dist/',
+          filter: 'isFile'
+        }]
+      }
+    },
 
     /**
     * Gunzip
@@ -163,11 +162,11 @@ module.exports = function(grunt) {
     }
   });
 
-	grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-jasmine-node');
@@ -175,7 +174,10 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['dist']);
   grunt.registerTask('dist', ['clean', 'rake', 'npm', 'bower', 'uglify', 'copy', 'compress', 'test']);
   grunt.registerTask('rake', ['shell:bundleInstall', 'shell:bundleExecRake', 'shell:rakeDist']);
-  grunt.registerTask('examples', ['shell:rakeExamples']);
+  grunt.registerTask('example-result', 'Log the path to view the example result task', function() {
+    grunt.log.subhead('You can now open the file build/asciidoctor_example.html');
+  });
+  grunt.registerTask('examples', ['shell:rakeExamples', 'example-result']);
   grunt.registerTask('npm', ['concat:npmCore', 'concat:npmCoreMin', 'concat:npmExtensions']);
   grunt.registerTask('bower', ['concat:coreExtensions', 'concat:all']);
   grunt.registerTask('test', ['jasmine:allStandard', 'jasmine:allMinified', 'jasmine_node:all']);

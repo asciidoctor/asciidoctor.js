@@ -20,28 +20,19 @@ To interact with the generated code, you either invoke the JavaScript APIs direc
 
 To build *asciidoctor.js*, you need some tools :
 
-* NPM and Node
+* Npm and Node
 * Bower
 * Rake and Bundle
 
 
 Start by cloning the source from GitHub:
 
- $ git clone --recurse-submodules git://github.com/asciidoctor/asciidoctor.js
+ $ git clone git://github.com/asciidoctor/asciidoctor.js
 
-[TIP]
-====
-If you need to update the submodule with the latest code from upstream, use the following command:
-
- $ git submodule foreach git pull origin master
-
-To make the update persistent, run +git commit+ afterwards.
-====
-
-Next, switch to the 'asciidoctor.js' directory and run NPM's +install+ command and Bower's +install+ command:
+Next, switch to the 'asciidoctor.js' directory and run Npm's +install+ command and Bower's +install+ command:
 
  $ cd asciidoctor.js
- $ NPM install
+ $ npm install
  $ bower install
 
 You're now ready to build asciidoctor.js.
@@ -69,7 +60,7 @@ This command produces some files in the 'dist' directory:
 - *asciidoctor-extensions.js* (extensions API only)
 - *asciidoctor-all.js* (core, extension and Opal)
 
-* *dist/NPM* (to use with NPM)
+* *dist/npm* (to use with Npm)
 - *asciidoctor-core.js* (no extensions API)
 - *asciidoctor-extensions.js* (extensions API only)
 
@@ -221,7 +212,7 @@ Opal.hash2(['attributes'], {'attributes': ['notitle!']})
 
 === Back-end development
 
-For back-end development, we use *NPM*.
+For back-end development, we use *npm*.
 
 Start by install *asciidoctor.js* module:
 
