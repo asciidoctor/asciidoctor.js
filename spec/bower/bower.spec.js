@@ -1,0 +1,1 @@
+commonSpec(Opal, Opal.Asciidoctor);

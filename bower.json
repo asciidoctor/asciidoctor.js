@@ -18,7 +18,14 @@
   "license": "MIT",
   "main": [
     "dist/asciidoctor.js",
-    "dist/asciidoctor_extensions.js"
+    "dist/asciidoctor-core.js",
+    "dist/asciidoctor-extensions.js",
+    "dist/asciidoctor.min.js",
+    "dist/asciidoctor-core.min.js",
+    "dist/asciidoctor-extensions.min.js",
+    "dist/asciidoctor.min.gz.js",
+    "dist/asciidoctor-core.min.gz.js",
+    "dist/asciidoctor-extensions.min.gz.js"
   ],
   "dependencies": {
     "opal": "~0.6.2"
@@ -28,6 +35,8 @@
     "examples",
     "Gemfile",
     "Rakefile",
+    "spec",
+    "src",
     "error-in-chrome-console.png",
     "error-in-javascript-debugger.png"
   ]

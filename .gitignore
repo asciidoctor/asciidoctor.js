@@ -3,3 +3,5 @@
 /Gemfile.lock
 /README.html
 /build/
+/node_modules/
+/bower_components/

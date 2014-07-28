@@ -22,7 +22,7 @@ task :dist do
 
   env = Opal::Environment.new
   env.js_compressor = Sprockets::ClosureCompressor if minify
-  env['opal'].write_to "build/opal.js#{compress ? '.gz' : nil}"
+  #env['opal'].write_to "build/opal.js#{compress ? '.gz' : nil}"
 
   # Use use_gem if you want to build against a release
   env.use_gem 'asciidoctor'
@@ -35,8 +35,8 @@ task :dist do
   # NOTE hack to make version compliant with semver
   asciidoctor.instance_variable_set :@source, (asciidoctor.instance_variable_get :@source)
       .sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
-  asciidoctor.write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
-  env['asciidoctor/extensions'].write_to "build/asciidoctor_extensions.js#{compress ? '.gz' : nil}"
+  asciidoctor.write_to "build/asciidoctor-core.js#{compress ? '.gz' : nil}"
+  env['asciidoctor/extensions'].write_to "build/asciidoctor-extensions.js#{compress ? '.gz' : nil}"
 end
 
 desc 'Build asciidoctor_example.js to build/'
