@@ -216,7 +216,7 @@ args = $slice.call(arguments, 0);
 
         var def = self._proto, $scope = self._scope;
 
-        def.$process = function(reader, target, attributes) {
+        def.$process = function(document, reader, target, attributes) {
           var $a, self = this;
 
           return self.$raise((($a = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $a));
@@ -303,16 +303,18 @@ args = $slice.call(arguments, 0);
 
         $opal.defn(self, '$parse_content_as', def.$content_model);
 
-        def.$pos_attrs = function(value) {
+        def.$positional_attributes = function(value) {
           var self = this;
 
           value = $slice.call(arguments, 0);
           return self.$option("pos_attrs", value.$flatten());
         };
 
-        $opal.defn(self, '$map_attributes', def.$pos_attrs);
+        $opal.defn(self, '$pos_attrs', def.$positional_attributes);
 
-        $opal.defn(self, '$name_positional_attributes', def.$pos_attrs);
+        $opal.defn(self, '$name_attributes', def.$positional_attributes);
+
+        $opal.defn(self, '$name_positional_attributes', def.$positional_attributes);
 
         def.$default_attrs = function(value) {
           var self = this;
@@ -321,7 +323,7 @@ args = $slice.call(arguments, 0);
         };
 
         $opal.defn(self, '$seed_attributes_with', def.$default_attrs);
-                ;$opal.donate(self, ["$named", "$match_name", "$bind_to", "$contexts", "$on_contexts", "$on_context", "$content_model", "$parse_content_as", "$pos_attrs", "$map_attributes", "$name_positional_attributes", "$default_attrs", "$seed_attributes_with"]);
+                ;$opal.donate(self, ["$named", "$match_name", "$bind_to", "$contexts", "$on_contexts", "$on_context", "$content_model", "$parse_content_as", "$positional_attributes", "$pos_attrs", "$name_attributes", "$name_positional_attributes", "$default_attrs", "$seed_attributes_with"]);
       })(self);
 
       $opal.casgn($scope.BlockProcessor, 'DSL', $scope.BlockProcessorDsl);
@@ -386,16 +388,18 @@ args = $slice.call(arguments, 0);
 
         $opal.defn(self, '$parse_content_as', def.$content_model);
 
-        def.$pos_attrs = function(value) {
+        def.$positional_attributes = function(value) {
           var self = this;
 
           value = $slice.call(arguments, 0);
           return self.$option("pos_attrs", value.$flatten());
         };
 
-        $opal.defn(self, '$map_attributes', def.$pos_attrs);
+        $opal.defn(self, '$pos_attrs', def.$positional_attributes);
 
-        $opal.defn(self, '$name_positional_attributes', def.$pos_attrs);
+        $opal.defn(self, '$name_attributes', def.$positional_attributes);
+
+        $opal.defn(self, '$name_positional_attributes', def.$positional_attributes);
 
         def.$default_attrs = function(value) {
           var self = this;
@@ -404,7 +408,7 @@ args = $slice.call(arguments, 0);
         };
 
         $opal.defn(self, '$seed_attributes_with', def.$default_attrs);
-                ;$opal.donate(self, ["$named", "$match_name", "$bind_to", "$content_model", "$parse_content_as", "$pos_attrs", "$map_attributes", "$name_positional_attributes", "$default_attrs", "$seed_attributes_with"]);
+                ;$opal.donate(self, ["$named", "$match_name", "$bind_to", "$content_model", "$parse_content_as", "$positional_attributes", "$pos_attrs", "$name_attributes", "$name_positional_attributes", "$default_attrs", "$seed_attributes_with"]);
       })(self);
 
       (function($base, $super) {

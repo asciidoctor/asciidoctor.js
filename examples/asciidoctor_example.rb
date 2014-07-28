@@ -2,6 +2,7 @@ data = <<EOS
 = AsciiDoc Syntax Quick Reference
 Dan Allen; Sarah White
 v1.0.3, 2013-08-27
+:compat-mode: legacy
 :description: This guide is a quick reference for the common formatting markup and document elements in the AsciiDoc syntax.
 :keywords: AsciiDoc, Asciidoctor, syntax, reference, cheatsheet
 :imagesdir: ../images
