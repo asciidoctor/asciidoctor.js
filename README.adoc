@@ -183,11 +183,11 @@ If you don't want to use *extensions*, you can load files separately :
 
 All Opal-compiled classes are stored under the Opal namespace.
 Ruby variables and methods on a class or object get prefixed with +$+.
-Thus, where you would execute +Asciidoctor.render+ in Ruby, you execute +Opal.Asciidoctor.$render+ in JavaScript.
+Thus, where you would execute +Asciidoctor.convert+ in Ruby, you execute +Opal.Asciidoctor.$convert+ in JavaScript.
 
 [source,javascript]
 ----
-var html_doc =Opal.Asciidoctor.$render(
+var html_doc =Opal.Asciidoctor.$convert(
     "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to the browser!")
@@ -197,13 +197,13 @@ You would insert the rendered document into the page using the normal JavaScript
 
 [source,javascript]
 ----
-document.getElementById('content').innerHTML = Opal.Asciidoctor.$render(
+document.getElementById('content').innerHTML = Opal.Asciidoctor.$convert(
     "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to the browser!")
 ----
 
-Passing the options +Hash+ to the +render+ method requires a little bit of Opal voodoo:
+Passing the options +Hash+ to the +convert+ method requires a little bit of Opal voodoo:
 
 [source,javascript]
 ----
