@@ -3,6 +3,8 @@ node_js:
   - "0.10"
 
 before_script:
+  - rvm install 1.9.3-p194
+  - rvm use 1.9.3-p194
   - npm install
   - bower install
 
