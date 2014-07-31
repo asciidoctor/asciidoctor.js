@@ -232,10 +232,10 @@ var opal = asciidoctorObject.Opal;
 // You can get Asciidoctor with Extensions ...
 var asciidoctorWithExtensions = asciidoctorObject.Asciidoctor(true);
 // ... or without extensions
-var asciidoctorWithoutExtensions = asciidoctorObject.Asciidoctor();
+// var asciidoctorWithoutExtensions = asciidoctorObject.Asciidoctor();
 
 // Now you can use it
-var html = Asciidoctor.$convert('== Test', opal.hash2(['attributes'], {'attributes': ['notitle!']}));
+var html = asciidoctorWithExtensions.$convert('== Test', opal.hash2(['attributes'], {'attributes': ['notitle!']}));
 
 // And for example log it
 console.log(html);
