@@ -20,23 +20,17 @@ module.exports = function(grunt) {
         },
         command: 'bundle install'
       },
-      bundleExecRake: {                        // Target
-        options: {                        // Options
-          stderr: false
-        },
-        command: 'bundle exec rake'
-      },
       rakeDist: {                        // Target
         options: {                        // Options
           stderr: false
         },
-        command: 'rake dist'
+        command: 'bundle exec rake dist'
       },
       rakeExamples: {                        // Target
         options: {                        // Options
           stderr: false
         },
-        command: 'rake examples'
+        command: 'bundle exec rake examples'
       }
     },
 
@@ -173,7 +167,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['dist']);
   grunt.registerTask('dist', ['clean', 'rake', 'npm', 'bower', 'uglify', 'copy', 'compress', 'test']);
-  grunt.registerTask('rake', ['shell:bundleInstall', 'shell:bundleExecRake', 'shell:rakeDist']);
+  grunt.registerTask('rake', ['shell:bundleInstall', 'shell:rakeDist']);
   grunt.registerTask('example-result', 'Log the path to view the example result task', function() {
     grunt.log.subhead('You can now open the file build/asciidoctor_example.html');
   });
