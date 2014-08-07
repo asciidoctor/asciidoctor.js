@@ -2388,7 +2388,7 @@ if (arg == null) arg = nil;
 
     var def = self._proto, $scope = self._scope;
 
-    $opal.cdecl($scope, 'VERSION', "1.5.0-rc.4")
+    $opal.cdecl($scope, 'VERSION', "1.5.0-rc.5")
     
   })(self)
 })(Opal);
@@ -3128,7 +3128,8 @@ if (line == null) line = nil;
                 } else {
                 return (function() {$case = (((($a = attribute_missing) !== false && $a !== nil) ? $a : attribute_missing = (((($b = opts['$[]']("attribute_missing")) !== false && $b !== nil) ? $b : doc_attrs.$fetch("attribute-missing", $scope.Compliance.$attribute_missing())))));if ("skip"['$===']($case)) {return m['$[]'](0)}else if ("drop-line"['$===']($case)) {self.$warn("asciidoctor: WARNING: dropping line containing reference to missing attribute: " + (key));
                 reject = true;
-                return ($breaker.$v = "", $breaker);}else if ("warn"['$===']($case)) {return self.$warn("asciidoctor: WARNING: skipping reference to missing attribute: " + (key))}else {reject_if_empty = true;
+                return ($breaker.$v = "", $breaker);}else if ("warn"['$===']($case)) {self.$warn("asciidoctor: WARNING: skipping reference to missing attribute: " + (key));
+                return m['$[]'](0);}else {reject_if_empty = true;
                 return "";}})()
               };}, TMP_17._s = self, TMP_17), $a).call($b, $scope.AttributeReferenceRx)};
           if ((($a = ((($c = reject) !== false && $c !== nil) ? $c : ((($d = reject_if_empty !== false && reject_if_empty !== nil) ? line['$empty?']() : $d)))) !== nil && (!$a._isBoolean || $a == true))) {
@@ -4838,7 +4839,7 @@ if (key == null) key = nil;if (index == null) index = nil;
       });
 
       def.$parse_attribute = function(index, pos_attrs) {
-        var $a, $b, TMP_2, $c, self = this, single_quoted_value = nil, first = nil, name = nil, value = nil, skipped = nil, c = nil, resolved_value = nil, $case = nil, resolved_name = nil, pos_name = nil;
+        var $a, $b, TMP_2, $c, $d, self = this, single_quoted_value = nil, first = nil, name = nil, value = nil, skipped = nil, c = nil, $case = nil, resolved_name = nil, pos_name = nil;
 
         if (index == null) {
           index = 0
@@ -4891,19 +4892,18 @@ if (key == null) key = nil;if (index == null) index = nil;
           };
         };
         if (value !== false && value !== nil) {
-          resolved_value = (function() {$case = name;if ("options"['$===']($case) || "opts"['$===']($case)) {name = "options";
+          $case = name;if ("options"['$===']($case) || "opts"['$===']($case)) {name = "options";
           ($a = ($b = value.$split(",")).$each, $a._p = (TMP_2 = function(o){var self = TMP_2._s || this;
             if (self.attributes == null) self.attributes = nil;
 if (o == null) o = nil;
           return self.attributes['$[]=']("" + (o.$strip()) + "-option", "")}, TMP_2._s = self, TMP_2), $a).call($b);
-          return value;}else if ("title"['$===']($case)) {return value}else {if ((($a = (($c = single_quoted_value !== false && single_quoted_value !== nil) ? self.block : $c)) !== nil && (!$a._isBoolean || $a == true))) {
+          self.attributes['$[]='](name, value);}else if ("title"['$===']($case)) {self.attributes['$[]='](name, value)}else {self.attributes['$[]='](name, (function() {if ((($a = ($c = (($d = single_quoted_value !== false && single_quoted_value !== nil) ? value['$empty?']()['$!']() : $d), $c !== false && $c !== nil ?self.block : $c)) !== nil && (!$a._isBoolean || $a == true))) {
             return (self.block.$apply_normal_subs(value))
             } else {
             return value
-          }}})();
-          self.attributes['$[]='](name, resolved_value);
+          }; return nil; })())}
           } else {
-          resolved_name = (function() {if ((($a = (($c = single_quoted_value !== false && single_quoted_value !== nil) ? self.block : $c)) !== nil && (!$a._isBoolean || $a == true))) {
+          resolved_name = (function() {if ((($a = ($c = (($d = single_quoted_value !== false && single_quoted_value !== nil) ? name['$empty?']()['$!']() : $d), $c !== false && $c !== nil ?self.block : $c)) !== nil && (!$a._isBoolean || $a == true))) {
             return (self.block.$apply_normal_subs(name))
             } else {
             return name
@@ -7643,34 +7643,34 @@ if (e == null) e = nil;
       };
 
       def.$save_attributes = function() {
-        var $a, $b, $c, TMP_10, self = this, val = nil, toc_position_val = nil, toc_val = nil, toc_placement = nil, default_toc_position = nil, default_toc_class = nil, position = nil, $case = nil;
+        var $a, $b, $c, TMP_10, self = this, attrs = nil, val = nil, toc_position_val = nil, toc_val = nil, toc_placement = nil, default_toc_position = nil, default_toc_class = nil, position = nil, $case = nil;
 
-        if (self.attributes['$[]']("basebackend")['$==']("docbook")) {
+        if (((attrs = self.attributes))['$[]']("basebackend")['$==']("docbook")) {
           if ((($a = ((($b = self['$attribute_locked?']("toc")) !== false && $b !== nil) ? $b : self.attributes_modified['$include?']("toc"))) !== nil && (!$a._isBoolean || $a == true))) {
             } else {
-            self.attributes['$[]=']("toc", "")
+            attrs['$[]=']("toc", "")
           };
           if ((($a = ((($b = self['$attribute_locked?']("sectnums")) !== false && $b !== nil) ? $b : self.attributes_modified['$include?']("sectnums"))) !== nil && (!$a._isBoolean || $a == true))) {
             } else {
-            self.attributes['$[]=']("sectnums", "")
+            attrs['$[]=']("sectnums", "")
           };};
-        if ((($a = ((($b = self.attributes['$key?']("doctitle")) !== false && $b !== nil) ? $b : ((val = self.$doctitle()))['$!']())) !== nil && (!$a._isBoolean || $a == true))) {
+        if ((($a = ((($b = attrs['$key?']("doctitle")) !== false && $b !== nil) ? $b : ((val = self.$doctitle()))['$!']())) !== nil && (!$a._isBoolean || $a == true))) {
           } else {
-          self.attributes['$[]=']("doctitle", val)
+          attrs['$[]=']("doctitle", val)
         };
         if ((($a = self.id) !== nil && (!$a._isBoolean || $a == true))) {
           } else {
-          self.id = self.attributes['$[]']("css-signature")
+          self.id = attrs['$[]']("css-signature")
         };
-        toc_position_val = (function() {if ((($a = (toc_val = ((function() {if ((($b = self.attributes.$delete("toc2")) !== nil && (!$b._isBoolean || $b == true))) {
+        toc_position_val = (function() {if ((($a = (toc_val = ((function() {if ((($b = attrs.$delete("toc2")) !== nil && (!$b._isBoolean || $b == true))) {
           return "left"
           } else {
-          return self.attributes['$[]']("toc")
+          return attrs['$[]']("toc")
         }; return nil; })()))) !== nil && (!$a._isBoolean || $a == true))) {
-          if ((($a = ($b = (toc_placement = self.attributes.$fetch("toc-placement", "macro")), $b !== false && $b !== nil ?toc_placement['$==']("auto")['$!']() : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+          if ((($a = ($b = (toc_placement = attrs.$fetch("toc-placement", "macro")), $b !== false && $b !== nil ?toc_placement['$==']("auto")['$!']() : $b)) !== nil && (!$a._isBoolean || $a == true))) {
             return toc_placement
             } else {
-            return self.attributes['$[]']("toc-position")
+            return attrs['$[]']("toc-position")
           }
           } else {
           return nil
@@ -7685,22 +7685,22 @@ if (e == null) e = nil;
             } else {
             position = default_toc_position
           };
-          self.attributes['$[]=']("toc", "");
-          self.attributes['$[]=']("toc-placement", "auto");
-          $case = position;if ("left"['$===']($case) || "<"['$===']($case) || "&lt;"['$===']($case)) {self.attributes['$[]=']("toc-position", "left")}else if ("right"['$===']($case) || ">"['$===']($case) || "&gt;"['$===']($case)) {self.attributes['$[]=']("toc-position", "right")}else if ("top"['$===']($case) || "^"['$===']($case)) {self.attributes['$[]=']("toc-position", "top")}else if ("bottom"['$===']($case) || "v"['$===']($case)) {self.attributes['$[]=']("toc-position", "bottom")}else if ("preamble"['$===']($case) || "macro"['$===']($case)) {self.attributes['$[]=']("toc-position", "content");
-          self.attributes['$[]=']("toc-placement", position);
-          default_toc_class = nil;}else {self.attributes.$delete("toc-position");
+          attrs['$[]=']("toc", "");
+          attrs['$[]=']("toc-placement", "auto");
+          $case = position;if ("left"['$===']($case) || "<"['$===']($case) || "&lt;"['$===']($case)) {attrs['$[]=']("toc-position", "left")}else if ("right"['$===']($case) || ">"['$===']($case) || "&gt;"['$===']($case)) {attrs['$[]=']("toc-position", "right")}else if ("top"['$===']($case) || "^"['$===']($case)) {attrs['$[]=']("toc-position", "top")}else if ("bottom"['$===']($case) || "v"['$===']($case)) {attrs['$[]=']("toc-position", "bottom")}else if ("preamble"['$===']($case) || "macro"['$===']($case)) {attrs['$[]=']("toc-position", "content");
+          attrs['$[]=']("toc-placement", position);
+          default_toc_class = nil;}else {attrs.$delete("toc-position");
           default_toc_class = nil;};
           if (default_toc_class !== false && default_toc_class !== nil) {
-            ($a = "toc-class", $b = self.attributes, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, default_toc_class)))};};
-        if ((($a = self.attributes['$key?']("compat-mode")) !== nil && (!$a._isBoolean || $a == true))) {
-          if ((($a = self.attributes['$has_key?']("language")) !== nil && (!$a._isBoolean || $a == true))) {
-            self.attributes['$[]=']("source-language", self.attributes['$[]']("language"))};
+            ($a = "toc-class", $b = attrs, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, default_toc_class)))};};
+        if ((($a = attrs['$key?']("compat-mode")) !== nil && (!$a._isBoolean || $a == true))) {
+          if ((($a = attrs['$has_key?']("language")) !== nil && (!$a._isBoolean || $a == true))) {
+            attrs['$[]=']("source-language", attrs['$[]']("language"))};
           self.compat_mode = true;
           } else {
           self.compat_mode = false
         };
-        self.original_attributes = self.attributes.$dup();
+        self.original_attributes = attrs.$dup();
         if ((($a = self['$nested?']()) !== nil && (!$a._isBoolean || $a == true))) {
           return nil
           } else {
@@ -8264,7 +8264,7 @@ if (f == null) f = nil;
       });
 
       $opal.defs(self, '$parse_document_header', function(reader, document) {
-        var $a, $b, self = this, block_attributes = nil, assigned_doctitle = nil, val = nil, section_title = nil, source_location = nil, _ = nil, doctitle = nil;
+        var $a, $b, self = this, block_attributes = nil, assigned_doctitle = nil, val = nil, section_title = nil, source_location = nil, _ = nil, doctitle = nil, single_line = nil;
 
         block_attributes = self.$parse_block_metadata_lines(reader, document);
         if ((($a = block_attributes['$has_key?']("title")) !== nil && (!$a._isBoolean || $a == true))) {
@@ -8279,11 +8279,15 @@ if (f == null) f = nil;
         if ((($a = self['$is_next_line_document_title?'](reader, block_attributes)) !== nil && (!$a._isBoolean || $a == true))) {
           if ((($a = document.$sourcemap()) !== nil && (!$a._isBoolean || $a == true))) {
             source_location = reader.$cursor()};
-          $a = $opal.to_ary(self.$parse_section_title(reader, document)), document['$id='](($a[0] == null ? nil : $a[0])), _ = ($a[1] == null ? nil : $a[1]), doctitle = ($a[2] == null ? nil : $a[2]), _ = ($a[3] == null ? nil : $a[3]), _ = ($a[4] == null ? nil : $a[4]);
+          $a = $opal.to_ary(self.$parse_section_title(reader, document)), document['$id='](($a[0] == null ? nil : $a[0])), _ = ($a[1] == null ? nil : $a[1]), doctitle = ($a[2] == null ? nil : $a[2]), _ = ($a[3] == null ? nil : $a[3]), single_line = ($a[4] == null ? nil : $a[4]);
           if (assigned_doctitle !== false && assigned_doctitle !== nil) {
             } else {
             document['$title='](doctitle);
             assigned_doctitle = doctitle;
+          };
+          if (single_line !== false && single_line !== nil) {
+            } else {
+            document.$set_attribute("compat-mode", "")
           };
           if (source_location !== false && source_location !== nil) {
             document.$header()['$source_location='](source_location)};
@@ -8459,7 +8463,7 @@ if (f == null) f = nil;
       });
 
       $opal.defs(self, '$next_block', function(reader, parent, attributes, options) {
-        var $a, $b, $c, $d, $e, TMP_1, $f, TMP_2, $g, TMP_3, TMP_4, $h, $i, TMP_5, $j, $k, $l, TMP_6, TMP_7, self = this, skipped = nil, text_only = nil, parse_metadata = nil, document = nil, extensions = nil, block_extensions = nil, block_macro_extensions = nil, in_list = nil, block = nil, style = nil, explicit_style = nil, sourcemap = nil, source_location = nil, this_line = nil, delimited_block = nil, block_context = nil, cloaked_context = nil, terminator = nil, delimited_blk_match = nil, first_char = nil, match = nil, blk_ctx = nil, posattrs = nil, target = nil, extension = nil, raw_attributes = nil, default_attrs = nil, expected_index = nil, list_item = nil, coids = nil, marker = nil, float_id = nil, float_reftext = nil, float_title = nil, float_level = nil, _ = nil, tmp_sect = nil, break_at_list = nil, lines = nil, first_line = nil, admonition_match = nil, admonition_name = nil, attribution = nil, citetitle = nil, first_line_shifted = nil, indent = nil, $case = nil, language = nil, linenums = nil, default_language = nil, default_stem_syntax = nil, cursor = nil, block_reader = nil, content_model = nil, pos_attrs = nil, resolved_target = nil, scaledwidth = nil, block_id = nil;
+        var $a, $b, $c, $d, $e, TMP_1, $f, TMP_2, $g, TMP_3, TMP_4, $h, $i, TMP_5, $j, $k, $l, TMP_6, TMP_7, self = this, skipped = nil, text_only = nil, parse_metadata = nil, document = nil, extensions = nil, block_extensions = nil, block_macro_extensions = nil, in_list = nil, block = nil, style = nil, explicit_style = nil, sourcemap = nil, source_location = nil, this_line = nil, delimited_block = nil, block_context = nil, cloaked_context = nil, terminator = nil, delimited_blk_match = nil, first_char = nil, match = nil, blk_ctx = nil, posattrs = nil, target = nil, extension = nil, raw_attributes = nil, default_attrs = nil, expected_index = nil, list_item = nil, coids = nil, marker = nil, float_id = nil, float_reftext = nil, float_title = nil, float_level = nil, _ = nil, tmp_sect = nil, break_at_list = nil, lines = nil, first_line = nil, admonition_match = nil, admonition_name = nil, attribution = nil, citetitle = nil, first_line_shifted = nil, indent = nil, $case = nil, language = nil, linenums = nil, default_language = nil, explicit_stem_syntax = nil, default_stem_syntax = nil, cursor = nil, block_reader = nil, content_model = nil, pos_attrs = nil, resolved_target = nil, scaledwidth = nil, block_id = nil;
 
         if (attributes == null) {
           attributes = $hash2([], {})
@@ -8780,7 +8784,13 @@ if (i == null) i = nil;
             } else if ((($b = (default_language = document.$attributes()['$[]']("source-language"))) !== nil && (!$b._isBoolean || $b == true))) {
               attributes['$[]=']("language", default_language)};};
           block = self.$build_block("listing", "verbatim", terminator, parent, reader, attributes);}else if ("literal"['$===']($case)) {block = self.$build_block(block_context, "verbatim", terminator, parent, reader, attributes)}else if ("pass"['$===']($case)) {block = self.$build_block(block_context, "raw", terminator, parent, reader, attributes)}else if ("stem"['$===']($case) || "latexmath"['$===']($case) || "asciimath"['$===']($case)) {if (block_context['$==']("stem")) {
-            attributes['$[]=']("style", (function() {if ((($b = ((default_stem_syntax = document.$attributes()['$[]']("stem")))['$nil_or_empty?']()) !== nil && (!$b._isBoolean || $b == true))) {
+            attributes['$[]=']("style", (function() {if ((($b = (explicit_stem_syntax = attributes['$[]'](2))) !== nil && (!$b._isBoolean || $b == true))) {
+              if ((($b = explicit_stem_syntax['$include?']("tex")) !== nil && (!$b._isBoolean || $b == true))) {
+                return "latexmath"
+                } else {
+                return "asciimath"
+              }
+            } else if ((($b = ((default_stem_syntax = document.$attributes()['$[]']("stem")))['$nil_or_empty?']()) !== nil && (!$b._isBoolean || $b == true))) {
               return "asciimath"
               } else {
               return default_stem_syntax
@@ -12454,6 +12464,8 @@ if (key == null) key = nil;
 
       $opal.cdecl($scope, 'CG_GRAPH', "[\\x21-\\x7E]");
 
+      $opal.cdecl($scope, 'CC_ALL', "[\\s\\S]");
+
       $opal.cdecl($scope, 'CC_WORD', "a-zA-Z0-9_");
 
       $opal.cdecl($scope, 'CG_WORD', "[a-zA-Z0-9_]");};
@@ -12550,11 +12562,11 @@ if (key == null) key = nil;
 
     $opal.cdecl($scope, 'EmailInlineMacroRx', (new RegExp("([\\\\>:\\/])?" + $scope.CG_WORD + "[" + $scope.CC_WORD + ".%+-]*@" + $scope.CG_ALNUM + "[" + $scope.CC_ALNUM + ".-]*\\." + $scope.CG_ALPHA + "{2,4}\\b")));
 
-    $opal.cdecl($scope, 'FootnoteInlineMacroRx', /\\?(footnote(?:ref)?):\[(.*?[^\\])\]/m);
+    $opal.cdecl($scope, 'FootnoteInlineMacroRx', (new RegExp("\\\\?(footnote(?:ref)?):\\[(" + $scope.CC_ALL + "*?[^\\\\])\\]")));
 
     $opal.cdecl($scope, 'ImageInlineMacroRx', /\\?(?:image|icon):([^:\[][^\[]*)\[((?:\\\]|[^\]])*?)\]/);
 
-    $opal.cdecl($scope, 'IndextermInlineMacroRx', /\\?(?:(indexterm2?):\[(.*?[^\\])\]|\(\((.+?)\)\)(?!\)))/m);
+    $opal.cdecl($scope, 'IndextermInlineMacroRx', (new RegExp("\\\\?(?:(indexterm2?):\\[(" + $scope.CC_ALL + "*?[^\\\\])\\]|\\(\\((" + $scope.CC_ALL + "+?)\\)\\)(?!\\)))")));
 
     $opal.cdecl($scope, 'KbdBtnInlineMacroRx', /\\?(?:kbd|btn):\[((?:\\\]|[^\]])+?)\]/);
 
@@ -12564,20 +12576,20 @@ if (key == null) key = nil;
 
     $opal.cdecl($scope, 'LinkInlineMacroRx', /\\?(?:link|mailto):([^\s\[]+)(?:\[((?:\\\]|[^\]])*?)\])/);
 
-    $opal.cdecl($scope, 'StemInlineMacroRx', /\\?(stem|(?:latex|ascii)math):([a-z,]*)\[(.*?[^\\])\]/m);
+    $opal.cdecl($scope, 'StemInlineMacroRx', (new RegExp("\\\\?(stem|(?:latex|ascii)math):([a-z,]*)\\[(" + $scope.CC_ALL + "*?[^\\\\])\\]")));
 
     $opal.cdecl($scope, 'MenuInlineMacroRx', (new RegExp("\\\\?menu:(" + $scope.CG_WORD + "|" + $scope.CG_WORD + ".*?\\S)\\[" + $scope.CG_BLANK + "*(.+?)?\\]")));
 
     $opal.cdecl($scope, 'MenuInlineRx', (new RegExp("\\\\?\"(" + $scope.CG_WORD + "[^\"]*?" + $scope.CG_BLANK + "*&gt;" + $scope.CG_BLANK + "*[^\" \\t][^\"]*)\"")));
 
-    $opal.cdecl($scope, 'PassInlineRx', $hash(false, ["+", "`", (new RegExp("(^|[^" + $scope.CC_WORD + ";:])(?:\\[([^\\]]+?)\\])?(\\\\?(\\+|`)(\\S|\\S.*?\\S)\\4)(?!" + $scope.CC_WORD + ")"))], true, ["`", nil, (new RegExp("(^|[^`" + $scope.CC_WORD + "])(?:\\[([^\\]]+?)\\])?(\\\\?(`)([^`\\s]|[^`\\s].*?\\S)\\4)(?![`" + $scope.CC_WORD + "])"))]));
+    $opal.cdecl($scope, 'PassInlineRx', $hash(false, ["+", "`", (new RegExp("(^|[^" + $scope.CC_WORD + ";:])(?:\\[([^\\]]+?)\\])?(\\\\?(\\+|`)(\\S|\\S" + $scope.CC_ALL + "*?\\S)\\4)(?!" + $scope.CC_WORD + ")"))], true, ["`", nil, (new RegExp("(^|[^`" + $scope.CC_WORD + "])(?:\\[([^\\]]+?)\\])?(\\\\?(`)([^`\\s]|[^`\\s]" + $scope.CC_ALL + "*?\\S)\\4)(?![`" + $scope.CC_WORD + "])"))]));
 
-    $opal.cdecl($scope, 'PassInlineMacroRx', /(?:(?:(\\?)\[([^\]]+?)\])?(\\{0,2})(\+{2,3}|\${2})(.*?)\4|(\\?)pass:([a-z,]*)\[(.*?[^\\])\])/m);
+    $opal.cdecl($scope, 'PassInlineMacroRx', (new RegExp("(?:(?:(\\\\?)\\[([^\\]]+?)\\])?(\\\\{0,2})(\\+{2,3}|\\${2})(" + $scope.CC_ALL + "*?)\\4|(\\\\?)pass:([a-z,]*)\\[(" + $scope.CC_ALL + "*?[^\\\\])\\])")));
 
-    $opal.cdecl($scope, 'XrefInlineMacroRx', (new RegExp("\\\\?(?:&lt;&lt;([" + $scope.CC_WORD + "\":].*?)&gt;&gt;|xref:([" + $scope.CC_WORD + "\":].*?)\\[(.*?)\\])")));
+    $opal.cdecl($scope, 'XrefInlineMacroRx', (new RegExp("\\\\?(?:&lt;&lt;([" + $scope.CC_WORD + "\":]" + $scope.CC_ALL + "*?)&gt;&gt;|xref:([" + $scope.CC_WORD + "\":]" + $scope.CC_ALL + "*?)\\[(" + $scope.CC_ALL + "*?)\\])")));
 
-    $opal.cdecl($scope, 'LineBreakRx', (function() {if ($scope.RUBY_ENGINE['$==']("opal")) {
-      return /^(.*)[ \t]\+$/m}; return nil; })());
+    if ($scope.RUBY_ENGINE['$==']("opal")) {
+      $opal.cdecl($scope, 'LineBreakRx', /^(.*)[ \t]\+$/m)};
 
     $opal.cdecl($scope, 'LayoutBreakLineRx', /^('|<){3,}$/);
 
@@ -12591,7 +12603,7 @@ if (key == null) key = nil;
 
     $opal.cdecl($scope, 'DoubleQuotedRx', /^("|)(.*)\1$/);
 
-    $opal.cdecl($scope, 'DoubleQuotedMultiRx', /^("|)(.*)\1$/m);
+    $opal.cdecl($scope, 'DoubleQuotedMultiRx', (new RegExp("^(\"|)(" + $scope.CC_ALL + "*)\\1$")));
 
     $opal.cdecl($scope, 'TrailingDigitsRx', /\d+$/);
 
@@ -12612,19 +12624,19 @@ if (key == null) key = nil;
 
     $opal.cdecl($scope, 'INTRINSIC_ATTRIBUTES', $hash2(["startsb", "endsb", "vbar", "caret", "asterisk", "tilde", "plus", "apostrophe", "backslash", "backtick", "empty", "sp", "space", "two-colons", "two-semicolons", "nbsp", "deg", "zwsp", "quot", "apos", "lsquo", "rsquo", "ldquo", "rdquo", "wj", "brvbar", "amp", "lt", "gt"], {"startsb": "[", "endsb": "]", "vbar": "|", "caret": "^", "asterisk": "*", "tilde": "~", "plus": "&#43;", "apostrophe": "'", "backslash": "\\", "backtick": "`", "empty": "", "sp": " ", "space": " ", "two-colons": "::", "two-semicolons": ";;", "nbsp": "&#160;", "deg": "&#176;", "zwsp": "&#8203;", "quot": "&#34;", "apos": "&#39;", "lsquo": "&#8216;", "rsquo": "&#8217;", "ldquo": "&#8220;", "rdquo": "&#8221;", "wj": "&#8288;", "brvbar": "&#166;", "amp": "&", "lt": "<", "gt": ">"}));
 
-    quote_subs = [["strong", "unconstrained", /\\?(?:\[([^\]]+?)\])?\*\*(.+?)\*\*/m], ["strong", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?\\*(\\S|\\S.*?\\S)\\*(?!" + $scope.CG_WORD + ")"))], ["double", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?\"`(\\S|\\S.*?\\S)`\"(?!" + $scope.CG_WORD + ")"))], ["single", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:`}])(?:\\[([^\\]]+?)\\])?'`(\\S|\\S.*?\\S)`'(?!" + $scope.CG_WORD + ")"))], ["monospaced", "unconstrained", /\\?(?:\[([^\]]+?)\])?``(.+?)``/m], ["monospaced", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:\"'`}])(?:\\[([^\\]]+?)\\])?`(\\S|\\S.*?\\S)`(?![" + $scope.CC_WORD + "\"'`])"))], ["emphasis", "unconstrained", /\\?(?:\[([^\]]+?)\])?__(.+?)__/m], ["emphasis", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?_(\\S|\\S.*?\\S)_(?!" + $scope.CG_WORD + ")"))], ["mark", "unconstrained", /\\?(?:\[([^\]]+?)\])?##(.+?)##/m], ["mark", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?#(\\S|\\S.*?\\S)#(?!" + $scope.CG_WORD + ")"))], ["superscript", "unconstrained", /\\?(?:\[([^\]]+?)\])?\^(\S*?)\^/m], ["subscript", "unconstrained", /\\?(?:\[([^\]]+?)\])?~(\S*?)~/m]];
+    quote_subs = [["strong", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?\\*\\*(" + $scope.CC_ALL + "+?)\\*\\*"))], ["strong", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?\\*(\\S|\\S" + $scope.CC_ALL + "*?\\S)\\*(?!" + $scope.CG_WORD + ")"))], ["double", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?\"`(\\S|\\S" + $scope.CC_ALL + "*?\\S)`\"(?!" + $scope.CG_WORD + ")"))], ["single", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:`}])(?:\\[([^\\]]+?)\\])?'`(\\S|\\S" + $scope.CC_ALL + "*?\\S)`'(?!" + $scope.CG_WORD + ")"))], ["monospaced", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?``(" + $scope.CC_ALL + "+?)``"))], ["monospaced", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:\"'`}])(?:\\[([^\\]]+?)\\])?`(\\S|\\S" + $scope.CC_ALL + "*?\\S)`(?![" + $scope.CC_WORD + "\"'`])"))], ["emphasis", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?__(" + $scope.CC_ALL + "+?)__"))], ["emphasis", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?_(\\S|\\S" + $scope.CC_ALL + "*?\\S)_(?!" + $scope.CG_WORD + ")"))], ["mark", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?##(" + $scope.CC_ALL + "+?)##"))], ["mark", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?#(\\S|\\S" + $scope.CC_ALL + "*?\\S)#(?!" + $scope.CG_WORD + ")"))], ["superscript", "unconstrained", /\\?(?:\[([^\]]+?)\])?\^(\S+?)\^/], ["subscript", "unconstrained", /\\?(?:\[([^\]]+?)\])?~(\S+?)~/]];
 
     compat_quote_subs = quote_subs.$dup();
 
-    compat_quote_subs['$[]='](2, ["double", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?``(\\S|\\S.*?\\S)''(?!" + $scope.CG_WORD + ")"))]);
+    compat_quote_subs['$[]='](2, ["double", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?``(\\S|\\S" + $scope.CC_ALL + "*?\\S)''(?!" + $scope.CG_WORD + ")"))]);
 
-    compat_quote_subs['$[]='](3, ["single", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?`(\\S|\\S.*?\\S)'(?!" + $scope.CG_WORD + ")"))]);
+    compat_quote_subs['$[]='](3, ["single", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?`(\\S|\\S" + $scope.CC_ALL + "*?\\S)'(?!" + $scope.CG_WORD + ")"))]);
 
-    compat_quote_subs['$[]='](4, ["monospaced", "unconstrained", /\\?(?:\[([^\]]+?)\])?\+\+(.+?)\+\+/m]);
+    compat_quote_subs['$[]='](4, ["monospaced", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?\\+\\+(" + $scope.CC_ALL + "+?)\\+\\+"))]);
 
-    compat_quote_subs['$[]='](5, ["monospaced", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?\\+(\\S|\\S.*?\\S)\\+(?!" + $scope.CG_WORD + ")"))]);
+    compat_quote_subs['$[]='](5, ["monospaced", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?\\+(\\S|\\S" + $scope.CC_ALL + "*?\\S)\\+(?!" + $scope.CG_WORD + ")"))]);
 
-    compat_quote_subs.$insert(3, ["emphasis", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?'(\\S|\\S.*?\\S)'(?!" + $scope.CG_WORD + ")"))]);
+    compat_quote_subs.$insert(3, ["emphasis", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?'(\\S|\\S" + $scope.CC_ALL + "*?\\S)'(?!" + $scope.CG_WORD + ")"))]);
 
     $opal.cdecl($scope, 'QUOTE_SUBS', $hash(false, quote_subs, true, compat_quote_subs));
 
