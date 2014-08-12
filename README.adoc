@@ -5,6 +5,8 @@ Dan Allen
 :sources: https://github.com/asciidoctor/asciidoctor.js
 :license: https://github.com/asciidoctor/asciidoctor.js/blob/master/LICENSE
 
+image:https://travis-ci.org/asciidoctor/asciidoctor.js.svg?branch=master["Build Status", link="https://travis-ci.org/asciidoctor/asciidoctor.js"]
+
 This project uses http://opalrb.org[Opal] to cross-compile http://asciidoctor.org[Asciidoctor], an implementation of AsciiDoc, from Ruby to JavaScript to produce *asciidoctor.js*, which brings http://asciidoc.org[AsciiDoc] to the browser!
 
 == Introduction
