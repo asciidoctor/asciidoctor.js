@@ -109,7 +109,7 @@ module.exports = function(grunt) {
         {
           expand: true,
           cwd: 'build/',
-          src: ['asciidoctor_default.css'],
+          src: ['asciidoctor.css'],
           dest: 'dist/css/'
         }]
       }

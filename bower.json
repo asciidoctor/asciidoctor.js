@@ -1,6 +1,6 @@
 {
   "name": "asciidoctor.js",
-  "version": "1.5.0-rc.2",
+  "version": "1.5.0",
   "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
   "keywords": [
     "asciidoc",
@@ -26,7 +26,7 @@
     "dist/asciidoctor.min.gz.js",
     "dist/asciidoctor-core.min.gz.js",
     "dist/asciidoctor-extensions.min.gz.js",
-    "dist/css/asciidoctor_default.css"
+    "dist/css/asciidoctor.css"
   ],
   "dependencies": {
     "opal": "~0.6.2"
