@@ -37,6 +37,11 @@ task :dist do
       .sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
   asciidoctor.write_to "build/asciidoctor-core.js#{compress ? '.gz' : nil}"
   env['asciidoctor/extensions'].write_to "build/asciidoctor-extensions.js#{compress ? '.gz' : nil}"
+  asciidoctor_spec = Gem::Specification.find_by_name 'asciidoctor'
+  css_file = File.join asciidoctor_spec.full_gem_path, 'data/stylesheets/asciidoctor-default.css'
+  File.copy_stream css_file, 'build/asciidoctor_default.css'
+  File.copy_stream css_file, 'examples/asciidoctor.css'
+
 end
 
 desc 'Build asciidoctor_example.js to build/'

@@ -105,6 +105,12 @@ module.exports = function(grunt) {
           src: ['**/*.js', '!**/*-min.js'],
           dest: 'dist/',
           filter: 'isFile'
+        },
+        {
+          expand: true,
+          cwd: 'build/',
+          src: ['asciidoctor_default.css'],
+          dest: 'dist/css/'
         }]
       }
     },

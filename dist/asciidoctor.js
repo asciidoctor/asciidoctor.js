@@ -2388,7 +2388,7 @@ if (arg == null) arg = nil;
 
     var def = self._proto, $scope = self._scope;
 
-    $opal.cdecl($scope, 'VERSION', "1.5.0-rc.5")
+    $opal.cdecl($scope, 'VERSION', "1.5.0")
     
   })(self)
 })(Opal);
@@ -2475,9 +2475,9 @@ if (arg == null) arg = nil;
         }
         if (subject !== false && subject !== nil) {
           to.$puts("Input file: " + (subject))};
-        to.$puts("  Time to read and parse source: " + ("%05.5f"['$%'](self.$read_parse())));
-        to.$puts("  Time to convert document: " + ("%05.5f"['$%'](self.$convert())));
-        return to.$puts("  Total time (read, parse and convert): " + ("%05.5f"['$%'](self.$read_parse_convert())));
+        to.$puts("  Time to read and parse source: " + ("%05.5f"['$%'](self.$read_parse().$to_i())));
+        to.$puts("  Time to convert document: " + ("%05.5f"['$%'](self.$convert().$to_i())));
+        return to.$puts("  Total time (read, parse and convert): " + ("%05.5f"['$%'](self.$read_parse_convert().$to_i())));
       }, nil) && 'print_report';
     })(self, null)
     
@@ -2972,15 +2972,15 @@ if (type == null) type = nil;
         return text;
       };
 
-      def.$restore_passthroughs = function(text, check) {
+      def.$restore_passthroughs = function(text, outer) {
         var $a, $b, $c, TMP_6, self = this;
         if (self.passthroughs == null) self.passthroughs = nil;
 
-        if (check == null) {
-          check = true
+        if (outer == null) {
+          outer = true
         }
         try {
-        if ((($a = (($b = check !== false && check !== nil) ? (((($c = self.passthroughs['$empty?']()) !== false && $c !== nil) ? $c : text['$include?']($scope.PASS_START)['$!']())) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+        if ((($a = (($b = outer !== false && outer !== nil) ? (((($c = self.passthroughs['$empty?']()) !== false && $c !== nil) ? $c : text['$include?']($scope.PASS_START)['$!']())) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
           return text};
         return ($a = ($b = text).$gsub, $a._p = (TMP_6 = function(){var self = TMP_6._s || this, $a, pass = nil, subbed_text = nil, subs = nil, type = nil;
           if (self.passthroughs == null) self.passthroughs = nil;
@@ -3000,7 +3000,8 @@ if (type == null) type = nil;
             return subbed_text
           };}, TMP_6._s = self, TMP_6), $a).call($b, $scope.PASS_MATCH);
         } finally {
-        self.passthroughs.$clear()
+        if (outer !== false && outer !== nil) {
+          self.passthroughs.$clear()}
         };
       };
 
@@ -3315,7 +3316,7 @@ if (extension == null) extension = nil;
               return $scope.Inline.$new(self, "indexterm", text, $hash2(["type"], {"type": "visible"})).$convert();
             };}, TMP_27._s = self, TMP_27), $a).call($g, $scope.IndextermInlineMacroRx)};
         if ((($a = (($h = found_colon !== false && found_colon !== nil) ? (result['$include?']("://")) : $h)) !== nil && (!$a._isBoolean || $a == true))) {
-          result = ($a = ($h = result).$gsub, $a._p = (TMP_28 = function(){var self = TMP_28._s || this, $a, $b, $c, m = nil, prefix = nil, target = nil, suffix = nil, $case = nil, link_opts = nil, attrs = nil, text = nil;
+          result = ($a = ($h = result).$gsub, $a._p = (TMP_28 = function(){var self = TMP_28._s || this, $a, $b, $c, $d, m = nil, prefix = nil, target = nil, suffix = nil, $case = nil, link_opts = nil, attrs = nil, text = nil;
             if (self.document == null) self.document = nil;
             if ($gvars["~"] == null) $gvars["~"] = nil;
 
@@ -3360,20 +3361,20 @@ if (extension == null) extension = nil;
             if ((($a = m['$[]'](3)['$nil_or_empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
               text = ""
               } else {
-              text = (function() {if ((($a = (($b = use_link_attrs !== false && use_link_attrs !== nil) ? (((($c = m['$[]'](3)['$start_with?']("\"")) !== false && $c !== nil) ? $c : m['$[]'](3)['$include?'](","))) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+              if ((($a = (($b = use_link_attrs !== false && use_link_attrs !== nil) ? (((($c = m['$[]'](3)['$start_with?']("\"")) !== false && $c !== nil) ? $c : (($d = m['$[]'](3)['$include?'](","), $d !== false && $d !== nil ?m['$[]'](3)['$include?']("=") : $d)))) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
                 attrs = self.$parse_attributes(self.$sub_attributes(m['$[]'](3).$gsub("\\]", "]")), []);
                 if ((($a = attrs['$has_key?']("id")) !== nil && (!$a._isBoolean || $a == true))) {
                   link_opts['$[]=']("id", (attrs.$delete("id")))};
-                return ((($a = attrs['$[]'](1)) !== false && $a !== nil) ? $a : "");
+                text = ((($a = attrs['$[]'](1)) !== false && $a !== nil) ? $a : "");
                 } else {
-                return self.$sub_attributes(m['$[]'](3).$gsub("\\]", "]"))
-              }; return nil; })();
+                text = self.$sub_attributes(m['$[]'](3).$gsub("\\]", "]"))
+              };
               if ((($a = text['$end_with?']("^")) !== nil && (!$a._isBoolean || $a == true))) {
                 text = text.$chop();
-                ((($a = attrs) !== false && $a !== nil) ? $a : attrs = $hash2([], {}));
-                if ((($a = attrs['$has_key?']("window")) !== nil && (!$a._isBoolean || $a == true))) {
+                if (attrs !== false && attrs !== nil) {
+                  ($a = "window", $b = attrs, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, "_blank")))
                   } else {
-                  attrs['$[]=']("window", "_blank")
+                  attrs = $hash2(["window"], {"window": "_blank"})
                 };};
             };
             if ((($a = text['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
@@ -3381,7 +3382,12 @@ if (extension == null) extension = nil;
                 return target.$sub($scope.UriSniffRx, "")
                 } else {
                 return target
-              }; return nil; })()};
+              }; return nil; })();
+              if (attrs !== false && attrs !== nil) {
+                attrs['$[]=']("role", (("bare ") + (attrs['$[]']("role"))).$chomp(" "))
+                } else {
+                attrs = $hash2(["role"], {"role": "bare"})
+              };};
             if (attrs !== false && attrs !== nil) {
               link_opts['$[]=']("attributes", attrs)};
             return "" + (prefix) + ($scope.Inline.$new(self, "anchor", text, link_opts).$convert()) + (suffix);}, TMP_28._s = self, TMP_28), $a).call($h, $scope.LinkInlineRx)};
@@ -3404,12 +3410,12 @@ if (extension == null) extension = nil;
             attrs = nil;
             text = (function() {if ((($a = (($b = use_link_attrs !== false && use_link_attrs !== nil) ? (((($c = m['$[]'](2)['$start_with?']("\"")) !== false && $c !== nil) ? $c : m['$[]'](2)['$include?'](","))) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
               attrs = self.$parse_attributes(self.$sub_attributes(m['$[]'](2).$gsub("\\]", "]")), []);
-              if ((($a = attrs['$has_key?']("id")) !== nil && (!$a._isBoolean || $a == true))) {
+              if ((($a = attrs['$key?']("id")) !== nil && (!$a._isBoolean || $a == true))) {
                 link_opts['$[]=']("id", (attrs.$delete("id")))};
               if (mailto !== false && mailto !== nil) {
-                if ((($a = attrs['$has_key?'](2)) !== nil && (!$a._isBoolean || $a == true))) {
+                if ((($a = attrs['$key?'](2)) !== nil && (!$a._isBoolean || $a == true))) {
                   target = link_opts['$[]=']("target", "" + (target) + "?subject=" + ($scope.Helpers.$encode_uri(attrs['$[]'](2))));
-                  if ((($a = attrs['$has_key?'](3)) !== nil && (!$a._isBoolean || $a == true))) {
+                  if ((($a = attrs['$key?'](3)) !== nil && (!$a._isBoolean || $a == true))) {
                     target = link_opts['$[]=']("target", "" + (target) + "&amp;body=" + ($scope.Helpers.$encode_uri(attrs['$[]'](3))))};}};
               return attrs['$[]'](1);
               } else {
@@ -3418,16 +3424,25 @@ if (extension == null) extension = nil;
             self.document.$register("links", target);
             if ((($a = text['$end_with?']("^")) !== nil && (!$a._isBoolean || $a == true))) {
               text = text.$chop();
-              ((($a = attrs) !== false && $a !== nil) ? $a : attrs = $hash2([], {}));
-              if ((($a = attrs['$has_key?']("window")) !== nil && (!$a._isBoolean || $a == true))) {
+              if (attrs !== false && attrs !== nil) {
+                ($a = "window", $b = attrs, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, "_blank")))
                 } else {
-                attrs['$[]=']("window", "_blank")
+                attrs = $hash2(["window"], {"window": "_blank"})
               };};
             if ((($a = text['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
-              if ((($a = self.document['$attr?']("hide-uri-scheme")) !== nil && (!$a._isBoolean || $a == true))) {
-                text = raw_target.$sub($scope.UriSniffRx, "")
-                } else {
+              if (mailto !== false && mailto !== nil) {
                 text = raw_target
+                } else {
+                if ((($a = self.document['$attr?']("hide-uri-scheme")) !== nil && (!$a._isBoolean || $a == true))) {
+                  text = raw_target.$sub($scope.UriSniffRx, "")
+                  } else {
+                  text = raw_target
+                };
+                if (attrs !== false && attrs !== nil) {
+                  attrs['$[]=']("role", (("bare ") + (attrs['$[]']("role"))).$chomp(" "))
+                  } else {
+                  attrs = $hash2(["role"], {"role": "bare"})
+                };
               }};
             if (attrs !== false && attrs !== nil) {
               link_opts['$[]=']("attributes", attrs)};
@@ -5652,7 +5667,7 @@ if (f == null) f = nil;
       };
 
       def.$document = function(node) {
-        var $a, $b, $c, TMP_1, TMP_2, self = this, result = nil, slash = nil, br = nil, asset_uri_scheme = nil, cdn_base = nil, linkcss = nil, lang_attribute = nil, webfonts = nil, iconfont_stylesheet = nil, $case = nil, pygments_style = nil, highlightjs_path = nil, prettify_path = nil, docinfo_content = nil, body_attrs = nil, authorcount = nil;
+        var $a, $b, $c, TMP_1, TMP_2, self = this, result = nil, slash = nil, br = nil, asset_uri_scheme = nil, cdn_base = nil, linkcss = nil, lang_attribute = nil, webfonts = nil, iconfont_stylesheet = nil, $case = nil, pygments_style = nil, highlightjs_path = nil, prettify_path = nil, docinfo_content = nil, body_attrs = nil, details = nil, authorcount = nil;
 
         result = [];
         slash = self.void_element_slash;
@@ -5718,16 +5733,16 @@ if (f == null) f = nil;
             } else {
             result['$<<'](self.stylesheets.$embed_coderay_stylesheet())
           }}}else if ("pygments"['$===']($case)) {if ((node.$attr("pygments-css", "class"))['$==']("class")) {
-          pygments_style = (node.$attr("pygments-style", "pastie"));
+          pygments_style = node.$attr("pygments-style");
           if (linkcss !== false && linkcss !== nil) {
             result['$<<']("<link rel=\"stylesheet\" href=\"" + (node.$normalize_web_path(self.stylesheets.$pygments_stylesheet_name(pygments_style), (node.$attr("stylesdir", "")))) + "\"" + (slash) + ">")
             } else {
             result['$<<']((self.stylesheets.$embed_pygments_stylesheet(pygments_style)))
-          };}}else if ("highlightjs"['$===']($case) || "highlight.js"['$===']($case)) {highlightjs_path = node.$attr("highlightjsdir", "" + (cdn_base) + "/highlight.js/8.0");
-        result['$<<']("<link rel=\"stylesheet\" href=\"" + (highlightjs_path) + "/styles/" + (node.$attr("highlightjs-theme", "googlecode")) + ".min.css\"" + (slash) + ">\n<script src=\"" + (highlightjs_path) + "/highlight.min.js\"></script>\n<script>hljs.initHighlightingOnLoad()</script>");}else if ("prettify"['$===']($case)) {prettify_path = node.$attr("prettifydir", "" + (cdn_base) + "/prettify/r298");
+          };}}else if ("highlightjs"['$===']($case) || "highlight.js"['$===']($case)) {highlightjs_path = node.$attr("highlightjsdir", "" + (cdn_base) + "/highlight.js/8.1");
+        result['$<<']("<link rel=\"stylesheet\" href=\"" + (highlightjs_path) + "/styles/" + (node.$attr("highlightjs-theme", "github")) + ".min.css\"" + (slash) + ">\n<script src=\"" + (highlightjs_path) + "/highlight.min.js\"></script>\n<script>hljs.initHighlightingOnLoad()</script>");}else if ("prettify"['$===']($case)) {prettify_path = node.$attr("prettifydir", "" + (cdn_base) + "/prettify/r298");
         result['$<<']("<link rel=\"stylesheet\" href=\"" + (prettify_path) + "/" + (node.$attr("prettify-theme", "prettify")) + ".min.css\"" + (slash) + ">\n<script src=\"" + (prettify_path) + "/prettify.min.js\"></script>\n<script>document.addEventListener('DOMContentLoaded', prettyPrint)</script>");};
         if ((($a = node['$attr?']("stem")) !== nil && (!$a._isBoolean || $a == true))) {
-          result['$<<']("<script type=\"text/x-mathjax-config\">\nMathJax.Hub.Config({\n  tex2jax: {\n    inlineMath: [" + ($scope.INLINE_MATH_DELIMITERS['$[]']("latexmath")) + "],\n    displayMath: [" + ($scope.BLOCK_MATH_DELIMITERS['$[]']("latexmath")) + "],\n    ignoreClass: \"nostem|nostem|nolatexmath\"\n  },\n  asciimath2jax: {\n    delimiters: [" + ($scope.BLOCK_MATH_DELIMITERS['$[]']("asciimath")) + "],\n    ignoreClass: \"nostem|nostem|noasciimath\"\n  }\n});\n</script>\n<script type=\"text/javascript\" src=\"" + (cdn_base) + "/mathjax/2.4.0/MathJax.js?config=TeX-MML-AM_HTMLorMML\"></script>\n<script>document.addEventListener('DOMContentLoaded', MathJax.Hub.TypeSet)</script>")};
+          result['$<<']("<script type=\"text/x-mathjax-config\">\nMathJax.Hub.Config({\n  tex2jax: {\n    inlineMath: [" + ($scope.INLINE_MATH_DELIMITERS['$[]']("latexmath")) + "],\n    displayMath: [" + ($scope.BLOCK_MATH_DELIMITERS['$[]']("latexmath")) + "],\n    ignoreClass: \"nostem|nolatexmath\"\n  },\n  asciimath2jax: {\n    delimiters: [" + ($scope.BLOCK_MATH_DELIMITERS['$[]']("asciimath")) + "],\n    ignoreClass: \"nostem|noasciimath\"\n  }\n});\n</script>\n<script src=\"" + (cdn_base) + "/mathjax/2.4.0/MathJax.js?config=TeX-MML-AM_HTMLorMML\"></script>")};
         if ((($a = ((docinfo_content = node.$docinfo()))['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
           } else {
           result['$<<'](docinfo_content)
@@ -5758,29 +5773,36 @@ if (f == null) f = nil;
                 } else {
                 result['$<<']("<h1>" + (node.$header().$title()) + "</h1>")
               };
+              details = [];
               if ((($a = node['$attr?']("author")) !== nil && (!$a._isBoolean || $a == true))) {
-                result['$<<']("<span id=\"author\" class=\"author\">" + (node.$attr("author")) + "</span>" + (br));
+                details['$<<']("<span id=\"author\" class=\"author\">" + (node.$attr("author")) + "</span>" + (br));
                 if ((($a = node['$attr?']("email")) !== nil && (!$a._isBoolean || $a == true))) {
-                  result['$<<']("<span id=\"email\" class=\"email\">" + (node.$sub_macros(node.$attr("email"))) + "</span>" + (br))};
+                  details['$<<']("<span id=\"email\" class=\"email\">" + (node.$sub_macros(node.$attr("email"))) + "</span>" + (br))};
                 if (((authorcount = (node.$attr("authorcount")).$to_i()))['$>'](1)) {
                   ($a = ($b = ($range(2, authorcount, false))).$each, $a._p = (TMP_1 = function(idx){var self = TMP_1._s || this, $a;
 if (idx == null) idx = nil;
-                  result['$<<']("<span id=\"author" + (idx) + "\" class=\"author\">" + (node.$attr("author_" + (idx))) + "</span>" + (br));
+                  details['$<<']("<span id=\"author" + (idx) + "\" class=\"author\">" + (node.$attr("author_" + (idx))) + "</span>" + (br));
                     if ((($a = node['$attr?']("email_" + (idx))) !== nil && (!$a._isBoolean || $a == true))) {
-                      return result['$<<']("<span id=\"email" + (idx) + "\" class=\"email\">" + (node.$sub_macros(node.$attr("email_" + (idx)))) + "</span>" + (br))
+                      return details['$<<']("<span id=\"email" + (idx) + "\" class=\"email\">" + (node.$sub_macros(node.$attr("email_" + (idx)))) + "</span>" + (br))
                       } else {
                       return nil
                     };}, TMP_1._s = self, TMP_1), $a).call($b)};};
               if ((($a = node['$attr?']("revnumber")) !== nil && (!$a._isBoolean || $a == true))) {
-                result['$<<']("<span id=\"revnumber\">" + ((((($a = (node.$attr("version-label"))) !== false && $a !== nil) ? $a : "")).$downcase()) + " " + (node.$attr("revnumber")) + ((function() {if ((($a = (node['$attr?']("revdate"))) !== nil && (!$a._isBoolean || $a == true))) {
+                details['$<<']("<span id=\"revnumber\">" + ((((($a = (node.$attr("version-label"))) !== false && $a !== nil) ? $a : "")).$downcase()) + " " + (node.$attr("revnumber")) + ((function() {if ((($a = (node['$attr?']("revdate"))) !== nil && (!$a._isBoolean || $a == true))) {
                   return ","
                   } else {
                   return ""
                 }; return nil; })()) + "</span>")};
               if ((($a = node['$attr?']("revdate")) !== nil && (!$a._isBoolean || $a == true))) {
-                result['$<<']("<span id=\"revdate\">" + (node.$attr("revdate")) + "</span>")};
+                details['$<<']("<span id=\"revdate\">" + (node.$attr("revdate")) + "</span>")};
               if ((($a = node['$attr?']("revremark")) !== nil && (!$a._isBoolean || $a == true))) {
-                result['$<<']("" + (br) + "<span id=\"revremark\">" + (node.$attr("revremark")) + "</span>")};};
+                details['$<<']("" + (br) + "<span id=\"revremark\">" + (node.$attr("revremark")) + "</span>")};
+              if ((($a = details['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+                } else {
+                result['$<<']("<div class=\"details\">");
+                result.$concat(details);
+                result['$<<']("</div>");
+              };};
             if ((($a = ($c = (node['$attr?']("toc")), $c !== false && $c !== nil ?(node['$attr?']("toc-placement", "auto")) : $c)) !== nil && (!$a._isBoolean || $a == true))) {
               result['$<<']("<div id=\"toc\" class=\"" + (node.$attr("toc-class", "toc")) + "\">\n<div id=\"toctitle\">" + (node.$attr("toc-title")) + "</div>\n" + (self.$outline(node)) + "\n</div>")};
           };
@@ -6185,44 +6207,30 @@ if (dt == null) dt = nil;
       };
 
       def.$listing = function(node) {
-        var $a, self = this, nowrap = nil, language = nil, language_classes = nil, $case = nil, pre_class = nil, code_class = nil, pre_start = nil, pre_end = nil, id_attribute = nil, title_element = nil, role = nil;
+        var $a, self = this, nowrap = nil, language = nil, code_attrs = nil, $case = nil, pre_class = nil, pre_start = nil, pre_end = nil, id_attribute = nil, title_element = nil, role = nil;
 
         nowrap = ((($a = (node.$document()['$attr?']("prewrap"))['$!']()) !== false && $a !== nil) ? $a : (node['$option?']("nowrap")));
         if (node.$style()['$==']("source")) {
-          language = node.$attr("language", nil, false);
-          language_classes = (function() {if (language !== false && language !== nil) {
-            return "" + (language) + " language-" + (language)
+          if ((($a = (language = node.$attr("language", nil, false))) !== nil && (!$a._isBoolean || $a == true))) {
+            code_attrs = " data-lang=\"" + (language) + "\""
+            } else {
+            code_attrs = nil
+          };
+          $case = node.$document().$attr("source-highlighter");if ("coderay"['$===']($case)) {pre_class = " class=\"CodeRay highlight" + ((function() {if (nowrap !== false && nowrap !== nil) {
+            return " nowrap"
             } else {
             return nil
-          }; return nil; })();
-          $case = node.$document().$attr("source-highlighter");if ("coderay"['$===']($case)) {pre_class = (function() {if (nowrap !== false && nowrap !== nil) {
-            return " class=\"CodeRay nowrap\""
-            } else {
-            return " class=\"CodeRay\""
-          }; return nil; })();
-          code_class = (function() {if (language !== false && language !== nil) {
-            return " class=\"" + (language_classes) + "\""
+          }; return nil; })()) + "\""}else if ("pygments"['$===']($case)) {pre_class = " class=\"pygments highlight" + ((function() {if (nowrap !== false && nowrap !== nil) {
+            return " nowrap"
             } else {
             return nil
-          }; return nil; })();}else if ("pygments"['$===']($case)) {pre_class = (function() {if (nowrap !== false && nowrap !== nil) {
-            return " class=\"pygments highlight nowrap\""
-            } else {
-            return " class=\"pygments highlight\""
-          }; return nil; })();
-          code_class = (function() {if (language !== false && language !== nil) {
-            return " class=\"" + (language_classes) + "\""
+          }; return nil; })()) + "\""}else if ("highlightjs"['$===']($case) || "highlight.js"['$===']($case)) {pre_class = " class=\"highlightjs highlight" + ((function() {if (nowrap !== false && nowrap !== nil) {
+            return " nowrap"
             } else {
             return nil
-          }; return nil; })();}else if ("highlightjs"['$===']($case) || "highlight.js"['$===']($case)) {pre_class = (function() {if (nowrap !== false && nowrap !== nil) {
-            return " class=\"highlight nowrap\""
-            } else {
-            return " class=\"highlight\""
-          }; return nil; })();
-          code_class = (function() {if (language !== false && language !== nil) {
-            return " class=\"" + (language_classes) + "\""
-            } else {
-            return nil
-          }; return nil; })();}else if ("prettify"['$===']($case)) {pre_class = " class=\"prettyprint" + ((function() {if (nowrap !== false && nowrap !== nil) {
+          }; return nil; })()) + "\"";
+          if (language !== false && language !== nil) {
+            code_attrs = " class=\"language-" + (language) + "\"" + (code_attrs)};}else if ("prettify"['$===']($case)) {pre_class = " class=\"prettyprint highlight" + ((function() {if (nowrap !== false && nowrap !== nil) {
             return " nowrap"
             } else {
             return nil
@@ -6231,26 +6239,20 @@ if (dt == null) dt = nil;
             } else {
             return nil
           }; return nil; })()) + "\"";
-          code_class = (function() {if (language !== false && language !== nil) {
-            return " class=\"" + (language_classes) + "\""
-            } else {
-            return nil
-          }; return nil; })();}else if ("html-pipeline"['$===']($case)) {pre_class = (function() {if (language !== false && language !== nil) {
+          if (language !== false && language !== nil) {
+            code_attrs = " class=\"language-" + (language) + "\"" + (code_attrs)};}else if ("html-pipeline"['$===']($case)) {pre_class = (function() {if (language !== false && language !== nil) {
             return " lang=\"" + (language) + "\""
             } else {
             return nil
           }; return nil; })();
-          code_class = nil;}else {pre_class = (function() {if (nowrap !== false && nowrap !== nil) {
-            return " class=\"highlight nowrap\""
-            } else {
-            return " class=\"highlight\""
-          }; return nil; })();
-          code_class = (function() {if (language !== false && language !== nil) {
-            return " class=\"" + (language_classes) + "\""
+          code_attrs = nil;}else {pre_class = " class=\"highlight" + ((function() {if (nowrap !== false && nowrap !== nil) {
+            return " nowrap"
             } else {
             return nil
-          }; return nil; })();};
-          pre_start = "<pre" + (pre_class) + "><code" + (code_class) + ">";
+          }; return nil; })()) + "\"";
+          if (language !== false && language !== nil) {
+            code_attrs = " class=\"language-" + (language) + "\"" + (code_attrs)};};
+          pre_start = "<pre" + (pre_class) + "><code" + (code_attrs) + ">";
           pre_end = "</code></pre>";
           } else {
           pre_start = "<pre" + ((function() {if (nowrap !== false && nowrap !== nil) {
@@ -6468,15 +6470,15 @@ if (item == null) item = nil;
             return nil
           }; return nil; })();
           attribution_text = (function() {if (attribution !== false && attribution !== nil) {
-            return "" + ((function() {if (citetitle !== false && citetitle !== nil) {
+            return "&#8212; " + (attribution) + ((function() {if (citetitle !== false && citetitle !== nil) {
               return "<br" + (self.void_element_slash) + ">\n"
               } else {
               return nil
-            }; return nil; })()) + "&#8212; " + (attribution)
+            }; return nil; })())
             } else {
             return nil
           }; return nil; })();
-          attribution_element = "\n<div class=\"attribution\">\n" + (cite_element) + (attribution_text) + "\n</div>";
+          attribution_element = "\n<div class=\"attribution\">\n" + (attribution_text) + (cite_element) + "\n</div>";
           } else {
           attribution_element = nil
         };
@@ -6724,15 +6726,15 @@ if (item == null) item = nil;
             return nil
           }; return nil; })();
           attribution_text = (function() {if (attribution !== false && attribution !== nil) {
-            return "" + ((function() {if (citetitle !== false && citetitle !== nil) {
+            return "&#8212; " + (attribution) + ((function() {if (citetitle !== false && citetitle !== nil) {
               return "<br" + (self.void_element_slash) + ">\n"
               } else {
               return nil
-            }; return nil; })()) + "&#8212; " + (attribution)
+            }; return nil; })())
             } else {
             return nil
           }; return nil; })();
-          attribution_element = "\n<div class=\"attribution\">\n" + (cite_element) + (attribution_text) + "\n</div>";
+          attribution_element = "\n<div class=\"attribution\">\n" + (attribution_text) + (cite_element) + "\n</div>";
           } else {
           attribution_element = nil
         };
@@ -7731,14 +7733,25 @@ if (name == null) name = nil;
         var $a, $b, TMP_11, self = this;
 
         if ((($a = block_attributes['$key?']("attribute_entries")) !== nil && (!$a._isBoolean || $a == true))) {
-          return ($a = ($b = block_attributes['$[]']("attribute_entries")).$each, $a._p = (TMP_11 = function(entry){var self = TMP_11._s || this, $a;
+          return ($a = ($b = block_attributes['$[]']("attribute_entries")).$each, $a._p = (TMP_11 = function(entry){var self = TMP_11._s || this, $a, name = nil;
             if (self.attributes == null) self.attributes = nil;
 if (entry == null) entry = nil;
-          if ((($a = entry.$negate()) !== nil && (!$a._isBoolean || $a == true))) {
-              return self.attributes.$delete(entry.$name())
+          name = entry.$name();
+            if ((($a = entry.$negate()) !== nil && (!$a._isBoolean || $a == true))) {
+              self.attributes.$delete(name);
+              if (name['$==']("compat-mode")) {
+                return self.compat_mode = false
+                } else {
+                return nil
+              };
               } else {
-              return self.attributes['$[]='](entry.$name(), entry.$value())
-            }}, TMP_11._s = self, TMP_11), $a).call($b)
+              self.attributes['$[]='](name, entry.$value());
+              if (name['$==']("compat-mode")) {
+                return self.compat_mode = true
+                } else {
+                return nil
+              };
+            };}, TMP_11._s = self, TMP_11), $a).call($b)
           } else {
           return nil
         };
@@ -11634,7 +11647,7 @@ if (inc == null) inc = nil;
       def.primary_stylesheet_data = def.coderay_stylesheet_data = def.pygments_stylesheet_data = nil;
       $opal.cdecl($scope, 'DEFAULT_STYLESHEET_NAME', "asciidoctor.css");
 
-      $opal.cdecl($scope, 'DEFAULT_PYGMENTS_STYLE', "pastie");
+      $opal.cdecl($scope, 'DEFAULT_PYGMENTS_STYLE', "default");
 
       $opal.cdecl($scope, 'STYLESHEETS_DATA_PATH', (($a = $opal.Object._scope.File) == null ? $opal.cm('File') : $a).$join($scope.DATA_PATH, "stylesheets"));
 
@@ -12582,7 +12595,7 @@ if (key == null) key = nil;
 
     $opal.cdecl($scope, 'MenuInlineRx', (new RegExp("\\\\?\"(" + $scope.CG_WORD + "[^\"]*?" + $scope.CG_BLANK + "*&gt;" + $scope.CG_BLANK + "*[^\" \\t][^\"]*)\"")));
 
-    $opal.cdecl($scope, 'PassInlineRx', $hash(false, ["+", "`", (new RegExp("(^|[^" + $scope.CC_WORD + ";:])(?:\\[([^\\]]+?)\\])?(\\\\?(\\+|`)(\\S|\\S" + $scope.CC_ALL + "*?\\S)\\4)(?!" + $scope.CC_WORD + ")"))], true, ["`", nil, (new RegExp("(^|[^`" + $scope.CC_WORD + "])(?:\\[([^\\]]+?)\\])?(\\\\?(`)([^`\\s]|[^`\\s]" + $scope.CC_ALL + "*?\\S)\\4)(?![`" + $scope.CC_WORD + "])"))]));
+    $opal.cdecl($scope, 'PassInlineRx', $hash(false, ["+", "`", (new RegExp("(^|[^" + $scope.CC_WORD + ";:])(?:\\[([^\\]]+?)\\])?(\\\\?(\\+|`)(\\S|\\S" + $scope.CC_ALL + "*?\\S)\\4)(?!" + $scope.CG_WORD + ")"))], true, ["`", nil, (new RegExp("(^|[^`" + $scope.CC_WORD + "])(?:\\[([^\\]]+?)\\])?(\\\\?(`)([^`\\s]|[^`\\s]" + $scope.CC_ALL + "*?\\S)\\4)(?![`" + $scope.CC_WORD + "])"))]));
 
     $opal.cdecl($scope, 'PassInlineMacroRx', (new RegExp("(?:(?:(\\\\?)\\[([^\\]]+?)\\])?(\\\\{0,2})(\\+{2,3}|\\${2})(" + $scope.CC_ALL + "*?)\\4|(\\\\?)pass:([a-z,]*)\\[(" + $scope.CC_ALL + "*?[^\\\\])\\])")));
 
@@ -12644,7 +12657,7 @@ if (key == null) key = nil;
 
     compat_quote_subs = nil;
 
-    $opal.cdecl($scope, 'REPLACEMENTS', [[/\\?\(C\)/, "&#169;", "none"], [/\\?\(R\)/, "&#174;", "none"], [/\\?\(TM\)/, "&#8482;", "none"], [/(^|\n| |\\)--( |\n|$)/, "&#8201;&#8212;&#8201;", "none"], [(new RegExp("(" + $scope.CG_WORD + ")\\\\?--(?=" + $scope.CG_WORD + ")")), "&#8212;", "leading"], [/\\?\.\.\./, "&#8230;", "leading"], [/\\?`'/, "&#8217;", "none"], [(new RegExp("(" + $scope.CG_ALNUM + ")\\\\?'(?=" + $scope.CG_ALPHA + ")")), "&#8217;", "leading"], [/\\?-&gt;/, "&#8594;", "none"], [/\\?=&gt;/, "&#8658;", "none"], [/\\?&lt;-/, "&#8592;", "none"], [/\\?&lt;=/, "&#8656;", "none"], [/\\?(&)amp;((?:[a-zA-Z]+|#\d{2,5}|#x[a-fA-F0-9]{2,4});)/, "", "bounding"]]);
+    $opal.cdecl($scope, 'REPLACEMENTS', [[/\\?\(C\)/, "&#169;", "none"], [/\\?\(R\)/, "&#174;", "none"], [/\\?\(TM\)/, "&#8482;", "none"], [/(^|\n| |\\)--( |\n|$)/, "&#8201;&#8212;&#8201;", "none"], [(new RegExp("(" + $scope.CG_WORD + ")\\\\?--(?=" + $scope.CG_WORD + ")")), "&#8212;&#8203;", "leading"], [/\\?\.\.\./, "&#8230;&#8203;", "leading"], [/\\?`'/, "&#8217;", "none"], [(new RegExp("(" + $scope.CG_ALNUM + ")\\\\?'(?=" + $scope.CG_ALPHA + ")")), "&#8217;", "leading"], [/\\?-&gt;/, "&#8594;", "none"], [/\\?=&gt;/, "&#8658;", "none"], [/\\?&lt;-/, "&#8592;", "none"], [/\\?&lt;=/, "&#8656;", "none"], [/\\?(&)amp;((?:[a-zA-Z]+|#\d{2,5}|#x[a-fA-F0-9]{2,4});)/, "", "bounding"]]);
 
     (function(self) {
       var $scope = self._scope, def = self._proto;

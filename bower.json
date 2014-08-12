@@ -25,7 +25,8 @@
     "dist/asciidoctor-extensions.min.js",
     "dist/asciidoctor.min.gz.js",
     "dist/asciidoctor-core.min.gz.js",
-    "dist/asciidoctor-extensions.min.gz.js"
+    "dist/asciidoctor-extensions.min.gz.js",
+    "dist/css/asciidoctor_default.css"
   ],
   "dependencies": {
     "opal": "~0.6.2"
