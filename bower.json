@@ -38,6 +38,7 @@
     "Rakefile",
     "spec",
     "src",
+    "dist/npm",
     "error-in-chrome-console.png",
     "error-in-javascript-debugger.png"
   ]
