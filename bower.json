@@ -20,12 +20,15 @@
     "dist/asciidoctor.js",
     "dist/asciidoctor-core.js",
     "dist/asciidoctor-extensions.js",
+    "dist/asciidoctor-all.js",
     "dist/asciidoctor.min.js",
     "dist/asciidoctor-core.min.js",
     "dist/asciidoctor-extensions.min.js",
+    "dist/asciidoctor-all.min.js",
     "dist/asciidoctor.min.gz.js",
     "dist/asciidoctor-core.min.gz.js",
     "dist/asciidoctor-extensions.min.gz.js",
+    "dist/asciidoctor-all.gz.js",
     "dist/css/asciidoctor.css"
   ],
   "dependencies": {
