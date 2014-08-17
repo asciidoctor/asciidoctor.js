@@ -1,5 +1,5 @@
 data = <<EOS
-include::README.adoc[]
+include::userguide.adoc[]
 EOS
 
 require 'native'
