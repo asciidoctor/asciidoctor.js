@@ -54,16 +54,26 @@ task :examples => :dist do
   env = Opal::Environment.new
   env.append_path 'examples'
   env['asciidoctor_example'].write_to 'build/asciidoctor_example.js'
-
   File.copy_stream 'examples/asciidoctor_example.html', 'build/asciidoctor_example.html'
+
+  env['userguide_test'].write_to 'build/userguide_test.js'
+  File.copy_stream 'examples/userguide_test.html', 'build/userguide_test.html'
+  File.copy_stream 'README.adoc', 'build/README.adoc'
+
   File.copy_stream 'examples/asciidoctor.css', 'build/asciidoctor.css'
 
-  File.copy_stream 'examples/customers.csv', 'build/customers.csv'
-
   Dir.mkdir 'build/images' unless File.directory? 'build/images'
-  Dir.mkdir 'build/images/icons' unless File.directory? 'build/images/icons'
 
-  File.copy_stream 'examples/images/sunset.jpg', 'build/images/sunset.jpg'
-  File.copy_stream 'examples/images/icons/pause.png', 'build/images/icons/pause.png'
-  File.copy_stream 'examples/images/icons/play.png', 'build/images/icons/play.png'
+  File.copy_stream 'error-in-chrome-console.png', 'build/images/error-in-chrome-console.png'
+  File.copy_stream 'error-in-javascript-debugger.png', 'build/images/error-in-javascript-debugger.png'
+
+  unless File.exist? 'build/userguide.adoc'
+    require 'open-uri'
+    userguide_uri = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625/doc/asciidoc.txt'
+    customers_uri = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625/doc/customers.csv'
+    userguide_content = open(userguide_uri) {|fd2| fd2.read }
+    customers_content = open(customers_uri) {|fd2| fd2.read }
+    File.open('build/userguide.adoc', 'w') {|fd1| fd1.write userguide_content }
+    File.open('build/customers.csv', 'w') {|fd1| fd1.write customers_content }
+  end
 end
