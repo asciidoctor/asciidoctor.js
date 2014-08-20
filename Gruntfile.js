@@ -62,6 +62,22 @@ module.exports = function(grunt) {
         ],
         dest: 'build/npm/asciidoctor-extensions.js'
       },
+      npmDocbook: {
+        src: [
+          'src/npm/prepend-extensions.js',
+          'build/asciidoctor-docbook45.js',
+          'build/asciidoctor-docbook5.js',
+          'src/npm/append-extensions.js'
+        ],
+        dest: 'build/npm/asciidoctor-docbook.js'
+      },
+      docbook: {
+        src: [
+          'build/asciidoctor-docbook45.js',
+          'build/asciidoctor-docbook5.js'
+        ],
+        dest: 'build/asciidoctor-docbook.js'
+      },
       coreExtensions: {
         src: [
           'build/asciidoctor-core.js',
@@ -73,7 +89,9 @@ module.exports = function(grunt) {
         src: [
           'bower_components/opal/opal/current/opal.js',
           'build/asciidoctor-core.js',
-          'build/asciidoctor-extensions.js'
+          'build/asciidoctor-extensions.js',
+          'build/asciidoctor-docbook45.js',
+          'build/asciidoctor-docbook5.js'
         ],
         dest: 'build/asciidoctor-all.js'
       }
@@ -87,8 +105,10 @@ module.exports = function(grunt) {
         files: {
           'dist/npm/asciidoctor-core.min.js': ['build/npm/asciidoctor-core-min.js'],
           'dist/npm/asciidoctor-extensions.min.js': ['build/npm/asciidoctor-extensions.js'],
+          'dist/npm/asciidoctor-docbook.min.js': ['build/npm/asciidoctor-docbook.js'],
           'dist/asciidoctor-core.min.js': ['build/asciidoctor-core.js'],
           'dist/asciidoctor-extensions.min.js': ['build/asciidoctor-extensions.js'],
+          'dist/asciidoctor-docbook.min.js': ['build/asciidoctor-docbook.js'],
           'dist/asciidoctor-all.min.js': ['build/asciidoctor-all.js']
         }
       }
@@ -102,7 +122,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: 'build/',
-          src: ['**/*.js', '!**/*-min.js'],
+          src: ['**/*.js', '!**/*-min.js', '!**/*.min.js', '!**/*-docbook45.js', '!**/*-docbook5.js'],
           dest: 'dist/',
           filter: 'isFile'
         },
@@ -178,7 +198,7 @@ module.exports = function(grunt) {
     grunt.log.subhead('You can now open the file build/asciidoctor_example.html');
   });
   grunt.registerTask('examples', ['shell:rakeExamples', 'example-result']);
-  grunt.registerTask('npm', ['concat:npmCore', 'concat:npmCoreMin', 'concat:npmExtensions']);
-  grunt.registerTask('bower', ['concat:coreExtensions', 'concat:all']);
+  grunt.registerTask('npm', ['concat:npmCore', 'concat:npmCoreMin', 'concat:npmExtensions', 'concat:npmDocbook']);
+  grunt.registerTask('bower', ['concat:coreExtensions', 'concat:docbook', 'concat:all']);
   grunt.registerTask('test', ['jasmine:allStandard', 'jasmine:allMinified', 'jasmine_node:all']);
 }
