@@ -65,11 +65,13 @@ This command produces some files in the [path]_dist_ directory:
 - *asciidoctor.js* (includes core and extensions)
 - *asciidoctor-core.js* (no extensions API)
 - *asciidoctor-extensions.js* (extensions API only)
-- *asciidoctor-all.js* (core, extension and Opal)
+- *asciidoctor-docbook.js* (docbook backends : docbook45 and docbook5)
+- *asciidoctor-all.js* (core, extension, docbook backends and Opal)
 
 * *dist/npm* (to use with Npm)
-- *asciidoctor-core.js* (no extensions API)
+- *asciidoctor-core.js* (no extensions API, will automatically load docbook backends)
 - *asciidoctor-extensions.js* (extensions API only)
+- *asciidoctor-docbook.js* (docbook backends : docbook45 and docbook5)
 
 Each file has a `minified` and `gz` version.
 
@@ -186,6 +188,8 @@ If you don't want to use *extensions*, you can load files separately :
 ----
 <script src="bower_components/opal/opal/current/opal.min.js"></script>
 <script src="bower_components/asciidoctor.js/dist/asciidoctor-core.min.js"></script>
+<!-- If you need docbook backends -->
+<script src="bower_components/asciidoctor.js/dist/asciidoctor-docbook.min.js"></script>
 ----
 
 All Opal-compiled classes are stored under the Opal namespace.

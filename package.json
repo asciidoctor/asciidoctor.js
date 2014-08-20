@@ -10,6 +10,9 @@
     "dist/npm/asciidoctor-extensions.gz.js",
     "dist/npm/asciidoctor-extensions.js",
     "dist/npm/asciidoctor-extensions.min.js",
+    "dist/npm/asciidoctor-docbook.gz.js",
+    "dist/npm/asciidoctor-docbook.js",
+    "dist/npm/asciidoctor-docbook.min.js",
     "dist/css/asciidoctor.css",
     "LICENSE",
     "README.adoc"
