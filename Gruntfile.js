@@ -89,9 +89,7 @@ module.exports = function(grunt) {
         src: [
           'bower_components/opal/opal/current/opal.js',
           'build/asciidoctor-core.js',
-          'build/asciidoctor-extensions.js',
-          'build/asciidoctor-docbook45.js',
-          'build/asciidoctor-docbook5.js'
+          'build/asciidoctor-extensions.js'
         ],
         dest: 'build/asciidoctor-all.js'
       }
@@ -157,10 +155,10 @@ module.exports = function(grunt) {
         vendor: ['spec/share/common-specs.js']
       },
       allStandard: {
-        src: 'dist/asciidoctor-all.js'
+        src: ['dist/asciidoctor-all.js', 'dist/asciidoctor-docbook.js']
       },
       allMinified: {
-        src: 'dist/asciidoctor-all.min.js'
+        src: ['dist/asciidoctor-all.min.js', 'dist/asciidoctor-docbook.min.js']
       },
     },
 

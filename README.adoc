@@ -66,7 +66,7 @@ This command produces some files in the [path]_dist_ directory:
 - *asciidoctor-core.js* (no extensions API)
 - *asciidoctor-extensions.js* (extensions API only)
 - *asciidoctor-docbook.js* (docbook backends : docbook45 and docbook5)
-- *asciidoctor-all.js* (core, extension, docbook backends and Opal)
+- *asciidoctor-all.js* (core, extension and Opal. Docbook isn't the main target of webapp, for this reason we choose to keep it separate)
 
 * *dist/npm* (to use with Npm)
 - *asciidoctor-core.js* (no extensions API, will automatically load docbook backends)
@@ -180,6 +180,8 @@ For instance, in an HTML page, add these `<script>` tag (ideally at the bottom o
 [source,html]
 ----
 <script src="bower_components/asciidoctor.js/dist/asciidoctor-all.min.js"></script>
+<!-- If you need docbook backends -->
+<script src="bower_components/asciidoctor.js/dist/asciidoctor-docbook.min.js"></script>
 ----
 
 If you don't want to use *extensions*, you can load files separately :
