@@ -152,7 +152,14 @@ module.exports = function(grunt) {
     jasmine: {
       options: {
         specs: 'spec/bower/bower.spec.js',
-        vendor: ['spec/share/common-specs.js']
+        vendor: ['spec/share/common-specs.js'],
+        template: require('grunt-template-jasmine-istanbul'),
+        templateOptions: {
+          coverage: 'coverage.json',
+          report: {
+            type: 'lcovonly'
+          }
+        }
       },
       allStandard: {
         src: ['dist/asciidoctor-all.js', 'dist/asciidoctor-docbook.js']
@@ -177,7 +184,13 @@ module.exports = function(grunt) {
         }
       },
       all: ['spec/npm']
-    }
+    },
+
+    coveralls: {
+      all: {
+        src: 'lcov.info'
+      }
+    },
   });
 
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -188,6 +201,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-jasmine-node');
+  grunt.loadNpmTasks('grunt-coveralls');
 
   grunt.registerTask('default', ['dist']);
   grunt.registerTask('dist', ['clean', 'rake', 'npm', 'bower', 'uglify', 'copy', 'compress', 'test']);
