@@ -8,7 +8,8 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Guillaume Grossetie <h
 :endash:
 
 ifdef::env-github[]
-image::https://travis-ci.org/asciidoctor/asciidoctor.js.svg?branch=master[Build Status, link=https://travis-ci.org/asciidoctor/asciidoctor.js]
+image:http://img.shields.io/travis/asciidoctor/asciidoctor.js.svg[Build Status, link=https://travis-ci.org/asciidoctor/asciidoctor.js]
+image:http://img.shields.io/npm/v/asciidoctor.js.svg[npm version, link=https://www.npmjs.org/package/asciidoctor.js]
 endif::[]
 
 This project uses http://opalrb.org[Opal] to transcompile http://asciidoctor.org[Asciidoctor]—a modern implementation of AsciiDoc—from Ruby to JavaScript to produce [path]_asciidoctor.js_, bringing http://asciidoc.org[AsciiDoc] to the browser!
