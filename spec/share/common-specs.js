@@ -46,7 +46,7 @@ var commonSpec = function(Opal, Asciidoctor) {
       expect(html).toContain('<?xml version="1.0" encoding="UTF-8"?>\n\
 <?asciidoc-toc?>\n\
 <?asciidoc-numbered?>\n\
-<book xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0" lang="en">\n\
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">\n\
 <info>\n\
 <title>DocTitle</title>\n\
 <date>2014-01-01</date>\n\

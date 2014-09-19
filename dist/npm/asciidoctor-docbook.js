@@ -25,13 +25,21 @@ module.exports = function(opalParam) {
         if ((($a = (doctype_line = self.$doctype_declaration(root_tag_name))) !== nil && (!$a._isBoolean || $a == true))) {
           result['$<<'](doctype_line)};
         if ((($a = node['$attr?']("toc")) !== nil && (!$a._isBoolean || $a == true))) {
-          result['$<<']("<?asciidoc-toc?>")};
+          if ((($a = node['$attr?']("toclevels")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<?asciidoc-toc maxdepth=\"" + (node.$attr("toclevels")) + "\"?>")
+            } else {
+            result['$<<']("<?asciidoc-toc?>")
+          }};
         if ((($a = node['$attr?']("sectnums")) !== nil && (!$a._isBoolean || $a == true))) {
-          result['$<<']("<?asciidoc-numbered?>")};
+          if ((($a = node['$attr?']("sectnumlevels")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<?asciidoc-numbered maxdepth=\"" + (node.$attr("sectnumlevels")) + "\"?>")
+            } else {
+            result['$<<']("<?asciidoc-numbered?>")
+          }};
         lang_attribute = (function() {if ((($a = (node['$attr?']("nolang"))) !== nil && (!$a._isBoolean || $a == true))) {
           return nil
           } else {
-          return " lang=\"" + (node.$attr("lang", "en")) + "\""
+          return " " + (self.$lang_attribute_name()) + "=\"" + (node.$attr("lang", "en")) + "\""
         }; return nil; })();
         result['$<<']("<" + (root_tag_name) + (self.$document_ns_attributes(node)) + (lang_attribute) + ">");
         result['$<<']((self.$document_info_element(node, root_tag_name)));
@@ -818,6 +826,12 @@ if (index == null) index = nil;
         var self = this;
 
         return " xmlns=\"http://docbook.org/ns/docbook\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"5.0\"";
+      };
+
+      def.$lang_attribute_name = function() {
+        var self = this;
+
+        return "xml:lang";
       };
 
       def.$document_title_tags = function(title) {
@@ -1006,6 +1020,12 @@ if (item == null) item = nil;if (idx == null) idx = nil;
         return $opal.find_super_dispatcher(self, 'document_info_element', TMP_3, null).apply(self, [doc, info_tag_prefix, true]);
       };
 
+      def.$lang_attribute_name = function() {
+        var self = this;
+
+        return "lang";
+      };
+
       return (def.$document_ns_attributes = function(doc) {
         var $a, self = this, ns = nil;
 
@@ -1048,13 +1068,21 @@ if (item == null) item = nil;if (idx == null) idx = nil;
         if ((($a = (doctype_line = self.$doctype_declaration(root_tag_name))) !== nil && (!$a._isBoolean || $a == true))) {
           result['$<<'](doctype_line)};
         if ((($a = node['$attr?']("toc")) !== nil && (!$a._isBoolean || $a == true))) {
-          result['$<<']("<?asciidoc-toc?>")};
+          if ((($a = node['$attr?']("toclevels")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<?asciidoc-toc maxdepth=\"" + (node.$attr("toclevels")) + "\"?>")
+            } else {
+            result['$<<']("<?asciidoc-toc?>")
+          }};
         if ((($a = node['$attr?']("sectnums")) !== nil && (!$a._isBoolean || $a == true))) {
-          result['$<<']("<?asciidoc-numbered?>")};
+          if ((($a = node['$attr?']("sectnumlevels")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<?asciidoc-numbered maxdepth=\"" + (node.$attr("sectnumlevels")) + "\"?>")
+            } else {
+            result['$<<']("<?asciidoc-numbered?>")
+          }};
         lang_attribute = (function() {if ((($a = (node['$attr?']("nolang"))) !== nil && (!$a._isBoolean || $a == true))) {
           return nil
           } else {
-          return " lang=\"" + (node.$attr("lang", "en")) + "\""
+          return " " + (self.$lang_attribute_name()) + "=\"" + (node.$attr("lang", "en")) + "\""
         }; return nil; })();
         result['$<<']("<" + (root_tag_name) + (self.$document_ns_attributes(node)) + (lang_attribute) + ">");
         result['$<<']((self.$document_info_element(node, root_tag_name)));
@@ -1841,6 +1869,12 @@ if (index == null) index = nil;
         var self = this;
 
         return " xmlns=\"http://docbook.org/ns/docbook\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"5.0\"";
+      };
+
+      def.$lang_attribute_name = function() {
+        var self = this;
+
+        return "xml:lang";
       };
 
       def.$document_title_tags = function(title) {

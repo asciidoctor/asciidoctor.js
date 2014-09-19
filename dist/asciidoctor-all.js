@@ -13848,26 +13848,33 @@ if (const$ == null) const$ = nil;
 
       
       var data = ''
-      var status = -1;
-      try {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', path, false);
-        xhr.addEventListener('load', function() {
-          status = this.status;
-          // status is 0 for local file mode (i.e., file://)
-          if (status == 0 || status == 200) {
-            data = this.responseText;
-          }
-        });
-        xhr.overrideMimeType('text/plain');
-        xhr.send();
-      }
-      catch (e) {
-        status = 0;
-      }
-      // assume that no data in local file mode means it doesn't exist
-      if (status == 404 || (status == 0 && data == '')) {
-        throw $scope.IOError.$new('No such file or directory: ' + path);
+      if (typeof module !== 'undefined' && module.exports) {
+        // Running under Node.js
+        var fs = require("fs");
+        data = fs.readFileSync(path, "utf8");
+      } else {
+        // Running under the browser
+        var status = -1;
+        try {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', path, false);
+          xhr.addEventListener('load', function() {
+            status = this.status;
+            // status is 0 for local file mode (i.e., file://)
+            if (status == 0 || status == 200) {
+              data = this.responseText;
+            }
+          });
+          xhr.overrideMimeType('text/plain');
+          xhr.send();
+        }
+        catch (e) {
+          status = 0;
+        }
+        // assume that no data in local file mode means it doesn't exist
+        if (status == 404 || (status == 0 && data == '')) {
+          throw $scope.IOError.$new('No such file or directory: ' + path);
+        }
       }
     
       return data;
@@ -13948,7 +13955,7 @@ if (arg == null) arg = nil;
 
     var def = self._proto, $scope = self._scope;
 
-    $opal.cdecl($scope, 'VERSION', "1.5.0")
+    $opal.cdecl($scope, 'VERSION', "1.5.1")
     
   })(self)
 })(Opal);
@@ -15029,7 +15036,7 @@ if (extension == null) extension = nil;
               return m['$[]'](0)['$[]']($range(1, -1, false));};
             if (m['$[]'](1)['$==']("footnote")) {
               id = nil;
-              text = self.$restore_passthroughs(self.$sub_inline_xrefs(self.$sub_inline_anchors(self.$normalize_string(m['$[]'](2), true))));
+              text = self.$restore_passthroughs(self.$sub_inline_xrefs(self.$sub_inline_anchors(self.$normalize_string(m['$[]'](2), true))), false);
               index = self.document.$counter("footnote-number");
               self.document.$register("footnotes", ($scope.Document)._scope.Footnote.$new(index, id, text));
               type = nil;
@@ -15051,7 +15058,7 @@ if (fn == null) fn = nil;
                 id = nil;
                 type = "xref";
                 } else {
-                text = self.$restore_passthroughs(self.$sub_inline_xrefs(self.$sub_inline_anchors(self.$normalize_string(text, true))));
+                text = self.$restore_passthroughs(self.$sub_inline_xrefs(self.$sub_inline_anchors(self.$normalize_string(text, true))), false);
                 index = self.document.$counter("footnote-number");
                 self.document.$register("footnotes", ($scope.Document)._scope.Footnote.$new(index, id, text));
                 type = "ref";
@@ -15516,7 +15523,8 @@ if (line == null) line = nil;
         };
         if ((($a = self['$attr?']("linenums")) !== nil && (!$a._isBoolean || $a == true))) {
           if ((opts['$[]=']("linenos", ((($a = self.document.$attributes()['$[]']("pygments-linenums-mode")) !== false && $a !== nil) ? $a : "table")))['$==']("table")) {
-            result = lexer.$highlight(source, $hash2(["options"], {"options": opts})).$sub(/<div class="pyhl">(.*)<\/div>/m, "\\1").$gsub(/<pre[^>]*>(.*?)<\/pre>\s*/m, "\\1")
+            linenums_mode = "table";
+            result = lexer.$highlight(source, $hash2(["options"], {"options": opts})).$sub(/<div class="pyhl">(.*)<\/div>/m, "\\1").$gsub(/<pre[^>]*>(.*?)<\/pre>\s*/m, "\\1");
             } else {
             result = lexer.$highlight(source, $hash2(["options"], {"options": opts})).$sub(/<div class="pyhl"><pre[^>]*>(.*?)<\/pre><\/div>/m, "\\1")
           }
@@ -15533,7 +15541,7 @@ if (line == null) line = nil;
           } else {
           lineno = 0;
           reached_code = linenums_mode['$==']("table")['$!']();
-          return ($a = ($c = result.$split($scope.EOL)).$map, $a._p = (TMP_46 = function(line){var self = TMP_46._s || this, $a, $b, $c, TMP_47, conums = nil, tail = nil, pos = nil, conums_markup = nil;
+          return ($a = ($c = result.$split($scope.EOL)).$map, $a._p = (TMP_46 = function(line){var self = TMP_46._s || this, $a, $b, TMP_47, conums = nil, tail = nil, pos = nil, conums_markup = nil;
             if (self.document == null) self.document = nil;
 if (line == null) line = nil;
           if (reached_code !== false && reached_code !== nil) {
@@ -15547,9 +15555,13 @@ if (line == null) line = nil;
             lineno = lineno['$+'](1);
             if ((($a = (conums = callout_marks.$delete(lineno))) !== nil && (!$a._isBoolean || $a == true))) {
               tail = nil;
-              if ((($a = ($b = (($c = callout_on_last !== false && callout_on_last !== nil) ? callout_marks['$empty?']() : $c), $b !== false && $b !== nil ?(pos = line.$index("</pre>")) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
-                tail = line['$[]']($range(pos, -1, false));
-                line = line['$[]']($range(0, pos, true));};
+              if ((($a = (($b = callout_on_last !== false && callout_on_last !== nil) ? callout_marks['$empty?']() : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                if ((($a = (pos = line.$index("</pre>"))) !== nil && (!$a._isBoolean || $a == true))) {
+                  tail = line['$[]']($range(pos, -1, false));
+                  line = "" + (line['$[]']($range(0, pos, true)).$chomp(" ")) + " ";
+                  } else {
+                  line = "" + (line.$chomp(" ")) + " "
+                }};
               if (conums.$size()['$=='](1)) {
                 return "" + (line) + ($scope.Inline.$new(self, "callout", conums['$[]'](0), $hash2(["id"], {"id": self.document.$callouts().$read_next_id()})).$convert()) + (tail)
                 } else {
@@ -15649,17 +15661,14 @@ if (sub == null) sub = nil;
           opts = $hash2([], {})
         }
         if (context['$==']("document")) {
-          self.parent = nil;
-          self.document = parent;
-        } else if ((($a = (self.parent = parent)) !== nil && (!$a._isBoolean || $a == true))) {
-          self.document = parent.$document()
-          } else {
-          self.document = nil
-        };
+          self.document = parent
+        } else if (parent !== false && parent !== nil) {
+          self.parent = parent;
+          self.document = parent.$document();};
         self.context = context;
         self.node_name = context.$to_s();
-        self.attributes = (function() {if ((($a = opts['$key?']("attributes")) !== nil && (!$a._isBoolean || $a == true))) {
-          return (((($a = opts['$[]']("attributes")) !== false && $a !== nil) ? $a : $hash2([], {}))).$dup()
+        self.attributes = (function() {if ((($a = (opts['$key?']("attributes"))) !== nil && (!$a._isBoolean || $a == true))) {
+          return opts['$[]']("attributes").$dup()
           } else {
           return $hash2([], {})
         }; return nil; })();
@@ -15781,10 +15790,10 @@ if (sub == null) sub = nil;
         if (expect == null) {
           expect = nil
         }
-        if ((($a = expect['$nil?']()) !== nil && (!$a._isBoolean || $a == true))) {
-          return ((($a = self.attributes['$has_key?']("role")) !== false && $a !== nil) ? $a : self.document.$attributes()['$has_key?']("role"))
-          } else {
+        if (expect !== false && expect !== nil) {
           return expect['$==']((((($a = self.attributes['$[]']("role")) !== false && $a !== nil) ? $a : self.document.$attributes()['$[]']("role"))))
+          } else {
+          return ((($a = self.attributes['$has_key?']("role")) !== false && $a !== nil) ? $a : self.document.$attributes()['$has_key?']("role"))
         };
       };
 
@@ -22763,8 +22772,9 @@ if (linedef == null) linedef = nil;
               tags = [attributes['$[]']("tag")].$to_set()
             } else if ((($a = attributes['$has_key?']("tags")) !== nil && (!$a._isBoolean || $a == true))) {
               tags = attributes['$[]']("tags").$split($scope.DataDelimiterRx).$uniq().$to_set()};};
-          if ((($a = inc_lines['$nil?']()['$!']()) !== nil && (!$a._isBoolean || $a == true))) {
-            if ((($a = inc_lines['$empty?']()['$!']()) !== nil && (!$a._isBoolean || $a == true))) {
+          if (inc_lines !== false && inc_lines !== nil) {
+            if ((($a = inc_lines['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+              } else {
               selected = [];
               inc_line_offset = 0;
               inc_lineno = 0;
@@ -22801,9 +22811,11 @@ if (l == null) l = nil;
                 }else { throw $err; }
               };
               self.$advance();
-              self.$push_include(selected, include_file, path, inc_line_offset, attributes);}
-          } else if ((($a = tags['$nil?']()['$!']()) !== nil && (!$a._isBoolean || $a == true))) {
-            if ((($a = tags['$empty?']()['$!']()) !== nil && (!$a._isBoolean || $a == true))) {
+              self.$push_include(selected, include_file, path, inc_line_offset, attributes);
+            }
+          } else if (tags !== false && tags !== nil) {
+            if ((($a = tags['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
+              } else {
               selected = [];
               inc_line_offset = 0;
               inc_lineno = 0;
@@ -22812,17 +22824,18 @@ if (l == null) l = nil;
               try {
               ($a = ($e = self).$open, $a._p = (TMP_16 = function(f){var self = TMP_16._s || this, $a, $b, TMP_17;
 if (f == null) f = nil;
-                return ($a = ($b = f).$each_line, $a._p = (TMP_17 = function(l){var self = TMP_17._s || this, $a, $b, TMP_18;
+                return ($a = ($b = f).$each_line, $a._p = (TMP_17 = function(l){var self = TMP_17._s || this, $a, $b, TMP_18, tl = nil;
 if (l == null) l = nil;
                   inc_lineno = inc_lineno['$+'](1);
                     if ((($a = $scope.FORCE_ENCODING) !== nil && (!$a._isBoolean || $a == true))) {
                       l.$force_encoding(((($a = $opal.Object._scope.Encoding) == null ? $opal.cm('Encoding') : $a))._scope.UTF_8)};
                     l = l.$rstrip();
+                    tl = l.$chomp("-->").$rstrip();
                     if (active_tag !== false && active_tag !== nil) {
-                      if ((($a = ($b = l['$end_with?']("end::" + (active_tag) + "[]"), $b !== false && $b !== nil ?$scope.TagDirectiveRx['$=~'](l) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                      if ((($a = tl['$end_with?']("end::" + (active_tag) + "[]")) !== nil && (!$a._isBoolean || $a == true))) {
                         return active_tag = nil
                         } else {
-                        if ((($a = ($b = l['$end_with?']("[]"), $b !== false && $b !== nil ?$scope.TagDirectiveRx['$=~'](l) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                        if ((($a = ($b = tl['$end_with?']("[]"), $b !== false && $b !== nil ?$scope.TagDirectiveRx['$=~'](tl) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
                           } else {
                           selected.$push(l)
                         };
@@ -22832,16 +22845,18 @@ if (l == null) l = nil;
                           return nil
                         };
                       }
-                      } else {
-                      return ($a = ($b = tags).$each, $a._p = (TMP_18 = function(tag){var self = TMP_18._s || this, $a, $b;
+                    } else if ((($a = ($b = tl['$end_with?']("[]"), $b !== false && $b !== nil ?$scope.TagDirectiveRx['$=~'](tl) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                      return ($a = ($b = tags).$each, $a._p = (TMP_18 = function(tag){var self = TMP_18._s || this, $a;
 if (tag == null) tag = nil;
-                      if ((($a = ($b = l['$end_with?']("tag::" + (tag) + "[]"), $b !== false && $b !== nil ?$scope.TagDirectiveRx['$=~'](l) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+                      if ((($a = tl['$end_with?']("tag::" + (tag) + "[]")) !== nil && (!$a._isBoolean || $a == true))) {
                           active_tag = tag;
                           tags_found['$<<'](tag);
                           return ($breaker.$v = nil, $breaker);
                           } else {
                           return nil
                         }}, TMP_18._s = self, TMP_18), $a).call($b)
+                      } else {
+                      return nil
                     };}, TMP_17._s = self, TMP_17), $a).call($b)}, TMP_16._s = self, TMP_16), $a).call($e, include_file, "r")
               } catch ($err) {if (true) {
                 self.$warn("asciidoctor: WARNING: " + (self.$line_info()) + ": include " + (target_type) + " not readable: " + (include_file));
@@ -22858,7 +22873,8 @@ if (tag == null) tag = nil;
                 }; return nil; })()) + " '" + (missing_tags['$*'](",")) + "' not found in include " + (target_type) + ": " + (include_file))
               };
               self.$advance();
-              self.$push_include(selected, include_file, path, inc_line_offset, attributes);}
+              self.$push_include(selected, include_file, path, inc_line_offset, attributes);
+            }
             } else {
             try {
             self.$advance();
@@ -24197,7 +24213,7 @@ if (key == null) key = nil;
 
     $opal.cdecl($scope, 'INTRINSIC_ATTRIBUTES', $hash2(["startsb", "endsb", "vbar", "caret", "asterisk", "tilde", "plus", "apostrophe", "backslash", "backtick", "empty", "sp", "space", "two-colons", "two-semicolons", "nbsp", "deg", "zwsp", "quot", "apos", "lsquo", "rsquo", "ldquo", "rdquo", "wj", "brvbar", "amp", "lt", "gt"], {"startsb": "[", "endsb": "]", "vbar": "|", "caret": "^", "asterisk": "*", "tilde": "~", "plus": "&#43;", "apostrophe": "'", "backslash": "\\", "backtick": "`", "empty": "", "sp": " ", "space": " ", "two-colons": "::", "two-semicolons": ";;", "nbsp": "&#160;", "deg": "&#176;", "zwsp": "&#8203;", "quot": "&#34;", "apos": "&#39;", "lsquo": "&#8216;", "rsquo": "&#8217;", "ldquo": "&#8220;", "rdquo": "&#8221;", "wj": "&#8288;", "brvbar": "&#166;", "amp": "&", "lt": "<", "gt": ">"}));
 
-    quote_subs = [["strong", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?\\*\\*(" + $scope.CC_ALL + "+?)\\*\\*"))], ["strong", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?\\*(\\S|\\S" + $scope.CC_ALL + "*?\\S)\\*(?!" + $scope.CG_WORD + ")"))], ["double", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?\"`(\\S|\\S" + $scope.CC_ALL + "*?\\S)`\"(?!" + $scope.CG_WORD + ")"))], ["single", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:`}])(?:\\[([^\\]]+?)\\])?'`(\\S|\\S" + $scope.CC_ALL + "*?\\S)`'(?!" + $scope.CG_WORD + ")"))], ["monospaced", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?``(" + $scope.CC_ALL + "+?)``"))], ["monospaced", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:\"'`}])(?:\\[([^\\]]+?)\\])?`(\\S|\\S" + $scope.CC_ALL + "*?\\S)`(?![" + $scope.CC_WORD + "\"'`])"))], ["emphasis", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?__(" + $scope.CC_ALL + "+?)__"))], ["emphasis", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?_(\\S|\\S" + $scope.CC_ALL + "*?\\S)_(?!" + $scope.CG_WORD + ")"))], ["mark", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?##(" + $scope.CC_ALL + "+?)##"))], ["mark", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?#(\\S|\\S" + $scope.CC_ALL + "*?\\S)#(?!" + $scope.CG_WORD + ")"))], ["superscript", "unconstrained", /\\?(?:\[([^\]]+?)\])?\^(\S+?)\^/], ["subscript", "unconstrained", /\\?(?:\[([^\]]+?)\])?~(\S+?)~/]];
+    quote_subs = [["strong", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?\\*\\*(" + $scope.CC_ALL + "+?)\\*\\*"))], ["strong", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?\\*(\\S|\\S" + $scope.CC_ALL + "*?\\S)\\*(?!" + $scope.CG_WORD + ")"))], ["double", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?\"`(\\S|\\S" + $scope.CC_ALL + "*?\\S)`\"(?!" + $scope.CG_WORD + ")"))], ["single", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:`}])(?:\\[([^\\]]+?)\\])?'`(\\S|\\S" + $scope.CC_ALL + "*?\\S)`'(?!" + $scope.CG_WORD + ")"))], ["monospaced", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?``(" + $scope.CC_ALL + "+?)``"))], ["monospaced", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:\"'`}])(?:\\[([^\\]]+?)\\])?`(\\S|\\S" + $scope.CC_ALL + "*?\\S)`(?![" + $scope.CC_WORD + "\"'`])"))], ["emphasis", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?__(" + $scope.CC_ALL + "+?)__"))], ["emphasis", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + ";:}])(?:\\[([^\\]]+?)\\])?_(\\S|\\S" + $scope.CC_ALL + "*?\\S)_(?!" + $scope.CG_WORD + ")"))], ["mark", "unconstrained", (new RegExp("\\\\?(?:\\[([^\\]]+?)\\])?##(" + $scope.CC_ALL + "+?)##"))], ["mark", "constrained", (new RegExp("(^|[^" + $scope.CC_WORD + "&;:}])(?:\\[([^\\]]+?)\\])?#(\\S|\\S" + $scope.CC_ALL + "*?\\S)#(?!" + $scope.CG_WORD + ")"))], ["superscript", "unconstrained", /\\?(?:\[([^\]]+?)\])?\^(\S+?)\^/], ["subscript", "unconstrained", /\\?(?:\[([^\]]+?)\])?~(\S+?)~/]];
 
     compat_quote_subs = quote_subs.$dup();
 
