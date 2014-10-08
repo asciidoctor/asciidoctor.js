@@ -207,6 +207,18 @@ var html = Opal.Asciidoctor.$convert(asciidoc, options);
 console.log(html);
 ----
 
+Here's an example that demonstrates how to read attributes defined in the AsciiDoc source once the document is loaded.
+
+[source,javascript]
+----
+var doc = Opal.Asciidoctor.$load(content, options);
+var attrs = {};
+doc.attributes.keys.forEach(function(key) {
+  attrs[key] = doc.attributes.map[key];
+});
+var doctitle = doc.doctitle;
+----
+
 === Back-end development
 
 [source, bash]
