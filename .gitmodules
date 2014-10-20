@@ -1,0 +1,3 @@
+[submodule "extensions-lab"]
+	path = extensions-lab
+	url = https://github.com/asciidoctor/asciidoctor-extensions-lab.git

@@ -29,6 +29,7 @@ task :dist do
   # If the Gemfile points to a git repo or local directory, be sure to use `bundle exec rake ...`
   # Use append_path if you want to build against a local clone
   #env.append_path 'asciidoctor/lib'
+  env.append_path 'extensions-lab/lib'
 
   #env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
   asciidoctor = env['asciidoctor']
@@ -39,6 +40,7 @@ task :dist do
   env['asciidoctor/extensions'].write_to "build/asciidoctor-extensions.js#{compress ? '.gz' : nil}"
   env['asciidoctor/converter/docbook45'].write_to "build/asciidoctor-docbook45.js#{compress ? '.gz' : nil}"
   env['asciidoctor/converter/docbook5'].write_to "build/asciidoctor-docbook5.js#{compress ? '.gz' : nil}"
+  env['chrome-inline-macro'].write_to "build/chrome-inline-macro-ext.js#{compress ? '.gz' : nil}"
   asciidoctor_spec = Gem::Specification.find_by_name 'asciidoctor'
   css_file = File.join asciidoctor_spec.full_gem_path, 'data/stylesheets/asciidoctor-default.css'
   File.copy_stream css_file, 'build/asciidoctor.css'
