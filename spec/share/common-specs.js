@@ -59,6 +59,17 @@ var commonSpec = function(Opal, Asciidoctor) {
     });
 
   });
+  
+  describe('Include', function() {
+    it('Should includes file', function() {
+      var opts = Opal.hash2(['safe'], {
+        'safe': 'safe'
+      });
+      var html = Asciidoctor.$convert('include::spec/share/include.adoc[]', opts);
+      expect(html).toContain('include content');
+    });
+
+  });
 
 }
 
