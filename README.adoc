@@ -203,7 +203,7 @@ var content = "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to the browser!";
 var options = Opal.hash2(['doctype', 'attributes'], {doctype: 'inline', attributes: ['showtitle']});
-var html = Opal.Asciidoctor.$convert(asciidoc, options);
+var html = Opal.Asciidoctor.$convert(content, options);
 console.log(html);
 ----
 
