@@ -1,0 +1,151 @@
+= Contributing
+:uri-nodejs: http://nodejs.org
+:uri-opal: http://opalrb.org
+:uri-bower: http://bower.io
+:uri-asciidoctor: http://asciidoctor.org
+:uri-repo: https://github.com/asciidoctor/asciidoctor.js
+:sources: {uri-repo}
+
+== Introduction
+
+{sources}[Asciidoctor.js] is direct port of {uri-asciidoctor}[Asciidoctor] from Ruby to JavaScript using {uri-opal}[Opal], a Ruby-to-JavaScript transcompiler.
+It consists of a Rake build script that executes the Opal compiler on the Asciidoctor source code to produce the asciidoctor.js script.
+A Grunt build is used to assemble and prepare the distribution files, using the Rake build underneath.
+
+Opal parses the Ruby code and any required libraries, then rewrites the code into JavaScript under the Opal namespace.
+The resulting JavaScript can be executed within any JavaScript runtime environment (such as a browser).
+
+To interact with the generated code, you either invoke the JavaScript APIs directly, or you can invoke native JavaScript objects from within the Ruby code prior to compilation.
+
+== Setup
+
+To build [path]_asciidoctor.js_, you'll need some tools:
+
+* {uri-nodejs}[Node.js] and npm
+* {uri-bower}[Bower]
+* Rake and Bundle
+
+Start by cloning the source from GitHub:
+
+ $ git clone git://github.com/asciidoctor/asciidoctor.js
+
+Next, switch to the _asciidoctor.js_ directory and run npm's `install` command followed by Bower's `install` command:
+
+ $ cd asciidoctor.js
+ $ npm install
+ $ bower install
+
+You're now ready to build _asciidoctor.js_.
+
+TIP: Opal.js, The Ruby runtime in JavaScript is available in `bower_components/opal/opal/current/opal.min.js`
+
+== Building asciidoctor.js
+
+To build asciidoctor.js, simple run the Grunt `dist` task from the root of the project:
+
+ $ grunt dist
+
+NOTE: The build task will make some minor code changes on the asciidoctor submodule.
+As you may know String are immutable in Javascript, so we need to replace `gsub!` and `sub!` methods.
+These changes are made at build time to keep the Ruby code as fast as possible.
+
+This command produces some files in the [path]_dist_ directory:
+
+* *dist/*
+- *asciidoctor.js* (includes core and extensions)
+- *asciidoctor-core.js* (no extensions API)
+- *asciidoctor-extensions.js* (extensions API only)
+- *asciidoctor-docbook.js* (docbook backends : docbook45 and docbook5)
+- *asciidoctor-all.js* (core, extension and Opal. Docbook isn't the main target of webapp, for this reason we choose to keep it separate)
+
+* *dist/npm* (to use with Npm)
+- *asciidoctor-core.js* (no extensions API, will automatically load docbook backends)
+- *asciidoctor-extensions.js* (extensions API only)
+- *asciidoctor-docbook.js* (docbook backends : docbook45 and docbook5)
+
+Each file has a `minified` and `gz` version.
+
+You'll see these scripts in action when you run the examples, described next.
+
+== Building and running the examples
+
+To build the examples, simply run the Rake `examples` task from the root of the project:
+
+ $ grunt examples
+
+This command produces another JavaScript file in the [path]_build_ directory, [path]_asciidoctor_example.js_.
+This script includes:
+
+* a string that contains an AsciiDoc source document
+* a call to the Asciidoctor API to render the content of that string to HTML
+* an event listener that inserts the generated HTML into the page
+
+All the JavaScript in that file was generated from a Ruby script by Opal.
+
+Point your browser at [path]_build/asciidoctor_example.html_.
+You should see the AsciiDoc Syntax Quick Reference document.
+The content on the page was rendered from AsciiDoc by asciidoctor.js when you loaded the page!
+
+== Changes to Asciidoctor (from upstream)
+
+Compiling Asciidoctor to JavaScript currently requires some changes in Asciidoctor.
+The goal is to eventually eliminate all of these differences so that Asciidoctor can be compiled to JavaScript as is.
+
+Here's a list of some of the changes that are currently needed:
+
+* Named posix groups in regular expressions are replaced with their ASCII equivalent
+  - JavaScript doesn't support named posix groups, such as [x-]`[[:alpha:]]`)
+* A shim library is needed to implement missing classes in Opal, such as `File` and `Dir`
+* All mutable String operations have been replaced with assignments (this is done at build time)
+  - JavaScript doesn't support mutable strings
+* `$~[0]` used in place of `$&` and `$~[n]` in place of `$n` after running a regular expression (where n is 1, 2, 3...)
+* Opal doesn't recognize modifiers on a regular expression (e.g., multiline)
+* Optional, non-matching capture groups resolve to empty string in gsub block in Firefox (see http://www.bennadel.com/blog/1916-different-browsers-use-different-non-matching-captured-regex-pattern-values.htm)
+* Assignments without a matching value are set to empty string instead of nil (in the following example, `b` is set to empty string)
+
+  a, b = "value".split ',', 2
+
+== Debugging
+
+Compiling a Ruby application to JavaScript and getting it to run is a process of eliminating fatal errors.
+When the JavaScript fails, the message isn't always clear or even close to where things went wrong.
+The key to working through these failures is to use the browser's JavaScript console.
+
+=== Chrome / Chromium
+
+Chrome (and Chromium) has a very intuitive JavaScript console.
+To open it, press kbd:[Ctrl+Shift+J] or right-click on the page, select menu:Inspect Element[] from the context menu and click the *Console* tab.
+
+When an error occurs in the JavaScript, Chrome will print the error message to the console.
+The error message is interactive.
+Click on the arrow at the start of the line to expand the call trace, as shown here:
+
+image::error-in-chrome-console.png[]
+
+When you identify the entry you want to inspect, click the link to the source location.
+If you want to inspect the state, add a breakpoint and refresh the page.
+
+Chrome tends to cache the JavaScript files too aggressively when running local scripts.
+Make a habit of holding down kbd:[Ctrl] when you click refresh to force Chrome to reload the JavaScript.
+
+Another option is to start Chrome with the application cache disabled.
+
+ $ chrome --disable-application-cache
+
+=== Firefox
+
+Firefox also has a JavaScript console.
+To open it, press kbd:[Ctrl+Shift+J] or right-click on the page, select menu:Inspect Element[] from the context menu and click the *Web Console* tab.
+
+When an error occurs in the JavaScript, Firefox will print the error message to the console.
+Unlike Chrome, the error message is not interactive.
+Its power, instead, lies under the hood.
+
+To see the call trace when an exception occurs, you need to configure the Debugger to pause on an exception.
+Click the *Debugger* tab, click the configuration gear icon in the upper right corner of that tab and click *Pause on exceptions*.
+Refresh the page and you'll notice that the debugger has paused at the location in the source where the exception is thrown.
+
+image::error-in-javascript-debugger.png[]
+
+The call trace is displayed as breadcrumb navigation, which you can use to jump through the stack.
+You can inspect the state at any location by looking through the panels on the right.
