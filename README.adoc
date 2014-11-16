@@ -8,6 +8,7 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Guillaume Grossetie <h
 :uri-freesoftware: https://www.gnu.org/philosophy/free-sw.html
 :uri-rel-file-base: link:
 :uri-contribute: {uri-rel-file-base}CONTRIBUTING.adoc
+:uri-user-manual: {uri-rel-file-base}manual.adoc
 :license: {uri-repo}/blob/master/LICENSE
 :experimental:
 :endash:
@@ -22,9 +23,6 @@ This project uses {uri-opal}[Opal] to transcompile http://asciidoctor.org[Asciid
 == Introduction
 
 You can use Asciidoctor.js either for back-end development using {uri-nodejs}[Node.js] or front-end development using a browser.
-
-IMPORTANT: To be successful with Asciidoctor.js, it's important to understand how to work with Ruby objects in the JavaScript environment.
-We recommend that you browse the http://opalrb.org/docs/using_ruby_from_javascript[Opal documentation] to learn how method names are mapped and what data types it expects.
 
 == Front-end development
 
@@ -122,6 +120,11 @@ You should see the following output in your terminal:
 ....
 <a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.org"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
 ....
+
+== Advanced topics
+
+If you want to know more about _Asciidoctor.js_, please read the {uri-user-manual}[User Manual].
+
 == Contributing
 
 In the spirit of {uri-freesoftware}[free software], _everyone_ is encouraged to help improve this project.
