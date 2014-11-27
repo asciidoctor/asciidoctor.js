@@ -229,16 +229,60 @@ args = $slice.call(arguments, 0);
       $opal.casgn($scope.IncludeProcessor, 'DSL', $scope.ProcessorDsl);
 
       (function($base, $super) {
-        function $BlockProcessor(){};
-        var self = $BlockProcessor = $klass($base, $super, 'BlockProcessor', $BlockProcessor);
+        function $DocinfoProcessor(){};
+        var self = $DocinfoProcessor = $klass($base, $super, 'DocinfoProcessor', $DocinfoProcessor);
 
         var def = self._proto, $scope = self._scope, TMP_4;
 
         def.config = nil;
+        self.$attr_accessor("location");
+
+        def.$initialize = TMP_4 = function(config) {
+          var $a, $b, $c, self = this, $iter = TMP_4._p, $yield = $iter || nil;
+
+          if (config == null) {
+            config = $hash2([], {})
+          }
+          TMP_4._p = null;
+          $opal.find_super_dispatcher(self, 'initialize', TMP_4, null).apply(self, [config]);
+          return ($a = "location", $b = self.config, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, "header")));
+        };
+
+        return (def.$process = function(document) {
+          var $a, self = this;
+
+          return self.$raise((($a = $opal.Object._scope.NotImplementedError) == null ? $opal.cm('NotImplementedError') : $a));
+        }, nil) && 'process';
+      })(self, $scope.Processor);
+
+      (function($base) {
+        var self = $module($base, 'DocinfoProcessorDsl');
+
+        var def = self._proto, $scope = self._scope;
+
+        self.$include($scope.ProcessorDsl);
+
+        def.$at_location = function(value) {
+          var self = this;
+
+          return self.$option("location", value);
+        };
+                ;$opal.donate(self, ["$at_location"]);
+      })(self);
+
+      $opal.casgn($scope.DocinfoProcessor, 'DSL', $scope.DocinfoProcessorDsl);
+
+      (function($base, $super) {
+        function $BlockProcessor(){};
+        var self = $BlockProcessor = $klass($base, $super, 'BlockProcessor', $BlockProcessor);
+
+        var def = self._proto, $scope = self._scope, TMP_5;
+
+        def.config = nil;
         self.$attr_accessor("name");
 
-        def.$initialize = TMP_4 = function(name, config) {
-          var $a, $b, $c, self = this, $iter = TMP_4._p, $yield = $iter || nil, $case = nil;
+        def.$initialize = TMP_5 = function(name, config) {
+          var $a, $b, $c, self = this, $iter = TMP_5._p, $yield = $iter || nil, $case = nil;
 
           if (name == null) {
             name = nil
@@ -246,8 +290,8 @@ args = $slice.call(arguments, 0);
           if (config == null) {
             config = $hash2([], {})
           }
-          TMP_4._p = null;
-          $opal.find_super_dispatcher(self, 'initialize', TMP_4, null).apply(self, [config]);
+          TMP_5._p = null;
+          $opal.find_super_dispatcher(self, 'initialize', TMP_5, null).apply(self, [config]);
           self.name = ((($a = name) !== false && $a !== nil) ? $a : self.config['$[]']("name"));
           $case = self.config['$[]']("contexts");if ((($a = $opal.Object._scope.NilClass) == null ? $opal.cm('NilClass') : $a)['$===']($case)) {($a = "contexts", $b = self.config, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, ["open", "paragraph"].$to_set())))}else if ((($a = $opal.Object._scope.Symbol) == null ? $opal.cm('Symbol') : $a)['$===']($case)) {self.config['$[]=']("contexts", [self.config['$[]']("contexts")].$to_set())}else {self.config['$[]=']("contexts", self.config['$[]']("contexts").$to_set())};
           return ($a = "content_model", $b = self.config, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, "compound")));
@@ -329,13 +373,13 @@ args = $slice.call(arguments, 0);
         function $MacroProcessor(){};
         var self = $MacroProcessor = $klass($base, $super, 'MacroProcessor', $MacroProcessor);
 
-        var def = self._proto, $scope = self._scope, TMP_5;
+        var def = self._proto, $scope = self._scope, TMP_6;
 
         def.config = nil;
         self.$attr_accessor("name");
 
-        def.$initialize = TMP_5 = function(name, config) {
-          var $a, $b, $c, self = this, $iter = TMP_5._p, $yield = $iter || nil;
+        def.$initialize = TMP_6 = function(name, config) {
+          var $a, $b, $c, self = this, $iter = TMP_6._p, $yield = $iter || nil;
 
           if (name == null) {
             name = nil
@@ -343,8 +387,8 @@ args = $slice.call(arguments, 0);
           if (config == null) {
             config = $hash2([], {})
           }
-          TMP_5._p = null;
-          $opal.find_super_dispatcher(self, 'initialize', TMP_5, null).apply(self, [config]);
+          TMP_6._p = null;
+          $opal.find_super_dispatcher(self, 'initialize', TMP_6, null).apply(self, [config]);
           self.name = ((($a = name) !== false && $a !== nil) ? $a : self.config['$[]']("name"));
           return ($a = "content_model", $b = self.config, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, "attributes")));
         };
@@ -423,17 +467,17 @@ args = $slice.call(arguments, 0);
         function $InlineMacroProcessor(){};
         var self = $InlineMacroProcessor = $klass($base, $super, 'InlineMacroProcessor', $InlineMacroProcessor);
 
-        var def = self._proto, $scope = self._scope, TMP_6;
+        var def = self._proto, $scope = self._scope, TMP_7;
 
         def.config = def.name = nil;
-        def.$initialize = TMP_6 = function(name, config) {var $zuper = $slice.call(arguments, 0);
-          var $a, $b, $c, self = this, $iter = TMP_6._p, $yield = $iter || nil;
+        def.$initialize = TMP_7 = function(name, config) {var $zuper = $slice.call(arguments, 0);
+          var $a, $b, $c, self = this, $iter = TMP_7._p, $yield = $iter || nil;
 
           if (config == null) {
             config = $hash2([], {})
           }
-          TMP_6._p = null;
-          $opal.find_super_dispatcher(self, 'initialize', TMP_6, $iter).apply(self, $zuper);
+          TMP_7._p = null;
+          $opal.find_super_dispatcher(self, 'initialize', TMP_7, $iter).apply(self, $zuper);
           return ($a = "regexp", $b = self.config, ((($c = $b['$[]']($a)) !== false && $c !== nil) ? $c : $b['$[]=']($a, (self.$resolve_regexp(self.name, self.config['$[]']("format"))))));
         };
 
@@ -496,19 +540,19 @@ args = $slice.call(arguments, 0);
         function $ProcessorExtension(){};
         var self = $ProcessorExtension = $klass($base, $super, 'ProcessorExtension', $ProcessorExtension);
 
-        var def = self._proto, $scope = self._scope, TMP_7;
+        var def = self._proto, $scope = self._scope, TMP_8;
 
         self.$attr("process_method");
 
-        return (def.$initialize = TMP_7 = function(kind, instance, process_method) {
-          var $a, self = this, $iter = TMP_7._p, $yield = $iter || nil;
+        return (def.$initialize = TMP_8 = function(kind, instance, process_method) {
+          var $a, self = this, $iter = TMP_8._p, $yield = $iter || nil;
 
           if (process_method == null) {
             process_method = nil
           }
-          TMP_7._p = null;
-          $opal.find_super_dispatcher(self, 'initialize', TMP_7, null).apply(self, [kind, instance, instance.$config()]);
-          return self.process_method = ((($a = process_method) !== false && $a !== nil) ? $a : instance.$method("process"));
+          TMP_8._p = null;
+          $opal.find_super_dispatcher(self, 'initialize', TMP_8, null).apply(self, [kind, instance, instance.$config()]);
+          return self.process_method = ((($a = process_method) !== false && $a !== nil) ? $a : (instance.$method("process")));
         }, nil) && 'initialize';
       })(self, $scope.Extension);
 
@@ -542,9 +586,9 @@ args = $slice.call(arguments, 0);
         function $Registry(){};
         var self = $Registry = $klass($base, $super, 'Registry', $Registry);
 
-        var def = self._proto, $scope = self._scope, TMP_9, TMP_10, TMP_11, TMP_12, TMP_13, TMP_14, TMP_15, TMP_16, TMP_18;
+        var def = self._proto, $scope = self._scope, TMP_10, TMP_11, TMP_12, TMP_13, TMP_14, TMP_17, TMP_18, TMP_19, TMP_20, TMP_22;
 
-        def.groups = def.preprocessor_extensions = def.treeprocessor_extensions = def.postprocessor_extensions = def.include_processor_extensions = def.block_extensions = def.block_macro_extensions = def.inline_macro_extensions = nil;
+        def.groups = def.preprocessor_extensions = def.treeprocessor_extensions = def.postprocessor_extensions = def.include_processor_extensions = def.docinfo_processor_extensions = def.block_extensions = def.block_macro_extensions = def.inline_macro_extensions = nil;
         self.$attr_reader("document");
 
         self.$attr_reader("groups");
@@ -556,26 +600,26 @@ args = $slice.call(arguments, 0);
             groups = $hash2([], {})
           }
           self.groups = groups;
-          self.preprocessor_extensions = self.treeprocessor_extensions = self.postprocessor_extensions = self.include_processor_extensions = nil;
+          self.preprocessor_extensions = self.treeprocessor_extensions = self.postprocessor_extensions = self.include_processor_extensions = self.docinfo_processor_extensions = nil;
           self.block_extensions = self.block_macro_extensions = self.inline_macro_extensions = nil;
           return self.document = nil;
         };
 
         def.$activate = function(document) {
-          var $a, $b, TMP_8, self = this;
+          var $a, $b, TMP_9, self = this;
 
           self.document = document;
-          ($a = ($b = ($scope.Extensions.$groups().$values()['$+'](self.groups.$values()))).$each, $a._p = (TMP_8 = function(group){var self = TMP_8._s || this, $a, $b, $case = nil;
+          ($a = ($b = ($scope.Extensions.$groups().$values()['$+'](self.groups.$values()))).$each, $a._p = (TMP_9 = function(group){var self = TMP_9._s || this, $a, $b, $case = nil;
 if (group == null) group = nil;
-          return (function() {$case = group;if ((($a = $opal.Object._scope.Proc) == null ? $opal.cm('Proc') : $a)['$===']($case)) {return (function() {$case = group.$arity();if ((0)['$===']($case) || (-1)['$===']($case)) {return ($a = ($b = self).$instance_exec, $a._p = group.$to_proc(), $a).call($b)}else if ((1)['$===']($case)) {return group.$call(self)}else { return nil }})()}else if ((($a = $opal.Object._scope.Class) == null ? $opal.cm('Class') : $a)['$===']($case)) {return group.$new().$activate(self)}else {return group.$activate(self)}})()}, TMP_8._s = self, TMP_8), $a).call($b);
+          return (function() {$case = group;if ((($a = $opal.Object._scope.Proc) == null ? $opal.cm('Proc') : $a)['$===']($case)) {return (function() {$case = group.$arity();if ((0)['$===']($case) || (-1)['$===']($case)) {return ($a = ($b = self).$instance_exec, $a._p = group.$to_proc(), $a).call($b)}else if ((1)['$===']($case)) {return group.$call(self)}else { return nil }})()}else if ((($a = $opal.Object._scope.Class) == null ? $opal.cm('Class') : $a)['$===']($case)) {return group.$new().$activate(self)}else {return group.$activate(self)}})()}, TMP_9._s = self, TMP_9), $a).call($b);
           return self;
         };
 
-        def.$preprocessor = TMP_9 = function(args) {
-          var $a, $b, self = this, $iter = TMP_9._p, block = $iter || nil;
+        def.$preprocessor = TMP_10 = function(args) {
+          var $a, $b, self = this, $iter = TMP_10._p, block = $iter || nil;
 
           args = $slice.call(arguments, 0);
-          TMP_9._p = null;
+          TMP_10._p = null;
           return ($a = ($b = self).$add_document_processor, $a._p = block.$to_proc(), $a).call($b, "preprocessor", args);
         };
 
@@ -591,11 +635,11 @@ if (group == null) group = nil;
           return self.preprocessor_extensions;
         };
 
-        def.$treeprocessor = TMP_10 = function(args) {
-          var $a, $b, self = this, $iter = TMP_10._p, block = $iter || nil;
+        def.$treeprocessor = TMP_11 = function(args) {
+          var $a, $b, self = this, $iter = TMP_11._p, block = $iter || nil;
 
           args = $slice.call(arguments, 0);
-          TMP_10._p = null;
+          TMP_11._p = null;
           return ($a = ($b = self).$add_document_processor, $a._p = block.$to_proc(), $a).call($b, "treeprocessor", args);
         };
 
@@ -611,11 +655,11 @@ if (group == null) group = nil;
           return self.treeprocessor_extensions;
         };
 
-        def.$postprocessor = TMP_11 = function(args) {
-          var $a, $b, self = this, $iter = TMP_11._p, block = $iter || nil;
+        def.$postprocessor = TMP_12 = function(args) {
+          var $a, $b, self = this, $iter = TMP_12._p, block = $iter || nil;
 
           args = $slice.call(arguments, 0);
-          TMP_11._p = null;
+          TMP_12._p = null;
           return ($a = ($b = self).$add_document_processor, $a._p = block.$to_proc(), $a).call($b, "postprocessor", args);
         };
 
@@ -631,11 +675,11 @@ if (group == null) group = nil;
           return self.postprocessor_extensions;
         };
 
-        def.$include_processor = TMP_12 = function(args) {
-          var $a, $b, self = this, $iter = TMP_12._p, block = $iter || nil;
+        def.$include_processor = TMP_13 = function(args) {
+          var $a, $b, self = this, $iter = TMP_13._p, block = $iter || nil;
 
           args = $slice.call(arguments, 0);
-          TMP_12._p = null;
+          TMP_13._p = null;
           return ($a = ($b = self).$add_document_processor, $a._p = block.$to_proc(), $a).call($b, "include_processor", args);
         };
 
@@ -651,11 +695,57 @@ if (group == null) group = nil;
           return self.include_processor_extensions;
         };
 
-        def.$block = TMP_13 = function(args) {
-          var $a, $b, self = this, $iter = TMP_13._p, block = $iter || nil;
+        def.$docinfo_processor = TMP_14 = function(args) {
+          var $a, $b, self = this, $iter = TMP_14._p, block = $iter || nil;
 
           args = $slice.call(arguments, 0);
-          TMP_13._p = null;
+          TMP_14._p = null;
+          return ($a = ($b = self).$add_document_processor, $a._p = block.$to_proc(), $a).call($b, "docinfo_processor", args);
+        };
+
+        def['$docinfo_processors?'] = function(location) {
+          var $a, $b, TMP_15, self = this;
+
+          if (location == null) {
+            location = nil
+          }
+          if ((($a = self.docinfo_processor_extensions) !== nil && (!$a._isBoolean || $a == true))) {
+            if (location !== false && location !== nil) {
+              return ($a = ($b = self.docinfo_processor_extensions).$find, $a._p = (TMP_15 = function(ext){var self = TMP_15._s || this;
+if (ext == null) ext = nil;
+              return ext.$config()['$[]']("location")['$=='](location)}, TMP_15._s = self, TMP_15), $a).call($b)
+              } else {
+              return true
+            }
+            } else {
+            return false
+          };
+        };
+
+        def.$docinfo_processors = function(location) {
+          var $a, $b, TMP_16, self = this;
+
+          if (location == null) {
+            location = nil
+          }
+          if ((($a = self.docinfo_processor_extensions) !== nil && (!$a._isBoolean || $a == true))) {
+            if (location !== false && location !== nil) {
+              return ($a = ($b = self.docinfo_processor_extensions).$select, $a._p = (TMP_16 = function(ext){var self = TMP_16._s || this;
+if (ext == null) ext = nil;
+              return ext.$config()['$[]']("location")['$=='](location)}, TMP_16._s = self, TMP_16), $a).call($b)
+              } else {
+              return self.docinfo_processor_extensions
+            }
+            } else {
+            return nil
+          };
+        };
+
+        def.$block = TMP_17 = function(args) {
+          var $a, $b, self = this, $iter = TMP_17._p, block = $iter || nil;
+
+          args = $slice.call(arguments, 0);
+          TMP_17._p = null;
           return ($a = ($b = self).$add_syntax_processor, $a._p = block.$to_proc(), $a).call($b, "block", args);
         };
 
@@ -685,11 +775,11 @@ if (group == null) group = nil;
           return self.block_extensions['$[]'](name.$to_sym());
         };
 
-        def.$block_macro = TMP_14 = function(args) {
-          var $a, $b, self = this, $iter = TMP_14._p, block = $iter || nil;
+        def.$block_macro = TMP_18 = function(args) {
+          var $a, $b, self = this, $iter = TMP_18._p, block = $iter || nil;
 
           args = $slice.call(arguments, 0);
-          TMP_14._p = null;
+          TMP_18._p = null;
           return ($a = ($b = self).$add_syntax_processor, $a._p = block.$to_proc(), $a).call($b, "block_macro", args);
         };
 
@@ -715,11 +805,11 @@ if (group == null) group = nil;
           return self.block_macro_extensions['$[]'](name.$to_sym());
         };
 
-        def.$inline_macro = TMP_15 = function(args) {
-          var $a, $b, self = this, $iter = TMP_15._p, block = $iter || nil;
+        def.$inline_macro = TMP_19 = function(args) {
+          var $a, $b, self = this, $iter = TMP_19._p, block = $iter || nil;
 
           args = $slice.call(arguments, 0);
-          TMP_15._p = null;
+          TMP_19._p = null;
           return ($a = ($b = self).$add_syntax_processor, $a._p = block.$to_proc(), $a).call($b, "inline_macro", args);
         };
 
@@ -753,14 +843,14 @@ if (group == null) group = nil;
 
         self.$private();
 
-        def.$add_document_processor = TMP_16 = function(kind, args) {
-          var $a, $b, TMP_17, $c, $d, $e, $f, self = this, $iter = TMP_16._p, block = $iter || nil, kind_name = nil, kind_class_symbol = nil, kind_class = nil, kind_java_class = nil, kind_store = nil, extension = nil, config = nil, processor = nil, processor_instance = nil;
+        def.$add_document_processor = TMP_20 = function(kind, args) {
+          var $a, $b, TMP_21, $c, $d, $e, $f, self = this, $iter = TMP_20._p, block = $iter || nil, kind_name = nil, kind_class_symbol = nil, kind_class = nil, kind_java_class = nil, kind_store = nil, extension = nil, config = nil, processor = nil, processor_instance = nil;
 
-          TMP_16._p = null;
+          TMP_20._p = null;
           kind_name = kind.$to_s().$tr("_", " ");
-          kind_class_symbol = ($a = ($b = kind_name.$split(" ")).$map, $a._p = (TMP_17 = function(word){var self = TMP_17._s || this;
+          kind_class_symbol = ($a = ($b = kind_name.$split(" ")).$map, $a._p = (TMP_21 = function(word){var self = TMP_21._s || this;
 if (word == null) word = nil;
-          return "" + (word.$chr().$upcase()) + (word['$[]']($range(1, -1, false)))}, TMP_17._s = self, TMP_17), $a).call($b).$join().$to_sym();
+          return "" + (word.$chr().$upcase()) + (word['$[]']($range(1, -1, false)))}, TMP_21._s = self, TMP_21), $a).call($b).$join().$to_sym();
           kind_class = $scope.Extensions.$const_get(kind_class_symbol);
           kind_java_class = (function() {if ((($a = (($opal.Object._scope.AsciidoctorJ == null ? nil : 'constant'))) !== nil && (!$a._isBoolean || $a == true))) {
             return (((($a = $opal.Object._scope.AsciidoctorJ) == null ? $opal.cm('AsciidoctorJ') : $a))._scope.Extensions.$const_get(kind_class_symbol))
@@ -771,11 +861,8 @@ if (word == null) word = nil;
           extension = (function() {if ((block !== nil)) {
             config = self.$resolve_args(args, 1);
             processor = kind_class.$new(config);
-            (function(self) {
-              var $scope = self._scope, def = self._proto;
-
-              return self.$include_dsl()
-            })(processor.$singleton_class());
+            if ((($a = kind_class.$constants().$grep("DSL")) !== nil && (!$a._isBoolean || $a == true))) {
+              processor.$extend(kind_class.$const_get("DSL"))};
             ($a = ($c = processor).$instance_exec, $a._p = block.$to_proc(), $a).call($c);
             processor.$freeze();
             if ((($a = processor['$process_block_given?']()) !== nil && (!$a._isBoolean || $a == true))) {
@@ -808,14 +895,14 @@ if (word == null) word = nil;
           };
         };
 
-        def.$add_syntax_processor = TMP_18 = function(kind, args) {
-          var $a, $b, TMP_19, $c, $d, $e, $f, self = this, $iter = TMP_18._p, block = $iter || nil, kind_name = nil, kind_class_basename = nil, kind_class_symbol = nil, kind_class = nil, kind_java_class = nil, kind_store = nil, name = nil, config = nil, processor = nil, processor_instance = nil;
+        def.$add_syntax_processor = TMP_22 = function(kind, args) {
+          var $a, $b, TMP_23, $c, $d, $e, $f, self = this, $iter = TMP_22._p, block = $iter || nil, kind_name = nil, kind_class_basename = nil, kind_class_symbol = nil, kind_class = nil, kind_java_class = nil, kind_store = nil, name = nil, config = nil, processor = nil, processor_instance = nil;
 
-          TMP_18._p = null;
+          TMP_22._p = null;
           kind_name = kind.$to_s().$tr("_", " ");
-          kind_class_basename = ($a = ($b = kind_name.$split(" ")).$map, $a._p = (TMP_19 = function(word){var self = TMP_19._s || this;
+          kind_class_basename = ($a = ($b = kind_name.$split(" ")).$map, $a._p = (TMP_23 = function(word){var self = TMP_23._s || this;
 if (word == null) word = nil;
-          return "" + (word.$chr().$upcase()) + (word['$[]']($range(1, -1, false)))}, TMP_19._s = self, TMP_19), $a).call($b).$join();
+          return "" + (word.$chr().$upcase()) + (word['$[]']($range(1, -1, false)))}, TMP_23._s = self, TMP_23), $a).call($b).$join();
           kind_class_symbol = ((("") + (kind_class_basename)) + "Processor").$to_sym();
           kind_class = $scope.Extensions.$const_get(kind_class_symbol);
           kind_java_class = (function() {if ((($a = (($opal.Object._scope.AsciidoctorJ == null ? nil : 'constant'))) !== nil && (!$a._isBoolean || $a == true))) {
@@ -827,11 +914,8 @@ if (word == null) word = nil;
           if ((block !== nil)) {
             $a = $opal.to_ary(self.$resolve_args(args, 2)), name = ($a[0] == null ? nil : $a[0]), config = ($a[1] == null ? nil : $a[1]);
             processor = kind_class.$new(self.$as_symbol(name), config);
-            (function(self) {
-              var $scope = self._scope, def = self._proto;
-
-              return self.$include_dsl()
-            })(processor.$singleton_class());
+            if ((($a = kind_class.$constants().$grep("DSL")) !== nil && (!$a._isBoolean || $a == true))) {
+              processor.$extend(kind_class.$const_get("DSL"))};
             if (block.$arity()['$=='](1)) {
               if ($opal.$yield1(block, processor) === $breaker) return $breaker.$v
               } else {
@@ -934,13 +1018,13 @@ if (word == null) word = nil;
 
           return ((($a = self.groups) !== false && $a !== nil) ? $a : self.groups = $hash2([], {}));
         };
-        self._proto.$build_registry = TMP_20 = function(name) {
-          var $a, self = this, $iter = TMP_20._p, block = $iter || nil;
+        self._proto.$build_registry = TMP_24 = function(name) {
+          var $a, self = this, $iter = TMP_24._p, block = $iter || nil;
 
           if (name == null) {
             name = nil
           }
-          TMP_20._p = null;
+          TMP_24._p = null;
           if ((block !== nil)) {
             ((($a = name) !== false && $a !== nil) ? $a : name = self.$generate_name());
             return $scope.Registry.$new($hash(name, block));
@@ -948,11 +1032,11 @@ if (word == null) word = nil;
             return $scope.Registry.$new()
           };
         };
-        self._proto.$register = TMP_21 = function(args) {
-          var $a, self = this, $iter = TMP_21._p, block = $iter || nil, argc = nil, resolved_group = nil, group = nil, $case = nil, name = nil;
+        self._proto.$register = TMP_25 = function(args) {
+          var $a, self = this, $iter = TMP_25._p, block = $iter || nil, argc = nil, resolved_group = nil, group = nil, $case = nil, name = nil;
 
           args = $slice.call(arguments, 0);
-          TMP_21._p = null;
+          TMP_25._p = null;
           argc = args.$length();
           resolved_group = (function() {if ((block !== nil)) {
             return block
@@ -983,10 +1067,10 @@ if (word == null) word = nil;
           };
         };
         return (self._proto.$class_for_name = function(qualified_name) {
-          var $a, $b, TMP_22, self = this, resolved_class = nil;
+          var $a, $b, TMP_26, self = this, resolved_class = nil;
 
           resolved_class = (($a = $opal.Object._scope.Object) == null ? $opal.cm('Object') : $a);
-          ($a = ($b = qualified_name.$split("::")).$each, $a._p = (TMP_22 = function(name){var self = TMP_22._s || this, $a;
+          ($a = ($b = qualified_name.$split("::")).$each, $a._p = (TMP_26 = function(name){var self = TMP_26._s || this, $a;
 if (name == null) name = nil;
           if ((($a = name['$empty?']()) !== nil && (!$a._isBoolean || $a == true))) {
               return nil
@@ -994,7 +1078,7 @@ if (name == null) name = nil;
               return resolved_class = resolved_class.$const_get(name)
               } else {
               return self.$raise("Could not resolve class for name: " + (qualified_name))
-            }}, TMP_22._s = self, TMP_22), $a).call($b);
+            }}, TMP_26._s = self, TMP_26), $a).call($b);
           return resolved_class;
         }, nil) && 'class_for_name';
       })(self.$singleton_class());
