@@ -35,7 +35,7 @@
     "dist/css/asciidoctor.css"
   ],
   "dependencies": {
-    "opal": "~0.6.2"
+    "opal": "~0.6.3"
   },
   "ignore": [
     "**/.*",
