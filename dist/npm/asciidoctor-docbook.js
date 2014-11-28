@@ -20,7 +20,8 @@ module.exports = function(opalParam) {
         var $a, self = this, result = nil, root_tag_name = nil, doctype_line = nil, lang_attribute = nil, footer_docinfo = nil;
 
         result = [];
-        root_tag_name = node.$doctype();
+        if (((root_tag_name = node.$doctype()))['$==']("manpage")) {
+          root_tag_name = "refentry"};
         result['$<<']("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         if ((($a = (doctype_line = self.$doctype_declaration(root_tag_name))) !== nil && (!$a._isBoolean || $a == true))) {
           result['$<<'](doctype_line)};
@@ -56,15 +57,16 @@ module.exports = function(opalParam) {
       $opal.defn(self, '$embedded', def.$content);
 
       def.$section = function(node) {
-        var $a, $b, self = this, tag_name = nil;
+        var $a, $b, self = this, doctype = nil, tag_name = nil;
 
+        doctype = node.$document().$doctype();
         tag_name = (function() {if ((($a = node.$special()) !== nil && (!$a._isBoolean || $a == true))) {
           if (node.$level()['$<='](1)) {
             return node.$sectname()
             } else {
             return "section"
           }
-        } else if ((($a = (($b = node.$document().$doctype()['$==']("book")) ? node.$level()['$<='](1) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+        } else if ((($a = (($b = doctype['$==']("book")) ? node.$level()['$<='](1) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
           return ((function() {if (node.$level()['$=='](0)) {
             return "part"
             } else {
@@ -73,6 +75,11 @@ module.exports = function(opalParam) {
           } else {
           return "section"
         }; return nil; })();
+        if (doctype['$==']("manpage")) {
+          if (tag_name['$==']("section")) {
+            tag_name = "refsection"
+          } else if (tag_name['$==']("synopsis")) {
+            tag_name = "refsynopsisdiv"}};
         return "<" + (tag_name) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n" + (node.$content()) + "\n</" + (tag_name) + ">";
       };
 
@@ -819,6 +826,19 @@ if (index == null) index = nil;
           if ((($a = doc['$attr?']("orgname")) !== nil && (!$a._isBoolean || $a == true))) {
             result['$<<']("<orgname>" + (doc.$attr("orgname")) + "</orgname>")};};
         result['$<<']("</" + (info_tag_prefix) + "info>");
+        if (doc.$doctype()['$==']("manpage")) {
+          result['$<<']("<refmeta>");
+          if ((($a = doc['$attr?']("mantitle")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<refentrytitle>" + (doc.$attr("mantitle")) + "</refentrytitle>")};
+          if ((($a = doc['$attr?']("manvolnum")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<manvolnum>" + (doc.$attr("manvolnum")) + "</manvolnum>")};
+          result['$<<']("</refmeta>");
+          result['$<<']("<refnamediv>");
+          if ((($a = doc['$attr?']("manname")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<refname>" + (doc.$attr("manname")) + "</refname>")};
+          if ((($a = doc['$attr?']("manpurpose")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<refpurpose>" + (doc.$attr("manpurpose")) + "</refpurpose>")};
+          result['$<<']("</refnamediv>");};
         return result['$*']($scope.EOL);
       };
 
@@ -1063,7 +1083,8 @@ if (item == null) item = nil;if (idx == null) idx = nil;
         var $a, self = this, result = nil, root_tag_name = nil, doctype_line = nil, lang_attribute = nil, footer_docinfo = nil;
 
         result = [];
-        root_tag_name = node.$doctype();
+        if (((root_tag_name = node.$doctype()))['$==']("manpage")) {
+          root_tag_name = "refentry"};
         result['$<<']("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         if ((($a = (doctype_line = self.$doctype_declaration(root_tag_name))) !== nil && (!$a._isBoolean || $a == true))) {
           result['$<<'](doctype_line)};
@@ -1099,15 +1120,16 @@ if (item == null) item = nil;if (idx == null) idx = nil;
       $opal.defn(self, '$embedded', def.$content);
 
       def.$section = function(node) {
-        var $a, $b, self = this, tag_name = nil;
+        var $a, $b, self = this, doctype = nil, tag_name = nil;
 
+        doctype = node.$document().$doctype();
         tag_name = (function() {if ((($a = node.$special()) !== nil && (!$a._isBoolean || $a == true))) {
           if (node.$level()['$<='](1)) {
             return node.$sectname()
             } else {
             return "section"
           }
-        } else if ((($a = (($b = node.$document().$doctype()['$==']("book")) ? node.$level()['$<='](1) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
+        } else if ((($a = (($b = doctype['$==']("book")) ? node.$level()['$<='](1) : $b)) !== nil && (!$a._isBoolean || $a == true))) {
           return ((function() {if (node.$level()['$=='](0)) {
             return "part"
             } else {
@@ -1116,6 +1138,11 @@ if (item == null) item = nil;if (idx == null) idx = nil;
           } else {
           return "section"
         }; return nil; })();
+        if (doctype['$==']("manpage")) {
+          if (tag_name['$==']("section")) {
+            tag_name = "refsection"
+          } else if (tag_name['$==']("synopsis")) {
+            tag_name = "refsynopsisdiv"}};
         return "<" + (tag_name) + (self.$common_attributes(node.$id(), node.$role(), node.$reftext())) + ">\n<title>" + (node.$title()) + "</title>\n" + (node.$content()) + "\n</" + (tag_name) + ">";
       };
 
@@ -1862,6 +1889,19 @@ if (index == null) index = nil;
           if ((($a = doc['$attr?']("orgname")) !== nil && (!$a._isBoolean || $a == true))) {
             result['$<<']("<orgname>" + (doc.$attr("orgname")) + "</orgname>")};};
         result['$<<']("</" + (info_tag_prefix) + "info>");
+        if (doc.$doctype()['$==']("manpage")) {
+          result['$<<']("<refmeta>");
+          if ((($a = doc['$attr?']("mantitle")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<refentrytitle>" + (doc.$attr("mantitle")) + "</refentrytitle>")};
+          if ((($a = doc['$attr?']("manvolnum")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<manvolnum>" + (doc.$attr("manvolnum")) + "</manvolnum>")};
+          result['$<<']("</refmeta>");
+          result['$<<']("<refnamediv>");
+          if ((($a = doc['$attr?']("manname")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<refname>" + (doc.$attr("manname")) + "</refname>")};
+          if ((($a = doc['$attr?']("manpurpose")) !== nil && (!$a._isBoolean || $a == true))) {
+            result['$<<']("<refpurpose>" + (doc.$attr("manpurpose")) + "</refpurpose>")};
+          result['$<<']("</refnamediv>");};
         return result['$*']($scope.EOL);
       };
 
