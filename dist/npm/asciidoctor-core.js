@@ -1,10 +1,11 @@
-module.exports = function(opalParam) {
+module.exports = function(opalParam, xmlHttpRequestParam) {
   var Opal = opalParam || require('opal-npm-wrapper').Opal;
 
-  //Use xmlhttprequest to emulate the browser XMLHttpRequest object.
-  var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-  //Define overrideMimeType, not define by default in wrapper
-  XMLHttpRequest.prototype.overrideMimeType = function() {};
+  if (xmlHttpRequestParam !== false) {
+    var XMLHttpRequest = xmlHttpRequestParam || require('xmlhttprequest').XMLHttpRequest;
+    // Define overrideMimeType, not define by default in wrapper
+    XMLHttpRequest.prototype.overrideMimeType = function() {};
+  }
 
   return {
     Opal: Opal,
