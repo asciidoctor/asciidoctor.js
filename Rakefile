@@ -1,4 +1,6 @@
 require 'opal'
+require 'zlib'
+require_relative 'rake/jdk_helper'
 
 # NOTE we're no longer using ERB templates in Asciidoctor.js by default
 # make Opal recognize .html.erb as valid ERB templates
@@ -87,34 +89,60 @@ end
 
 desc 'Run a smoke test against JDK 8 Early Access Release'
 task :jdk8_ea => :dist do
-  `wget http://www.java.net/download/jdk8u40/archive/b15/binaries/jdk-8u40-ea-bin-b15-linux-x64-18_nov_2014.tar.gz -O /tmp/jdk-8-ea.tar.gz`
-  `rm -rf /tmp/jdk1.8.0_40/`
-  `tar -xvf /tmp/jdk-8-ea.tar.gz -C /tmp`
-  output = `/tmp/jdk1.8.0_40/bin/jjs spec/share/jjs-smoke.js`
+  extract_folder = "#{Dir.tmpdir}/jdk1.8.0_40"
+  destination_file = "#{Dir.tmpdir}/jdk-8-ea.tar.gz"
+  FileUtils.remove_dir extract_folder, :force => true
+  jdk_url = JdkHelper.get_jdk8_linux64_download_url
+  JdkHelper.download_binary_file jdk_url, destination_file
+  `tar -xvf #{destination_file} -C #{Dir.tmpdir}` 
+  jdk_bin_dir = "#{extract_folder}/bin"
+  output = `#{jdk_bin_dir}/jjs spec/share/jjs-smoke.js`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
-    raise "JDK 8u40 b17 jjs smoke test failed"
+    puts "output #{output}"
+    raise "JDK 8u40 jjs smoke test failed"
   end
-  `/tmp/jdk1.8.0_40/bin/javac ./spec/nashorn/NashornSmoke.java -d ./build`
-  output = `/tmp/jdk1.8.0_40/bin/java -classpath ./build NashornSmoke`
+  unless output.include? "include content"
+    puts "output #{output}"
+    raise "JDK 8u40 jjs include directive is broken"
+  end
+  `#{jdk_bin_dir}/javac ./spec/nashorn/NashornSmoke.java -d ./build`
+  output = `#{jdk_bin_dir}/java -classpath ./build NashornSmoke`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
-    raise "JDK 8u40 b17 java smoke test failed"
+    puts "output #{output}"
+    raise "JDK 8u40 java smoke test failed"
+  end
+  unless output.include? "include content"
+    puts "output #{output}"
+    raise "JDK 8u40 java include directive is broken"
   end
 end
 
 desc 'Run a smoke test against JDK 9 Early Access Release'
 task :jdk9_ea => :dist do
-  `wget http://www.java.net/download/jigsaw/archive/b40/binaries/jigsaw-jdk-9-ea-bin-b40-linux-x64-17_nov_2014.tar.gz -O /tmp/jdk-9-ea.tar.gz`
-  `rm -rf /tmp/jdk1.9.0`
-  `tar -xvf /tmp/jdk-9-ea.tar.gz -C /tmp`
-  output `/tmp/jdk1.9.0/bin/jjs spec/share/jjs-smoke.js`  
+  extract_folder = "#{Dir.tmpdir}/jdk1.9.0"
+  destination_file = "#{Dir.tmpdir}/jdk-9-ea.tar.gz"
+  FileUtils.remove_dir extract_folder, :force => true
+  jdk_url = JdkHelper.get_jdk9_linux64_download_url
+  JdkHelper.download_binary_file jdk_url, destination_file
+  `tar -xvf #{destination_file} -C #{Dir.tmpdir}` 
+  jdk_bin_dir = "#{extract_folder}/bin"
+  output `#{jdk_bin_dir}/jjs spec/share/jjs-smoke.js`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
-    raise "JDK 9 b40 jjs smoke test failed"
+    puts "output #{output}"
+    raise "JDK 9 jjs smoke test failed"
   end
-  `/tmp/jdk1.9.0/bin/javac ./spec/nashorn/NashornSmoke.java -d ./build`
-  output = `/tmp/jdk1.9.0/bin/java -classpath ./build NashornSmoke`
+  unless output.include? "include content"
+    puts "output #{output}"
+    raise "JDK 9 jjs include directive is broken"
+  end
+  `#{jdk_bin_dir}/javac ./spec/nashorn/NashornSmoke.java -d ./build`
+  output = `#{jdk_bin_dir}/bin/java -classpath ./build NashornSmoke`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
-    raise "JDK 9 b40 java smoke test failed"
+    puts "output #{output}"
+    raise "JDK 9 java smoke test failed"
+  end
+  unless output.include? "include content"
+    puts "output #{output}"
+    raise "JDK 9 java include directive is broken"
   end
 end
-
-
