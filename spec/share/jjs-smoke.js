@@ -8,8 +8,9 @@ var data = "= asciidoctor.js, AsciiDoc in JavaScript\n" +
 "* AsciiDoc\n" +
 "* Asciidoctor\n" +
 "* Opal\n\n" +
-"NOTE: That's all she wrote!!!";
+"NOTE: That's all she wrote!!!\n\n" +
+"include::spec/share/include.adoc[]";
 
-var options = Opal.hash2(['attributes'], {attributes: ['showtitle']});
+var options = Opal.hash2(['safe', 'attributes'], {'safe': 'server', attributes: ['showtitle']});
 var html = Opal.Asciidoctor.$convert(data, options);
 print(html);
