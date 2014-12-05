@@ -1,6 +1,7 @@
 require 'opal'
 require 'zlib'
 require_relative 'rake/jdk_helper'
+require_relative 'rake/tar'
 
 # NOTE we're no longer using ERB templates in Asciidoctor.js by default
 # make Opal recognize .html.erb as valid ERB templates
@@ -89,12 +90,11 @@ end
 
 desc 'Run a smoke test against JDK 8 Early Access Release'
 task :jdk8_ea => :dist do
-  extract_folder = "#{Dir.tmpdir}/jdk1.8.0_40"
   destination_file = "#{Dir.tmpdir}/jdk-8-ea.tar.gz"
-  FileUtils.remove_dir extract_folder, :force => true
+  extract_folder = "#{Dir.tmpdir}/jdk1.8.0_40"
   jdk_url = JdkHelper.get_jdk8_linux64_download_url
   JdkHelper.download_binary_file jdk_url, destination_file
-  `tar -xvf #{destination_file} -C #{Dir.tmpdir}` 
+  JdkHelper.extract_jdk destination_file, extract_folder
   jdk_bin_dir = "#{extract_folder}/bin"
   output = `#{jdk_bin_dir}/jjs spec/share/jjs-smoke.js`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
@@ -121,10 +121,9 @@ desc 'Run a smoke test against JDK 9 Early Access Release'
 task :jdk9_ea => :dist do
   extract_folder = "#{Dir.tmpdir}/jdk1.9.0"
   destination_file = "#{Dir.tmpdir}/jdk-9-ea.tar.gz"
-  FileUtils.remove_dir extract_folder, :force => true
   jdk_url = JdkHelper.get_jdk9_linux64_download_url
   JdkHelper.download_binary_file jdk_url, destination_file
-  `tar -xvf #{destination_file} -C #{Dir.tmpdir}` 
+  JdkHelper.extract_jdk destination_file, extract_folder
   jdk_bin_dir = "#{extract_folder}/bin"
   output `#{jdk_bin_dir}/jjs spec/share/jjs-smoke.js`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"

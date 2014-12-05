@@ -1,6 +1,20 @@
 require 'open-uri'
+require_relative 'tar'
+
+include Util::Tar
 
 class JdkHelper
+
+  def self.extract_jdk path, extract_folder
+    FileUtils.remove_dir extract_folder, :force => true
+    io = ungzip File.new(path, "r")
+    untar io, Dir.tmpdir
+    jdk_bin_dir = "#{extract_folder}/bin"
+    File.chmod(0755, "#{jdk_bin_dir}/jjs")
+    File.chmod(0755, "#{jdk_bin_dir}/javac")
+    File.chmod(0755, "#{jdk_bin_dir}/java")
+  end
+
   def self.download_binary_file url, destination_file
     bindata = open(url, 'rb') {|file| file.read }
     IO.binwrite(destination_file, bindata)
