@@ -1,5 +1,4 @@
 require 'opal'
-require 'zlib'
 require_relative 'rake/jdk_helper'
 require_relative 'rake/tar'
 
