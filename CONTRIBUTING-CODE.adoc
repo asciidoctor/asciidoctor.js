@@ -29,7 +29,7 @@ To build [path]_asciidoctor.js_, you'll need some tools:
 
 Start by cloning the source from GitHub:
 
- $ git clone git://github.com/asciidoctor/asciidoctor.js
+ $ git clone --recursive git://github.com/asciidoctor/asciidoctor.js
 
 Next, switch to the _asciidoctor.js_ directory and run npm's `install` command followed by Bower's `install` command:
 
