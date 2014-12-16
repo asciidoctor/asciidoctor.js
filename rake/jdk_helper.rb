@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'progressbar'
 require_relative 'tar'
 
 include Util::Tar
@@ -17,7 +18,15 @@ class JdkHelper
 
   def self.download_binary_file url, destination_file
     puts "Downloading #{url}..."
-    bindata = open(url, 'rb') {|file| file.read }
+    pbar = nil
+    bindata = open(url, 'rb', :content_length_proc => lambda { |t|
+      if t && 0 < t
+        pbar = ProgressBar.new("...", t)
+        pbar.file_transfer_mode
+      end
+    }, :progress_proc => lambda {|s|
+      pbar.set s if pbar
+    }) {|file| file.read }
     IO.binwrite(destination_file, bindata)
   end
 

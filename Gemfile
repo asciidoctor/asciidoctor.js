@@ -10,7 +10,8 @@ gem 'asciidoctor', '1.5.2'
 gem 'rake'
 
 group :development, :test do
-   gem 'fileutils', '~> 0.7'
+  gem 'fileutils', '~> 0.7'
+  gem 'progressbar'
 end
 
 # to minify JavaScript:
