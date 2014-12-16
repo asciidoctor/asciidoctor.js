@@ -124,7 +124,7 @@ task :jdk9_ea => :dist do
   JdkHelper.download_binary_file jdk_url, destination_file
   JdkHelper.extract_jdk destination_file, extract_folder
   jdk_bin_dir = "#{extract_folder}/bin"
-  output `#{jdk_bin_dir}/jjs spec/share/jjs-smoke.js`
+  output = `#{jdk_bin_dir}/jjs spec/share/jjs-smoke.js`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
     puts "output #{output}"
     raise "JDK 9 jjs smoke test failed"
