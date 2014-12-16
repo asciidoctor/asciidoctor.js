@@ -16,6 +16,7 @@ class JdkHelper
   end
 
   def self.download_binary_file url, destination_file
+    puts "Downloading #{url}..."
     bindata = open(url, 'rb') {|file| file.read }
     IO.binwrite(destination_file, bindata)
   end
