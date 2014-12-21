@@ -1,0 +1,24 @@
+version: '{build}'
+skip_tags: true
+skip_commits:
+  message: /\[ci skip\]/
+clone_depth: 10
+environment:
+  matrix:
+  - ruby_version: 193
+install:
+- git submodule update --init --recursive
+- SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
+- ruby --version
+- gem --version
+- gem install bundler --quiet --no-ri --no-rdoc
+- bundler --version
+- bundle
+build_script:
+- ps: >-
+    if ($env:APPVEYOR_SCHEDULED_BUILD) {
+      rake jdk8_ea
+      rake jdk9_ea
+    } else {
+      rake
+    }
