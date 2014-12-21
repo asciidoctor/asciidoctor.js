@@ -17,17 +17,21 @@ class JdkHelper
   end
 
   def self.download_binary_file url, destination_file
-    puts "Downloading #{url}..."
-    pbar = nil
-    bindata = open(url, 'rb', :content_length_proc => lambda { |t|
-      if t && 0 < t
-        pbar = ProgressBar.new("...", t)
-        pbar.file_transfer_mode
-      end
-    }, :progress_proc => lambda {|s|
-      pbar.set s if pbar
-    }) {|file| file.read }
-    IO.binwrite(destination_file, bindata)
+    if File.file?(destination_file)
+      puts "File #{destination_file} already exists, skipping download"
+    else
+      puts "Downloading #{url}..."
+      pbar = nil
+      bindata = open(url, 'rb', :content_length_proc => lambda { |t|
+        if t && 0 < t
+          pbar = ProgressBar.new("...", t)
+          pbar.file_transfer_mode
+        end
+      }, :progress_proc => lambda {|s|
+        pbar.set s if pbar
+      }) {|file| file.read }
+      IO.binwrite(destination_file, bindata)
+    end
   end
 
   def self.get_jdk9_linux64_download_url
