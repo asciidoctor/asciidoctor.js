@@ -9,6 +9,10 @@ gem 'asciidoctor', '1.5.2'
 #gem 'asciidoctor', :path => 'asciidoctor'
 gem 'rake'
 
+group :development, :test do
+  gem 'progressbar'
+end
+
 # to minify JavaScript:
 # 1. uncomment closure-compiler dependency
 # 2. run `bundle install`

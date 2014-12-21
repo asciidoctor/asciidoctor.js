@@ -1,4 +1,6 @@
 require 'opal'
+require_relative 'rake/jdk_helper'
+require_relative 'rake/tar'
 
 # NOTE we're no longer using ERB templates in Asciidoctor.js by default
 # make Opal recognize .html.erb as valid ERB templates
@@ -82,5 +84,63 @@ task :examples => :dist do
     customers_content = open(customers_uri) {|fd2| fd2.read }
     File.open('build/userguide.adoc', 'w') {|fd1| fd1.write userguide_content }
     File.open('build/customers.csv', 'w') {|fd1| fd1.write customers_content }
+  end
+end
+
+desc 'Run a smoke test against JDK 8 Early Access Release'
+task :jdk8_ea => :dist do
+  destination_file = "#{Dir.tmpdir}/jdk-8-ea.tar.gz"
+  extract_folder = "#{Dir.tmpdir}/jdk1.8.0_40"
+  jdk_url = JdkHelper.get_jdk8_linux64_download_url
+  JdkHelper.download_binary_file jdk_url, destination_file
+  JdkHelper.extract_jdk destination_file, extract_folder
+  jdk_bin_dir = "#{extract_folder}/bin"
+  output = `#{jdk_bin_dir}/jjs spec/share/jjs-smoke.js`
+  unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
+    puts "output #{output}"
+    raise "JDK 8u40 jjs smoke test failed"
+  end
+  unless output.include? "include content"
+    puts "output #{output}"
+    raise "JDK 8u40 jjs include directive is broken"
+  end
+  `#{jdk_bin_dir}/javac ./spec/nashorn/NashornSmoke.java -d ./build`
+  output = `#{jdk_bin_dir}/java -classpath ./build NashornSmoke`
+  unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
+    puts "output #{output}"
+    raise "JDK 8u40 java smoke test failed"
+  end
+  unless output.include? "include content"
+    puts "output #{output}"
+    raise "JDK 8u40 java include directive is broken"
+  end
+end
+
+desc 'Run a smoke test against JDK 9 Early Access Release'
+task :jdk9_ea => :dist do
+  extract_folder = "#{Dir.tmpdir}/jdk1.9.0"
+  destination_file = "#{Dir.tmpdir}/jdk-9-ea.tar.gz"
+  jdk_url = JdkHelper.get_jdk9_linux64_download_url
+  JdkHelper.download_binary_file jdk_url, destination_file
+  JdkHelper.extract_jdk destination_file, extract_folder
+  jdk_bin_dir = "#{extract_folder}/bin"
+  output = `#{jdk_bin_dir}/jjs spec/share/jjs-smoke.js`
+  unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
+    puts "output #{output}"
+    raise "JDK 9 jjs smoke test failed"
+  end
+  unless output.include? "include content"
+    puts "output #{output}"
+    raise "JDK 9 jjs include directive is broken"
+  end
+  `#{jdk_bin_dir}/javac ./spec/nashorn/NashornSmoke.java -d ./build`
+  output = `#{jdk_bin_dir}/bin/java -classpath ./build NashornSmoke`
+  unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
+    puts "output #{output}"
+    raise "JDK 9 java smoke test failed"
+  end
+  unless output.include? "include content"
+    puts "output #{output}"
+    raise "JDK 9 java include directive is broken"
   end
 end
