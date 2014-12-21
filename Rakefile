@@ -18,7 +18,7 @@ task :dist do
   Opal::Processor.method_missing_enabled = false
   Opal::Processor.const_missing_enabled = false
   Opal::Processor.source_map_enabled = false
-  Opal::Processor.dynamic_require_severity = :warning
+  Opal::Processor.dynamic_require_severity = :ignore
 
   Dir.mkdir 'build' unless File.directory? 'build'
 
