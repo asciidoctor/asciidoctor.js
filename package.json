@@ -43,6 +43,7 @@
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
     "cli": "^0.6.5",
+    "mkdirp": "^0.5.0",
     "opal-npm-wrapper": "git://github.com/anthonny/opal-npm-wrapper.git#0.1.1",
     "xmlhttprequest": "~1.6.0"
   },
