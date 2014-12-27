@@ -99,8 +99,9 @@ task :jdk8_ea => :dist do
   if File.directory?(extract_folder)
     puts "JDK8 directory #{extract_folder} already exists, skipping install"
   else
-    jdk_url = JdkHelper.get_jdk8_download_url
     if OS.windows?
+      ENV['SSL_CERT_FILE'] = "#{File.expand_path File.dirname(__FILE__)}\\rake\\cacert.pem"
+      jdk_url = JdkHelper.get_jdk8_download_url
       destination_file = "#{Dir.tmpdir}/jdk-8-ea.exe"
       JdkHelper.download_binary_file jdk_url, destination_file
       `#{destination_file} /s INSTALLDIR="%CD%\\build\\jdk1.8.0_40-ea"`
@@ -108,6 +109,7 @@ task :jdk8_ea => :dist do
         sleep 1
       end
     else
+      jdk_url = JdkHelper.get_jdk8_download_url
       destination_file = "#{Dir.tmpdir}/jdk-8-ea.tar.gz"
       JdkHelper.download_binary_file jdk_url, destination_file
       JdkHelper.extract_jdk destination_file, extract_folder
@@ -146,8 +148,9 @@ task :jdk9_ea => :dist do
   if File.directory?(extract_folder)
     puts "JDK9 directory #{extract_folder} already exists, skipping install"
   else
-    jdk_url = JdkHelper.get_jdk9_download_url
     if OS.windows?
+      ENV['SSL_CERT_FILE'] = "#{File.expand_path File.dirname(__FILE__)}\\rake\\cacert.pem"
+      jdk_url = JdkHelper.get_jdk9_download_url
       destination_file = "#{Dir.tmpdir}/jdk-9-ea.exe"
       JdkHelper.download_binary_file jdk_url, destination_file
       `#{destination_file} /s INSTALLDIR="%CD%\\build\\jdk1.9.0-ea"`
@@ -155,6 +158,7 @@ task :jdk9_ea => :dist do
         sleep 1
       end
     else
+      jdk_url = JdkHelper.get_jdk9_download_url
       destination_file = "#{Dir.tmpdir}/jdk-9-ea.tar.gz"
       JdkHelper.download_binary_file jdk_url, destination_file
       JdkHelper.extract_jdk destination_file, extract_folder
