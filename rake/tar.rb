@@ -19,7 +19,8 @@ module Util
     def untar(io, destination)
       Gem::Package::TarReader.new io do |tar|
         tar.each do |tarfile|
-          destination_file = File.join destination, tarfile.full_name
+          # NOTE skip the root directory of the tarfile
+          destination_file = File.join destination, tarfile.full_name.split('/', 2).last
 
           if tarfile.directory?
             FileUtils.mkdir_p destination_file
