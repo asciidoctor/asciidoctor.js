@@ -89,13 +89,33 @@ end
 
 desc 'Run a smoke test against JDK 8 Early Access Release'
 task :jdk8_ea => :dist do
-  destination_file = "#{Dir.tmpdir}/jdk-8-ea.tar.gz"
-  extract_folder = "#{Dir.tmpdir}/jdk1.8.0_40"
-  jdk_url = JdkHelper.get_jdk8_linux64_download_url
-  JdkHelper.download_binary_file jdk_url, destination_file
-  JdkHelper.extract_jdk destination_file, extract_folder
-  jdk_bin_dir = "#{extract_folder}/bin"
-  output = `#{jdk_bin_dir}/jjs spec/share/jjs-smoke.js`
+  extract_folder = "#{File.expand_path File.dirname(__FILE__)}/build/jdk1.8.0_40-ea"
+  jdk_bin_dir = File.join(extract_folder, 'bin')
+  jjs_bin = File.join(jdk_bin_dir, 'jjs')
+  javac_bin = File.join(jdk_bin_dir, 'javac')
+  java_bin = File.join(jdk_bin_dir, 'java')
+  jjs_script = File.join('spec', 'share', 'jjs-smoke.js')
+  nashorn_java = File.join('spec', 'nashorn', 'NashornSmoke.java')
+  if File.directory?(extract_folder)
+    puts "JDK8 directory #{extract_folder} already exists, skipping install"
+  else
+    if OS.windows?
+      ENV['SSL_CERT_FILE'] = "#{File.expand_path File.dirname(__FILE__)}\\rake\\cacert.pem"
+      jdk_url = JdkHelper.get_jdk8_download_url
+      destination_file = "#{Dir.tmpdir}/jdk-8-ea.exe"
+      JdkHelper.download_binary_file jdk_url, destination_file
+      `#{destination_file} /s INSTALLDIR="%CD%\\build\\jdk1.8.0_40-ea"`
+      until File.exist?("#{jjs_bin}.exe") && File.exist?("#{javac_bin}.exe") && File.exist?("#{java_bin}.exe")
+        sleep 1
+      end
+    else
+      jdk_url = JdkHelper.get_jdk8_download_url
+      destination_file = "#{Dir.tmpdir}/jdk-8-ea.tar.gz"
+      JdkHelper.download_binary_file jdk_url, destination_file
+      JdkHelper.extract_jdk destination_file, extract_folder
+    end
+  end
+  output = `\"#{jjs_bin}\" #{jjs_script}`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
     puts "output #{output}"
     raise "JDK 8u40 jjs smoke test failed"
@@ -104,8 +124,8 @@ task :jdk8_ea => :dist do
     puts "output #{output}"
     raise "JDK 8u40 jjs include directive is broken"
   end
-  `#{jdk_bin_dir}/javac ./spec/nashorn/NashornSmoke.java -d ./build`
-  output = `#{jdk_bin_dir}/java -classpath ./build NashornSmoke`
+  `\"#{javac_bin}\" ./#{nashorn_java} -d ./build`
+  output = `\"#{java_bin}\" -classpath ./build NashornSmoke`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
     puts "output #{output}"
     raise "JDK 8u40 java smoke test failed"
@@ -118,13 +138,33 @@ end
 
 desc 'Run a smoke test against JDK 9 Early Access Release'
 task :jdk9_ea => :dist do
-  extract_folder = "#{Dir.tmpdir}/jdk1.9.0"
-  destination_file = "#{Dir.tmpdir}/jdk-9-ea.tar.gz"
-  jdk_url = JdkHelper.get_jdk9_linux64_download_url
-  JdkHelper.download_binary_file jdk_url, destination_file
-  JdkHelper.extract_jdk destination_file, extract_folder
-  jdk_bin_dir = "#{extract_folder}/bin"
-  output = `#{jdk_bin_dir}/jjs spec/share/jjs-smoke.js`
+  extract_folder = "#{File.expand_path File.dirname(__FILE__)}/jdk1.9.0-ea"
+  jdk_bin_dir = File.join(extract_folder, 'bin')
+  jjs_bin = File.join(jdk_bin_dir, 'jjs')
+  javac_bin = File.join(jdk_bin_dir, 'javac')
+  java_bin = File.join(jdk_bin_dir, 'java')
+  jjs_script = File.join('spec', 'share', 'jjs-smoke.js')
+  nashorn_java = File.join('spec', 'nashorn', 'NashornSmoke.java')
+  if File.directory?(extract_folder)
+    puts "JDK9 directory #{extract_folder} already exists, skipping install"
+  else
+    if OS.windows?
+      ENV['SSL_CERT_FILE'] = "#{File.expand_path File.dirname(__FILE__)}\\rake\\cacert.pem"
+      jdk_url = JdkHelper.get_jdk9_download_url
+      destination_file = "#{Dir.tmpdir}/jdk-9-ea.exe"
+      JdkHelper.download_binary_file jdk_url, destination_file
+      `#{destination_file} /s INSTALLDIR="%CD%\\build\\jdk1.9.0-ea"`
+      until File.exist?("#{jjs_bin}.exe") && File.exist?("#{javac_bin}.exe") && File.exist?("#{java_bin}.exe")
+        sleep 1
+      end
+    else
+      jdk_url = JdkHelper.get_jdk9_download_url
+      destination_file = "#{Dir.tmpdir}/jdk-9-ea.tar.gz"
+      JdkHelper.download_binary_file jdk_url, destination_file
+      JdkHelper.extract_jdk destination_file, extract_folder
+    end
+  end
+  output = `\"#{jjs_bin}\" #{jjs_script}`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
     puts "output #{output}"
     raise "JDK 9 jjs smoke test failed"
@@ -133,8 +173,8 @@ task :jdk9_ea => :dist do
     puts "output #{output}"
     raise "JDK 9 jjs include directive is broken"
   end
-  `#{jdk_bin_dir}/javac ./spec/nashorn/NashornSmoke.java -d ./build`
-  output = `#{jdk_bin_dir}/bin/java -classpath ./build NashornSmoke`
+  `\"#{javac_bin}\" ./#{nashorn_java} -d ./build`
+  output = `\"#{java_bin}\" -classpath ./build NashornSmoke`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
     puts "output #{output}"
     raise "JDK 9 java smoke test failed"
