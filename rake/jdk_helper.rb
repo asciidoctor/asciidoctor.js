@@ -9,7 +9,7 @@ class JdkHelper
   def self.extract_jdk path, extract_folder
     FileUtils.remove_dir extract_folder, :force => true
     io = ungzip File.new(path, "r")
-    untar io, Dir.tmpdir
+    untar io, extract_folder
     jdk_bin_dir = "#{extract_folder}/bin"
     File.chmod(0755, "#{jdk_bin_dir}/jjs")
     File.chmod(0755, "#{jdk_bin_dir}/javac")
