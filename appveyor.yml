@@ -15,10 +15,4 @@ install:
 - bundler --version
 - bundle
 build_script:
-- ps: >-
-    if ($env:APPVEYOR_SCHEDULED_BUILD) {
-      rake jdk8_ea  2>&1 | % { $_.ToString() }
-      rake jdk9_ea  2>&1 | % { $_.ToString() }
-    } else {
-      rake
-    }
+- rake test_on_appveyor

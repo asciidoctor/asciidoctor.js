@@ -20,7 +20,7 @@ class JdkHelper
     if File.file?(destination_file)
       puts "File #{destination_file} already exists, skipping download"
     else
-      puts "Downloading #{url}..."
+      puts "Downloading #{url} in #{destination_file}..."
       pbar = nil
       bindata = open(url, 'rb', :content_length_proc => lambda { |t|
         if t && 0 < t
