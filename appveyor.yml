@@ -17,8 +17,8 @@ install:
 build_script:
 - ps: >-
     if ($env:APPVEYOR_SCHEDULED_BUILD) {
-      rake jdk8_ea
-      rake jdk9_ea
+      rake jdk8_ea  2>&1 | % { $_.ToString() }
+      rake jdk9_ea  2>&1 | % { $_.ToString() }
     } else {
       rake
     }
