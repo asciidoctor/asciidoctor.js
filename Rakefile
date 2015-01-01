@@ -163,7 +163,7 @@ end
 
 desc 'Run a smoke test against JDK 9 Early Access Release'
 task :jdk9_ea => :dist do
-  extract_folder = "#{File.expand_path File.dirname(__FILE__)}/jdk1.9.0-ea"
+  extract_folder = "#{File.expand_path File.dirname(__FILE__)}/build/jdk1.9.0-ea"
   jdk_bin_dir = File.join(extract_folder, 'bin')
   jjs_bin = File.join(jdk_bin_dir, 'jjs')
   javac_bin = File.join(jdk_bin_dir, 'javac')
