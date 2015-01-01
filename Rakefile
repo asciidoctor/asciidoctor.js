@@ -89,10 +89,11 @@ end
 
 desc 'Run smoke tests on AppVeyor'
 task :test_on_appveyor do
+  STDOUT.sync = true
   #if ENV['APPVEYOR_SCHEDULED_BUILD']
-    $stdout.puts "Smoke test on JDK 8"
+    puts "Smoke test on JDK 8"
     Rake::Task["jdk8_ea"].invoke
-    $stdout.puts "Smoke test on JDK 9"
+    puts "Smoke test on JDK 9"
     Rake::Task["jdk9_ea"].invoke
   #end
 end
@@ -107,20 +108,20 @@ task :jdk8_ea => :dist do
   jjs_script = File.join('spec', 'share', 'jjs-smoke.js')
   nashorn_java = File.join('spec', 'nashorn', 'NashornSmoke.java')
   if File.directory?(extract_folder)
-    $stdout.puts "JDK 8 directory #{extract_folder} already exists, skipping install"
+    puts "JDK 8 directory #{extract_folder} already exists, skipping install"
   else
     if OS.windows?
       ENV['SSL_CERT_FILE'] = "#{File.expand_path File.dirname(__FILE__)}\\rake\\cacert.pem"
       jdk_url = JdkHelper.get_jdk8_download_url
       destination_file = "#{Dir.tmpdir}/jdk-8-ea.exe"
       JdkHelper.download_binary_file jdk_url, destination_file
-	  $stdout.puts "Install silently #{destination_file} in %CD%\\build\\jdk1.8.0_40-ea"
+	  puts "Install silently #{destination_file} in %CD%\\build\\jdk1.8.0_40-ea"
       install_output = `#{destination_file} /s INSTALLDIR="%CD%\\build\\jdk1.8.0_40-ea"`
-	  $stdout.puts "Install output '#{install_output}'"
+	  puts "Install output '#{install_output}'"
       until File.exist?("#{jjs_bin}.exe") && File.exist?("#{javac_bin}.exe") && File.exist?("#{java_bin}.exe")
-        $stdout.puts "#{jjs_bin}.exe file exists? #{File.exist?("#{jjs_bin}.exe")}"
-        $stdout.puts "#{javac_bin}.exe file exists? #{File.exist?("#{javac_bin}.exe")}"
-        $stdout.puts "#{java_bin}.exe file exists? #{File.exist?("#{java_bin}.exe")}"
+        puts "#{jjs_bin}.exe file exists? #{File.exist?("#{jjs_bin}.exe")}"
+        puts "#{javac_bin}.exe file exists? #{File.exist?("#{javac_bin}.exe")}"
+        puts "#{java_bin}.exe file exists? #{File.exist?("#{java_bin}.exe")}"
         sleep 1
       end
     else
@@ -130,7 +131,8 @@ task :jdk8_ea => :dist do
       JdkHelper.extract_jdk destination_file, extract_folder
     end
   end
-  $stdout.puts "Smoke test with jjs"
+  puts "Smoke test with jjs..."
+  beginning_time = Time.now
   output = `\"#{jjs_bin}\" #{jjs_script}`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
     $stderr.puts "output #{output}"
@@ -140,9 +142,12 @@ task :jdk8_ea => :dist do
     $stderr.puts "output #{output}"
     raise "JDK 8u40 jjs include directive is broken"
   end
-  $stdout.puts "Compiling NashornSmoke.java..."
+  end_time = Time.now
+  puts "Smoke test with jjs... OK in #{(end_time - beginning_time)*1000} ms"
+  puts "Compiling NashornSmoke.java..."
   `\"#{javac_bin}\" ./#{nashorn_java} -d ./build`
-  $stdout.puts "Smoke test with java"
+  puts "Smoke test with java..."
+  beginning_time = Time.now
   output = `\"#{java_bin}\" -classpath ./build NashornSmoke`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
     $stderr.puts "output #{output}"
@@ -152,6 +157,8 @@ task :jdk8_ea => :dist do
     $stderr.puts "output #{output}"
     raise "JDK 8u40 java include directive is broken"
   end
+  end_time = Time.now
+  puts "Smoke test with java... OK in #{(end_time - beginning_time)*1000} ms"
 end
 
 desc 'Run a smoke test against JDK 9 Early Access Release'
@@ -171,8 +178,13 @@ task :jdk9_ea => :dist do
       jdk_url = JdkHelper.get_jdk9_download_url
       destination_file = "#{Dir.tmpdir}/jdk-9-ea.exe"
       JdkHelper.download_binary_file jdk_url, destination_file
-      `#{destination_file} /s INSTALLDIR="%CD%\\build\\jdk1.9.0-ea"`
+	  puts "Install silently #{destination_file} in %CD%\\build\\jdk1.9.0-ea"
+      install_output = `#{destination_file} /s INSTALLDIR="%CD%\\build\\jdk1.9.0-ea"`
+	  puts "Install output '#{install_output}'"
       until File.exist?("#{jjs_bin}.exe") && File.exist?("#{javac_bin}.exe") && File.exist?("#{java_bin}.exe")
+        puts "#{jjs_bin}.exe file exists? #{File.exist?("#{jjs_bin}.exe")}"
+        puts "#{javac_bin}.exe file exists? #{File.exist?("#{javac_bin}.exe")}"
+        puts "#{java_bin}.exe file exists? #{File.exist?("#{java_bin}.exe")}"
         sleep 1
       end
     else
@@ -182,6 +194,8 @@ task :jdk9_ea => :dist do
       JdkHelper.extract_jdk destination_file, extract_folder
     end
   end
+  puts "Smoke test with jjs..."
+  beginning_time = Time.now
   output = `\"#{jjs_bin}\" #{jjs_script}`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
     puts "output #{output}"
@@ -191,7 +205,12 @@ task :jdk9_ea => :dist do
     puts "output #{output}"
     raise "JDK 9 jjs include directive is broken"
   end
+  end_time = Time.now
+  puts "Smoke test with jjs... OK in #{(end_time - beginning_time)*1000} ms"
+  puts "Compiling NashornSmoke.java..."
   `\"#{javac_bin}\" ./#{nashorn_java} -d ./build`
+  puts "Smoke test with java..."
+  beginning_time = Time.now
   output = `\"#{java_bin}\" -classpath ./build NashornSmoke`
   unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
     puts "output #{output}"
@@ -201,4 +220,6 @@ task :jdk9_ea => :dist do
     puts "output #{output}"
     raise "JDK 9 java include directive is broken"
   end
+  end_time = Time.now
+  puts "Smoke test with java... OK in #{(end_time - beginning_time)*1000} ms"
 end
