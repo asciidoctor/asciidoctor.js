@@ -90,12 +90,15 @@ end
 desc 'Run smoke tests on AppVeyor'
 task :test_on_appveyor do
   STDOUT.sync = true
-  #if ENV['APPVEYOR_SCHEDULED_BUILD']
-    puts "Smoke test on JDK 8"
+  if ENV['APPVEYOR_SCHEDULED_BUILD']
+    puts 'Smoke test on JDK 8'
     Rake::Task["jdk8_ea"].invoke
-    puts "Smoke test on JDK 9"
+	puts ''
+    puts 'Smoke test on JDK 9'
     Rake::Task["jdk9_ea"].invoke
-  #end
+  else
+    Rake::Task["default"].invoke
+  end
 end
 
 desc 'Run a smoke test against JDK 8 Early Access Release'
@@ -105,8 +108,10 @@ task :jdk8_ea => :dist do
   jjs_bin = File.join(jdk_bin_dir, 'jjs')
   javac_bin = File.join(jdk_bin_dir, 'javac')
   java_bin = File.join(jdk_bin_dir, 'java')
-  jjs_script = File.join('spec', 'share', 'jjs-smoke.js')
-  nashorn_java = File.join('spec', 'nashorn', 'NashornSmoke.java')
+  basic_jjs = File.join('spec', 'share', 'basic.js')
+  basic_nashorn_java = File.join('spec', 'nashorn', 'BasicJavascriptWithNashorn.java')
+  asciidoctor_jjs = File.join('spec', 'share', 'asciidoctor-convert.js')
+  asciidoctor_nashorn_java = File.join('spec', 'nashorn', 'AsciidoctorConvertWithNashorn.java')
   if File.directory?(extract_folder)
     puts "JDK 8 directory #{extract_folder} already exists, skipping install"
   else
@@ -131,34 +136,12 @@ task :jdk8_ea => :dist do
       JdkHelper.extract_jdk destination_file, extract_folder
     end
   end
-  puts "Smoke test with jjs..."
-  beginning_time = Time.now
-  output = `\"#{jjs_bin}\" #{jjs_script}`
-  unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
-    $stderr.puts "output #{output}"
-    raise "JDK 8u40 jjs smoke test failed"
-  end
-  unless output.include? "include content"
-    $stderr.puts "output #{output}"
-    raise "JDK 8u40 jjs include directive is broken"
-  end
-  end_time = Time.now
-  puts "Smoke test with jjs... OK in #{(end_time - beginning_time)*1000} ms"
-  puts "Compiling NashornSmoke.java..."
-  `\"#{javac_bin}\" ./#{nashorn_java} -d ./build`
-  puts "Smoke test with java..."
-  beginning_time = Time.now
-  output = `\"#{java_bin}\" -classpath ./build NashornSmoke`
-  unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
-    $stderr.puts "output #{output}"
-    raise "JDK 8u40 java smoke test failed"
-  end
-  unless output.include? "include content"
-    $stderr.puts "output #{output}"
-    raise "JDK 8u40 java include directive is broken"
-  end
-  end_time = Time.now
-  puts "Smoke test with java... OK in #{(end_time - beginning_time)*1000} ms"
+  JdkHelper.run_jjs_nashorn jjs_bin, basic_jjs
+  output = JdkHelper.run_jjs_nashorn jjs_bin, asciidoctor_jjs
+  Assertion.check_convert output, "Running Asciidoctor with Nashorn JDK 8 jjs"
+  JdkHelper.compile_run_java_nashorn javac_bin, java_bin, basic_nashorn_java, 'BasicJavascriptWithNashorn'
+  output = JdkHelper.compile_run_java_nashorn javac_bin, java_bin, asciidoctor_nashorn_java, 'AsciidoctorConvertWithNashorn'
+  Assertion.check_convert output, "Running Asciidoctor with Nashorn JDK 8 java"
 end
 
 desc 'Run a smoke test against JDK 9 Early Access Release'
@@ -168,8 +151,10 @@ task :jdk9_ea => :dist do
   jjs_bin = File.join(jdk_bin_dir, 'jjs')
   javac_bin = File.join(jdk_bin_dir, 'javac')
   java_bin = File.join(jdk_bin_dir, 'java')
-  jjs_script = File.join('spec', 'share', 'jjs-smoke.js')
-  nashorn_java = File.join('spec', 'nashorn', 'NashornSmoke.java')
+  basic_jjs = File.join('spec', 'share', 'basic.js')
+  basic_nashorn_java = File.join('spec', 'nashorn', 'BasicJavascriptWithNashorn.java')
+  asciidoctor_jjs = File.join('spec', 'share', 'asciidoctor-convert.js')
+  asciidoctor_nashorn_java = File.join('spec', 'nashorn', 'AsciidoctorConvertWithNashorn.java')
   if File.directory?(extract_folder)
     puts "JDK 9 directory #{extract_folder} already exists, skipping install"
   else
@@ -194,32 +179,10 @@ task :jdk9_ea => :dist do
       JdkHelper.extract_jdk destination_file, extract_folder
     end
   end
-  puts "Smoke test with jjs..."
-  beginning_time = Time.now
-  output = `\"#{jjs_bin}\" #{jjs_script}`
-  unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
-    puts "output #{output}"
-    raise "JDK 9 jjs smoke test failed"
-  end
-  unless output.include? "include content"
-    puts "output #{output}"
-    raise "JDK 9 jjs include directive is broken"
-  end
-  end_time = Time.now
-  puts "Smoke test with jjs... OK in #{(end_time - beginning_time)*1000} ms"
-  puts "Compiling NashornSmoke.java..."
-  `\"#{javac_bin}\" ./#{nashorn_java} -d ./build`
-  puts "Smoke test with java..."
-  beginning_time = Time.now
-  output = `\"#{java_bin}\" -classpath ./build NashornSmoke`
-  unless output.include? "<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>"
-    puts "output #{output}"
-    raise "JDK 9 java smoke test failed"
-  end
-  unless output.include? "include content"
-    puts "output #{output}"
-    raise "JDK 9 java include directive is broken"
-  end
-  end_time = Time.now
-  puts "Smoke test with java... OK in #{(end_time - beginning_time)*1000} ms"
+  JdkHelper.run_jjs_nashorn jjs_bin, basic_jjs
+  output = JdkHelper.run_jjs_nashorn jjs_bin, asciidoctor_jjs
+  Assertion.check_convert output, "Running Asciidoctor with Nashorn JDK 9 jjs"
+  JdkHelper.compile_run_java_nashorn javac_bin, java_bin, basic_nashorn_java, 'BasicJavascriptWithNashorn'
+  output = JdkHelper.compile_run_java_nashorn javac_bin, java_bin, asciidoctor_nashorn_java, 'AsciidoctorConvertWithNashorn'
+  Assertion.check_convert output, "Running Asciidoctor with Nashorn JDK 9 java"
 end

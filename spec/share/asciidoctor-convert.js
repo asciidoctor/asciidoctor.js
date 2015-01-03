@@ -1,6 +1,6 @@
 load("./dist/asciidoctor-all.js");
 
-var data = "= asciidoctor.js, AsciiDoc in JavaScript\n" + 
+var data = "= asciidoctor.js, AsciiDoc in JavaScript\n" +
 "Doc Writer <docwriter@example.com>\n\n" +
 "Asciidoctor and Opal come together to bring\n" +
 "http://asciidoc.org[AsciiDoc] to the browser!.\n\n" +
