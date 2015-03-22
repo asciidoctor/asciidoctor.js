@@ -43,7 +43,7 @@ task :dist do
   env['asciidoctor/converter/docbook5'].write_to "build/asciidoctor-docbook5.js#{compress ? '.gz' : nil}"
 
   env.append_path 'extensions-lab/lib'
-  endorsed_extensions = ['chrome-inline-macro', 'man-inline-macro']
+  endorsed_extensions = ['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro']
   endorsed_extensions.each { |extension| env[extension].write_to "build/asciidoctor-#{extension}.js#{compress ? '.gz' : nil}" }
 
   asciidoctor_spec = Gem::Specification.find_by_name 'asciidoctor'
