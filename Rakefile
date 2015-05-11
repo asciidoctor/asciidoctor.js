@@ -42,9 +42,14 @@ task :dist do
   env['asciidoctor/converter/docbook45'].write_to "build/asciidoctor-docbook45.js#{compress ? '.gz' : nil}"
   env['asciidoctor/converter/docbook5'].write_to "build/asciidoctor-docbook5.js#{compress ? '.gz' : nil}"
 
-  env.append_path 'extensions-lab/lib'
-  endorsed_extensions = ['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro']
-  endorsed_extensions.each { |extension| env[extension].write_to "build/asciidoctor-#{extension}.js#{compress ? '.gz' : nil}" }
+  if File.directory? 'extensions-lab/lib'
+    env.append_path 'extensions-lab/lib'
+    endorsed_extensions = ['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro']
+    endorsed_extensions.each { |extension| env[extension].write_to "build/asciidoctor-#{extension}.js#{compress ? '.gz' : nil}" }
+  else
+    puts "Unable to cross-compile extensions because git submodule 'extensions-lab' is not initialized."
+    puts "To initialize the submodule use the following command `git submodule init` and `git submodule update`."
+  end
 
   asciidoctor_spec = Gem::Specification.find_by_name 'asciidoctor'
   css_file = File.join asciidoctor_spec.full_gem_path, 'data/stylesheets/asciidoctor-default.css'
