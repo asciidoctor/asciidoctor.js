@@ -6,12 +6,12 @@
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
 :sources: {uri-repo}
 
-This guide will give you all the necessary information you need to become a successful _Asciidoctor.js_ developper! 
+This guide will give you all the necessary information you need to become a successful _Asciidoctor.js_ developer!
 
 == Introduction
 
-{sources}[Asciidoctor.js] is direct port of {uri-asciidoctor}[Asciidoctor] from Ruby to JavaScript using {uri-opal}[Opal], a Ruby-to-JavaScript transcompiler.
-It consists of a Rake build script that executes the Opal compiler on the Asciidoctor source code to produce the asciidoctor.js script.
+{sources}[Asciidoctor.js] is direct port of {uri-asciidoctor}[Asciidoctor] from Ruby to JavaScript using {uri-opal}[Opal], a Ruby-to-JavaScript transpiler.
+The project includes a Rake build script that executes the Opal compiler on the Asciidoctor source code to produce the Asciidoctor.js scripts.
 A Grunt build is used to assemble and prepare the distribution files, using the Rake build underneath.
 
 Opal parses the Ruby code and any required libraries, then rewrites the code into JavaScript under the Opal namespace.
@@ -48,7 +48,7 @@ To build asciidoctor.js, simple run the Grunt `dist` task from the root of the p
  $ grunt dist
 
 NOTE: The build task will make some minor code changes on the asciidoctor submodule.
-As you may know String are immutable in Javascript, so we need to replace `gsub!` and `sub!` methods.
+As you may know String are immutable in JavaScript, so we need to replace `gsub!` and `sub!` methods.
 These changes are made at build time to keep the Ruby code as fast as possible.
 
 This command produces some files in the [path]_dist_ directory:
@@ -57,13 +57,13 @@ This command produces some files in the [path]_dist_ directory:
 - *asciidoctor.js* (includes core and extensions)
 - *asciidoctor-core.js* (no extensions API)
 - *asciidoctor-extensions.js* (extensions API only)
-- *asciidoctor-docbook.js* (docbook backends : docbook45 and docbook5)
-- *asciidoctor-all.js* (core, extension and Opal. Docbook isn't the main target of webapp, for this reason we choose to keep it separate)
+- *asciidoctor-docbook.js* (DocBook backends: docbook45 & docbook5)
+- *asciidoctor-all.js* (core, extension and Opal. DocBook isn't the main target of webapp, for this reason we choose to keep it separate)
 
-* *dist/npm* (to use with Npm)
-- *asciidoctor-core.js* (no extensions API, will automatically load docbook backends)
+* *dist/npm* (to use with npm)
+- *asciidoctor-core.js* (no extensions API, will automatically load the DocBook backends)
 - *asciidoctor-extensions.js* (extensions API only)
-- *asciidoctor-docbook.js* (docbook backends : docbook45 and docbook5)
+- *asciidoctor-docbook.js* (DocBook backends: docbook45 & docbook5)
 
 Each file has a `minified` and `gz` version.
 
