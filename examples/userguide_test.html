@@ -8,8 +8,12 @@
   </head>
   <body>
     <div id="content"></div>
-    <script src="../bower_components/opal/opal/0.6.2/opal.js"></script>
+    <script src="../bower_components/opal/opal/current/opal.js"></script>
     <script src="asciidoctor-core.js"></script>
     <script src="userguide_test.js"></script>
+    <script>
+      Opal.require('asciidoctor');
+      Opal.require('userguide_test');
+    </script>
   </body>
 </html>

@@ -1,4 +1,5 @@
 require 'opal'
+require 'opal/sprockets/environment'
 require_relative 'rake/jdk_helper'
 require_relative 'rake/tar'
 
@@ -67,10 +68,10 @@ task :examples => :dist do
 
   env = Opal::Environment.new
   env.append_path 'examples'
-  env['asciidoctor_example'].write_to 'build/asciidoctor_example.js'
+  env['asciidoctor_example.rb'].write_to 'build/asciidoctor_example.js'
   File.copy_stream 'examples/asciidoctor_example.html', 'build/asciidoctor_example.html'
 
-  env['userguide_test'].write_to 'build/userguide_test.js'
+  env['userguide_test.rb'].write_to 'build/userguide_test.js'
   File.copy_stream 'examples/userguide_test.html', 'build/userguide_test.html'
   File.copy_stream 'README.adoc', 'build/README.adoc'
 
