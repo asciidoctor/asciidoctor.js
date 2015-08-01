@@ -56,7 +56,7 @@ task :dist do
   env.append_path 'core-ext'
   env['converter/slide'].write_to "build/asciidoctor-slide.js#{compress ? '.gz' : nil}"
   env['converter/deckjs'].write_to "build/asciidoctor-deckjs.js#{compress ? '.gz' : nil}"
-  env['converter/revealjs'].write_to "build/asciidoctor-deckjs.js#{compress ? '.gz' : nil}"
+  env['converter/revealjs'].write_to "build/asciidoctor-revealjs.js#{compress ? '.gz' : nil}"
   
   asciidoctor_spec = Gem::Specification.find_by_name 'asciidoctor'
   css_file = File.join asciidoctor_spec.full_gem_path, 'data/stylesheets/asciidoctor-default.css'
