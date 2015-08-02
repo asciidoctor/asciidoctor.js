@@ -27,6 +27,8 @@ task :dist do
   env.js_compressor = Sprockets::ClosureCompressor if minify
   #env['opal'].write_to "build/opal.js#{compress ? '.gz' : nil}"
 
+  env.append_path 'lib'
+
   # Use use_gem if you want to build against a release
   env.use_gem 'asciidoctor'
   # If the Gemfile points to a git repo or local directory, be sure to use `bundle exec rake ...`
@@ -36,8 +38,11 @@ task :dist do
   #env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
   asciidoctor = env['asciidoctor']
   # NOTE hack to make version compliant with semver
-  asciidoctor.instance_variable_set :@source, (asciidoctor.instance_variable_get :@source)
-      .sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
+  asciidoctor_src = env['asciidoctor/core_ext/match_data'].source + env['asciidoctor'].source
+  asciidoctor_src = asciidoctor_src.sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
+  asciidoctor_src = asciidoctor_src.sub(/^( *)(self.\$require\("asciidoctor\/core_ext"\);)/,
+      %(\\1\\2\n\\1self.$require("asciidoctor/core_ext/match_data");))
+  asciidoctor.instance_variable_set :@source, asciidoctor_src
   asciidoctor.write_to "build/asciidoctor-core.js#{compress ? '.gz' : nil}"
   env['asciidoctor/extensions'].write_to "build/asciidoctor-extensions.js#{compress ? '.gz' : nil}"
   env['asciidoctor/converter/docbook45'].write_to "build/asciidoctor-docbook45.js#{compress ? '.gz' : nil}"
