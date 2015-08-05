@@ -4,7 +4,7 @@ class Slide
     templatedir = node.document.attributes['templatedir'] || ''
     node_name = node.node_name || ''
 
-    template = File.read(File.join(templatedir, backend, node_name, ".jade"));
+    template = File.read(File.join(templatedir, backend, node_name) + ".jade");
 
     %x(
           var compiled = jade.compile(#{template}, {pretty: true});
