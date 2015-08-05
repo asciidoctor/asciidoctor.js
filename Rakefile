@@ -82,8 +82,9 @@ task :examples => :dist do
   File.copy_stream 'examples/userguide_test.html', 'build/userguide_test.html'
   File.copy_stream 'README.adoc', 'build/README.adoc'
 
-  File.copy_stream 'examples/slide.html', 'build/slide.html'
+  File.copy_stream 'examples/asciidoctor.css', 'build/asciidoctor.css'
 
+  File.copy_stream 'examples/slide.html', 'build/slide.html'
   FileUtils.cp_r 'reveal.js', 'build/'
   FileUtils.cp_r 'slide-templates', 'build/'
 
