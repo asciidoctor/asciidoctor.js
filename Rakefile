@@ -101,6 +101,13 @@ task :examples => :dist do
     File.open('build/userguide.adoc', 'w') {|fd1| fd1.write userguide_content }
     File.open('build/customers.csv', 'w') {|fd1| fd1.write customers_content }
   end
+
+  unless File.exists? 'build/jade.js'
+    require 'open-uri'
+    jadejs_uri = 'https://raw.githubusercontent.com/jadejs/jade/1.11.0/jade.js'
+    jadejs_content = open(jadejs_uri) {|fd2| fd2.read }
+    File.open('build/jade.js', 'w') {|fd1| fd1.write jadejs_content }
+  end
 end
 
 desc 'Run smoke tests on AppVeyor'
