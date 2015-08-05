@@ -4,3 +4,6 @@
 [submodule "slide-templates"]
 	path = slide-templates
 	url = https://github.com/asciidocfx/asciidoctorjs-slide-templates.git
+[submodule "reveal.js"]
+	path = reveal.js
+	url = https://github.com/hakimel/reveal.js.git
