@@ -9,7 +9,6 @@
         "running on http://opalrb.org[_Opal_] " +
         "brings AsciiDoc to the browser!";
       var options = Opal.hash({doctype: 'inline', attributes: ['showtitle']});
-      Opal.require('asciidoctor');
       var html = Opal.Asciidoctor.$convert(content, options);
       console.log('html', html);
     </script>

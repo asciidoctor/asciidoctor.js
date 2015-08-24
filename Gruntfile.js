@@ -42,7 +42,8 @@ module.exports = function(grunt) {
         src: [
           'src/npm/prepend-core.js',
           'build/asciidoctor-core.js',
-          'src/npm/append-core.js'
+          'src/npm/append-core.js',
+          'src/append-require-core.js'
         ],
         dest: 'build/npm/asciidoctor-core.js'
       },
@@ -50,7 +51,8 @@ module.exports = function(grunt) {
         src: [
           'src/npm/prepend-core.js',
           'build/asciidoctor-core.js',
-          'src/npm/append-core-min.js'
+          'src/npm/append-core-min.js',
+          'src/append-require-core.js'
         ],
         dest: 'build/npm/asciidoctor-core-min.js'
       },
@@ -58,7 +60,8 @@ module.exports = function(grunt) {
         src: [
           'src/npm/prepend-extensions.js',
           'build/asciidoctor-extensions.js',
-          'src/npm/append-extensions.js'
+          'src/npm/append-extensions.js',
+          'src/append-require-extensions.js'
         ],
         dest: 'build/npm/asciidoctor-extensions.js'
       },
@@ -67,21 +70,25 @@ module.exports = function(grunt) {
           'src/npm/prepend-extensions.js',
           'build/asciidoctor-docbook45.js',
           'build/asciidoctor-docbook5.js',
-          'src/npm/append-extensions.js'
+          'src/npm/append-extensions.js',
+          'src/append-require-docbook.js'
         ],
         dest: 'build/npm/asciidoctor-docbook.js'
       },
       docbook: {
         src: [
           'build/asciidoctor-docbook45.js',
-          'build/asciidoctor-docbook5.js'
+          'build/asciidoctor-docbook5.js',
+          'src/append-require-docbook.js'
         ],
         dest: 'build/asciidoctor-docbook.js'
       },
       coreExtensions: {
         src: [
           'build/asciidoctor-core.js',
-          'build/asciidoctor-extensions.js'
+          'build/asciidoctor-extensions.js',
+          'src/append-require-core.js',
+          'src/append-require-extensions.js'
         ],
         dest: 'build/asciidoctor.js'
       },
@@ -89,7 +96,9 @@ module.exports = function(grunt) {
         src: [
           'bower_components/opal/opal/current/opal.js',
           'build/asciidoctor-core.js',
-          'build/asciidoctor-extensions.js'
+          'build/asciidoctor-extensions.js',
+          'src/append-require-core.js',
+          'src/append-require-extensions.js'
         ],
         dest: 'build/asciidoctor-all.js'
       }
