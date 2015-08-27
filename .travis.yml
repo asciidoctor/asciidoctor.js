@@ -9,3 +9,4 @@ before_script:
   - bower install
 
 script: "grunt"
+sudo: false
