@@ -53,6 +53,12 @@ var commonSpec = function(Opal, Asciidoctor) {
       expect(html).toContain('<h3 id="_test">Test</h3>');
     });
 
+   it('=== Test should embed assets', function() {
+     var options = Opal.hash({doctype: 'article', safe: 'unsafe', header_footer: true, attributes: ['showtitle', 'stylesheet=asciidoctor.css', 'stylesdir=../../dist/css']});
+     var html = Asciidoctor.$convert('=== Test', options);
+     expect(html).toContain('Asciidoctor default stylesheet');
+    });
+
     it('backend=docbook45 should produce a docbook45 document', function() {
       var options = Opal.hash({'attributes': ['backend=docbook45', 'doctype=book'],'header_footer':true});
       var html = Asciidoctor.$convert(':doctitle: DocTitle\n:docdate: 2014-01-01\n== Test', options);
