@@ -6,7 +6,7 @@ var commonSpec = function(Opal, Asciidoctor) {
     });
 
     it('Asciidoctor should not be null', function() {
-      expect(Opal).not.toBe(null);
+      expect(Asciidoctor).not.toBe(null);
     });
   });
 
@@ -22,7 +22,7 @@ var commonSpec = function(Opal, Asciidoctor) {
     });
 
     it('backend=docbook45 should produce a docbook45 document', function() {
-      var options = Opal.hash2(['attributes','header_footer'], {'attributes': ['backend=docbook45', 'doctype=book'],'header_footer':true});
+      var options = Opal.hash({'attributes': ['backend=docbook45', 'doctype=book'],'header_footer':true});
       var html = Asciidoctor.$convert(':doctitle: DocTitle\n:docdate: 2014-01-01\n== Test', options);
       expect(html).toContain('<?xml version="1.0" encoding="UTF-8"?>\n\
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">\n\
@@ -41,7 +41,7 @@ var commonSpec = function(Opal, Asciidoctor) {
     });
 
     it('backend=docbook5 should produce a docbook5 document', function() {
-      var options = Opal.hash2(['attributes','header_footer'], {'attributes': ['backend=docbook5', 'doctype=book'],'header_footer':true});
+      var options = Opal.hash({'attributes': ['backend=docbook5', 'doctype=book'],'header_footer':true});
       var html = Asciidoctor.$convert(':doctitle: DocTitle\n:docdate: 2014-01-01\n== Test', options);
       expect(html).toContain('<?xml version="1.0" encoding="UTF-8"?>\n\
 <?asciidoc-toc?>\n\
@@ -62,13 +62,10 @@ var commonSpec = function(Opal, Asciidoctor) {
   
   describe('Include', function() {
     it('Should includes file', function() {
-      var opts = Opal.hash2(['safe'], {
-        'safe': 'safe'
-      });
+      var opts = Opal.hash({'safe': 'safe'});
       var html = Asciidoctor.$convert('include::spec/share/include.adoc[]', opts);
       expect(html).toContain('include content');
     });
-
   });
 
 }
