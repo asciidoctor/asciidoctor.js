@@ -10,6 +10,38 @@ var commonSpec = function(Opal, Asciidoctor) {
     });
   });
 
+
+  describe('Loading', function() {
+    it('should load document with inline attributes @', function() {
+      var options = Opal.hash({'attributes': 'icons=font@'});
+      var doc = Asciidoctor.$load('== Test', options);
+      expect(doc.attributes.smap['icons']).toBe('font');
+    });
+
+    // Regression with Opal 0.8.0
+    /*
+    it('should load document with inline attributes !', function() {
+      var options = Opal.hash({'attributes': 'icons=font@ data-uri!'});
+      var doc = Asciidoctor.$load('== Test', options);
+      expect(doc.attributes.smap['icons']).toBe('font');
+    });
+    */
+
+    it('should load document with array attributes !', function() {
+      var options = Opal.hash({'attributes': ['icons=font@', 'data-uri!']});
+      var doc = Asciidoctor.$load('== Test', options);
+      expect(doc.attributes.smap['icons']).toBe('font');
+      expect(doc.attributes.smap['data-uri']).toBeUndefined();
+    });
+
+    it('should load document with boolean attributes', function() {
+      var options = Opal.hash({'attributes': ['sectnums=true']});
+      var doc = Asciidoctor.$load('== Test', options);
+      expect(doc.attributes.smap['sectnums']).toBe('true');
+    });
+
+  });
+
   describe('Parsing', function() {
     it('== Test should contains <h2 id="_test">Test</h2>', function() {
       var html = Asciidoctor.$convert('== Test', null);
@@ -56,6 +88,12 @@ var commonSpec = function(Opal, Asciidoctor) {
 \n\
 </chapter>\n\
 </book>');
+    });
+
+    it('should produce a html5 document with font icons', function() {
+      var options = Opal.hash({'attributes': 'icons=font@'});
+      var html = Asciidoctor.$convert('= Document\n\nThis is a simple document.\n\n== Section\n\nCAUTION: This is important!', options);
+      expect(html).toContain('<i class="fa icon-caution" title="Caution"></i>');
     });
 
   });
