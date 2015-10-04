@@ -50,7 +50,7 @@ task :dist do
 
   if File.directory? 'extensions-lab/lib'
     env.append_path 'extensions-lab/lib'
-    endorsed_extensions = ['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro']
+    endorsed_extensions = ['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro', 'chart-block-macro']
     endorsed_extensions.each { |extension| env[extension].write_to "build/asciidoctor-#{extension}.js#{compress ? '.gz' : nil}" }
   else
     puts "Unable to cross-compile extensions because git submodule 'extensions-lab' is not initialized."
