@@ -6,5 +6,3 @@
       return Opal.Asciidoctor;
     }
   }
-}
-Opal.require('asciidoctor');

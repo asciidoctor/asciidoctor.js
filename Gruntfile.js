@@ -43,7 +43,8 @@ module.exports = function(grunt) {
           'src/npm/prepend-core.js',
           'build/asciidoctor-core.js',
           'src/npm/append-core.js',
-          'src/append-require-core.js'
+          'src/append-require-core.js',
+          'src/npm/append-close-bracket.js'
         ],
         dest: 'build/npm/asciidoctor-core.js'
       },
@@ -52,7 +53,8 @@ module.exports = function(grunt) {
           'src/npm/prepend-core.js',
           'build/asciidoctor-core.js',
           'src/npm/append-core-min.js',
-          'src/append-require-core.js'
+          'src/append-require-core.js',
+          'src/npm/append-close-bracket.js'
         ],
         dest: 'build/npm/asciidoctor-core-min.js'
       },

@@ -6,4 +6,3 @@
       return Opal.Asciidoctor;
     }
   }
-}
