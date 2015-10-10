@@ -42,9 +42,7 @@ module.exports = function(grunt) {
         src: [
           'src/npm/prepend-core.js',
           'build/asciidoctor-core.js',
-          'src/npm/append-core.js',
-          'src/append-require-core.js',
-          'src/npm/append-close-bracket.js'
+          'src/npm/append-core.js'
         ],
         dest: 'build/npm/asciidoctor-core.js'
       },
@@ -52,9 +50,7 @@ module.exports = function(grunt) {
         src: [
           'src/npm/prepend-core.js',
           'build/asciidoctor-core.js',
-          'src/npm/append-core-min.js',
-          'src/append-require-core.js',
-          'src/npm/append-close-bracket.js'
+          'src/npm/append-core-min.js'
         ],
         dest: 'build/npm/asciidoctor-core-min.js'
       },
@@ -62,8 +58,8 @@ module.exports = function(grunt) {
         src: [
           'src/npm/prepend-extensions.js',
           'build/asciidoctor-extensions.js',
-          'src/npm/append-extensions.js',
-          'src/append-require-extensions.js'
+          'src/append-require-extensions.js',
+          'src/npm/append-extensions.js'
         ],
         dest: 'build/npm/asciidoctor-extensions.js'
       },
@@ -72,8 +68,8 @@ module.exports = function(grunt) {
           'src/npm/prepend-extensions.js',
           'build/asciidoctor-docbook45.js',
           'build/asciidoctor-docbook5.js',
-          'src/npm/append-extensions.js',
-          'src/append-require-docbook.js'
+          'src/append-require-docbook.js',
+          'src/npm/append-extensions.js'
         ],
         dest: 'build/npm/asciidoctor-docbook.js'
       },
@@ -163,14 +159,14 @@ module.exports = function(grunt) {
     jasmine: {
       options: {
         specs: 'spec/bower/bower.spec.js',
-        vendor: ['spec/share/common-specs.js'],
-        template: require('grunt-template-jasmine-istanbul'),
-        templateOptions: {
-          coverage: 'coverage.json',
-          report: {
-            type: 'lcovonly'
-          }
-        }
+        vendor: ['spec/share/common-specs.js']
+        //template: require('grunt-template-jasmine-istanbul'),
+        //templateOptions: {
+        //  coverage: 'coverage.json',
+        //  report: {
+        //    type: 'lcovonly'
+        //  }
+        //}
       },
       allStandard: {
         src: ['dist/asciidoctor-all.js', 'dist/asciidoctor-docbook.js']
