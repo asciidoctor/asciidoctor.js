@@ -99,6 +99,13 @@ module.exports = function(grunt) {
           'src/append-require-extensions.js'
         ],
         dest: 'build/asciidoctor-all.js'
+      },
+      core: {
+        src: [
+          'build/asciidoctor-core.js',
+          'src/append-require-core.js'
+        ],
+        dest: 'build/asciidoctor-core.js'
       }
     },
 
@@ -216,8 +223,8 @@ module.exports = function(grunt) {
   grunt.registerTask('example-result', 'Log the path to view the example result task', function() {
     grunt.log.subhead('You can now open the file build/asciidoctor_example.html');
   });
-  grunt.registerTask('examples', ['shell:rakeExamples', 'example-result']);
+  grunt.registerTask('examples', ['shell:rakeExamples', 'concat:core', 'example-result']);
   grunt.registerTask('npm', ['concat:npmCore', 'concat:npmCoreMin', 'concat:npmExtensions', 'concat:npmDocbook']);
-  grunt.registerTask('bower', ['concat:coreExtensions', 'concat:docbook', 'concat:all']);
+  grunt.registerTask('bower', ['concat:coreExtensions', 'concat:docbook', 'concat:all', 'concat:core']);
   grunt.registerTask('test', ['jasmine:allStandard', 'jasmine:allMinified', 'jasmine_node:all']);
 }
