@@ -25,7 +25,6 @@ task :dist do
 
   env = Opal::Environment.new
   env.js_compressor = Sprockets::ClosureCompressor if minify
-  #env['opal'].write_to "build/opal.js#{compress ? '.gz' : nil}"
 
   env.append_path 'lib'
 
@@ -35,13 +34,10 @@ task :dist do
   # Use append_path if you want to build against a local clone
   #env.append_path 'asciidoctor/lib'
 
-  #env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
   asciidoctor = env['asciidoctor']
+  asciidoctor_src = env['asciidoctor/opal_ext'].source + env['asciidoctor'].source
   # NOTE hack to make version compliant with semver
-  asciidoctor_src = env['asciidoctor/core_ext/match_data'].source + env['asciidoctor'].source
   asciidoctor_src = asciidoctor_src.sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
-  asciidoctor_src = asciidoctor_src.sub(/^( *)(self.\$require\("asciidoctor\/core_ext"\);)/,
-      %(\\1\\2\n\\1self.$require("asciidoctor/core_ext/match_data");))
   asciidoctor.instance_variable_set :@source, asciidoctor_src
   asciidoctor.write_to "build/asciidoctor-core.js#{compress ? '.gz' : nil}"
   env['asciidoctor/extensions'].write_to "build/asciidoctor-extensions.js#{compress ? '.gz' : nil}"
