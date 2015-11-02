@@ -25,7 +25,6 @@ task :dist do
 
   env = Opal::Environment.new
   env.js_compressor = Sprockets::ClosureCompressor if minify
-  #env['opal'].write_to "build/opal.js#{compress ? '.gz' : nil}"
 
   env.append_path 'lib'
 
@@ -35,18 +34,26 @@ task :dist do
   # Use append_path if you want to build against a local clone
   #env.append_path 'asciidoctor/lib'
 
-  #env['asciidoctor'].write_to "build/asciidoctor.js#{compress ? '.gz' : nil}"
   asciidoctor = env['asciidoctor']
+  asciidoctor_opal_ext = env['asciidoctor/opal_ext']
+  asciidoctor_extensions = env['asciidoctor/extensions']
+  asciidoctor_docbook45 = env['asciidoctor/converter/docbook45']
+  asciidoctor_docbook5 = env['asciidoctor/converter/docbook5']
+  asciidoctor_src = asciidoctor_opal_ext.source + asciidoctor.source
+  asciidoctor_docbook5_src = asciidoctor_docbook5.source
+  
   # NOTE hack to make version compliant with semver
-  asciidoctor_src = env['asciidoctor/core_ext/match_data'].source + env['asciidoctor'].source
   asciidoctor_src = asciidoctor_src.sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
-  asciidoctor_src = asciidoctor_src.sub(/^( *)(self.\$require\("asciidoctor\/core_ext"\);)/,
-      %(\\1\\2\n\\1self.$require("asciidoctor/core_ext/match_data");))
   asciidoctor.instance_variable_set :@source, asciidoctor_src
+  
+  # NOTE hack to manually resolve the constant in the scope (workaround an issue in Opal)
+  asciidoctor_docbook5_src = asciidoctor_docbook5_src.sub(/\$scope\.get\('DLIST_TAGS'\)\['\$\[\]'\]\("labeled"\)/, '$hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"})')
+  asciidoctor_docbook5.instance_variable_set :@source, asciidoctor_docbook5_src
+ 
   asciidoctor.write_to "build/asciidoctor-core.js#{compress ? '.gz' : nil}"
-  env['asciidoctor/extensions'].write_to "build/asciidoctor-extensions.js#{compress ? '.gz' : nil}"
-  env['asciidoctor/converter/docbook45'].write_to "build/asciidoctor-docbook45.js#{compress ? '.gz' : nil}"
-  env['asciidoctor/converter/docbook5'].write_to "build/asciidoctor-docbook5.js#{compress ? '.gz' : nil}"
+  asciidoctor_extensions.write_to "build/asciidoctor-extensions.js#{compress ? '.gz' : nil}"
+  asciidoctor_docbook45.write_to "build/asciidoctor-docbook45.js#{compress ? '.gz' : nil}"
+  asciidoctor_docbook5.write_to "build/asciidoctor-docbook5.js#{compress ? '.gz' : nil}"
 
   if File.directory? 'extensions-lab/lib'
     env.append_path 'extensions-lab/lib'

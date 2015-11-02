@@ -35,6 +35,7 @@ Opal.modules["asciidoctor/converter/docbook5"] = function(Opal) {
 
       var def = self.$$proto, $scope = self.$$scope, $a, $b;
 
+      def.asciimath_loaded = nil;
       def.$document = function(node) {
         var $a, self = this, result = nil, root_tag_name = nil, doctype_line = nil, lang_attribute = nil, footer_docinfo = nil;
 
@@ -128,9 +129,7 @@ if (item == null) item = nil;
         return $rb_times(result, $scope.get('EOL'));
       };
 
-      Opal.cdecl($scope, 'DLIST_TAGS', $hash2(["labeled", "qanda", "glossary"], {"labeled": $hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"}), "qanda": $hash2(["list", "entry", "label", "term", "item"], {"list": "qandaset", "entry": "qandaentry", "label": "question", "term": "simpara", "item": "answer"}), "glossary": $hash2(["list", "entry", "term", "item"], {"list": nil, "entry": "glossentry", "term": "glossterm", "item": "glossdef"})}));
-
-      (($a = [$scope.get('DLIST_TAGS')['$[]']("labeled")]), $b = $scope.get('DLIST_TAGS'), $b['$default='].apply($b, $a), $a[$a.length-1]);
+      (($a = [$scope.get('DLIST_TAGS')['$[]']("labeled")]), $b = (Opal.cdecl($scope, 'DLIST_TAGS', $hash2(["labeled", "qanda", "glossary"], {"labeled": $hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"}), "qanda": $hash2(["list", "entry", "label", "term", "item"], {"list": "qandaset", "entry": "qandaentry", "label": "question", "term": "simpara", "item": "answer"}), "glossary": $hash2(["list", "entry", "term", "item"], {"list": nil, "entry": "glossentry", "term": "glossterm", "item": "glossdef"})}))), $b['$default='].apply($b, $a), $a[$a.length-1]);
 
       def.$dlist = function(node) {
         var $a, $b, TMP_2, $c, TMP_4, self = this, result = nil, tag_name = nil, tags = nil, list_tag = nil, entry_tag = nil, label_tag = nil, term_tag = nil, item_tag = nil;
@@ -288,7 +287,7 @@ if (dt == null) dt = nil;
       };
 
       def.$stem = function(node) {
-        var $a, self = this, idx = nil, equation = nil, equation_data = nil;
+        var $a, $b, $c, $d, $e, self = this, idx = nil, equation = nil, equation_data = nil;
 
         if ((($a = (idx = node.$subs().$index("specialcharacters"))) !== nil && (!$a.$$is_boolean || $a == true))) {
           node.$subs().$delete("specialcharacters")};
@@ -297,6 +296,12 @@ if (dt == null) dt = nil;
           node.$subs().$insert(idx, "specialcharacters")};
         if (node.$style()['$==']("latexmath")) {
           equation_data = "<alt><![CDATA[" + (equation) + "]]></alt>\n<mediaobject><textobject><phrase></phrase></textobject></mediaobject>"
+        } else if ((($a = (($b = node.$style()['$==']("asciimath")) ? (((($c = ((Opal.Object.$$scope.AsciiMath == null ? nil : 'constant'))) !== false && $c !== nil) ? $c : ((function() {if ((($d = ((($e = self['asciimath_loaded'], $e != null && $e !== nil) ? 'instance-variable' : nil))['$!']()) !== nil && (!$d.$$is_boolean || $d == true))) {
+          return (self.asciimath_loaded = $scope.get('Helpers').$require_library("asciimath", true, "warn"))
+          } else {
+          return self.asciimath_loaded
+        }; return nil; })()))) : $b)) !== nil && (!$a.$$is_boolean || $a == true))) {
+          equation_data = Opal.get('AsciiMath').$parse(equation).$to_mathml("mml:", $hash2(["xmlns:mml"], {"xmlns:mml": "http://www.w3.org/1998/Math/MathML"}))
           } else {
           equation_data = "<mediaobject><textobject><phrase><![CDATA[" + (equation) + "]]></phrase></textobject></mediaobject>"
         };
@@ -435,6 +440,10 @@ if (item == null) item = nil;
           } else {
           return 1
         }; return nil; })()) + "\">");
+        if ((($a = (node['$option?']("unbreakable"))) !== nil && (!$a.$$is_boolean || $a == true))) {
+          result['$<<']("<?dbfo keep-together=\"always\"?>")
+        } else if ((($a = (node['$option?']("breakable"))) !== nil && (!$a.$$is_boolean || $a == true))) {
+          result['$<<']("<?dbfo keep-together=\"auto\"?>")};
         if (tag_name['$==']("table")) {
           result['$<<']("<title>" + (node.$title()) + "</title>")};
         if ((($a = (width = (function() {if ((($b = (node['$attr?']("width"))) !== nil && (!$b.$$is_boolean || $b == true))) {
@@ -587,18 +596,19 @@ if (item == null) item = nil;
       Opal.defn(self, '$video', def.$skip);
 
       def.$inline_anchor = function(node) {
-        var $a, self = this, $case = nil, linkend = nil, text = nil;
+        var $a, self = this, $case = nil, path = nil, linkend = nil, text = nil, target = nil;
 
-        return (function() {$case = node.$type();if ("ref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, node.$text())) + "/>"}else if ("xref"['$===']($case)) {if ((($a = node['$attr?']("path", nil)) !== nil && (!$a.$$is_boolean || $a == true))) {
-          linkend = ((($a = (node.$attr("fragment"))) !== false && $a !== nil) ? $a : node.$target());
+        return (function() {$case = node.$type();if ("ref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, node.$text())) + "/>"}else if ("xref"['$===']($case)) {if ((($a = (path = node.$attributes()['$[]']("path"))) !== nil && (!$a.$$is_boolean || $a == true))) {
+          return "<link xlink:href=\"" + (node.$target()) + "\">" + (((($a = node.$text()) !== false && $a !== nil) ? $a : path)) + "</link>"
+          } else {
+          linkend = ((($a = node.$attributes()['$[]']("fragment")) !== false && $a !== nil) ? $a : node.$target());
           if ((($a = (text = node.$text())) !== nil && (!$a.$$is_boolean || $a == true))) {
             return "<link linkend=\"" + (linkend) + "\">" + (text) + "</link>"
             } else {
             return "<xref linkend=\"" + (linkend) + "\"/>"
           };
-          } else {
-          return "<link xlink:href=\"" + (self.$target()) + "\">" + (((($a = node.$text()) !== false && $a !== nil) ? $a : (node.$attr("path")))) + "</link>"
-        }}else if ("link"['$===']($case)) {return "<link xlink:href=\"" + (node.$target()) + "\">" + (node.$text()) + "</link>"}else if ("bibref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, "[" + (node.$target()) + "]")) + "/>[" + (node.$target()) + "]"}else {return self.$warn("asciidoctor: WARNING: unknown anchor type: " + (node.$type().$inspect()))}})();
+        }}else if ("link"['$===']($case)) {return "<link xlink:href=\"" + (node.$target()) + "\">" + (node.$text()) + "</link>"}else if ("bibref"['$===']($case)) {target = node.$target();
+        return "<anchor" + (self.$common_attributes(target, nil, "[" + (target) + "]")) + "/>[" + (target) + "]";}else {return self.$warn("asciidoctor: WARNING: unknown anchor type: " + (node.$type().$inspect()))}})();
       };
 
       def.$inline_break = function(node) {
@@ -667,15 +677,14 @@ if (item == null) item = nil;
       };
 
       def.$inline_kbd = function(node) {
-        var $a, $b, TMP_17, self = this, keys = nil, key_combo = nil;
+        var $a, $b, TMP_17, self = this, keys = nil;
 
         if (((keys = node.$attr("keys"))).$size()['$=='](1)) {
           return "<keycap>" + (keys['$[]'](0)) + "</keycap>"
           } else {
-          key_combo = ($a = ($b = keys).$map, $a.$$p = (TMP_17 = function(key){var self = TMP_17.$$s || this;
+          return "<keycombo>" + (($a = ($b = keys).$map, $a.$$p = (TMP_17 = function(key){var self = TMP_17.$$s || this;
 if (key == null) key = nil;
-          return "<keycap>" + (key) + "</keycap>"}, TMP_17.$$s = self, TMP_17), $a).call($b).$join();
-          return "<keycombo>" + (key_combo) + "</keycombo>";
+          return "<keycap>" + (key) + "</keycap>"}, TMP_17.$$s = self, TMP_17), $a).call($b).$join()) + "</keycombo>"
         };
       };
 
@@ -695,9 +704,7 @@ if (submenu == null) submenu = nil;
         };
       };
 
-      Opal.cdecl($scope, 'QUOTE_TAGS', $hash2(["emphasis", "strong", "monospaced", "superscript", "subscript", "double", "single", "mark"], {"emphasis": ["<emphasis>", "</emphasis>", true], "strong": ["<emphasis role=\"strong\">", "</emphasis>", true], "monospaced": ["<literal>", "</literal>", false], "superscript": ["<superscript>", "</superscript>", false], "subscript": ["<subscript>", "</subscript>", false], "double": ["&#8220;", "&#8221;", true], "single": ["&#8216;", "&#8217;", true], "mark": ["<emphasis role=\"marked\">", "</emphasis>", false]}));
-
-      (($a = [[nil, nil, true]]), $b = $scope.get('QUOTE_TAGS'), $b['$default='].apply($b, $a), $a[$a.length-1]);
+      (($a = [[nil, nil, true]]), $b = (Opal.cdecl($scope, 'QUOTE_TAGS', $hash2(["emphasis", "strong", "monospaced", "superscript", "subscript", "double", "single", "mark"], {"emphasis": ["<emphasis>", "</emphasis>", true], "strong": ["<emphasis role=\"strong\">", "</emphasis>", true], "monospaced": ["<literal>", "</literal>", false], "superscript": ["<superscript>", "</superscript>", false], "subscript": ["<subscript>", "</subscript>", false], "double": ["&#8220;", "&#8221;", true], "single": ["&#8216;", "&#8217;", true], "mark": ["<emphasis role=\"marked\">", "</emphasis>", false]}))), $b['$default='].apply($b, $a), $a[$a.length-1]);
 
       def.$inline_quoted = function(node) {
         var $a, self = this, type = nil, open = nil, close = nil, supports_phrase = nil, text = nil, role = nil, quoted_text = nil;
@@ -794,7 +801,7 @@ if (submenu == null) submenu = nil;
       };
 
       def.$document_info_element = function(doc, info_tag_prefix, use_info_tag_prefix) {
-        var $a, $b, TMP_19, $c, $d, self = this, result = nil, authorcount = nil, header_docinfo = nil;
+        var $a, $b, TMP_19, $c, $d, self = this, result = nil, authorcount = nil, head_docinfo = nil;
 
         if (use_info_tag_prefix == null) {
           use_info_tag_prefix = false
@@ -838,9 +845,9 @@ if (index == null) index = nil;
             if ((($a = doc['$attr?']("revremark")) !== nil && (!$a.$$is_boolean || $a == true))) {
               result['$<<']("<revremark>" + (doc.$attr("revremark")) + "</revremark>")};
             result['$<<']("</revision>\n</revhistory>");};
-          if ((($a = ((header_docinfo = doc.$docinfo("header")))['$empty?']()) !== nil && (!$a.$$is_boolean || $a == true))) {
+          if ((($a = ((head_docinfo = doc.$docinfo()))['$empty?']()) !== nil && (!$a.$$is_boolean || $a == true))) {
             } else {
-            result['$<<'](header_docinfo)
+            result['$<<'](head_docinfo)
           };
           if ((($a = doc['$attr?']("orgname")) !== nil && (!$a.$$is_boolean || $a == true))) {
             result['$<<']("<orgname>" + (doc.$attr("orgname")) + "</orgname>")};};
@@ -972,20 +979,19 @@ if (item == null) item = nil;if (idx == null) idx = nil;
       };
 
       def.$inline_anchor = function(node) {
-        var $a, self = this, target = nil, $case = nil, linkend = nil, text = nil;
+        var $a, self = this, $case = nil, path = nil, linkend = nil, text = nil, target = nil;
 
-        target = node.$target();
-        return (function() {$case = node.$type();if ("ref"['$===']($case)) {return "<anchor" + (self.$common_attributes(target, nil, node.$text())) + "/>"}else if ("xref"['$===']($case)) {if ((($a = node['$attr?']("path", nil)) !== nil && (!$a.$$is_boolean || $a == true))) {
-          linkend = ((($a = (node.$attr("fragment"))) !== false && $a !== nil) ? $a : target);
+        return (function() {$case = node.$type();if ("ref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, node.$text())) + "/>"}else if ("xref"['$===']($case)) {if ((($a = (path = node.$attributes()['$[]']("path"))) !== nil && (!$a.$$is_boolean || $a == true))) {
+          return "<ulink url=\"" + (node.$target()) + "\">" + (((($a = node.$text()) !== false && $a !== nil) ? $a : path)) + "</ulink>"
+          } else {
+          linkend = ((($a = node.$attributes()['$[]']("fragment")) !== false && $a !== nil) ? $a : node.$target());
           if ((($a = (text = node.$text())) !== nil && (!$a.$$is_boolean || $a == true))) {
             return "<link linkend=\"" + (linkend) + "\">" + (text) + "</link>"
             } else {
             return "<xref linkend=\"" + (linkend) + "\"/>"
           };
-          } else {
-          text = ((($a = node.$text()) !== false && $a !== nil) ? $a : (node.$attr("path")));
-          return "<ulink url=\"" + (target) + "\">" + (text) + "</ulink>";
-        }}else if ("link"['$===']($case)) {return "<ulink url=\"" + (target) + "\">" + (node.$text()) + "</ulink>"}else if ("bibref"['$===']($case)) {return "<anchor" + (self.$common_attributes(target, nil, "[" + (target) + "]")) + "/>[" + (target) + "]"}else { return nil }})();
+        }}else if ("link"['$===']($case)) {return "<ulink url=\"" + (node.$target()) + "\">" + (node.$text()) + "</ulink>"}else if ("bibref"['$===']($case)) {target = node.$target();
+        return "<anchor" + (self.$common_attributes(target, nil, "[" + (target) + "]")) + "/>[" + (target) + "]";}else { return nil }})();
       };
 
       def.$author_element = function(doc, index) {
@@ -1119,6 +1125,7 @@ Opal.modules["asciidoctor/converter/docbook5"] = function(Opal) {
 
       var def = self.$$proto, $scope = self.$$scope, $a, $b;
 
+      def.asciimath_loaded = nil;
       def.$document = function(node) {
         var $a, self = this, result = nil, root_tag_name = nil, doctype_line = nil, lang_attribute = nil, footer_docinfo = nil;
 
@@ -1212,9 +1219,7 @@ if (item == null) item = nil;
         return $rb_times(result, $scope.get('EOL'));
       };
 
-      Opal.cdecl($scope, 'DLIST_TAGS', $hash2(["labeled", "qanda", "glossary"], {"labeled": $hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"}), "qanda": $hash2(["list", "entry", "label", "term", "item"], {"list": "qandaset", "entry": "qandaentry", "label": "question", "term": "simpara", "item": "answer"}), "glossary": $hash2(["list", "entry", "term", "item"], {"list": nil, "entry": "glossentry", "term": "glossterm", "item": "glossdef"})}));
-
-      (($a = [$scope.get('DLIST_TAGS')['$[]']("labeled")]), $b = $scope.get('DLIST_TAGS'), $b['$default='].apply($b, $a), $a[$a.length-1]);
+      (($a = [$hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"})]), $b = (Opal.cdecl($scope, 'DLIST_TAGS', $hash2(["labeled", "qanda", "glossary"], {"labeled": $hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"}), "qanda": $hash2(["list", "entry", "label", "term", "item"], {"list": "qandaset", "entry": "qandaentry", "label": "question", "term": "simpara", "item": "answer"}), "glossary": $hash2(["list", "entry", "term", "item"], {"list": nil, "entry": "glossentry", "term": "glossterm", "item": "glossdef"})}))), $b['$default='].apply($b, $a), $a[$a.length-1]);
 
       def.$dlist = function(node) {
         var $a, $b, TMP_2, $c, TMP_4, self = this, result = nil, tag_name = nil, tags = nil, list_tag = nil, entry_tag = nil, label_tag = nil, term_tag = nil, item_tag = nil;
@@ -1372,7 +1377,7 @@ if (dt == null) dt = nil;
       };
 
       def.$stem = function(node) {
-        var $a, self = this, idx = nil, equation = nil, equation_data = nil;
+        var $a, $b, $c, $d, $e, self = this, idx = nil, equation = nil, equation_data = nil;
 
         if ((($a = (idx = node.$subs().$index("specialcharacters"))) !== nil && (!$a.$$is_boolean || $a == true))) {
           node.$subs().$delete("specialcharacters")};
@@ -1381,6 +1386,12 @@ if (dt == null) dt = nil;
           node.$subs().$insert(idx, "specialcharacters")};
         if (node.$style()['$==']("latexmath")) {
           equation_data = "<alt><![CDATA[" + (equation) + "]]></alt>\n<mediaobject><textobject><phrase></phrase></textobject></mediaobject>"
+        } else if ((($a = (($b = node.$style()['$==']("asciimath")) ? (((($c = ((Opal.Object.$$scope.AsciiMath == null ? nil : 'constant'))) !== false && $c !== nil) ? $c : ((function() {if ((($d = ((($e = self['asciimath_loaded'], $e != null && $e !== nil) ? 'instance-variable' : nil))['$!']()) !== nil && (!$d.$$is_boolean || $d == true))) {
+          return (self.asciimath_loaded = $scope.get('Helpers').$require_library("asciimath", true, "warn"))
+          } else {
+          return self.asciimath_loaded
+        }; return nil; })()))) : $b)) !== nil && (!$a.$$is_boolean || $a == true))) {
+          equation_data = Opal.get('AsciiMath').$parse(equation).$to_mathml("mml:", $hash2(["xmlns:mml"], {"xmlns:mml": "http://www.w3.org/1998/Math/MathML"}))
           } else {
           equation_data = "<mediaobject><textobject><phrase><![CDATA[" + (equation) + "]]></phrase></textobject></mediaobject>"
         };
@@ -1519,6 +1530,10 @@ if (item == null) item = nil;
           } else {
           return 1
         }; return nil; })()) + "\">");
+        if ((($a = (node['$option?']("unbreakable"))) !== nil && (!$a.$$is_boolean || $a == true))) {
+          result['$<<']("<?dbfo keep-together=\"always\"?>")
+        } else if ((($a = (node['$option?']("breakable"))) !== nil && (!$a.$$is_boolean || $a == true))) {
+          result['$<<']("<?dbfo keep-together=\"auto\"?>")};
         if (tag_name['$==']("table")) {
           result['$<<']("<title>" + (node.$title()) + "</title>")};
         if ((($a = (width = (function() {if ((($b = (node['$attr?']("width"))) !== nil && (!$b.$$is_boolean || $b == true))) {
@@ -1671,18 +1686,19 @@ if (item == null) item = nil;
       Opal.defn(self, '$video', def.$skip);
 
       def.$inline_anchor = function(node) {
-        var $a, self = this, $case = nil, linkend = nil, text = nil;
+        var $a, self = this, $case = nil, path = nil, linkend = nil, text = nil, target = nil;
 
-        return (function() {$case = node.$type();if ("ref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, node.$text())) + "/>"}else if ("xref"['$===']($case)) {if ((($a = node['$attr?']("path", nil)) !== nil && (!$a.$$is_boolean || $a == true))) {
-          linkend = ((($a = (node.$attr("fragment"))) !== false && $a !== nil) ? $a : node.$target());
+        return (function() {$case = node.$type();if ("ref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, node.$text())) + "/>"}else if ("xref"['$===']($case)) {if ((($a = (path = node.$attributes()['$[]']("path"))) !== nil && (!$a.$$is_boolean || $a == true))) {
+          return "<link xlink:href=\"" + (node.$target()) + "\">" + (((($a = node.$text()) !== false && $a !== nil) ? $a : path)) + "</link>"
+          } else {
+          linkend = ((($a = node.$attributes()['$[]']("fragment")) !== false && $a !== nil) ? $a : node.$target());
           if ((($a = (text = node.$text())) !== nil && (!$a.$$is_boolean || $a == true))) {
             return "<link linkend=\"" + (linkend) + "\">" + (text) + "</link>"
             } else {
             return "<xref linkend=\"" + (linkend) + "\"/>"
           };
-          } else {
-          return "<link xlink:href=\"" + (self.$target()) + "\">" + (((($a = node.$text()) !== false && $a !== nil) ? $a : (node.$attr("path")))) + "</link>"
-        }}else if ("link"['$===']($case)) {return "<link xlink:href=\"" + (node.$target()) + "\">" + (node.$text()) + "</link>"}else if ("bibref"['$===']($case)) {return "<anchor" + (self.$common_attributes(node.$target(), nil, "[" + (node.$target()) + "]")) + "/>[" + (node.$target()) + "]"}else {return self.$warn("asciidoctor: WARNING: unknown anchor type: " + (node.$type().$inspect()))}})();
+        }}else if ("link"['$===']($case)) {return "<link xlink:href=\"" + (node.$target()) + "\">" + (node.$text()) + "</link>"}else if ("bibref"['$===']($case)) {target = node.$target();
+        return "<anchor" + (self.$common_attributes(target, nil, "[" + (target) + "]")) + "/>[" + (target) + "]";}else {return self.$warn("asciidoctor: WARNING: unknown anchor type: " + (node.$type().$inspect()))}})();
       };
 
       def.$inline_break = function(node) {
@@ -1751,15 +1767,14 @@ if (item == null) item = nil;
       };
 
       def.$inline_kbd = function(node) {
-        var $a, $b, TMP_17, self = this, keys = nil, key_combo = nil;
+        var $a, $b, TMP_17, self = this, keys = nil;
 
         if (((keys = node.$attr("keys"))).$size()['$=='](1)) {
           return "<keycap>" + (keys['$[]'](0)) + "</keycap>"
           } else {
-          key_combo = ($a = ($b = keys).$map, $a.$$p = (TMP_17 = function(key){var self = TMP_17.$$s || this;
+          return "<keycombo>" + (($a = ($b = keys).$map, $a.$$p = (TMP_17 = function(key){var self = TMP_17.$$s || this;
 if (key == null) key = nil;
-          return "<keycap>" + (key) + "</keycap>"}, TMP_17.$$s = self, TMP_17), $a).call($b).$join();
-          return "<keycombo>" + (key_combo) + "</keycombo>";
+          return "<keycap>" + (key) + "</keycap>"}, TMP_17.$$s = self, TMP_17), $a).call($b).$join()) + "</keycombo>"
         };
       };
 
@@ -1779,9 +1794,7 @@ if (submenu == null) submenu = nil;
         };
       };
 
-      Opal.cdecl($scope, 'QUOTE_TAGS', $hash2(["emphasis", "strong", "monospaced", "superscript", "subscript", "double", "single", "mark"], {"emphasis": ["<emphasis>", "</emphasis>", true], "strong": ["<emphasis role=\"strong\">", "</emphasis>", true], "monospaced": ["<literal>", "</literal>", false], "superscript": ["<superscript>", "</superscript>", false], "subscript": ["<subscript>", "</subscript>", false], "double": ["&#8220;", "&#8221;", true], "single": ["&#8216;", "&#8217;", true], "mark": ["<emphasis role=\"marked\">", "</emphasis>", false]}));
-
-      (($a = [[nil, nil, true]]), $b = $scope.get('QUOTE_TAGS'), $b['$default='].apply($b, $a), $a[$a.length-1]);
+      (($a = [[nil, nil, true]]), $b = (Opal.cdecl($scope, 'QUOTE_TAGS', $hash2(["emphasis", "strong", "monospaced", "superscript", "subscript", "double", "single", "mark"], {"emphasis": ["<emphasis>", "</emphasis>", true], "strong": ["<emphasis role=\"strong\">", "</emphasis>", true], "monospaced": ["<literal>", "</literal>", false], "superscript": ["<superscript>", "</superscript>", false], "subscript": ["<subscript>", "</subscript>", false], "double": ["&#8220;", "&#8221;", true], "single": ["&#8216;", "&#8217;", true], "mark": ["<emphasis role=\"marked\">", "</emphasis>", false]}))), $b['$default='].apply($b, $a), $a[$a.length-1]);
 
       def.$inline_quoted = function(node) {
         var $a, self = this, type = nil, open = nil, close = nil, supports_phrase = nil, text = nil, role = nil, quoted_text = nil;
@@ -1878,7 +1891,7 @@ if (submenu == null) submenu = nil;
       };
 
       def.$document_info_element = function(doc, info_tag_prefix, use_info_tag_prefix) {
-        var $a, $b, TMP_19, $c, $d, self = this, result = nil, authorcount = nil, header_docinfo = nil;
+        var $a, $b, TMP_19, $c, $d, self = this, result = nil, authorcount = nil, head_docinfo = nil;
 
         if (use_info_tag_prefix == null) {
           use_info_tag_prefix = false
@@ -1922,9 +1935,9 @@ if (index == null) index = nil;
             if ((($a = doc['$attr?']("revremark")) !== nil && (!$a.$$is_boolean || $a == true))) {
               result['$<<']("<revremark>" + (doc.$attr("revremark")) + "</revremark>")};
             result['$<<']("</revision>\n</revhistory>");};
-          if ((($a = ((header_docinfo = doc.$docinfo("header")))['$empty?']()) !== nil && (!$a.$$is_boolean || $a == true))) {
+          if ((($a = ((head_docinfo = doc.$docinfo()))['$empty?']()) !== nil && (!$a.$$is_boolean || $a == true))) {
             } else {
-            result['$<<'](header_docinfo)
+            result['$<<'](head_docinfo)
           };
           if ((($a = doc['$attr?']("orgname")) !== nil && (!$a.$$is_boolean || $a == true))) {
             result['$<<']("<orgname>" + (doc.$attr("orgname")) + "</orgname>")};};
