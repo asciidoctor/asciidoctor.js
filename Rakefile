@@ -44,6 +44,9 @@ task :dist do
   
   # NOTE hack to make version compliant with semver
   asciidoctor_src = asciidoctor_src.sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
+  # NOTE hack to remove backreference substitution for Opal
+  # Keep this hack until Asciidoctor 1.5.4 is released (fix in core https://github.com/asciidoctor/asciidoctor/commit/df49f227bab51f2b1197862e7ac95f2a0b844f2b)
+  asciidoctor_src = asciidoctor_src.sub(/capture_1\ =\ \(function\(\).*/, 'capture_1 = (function() {if (false) {')
   asciidoctor.instance_variable_set :@source, asciidoctor_src
   
   # NOTE hack to manually resolve the constant in the scope (workaround an issue in Opal)
