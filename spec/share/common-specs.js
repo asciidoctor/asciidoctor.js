@@ -18,14 +18,17 @@ var commonSpec = function(Opal, Asciidoctor) {
       expect(doc.attributes.smap['icons']).toBe('font');
     });
 
-    // Regression with Opal 0.8.0
-    /*
     it('should load document with inline attributes !', function() {
       var options = Opal.hash({'attributes': 'icons=font@ data-uri!'});
       var doc = Asciidoctor.$load('== Test', options);
       expect(doc.attributes.smap['icons']).toBe('font');
     });
-    */
+
+    it('should load document attributes', function() {
+      var options = Opal.hash({'attributes': 'icons=font@ data-uri!'});
+      var doc = Asciidoctor.$load('= Document Title\n:attribute-key: attribute-value\n\ncontent', options);
+      expect(doc.$attr('attribute-key')).toBe('attribute-value');
+    });
 
     it('should load document with array attributes !', function() {
       var options = Opal.hash({'attributes': ['icons=font@', 'data-uri!']});
