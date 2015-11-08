@@ -17046,7 +17046,7 @@ if (accum == null) accum = nil;if (entry == null) entry = nil;
               accum['$[]='](k, ((($a = v) !== false && $a !== nil) ? $a : ""));
               return accum;}, TMP_2.$$s = self, TMP_2), $a).call($b, $hash2([], {}))
           } else if ((($a = Opal.get('String')['$==='](attrs)) !== nil && (!$a.$$is_boolean || $a == true))) {
-            capture_1 = (function() {if ((($a = Opal.get('RUBY_ENGINE_OPAL')) !== nil && (!$a.$$is_boolean || $a == true))) {
+            capture_1 = (function() {if (false) {
               return "$1"
               } else {
               return "\\1"
