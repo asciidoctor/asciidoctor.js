@@ -138,6 +138,8 @@ task :jdk8_ea => :dist do
   else
     if OS.windows?
       ENV['SSL_CERT_FILE'] = "#{File.expand_path File.dirname(__FILE__)}\\rake\\cacert.pem"
+      ctx = OpenSSL::SSL::SSLContext.new
+      ctx.ssl_version = :SSLv23
       jdk_url = JdkHelper.get_jdk8_download_url
       destination_file = "#{Dir.tmpdir}/jdk-8-ea.exe"
       JdkHelper.download_binary_file jdk_url, destination_file
@@ -181,6 +183,8 @@ task :jdk9_ea => :dist do
   else
     if OS.windows?
       ENV['SSL_CERT_FILE'] = "#{File.expand_path File.dirname(__FILE__)}\\rake\\cacert.pem"
+      ctx = OpenSSL::SSL::SSLContext.new
+      ctx.ssl_version = :SSLv23
       jdk_url = JdkHelper.get_jdk9_download_url
       destination_file = "#{Dir.tmpdir}/jdk-9-ea.exe"
       JdkHelper.download_binary_file jdk_url, destination_file
