@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 # NOTE use `bundle exec rake examples` if one of the gems points to a git clone or local path
 
-gem 'opal', '0.8.0'
+gem 'opal', '0.9.0.beta2'
 #gem 'opal', :github => 'opal'
 gem 'asciidoctor', '1.5.3'
 #gem 'asciidoctor', :github => 'asciidoctor', :ref => 'master'
