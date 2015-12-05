@@ -20,10 +20,15 @@
   }
 )
 JAVASCRIPT_PLATFORM = %x(value)
-require 'encoding' # needed for String.bytes method
 require 'strscan'
 require 'asciidoctor/opal_ext/comparable'
 require 'asciidoctor/opal_ext/dir'
 require 'asciidoctor/opal_ext/error'
 require 'asciidoctor/opal_ext/file'
 require 'asciidoctor/opal_ext/match_data'
+
+case JAVASCRIPT_PLATFORM
+  when 'java-nashorn'
+    require 'asciidoctor/opal_ext/nashorn/io'
+  else
+end

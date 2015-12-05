@@ -1,4 +1,4 @@
-class Kernel
+module Kernel
   # basic implementation of open, enough to work
   # with reading files over XmlHttpRequest
   def open(path, *rest)
