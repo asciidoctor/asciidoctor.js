@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "opal-npm-wrapper": "^0.8.0",
+    "opal-npm-wrapper": "^0.9.0-beta2",
     "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
