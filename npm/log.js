@@ -20,6 +20,10 @@ Log.prototype.warn = function(message) {
   console.log(message.yellow);
 }
 
+Log.prototype.error = function(message) {
+  console.log(message.red);
+}
+
 Log.prototype.success = function(message) {
   console.log('');
   console.log('>>'.green + ' ' + message);  

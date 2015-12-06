@@ -21,7 +21,8 @@
     "test": "node npm/test/jasmine-bower.js && node npm/test/jasmine-bower-min.js && node npm/test/jasmine-npm.js",
     "dist": "node npm/dist.js && npm run test",
     "package": "MINIFY=1 node npm/dist.js && MINIFY=1 npm run test",
-    "examples": "node npm/examples.js"
+    "examples": "node npm/examples.js",
+    "release": "MINIFY=1 node npm/release.js"
   },
   "repository": {
     "type": "git",

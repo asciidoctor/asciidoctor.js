@@ -59,6 +59,58 @@ function Build() {
   ];
 }
 
+Build.prototype.dist = function() {
+  var build = this;
+  var start = process.hrtime();
+
+  // Step 1: clean
+  build.clean();
+
+  // Step 2: build
+  build.buildRuby();
+
+  // Step 3: concat
+  build.concatJavaScripts();
+
+  async.series([
+    function(callback) {
+      build.copyToDist(callback); // Step 4: Copy to dist
+    },
+    function(callback) {
+      build.uglify(callback); // Step 5: Uglify (optional)
+    },
+    function(callback) {
+      build.gzip(callback); // Step 6: Gzip
+    }
+  ], function() {
+    log.success('Done in ' + process.hrtime(start)[0] + 's');
+  });
+}
+
+Build.prototype.clean = function() {
+  log.title('clean');
+  this.deleteBuildFolder(); // delete build folder
+  this.deleteDistFolder(); // delete dist folder
+}
+
+Build.prototype.buildRuby = function() {
+  log.title('build');
+  this.execSync('bundle install');
+  this.execSync('bundle exec rake dist');
+}
+
+Build.prototype.concatJavaScripts = function() {
+  log.title('concat');
+  this.concatCore();
+  this.concatCoreMin();
+  this.concatNpmExtensions();
+  this.concatNpmDocbook();
+  this.concatBowerCoreExtensions();
+  this.concatBowerDocbook();
+  this.concatBowerAll();
+  this.concatBowerCore(); // must be the last because we're using 'build/asciidoctor-core.js' in other concat tasks
+}
+
 Build.prototype.concat = function(message, files, destination) {
   log.debug(message);
   concat(files, destination);
@@ -146,10 +198,21 @@ Build.prototype.deleteDistFolder = function() {
   fs.mkdirSync('dist/npm');
 }
 
+Build.prototype.replaceFileSync = function(file, regexp, newSubString) {
+  log.debug('update ' + file);
+  if (!process.env.DRY_RUN) {
+    var data = fs.readFileSync(file, 'utf8');
+    var dataUpdated = data.replace(regexp, newSubString);
+    fs.writeFileSync(file, dataUpdated, 'utf8');
+  }
+}
+
 Build.prototype.execSync = function(command) {
   log.debug(command);
-  stdout = child_process.execSync(command);
-  process.stdout.write(stdout);
+  if (!process.env.DRY_RUN) {
+    stdout = child_process.execSync(command);
+    process.stdout.write(stdout);
+  }
 }
 
 Build.prototype.uglify = function(callback) {
