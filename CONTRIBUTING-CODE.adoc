@@ -12,7 +12,7 @@ This guide will give you all the necessary information you need to become a succ
 
 {sources}[Asciidoctor.js] is direct port of {uri-asciidoctor}[Asciidoctor] from Ruby to JavaScript using {uri-opal}[Opal], a Ruby-to-JavaScript transpiler.
 The project includes a Rake build script that executes the Opal compiler on the Asciidoctor source code to produce the Asciidoctor.js scripts.
-A Grunt build is used to assemble and prepare the distribution files, using the Rake build underneath.
+A npm build is used to assemble and prepare the distribution files, using the Rake build underneath.
 
 Opal parses the Ruby code and any required libraries, then rewrites the code into JavaScript under the Opal namespace.
 The resulting JavaScript can be executed within any JavaScript runtime environment (such as a browser).
@@ -43,9 +43,9 @@ TIP: Opal.js, The Ruby runtime in JavaScript is available in `bower_components/o
 
 == Building asciidoctor.js
 
-To build asciidoctor.js, simple run the Grunt `dist` task from the root of the project:
+To build asciidoctor.js, simple run the npm `dist` script from the root of the project:
 
- $ grunt dist
+ $ npm run dist
 
 NOTE: The build task will make some minor code changes on the asciidoctor submodule.
 As you may know String are immutable in JavaScript, so we need to replace `gsub!` and `sub!` methods.
@@ -73,7 +73,7 @@ You'll see these scripts in action when you run the examples, described next.
 
 To build the examples, simply run the Rake `examples` task from the root of the project:
 
- $ grunt examples
+ $ npm run examples
 
 This command produces another JavaScript file in the [path]_build_ directory, [path]_asciidoctor_example.js_.
 This script includes:
@@ -106,7 +106,6 @@ Here's a list of some of the changes that are currently needed:
 * Assignments without a matching value are set to empty string instead of nil (in the following example, `b` is set to empty string)
 
   a, b = "value".split ',', 2
-
 
 == Debugging
 

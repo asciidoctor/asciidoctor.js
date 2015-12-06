@@ -1,6 +1,9 @@
 language: node_js
 node_js:
-  - "0.10"
+  - "0.12"
+
+jdk:
+  - oraclejdk8
 
 before_script:
   - rvm install 1.9.3-p194
@@ -8,5 +11,5 @@ before_script:
   - npm install
   - bower install
 
-script: "grunt"
+script: "npm run package"
 sudo: false
