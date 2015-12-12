@@ -35,11 +35,10 @@ task :dist do
   #env.append_path 'asciidoctor/lib'
 
   asciidoctor = env['asciidoctor']
-  asciidoctor_opal_ext = env['asciidoctor/opal_ext']
   asciidoctor_extensions = env['asciidoctor/extensions']
   asciidoctor_docbook45 = env['asciidoctor/converter/docbook45']
   asciidoctor_docbook5 = env['asciidoctor/converter/docbook5']
-  asciidoctor_src = asciidoctor_opal_ext.source + asciidoctor.source
+  asciidoctor_src = asciidoctor.source
   asciidoctor_docbook5_src = asciidoctor_docbook5.source
   
   # NOTE hack to make version compliant with semver
