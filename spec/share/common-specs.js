@@ -42,7 +42,17 @@ var commonSpec = function(Opal, Asciidoctor) {
       var doc = Asciidoctor.$load('== Test', options);
       expect(doc.attributes.smap['sectnums']).toBe('true');
     });
+  });
 
+  describe('Modifying', function() {
+    it('should allow document-level attributes to be modified', function() {
+      var doc = Asciidoctor.$load('= Document Title\n:lang: fr\n\ncontent is in {lang}');
+      expect(doc.$attr('lang')).toBe('fr');
+      doc.$set_attribute('lang', 'us');
+      expect(doc.$attr('lang')).toBe('us');
+      var html = doc.$convert();
+      expect(html).toContain('content is in us');
+    });
   });
 
   describe('Parsing', function() {
@@ -104,7 +114,6 @@ var commonSpec = function(Opal, Asciidoctor) {
       var html = Asciidoctor.$convert('= Document\n\nThis is a simple document.\n\n== Section\n\nCAUTION: This is important!', options);
       expect(html).toContain('<i class="fa icon-caution" title="Caution"></i>');
     });
-
   });
   
   describe('Include', function() {
