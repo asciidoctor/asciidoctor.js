@@ -7,3 +7,34 @@
 Opal 0.8 is now using modules that you need to require in order to use them.
 By default Asciidoctor.js automatically requires the necessary modules.
 If you want to disable this behavior you can set the global variable `AsciidoctorConfiguration = {}; AsciidoctorConfiguration.autoLoadModule = false`
+
+=== How to set document attribute
+
+You can set document attributes after loading AsciiDoc content.
+
+[source,javascript]
+----
+var content= "== Title";
+var document= Opal.Asciidoctor.$load(content);
+console.log(document.$attr("data-uri")); // prints nil
+console.log(document.$attr("data-uri",false)); // prints false
+
+document.$set_attribute("data-uri",true);
+console.log(document.$attr("data-uri")); // prints true
+----
+
+=== How to unset/delete document attribute
+
+You can unset document attributes after loading AsciiDoc content.
+
+[source,javascript]
+----
+var content= "== Title";
+var document= Opal.Asciidoctor.$load(content);
+document.$set_attribute("data-uri",true);
+console.log(document.$attr("data-uri")); // prints true
+
+doc.attributes.$delete("data-uri");
+doc.attribute_overrides.$delete("data-uri");
+console.log(document.$attr("data-uri")); // prints nil
+----
