@@ -57,6 +57,7 @@ task :dist do
   asciidoctor_docbook45.write_to "build/asciidoctor-docbook45.js#{compress ? '.gz' : nil}"
   asciidoctor_docbook5.write_to "build/asciidoctor-docbook5.js#{compress ? '.gz' : nil}"
 
+  # Extensions lab
   if File.directory? 'extensions-lab/lib'
     env.append_path 'extensions-lab/lib'
     endorsed_extensions = ['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro', 'chart-block-macro']
@@ -65,6 +66,13 @@ task :dist do
     puts "Unable to cross-compile extensions because git submodule 'extensions-lab' is not initialized."
     puts "To initialize the submodule use the following command `git submodule init` and `git submodule update`."
   end
+
+  # Core extensions
+  env.append_path 'lib'
+  env['asciidoctor/core_ext/slide'].write_to "build/asciidoctor-slide.js#{compress ? '.gz' : nil}"
+  env['asciidoctor/core_ext/deckjs'].write_to "build/asciidoctor-deckjs.js#{compress ? '.gz' : nil}"
+  env['asciidoctor/core_ext/revealjs'].write_to "build/asciidoctor-revealjs.js#{compress ? '.gz' : nil}"
+  env['asciidoctor/core_ext/factory'].write_to "build/asciidoctor-factory.js#{compress ? '.gz' : nil}"
 
   asciidoctor_spec = Gem::Specification.find_by_name 'asciidoctor'
   css_file = File.join asciidoctor_spec.full_gem_path, 'data/stylesheets/asciidoctor-default.css'
@@ -91,6 +99,10 @@ task :examples => :dist do
 
   File.copy_stream 'examples/asciidoctor.css', 'build/asciidoctor.css'
 
+  File.copy_stream 'examples/slide.html', 'build/slide.html'
+  FileUtils.cp_r 'reveal.js', 'build/'
+  FileUtils.cp_r 'slide-templates', 'build/'
+
   Dir.mkdir 'build/images' unless File.directory? 'build/images'
 
   File.copy_stream 'error-in-chrome-console.png', 'build/images/error-in-chrome-console.png'
@@ -104,6 +116,13 @@ task :examples => :dist do
     customers_content = open(customers_uri) {|fd2| fd2.read }
     File.open('build/userguide.adoc', 'w') {|fd1| fd1.write userguide_content }
     File.open('build/customers.csv', 'w') {|fd1| fd1.write customers_content }
+  end
+
+  unless File.exists? 'build/jade.js'
+    require 'open-uri'
+    jadejs_uri = 'https://raw.githubusercontent.com/jadejs/jade/1.11.0/jade.js'
+    jadejs_content = open(jadejs_uri) {|fd2| fd2.read }
+    File.open('build/jade.js', 'w') {|fd1| fd1.write jadejs_content }
   end
 end
 

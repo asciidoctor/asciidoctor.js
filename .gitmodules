@@ -1,3 +1,9 @@
 [submodule "extensions-lab"]
 	path = extensions-lab
 	url = https://github.com/asciidoctor/asciidoctor-extensions-lab.git
+[submodule "slide-templates"]
+	path = slide-templates
+	url = https://github.com/asciidocfx/asciidoctorjs-slide-templates.git
+[submodule "reveal.js"]
+	path = reveal.js
+	url = https://github.com/hakimel/reveal.js.git
