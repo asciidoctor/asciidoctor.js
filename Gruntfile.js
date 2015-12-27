@@ -114,6 +114,9 @@ module.exports = function(grunt) {
     */
     uglify: {
       dist: {
+        options: {
+              maxLineLen: 500
+        },
         files: {
           'dist/npm/asciidoctor-core.min.js': ['build/npm/asciidoctor-core-min.js'],
           'dist/npm/asciidoctor-extensions.min.js': ['build/npm/asciidoctor-extensions.js'],
