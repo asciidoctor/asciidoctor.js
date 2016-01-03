@@ -152,6 +152,11 @@ Build.prototype.commit = function(releaseVersion, callback) {
 }
 
 Build.prototype.publish = function(callback) {
+  if (process.env.SKIP_PUBLISH) {
+    log.info('SKIP_PUBLISH environment variable is defined, skipping "publish" task');
+    callback();
+    return;
+  } 
   this.execSync('npm publish');
   callback();
 }
