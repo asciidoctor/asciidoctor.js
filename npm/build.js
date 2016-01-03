@@ -6,7 +6,6 @@ var fs = require('fs');
 var path = require('path');
 var concat = require('./concat.js');
 var Uglify = require('./uglify.js');
-var zlib = require('zlib');
 var Log = require('./log.js');
 var log = new Log();
 var uglify = new Uglify();
@@ -121,6 +120,7 @@ Build.prototype.release = function(releaseVersion) {
   async.series([
     function(callback) { build.prepareRelease(releaseVersion, callback); },
     function(callback) { build.dist(callback); },
+    function(callback) { build.runTest(callback); },
     function(callback) { build.commit(releaseVersion, callback); },
     function(callback) { build.publish(callback); },
     function(callback) { build.completeRelease(releaseVersion, callback); }
@@ -145,6 +145,11 @@ Build.prototype.commit = function(releaseVersion, callback) {
   this.execSync('git add -A .');
   this.execSync('git commit -m "Prepare version ' + releaseVersion + '"');
   this.execSync('git tag v' + releaseVersion);
+  callback();
+}
+
+Build.prototype.runTest = function(callback) {
+  this.execSync('npm run test');
   callback();
 }
 
