@@ -59,7 +59,12 @@ function Build() {
   ];
 }
 
-Build.prototype.dist = function() {
+Build.prototype.dist = function(callback) {
+  if (process.env.DRY_RUN) {
+    log.debug('dist');
+    callback();
+    return;
+  }
   var build = this;
   var start = process.hrtime();
 
@@ -84,6 +89,7 @@ Build.prototype.dist = function() {
     }
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
+    callback();
   });
 }
 
@@ -109,6 +115,54 @@ Build.prototype.concatJavaScripts = function() {
   this.concatBowerDocbook();
   this.concatBowerAll();
   this.concatBowerCore(); // must be the last because we're using 'build/asciidoctor-core.js' in other concat tasks
+}
+
+Build.prototype.release = function(releaseVersion) {
+  var build = this;
+  var start = process.hrtime();
+
+  async.series([
+    function(callback) { build.prepareRelease(releaseVersion, callback); },
+    function(callback) { build.dist(callback); },
+    function(callback) { build.commit(releaseVersion, callback); },
+    function(callback) { build.publish(callback); },
+    function(callback) { build.completeRelease(releaseVersion, callback); }
+  ], function() {
+    log.success('Done in ' + process.hrtime(start)[0] + 's');
+  });
+}
+
+Build.prototype.prepareRelease = function(releaseVersion, callback) {
+  log.title('Release version: ' + releaseVersion);
+
+  if (process.env.DRY_RUN) {
+    log.warn('Dry run! To perform the release, run the command again without DRY_RUN environment variable');
+  }
+
+  this.replaceFileSync('package.json', /"version": "(.*?)"/g, '"version": "' + releaseVersion + '"');
+  this.replaceFileSync('bower.json', /"version": "(.*?)"/g, '"version": "' + releaseVersion + '"');
+  callback();
+}
+
+Build.prototype.commit = function(releaseVersion, callback) {
+  this.execSync('git add -A .');
+  this.execSync('git commit -m "Prepare version ' + releaseVersion + '"');
+  this.execSync('git tag v' + releaseVersion);
+  callback();
+}
+
+Build.prototype.publish = function(callback) {
+  this.execSync('npm publish');
+  callback();
+}
+
+Build.prototype.completeRelease = function(releaseVersion, callback) {
+  console.log('');
+  log.info('To complete the release, you need to:');
+  log.info("[ ] push changes upstream: 'git push origin master && git push origin " + releaseVersion + "'");
+  log.info("[ ] publish a release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/new");
+  log.info('[ ] create an issue here: https://github.com/webjars/asciidoctor.js to update Webjars');
+  callback();
 }
 
 Build.prototype.concat = function(message, files, destination) {
