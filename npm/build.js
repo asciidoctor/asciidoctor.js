@@ -89,7 +89,7 @@ Build.prototype.dist = function(callback) {
     }
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
-    callback();
+    typeof callback === 'function' && callback();
   });
 }
 
