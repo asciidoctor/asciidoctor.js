@@ -83,9 +83,6 @@ Build.prototype.dist = function(callback) {
     },
     function(callback) {
       build.uglify(callback); // Step 5: Uglify (optional)
-    },
-    function(callback) {
-      build.gzip(callback); // Step 6: Gzip
     }
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
@@ -337,31 +334,6 @@ Build.prototype.copyToDist = function(callback) {
       log.transform('copy', filePath, destination);
       fs.createReadStream(filePath).pipe(fs.createWriteStream(destination));
     }
-  });
-  callback();
-}
-
-Build.prototype.gzip = function(callback) {
-  log.title('gzip');
-  walk('dist', function(filePath, stat) {
-    var basename = path.basename(filePath);
-    var dotIndex = basename.indexOf('.');
-    var ext = basename.substr(dotIndex + 1);
-    var basenameWithoutExt = basename.substr(0, dotIndex);
-    if (ext === 'js') {
-      var paths = path.dirname(filePath).split(path.sep);
-      // remove 'build' base directory
-      paths.shift();
-      // add 'dist' base directory
-      paths.unshift('dist');
-      paths.push(basenameWithoutExt + '.gz.js');
-      var source = filePath;
-      var destination = paths.join(path.sep);
-      var input = fs.createReadStream(filePath);
-      var output = fs.createWriteStream(paths.join(path.sep));
-      log.transform('gzip', source, destination);
-      input.pipe(zlib.createGzip()).pipe(output);
-    }
   });
   callback();
 }

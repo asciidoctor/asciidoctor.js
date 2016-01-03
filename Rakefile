@@ -3,14 +3,6 @@ require 'opal/sprockets/environment'
 require_relative 'rake/jdk_helper'
 require_relative 'rake/tar'
 
-# NOTE we're no longer using ERB templates in Asciidoctor.js by default
-# make Opal recognize .html.erb as valid ERB templates
-#Tilt.register 'erb', Opal::ERB::Processor
-#Sprockets.register_engine '.erb', Opal::ERB::Processor
-#Sprockets.register_mime_type 'application/javascript', '.html'
-
-compress = ENV['COMPRESS'] == '1'
-
 task :default => :dist
 
 desc 'Build opal.js, asciidoctor.js and endorsed extensions to build/'
@@ -50,15 +42,15 @@ task :dist do
   asciidoctor_docbook5_src = asciidoctor_docbook5_src.sub(/\$scope\.get\('DLIST_TAGS'\)\['\$\[\]'\]\("labeled"\)/, '$hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"})')
   asciidoctor_docbook5.instance_variable_set :@source, asciidoctor_docbook5_src
  
-  asciidoctor.write_to "build/asciidoctor-core.js#{compress ? '.gz' : nil}"
-  asciidoctor_extensions.write_to "build/asciidoctor-extensions.js#{compress ? '.gz' : nil}"
-  asciidoctor_docbook45.write_to "build/asciidoctor-docbook45.js#{compress ? '.gz' : nil}"
-  asciidoctor_docbook5.write_to "build/asciidoctor-docbook5.js#{compress ? '.gz' : nil}"
+  asciidoctor.write_to 'build/asciidoctor-core.js'
+  asciidoctor_extensions.write_to 'build/asciidoctor-extensions.js'
+  asciidoctor_docbook45.write_to 'build/asciidoctor-docbook45.js'
+  asciidoctor_docbook5.write_to 'build/asciidoctor-docbook5.js'
 
   if File.directory? 'extensions-lab/lib'
     env.append_path 'extensions-lab/lib'
     endorsed_extensions = ['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro', 'chart-block-macro']
-    endorsed_extensions.each { |extension| env[extension].write_to "build/asciidoctor-#{extension}.js#{compress ? '.gz' : nil}" }
+    endorsed_extensions.each { |extension| env[extension].write_to "build/asciidoctor-#{extension}.js" }
   else
     puts "Unable to cross-compile extensions because git submodule 'extensions-lab' is not initialized."
     puts "To initialize the submodule use the following command `git submodule init` and `git submodule update`."
