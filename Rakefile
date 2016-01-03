@@ -9,7 +9,6 @@ require_relative 'rake/tar'
 #Sprockets.register_engine '.erb', Opal::ERB::Processor
 #Sprockets.register_mime_type 'application/javascript', '.html'
 
-minify   = ENV['MINIFY'] == '1'
 compress = ENV['COMPRESS'] == '1'
 
 task :default => :dist
@@ -24,7 +23,6 @@ task :dist do
   Dir.mkdir 'build' unless File.directory? 'build'
 
   env = Opal::Environment.new
-  env.js_compressor = Sprockets::ClosureCompressor if minify
 
   env.append_path 'lib'
 
