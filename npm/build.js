@@ -166,7 +166,7 @@ Build.prototype.publish = function(callback) {
 Build.prototype.completeRelease = function(releaseVersion, callback) {
   console.log('');
   log.info('To complete the release, you need to:');
-  log.info("[ ] push changes upstream: 'git push origin master && git push origin " + releaseVersion + "'");
+  log.info("[ ] push changes upstream: 'git push origin master && git push origin v" + releaseVersion + "'");
   log.info("[ ] publish a release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/new");
   log.info('[ ] create an issue here: https://github.com/webjars/asciidoctor.js to update Webjars');
   callback();
