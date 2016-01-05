@@ -2,6 +2,7 @@
 :uri-nodejs: http://nodejs.org
 :uri-opal: http://opalrb.org
 :uri-bower: http://bower.io
+:uri-nvm: https://github.com/creationix/nvm
 :uri-asciidoctor: http://asciidoctor.org
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
 :sources: {uri-repo}
@@ -23,7 +24,7 @@ To interact with the generated code, you either invoke the JavaScript APIs direc
 
 To build [path]_asciidoctor.js_, you'll need some tools:
 
-* {uri-nodejs}[Node.js] and npm
+* {uri-nodejs}[Node.js] >= 0.12 and npm (we recommend {uri-nvm}[nvm] to manage multiple active Node.js versions)
 * {uri-bower}[Bower]
 * Rake and Bundle
 
