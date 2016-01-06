@@ -1,17 +1,22 @@
 = Contributing Code
+// settings:
+:experimental:
+:idprefix:
+:idseparator: -
+:toc: preamble
+// URIs:
 :uri-nodejs: http://nodejs.org
 :uri-opal: http://opalrb.org
 :uri-bower: http://bower.io
 :uri-nvm: https://github.com/creationix/nvm
 :uri-asciidoctor: http://asciidoctor.org
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
-:sources: {uri-repo}
 
-This guide will give you all the necessary information you need to become a successful _Asciidoctor.js_ developer!
+This guide will give you all the necessary information you need to become a successful Asciidoctor.js developer and code contributor!
 
 == Introduction
 
-{sources}[Asciidoctor.js] is direct port of {uri-asciidoctor}[Asciidoctor] from Ruby to JavaScript using {uri-opal}[Opal], a Ruby-to-JavaScript transpiler.
+{uri-repo}[Asciidoctor.js] is direct port of {uri-asciidoctor}[Asciidoctor] from Ruby to JavaScript using {uri-opal}[Opal], a Ruby-to-JavaScript transpiler.
 The project includes a Rake build script that executes the Opal compiler on the Asciidoctor source code to produce the Asciidoctor.js scripts.
 A npm build is used to assemble and prepare the distribution files, using the Rake build underneath.
 
@@ -22,7 +27,7 @@ To interact with the generated code, you either invoke the JavaScript APIs direc
 
 == Setup
 
-To build [path]_asciidoctor.js_, you'll need some tools:
+To build Asciidoctor.js, you'll need some tools:
 
 * {uri-nodejs}[Node.js] >= 0.12 and npm (we recommend {uri-nvm}[nvm] to manage multiple active Node.js versions)
 * {uri-bower}[Bower]
@@ -35,16 +40,20 @@ Start by cloning the source from GitHub:
 Next, switch to the _asciidoctor.js_ directory and run npm's `install` command followed by Bower's `install` command:
 
  $ cd asciidoctor.js
- $ npm install
- $ bower install
+   npm install
+   bower install
 
-You're now ready to build _asciidoctor.js_.
+You're now ready to build Asciidoctor.js.
 
-TIP: Opal.js, The Ruby runtime in JavaScript is available in `bower_components/opal/opal/current/opal.min.js`
+TIP: Opal.js, the Ruby runtime in JavaScript is available in `bower_components/opal/opal/current/opal.min.js`
 
-== Building asciidoctor.js
+== Building
 
-To build asciidoctor.js, simple run the npm `dist` script from the root of the project:
+This section describes how to build Asciidoctor.js from source, execute the tests and try out the examples.
+
+=== Building Asciidoctor.js
+
+To build Asciidoctor.js, simply run the npm `dist` script from the root of the project:
 
  $ npm run dist
 
@@ -54,23 +63,25 @@ These changes are made at build time to keep the Ruby code as fast as possible.
 
 This command produces some files in the [path]_dist_ directory:
 
-* *dist/*
-- *asciidoctor.js* (includes core and extensions)
-- *asciidoctor-core.js* (no extensions API)
-- *asciidoctor-extensions.js* (extensions API only)
-- *asciidoctor-docbook.js* (DocBook backends: docbook45 & docbook5)
-- *asciidoctor-all.js* (core, extension and Opal. DocBook isn't the main target of webapp, for this reason we choose to keep it separate)
+dist/::
+* *asciidoctor.js* -- includes core and extensions
+* *asciidoctor-core.js* -- no extensions API
+* *asciidoctor-extensions.js* -- extensions API only
+* *asciidoctor-docbook.js* -- DocBook (4.5 and 5) converters
+* *asciidoctor-all.js* -- core, extensions API and Opal +
+  _(DocBook isn't the main target of webapp. For this reason, we choose to keep it separate.)_
 
-* *dist/npm* (to use with npm)
-- *asciidoctor-core.js* (no extensions API, will automatically load the DocBook backends)
-- *asciidoctor-extensions.js* (extensions API only)
-- *asciidoctor-docbook.js* (DocBook backends: docbook45 & docbook5)
+dist/npm/::
+* *asciidoctor-core.js* -- no extensions API, will automatically load the DocBook converters
+* *asciidoctor-extensions.js* -- extensions API only
+* *asciidoctor-docbook.js* -- DocBook (4.5 and 5) converters
 
-Each file has a `minified` and `gz` version.
+//Each file has a minified (`.min.js`) and compressed (`.js.gz`) version.
+Each file has a minified (`.min.js`) version.
 
 You'll see these scripts in action when you run the examples, described next.
 
-== Building and running the examples
+=== Building and running the examples
 
 To build the examples, simply run the Rake `examples` task from the root of the project:
 
@@ -86,27 +97,8 @@ This script includes:
 All the JavaScript in that file was generated from a Ruby script by Opal.
 
 Point your browser at [path]_build/asciidoctor_example.html_.
-You should see the AsciiDoc Syntax Quick Reference document.
-The content on the page was rendered from AsciiDoc by asciidoctor.js when you loaded the page!
-
-== Changes to Asciidoctor (from upstream)
-
-Compiling Asciidoctor to JavaScript currently requires some changes in Asciidoctor.
-The goal is to eventually eliminate all of these differences so that Asciidoctor can be compiled to JavaScript as is.
-
-Here's a list of some of the changes that are currently needed:
-
-* Named posix groups in regular expressions are replaced with their ASCII equivalent
-  - JavaScript doesn't support named posix groups, such as [x-]`[[:alpha:]]`)
-* A shim library is needed to implement missing classes in Opal, such as `File` and `Dir`
-* All mutable String operations have been replaced with assignments (this is done at build time)
-  - JavaScript doesn't support mutable strings
-* `$~[0]` used in place of `$&` and `$~[n]` in place of `$n` after running a regular expression (where n is 1, 2, 3...)
-* Opal doesn't recognize modifiers on a regular expression (e.g., multiline)
-* Optional, non-matching capture groups resolve to empty string in gsub block in Firefox (see http://www.bennadel.com/blog/1916-different-browsers-use-different-non-matching-captured-regex-pattern-values.htm)
-* Assignments without a matching value are set to empty string instead of nil (in the following example, `b` is set to empty string)
-
-  a, b = "value".split ',', 2
+You should see the Asciidoctor.js README.
+The content on the page was rendered from AsciiDoc by Asciidoctor.js when you loaded the page!
 
 == Debugging
 
@@ -152,3 +144,22 @@ image::error-in-javascript-debugger.png[]
 
 The call trace is displayed as breadcrumb navigation, which you can use to jump through the stack.
 You can inspect the state at any location by looking through the panels on the right.
+
+== Modifications to Asciidoctor (for compatibility)
+
+Compiling Asciidoctor to JavaScript currently requires some changes in Asciidoctor.
+The goal is to eventually eliminate all of these differences so that Asciidoctor can be compiled to JavaScript as is.
+
+Here's a list of some of the changes that are currently needed:
+
+* Named posix groups in regular expressions are replaced with their ASCII equivalent
+  - JavaScript doesn't support named posix groups, such as [x-]`[[:alpha:]]`)
+* A shim library is needed to implement missing classes in Opal, such as `File` and `Dir`
+* All mutable String operations have been replaced with assignments (this is done at build time)
+  - JavaScript doesn't support mutable strings
+* `$~[0]` used in place of `$&` and `$~[n]` in place of `$n` after running a regular expression (where n is 1, 2, 3...)
+* Opal doesn't recognize modifiers on a regular expression (e.g., multiline)
+* Optional, non-matching capture groups resolve to empty string in gsub block in Firefox (see http://www.bennadel.com/blog/1916-different-browsers-use-different-non-matching-captured-regex-pattern-values.htm)
+* Assignments without a matching value are set to empty string instead of nil (in the following example, `b` is set to empty string)
+
+  a, b = "value".split ',', 2
