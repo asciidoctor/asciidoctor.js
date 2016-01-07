@@ -42,6 +42,18 @@ var commonSpec = function(Opal, Asciidoctor) {
       var doc = Asciidoctor.$load('== Test', options);
       expect(doc.attributes.smap['sectnums']).toBe('true');
     });
+
+    it('should load document authors', function() {
+      var doc = Asciidoctor.$load('= Authors\nGuillaume Grossetie;Anders Nawroth\n');
+      expect(doc.attributes.smap['author']).toBe('Guillaume Grossetie');
+      expect(doc.attributes.smap['author_1']).toBe('Guillaume Grossetie');
+      expect(doc.attributes.smap['author_2']).toBe('Anders Nawroth');
+      expect(doc.attributes.smap['authorcount']).toBe(2);
+      expect(doc.attributes.smap['authorinitials']).toBe('GG');
+      expect(doc.attributes.smap['authorinitials_1']).toBe('GG');
+      expect(doc.attributes.smap['authorinitials_2']).toBe('AN');
+      expect(doc.attributes.smap['authors']).toBe('Guillaume Grossetie, Anders Nawroth');
+    });
   });
 
   describe('Modifying', function() {
@@ -114,6 +126,7 @@ var commonSpec = function(Opal, Asciidoctor) {
       var html = Asciidoctor.$convert('= Document\n\nThis is a simple document.\n\n== Section\n\nCAUTION: This is important!', options);
       expect(html).toContain('<i class="fa icon-caution" title="Caution"></i>');
     });
+
   });
   
   describe('Include', function() {
