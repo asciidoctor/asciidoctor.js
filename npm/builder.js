@@ -10,7 +10,6 @@ var Uglify = require('./uglify.js');
 var OpalCompiler = require('./opal-compiler.js');
 var Log = require('./log.js');
 var uglify = new Uglify();
-var opalCompiler = new OpalCompiler();
 var log = new Log();
 
 var stdout;
@@ -79,8 +78,8 @@ Builder.prototype.build = function(callback) {
   // Step 1: clean
   builder.clean();
 
-  // Step 2: build
-  builder.buildRuby();
+  // Step 2: compile
+  builder.compile();
 
   // Step 3: concat
   builder.concatJavaScripts();
@@ -98,12 +97,6 @@ Builder.prototype.build = function(callback) {
 Builder.prototype.clean = function() {
   log.title('clean');
   this.deleteBuildFolder(); // delete build folder
-}
-
-Builder.prototype.buildRuby = function() {
-  log.title('build');
-  this.execSync('bundle install');
-  this.execSync('bundle exec rake dist');
 }
 
 Builder.prototype.concatJavaScripts = function() {
@@ -124,13 +117,13 @@ Builder.prototype.release = function(releaseVersion) {
 
   async.series([
     function(callback) { builder.prepareRelease(releaseVersion, callback); },
-    function(callback) { builder.build(callback); },
+//    function(callback) { builder.build(callback); },
     function(callback) { builder.runTest(callback); },
     function(callback) { builder.copyToDist(callback); },
     function(callback) { builder.uglify(callback); },
     function(callback) { builder.commit(releaseVersion, callback); },
     function(callback) { builder.prepareNextIteration(callback); },
-    function(callback) { builder.publish(callback); },
+//    function(callback) { builder.publish(callback); },
     function(callback) { builder.completeRelease(releaseVersion, callback); }
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
@@ -356,6 +349,7 @@ Builder.prototype.copyToDist = function(callback) {
       this.copy(filePath, destination);
     }
   });
+  console.log('copy done!');
   typeof callback === 'function' && callback();
 }
 
@@ -374,7 +368,8 @@ Builder.prototype.copyToDir = function(from, toDir) {
 
 Builder.prototype.copy = function(from, to) {
   log.transform('copy', from, to);
-  fs.createReadStream(from).pipe(fs.createWriteStream(to));
+  var data = fs.readFileSync(from);
+  fs.writeFileSync(to, data);
 }
 
 Builder.prototype.mkdirSync = function(path) {
@@ -405,6 +400,7 @@ Builder.prototype.examples = function(callback) {
 Builder.prototype.compileExamples = function(callback) {
   log.title('compile examples');
   this.mkdirSync(this.examplesBuildDir);
+  var opalCompiler = new OpalCompiler();
   opalCompiler.compile('examples/asciidoctor_example.rb', this.examplesBuildDir + '/asciidoctor_example.js');
   opalCompiler.compile('examples/userguide_test.rb', this.examplesBuildDir + '/userguide_test.js');
   callback();
@@ -444,4 +440,44 @@ Builder.prototype.copyExamplesResources = function(callback) {
   ], function() {
     typeof callback === 'function' && callback();
   });
+}
+
+Builder.prototype.compile = function() {
+  var builder = this;
+
+  builder.execSync('bundle install');
+
+  var opalCompiler = new OpalCompiler({dynamicRequireLevel: 'ignore'});
+
+  var opalCompileExtensions = function(names) {
+    names.forEach(opalCompileExtension);
+  }
+
+  var opalCompileExtension = function(name) {
+    opalCompiler.compile('-I extensions-lab/lib -I asciidoctor -g asciidoctor -r ' + name, 'build/asciidoctor-' + name + '.js');
+  }
+
+  this.mkdirSync('build');
+
+  log.title('compile core lib');
+  opalCompiler.compile('-I asciidoctor -g asciidoctor -r asciidoctor/converter/docbook5', 'build/asciidoctor-docbook5.js');
+  opalCompiler.compile('-I asciidoctor -g asciidoctor -r asciidoctor/converter/docbook45', 'build/asciidoctor-docbook45.js');
+  opalCompiler.compile('-I asciidoctor -g asciidoctor -r asciidoctor/extensions', 'build/asciidoctor-extensions.js');
+  opalCompiler.compile('-I lib -I asciidoctor -g asciidoctor -r asciidoctor', 'build/asciidoctor-core.js');
+
+  log.title('compile extensions-lab lib');
+  if (fs.existsSync('extensions-lab/lib')) {
+    opalCompileExtensions(['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro', 'chart-block-macro']);
+  } else {
+    log.error("Unable to cross-compile extensions because git submodule 'extensions-lab' is not initialized.");
+    log.info("To initialize the submodule use the following command `git submodule init` and `git submodule update`.");
+    process.exit(9);
+  }
+
+  log.title('copy resources');
+  log.debug('copy asciidoctor.css');
+  // FIXME: Find a more robust implementation to get the Asciidoctor gem install path
+  asciidoctorGemPath = child_process.execSync("ruby -e \"print (Gem::Specification.find_by_name 'asciidoctor').full_gem_path\"");
+  asciidoctorCSSFile = asciidoctorGemPath + '/data/stylesheets/asciidoctor-default.css';
+  fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/asciidoctor.css'));
 }
