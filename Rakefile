@@ -35,10 +35,6 @@ task :dist do
   asciidoctor_src = asciidoctor_src.sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
   asciidoctor.instance_variable_set :@source, asciidoctor_src
   
-  # NOTE hack to manually resolve the constant in the scope (workaround an issue in Opal)
-  asciidoctor_docbook5_src = asciidoctor_docbook5_src.sub(/\$scope\.get\('DLIST_TAGS'\)\['\$\[\]'\]\("labeled"\)/, '$hash2(["list", "entry", "term", "item"], {"list": "variablelist", "entry": "varlistentry", "term": "term", "item": "listitem"})')
-  asciidoctor_docbook5.instance_variable_set :@source, asciidoctor_docbook5_src
- 
   asciidoctor.write_to 'build/asciidoctor-core.js'
   asciidoctor_extensions.write_to 'build/asciidoctor-extensions.js'
   asciidoctor_docbook45.write_to 'build/asciidoctor-docbook45.js'
