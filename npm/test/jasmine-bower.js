@@ -5,8 +5,8 @@ var Jasmine = require('jasmine');
 
 log.title('Jasmine Bower');
 concat([
-  'dist/asciidoctor-all.js',
-  'dist/asciidoctor-docbook.js',
+  'build/asciidoctor-all.js',
+  'build/asciidoctor-docbook.js',
   'spec/share/common-specs.js',
   'spec/bower/bower.spec.js',
 ], 'build/bower.spec.all.js');
