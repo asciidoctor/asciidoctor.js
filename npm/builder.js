@@ -76,21 +76,14 @@ Builder.prototype.build = function(callback) {
   // Step 3: concat
   build.concatJavaScripts();
 
-/*
   async.series([
     function(callback) {
-      build.copyToDist(callback); // Step 4: Copy to dist
-    },
-    function(callback) {
-      build.uglify(callback); // Step 5: Uglify (optional)
+      build.uglify(callback); // Step 4: Uglify (optional)
     }
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
     typeof callback === 'function' && callback();
   });
-*/
-  log.success('Done in ' + process.hrtime(start)[0] + 's');
-  typeof callback === 'function' && callback();
 }
 
 Builder.prototype.clean = function() {
@@ -311,13 +304,13 @@ Builder.prototype.uglify = function(callback) {
   }
   log.title('uglify');
   var files = [
-    {source: 'build/npm/asciidoctor-core-min.js', destination: 'dist/npm/asciidoctor-core.min.js' },
-    {source: 'build/npm/asciidoctor-extensions.js', destination: 'dist/npm/asciidoctor-extensions.min.js' },
-    {source: 'build/npm/asciidoctor-docbook.js', destination: 'dist/npm/asciidoctor-docbook.min.js' },
-    {source: 'build/asciidoctor-core.js', destination: 'dist/asciidoctor-core.min.js' },
-    {source: 'build/asciidoctor-extensions.js', destination: 'dist/asciidoctor-extensions.min.js' },
-    {source: 'build/asciidoctor-docbook.js', destination: 'dist/asciidoctor-docbook.min.js' },
-    {source: 'build/asciidoctor-all.js', destination: 'dist/asciidoctor-all.min.js' }
+    {source: 'build/npm/asciidoctor-core-min.js', destination: 'build/npm/asciidoctor-core.min.js' },
+    {source: 'build/npm/asciidoctor-extensions.js', destination: 'build/npm/asciidoctor-extensions.min.js' },
+    {source: 'build/npm/asciidoctor-docbook.js', destination: 'build/npm/asciidoctor-docbook.min.js' },
+    {source: 'build/asciidoctor-core.js', destination: 'build/asciidoctor-core.min.js' },
+    {source: 'build/asciidoctor-extensions.js', destination: 'build/asciidoctor-extensions.min.js' },
+    {source: 'build/asciidoctor-docbook.js', destination: 'build/asciidoctor-docbook.min.js' },
+    {source: 'build/asciidoctor-all.js', destination: 'build/asciidoctor-all.min.js' }
   ];
 
   var functions = [];
@@ -334,15 +327,17 @@ Builder.prototype.uglify = function(callback) {
 
 Builder.prototype.copyToDist = function(callback) {
   log.title('copy to dist/')
+  this.deleteDistFolder();
   fs.createReadStream('build/asciidoctor.css').pipe(fs.createWriteStream('dist/css/asciidoctor.css'));
   walk('build', function(filePath, stat) {
-    if (filePath.endsWith(".js") 
-         && !filePath.endsWith("-min.js") 
-         && !filePath.endsWith(".min.js") 
+    var basename = path.basename(filePath);
+    var paths = path.dirname(filePath).split(path.sep);
+    if (filePath.endsWith('.js')
+         && paths.indexOf('examples') == -1
+         && filePath.indexOf('spec') == -1
+         && !filePath.endsWith('-min.js')
          && !filePath.endsWith('-docbook45.js') 
          && !filePath.endsWith('-docbook5.js')) {
-      var basename = path.basename(filePath);
-      var paths = path.dirname(filePath).split(path.sep);
       // remove 'build' base directory
       paths.shift();
       // add 'dist' base directory
@@ -353,5 +348,5 @@ Builder.prototype.copyToDist = function(callback) {
       fs.createReadStream(filePath).pipe(fs.createWriteStream(destination));
     }
   });
-  callback();
+  typeof callback === 'function' && callback();
 }

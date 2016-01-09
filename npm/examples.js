@@ -16,4 +16,4 @@ process.stdout.write(stdout);
 builder.concatBowerCore();
 
 // Step3: success!
-log.success('You can now open the file build/asciidoctor_example.html');
+log.success('You can now open build/examples/asciidoctor_example.html and build/examples/userguide_test.html');

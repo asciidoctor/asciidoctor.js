@@ -60,7 +60,7 @@ task :dist do
 
 end
 
-desc 'Build asciidoctor_example.js to build/'
+desc 'Build examples to build/examples'
 task :examples => :dist do
   Opal::Processor.method_missing_enabled = true
   Opal::Processor.const_missing_enabled = false
@@ -69,28 +69,31 @@ task :examples => :dist do
 
   env = Opal::Environment.new
   env.append_path 'examples'
-  env['asciidoctor_example.rb'].write_to 'build/asciidoctor_example.js'
-  File.copy_stream 'examples/asciidoctor_example.html', 'build/asciidoctor_example.html'
+  env['asciidoctor_example.rb'].write_to 'build/examples/asciidoctor_example.js'
 
-  env['userguide_test.rb'].write_to 'build/userguide_test.js'
-  File.copy_stream 'examples/userguide_test.html', 'build/userguide_test.html'
-  File.copy_stream 'README.adoc', 'build/README.adoc'
+  Dir.mkdir 'build/examples' unless File.directory? 'build/examples'
 
-  File.copy_stream 'examples/asciidoctor.css', 'build/asciidoctor.css'
+  File.copy_stream 'examples/asciidoctor_example.html', 'build/examples/asciidoctor_example.html'
 
-  Dir.mkdir 'build/images' unless File.directory? 'build/images'
+  env['userguide_test.rb'].write_to 'build/examples/userguide_test.js'
+  File.copy_stream 'examples/userguide_test.html', 'build/examples/userguide_test.html'
+  File.copy_stream 'README.adoc', 'build/examples/README.adoc'
 
-  File.copy_stream 'error-in-chrome-console.png', 'build/images/error-in-chrome-console.png'
-  File.copy_stream 'error-in-javascript-debugger.png', 'build/images/error-in-javascript-debugger.png'
+  File.copy_stream 'examples/asciidoctor.css', 'build/examples/asciidoctor.css'
 
-  unless File.exist? 'build/userguide.adoc'
+  Dir.mkdir 'build/examples/images' unless File.directory? 'build/examples/images'
+
+  File.copy_stream 'error-in-chrome-console.png', 'build/examples/images/error-in-chrome-console.png'
+  File.copy_stream 'error-in-javascript-debugger.png', 'build/examples/images/error-in-javascript-debugger.png'
+
+  unless File.exist? 'build/examples/userguide.adoc'
     require 'open-uri'
     userguide_uri = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625/doc/asciidoc.txt'
     customers_uri = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625/doc/customers.csv'
     userguide_content = open(userguide_uri) {|fd2| fd2.read }
     customers_content = open(customers_uri) {|fd2| fd2.read }
-    File.open('build/userguide.adoc', 'w') {|fd1| fd1.write userguide_content }
-    File.open('build/customers.csv', 'w') {|fd1| fd1.write customers_content }
+    File.open('build/examples/userguide.adoc', 'w') {|fd1| fd1.write userguide_content }
+    File.open('build/examples/customers.csv', 'w') {|fd1| fd1.write customers_content }
   end
 end
 
