@@ -328,7 +328,7 @@ Builder.prototype.uglify = function(callback) {
 Builder.prototype.copyToDist = function(callback) {
   log.title('copy to dist/')
   this.deleteDistFolder();
-  fs.createReadStream('build/asciidoctor.css').pipe(fs.createWriteStream('dist/css/asciidoctor.css'));
+  this.copy('build/asciidoctor.css', 'dist/css/asciidoctor.css');
   walk('build', function(filePath, stat) {
     var basename = path.basename(filePath);
     var paths = path.dirname(filePath).split(path.sep);
@@ -344,9 +344,24 @@ Builder.prototype.copyToDist = function(callback) {
       paths.unshift('dist');
       paths.push(basename);
       var destination = paths.join(path.sep);
-      log.transform('copy', filePath, destination);
-      fs.createReadStream(filePath).pipe(fs.createWriteStream(destination));
+      this.copy(filePath, destination);
     }
   });
   typeof callback === 'function' && callback();
+}
+
+Builder.prototype.copyToDir = function(from, toDir) {
+  var basename = path.basename(from);
+  this.copy(from, toDir + '/' + basename);
+}
+
+Builder.prototype.copy = function(from, to) {
+  log.transform('copy', from, to);
+  fs.createReadStream(from).pipe(fs.createWriteStream(to));
+}
+
+Builder.prototype.mkdirSync = function(path) {
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path);
+  }
 }
