@@ -53,17 +53,17 @@ This section describes how to build Asciidoctor.js from source, execute the test
 
 === Building Asciidoctor.js
 
-To build Asciidoctor.js, simply run the npm `dist` script from the root of the project:
+To build Asciidoctor.js, simply run the npm `build` script from the root of the project:
 
- $ npm run dist
+ $ npm run build
 
 NOTE: The build task will make some minor code changes on the asciidoctor submodule.
 As you may know String are immutable in JavaScript, so we need to replace `gsub!` and `sub!` methods.
 These changes are made at build time to keep the Ruby code as fast as possible.
 
-This command produces some files in the [path]_dist_ directory:
+This command produces some files in the [path]_build_ directory:
 
-dist/::
+build/::
 * *asciidoctor.js* -- includes core and extensions
 * *asciidoctor-core.js* -- no extensions API
 * *asciidoctor-extensions.js* -- extensions API only
@@ -71,12 +71,11 @@ dist/::
 * *asciidoctor-all.js* -- core, extensions API and Opal +
   _(DocBook isn't the main target of webapp. For this reason, we choose to keep it separate.)_
 
-dist/npm/::
+build/npm/::
 * *asciidoctor-core.js* -- no extensions API, will automatically load the DocBook converters
 * *asciidoctor-extensions.js* -- extensions API only
 * *asciidoctor-docbook.js* -- DocBook (4.5 and 5) converters
 
-//Each file has a minified (`.min.js`) and compressed (`.js.gz`) version.
 Each file has a minified (`.min.js`) version.
 
 You'll see these scripts in action when you run the examples, described next.

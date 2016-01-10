@@ -1,4 +1,4 @@
-load("./dist/asciidoctor-all.js");
+load("./build/asciidoctor-all.js");
 
 var data = "= asciidoctor.js, AsciiDoc in JavaScript\n" +
 "Doc Writer <docwriter@example.com>\n\n" +

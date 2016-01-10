@@ -1,6 +1,6 @@
 var Log = require('./log.js');
-var Build = require('./build.js');
-var build = new Build();
+var Builder = require('./builder.js');
+var builder = new Builder();
 var log = new Log();
 
 var args = process.argv.slice(2);
@@ -11,4 +11,4 @@ if (typeof releaseVersion === 'undefined') {
   process.exit(9);
 }
 
-build.release(releaseVersion);
+builder.release(releaseVersion);
