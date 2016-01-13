@@ -1,22 +1,8 @@
 require_relative 'rake/jdk_helper'
 require_relative 'rake/tar'
 
-desc 'Run smoke tests on AppVeyor'
-task :test_on_appveyor do
-  STDOUT.sync = true
-  if ENV['APPVEYOR_SCHEDULED_BUILD']
-    puts 'Smoke test on JDK 8'
-    Rake::Task["jdk8_ea"].invoke
-	puts ''
-    puts 'Smoke test on JDK 9'
-    Rake::Task["jdk9_ea"].invoke
-  else
-    Rake::Task["default"].invoke
-  end
-end
-
 desc 'Run a smoke test against JDK 8 Early Access Release'
-task :jdk8_ea => :dist do
+task :jdk8_ea do
   extract_folder = "#{File.expand_path File.dirname(__FILE__)}/build/jdk1.8.0_40-ea"
   jdk_bin_dir = File.join(extract_folder, 'bin')
   jjs_bin = File.join(jdk_bin_dir, 'jjs')
@@ -61,7 +47,7 @@ task :jdk8_ea => :dist do
 end
 
 desc 'Run a smoke test against JDK 9 Early Access Release'
-task :jdk9_ea => :dist do
+task :jdk9_ea do
   extract_folder = "#{File.expand_path File.dirname(__FILE__)}/build/jdk1.9.0-ea"
   jdk_bin_dir = File.join(extract_folder, 'bin')
   jjs_bin = File.join(jdk_bin_dir, 'jjs')

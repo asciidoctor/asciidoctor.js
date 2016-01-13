@@ -151,7 +151,7 @@ Builder.prototype.commit = function(releaseVersion, callback) {
 Builder.prototype.prepareNextIteration = function(callback) {
   this.deleteDistFolder();
   this.execSync('git add -A .');
-  this.execSync('git commit -m "Prepare for next development iteration');
+  this.execSync('git commit -m "Prepare for next development iteration"');
   callback();
 }
 
@@ -327,9 +327,11 @@ Builder.prototype.uglify = function(callback) {
 }
 
 Builder.prototype.copyToDist = function(callback) {
+  var builder = this;
+
   log.title('copy to dist/')
-  this.deleteDistFolder();
-  this.copy('build/asciidoctor.css', 'dist/css/asciidoctor.css');
+  builder.deleteDistFolder();
+  builder.copy('build/asciidoctor.css', 'dist/css/asciidoctor.css');
   walk('build', function(filePath, stat) {
     var basename = path.basename(filePath);
     var paths = path.dirname(filePath).split(path.sep);
@@ -345,7 +347,7 @@ Builder.prototype.copyToDist = function(callback) {
       paths.unshift('dist');
       paths.push(basename);
       var destination = paths.join(path.sep);
-      this.copy(filePath, destination);
+      builder.copy(filePath, destination);
     }
   });
   console.log('copy done!');
