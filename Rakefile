@@ -56,43 +56,6 @@ task :dist do
 
 end
 
-desc 'Build examples to build/examples'
-task :examples => :dist do
-  Opal::Processor.method_missing_enabled = true
-  Opal::Processor.const_missing_enabled = false
-  Opal::Processor.source_map_enabled = false
-  Opal::Processor.dynamic_require_severity = :warning
-
-  env = Opal::Environment.new
-  env.append_path 'examples'
-  env['asciidoctor_example.rb'].write_to 'build/examples/asciidoctor_example.js'
-
-  Dir.mkdir 'build/examples' unless File.directory? 'build/examples'
-
-  File.copy_stream 'examples/asciidoctor_example.html', 'build/examples/asciidoctor_example.html'
-
-  env['userguide_test.rb'].write_to 'build/examples/userguide_test.js'
-  File.copy_stream 'examples/userguide_test.html', 'build/examples/userguide_test.html'
-  File.copy_stream 'README.adoc', 'build/examples/README.adoc'
-
-  File.copy_stream 'examples/asciidoctor.css', 'build/examples/asciidoctor.css'
-
-  Dir.mkdir 'build/examples/images' unless File.directory? 'build/examples/images'
-
-  File.copy_stream 'error-in-chrome-console.png', 'build/examples/images/error-in-chrome-console.png'
-  File.copy_stream 'error-in-javascript-debugger.png', 'build/examples/images/error-in-javascript-debugger.png'
-
-  unless File.exist? 'build/examples/userguide.adoc'
-    require 'open-uri'
-    userguide_uri = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625/doc/asciidoc.txt'
-    customers_uri = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625/doc/customers.csv'
-    userguide_content = open(userguide_uri) {|fd2| fd2.read }
-    customers_content = open(customers_uri) {|fd2| fd2.read }
-    File.open('build/examples/userguide.adoc', 'w') {|fd1| fd1.write userguide_content }
-    File.open('build/examples/customers.csv', 'w') {|fd1| fd1.write customers_content }
-  end
-end
-
 desc 'Run smoke tests on AppVeyor'
 task :test_on_appveyor do
   STDOUT.sync = true

@@ -4,11 +4,14 @@ var async = require('async');
 var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
+var https = require('https');
 var concat = require('./concat.js');
 var Uglify = require('./uglify.js');
+var OpalCompiler = require('./opal-compiler.js');
 var Log = require('./log.js');
-var log = new Log();
 var uglify = new Uglify();
+var opalCompiler = new OpalCompiler();
+var log = new Log();
 
 var stdout;
 
@@ -51,11 +54,17 @@ var javaVersionText = function() {
   return javaVersion.replace(/\./g, '').replace(/_/g, '');
 }
 
+
 function Builder() {
   this.npmCoreFiles = [
     'src/npm/prepend-core.js',
     'build/asciidoctor-core.js'
   ];
+  this.examplesBuildDir = 'build/examples';
+  this.examplesImagesBuildDir = this.examplesBuildDir + '/images';
+  var asciidocRepoURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc';
+  var asciidocRepoHash = 'd43faae38c4a8bf366dcba545971da99f2b2d625';
+  this.asciidocRepoBaseURI = asciidocRepoURI + '/' + asciidocRepoHash;
 }
 
 Builder.prototype.build = function(callback) {
@@ -64,21 +73,21 @@ Builder.prototype.build = function(callback) {
     callback();
     return;
   }
-  var build = this;
+  var builder = this;
   var start = process.hrtime();
 
   // Step 1: clean
-  build.clean();
+  builder.clean();
 
   // Step 2: build
-  build.buildRuby();
+  builder.buildRuby();
 
   // Step 3: concat
-  build.concatJavaScripts();
+  builder.concatJavaScripts();
 
   async.series([
     function(callback) {
-      build.uglify(callback); // Step 4: Uglify (optional)
+      builder.uglify(callback); // Step 4: Uglify (optional)
     }
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
@@ -328,7 +337,7 @@ Builder.prototype.uglify = function(callback) {
 Builder.prototype.copyToDist = function(callback) {
   log.title('copy to dist/')
   this.deleteDistFolder();
-  fs.createReadStream('build/asciidoctor.css').pipe(fs.createWriteStream('dist/css/asciidoctor.css'));
+  this.copy('build/asciidoctor.css', 'dist/css/asciidoctor.css');
   walk('build', function(filePath, stat) {
     var basename = path.basename(filePath);
     var paths = path.dirname(filePath).split(path.sep);
@@ -344,9 +353,95 @@ Builder.prototype.copyToDist = function(callback) {
       paths.unshift('dist');
       paths.push(basename);
       var destination = paths.join(path.sep);
-      log.transform('copy', filePath, destination);
-      fs.createReadStream(filePath).pipe(fs.createWriteStream(destination));
+      this.copy(filePath, destination);
     }
   });
   typeof callback === 'function' && callback();
+}
+
+Builder.prototype.copyToExamplesBuildDir = function(file) {
+  this.copyToDir(file, this.examplesBuildDir);
+}
+
+Builder.prototype.copyToExamplesImagesBuildDir = function(file) {
+  this.copyToDir(file, this.examplesImagesBuildDir);
+}
+
+Builder.prototype.copyToDir = function(from, toDir) {
+  var basename = path.basename(from);
+  this.copy(from, toDir + '/' + basename);
+}
+
+Builder.prototype.copy = function(from, to) {
+  log.transform('copy', from, to);
+  fs.createReadStream(from).pipe(fs.createWriteStream(to));
+}
+
+Builder.prototype.mkdirSync = function(path) {
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path);
+  }
+}
+
+Builder.prototype.examples = function(callback) {
+  var builder = this;
+  
+  async.series([
+    function(callback) {
+      builder.build(callback); // Step 1: Build
+    },
+    function(callback) {
+      builder.compileExamples(callback); // Step 2: Compile examples
+    },
+    function(callback) {
+      builder.copyExamplesResources(callback); // Step 3: Copy examples resources
+    }
+  ], function() {
+    log.success('You can now open build/examples/asciidoctor_example.html and build/examples/userguide_test.html');
+    typeof callback === 'function' && callback();
+  });
+}
+
+Builder.prototype.compileExamples = function(callback) {
+  log.title('compile examples');
+  this.mkdirSync(this.examplesBuildDir);
+  opalCompiler.compile('examples/asciidoctor_example.rb', this.examplesBuildDir + '/asciidoctor_example.js');
+  opalCompiler.compile('examples/userguide_test.rb', this.examplesBuildDir + '/userguide_test.js');
+  callback();
+}
+
+Builder.prototype.fetchAsciiDocContent = function(source, target, callback) {
+  log.transform('fetch', source, target);
+  var targetStream = fs.createWriteStream(target);
+  var request = https.get(this.asciidocRepoBaseURI + '/doc/' + source, function(response) {
+    response.pipe(targetStream);
+    callback();
+  });
+}
+
+Builder.prototype.copyExamplesResources = function(callback) {
+  var builder = this;
+
+  log.title('copy resources to ' + this.examplesBuildDir + '/');
+  this.copyToExamplesBuildDir('examples/asciidoctor_example.html');
+  this.copyToExamplesBuildDir('examples/userguide_test.html');
+  this.copyToExamplesBuildDir('examples/asciidoctor.css');
+  this.copyToExamplesBuildDir('README.adoc');
+
+  log.title('copy images to ' + this.examplesImagesBuildDir + '/');
+  this.mkdirSync(this.examplesBuildDir + '/images');
+  this.copyToExamplesImagesBuildDir('error-in-chrome-console.png');
+  this.copyToExamplesImagesBuildDir('error-in-javascript-debugger.png');
+
+  log.title('fetch content from AsciiDoc repository');
+  async.series([
+    function(callback) {
+      builder.fetchAsciiDocContent('asciidoc.txt', builder.examplesBuildDir + '/userguide.adoc', callback);
+    },
+    function(callback) {
+      builder.fetchAsciiDocContent('customers.csv', builder.examplesBuildDir + '/customers.csv', callback);
+    }
+  ], function() {
+    typeof callback === 'function' && callback();
+  });
 }
