@@ -120,7 +120,6 @@ Builder.prototype.release = function(releaseVersion) {
 //    function(callback) { builder.build(callback); },
     function(callback) { builder.runTest(callback); },
     function(callback) { builder.copyToDist(callback); },
-    function(callback) { builder.uglify(callback); },
     function(callback) { builder.commit(releaseVersion, callback); },
     function(callback) { builder.prepareNextIteration(callback); },
 //    function(callback) { builder.publish(callback); },
