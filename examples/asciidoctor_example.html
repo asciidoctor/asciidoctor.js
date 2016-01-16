@@ -8,17 +8,8 @@
   </head>
   <body>
     <div id="content"></div>
-    <script>
-      // Disable auto-require (i.e. you'll need to manually require Asciidoctor module)
-      AsciidoctorConfiguration = {}; AsciidoctorConfiguration.autoLoadModule = false;
-    </script>
     <script src="../../bower_components/opal/opal/current/opal.js"></script>
     <script src="../asciidoctor-core.js"></script>
     <script src="asciidoctor_example.js"></script>
-    <script>
-      // Manually require Asciidoctor module
-      Opal.require('asciidoctor');
-      Opal.require('asciidoctor_example');
-    </script>
   </body>
 </html>

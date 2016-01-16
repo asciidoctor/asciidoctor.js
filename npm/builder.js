@@ -108,7 +108,6 @@ Builder.prototype.concatJavaScripts = function() {
   this.concatBowerCoreExtensions();
   this.concatBowerDocbook();
   this.concatBowerAll();
-  this.concatBowerCore(); // must be the last because we're using 'build/asciidoctor-core.js' in other concat tasks
 }
 
 Builder.prototype.release = function(releaseVersion) {
@@ -196,7 +195,6 @@ Builder.prototype.concatNpmExtensions = function() {
   var files = [
     'src/npm/prepend-extensions.js',
     'build/asciidoctor-extensions.js',
-    'src/append-require-extensions.js',
     'src/npm/append-extensions.js'
   ];
   this.concat('npm extensions', files, 'build/npm/asciidoctor-extensions.js');
@@ -207,7 +205,6 @@ Builder.prototype.concatNpmDocbook = function() {
     'src/npm/prepend-extensions.js',
     'build/asciidoctor-docbook45.js',
     'build/asciidoctor-docbook5.js',
-    'src/append-require-docbook.js',
     'src/npm/append-extensions.js'
   ];
   this.concat('npm docbook', files, 'build/npm/asciidoctor-docbook.js');
@@ -216,9 +213,7 @@ Builder.prototype.concatNpmDocbook = function() {
 Builder.prototype.concatBowerCoreExtensions = function() {
   var files = [
     'build/asciidoctor-core.js',
-    'build/asciidoctor-extensions.js',
-    'src/append-require-core.js',
-    'src/append-require-extensions.js'
+    'build/asciidoctor-extensions.js'
   ];
   this.concat('Bower core + extensions', files, 'build/asciidoctor.js');
 }
@@ -226,8 +221,7 @@ Builder.prototype.concatBowerCoreExtensions = function() {
 Builder.prototype.concatBowerDocbook = function() {
   var files = [
     'build/asciidoctor-docbook45.js',
-    'build/asciidoctor-docbook5.js',
-    'src/append-require-docbook.js'
+    'build/asciidoctor-docbook5.js'
   ];
   this.concat('Bower docbook', files, 'build/asciidoctor-docbook.js');
 }
@@ -236,19 +230,9 @@ Builder.prototype.concatBowerAll = function() {
   var files = [
     'bower_components/opal/opal/current/opal.js',
     'build/asciidoctor-core.js',
-    'build/asciidoctor-extensions.js',
-    'src/append-require-core.js',
-    'src/append-require-extensions.js'
+    'build/asciidoctor-extensions.js'
   ];
   this.concat('Bower all', files, 'build/asciidoctor-all.js');
-}
-
-Builder.prototype.concatBowerCore = function() {
-  var files = [
-    'build/asciidoctor-core.js',
-    'src/append-require-core.js'
-  ];
-  this.concat('Bower core', files, 'build/asciidoctor-core.js');
 }
 
 Builder.prototype.deleteBuildFolder = function() {
