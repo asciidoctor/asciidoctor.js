@@ -1,77 +1,8 @@
-require 'opal'
-require 'opal/sprockets/environment'
 require_relative 'rake/jdk_helper'
 require_relative 'rake/tar'
 
-task :default => :dist
-
-desc 'Build opal.js, asciidoctor.js and endorsed extensions to build/'
-task :dist do
-  Opal::Processor.method_missing_enabled = false
-  Opal::Processor.const_missing_enabled = false
-  Opal::Processor.source_map_enabled = false
-  Opal::Processor.dynamic_require_severity = :ignore
-
-  Dir.mkdir 'build' unless File.directory? 'build'
-
-  env = Opal::Environment.new
-
-  env.append_path 'lib'
-
-  # Use use_gem if you want to build against a release
-  env.use_gem 'asciidoctor'
-  # If the Gemfile points to a git repo or local directory, be sure to use `bundle exec rake ...`
-  # Use append_path if you want to build against a local clone
-  #env.append_path 'asciidoctor/lib'
-
-  asciidoctor = env['asciidoctor']
-  asciidoctor_extensions = env['asciidoctor/extensions']
-  asciidoctor_docbook45 = env['asciidoctor/converter/docbook45']
-  asciidoctor_docbook5 = env['asciidoctor/converter/docbook5']
-  asciidoctor_src = asciidoctor.source
-  asciidoctor_docbook5_src = asciidoctor_docbook5.source
-  
-  # NOTE hack to make version compliant with semver
-  asciidoctor_src = asciidoctor_src.sub(/'VERSION', "(\d+\.\d+.\d+)\.(.*)"/, '\'VERSION\', "\1-\2"')
-  asciidoctor.instance_variable_set :@source, asciidoctor_src
-  
-  asciidoctor.write_to 'build/asciidoctor-core.js'
-  asciidoctor_extensions.write_to 'build/asciidoctor-extensions.js'
-  asciidoctor_docbook45.write_to 'build/asciidoctor-docbook45.js'
-  asciidoctor_docbook5.write_to 'build/asciidoctor-docbook5.js'
-
-  if File.directory? 'extensions-lab/lib'
-    env.append_path 'extensions-lab/lib'
-    endorsed_extensions = ['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro', 'chart-block-macro']
-    endorsed_extensions.each { |extension| env[extension].write_to "build/asciidoctor-#{extension}.js" }
-  else
-    puts "Unable to cross-compile extensions because git submodule 'extensions-lab' is not initialized."
-    puts "To initialize the submodule use the following command `git submodule init` and `git submodule update`."
-  end
-
-  asciidoctor_spec = Gem::Specification.find_by_name 'asciidoctor'
-  css_file = File.join asciidoctor_spec.full_gem_path, 'data/stylesheets/asciidoctor-default.css'
-  File.copy_stream css_file, 'build/asciidoctor.css'
-  File.copy_stream css_file, 'examples/asciidoctor.css'
-
-end
-
-desc 'Run smoke tests on AppVeyor'
-task :test_on_appveyor do
-  STDOUT.sync = true
-  if ENV['APPVEYOR_SCHEDULED_BUILD']
-    puts 'Smoke test on JDK 8'
-    Rake::Task["jdk8_ea"].invoke
-	puts ''
-    puts 'Smoke test on JDK 9'
-    Rake::Task["jdk9_ea"].invoke
-  else
-    Rake::Task["default"].invoke
-  end
-end
-
 desc 'Run a smoke test against JDK 8 Early Access Release'
-task :jdk8_ea => :dist do
+task :jdk8_ea do
   extract_folder = "#{File.expand_path File.dirname(__FILE__)}/build/jdk1.8.0_40-ea"
   jdk_bin_dir = File.join(extract_folder, 'bin')
   jjs_bin = File.join(jdk_bin_dir, 'jjs')
@@ -116,7 +47,7 @@ task :jdk8_ea => :dist do
 end
 
 desc 'Run a smoke test against JDK 9 Early Access Release'
-task :jdk9_ea => :dist do
+task :jdk9_ea do
   extract_folder = "#{File.expand_path File.dirname(__FILE__)}/build/jdk1.9.0-ea"
   jdk_bin_dir = File.join(extract_folder, 'bin')
   jjs_bin = File.join(jdk_bin_dir, 'jjs')
