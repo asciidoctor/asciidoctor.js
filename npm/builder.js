@@ -59,6 +59,7 @@ function Builder() {
     'src/npm/prepend-core.js',
     'build/asciidoctor-core.js'
   ];
+  this.benchmarkBuildDir = 'build/benchmark';
   this.examplesBuildDir = 'build/examples';
   this.examplesImagesBuildDir = this.examplesBuildDir + '/images';
   var asciidocRepoURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc';
@@ -321,6 +322,7 @@ Builder.prototype.copyToDist = function(callback) {
     var paths = path.dirname(filePath).split(path.sep);
     if (filePath.endsWith('.js')
          && paths.indexOf('examples') == -1
+         && paths.indexOf('benchmark') == -1
          && filePath.indexOf('spec') == -1
          && !filePath.endsWith('-min.js')
          && !filePath.endsWith('-docbook45.js') 
@@ -390,8 +392,8 @@ Builder.prototype.compileExamples = function(callback) {
   callback();
 }
 
-Builder.prototype.fetchAsciiDocContent = function(source, target, callback) {
-  log.transform('fetch', source, target);
+Builder.prototype.getContentFromAsciiDocRepo = function(source, target, callback) {
+  log.transform('get', source, target);
   var targetStream = fs.createWriteStream(target);
   var request = https.get(this.asciidocRepoBaseURI + '/doc/' + source, function(response) {
     response.pipe(targetStream);
@@ -413,13 +415,13 @@ Builder.prototype.copyExamplesResources = function(callback) {
   this.copyToExamplesImagesBuildDir('error-in-chrome-console.png');
   this.copyToExamplesImagesBuildDir('error-in-javascript-debugger.png');
 
-  log.title('fetch content from AsciiDoc repository');
+  log.title('download sample data from AsciiDoc repository');
   async.series([
     function(callback) {
-      builder.fetchAsciiDocContent('asciidoc.txt', builder.examplesBuildDir + '/userguide.adoc', callback);
+      builder.getContentFromAsciiDocRepo('asciidoc.txt', builder.examplesBuildDir + '/userguide.adoc', callback);
     },
     function(callback) {
-      builder.fetchAsciiDocContent('customers.csv', builder.examplesBuildDir + '/customers.csv', callback);
+      builder.getContentFromAsciiDocRepo('customers.csv', builder.examplesBuildDir + '/customers.csv', callback);
     }
   ], function() {
     typeof callback === 'function' && callback();
@@ -464,4 +466,29 @@ Builder.prototype.compile = function() {
   asciidoctorGemPath = child_process.execSync("ruby -e \"print (Gem::Specification.find_by_name 'asciidoctor').full_gem_path\"");
   asciidoctorCSSFile = asciidoctorGemPath + '/data/stylesheets/asciidoctor-default.css';
   fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/asciidoctor.css'));
+}
+
+Builder.prototype.benchmark = function(runner, callback) {
+  var builder = this;
+
+  async.series([
+    function(callback) { builder.build(callback); },
+    function(callback) {
+      builder.mkdirSync(builder.benchmarkBuildDir);
+      builder.copyToDir('benchmark/run.js', builder.benchmarkBuildDir);
+      callback();
+    },
+    function(callback) {
+      log.title('download sample data from AsciiDoc repository');
+      callback();
+    },
+    function(callback) { builder.getContentFromAsciiDocRepo('asciidoc.txt', 'build/benchmark/userguide.adoc', callback); },
+    function(callback) { builder.getContentFromAsciiDocRepo('customers.csv', 'build/benchmark/customers.csv', callback); },
+    function(callback) {
+      log.title('run benchmark');
+      builder.execSync(runner + ' ' + builder.benchmarkBuildDir + '/run.js');
+    }
+  ], function() {
+    typeof callback === 'function' && callback();
+  });
 }

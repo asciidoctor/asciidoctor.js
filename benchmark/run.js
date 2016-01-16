@@ -1,11 +1,3 @@
-// Run the following script before running this benchmark:
-//
-// $ ruby fetch-sample-data.rb
-//
-// Then run the script using node, js or jjs
-//
-// $ node benchmark-a.js
-
 // define console object in Nashorn
 if (typeof console === 'undefined') {
   console = {
@@ -27,33 +19,33 @@ function secondsSince(start) {
 }
 
 var start = currentTimeMillis();
-var asciidoctor = false;
-var pwd = '';
+var Asciidoctor;
+var verbose = false;
 if (typeof load === 'function') {
-  AsciidoctorConfiguration = {};
-  AsciidoctorConfiguration.autoLoadModule = false;
-  load('../bower_components/opal/opal/current/opal.js');
-  load('../dist/asciidoctor-core.js');
-  //or...
-  //load('../dist/asciidoctor-all.js');
+  load('./bower_components/opal/opal/current/opal.js');
+  load('./build/asciidoctor-core.js'); //or... load('./build/asciidoctor-all.js');
   Opal.require('asciidoctor');
-  if (typeof Java === 'undefined') {
-    pwd = '../benchmark/';
-  }
+  Asciidoctor = Opal.Asciidoctor;
+  verbose = $ENV.VERBOSE;
 }
 else {
   Opal = require('opal-npm-wrapper').Opal;
-  asciidoctor = require('../dist/npm/asciidoctor-core.js')(Opal, (typeof phantom === 'undefined' ? null : false)).Asciidoctor();
+  Asciidoctor = require('../npm/asciidoctor-core.js')(Opal, (typeof phantom === 'undefined' ? null : false)).Asciidoctor();
   // patch the FS module in PhantomJS so it maps to the FS API in Node
   if (typeof phantom !== 'undefined') {
     var fs = require('fs');
     fs.readFileSync = fs.read;
+    var system = require('system');
+    var env = system.env;
+    verbose = env.VERBOSE;
+  } else {
+    verbose = process.env.VERBOSE;
   }
 }
 console.log("Load scripts: " + secondsSince(start));
 start = currentTimeMillis();
 
-var data = "include::" + pwd + "sample-data/userguide.adoc[]";
+var data = "include::build/benchmark/userguide.adoc[]";
 
 var options = Opal.hash({
   safe: 'safe',
@@ -61,17 +53,19 @@ var options = Opal.hash({
   header_footer: true,
   attributes: 'linkcss copycss! toc! numbered! icons! compat-mode'
 });
-//var doc = (asciidoctor ? asciidoctor : Opal.Asciidoctor).$load(data, options);
+//var doc = Asciidoctor.$load(data, options);
 var html;
 var runs = 4;
 for (var i = 1; i <= runs; i++) {
   start = currentTimeMillis();
-  //doc = (asciidoctor ? asciidoctor : Opal.Asciidoctor).$load(data, options);
-  html = (asciidoctor ? asciidoctor : Opal.Asciidoctor).$convert(data, options);
+  //doc = Asciidoctor.$load(data, options);
+  html = Asciidoctor.$convert(data, options);
   console.log("Run #" + i + ": " + secondsSince(start));
 }
-// TODO add flag to output result
-//console.log(html);
+
+if (verbose) {
+  console.log(html);
+}
 
 if (typeof phantom !== 'undefined') {
   phantom.exit();
