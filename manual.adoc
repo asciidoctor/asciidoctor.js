@@ -1,12 +1,6 @@
 = Asciidoctor.js User Manual
 
-== Opal
-
-=== Disable auto require module
-
-Opal 0.8 is now using modules that you need to require in order to use them.
-By default Asciidoctor.js automatically requires the necessary modules.
-If you want to disable this behavior you can set the global variable `AsciidoctorConfiguration = {}; AsciidoctorConfiguration.autoLoadModule = false`
+== API
 
 === How to set document attribute
 
