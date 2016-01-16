@@ -334,7 +334,6 @@ Builder.prototype.copyToDist = function(callback) {
       builder.copy(filePath, destination);
     }
   });
-  console.log('copy done!');
   typeof callback === 'function' && callback();
 }
 
