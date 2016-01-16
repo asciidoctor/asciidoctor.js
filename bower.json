@@ -1,6 +1,6 @@
 {
   "name": "asciidoctor.js",
-  "version": "1.5.4",
+  "version": "1.5.4-rc.1",
   "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
   "keywords": [
     "asciidoc",
