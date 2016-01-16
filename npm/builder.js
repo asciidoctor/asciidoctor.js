@@ -116,12 +116,12 @@ Builder.prototype.release = function(releaseVersion) {
 
   async.series([
     function(callback) { builder.prepareRelease(releaseVersion, callback); },
-//    function(callback) { builder.build(callback); },
+    function(callback) { builder.build(callback); },
     function(callback) { builder.runTest(callback); },
     function(callback) { builder.copyToDist(callback); },
     function(callback) { builder.commit(releaseVersion, callback); },
     function(callback) { builder.prepareNextIteration(callback); },
-//    function(callback) { builder.publish(callback); },
+    function(callback) { builder.publish(callback); },
     function(callback) { builder.completeRelease(releaseVersion, callback); }
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
