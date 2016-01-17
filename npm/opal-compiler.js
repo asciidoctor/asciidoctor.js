@@ -1,17 +1,25 @@
 module.exports = OpalCompiler;
 
-var child_process = require('child_process');
+var Builder = require('opal-compiler').Builder;
 
-var Builder = require('./builder.js');
-var builder = new Builder();
+var fs = require('fs');
 
 function OpalCompiler(config) {
   this.config = config || {};
-  var dynamicRequireLevel = this.config.dynamicRequireLevel || 'warning';
-  this.config.options = this.config.options || ['--compile', '--dynamic-require ' + dynamicRequireLevel, '--no-opal', '--no-exit'];
+  this.dynamicRequireLevel = this.config.dynamicRequireLevel || 'warning';
+  Opal.config.unsupported_features_severity = 'ignore';
 }
 
-OpalCompiler.prototype.compile = function(inputFile, outputFile) {
-  var options = this.config.options.join(' ');
-  builder.execSync('opal ' + options + ' ' + inputFile + ' > ' + outputFile);
+OpalCompiler.prototype.compile = function(require, outputFile, includes) {
+  var builder = Builder.$new();
+  builder.$append_paths('node_modules/opal-compiler/src/stdlib', 'lib', 'build/asciidoctor/lib');
+  builder.compiler_options = Opal.hash({'dynamic_require_severity': this.dynamicRequireLevel});
+  if (typeof includes !== 'undefined') {
+    var includesLength = includes.length;
+    for (var i = 0; i < includesLength; i++) {
+      builder.$append_paths(includes[i]);
+    }
+  }
+  var result = builder.$build(require);
+  fs.writeFileSync(outputFile, result.$to_s(), 'utf8');
 }

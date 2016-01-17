@@ -6,10 +6,7 @@ jdk:
   - oraclejdk8
 
 before_script:
-  - rvm install 2.3.1
-  - rvm use 2.3.1
   - npm install
-  - bower install
 
 script: "npm run package"
 sudo: false

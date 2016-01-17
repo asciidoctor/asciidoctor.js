@@ -63,6 +63,7 @@ function Builder() {
     'src/npm/prepend-core.js',
     'build/asciidoctor-core.js'
   ];
+  this.asciidoctorCoreVersion = '1.5.4';
   this.jdk8EAName = 'jdk1.8.0-ea';
   this.jdk8EABuildDir = 'build' + path.sep + this.jdk8EAName;
   this.jdk9EAName = 'jdk1.9.0-ea';
@@ -84,31 +85,53 @@ Builder.prototype.build = function(callback) {
   var builder = this;
   var start = process.hrtime();
 
-  // Step 1: clean
-  builder.clean();
-
-  // Step 2: compile
-  builder.compile();
-
-  // Step 3: concat
-  builder.concatJavaScripts();
-
   async.series([
-    function(callback) {
-      builder.uglify(callback); // Step 4: Uglify (optional)
-    }
+    function(callback) { builder.clean(callback); }, // clean
+    function(callback) { builder.downloadDependencies(callback); }, // download dependencies
+    function(callback) { builder.compile(callback); }, // compile
+    function(callback) { builder.concatJavaScripts(callback); }, // concat
+    function(callback) { builder.uglify(callback); } // uglify (optional)
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
     typeof callback === 'function' && callback();
   });
 };
 
-Builder.prototype.clean = function() {
+Builder.prototype.clean = function(callback) {
   log.title('clean');
   this.deleteBuildFolder(); // delete build folder
+  callback();
 };
 
-Builder.prototype.concatJavaScripts = function() {
+Builder.prototype.downloadDependencies = function(callback) {
+  log.title('download dependencies');
+
+  var builder = this;
+  async.series([
+    function(callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
+    function(callback) {
+      var stream = fs.createReadStream('build/asciidoctor.tar.gz').pipe(zlib.createGunzip()).pipe(tar.extract('build', {
+        map: function (header) {
+          // REMIND Do NOT user path.sep!
+          // In this case, even on Windows, the separator is '/'.
+          var paths = header.name.split('/');
+          // replace base directory with 'asciidoctor'
+          paths.shift();
+          paths.unshift('asciidoctor');
+          header.name = paths.join('/');
+          return header;
+        }
+      }));
+      stream.on('finish', function () {
+        callback();
+      });
+    }
+  ], function() {
+    typeof callback === 'function' && callback();
+  });
+}
+
+Builder.prototype.concatJavaScripts = function(callback) {
   log.title('concat');
   this.concatCore();
   this.concatCoreMin();
@@ -117,6 +140,7 @@ Builder.prototype.concatJavaScripts = function() {
   this.concatBowerCoreExtensions();
   this.concatBowerDocbook();
   this.concatBowerAll();
+  callback();
 };
 
 Builder.prototype.release = function(releaseVersion) {
@@ -237,7 +261,7 @@ Builder.prototype.concatBowerDocbook = function() {
 
 Builder.prototype.concatBowerAll = function() {
   var files = [
-    'bower_components/opal/opal/current/opal.js',
+    'node_modules/opal-runtime/src/opal.js',
     'build/asciidoctor-core.js',
     'build/asciidoctor-extensions.js'
   ];
@@ -447,10 +471,8 @@ Builder.prototype.copyExamplesResources = function(callback) {
   });
 };
 
-Builder.prototype.compile = function() {
+Builder.prototype.compile = function(callback) {
   var builder = this;
-
-  builder.execSync('bundle install');
 
   var opalCompiler = new OpalCompiler({dynamicRequireLevel: 'ignore'});
 
@@ -459,16 +481,16 @@ Builder.prototype.compile = function() {
   };
 
   var opalCompileExtension = function(name) {
-    opalCompiler.compile('-I extensions-lab/lib -I asciidoctor -g asciidoctor -r ' + name, 'build/asciidoctor-' + name + '.js');
+    opalCompiler.compile(name, 'build/asciidoctor-' + name + '.js', ['extensions-lab/lib']);
   };
 
   this.mkdirSync('build');
 
   log.title('compile core lib');
-  opalCompiler.compile('-I asciidoctor -g asciidoctor -r asciidoctor/converter/docbook5', 'build/asciidoctor-docbook5.js');
-  opalCompiler.compile('-I asciidoctor -g asciidoctor -r asciidoctor/converter/docbook45', 'build/asciidoctor-docbook45.js');
-  opalCompiler.compile('-I asciidoctor -g asciidoctor -r asciidoctor/extensions', 'build/asciidoctor-extensions.js');
-  opalCompiler.compile('-I lib -I asciidoctor -g asciidoctor -r asciidoctor', 'build/asciidoctor-core.js');
+  opalCompiler.compile('asciidoctor/converter/docbook5', 'build/asciidoctor-docbook5.js');
+  opalCompiler.compile('asciidoctor/converter/docbook45', 'build/asciidoctor-docbook45.js');
+  opalCompiler.compile('asciidoctor/extensions', 'build/asciidoctor-extensions.js');
+  opalCompiler.compile('asciidoctor', 'build/asciidoctor-core.js');
 
   log.title('compile extensions-lab lib');
   if (fs.existsSync('extensions-lab/lib')) {
@@ -481,10 +503,10 @@ Builder.prototype.compile = function() {
 
   log.title('copy resources');
   log.debug('copy asciidoctor.css');
-  // FIXME: Find a more robust implementation to get the Asciidoctor gem install path
-  var asciidoctorGemPath = child_process.execSync("ruby -e \"print (Gem::Specification.find_by_name 'asciidoctor').full_gem_path\"");
-  var asciidoctorCSSFile = asciidoctorGemPath + '/data/stylesheets/asciidoctor-default.css';
+  var asciidoctorPath = 'build/asciidoctor';
+  var asciidoctorCSSFile = asciidoctorPath + '/data/stylesheets/asciidoctor-default.css';
   fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/asciidoctor.css'));
+  callback();
 };
 
 Builder.prototype.benchmark = function(runner, callback) {

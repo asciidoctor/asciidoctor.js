@@ -22,15 +22,15 @@ var start = currentTimeMillis();
 var Asciidoctor;
 var verbose = false;
 if (typeof load === 'function') {
-  load('./bower_components/opal/opal/current/opal.js');
+  load('./node_modules/opal-runtime/src/opal.js');
   load('./build/asciidoctor-core.js'); //or... load('./build/asciidoctor-all.js');
   Opal.require('asciidoctor');
   Asciidoctor = Opal.Asciidoctor;
   verbose = $ENV.VERBOSE;
 }
 else {
-  Opal = require('opal-npm-wrapper').Opal;
-  Asciidoctor = require('../npm/asciidoctor-core.js')(Opal, (typeof phantom === 'undefined' ? null : false)).Asciidoctor();
+  require('opal-runtime');
+  var Asciidoctor = require('../npm/asciidoctor-core.js')(this.Opal, (typeof phantom === 'undefined' ? null : false)).Asciidoctor();
   // patch the FS module in PhantomJS so it maps to the FS API in Node
   if (typeof phantom !== 'undefined') {
     var fs = require('fs');
