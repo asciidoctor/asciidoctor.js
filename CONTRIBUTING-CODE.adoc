@@ -82,7 +82,7 @@ You'll see these scripts in action when you run the examples, described next.
 
 === Building and running the examples
 
-To build the examples, simply run the Rake `examples` task from the root of the project:
+To build the examples, simply run the npm `examples` task from the root of the project:
 
  $ npm run examples
 
@@ -98,6 +98,22 @@ All the JavaScript in that file was generated from a Ruby script by Opal.
 Point your browser at [path]_build/asciidoctor_example.html_.
 You should see the Asciidoctor.js README.
 The content on the page was rendered from AsciiDoc by Asciidoctor.js when you loaded the page!
+
+=== Building and running benchmark
+
+Currently, you can run benchmark against 3 JavaScript environment:
+
+ * node
+ * phantomjs
+ * jjs
+
+The following command will run benchmark against Node.js:
+
+ $ npm run benchmark node
+
+Once `build/benchmark` is initialized, you can run benchmark again (without building the project):
+
+ $ node build/benchmark/run.js
 
 == Debugging
 
