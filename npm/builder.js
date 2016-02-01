@@ -122,7 +122,7 @@ Builder.prototype.release = function(releaseVersion) {
     function(callback) { builder.copyToDist(callback); },
     function(callback) { builder.commit(releaseVersion, callback); },
     function(callback) { builder.prepareNextIteration(callback); },
-    function(callback) { builder.publish(callback); },
+    function(callback) { builder.publish(releaseVersion, callback); },
     function(callback) { builder.completeRelease(releaseVersion, callback); }
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
@@ -160,13 +160,13 @@ Builder.prototype.runTest = function(callback) {
   callback();
 }
 
-Builder.prototype.publish = function(callback) {
+Builder.prototype.publish = function(releaseVersion, callback) {
   if (process.env.SKIP_PUBLISH) {
     log.info('SKIP_PUBLISH environment variable is defined, skipping "publish" task');
     callback();
     return;
   } 
-  this.execSync('npm publish');
+  this.execSync('npm publish --tag v' + releaseVersion);
   callback();
 }
 
