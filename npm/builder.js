@@ -121,8 +121,8 @@ Builder.prototype.release = function(releaseVersion) {
     function(callback) { builder.runTest(callback); },
     function(callback) { builder.copyToDist(callback); },
     function(callback) { builder.commit(releaseVersion, callback); },
-    function(callback) { builder.prepareNextIteration(callback); },
     function(callback) { builder.publish(callback); },
+    function(callback) { builder.prepareNextIteration(callback); },
     function(callback) { builder.completeRelease(releaseVersion, callback); }
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
