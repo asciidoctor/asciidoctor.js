@@ -1,5 +1,6 @@
 require_relative 'rake/jdk_helper'
 require_relative 'rake/tar'
+require 'openssl'
 
 desc 'Run a smoke test against JDK 8 Early Access Release'
 task :jdk8_ea do
