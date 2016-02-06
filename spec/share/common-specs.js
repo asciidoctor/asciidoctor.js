@@ -16,6 +16,8 @@ var commonSpec = function(Opal, Asciidoctor) {
       var options = Opal.hash({'attributes': 'icons=font@'});
       var doc = Asciidoctor.$load('== Test', options);
       expect(doc.attributes.smap['icons']).toBe('font');
+      expect(doc.attributes['$[]']('icons')).toBe('font');
+      expect(doc.attributes.$fetch('icons')).toBe('font');
     });
 
     it('should load document with inline attributes !', function() {
