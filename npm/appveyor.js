@@ -1,3 +1,4 @@
+var async = require('async');
 var Log = require('./log.js');
 var Builder = require('./builder.js');
 var builder = new Builder();
@@ -7,9 +8,12 @@ log.title('Appveyor');
 builder.build();
 
 if (process.env.APPVEYOR_SCHEDULED_BUILD) {
-  log.debug('Smoke test on JDK 8');
-  builder.execSync('bundle exec rake jdk8_ea');
-
-  log.debug('Smoke test on JDK 9');
-  builder.execSync('bundle exec rake jdk9_ea');
+  async.series([
+    function (callback) {
+      builder.jdk8EA(callback);
+    },
+    function (callback) {
+      builder.jdk9EA(callback);
+    }]
+  );
 }
