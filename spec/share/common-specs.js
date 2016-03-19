@@ -132,10 +132,16 @@ var commonSpec = function(Opal, Asciidoctor) {
   });
   
   describe('Include', function() {
-    it('Should includes file', function() {
+    it('Should include file', function() {
       var opts = Opal.hash({'safe': 'safe'});
       var html = Asciidoctor.$convert('include::spec/share/include.adoc[]', opts);
       expect(html).toContain('include content');
+    });
+
+    it('Should include csv file in table', function() {
+      var opts = Opal.hash({'safe': 'safe'});
+      var html = Asciidoctor.$convert(',===\ninclude::spec/share/sample.csv[]\n,===', opts);
+      expect(html).toContain('March');
     });
   });
 
