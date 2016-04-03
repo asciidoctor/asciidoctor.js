@@ -15,7 +15,7 @@
     "README.adoc"
   ],
   "scripts": {
-    "test": "node npm/test/jasmine-bower.js && node npm/test/jasmine-bower-min.js && node npm/test/jasmine-npm.js",
+    "test": "node npm/test/jasmine-bower.js && node npm/test/jasmine-bower-min.js && node npm/test/jasmine-npm.js && karma start",
     "build": "node npm/build.js && npm run test",
     "package": "MINIFY=1 node npm/build.js && MINIFY=1 npm run test",
     "examples": "node npm/examples.js",
@@ -48,10 +48,17 @@
     "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
-    "bower": "^1.5.3",
-    "jasmine": "^2.4.1",
-    "colors": "1.1.2",
     "async": "^1.5.0",
-    "tar-fs": "1.11.1"
+    "bower": "^1.5.3",
+    "browserify": "^13.0.0",
+    "colors": "1.1.2",
+    "jasmine": "^2.4.1",
+    "karma": "^0.13.22",
+    "karma-browserify": "^5.0.3",
+    "karma-jasmine": "^0.3.8",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "phantomjs-prebuilt": "^2.1.7",
+    "tar-fs": "1.11.1",
+    "watchify": "^3.7.0"
   }
 }

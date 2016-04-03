@@ -46,7 +46,7 @@ class File
       lines = File.read(@path)
       %x(
         self.eof = false;
-        self.lineno = 0; 
+        self.lineno = 0;
         var chomped  = #{lines.chomp},
             trailing = lines.length != chomped.length,
             splitted = chomped.split(separator);
@@ -94,7 +94,7 @@ class File
   def self.file?(path)
     true
   end
-  
+
   def self.readable?(path)
     true
   end
