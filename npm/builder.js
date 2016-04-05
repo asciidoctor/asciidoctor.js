@@ -5,6 +5,10 @@ var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
 var https = require('https');
+var http = require('http');
+var os = require('os');
+var zlib = require('zlib');
+var tar = require('tar-fs');
 var concat = require('./concat.js');
 var Uglify = require('./uglify.js');
 var OpalCompiler = require('./opal-compiler.js');
@@ -22,7 +26,7 @@ var deleteFolderRecursive = function(path) {
   var files = [];
   if (fs.existsSync(path)) {
     files = fs.readdirSync(path);
-    files.forEach(function(file,index){
+    files.forEach(function(file){
       var curPath = path + "/" + file;
       if (fs.lstatSync(curPath).isDirectory()) { // recurse
         deleteFolderRecursive(curPath);
@@ -51,7 +55,7 @@ var javaVersionText = function() {
   var firstLine = result.split('\n')[0];
   var javaVersion = firstLine.match(/"(.*?)"/i)[1];
   return javaVersion.replace(/\./g, '').replace(/_/g, '');
-}
+};
 
 
 function Builder() {
@@ -59,9 +63,13 @@ function Builder() {
     'src/npm/prepend-core.js',
     'build/asciidoctor-core.js'
   ];
-  this.benchmarkBuildDir = 'build/benchmark';
-  this.examplesBuildDir = 'build/examples';
-  this.examplesImagesBuildDir = this.examplesBuildDir + '/images';
+  this.jdk8EAName = 'jdk1.8.0-ea';
+  this.jdk8EABuildDir = 'build' + path.sep + this.jdk8EAName;
+  this.jdk9EAName = 'jdk1.9.0-ea';
+  this.jdk9EABuildDir = 'build' + path.sep + this.jdk9EAName;
+  this.benchmarkBuildDir = 'build' + path.sep + 'benchmark';
+  this.examplesBuildDir = 'build' + path.sep + 'examples';
+  this.examplesImagesBuildDir = this.examplesBuildDir + path.sep + 'images';
   var asciidocRepoURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc';
   var asciidocRepoHash = 'd43faae38c4a8bf366dcba545971da99f2b2d625';
   this.asciidocRepoBaseURI = asciidocRepoURI + '/' + asciidocRepoHash;
@@ -93,12 +101,12 @@ Builder.prototype.build = function(callback) {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
     typeof callback === 'function' && callback();
   });
-}
+};
 
 Builder.prototype.clean = function() {
   log.title('clean');
   this.deleteBuildFolder(); // delete build folder
-}
+};
 
 Builder.prototype.concatJavaScripts = function() {
   log.title('concat');
@@ -109,7 +117,7 @@ Builder.prototype.concatJavaScripts = function() {
   this.concatBowerCoreExtensions();
   this.concatBowerDocbook();
   this.concatBowerAll();
-}
+};
 
 Builder.prototype.release = function(releaseVersion) {
   var builder = this;
@@ -127,7 +135,7 @@ Builder.prototype.release = function(releaseVersion) {
   ], function() {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
   });
-}
+};
 
 Builder.prototype.prepareRelease = function(releaseVersion, callback) {
   log.title('Release version: ' + releaseVersion);
@@ -139,36 +147,36 @@ Builder.prototype.prepareRelease = function(releaseVersion, callback) {
   this.replaceFileSync('package.json', /"version": "(.*?)"/g, '"version": "' + releaseVersion + '"');
   this.replaceFileSync('bower.json', /"version": "(.*?)"/g, '"version": "' + releaseVersion + '"');
   callback();
-}
+};
 
 Builder.prototype.commit = function(releaseVersion, callback) {
   this.execSync('git add -A .');
   this.execSync('git commit -m "Release ' + releaseVersion + '"');
   this.execSync('git tag v' + releaseVersion);
   callback();
-}
+};
 
 Builder.prototype.prepareNextIteration = function(callback) {
   this.deleteDistFolder();
   this.execSync('git add -A .');
   this.execSync('git commit -m "Prepare for next development iteration"');
   callback();
-}
+};
 
 Builder.prototype.runTest = function(callback) {
   this.execSync('npm run test');
   callback();
-}
+};
 
 Builder.prototype.publish = function(callback) {
   if (process.env.SKIP_PUBLISH) {
     log.info('SKIP_PUBLISH environment variable is defined, skipping "publish" task');
     callback();
     return;
-  } 
+  }
   this.execSync('npm publish');
   callback();
-}
+};
 
 Builder.prototype.completeRelease = function(releaseVersion, callback) {
   console.log('');
@@ -177,20 +185,20 @@ Builder.prototype.completeRelease = function(releaseVersion, callback) {
   log.info("[ ] publish a release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/new");
   log.info('[ ] create an issue here: https://github.com/webjars/asciidoctor.js to update Webjars');
   callback();
-}
+};
 
 Builder.prototype.concat = function(message, files, destination) {
   log.debug(message);
   concat(files, destination);
-}
+};
 
 Builder.prototype.concatCore = function() {
   this.concat('npm core', this.npmCoreFiles.concat(['src/npm/append-core.js']), 'build/npm/asciidoctor-core.js');
-}
+};
 
 Builder.prototype.concatCoreMin = function() {
   this.concat('npm core.min', this.npmCoreFiles.concat(['src/npm/append-core-min.js']), 'build/npm/asciidoctor-core-min.js');
-}
+};
 
 Builder.prototype.concatNpmExtensions = function() {
   var files = [
@@ -199,7 +207,7 @@ Builder.prototype.concatNpmExtensions = function() {
     'src/npm/append-extensions.js'
   ];
   this.concat('npm extensions', files, 'build/npm/asciidoctor-extensions.js');
-}
+};
 
 Builder.prototype.concatNpmDocbook = function() {
   var files = [
@@ -209,7 +217,7 @@ Builder.prototype.concatNpmDocbook = function() {
     'src/npm/append-extensions.js'
   ];
   this.concat('npm docbook', files, 'build/npm/asciidoctor-docbook.js');
-}
+};
 
 Builder.prototype.concatBowerCoreExtensions = function() {
   var files = [
@@ -217,7 +225,7 @@ Builder.prototype.concatBowerCoreExtensions = function() {
     'build/asciidoctor-extensions.js'
   ];
   this.concat('Bower core + extensions', files, 'build/asciidoctor.js');
-}
+};
 
 Builder.prototype.concatBowerDocbook = function() {
   var files = [
@@ -225,7 +233,7 @@ Builder.prototype.concatBowerDocbook = function() {
     'build/asciidoctor-docbook5.js'
   ];
   this.concat('Bower docbook', files, 'build/asciidoctor-docbook.js');
-}
+};
 
 Builder.prototype.concatBowerAll = function() {
   var files = [
@@ -234,14 +242,14 @@ Builder.prototype.concatBowerAll = function() {
     'build/asciidoctor-extensions.js'
   ];
   this.concat('Bower all', files, 'build/asciidoctor-all.js');
-}
+};
 
 Builder.prototype.deleteBuildFolder = function() {
   log.debug('delete build directory');
   deleteFolderRecursive('build');
   fs.mkdirSync('build');
   fs.mkdirSync('build/npm');
-}
+};
 
 Builder.prototype.deleteDistFolder = function() {
   log.debug('delete dist directory');
@@ -249,7 +257,7 @@ Builder.prototype.deleteDistFolder = function() {
   fs.mkdirSync('dist');
   fs.mkdirSync('dist/css');
   fs.mkdirSync('dist/npm');
-}
+};
 
 Builder.prototype.replaceFileSync = function(file, regexp, newSubString) {
   log.debug('update ' + file);
@@ -258,7 +266,7 @@ Builder.prototype.replaceFileSync = function(file, regexp, newSubString) {
     var dataUpdated = data.replace(regexp, newSubString);
     fs.writeFileSync(file, dataUpdated, 'utf8');
   }
-}
+};
 
 Builder.prototype.execSync = function(command) {
   log.debug(command);
@@ -266,7 +274,7 @@ Builder.prototype.execSync = function(command) {
     stdout = child_process.execSync(command);
     process.stdout.write(stdout);
   }
-}
+};
 
 Builder.prototype.uglify = function(callback) {
   // Preconditions
@@ -299,8 +307,6 @@ Builder.prototype.uglify = function(callback) {
     {source: 'build/asciidoctor-all.js', destination: 'build/asciidoctor-all.min.js' }
   ];
 
-  var functions = [];
-
   var tasks = [];
   files.forEach(function(file) {
     var source = file.source;
@@ -309,15 +315,15 @@ Builder.prototype.uglify = function(callback) {
     tasks.push(function(callback) { uglify.minify(source, destination, callback) });
   });
   async.parallelLimit(tasks, 4, callback);
-}
+};
 
 Builder.prototype.copyToDist = function(callback) {
   var builder = this;
 
-  log.title('copy to dist/')
+  log.title('copy to dist/');
   builder.deleteDistFolder();
   builder.copy('build/asciidoctor.css', 'dist/css/asciidoctor.css');
-  walk('build', function(filePath, stat) {
+  walk('build', function(filePath) {
     var basename = path.basename(filePath);
     var paths = path.dirname(filePath).split(path.sep);
     if (filePath.endsWith('.js')
@@ -325,7 +331,7 @@ Builder.prototype.copyToDist = function(callback) {
          && paths.indexOf('benchmark') == -1
          && filePath.indexOf('spec') == -1
          && !filePath.endsWith('-min.js')
-         && !filePath.endsWith('-docbook45.js') 
+         && !filePath.endsWith('-docbook45.js')
          && !filePath.endsWith('-docbook5.js')) {
       // remove 'build' base directory
       paths.shift();
@@ -337,36 +343,36 @@ Builder.prototype.copyToDist = function(callback) {
     }
   });
   typeof callback === 'function' && callback();
-}
+};
 
 Builder.prototype.copyToExamplesBuildDir = function(file) {
   this.copyToDir(file, this.examplesBuildDir);
-}
+};
 
 Builder.prototype.copyToExamplesImagesBuildDir = function(file) {
   this.copyToDir(file, this.examplesImagesBuildDir);
-}
+};
 
 Builder.prototype.copyToDir = function(from, toDir) {
   var basename = path.basename(from);
   this.copy(from, toDir + '/' + basename);
-}
+};
 
 Builder.prototype.copy = function(from, to) {
   log.transform('copy', from, to);
   var data = fs.readFileSync(from);
   fs.writeFileSync(to, data);
-}
+};
 
 Builder.prototype.mkdirSync = function(path) {
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path);
   }
-}
+};
 
 Builder.prototype.examples = function(callback) {
   var builder = this;
-  
+
   async.series([
     function(callback) {
       builder.build(callback); // Step 1: Build
@@ -381,7 +387,7 @@ Builder.prototype.examples = function(callback) {
     log.success('You can now open build/examples/asciidoctor_example.html and build/examples/userguide_test.html');
     typeof callback === 'function' && callback();
   });
-}
+};
 
 Builder.prototype.compileExamples = function(callback) {
   log.title('compile examples');
@@ -390,16 +396,29 @@ Builder.prototype.compileExamples = function(callback) {
   opalCompiler.compile('examples/asciidoctor_example.rb', this.examplesBuildDir + '/asciidoctor_example.js');
   opalCompiler.compile('examples/userguide_test.rb', this.examplesBuildDir + '/userguide_test.js');
   callback();
-}
+};
 
 Builder.prototype.getContentFromAsciiDocRepo = function(source, target, callback) {
+  this.getContentFromURL(this.asciidocRepoBaseURI + '/doc/' + source, target, callback);
+};
+
+Builder.prototype.getContentFromURL = function(source, target, callback) {
   log.transform('get', source, target);
   var targetStream = fs.createWriteStream(target);
-  var request = https.get(this.asciidocRepoBaseURI + '/doc/' + source, function(response) {
+  var downloadModule;
+  // startWith alternative
+  if (source.lastIndexOf('https', 0) === 0) {
+    downloadModule = https;
+  } else {
+    downloadModule = http;
+  }
+  downloadModule.get(source, function(response) {
     response.pipe(targetStream);
-    callback();
+    targetStream.on('finish', function () {
+      targetStream.close(callback);
+    });
   });
-}
+};
 
 Builder.prototype.copyExamplesResources = function(callback) {
   var builder = this;
@@ -426,7 +445,7 @@ Builder.prototype.copyExamplesResources = function(callback) {
   ], function() {
     typeof callback === 'function' && callback();
   });
-}
+};
 
 Builder.prototype.compile = function() {
   var builder = this;
@@ -437,11 +456,11 @@ Builder.prototype.compile = function() {
 
   var opalCompileExtensions = function(names) {
     names.forEach(opalCompileExtension);
-  }
+  };
 
   var opalCompileExtension = function(name) {
     opalCompiler.compile('-I extensions-lab/lib -I asciidoctor -g asciidoctor -r ' + name, 'build/asciidoctor-' + name + '.js');
-  }
+  };
 
   this.mkdirSync('build');
 
@@ -463,10 +482,10 @@ Builder.prototype.compile = function() {
   log.title('copy resources');
   log.debug('copy asciidoctor.css');
   // FIXME: Find a more robust implementation to get the Asciidoctor gem install path
-  asciidoctorGemPath = child_process.execSync("ruby -e \"print (Gem::Specification.find_by_name 'asciidoctor').full_gem_path\"");
-  asciidoctorCSSFile = asciidoctorGemPath + '/data/stylesheets/asciidoctor-default.css';
+  var asciidoctorGemPath = child_process.execSync("ruby -e \"print (Gem::Specification.find_by_name 'asciidoctor').full_gem_path\"");
+  var asciidoctorCSSFile = asciidoctorGemPath + '/data/stylesheets/asciidoctor-default.css';
   fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/asciidoctor.css'));
-}
+};
 
 Builder.prototype.benchmark = function(runner, callback) {
   var builder = this;
@@ -484,11 +503,186 @@ Builder.prototype.benchmark = function(runner, callback) {
     },
     function(callback) { builder.getContentFromAsciiDocRepo('asciidoc.txt', 'build/benchmark/userguide.adoc', callback); },
     function(callback) { builder.getContentFromAsciiDocRepo('customers.csv', 'build/benchmark/customers.csv', callback); },
-    function(callback) {
+    function() {
       log.title('run benchmark');
       builder.execSync(runner + ' ' + builder.benchmarkBuildDir + '/run.js');
     }
   ], function() {
     typeof callback === 'function' && callback();
   });
-}
+};
+
+Builder.prototype.jdkDownloadURL = function(jdkId, url, callback) {
+  https.get(url, function(result) {
+    var data = [];
+    result.setEncoding('utf8');
+    result.on('data', function(chunk) {
+      data.push(chunk);
+    });
+    result.on('end', function(){
+      var html = data.join('');
+      var jdkURLRegexp = new RegExp('document\\.getElementById\\(\\"' + jdkId + '\\"\\)\\.href = \\"http:\\/\\/www.java.net\\/download\\/(.*)\\";');
+      var match = jdkURLRegexp.exec(html)[1];
+      // Avoid redirection http -> https
+      var jdkURL = 'http://download.java.net/' + match;
+      callback(jdkURL);
+    });
+  }).on('error', function(e) {
+    console.error(e);
+  });
+};
+
+Builder.prototype.isWin = function() {
+  return /^win/.test(process.platform);
+};
+
+Builder.prototype.jdk8DownloadURL = function(builder, callback) {
+  var jdkId = builder.isWin() ? 'winOffline64JDK' : 'lin64JDKrpm';
+  builder.jdkDownloadURL(jdkId, 'https://jdk8.java.net/download.html', callback);
+};
+
+Builder.prototype.jdk9DownloadURL = function(builder, callback) {
+  var jdkId = builder.isWin() ? 'winOffline64JDK' : 'lin64JDKrpm';
+  builder.jdkDownloadURL(jdkId, 'https://jdk9.java.net/download/', callback);
+};
+
+Builder.prototype.nashornCheckConvert = function(result, testName) {
+  if (result.indexOf('<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>') == -1) {
+    log.error(testName + ' failed, AsciiDoc source is not converted');
+    process.stdout.write(result);
+  }
+  if (result.indexOf('include content') == -1) {
+    log.error(testName + ' failed, include directive is not processed');
+    process.stdout.write(result);
+  }
+};
+
+Builder.prototype.nashornJJSRun = function(specName, jjsBin) {
+  log.debug('running ' + specName);
+  var start = process.hrtime();
+  var result = child_process.execSync(jjsBin + ' ' + specName).toString('utf8');
+  log.debug('running ' + className + ' in ' + process.hrtime(start)[0] + 's');
+  return result;
+};
+
+Builder.prototype.nashornJavaCompileAndRun = function(specName, className, javacBin, javaBin) {
+  // Compile
+  log.debug('compiling ' + specName + ' to build/');
+  child_process.execSync(javacBin + ' ./' + specName + ' -d ./build');
+
+  // Run
+  log.debug('running ' + className);
+  var start = process.hrtime();
+  var result = child_process.execSync(javaBin + ' -classpath ./build ' + className).toString('utf8');
+  log.debug('running ' + className + ' in ' + process.hrtime(start)[0] + 's');
+  return result;
+};
+
+Builder.prototype.nashornRun = function(name, jdkBuildDir) {
+  log.title('run against ' + name);
+
+  var start = process.hrtime();
+  var jdkBinDir = jdkBuildDir + path.sep + 'bin';
+  var jjsBin = jdkBinDir + path.sep + 'jjs';
+  var javacBin = jdkBinDir + path.sep + 'javac';
+  var javaBin = jdkBinDir + path.sep + 'java';
+  if (this.isWin()) {
+    jjsBin = jjsBin + '.exe';
+    javacBin = javacBin + '.exe';
+    javaBin = javaBin + '.exe';
+  }
+
+  // jjs scripts
+  var basicSpec = 'spec/share/basic.js';
+  var asciidoctorSpec = 'spec/share/asciidoctor-convert.js';
+
+  // Nashorn classes
+  var basicNashornClassName = 'BasicJavascriptWithNashorn';
+  var basicNashornSpec = 'spec/nashorn/' + basicNashornClassName + '.java';
+  var asciidoctorNashornClassName = 'AsciidoctorConvertWithNashorn';
+  var asciidoctorNashornSpec = 'spec/nashorn/' + asciidoctorNashornClassName + '.java';
+
+  log.info('run Nashorn jjs');
+  this.nashornJJSRun(basicSpec, jjsBin);
+  var jjsResult =  this.nashornJJSRun(asciidoctorSpec, jjsBin);
+  this.nashornCheckConvert(jjsResult, 'run with ' + name + ' jjs');
+
+  log.info('run Nashorn java');
+  this.nashornJavaCompileAndRun(basicNashornSpec, basicNashornClassName, javacBin, javaBin);
+  var javaResult = this.nashornJavaCompileAndRun(asciidoctorNashornSpec, asciidoctorNashornClassName, javacBin, javaBin);
+  this.nashornCheckConvert(javaResult, 'run with ' + name + ' java');
+  log.success('Done ' + name + ' in ' + process.hrtime(start)[0] + 's');
+};
+
+Builder.prototype.jdk8EA = function(callback) {
+  var builder = this;
+  builder.jdkEA(builder.jdk8EABuildDir, builder.jdk8EAName, builder.jdk8DownloadURL, callback);
+};
+
+Builder.prototype.jdk9EA = function(callback) {
+  var builder = this;
+  builder.jdkEA(builder.jdk9EABuildDir, builder.jdk9EAName, builder.jdk9DownloadURL, callback);
+};
+
+Builder.prototype.jdkEA = function(jdkEABuildDir, jdkName, jdkDownloadURLFunction, callback) {
+  var builder = this;
+  var jdkEADownloadDestination = this.isWin() ? os.tmpdir() + path.sep + jdkName + '.exe' : os.tmpdir() + path.sep + jdkName + '.tar.gz';
+
+  function waitWindowsInstallCompletion(jdkBuildDir) {
+    if (!fs.existsSync(jdkBuildDir + path.sep + 'bin' + path.sep + 'jjs.exe')
+      || !fs.existsSync(jdkBuildDir + path.sep + 'bin' + path.sep + 'javac.exe')
+      || !fs.existsSync(jdkBuildDir + path.sep + 'bin' + path.sep + 'java.exe')) {
+      setTimeout(waitWindowsInstallCompletion(jdkBuildDir), 1000);
+    }
+  }
+
+  async.series([
+    function(callback) {
+      deleteFolderRecursive(jdkEABuildDir);
+      builder.mkdirSync(jdkEABuildDir);
+      callback();
+    },
+    function(callback) {
+      log.title('download ' + jdkName);
+      if (fs.existsSync(jdkEADownloadDestination)) {
+        log.info('File ' + jdkEADownloadDestination + ' already exists, skipping download');
+        callback();
+      } else {
+        log.info('Starting download...');
+        jdkDownloadURLFunction(builder, function(jdkURL) {
+          builder.getContentFromURL(jdkURL, jdkEADownloadDestination, callback);
+        });
+      }
+    },
+    function(callback) {
+      if (builder.isWin()) {
+        builder.execSync(jdkEADownloadDestination + ' /s INSTALLDIR="%CD%\\build\\' + jdkName + '"');
+        waitWindowsInstallCompletion(jdkEABuildDir);
+        callback();
+      } else {
+        log.title('uncompress ' + jdkName);
+        var stream = fs.createReadStream(jdkEADownloadDestination).pipe(zlib.createGunzip()).pipe(tar.extract('build', {
+          map: function (header) {
+            // REMIND Do NOT user path.sep!
+            // In this case, even on Windows, the separator is '/'.
+            var paths = header.name.split('/');
+            // replace base directory with 'jdkName'
+            paths.shift();
+            paths.unshift(jdkName);
+            header.name = paths.join('/');
+            return header;
+          }
+        })); // ungzip & untar
+        stream.on('finish', function () {
+          callback();
+        });
+      }
+    },
+    function(callback) {
+      builder.nashornRun(jdkName, jdkEABuildDir);
+      callback();
+    }
+  ], function() {
+    typeof callback === 'function' && callback();
+  });
+};
