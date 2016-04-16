@@ -1,0 +1,43 @@
+= Sample Document
+Doc Writer <doc.writer@asciidoc.org>; John Smith <john.smith@asciidoc.org>
+v1.0, 2013-05-20: First draft
+:title: Sample Document
+:Tags: [document, example]
+
+== Abstract
+[abstract]
+A chunk of content that can be used where the abstract of the content needs to be displayed. 
+
+== First Section
+The abstract is a built-in role (called a style). When a built-in role is not available, a role can be used to pass the same type of information: 
+
+.Block title
+[[blockid]]
+[quote, attribution="Abraham Lincoln", Soldiers' National Cemetery Dedication]
+This is some section with title and id and attributes
+
+[role="feature-list"] 
+* lightweight 
+* reusable 
+* readable 
+* etc... 
+
+And not only can a role be assigned to a single paragraph, block or list, it can also be assigned to a sequence of content thanks to the open block. 
+
+[role="lead"] 
+-- 
+Opening paragraph of the lead. 
+
+Another lead paragraph. 
+
+* topic 1 
+* topic 2 
+* topic 3 
+
+Conclusion of the lead. 
+--
+== Second Section
+
+[Images]
+image::sunset.jpg[Sunset]
+image::sunset2.jpg[Sunset2] 

@@ -1,20 +1,20 @@
-var commonSpec = function(testOptions, Opal, Asciidoctor) {
+var commonSpec = function (testOptions, Opal, Asciidoctor) {
 
   describe(testOptions.platform, function () {
 
-    describe('When loaded', function() {
-      it('Opal should not be null', function() {
+    describe('When loaded', function () {
+      it('Opal should not be null', function () {
         expect(Opal).not.toBe(null);
       });
 
-      it('Asciidoctor should not be null', function() {
+      it('Asciidoctor should not be null', function () {
         expect(Asciidoctor).not.toBe(null);
       });
     });
 
-    describe('Parsing', function() {
-      it('should render asciidoctor-latex question/answer block', function() {
-        var html = Asciidoctor.$convert('[env.question]\n--\nWhat is the speed of light?\n--\n\n[click.answer]\n--\n300,000 km/sec\n--', null);
+    describe('Parsing', function () {
+      it('should render asciidoctor-latex question/answer block', function () {
+        var html = Asciidoctor.convert('[env.question]\n--\nWhat is the speed of light?\n--\n\n[click.answer]\n--\n300,000 km/sec\n--', null);
         expect(html).toContain('<div class="openblock question">\n' +
                                '<div class="title">Question 1.</div><div class="content">\n' + 
                                '<div class=\'click_oblique\'>\n' +
@@ -33,7 +33,7 @@ var commonSpec = function(testOptions, Opal, Asciidoctor) {
       });
     });
   });
-}
+};
 
 // Export commonSpec for node test
 if (typeof module !== 'undefined' && module.exports) {

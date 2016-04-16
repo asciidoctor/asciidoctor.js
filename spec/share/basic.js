@@ -1,4 +1,3 @@
-var data = "";
 var x, y, z;
 x = 50;
 y = 10;
@@ -9,7 +8,7 @@ for (i = 0; i < z; i++) {
   count = count + 5;
 }
 
-var subject = "Asciidoctor.js";
-var verb = " is ";
-var adjective = "awesome";
-var sentence = subject.concat(verb).concat(adjective);
+var subject = 'Asciidoctor.js';
+var verb = ' is ';
+var adjective = 'awesome';
+subject.concat(verb).concat(adjective);

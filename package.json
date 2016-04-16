@@ -20,6 +20,7 @@
   "scripts": {
     "test": "node npm/test/unsupported-features.js && node npm/test/jasmine-bower.js && node npm/test/jasmine-bower-min.js && node npm/test/jasmine-npm.js && node npm/test/jasmine-bower-latex.js && karma start",
     "build": "node npm/build.js && npm run test",
+    "lint": "eslint src spec",
     "package": "cross-env MINIFY=1 node npm/build.js && cross-env MINIFY=1 npm run test",
     "examples": "node npm/examples.js",
     "benchmark": "node npm/benchmark.js",
@@ -59,6 +60,7 @@
     "bower": "^1.5.3",
     "browserify": "^13.0.0",
     "cross-env": "^1.0.8",
+    "eslint": "^2.11.0",
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.22",

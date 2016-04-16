@@ -4,8 +4,7 @@ var Jasmine = require('jasmine');
 
 log.task('Jasmine Bower Latex');
 bfs.concatSync([
-  'node_modules/opal-runtime/src/opal.js',
-  'build/asciidoctor-extensions.js',
+  'build/asciidoctor-all.js',
   'build/asciidoctor-latex.js',
   'spec/share/latex-specs.js',
   'spec/bower/bower.spec.js'
