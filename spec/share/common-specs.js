@@ -15,7 +15,7 @@ var commonSpec = function(Opal, Asciidoctor) {
     it('should load document with inline attributes @', function() {
       var options = Opal.hash({'attributes': 'icons=font@'});
       var doc = Asciidoctor.$load('== Test', options);
-      expect(doc.attributes.smap['icons']).toBe('font');
+      expect(doc.$attr('icons')).toBe('font');
       expect(doc.attributes['$[]']('icons')).toBe('font');
       expect(doc.attributes.$fetch('icons')).toBe('font');
     });
@@ -23,7 +23,7 @@ var commonSpec = function(Opal, Asciidoctor) {
     it('should load document with inline attributes !', function() {
       var options = Opal.hash({'attributes': 'icons=font@ data-uri!'});
       var doc = Asciidoctor.$load('== Test', options);
-      expect(doc.attributes.smap['icons']).toBe('font');
+      expect(doc.$attr('icons')).toBe('font');
     });
 
     it('should load document attributes', function() {
@@ -35,26 +35,26 @@ var commonSpec = function(Opal, Asciidoctor) {
     it('should load document with array attributes !', function() {
       var options = Opal.hash({'attributes': ['icons=font@', 'data-uri!']});
       var doc = Asciidoctor.$load('== Test', options);
-      expect(doc.attributes.smap['icons']).toBe('font');
-      expect(doc.attributes.smap['data-uri']).toBeUndefined();
+      expect(doc.$attr('icons')).toBe('font');
+      expect(doc.$attr('data-uri')).toBe(Opal.nil);
     });
 
     it('should load document with boolean attributes', function() {
       var options = Opal.hash({'attributes': ['sectnums=true']});
       var doc = Asciidoctor.$load('== Test', options);
-      expect(doc.attributes.smap['sectnums']).toBe('true');
+      expect(doc.$attr('sectnums')).toBe('true');
     });
 
     it('should load document authors', function() {
       var doc = Asciidoctor.$load('= Authors\nGuillaume Grossetie;Anders Nawroth\n');
-      expect(doc.attributes.smap['author']).toBe('Guillaume Grossetie');
-      expect(doc.attributes.smap['author_1']).toBe('Guillaume Grossetie');
-      expect(doc.attributes.smap['author_2']).toBe('Anders Nawroth');
-      expect(doc.attributes.smap['authorcount']).toBe(2);
-      expect(doc.attributes.smap['authorinitials']).toBe('GG');
-      expect(doc.attributes.smap['authorinitials_1']).toBe('GG');
-      expect(doc.attributes.smap['authorinitials_2']).toBe('AN');
-      expect(doc.attributes.smap['authors']).toBe('Guillaume Grossetie, Anders Nawroth');
+      expect(doc.$attr('author')).toBe('Guillaume Grossetie');
+      expect(doc.$attr('author_1')).toBe('Guillaume Grossetie');
+      expect(doc.$attr('author_2')).toBe('Anders Nawroth');
+      expect(doc.$attr('authorcount')).toBe(2);
+      expect(doc.$attr('authorinitials')).toBe('GG');
+      expect(doc.$attr('authorinitials_1')).toBe('GG');
+      expect(doc.$attr('authorinitials_2')).toBe('AN');
+      expect(doc.$attr('authors')).toBe('Guillaume Grossetie, Anders Nawroth');
     });
   });
 
