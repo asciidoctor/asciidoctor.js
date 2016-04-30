@@ -12,7 +12,7 @@ install:
 - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
 - ruby --version
 - gem --version
-- gem install bundler --quiet --no-ri --no-rdoc
+- gem install bundler --quiet --no-ri --no-rdoc -v 1.9
 - bundler --version
 - bundle
 - npm install
