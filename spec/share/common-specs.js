@@ -56,6 +56,18 @@ var commonSpec = function(Opal, Asciidoctor) {
       expect(doc.$attr('authorinitials_2')).toBe('AN');
       expect(doc.$attr('authors')).toBe('Guillaume Grossetie, Anders Nawroth');
     });
+
+    it('should modify document attributes', function() {
+      var content = '== Title';
+      var doc = Opal.Asciidoctor.$load(content);
+      doc.$set_attribute('data-uri', 'true');
+      expect(doc.$attr('data-uri')).toBe('true');
+      doc.attributes.$delete('data-uri');
+      doc.attribute_overrides.$delete('data-uri');
+      expect(doc.$attr('data-uri')).toBe(Opal.nil);
+      doc.$set_attribute('data-uri', 'false');
+      expect(doc.$attr('data-uri')).toBe('false');
+    });
   });
 
   describe('Modifying', function() {
