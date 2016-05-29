@@ -5,16 +5,12 @@
       isRhino = typeof java !== 'undefined',
       value;
 
-
-  // With browserify we can use module and XMLHttpRequest, so for node
-  // we must test that we have not XMLHttpRequest
-  if (isNode && !isBrowser) {
-    value = 'node';
-  }
-  else if (isBrowser) {
-  // or we can check for document
-  //else if (typeof document !== 'undefined' && document.nodeType) {
+  // The order of the if statements is important because 'module' will be defined in a Browserify environment
+  if (isBrowser) {
     value = 'browser';
+  }
+  else if (isNode) {
+    value = 'node';
   }
   else if (isNashorn) {
     value = 'java-nashorn';
@@ -23,14 +19,9 @@
     value = 'java-rhino';
   }
   else {
-    // standalone is likely SpiderMonkey
+    // standalone most likely SpiderMonkey
     value = 'standalone';
   }
-  // Extra lines to debug tests
-  // console.log('====== opal_ext.rb - Comment this block of logs, it\'s just for debug');
-  // console.log('====== JAVASCRIPT_PLATFORM ========== ', value);
-  // console.log('====== Value of isBrowser ', !!isBrowser);
-  // console.log('====== Value of isNode ', !!isNode);
 )
 JAVASCRIPT_PLATFORM = %x(value)
 require 'strscan'
