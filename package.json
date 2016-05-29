@@ -53,6 +53,7 @@
     "browserify": "^13.0.0",
     "colors": "1.1.2",
     "jasmine": "^2.4.1",
+    "jasmine-core": "^2.4.1",
     "karma": "^0.13.22",
     "karma-browserify": "^5.0.3",
     "karma-jasmine": "^0.3.8",
