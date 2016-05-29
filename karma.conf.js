@@ -8,13 +8,13 @@ module.exports = function(karma) {
       {pattern: 'spec/share/include.adoc', watched: false, included: false, served: true},
       {pattern: 'spec/share/sample.csv', watched: false, included: false, served: true},
       {pattern: 'build/asciidoctor.css', watched: false, included: false, served: true},
-      'spec/commonJs/asciidoctor-all.spec.js'
+      'spec/commonJS/asciidoctor-all.spec.js'
     ],
 
     reporters: [ 'dots' ],
 
     preprocessors: {
-      'spec/commonJs/asciidoctor-all.spec.js': [ 'browserify' ]
+      'spec/commonJS/asciidoctor-all.spec.js': [ 'browserify' ]
     },
 
     browsers: [ 'PhantomJS' ],
