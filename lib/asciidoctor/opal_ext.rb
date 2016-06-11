@@ -1,5 +1,6 @@
 %x(
   var isNode = typeof module !== 'undefined' && module.exports,
+      isElectron = typeof process === 'object' && process.versions === 'object' && process.versions.electron === 'string',
       isBrowser = typeof window !== 'undefined',
       isNashorn = typeof Java !== 'undefined' && Java.type,
       isRhino = typeof java !== 'undefined',
@@ -10,7 +11,11 @@
     value = 'browser';
   }
   else if (isNode) {
-    value = 'node';
+    if (isElectron) {
+      value = 'node-electron';
+    } else {
+      value = 'node';
+    }
   }
   else if (isNashorn) {
     value = 'java-nashorn';
@@ -32,5 +37,7 @@ require 'asciidoctor/opal_ext/kernel'
 case JAVASCRIPT_PLATFORM
   when 'java-nashorn'
     require 'asciidoctor/opal_ext/nashorn/io'
+  when 'node-electron'
+    require 'asciidoctor/opal_ext/electron/io'
   else
 end
