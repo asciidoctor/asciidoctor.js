@@ -17,10 +17,10 @@
   "scripts": {
     "test": "node npm/test/jasmine-bower.js && node npm/test/jasmine-bower-min.js && node npm/test/jasmine-npm.js && karma start",
     "build": "node npm/build.js && npm run test",
-    "package": "MINIFY=1 node npm/build.js && MINIFY=1 npm run test",
+    "package": "node npm/build.js env.MINIFY=1 && npm run test env.MINIFY=1",
     "examples": "node npm/examples.js",
     "benchmark": "node npm/benchmark.js",
-    "release": "MINIFY=1 node npm/release.js"
+    "release": "node npm/release.js env.MINIFY=1"
   },
   "repository": {
     "type": "git",
