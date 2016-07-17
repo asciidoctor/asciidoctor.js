@@ -1,7 +1,11 @@
 var concat = require('../concat.js');
 var Log = require('../log.js');
+var Arg = require('../arg.js');
 var log = new Log();
 var Jasmine = require('jasmine');
+var arg = new Arg();
+
+arg.exportEnvironmentVariables();
 
 if (!process.env.MINIFY) {
   log.info('MINIFY environment variable is not defined, skipping "Jasmine Bower.min" task');
