@@ -1,13 +1,13 @@
 language: node_js
 node_js:
-  - "0.12"
+  - "4.4.7"
 
 jdk:
   - oraclejdk8
 
 before_script:
-  - rvm install 1.9.3-p194
-  - rvm use 1.9.3-p194
+  - rvm install 2.3.1
+  - rvm use 2.3.1
   - npm install
   - bower install
 
