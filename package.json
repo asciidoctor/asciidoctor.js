@@ -3,6 +3,7 @@
   "version": "1.5.5-1",
   "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
   "main": "dist/npm/asciidoctor-core.min.js",
+  "engines" : { "node" : ">=0.12" },
   "files": [
     "dist/npm/asciidoctor-core.js",
     "dist/npm/asciidoctor-core.min.js",
