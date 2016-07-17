@@ -84,23 +84,28 @@ var commonSpec = function(testOptions, Opal, Asciidoctor) {
     });
 
     describe('Parsing', function() {
-      it('== Test should contains <h2 id="_test">Test</h2>', function() {
+      it('should convert a simple document with a title 2', function() {
         var html = Asciidoctor.$convert('== Test', null);
         expect(html).toContain('<h2 id="_test">Test</h2>');
       });
 
-      it('=== Test should contains <h3 id="_test">Test</h3>', function() {
+      it('should convert a simple document with a title 3', function() {
         var html = Asciidoctor.$convert('=== Test', null);
         expect(html).toContain('<h3 id="_test">Test</h3>');
       });
 
-      it('=== Test should embed assets', function() {
+      it('should convert a document with tabsize', function() {
+        var html = Asciidoctor.$convert('= Learn Go\n:tabsize: 2\n\n[source]\n----\npackage main\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("Hello, playground")\n}', null);
+        expect(html).toContain('<div class="listingblock">\n<div class="content">\n<pre class="highlight"><code>package main\nimport "fmt"\n\nfunc main() {\n  fmt.Println("Hello, playground")\n}</code></pre>\n</div>\n</div>');
+      });
+
+      it('should embed assets', function() {
         var options = Opal.hash({doctype: 'article', safe: 'unsafe', header_footer: true, attributes: ['showtitle', 'stylesheet=asciidoctor.css', 'stylesdir='+testOptions.baseDir+'/build']});
         var html = Asciidoctor.$convert('=== Test', options);
         expect(html).toContain('Asciidoctor default stylesheet');
       });
 
-      it('backend=docbook45 should produce a docbook45 document', function() {
+      it('should produce a docbook45 document when backend=docbook45', function() {
         var options = Opal.hash({'attributes': ['backend=docbook45', 'doctype=book'],'header_footer':true});
         var html = Asciidoctor.$convert(':doctitle: DocTitle\n:docdate: 2014-01-01\n== Test', options);
         expect(html).toContain('<?xml version="1.0" encoding="UTF-8"?>\n\
@@ -119,7 +124,7 @@ var commonSpec = function(testOptions, Opal, Asciidoctor) {
 </book>');
             });
 
-      it('backend=docbook5 should produce a docbook5 document', function() {
+      it('should produce a docbook5 document when backend=docbook5', function() {
         var options = Opal.hash({'attributes': ['backend=docbook5', 'doctype=book'],'header_footer':true});
         var html = Asciidoctor.$convert(':doctitle: DocTitle\n:docdate: 2014-01-01\n== Test', options);
         expect(html).toContain('<?xml version="1.0" encoding="UTF-8"?>\n\
@@ -146,13 +151,13 @@ var commonSpec = function(testOptions, Opal, Asciidoctor) {
     });
 
     describe('Include', function() {
-      it('Should include file', function() {
+      it('should include file', function() {
         var opts = Opal.hash({base_dir: testOptions.baseDir, 'safe': 'safe'});
         var html = Asciidoctor.$convert('include::spec/share/include.adoc[]', opts);
         expect(html).toContain('include content');
       });
 
-      it('Should include csv file in table', function() {
+      it('should include csv file in table', function() {
         var opts = Opal.hash({base_dir: testOptions.baseDir, 'safe': 'safe'});
         var html = Asciidoctor.$convert(',===\ninclude::spec/share/sample.csv[]\n,===', opts);
         expect(html).toContain('March');

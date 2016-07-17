@@ -91,6 +91,7 @@ Builder.prototype.build = function(callback) {
     function(callback) { builder.clean(callback); }, // clean
     function(callback) { builder.downloadDependencies(callback); }, // download dependencies
     function(callback) { builder.compile(callback); }, // compile
+    function(callback) { builder.replaceUnsupportedFeatures(callback); }, // replace unsupported features
     function(callback) { builder.concatJavaScripts(callback); }, // concat
     function(callback) { builder.uglify(callback); } // uglify (optional)
   ], function() {
@@ -519,6 +520,16 @@ Builder.prototype.compile = function(callback) {
   var asciidoctorPath = 'build/asciidoctor';
   var asciidoctorCSSFile = asciidoctorPath + '/data/stylesheets/asciidoctor-default.css';
   fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/asciidoctor.css'));
+  callback();
+};
+
+Builder.prototype.replaceUnsupportedFeatures = function(callback) {
+  log.title('Replace unsupported features');
+  var path = 'build/asciidoctor-core.js';
+  var data = fs.readFileSync(path, 'utf8');
+  log.debug('Replace (g)sub! with (g)sub');
+  data = data.replace(/(\(\$\w+ = \(\$\w+ = (\w+)\))\['(\$g?sub)!'\]/g, "$2 = $1['$3']");
+  fs.writeFileSync(path, data, 'utf8');
   callback();
 };
 
