@@ -16,7 +16,7 @@
     "README.adoc"
   ],
   "scripts": {
-    "test": "node npm/test/jasmine-bower.js && node npm/test/jasmine-bower-min.js && node npm/test/jasmine-npm.js && karma start",
+    "test": "node npm/test/jasmine-bower.js && node npm/test/jasmine-bower-min.js && node npm/test/jasmine-npm.js && node npm/test/jasmine-bower-latex.js && karma start",
     "build": "node npm/build.js && npm run test",
     "package": "cross-env MINIFY=1 node npm/build.js && cross-env MINIFY=1 npm run test",
     "examples": "node npm/examples.js",
