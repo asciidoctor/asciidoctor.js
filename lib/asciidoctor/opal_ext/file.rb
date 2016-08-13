@@ -68,6 +68,15 @@ class File
     end
   end
 
+  def readlines()
+    File.readlines(@path)
+  end
+
+  def self.readlines(path, separator = $/)
+    content = File.read(path)
+    content.split(separator)
+  end
+
   def self.expand_path(path)
     path
   end
