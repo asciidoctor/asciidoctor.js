@@ -1,5 +1,5 @@
 module.exports = function(opalParam, xmlHttpRequestParam) {
-  var Opal = opalParam || require('opal-npm-wrapper').Opal;
+  var Opal = opalParam || require('opal-runtime').Opal;
 
   if (xmlHttpRequestParam !== false) {
     var XMLHttpRequest = xmlHttpRequestParam || require('xmlhttprequest').XMLHttpRequest;

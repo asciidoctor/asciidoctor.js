@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "opal-npm-wrapper": "0.9.2",
+    "opal-runtime": "0.10.1-integration1",
     "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
@@ -60,6 +60,7 @@
     "karma-browserify": "^5.0.3",
     "karma-jasmine": "^0.3.8",
     "karma-phantomjs-launcher": "^1.0.0",
+    "opal-compiler": "0.10.1-integration1",
     "phantomjs-prebuilt": "^2.1.7",
     "tar-fs": "1.11.1",
     "watchify": "^3.7.0"

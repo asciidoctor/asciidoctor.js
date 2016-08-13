@@ -1,2 +1,2 @@
 module.exports = function(opalParam) {
-  var Opal = opalParam || require('opal-npm-wrapper').Opal;
+  var Opal = opalParam || require('opal-runtime').Opal;

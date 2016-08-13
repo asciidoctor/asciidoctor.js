@@ -5,18 +5,9 @@ skip_commits:
 clone_depth: 10
 environment:
   nodejs_version: 0.12
-  matrix:
-  - ruby_version: 193
 install:
 - git submodule update --init --recursive
-- SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
-- ruby --version
-- gem --version
-- gem install bundler --quiet --no-ri --no-rdoc -v 1.9
-- bundler --version
-- bundle
 - npm install
 - npm install -g bower
-- bower install
 build_script:
 - node npm/appveyor.js
