@@ -1,7 +1,8 @@
 module.exports = OpalCompiler;
 
+var Log = require('./log.js');
+var log = new Log();
 var Builder = require('opal-compiler').Builder;
-
 var fs = require('fs');
 
 function OpalCompiler(config) {
@@ -20,6 +21,7 @@ OpalCompiler.prototype.compile = function(require, outputFile, includes) {
       builder.$append_paths(includes[i]);
     }
   }
+  log.debug('compile ' + require);
   var result = builder.$build(require);
   fs.writeFileSync(outputFile, result.$to_s(), 'utf8');
 }
