@@ -68,7 +68,7 @@ class File
     end
   end
 
-  def readlines()
+  def readlines
     File.readlines(@path)
   end
 
