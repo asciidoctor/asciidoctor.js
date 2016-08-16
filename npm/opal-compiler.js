@@ -15,7 +15,6 @@ function OpalCompiler(config) {
 }
 
 OpalCompiler.prototype.compile = function(require, outputFile, includes) {
-  log.debug('compile ' + require);
   var builder = Builder.$new();
   builder.$append_paths('node_modules/opal-compiler/src/stdlib', 'lib', 'build/asciidoctor/lib');
   builder.compiler_options = Opal.hash({'dynamic_require_severity': this.dynamicRequireLevel});
