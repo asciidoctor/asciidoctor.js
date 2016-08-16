@@ -64,6 +64,8 @@ function Builder() {
     'build/asciidoctor-core.js'
   ];
   this.asciidoctorCoreVersion = '1.5.4';
+  this.asciidoctorLatexVersion = '0.2';
+  this.htmlEntitiesVersion = '4.3.3';
   this.jdk8EAName = 'jdk1.8.0-ea';
   this.jdk8EABuildDir = 'build' + path.sep + this.jdk8EAName;
   this.jdk9EAName = 'jdk1.9.0-ea';
@@ -109,28 +111,33 @@ Builder.prototype.downloadDependencies = function(callback) {
   var builder = this;
   async.series([
     function(callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
-    function(callback) {
-      var stream = fs.createReadStream('build/asciidoctor.tar.gz').pipe(zlib.createGunzip()).pipe(tar.extract('build', {
-        map: function (header) {
-          // REMIND Do NOT user path.sep!
-          // In this case, even on Windows, the separator is '/'.
-          var paths = header.name.split('/');
-          // replace base directory with 'asciidoctor'
-          paths.shift();
-          paths.unshift('asciidoctor');
-          header.name = paths.join('/');
-          return header;
-        }
-      }));
-      stream.on('finish', function () {
-        callback();
-      });
-    }
+    function(callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor-latex/tar.gz/' + builder.asciidoctorLatexVersion, 'build/asciidoctor-latex.tar.gz', callback); },
+    function(callback) { builder.getContentFromURL('https://codeload.github.com/threedaymonk/htmlentities/tar.gz/v' + builder.htmlEntitiesVersion, 'build/htmlentities.tar.gz', callback); },
+    function(callback) { builder.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); },
+    function(callback) { builder.untar('build/asciidoctor-latex.tar.gz', 'asciidoctor-latex', 'build', callback); },
+    function(callback) { builder.untar('build/htmlentities.tar.gz', 'htmlentities', 'build', callback); }
   ], function() {
     typeof callback === 'function' && callback();
   });
 }
 
+Builder.prototype.untar = function(source, baseDirName, destinationDir, callback) {
+  var stream = fs.createReadStream(source).pipe(zlib.createGunzip()).pipe(tar.extract(destinationDir, {
+    map: function (header) {
+      // REMIND Do NOT user path.sep!
+      // In this case, even on Windows, the separator is '/'.
+      var paths = header.name.split('/');
+      // replace base directory with 'baseDirName'
+      paths.shift();
+      paths.unshift(baseDirName);
+      header.name = paths.join('/');
+      return header;
+    }
+  }));
+  stream.on('finish', function () {
+    callback();
+  });
+}
 Builder.prototype.concatJavaScripts = function(callback) {
   log.title('concat');
   this.concatCore();
@@ -486,6 +493,9 @@ Builder.prototype.compile = function(callback) {
 
   this.mkdirSync('build');
 
+  log.title('compile latex');
+  opalCompiler.compile('asciidoctor-latex', 'build/asciidoctor-latex.js', ['build/asciidoctor-latex/lib', 'build/htmlentities/lib']);
+
   log.title('compile core lib');
   opalCompiler.compile('asciidoctor/converter/docbook5', 'build/asciidoctor-docbook5.js');
   opalCompiler.compile('asciidoctor/converter/docbook45', 'build/asciidoctor-docbook45.js');
@@ -683,21 +693,7 @@ Builder.prototype.jdkEA = function(jdkEABuildDir, jdkName, jdkDownloadURLFunctio
         callback();
       } else {
         log.title('uncompress ' + jdkName);
-        var stream = fs.createReadStream(jdkEADownloadDestination).pipe(zlib.createGunzip()).pipe(tar.extract('build', {
-          map: function (header) {
-            // REMIND Do NOT user path.sep!
-            // In this case, even on Windows, the separator is '/'.
-            var paths = header.name.split('/');
-            // replace base directory with 'jdkName'
-            paths.shift();
-            paths.unshift(jdkName);
-            header.name = paths.join('/');
-            return header;
-          }
-        })); // ungzip & untar
-        stream.on('finish', function () {
-          callback();
-        });
+        builder.untar(jdkEADownloadDestination, jdkName, 'build', callback);
       }
     },
     function(callback) {
