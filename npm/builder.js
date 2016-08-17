@@ -593,7 +593,7 @@ Builder.prototype.nashornJJSRun = function(specName, jjsBin) {
   log.debug('running ' + specName);
   var start = process.hrtime();
   var result = child_process.execSync(jjsBin + ' ' + specName).toString('utf8');
-  log.debug('running ' + className + ' in ' + process.hrtime(start)[0] + 's');
+  log.debug('running ' + specName + ' in ' + process.hrtime(start)[0] + 's');
   return result;
 };
 
