@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "opal-runtime": "0.10.1-integration1",
+    "opal-runtime": "0.10.1-integration2",
     "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
