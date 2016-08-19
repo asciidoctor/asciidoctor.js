@@ -24,6 +24,7 @@ class File
     @contents = nil
     @eof = false
     @lineno = 0
+    @fd = `require('fs').openSync(path, mode)` if JAVASCRIPT_PLATFORM == 'node'
   end
 
   def read
