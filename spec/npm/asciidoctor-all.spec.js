@@ -34,13 +34,13 @@ describe('Node.js', function () {
   describe('Loading file', function() {
     it('should be able to load a file', function() {
       var doc = Asciidoctor.$load_file(__dirname + '/test.adoc', null);
-      expect(doc.attributes.$fetch('docname')).toBe('test.adoc');
+      expect(doc.attributes.$fetch('docname')).toBe('test');
     });
   });
 
   describe('Converting file', function() {
     it('should be able to convert a file', function() {
-      var expectFilePath = __dirname + '/test.adoc.html';
+      var expectFilePath = __dirname + '/test.html';
       removeFile(expectFilePath);
       try {
         var doc = Asciidoctor.$convert_file(__dirname + '/test.adoc', null);
@@ -53,7 +53,7 @@ describe('Node.js', function () {
     });
 
     it('should be able to convert a file with custom css', function() {
-      var expectFilePath = __dirname + '/test.adoc.html';
+      var expectFilePath = __dirname + '/test.html';
       removeFile(expectFilePath);
       try {
         var options = Opal.hash({'attributes': ['stylesheet=simple.css', 'stylesdir=css']});
@@ -67,7 +67,7 @@ describe('Node.js', function () {
     });
 
     it('should be able to convert a file with custom css embedded', function() {
-      var expectFilePath = __dirname + '/test.adoc.html';
+      var expectFilePath = __dirname + '/test.html';
       removeFile(expectFilePath);
       try {
         var options = Opal.hash({'safe': 'server', 'attributes': ['stylesheet=simple.css', 'stylesdir=css']});
@@ -81,7 +81,7 @@ describe('Node.js', function () {
     });
 
     it('should be able to convert a file with to_dir', function() {
-      var expectFilePath = __dirname + '/target/test.adoc.html';
+      var expectFilePath = __dirname + '/target/test.html';
       removeFile(expectFilePath);
       try {
         var options = Opal.hash({'to_dir': './spec/npm/target'});

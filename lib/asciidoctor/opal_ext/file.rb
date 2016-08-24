@@ -78,28 +78,6 @@ class File
     content.split(separator)
   end
 
-  def self.expand_path(path)
-    path
-  end
-
-  def self.join(*paths)
-    paths * SEPARATOR
-  end
-
-  def self.basename(path)
-    (offset = path.rindex SEPARATOR) ? path[(offset + 1)..-1] : path
-  end
-
-  def self.dirname(path)
-    (offset = path.rindex SEPARATOR) ? path[0..(offset - 1)] : '.'
-  end
-
-  def self.extname(path)
-    return '' if path.nil_or_empty?
-    last_dot_idx = path[1..-1].rindex('.')
-    last_dot_idx.nil? ? '' : path[(last_dot_idx + 1)..-1]
-  end
-
   # TODO use XMLHttpRequest HEAD request unless in local file mode
   def self.file?(path)
     true
