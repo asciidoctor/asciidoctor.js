@@ -360,7 +360,9 @@ Builder.prototype.copyToDist = function(callback) {
     if (filePath.endsWith('.js')
          && paths.indexOf('examples') == -1
          && paths.indexOf('benchmark') == -1
-         && paths.indexOf('doc') == -1
+         && paths.indexOf('asciidoctor-latex') == -1
+         && paths.indexOf('htmlentities') == -1
+         && paths.indexOf('asciidoctor') == -1
          && filePath.indexOf('spec') == -1
          && !filePath.endsWith('-min.js')
          && !filePath.endsWith('-docbook45.js')
