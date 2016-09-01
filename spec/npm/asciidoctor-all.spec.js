@@ -2,6 +2,7 @@ var path = require('path');
 var fs = require('fs');
 var commonSpec = require('../share/common-specs.js');
 var asciidoctor = require('../../build/npm/asciidoctor-core.js')();
+
 var testOptions = {
   platform: 'Node.js',
   baseDir: path.join(__dirname, '..', '..')
@@ -11,6 +12,8 @@ var Opal = asciidoctor.Opal;
 
 Opal.load('nodejs');
 Opal.load('pathname');
+
+require('asciidoctor-template.js');
 
 commonSpec(testOptions, Opal, Asciidoctor);
 
@@ -67,10 +70,10 @@ describe('Node.js', function () {
       expect(blocks[1].getBlocks()[1].getAttribute('attribution')).toBe('Abraham Lincoln');
 
       expect(blocks[1].getBlocks()[2].getRole()).toBe('feature-list');
-      
+
       expect(blocks[2].getTitle()).toBe('Second Section');
       expect(blocks[2].getBlocks().length).toBe(2);
-     
+
       expect(blocks[2].getBlocks()[0].getContext()).toBe('image');
       expect(blocks[2].getBlocks()[1].getContext()).toBe('image');
     });
@@ -144,6 +147,20 @@ describe('Node.js', function () {
       } finally {
         removeFile(expectFilePath);
       }
+    });
+
+    it('should be able to use a custom backend', function () {
+      var options = Opal.hash({'safe': 'safe', 'header_footer': true});
+      var content = '= Title\n' +
+                    ':backend: revealjs\n\n' +
+                    '== Slide 1\n\n' +
+                    'Content 1\n\n' +
+                    '== Slide 2\n\n' +
+                    'Content 2';
+      var result = Asciidoctor.$convert(content, options);
+      expect(result).toContain('<section id="_slide_1"');
+      expect(result).toContain('<section id="_slide_2"');
+      expect(result).toContain('<script src="reveal.js/js/reveal.js"></script>');
     });
   });
 });

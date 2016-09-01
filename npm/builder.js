@@ -327,7 +327,13 @@ Builder.prototype.examples = function(callback) {
       builder.copyExamplesResources(callback); // Step 3: Copy examples resources
     }
   ], function() {
-    log.success('You can now open build/examples/asciidoctor_example.html and build/examples/userguide_test.html');
+    log.info('');
+    log.info('In order to visualize the result, a local HTTP server must be started within the root of this project otherwise you will have cross-origin issues.');
+    log.info('For this purpose, you can run the following command to start a HTTP server locally: npm run server');
+    log.success('You can now open:'
+      + '\n - build/examples/asciidoctor_example.html'
+      + '\n - build/examples/userguide_test.html'
+      + '\n - build/examples/slide.html');
     typeof callback === 'function' && callback();
   });
 };
@@ -370,6 +376,7 @@ Builder.prototype.copyExamplesResources = function(callback) {
   this.copyToExamplesBuildDir('examples/asciidoctor_example.html');
   this.copyToExamplesBuildDir('examples/userguide_test.html');
   this.copyToExamplesBuildDir('examples/asciidoctor.css');
+  this.copyToExamplesBuildDir('examples/slide.html');
   this.copyToExamplesBuildDir('README.adoc');
 
   log.task('download sample data from AsciiDoc repository');
