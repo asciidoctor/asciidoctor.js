@@ -51,7 +51,7 @@ If you don't want to use *extensions*, you can load files separately :
 <script src="bower_components/asciidoctor.js/dist/asciidoctor-docbook.min.js"></script>
 ```
 
-Here is a simple example that converts AsciiDoc to HTML5 using the `doctype: 'inline'` option and `showtitle` attribute:
+Here is a simple example that converts AsciiDoc to HTML5:
 
 .sample.js
 
@@ -59,8 +59,7 @@ Here is a simple example that converts AsciiDoc to HTML5 using the `doctype: 'in
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to the browser!";
-var options = Opal.hash({doctype: 'inline', attributes: ['showtitle']});
-var html = Opal.Asciidoctor.$convert(content, options); // <1>
+var html = Opal.Asciidoctor.$convert(content); // <1>
 console.log(html); // <2>
 ```
 
@@ -94,8 +93,7 @@ else {
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to Node.js!";
-var options = opal.hash({doctype: 'inline', attributes: ['showtitle']});
-var html = processor.$convert(content, options); // <5>
+var html = processor.$convert(content); // <5>
 console.log(html); // <6>
 ```
 
@@ -114,7 +112,9 @@ You should see the following output in your terminal:
 
 [.output]
 ....
-<a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.org"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
+<div class="paragraph">
+<p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.org"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
+</div>
 ....
 
 ## Advanced topics
