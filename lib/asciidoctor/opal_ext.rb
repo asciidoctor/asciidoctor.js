@@ -16,6 +16,8 @@
     } else {
       value = 'node';
     }
+    Opal.load("nodejs");
+    Opal.load("pathname");
   }
   else if (isNashorn) {
     value = 'java-nashorn';
