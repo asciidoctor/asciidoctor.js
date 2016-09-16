@@ -464,11 +464,6 @@ Builder.prototype.copyExamplesResources = function(callback) {
   this.copyToExamplesBuildDir('examples/asciidoctor.css');
   this.copyToExamplesBuildDir('README.adoc');
 
-  log.title('copy images to ' + this.examplesImagesBuildDir + '/');
-  this.mkdirSync(this.examplesBuildDir + '/images');
-  this.copyToExamplesImagesBuildDir('error-in-chrome-console.png');
-  this.copyToExamplesImagesBuildDir('error-in-javascript-debugger.png');
-
   log.title('download sample data from AsciiDoc repository');
   async.series([
     function(callback) {
