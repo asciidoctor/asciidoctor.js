@@ -7,7 +7,7 @@ module.exports = function(karma) {
     files: [
       {pattern: 'spec/share/include.adoc', watched: false, included: false, served: true},
       {pattern: 'spec/share/sales.csv', watched: false, included: false, served: true},
-      {pattern: 'build/asciidoctor.css', watched: false, included: false, served: true},
+      {pattern: 'build/css/asciidoctor.css', watched: false, included: false, served: true},
       'spec/commonJS/asciidoctor-all.spec.js'
     ],
 

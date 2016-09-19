@@ -52,6 +52,7 @@ Builder.prototype.build = function(callback) {
     function(callback) { builder.downloadDependencies(callback); }, // download dependencies
     function(callback) { builder.compile(callback); }, // compile
     function(callback) { builder.replaceUnsupportedFeatures(callback); }, // replace unsupported features
+    function(callback) { builder.replaceDefaultStylesheetPath(callback); }, // replace unsupported features
     function(callback) { builder.concatJavaScripts(callback); }, // concat
     function(callback) { builder.uglify(callback); } // uglify (optional)
   ], function() {
@@ -227,6 +228,7 @@ Builder.prototype.removeBuildDirSync = function() {
   log.debug('remove build directory');
   bfs.removeSync('build');
   bfs.mkdirsSync('build/npm');
+  bfs.mkdirsSync('build/css');
 };
 
 Builder.prototype.removeDistDirSync = function() {
@@ -278,8 +280,8 @@ Builder.prototype.copyToDist = function(callback) {
   var builder = this;
 
   log.task('copy to dist/');
-  bfs.removeDistDirSync('dist');
-  bfs.copySync('build/asciidoctor.css', 'dist/css/asciidoctor.css');
+  bfs.removeDistDirSync();
+  bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css');
   bfs.walk('build', function(filePath) {
     var basename = path.basename(filePath);
     var paths = path.dirname(filePath).split(path.sep);
@@ -375,7 +377,6 @@ Builder.prototype.copyExamplesResources = function(callback) {
   log.task('copy resources to ' + this.examplesBuildDir + '/');
   this.copyToExamplesBuildDir('examples/asciidoctor_example.html');
   this.copyToExamplesBuildDir('examples/userguide_test.html');
-  this.copyToExamplesBuildDir('examples/asciidoctor.css');
   this.copyToExamplesBuildDir('examples/slide.html');
   this.copyToExamplesBuildDir('README.adoc');
 
@@ -429,7 +430,7 @@ Builder.prototype.compile = function(callback) {
   log.debug('copy asciidoctor.css');
   var asciidoctorPath = 'build/asciidoctor';
   var asciidoctorCSSFile = asciidoctorPath + '/data/stylesheets/asciidoctor-default.css';
-  fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/asciidoctor.css'));
+  fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/css/asciidoctor.css'));
   callback();
 };
 
@@ -442,6 +443,23 @@ Builder.prototype.replaceUnsupportedFeatures = function(callback) {
   fs.writeFileSync(path, data, 'utf8');
   callback();
 };
+
+Builder.prototype.replaceDefaultStylesheetPath = function(callback) {
+  log.task('Replace default stylesheet path');
+  var path = 'build/asciidoctor-core.js';
+  var data = fs.readFileSync(path, 'utf8');
+  log.debug('Replace primary_stylesheet_data method');
+  var primaryStylesheetDataImpl = 'var stylesheetsPath;\n' +
+    'if ($scope.get("JAVASCRIPT_PLATFORM")["$=="]("node") || $scope.get("JAVASCRIPT_PLATFORM")["$=="]("node-electron")) {\n' +
+    '  stylesheetsPath = Opal.get("File").$join(__dirname, "..", "css");\n' +
+    '} else {\n' +
+    '  stylesheetsPath = "css";\n' +
+    '}\n' +
+    'return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != null) ? $a : self.primary_stylesheet_data = Opal.get("IO").$read(Opal.get("File").$join(stylesheetsPath, "asciidoctor.css")).$chomp());';
+  data = data.replace(/(ːprimary_stylesheet_data\(\)\ {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2');
+  fs.writeFileSync(path, data, 'utf8');
+  callback();
+}
 
 Builder.prototype.benchmark = function(runner, callback) {
   var builder = this;
