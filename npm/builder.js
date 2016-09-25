@@ -10,10 +10,8 @@ var os = require('os');
 var zlib = require('zlib');
 var tar = require('tar-fs');
 var concat = require('./concat.js');
-var Uglify = require('./uglify.js');
 var OpalCompiler = require('./opal-compiler.js');
 var Log = require('./log.js');
-var uglify = new Uglify();
 var log = new Log();
 
 var stdout;
@@ -316,18 +314,7 @@ Builder.prototype.uglify = function(callback) {
     callback();
     return;
   }
-  // - Java7 or higher is available in PATH
-  try {
-    if (javaVersionText() < '170') {
-      log.warn('Closure Compiler requires Java7 or higher, skipping "minify" task');
-      callback();
-      return;
-    }
-  } catch (e) {
-    log.warn('\'java\' binary is not available in PATH, skipping "minify" task');
-    callback();
-    return;
-  }
+  var uglify = require('bestikk-uglify');
   log.title('uglify');
   var files = [
     {source: 'build/npm/asciidoctor-core-min.js', destination: 'build/npm/asciidoctor-core.min.js' },
