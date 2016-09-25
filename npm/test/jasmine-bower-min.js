@@ -1,13 +1,12 @@
 var concat = require('../concat.js');
-var Log = require('../log.js');
-var log = new Log();
+var log = require('bestikk-log');
 var Jasmine = require('jasmine');
 
 if (!process.env.MINIFY) {
   log.info('MINIFY environment variable is not defined, skipping "Jasmine Bower.min" task');
   return;
 }
-log.title('Jasmine Bower.min');
+log.task('Jasmine Bower.min');
 concat([
   'build/asciidoctor-all.min.js',
   'build/asciidoctor-docbook.min.js',

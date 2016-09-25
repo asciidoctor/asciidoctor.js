@@ -11,8 +11,7 @@ var zlib = require('zlib');
 var tar = require('tar-fs');
 var concat = require('./concat.js');
 var OpalCompiler = require('./opal-compiler.js');
-var Log = require('./log.js');
-var log = new Log();
+var log = require('bestikk-log');
 
 var stdout;
 
@@ -99,13 +98,13 @@ Builder.prototype.build = function(callback) {
 };
 
 Builder.prototype.clean = function(callback) {
-  log.title('clean');
+  log.task('clean');
   this.deleteBuildFolder(); // delete build folder
   callback();
 };
 
 Builder.prototype.downloadDependencies = function(callback) {
-  log.title('download dependencies');
+  log.task('download dependencies');
 
   var builder = this;
   async.series([
@@ -138,7 +137,7 @@ Builder.prototype.untar = function(source, baseDirName, destinationDir, callback
   });
 }
 Builder.prototype.concatJavaScripts = function(callback) {
-  log.title('concat');
+  log.task('concat');
   this.concatCore();
   this.concatCoreMin();
   this.concatNpmExtensions();
@@ -168,7 +167,7 @@ Builder.prototype.release = function(releaseVersion) {
 };
 
 Builder.prototype.prepareRelease = function(releaseVersion, callback) {
-  log.title('Release version: ' + releaseVersion);
+  log.task('Release version: ' + releaseVersion);
 
   if (process.env.DRY_RUN) {
     log.warn('Dry run! To perform the release, run the command again without DRY_RUN environment variable');
@@ -315,7 +314,7 @@ Builder.prototype.uglify = function(callback) {
     return;
   }
   var uglify = require('bestikk-uglify');
-  log.title('uglify');
+  log.task('uglify');
   var files = [
     {source: 'build/npm/asciidoctor-core-min.js', destination: 'build/npm/asciidoctor-core.min.js' },
     {source: 'build/npm/asciidoctor-extensions.js', destination: 'build/npm/asciidoctor-extensions.min.js' },
@@ -339,7 +338,7 @@ Builder.prototype.uglify = function(callback) {
 Builder.prototype.copyToDist = function(callback) {
   var builder = this;
 
-  log.title('copy to dist/');
+  log.task('copy to dist/');
   builder.deleteDistFolder();
   builder.copy('build/asciidoctor.css', 'dist/css/asciidoctor.css');
   walk('build', function(filePath) {
@@ -412,7 +411,7 @@ Builder.prototype.examples = function(callback) {
 };
 
 Builder.prototype.compileExamples = function(callback) {
-  log.title('compile examples');
+  log.task('compile examples');
   this.mkdirSync(this.examplesBuildDir);
   var opalCompiler = new OpalCompiler();
   opalCompiler.compile('examples/asciidoctor_example.rb', this.examplesBuildDir + '/asciidoctor_example.js');
@@ -445,13 +444,13 @@ Builder.prototype.getContentFromURL = function(source, target, callback) {
 Builder.prototype.copyExamplesResources = function(callback) {
   var builder = this;
 
-  log.title('copy resources to ' + this.examplesBuildDir + '/');
+  log.task('copy resources to ' + this.examplesBuildDir + '/');
   this.copyToExamplesBuildDir('examples/asciidoctor_example.html');
   this.copyToExamplesBuildDir('examples/userguide_test.html');
   this.copyToExamplesBuildDir('examples/asciidoctor.css');
   this.copyToExamplesBuildDir('README.adoc');
 
-  log.title('download sample data from AsciiDoc repository');
+  log.task('download sample data from AsciiDoc repository');
   async.series([
     function(callback) {
       builder.getContentFromAsciiDocRepo('asciidoc.txt', builder.examplesBuildDir + '/userguide.adoc', callback);
@@ -479,16 +478,16 @@ Builder.prototype.compile = function(callback) {
 
   this.mkdirSync('build');
 
-  log.title('compile latex');
+  log.task('compile latex');
   opalCompiler.compile('asciidoctor-latex', 'build/asciidoctor-latex.js', ['build/asciidoctor-latex/lib', 'build/htmlentities/lib']);
 
-  log.title('compile core lib');
+  log.task('compile core lib');
   opalCompiler.compile('asciidoctor/converter/docbook5', 'build/asciidoctor-docbook5.js');
   opalCompiler.compile('asciidoctor/converter/docbook45', 'build/asciidoctor-docbook45.js');
   opalCompiler.compile('asciidoctor/extensions', 'build/asciidoctor-extensions.js');
   opalCompiler.compile('asciidoctor', 'build/asciidoctor-core.js');
 
-  log.title('compile extensions-lab lib');
+  log.task('compile extensions-lab lib');
   if (fs.existsSync('extensions-lab/lib')) {
     opalCompileExtensions(['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro', 'chart-block-macro']);
   } else {
@@ -497,7 +496,7 @@ Builder.prototype.compile = function(callback) {
     process.exit(9);
   }
 
-  log.title('copy resources');
+  log.task('copy resources');
   log.debug('copy asciidoctor.css');
   var asciidoctorPath = 'build/asciidoctor';
   var asciidoctorCSSFile = asciidoctorPath + '/data/stylesheets/asciidoctor-default.css';
@@ -506,7 +505,7 @@ Builder.prototype.compile = function(callback) {
 };
 
 Builder.prototype.replaceUnsupportedFeatures = function(callback) {
-  log.title('Replace unsupported features');
+  log.task('Replace unsupported features');
   var path = 'build/asciidoctor-core.js';
   var data = fs.readFileSync(path, 'utf8');
   log.debug('Replace (g)sub! with (g)sub');
@@ -526,13 +525,13 @@ Builder.prototype.benchmark = function(runner, callback) {
       callback();
     },
     function(callback) {
-      log.title('download sample data from AsciiDoc repository');
+      log.task('download sample data from AsciiDoc repository');
       callback();
     },
     function(callback) { builder.getContentFromAsciiDocRepo('asciidoc.txt', 'build/benchmark/userguide.adoc', callback); },
     function(callback) { builder.getContentFromAsciiDocRepo('customers.csv', 'build/benchmark/customers.csv', callback); },
     function() {
-      log.title('run benchmark');
+      log.task('run benchmark');
       builder.execSync(runner + ' ' + builder.benchmarkBuildDir + '/run.js');
     }
   ], function() {
@@ -607,7 +606,7 @@ Builder.prototype.nashornJavaCompileAndRun = function(specName, className, javac
 };
 
 Builder.prototype.nashornRun = function(name, jdkBuildDir) {
-  log.title('run against ' + name);
+  log.task('run against ' + name);
 
   var start = process.hrtime();
   var jdkBinDir = jdkBuildDir + path.sep + 'bin';
@@ -671,7 +670,7 @@ Builder.prototype.jdkEA = function(jdkEABuildDir, jdkName, jdkDownloadURLFunctio
       callback();
     },
     function(callback) {
-      log.title('download ' + jdkName);
+      log.task('download ' + jdkName);
       if (fs.existsSync(jdkEADownloadDestination)) {
         log.info('File ' + jdkEADownloadDestination + ' already exists, skipping download');
         callback();
@@ -688,7 +687,7 @@ Builder.prototype.jdkEA = function(jdkEABuildDir, jdkName, jdkDownloadURLFunctio
         waitWindowsInstallCompletion(jdkEABuildDir);
         callback();
       } else {
-        log.title('uncompress ' + jdkName);
+        log.task('uncompress ' + jdkName);
         builder.untar(jdkEADownloadDestination, jdkName, 'build', callback);
       }
     },

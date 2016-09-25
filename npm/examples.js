@@ -1,7 +1,6 @@
-var Log = require('./log.js');
+var log = require('bestikk-log');
 var Builder = require('./builder.js');
 var builder = new Builder();
-var log = new Log();
 
-log.title('examples');
+log.task('examples');
 builder.examples();

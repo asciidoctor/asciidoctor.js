@@ -1,12 +1,8 @@
-var Log = require('./log.js');
-var log = new Log();
-
-module.exports = OpalCompiler;
-
-var Log = require('./log.js');
-var log = new Log();
+var log = require('bestikk-log');
 var Builder = require('opal-compiler').Builder;
 var fs = require('fs');
+
+module.exports = OpalCompiler;
 
 function OpalCompiler(config) {
   this.config = config || {};

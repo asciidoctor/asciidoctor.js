@@ -1,9 +1,8 @@
 var concat = require('../concat.js');
-var Log = require('../log.js');
-var log = new Log();
+var log = require('bestikk-log');
 var Jasmine = require('jasmine');
 
-log.title('Jasmine Bower Latex');
+log.task('Jasmine Bower Latex');
 concat([
   'node_modules/opal-runtime/src/opal.js',
   'build/asciidoctor-extensions.js',
