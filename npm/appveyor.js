@@ -1,10 +1,9 @@
 var async = require('async');
-var Log = require('./log.js');
+var log = require('bestikk-log');
 var Builder = require('./builder.js');
 var builder = new Builder();
-var log = new Log();
 
-log.title('Appveyor');
+log.task('Appveyor');
 async.series([
   function (callback) { builder.build(callback); },
   function (callback) {

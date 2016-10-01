@@ -1,9 +1,8 @@
 var Jasmine = require('jasmine');
-var Log = require('../log.js');
-var log = new Log();
+var log = require('bestikk-log');
 var jasmine = new Jasmine();
 
-log.title('Jasmine npm');
+log.task('Jasmine npm');
 jasmine.loadConfig({
   spec_dir: 'spec',
   spec_files: [

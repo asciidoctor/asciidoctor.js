@@ -1,7 +1,6 @@
-var Log = require('./log.js');
+var log = require('bestikk-log');
 var Builder = require('./builder.js');
 var builder = new Builder();
-var log = new Log();
 
 var args = process.argv.slice(2);
 var releaseVersion = args[0];

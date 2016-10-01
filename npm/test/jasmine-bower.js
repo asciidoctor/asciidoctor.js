@@ -1,9 +1,8 @@
 var concat = require('../concat.js');
-var Log = require('../log.js');
-var log = new Log();
+var log = require('bestikk-log');
 var Jasmine = require('jasmine');
 
-log.title('Jasmine Bower');
+log.task('Jasmine Bower');
 concat([
   'build/asciidoctor-all.js',
   'build/asciidoctor-docbook.js',
