@@ -3,7 +3,9 @@
   "version": "1.5.5-2",
   "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
   "main": "dist/npm/asciidoctor-core.min.js",
-  "engines" : { "node" : ">=0.12" },
+  "engines": {
+    "node": ">=0.12"
+  },
   "files": [
     "dist/npm/asciidoctor-core.js",
     "dist/npm/asciidoctor-core.min.js",
@@ -50,6 +52,7 @@
   },
   "devDependencies": {
     "async": "^1.5.0",
+    "bestikk-jdk-ea": "^0.1.0",
     "bestikk-log": "0.1.0",
     "bestikk-uglify": "0.1.1",
     "bower": "^1.5.3",

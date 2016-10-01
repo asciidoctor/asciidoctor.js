@@ -12,6 +12,7 @@ var tar = require('tar-fs');
 var concat = require('./concat.js');
 var OpalCompiler = require('./opal-compiler.js');
 var log = require('bestikk-log');
+var jdkEA = require('bestikk-jdk-ea');
 
 var stdout;
 
@@ -54,6 +55,9 @@ var javaVersionText = function() {
   return javaVersion.replace(/\./g, '').replace(/_/g, '');
 };
 
+var isWin = function() {
+  return /^win/.test(process.platform);
+};
 
 function Builder() {
   this.npmCoreFiles = [
@@ -63,10 +67,6 @@ function Builder() {
   this.asciidoctorCoreVersion = '1.5.4';
   this.asciidoctorLatexVersion = '0.2';
   this.htmlEntitiesVersion = '4.3.3';
-  this.jdk8EAName = 'jdk1.8.0-ea';
-  this.jdk8EABuildDir = 'build' + path.sep + this.jdk8EAName;
-  this.jdk9EAName = 'jdk1.9.0-ea';
-  this.jdk9EABuildDir = 'build' + path.sep + this.jdk9EAName;
   this.benchmarkBuildDir = 'build' + path.sep + 'benchmark';
   this.examplesBuildDir = 'build' + path.sep + 'examples';
   this.examplesImagesBuildDir = this.examplesBuildDir + path.sep + 'images';
@@ -539,40 +539,6 @@ Builder.prototype.benchmark = function(runner, callback) {
   });
 };
 
-Builder.prototype.jdkDownloadURL = function(jdkId, url, callback) {
-  https.get(url, function(result) {
-    var data = [];
-    result.setEncoding('utf8');
-    result.on('data', function(chunk) {
-      data.push(chunk);
-    });
-    result.on('end', function(){
-      var html = data.join('');
-      var jdkURLRegexp = new RegExp('document\\.getElementById\\(\\"' + jdkId + '\\"\\)\\.href = \\"http:\\/\\/www.java.net\\/download\\/(.*)\\";');
-      var match = jdkURLRegexp.exec(html)[1];
-      // Avoid redirection http -> https
-      var jdkURL = 'http://download.java.net/' + match;
-      callback(jdkURL);
-    });
-  }).on('error', function(e) {
-    console.error(e);
-  });
-};
-
-Builder.prototype.isWin = function() {
-  return /^win/.test(process.platform);
-};
-
-Builder.prototype.jdk8DownloadURL = function(builder, callback) {
-  var jdkId = builder.isWin() ? 'winOffline64JDK' : 'lin64JDKrpm';
-  builder.jdkDownloadURL(jdkId, 'https://jdk8.java.net/download.html', callback);
-};
-
-Builder.prototype.jdk9DownloadURL = function(builder, callback) {
-  var jdkId = builder.isWin() ? 'winOffline64JDK' : 'lin64JDKrpm';
-  builder.jdkDownloadURL(jdkId, 'https://jdk9.java.net/download/', callback);
-};
-
 Builder.prototype.nashornCheckConvert = function(result, testName) {
   if (result.indexOf('<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>') == -1) {
     log.error(testName + ' failed, AsciiDoc source is not converted');
@@ -605,15 +571,15 @@ Builder.prototype.nashornJavaCompileAndRun = function(specName, className, javac
   return result;
 };
 
-Builder.prototype.nashornRun = function(name, jdkBuildDir) {
+Builder.prototype.nashornRun = function(name, jdkInstallDir) {
   log.task('run against ' + name);
 
   var start = process.hrtime();
-  var jdkBinDir = jdkBuildDir + path.sep + 'bin';
+  var jdkBinDir = jdkInstallDir + path.sep + 'bin';
   var jjsBin = jdkBinDir + path.sep + 'jjs';
   var javacBin = jdkBinDir + path.sep + 'javac';
   var javaBin = jdkBinDir + path.sep + 'java';
-  if (this.isWin()) {
+  if (isWin()) {
     jjsBin = jjsBin + '.exe';
     javacBin = javacBin + '.exe';
     javaBin = javaBin + '.exe';
@@ -643,56 +609,27 @@ Builder.prototype.nashornRun = function(name, jdkBuildDir) {
 
 Builder.prototype.jdk8EA = function(callback) {
   var builder = this;
-  builder.jdkEA(builder.jdk8EABuildDir, builder.jdk8EAName, builder.jdk8DownloadURL, callback);
+  async.series([
+    function(callback) {
+      jdkEA.installJDK8EA('build/jdk8', callback);
+    },
+    function(callback) {
+      builder.nashornRun('jdk1.8.0-ea', 'build/jdk8');
+      callback();
+    }
+  ], function() {
+    typeof callback === 'function' && callback();
+  });
 };
 
 Builder.prototype.jdk9EA = function(callback) {
   var builder = this;
-  builder.jdkEA(builder.jdk9EABuildDir, builder.jdk9EAName, builder.jdk9DownloadURL, callback);
-};
-
-Builder.prototype.jdkEA = function(jdkEABuildDir, jdkName, jdkDownloadURLFunction, callback) {
-  var builder = this;
-  var jdkEADownloadDestination = this.isWin() ? os.tmpdir() + path.sep + jdkName + '.exe' : os.tmpdir() + path.sep + jdkName + '.tar.gz';
-
-  function waitWindowsInstallCompletion(jdkBuildDir) {
-    if (!fs.existsSync(jdkBuildDir + path.sep + 'bin' + path.sep + 'jjs.exe')
-      || !fs.existsSync(jdkBuildDir + path.sep + 'bin' + path.sep + 'javac.exe')
-      || !fs.existsSync(jdkBuildDir + path.sep + 'bin' + path.sep + 'java.exe')) {
-      setTimeout(waitWindowsInstallCompletion(jdkBuildDir), 1000);
-    }
-  }
-
   async.series([
     function(callback) {
-      deleteFolderRecursive(jdkEABuildDir);
-      builder.mkdirSync(jdkEABuildDir);
-      callback();
+      jdkEA.installJDK9EA('build/jdk9', callback);
     },
     function(callback) {
-      log.task('download ' + jdkName);
-      if (fs.existsSync(jdkEADownloadDestination)) {
-        log.info('File ' + jdkEADownloadDestination + ' already exists, skipping download');
-        callback();
-      } else {
-        log.info('Starting download...');
-        jdkDownloadURLFunction(builder, function(jdkURL) {
-          builder.getContentFromURL(jdkURL, jdkEADownloadDestination, callback);
-        });
-      }
-    },
-    function(callback) {
-      if (builder.isWin()) {
-        builder.execSync(jdkEADownloadDestination + ' /s INSTALLDIR="%CD%\\build\\' + jdkName + '"');
-        waitWindowsInstallCompletion(jdkEABuildDir);
-        callback();
-      } else {
-        log.task('uncompress ' + jdkName);
-        builder.untar(jdkEADownloadDestination, jdkName, 'build', callback);
-      }
-    },
-    function(callback) {
-      builder.nashornRun(jdkName, jdkEABuildDir);
+      builder.nashornRun('jdk1.9.0-ea', 'build/jdk9');
       callback();
     }
   ], function() {
