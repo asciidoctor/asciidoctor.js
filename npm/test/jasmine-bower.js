@@ -1,9 +1,9 @@
-var concat = require('../concat.js');
+var bfs = require('bestikk-fs');
 var log = require('bestikk-log');
 var Jasmine = require('jasmine');
 
 log.task('Jasmine Bower');
-concat([
+bfs.concatSync([
   'build/asciidoctor-all.js',
   'build/asciidoctor-docbook.js',
   'spec/share/common-specs.js',
