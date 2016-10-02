@@ -1,9 +1,9 @@
-var concat = require('../concat.js');
+var bfs = require('bestikk-fs');
 var log = require('bestikk-log');
 var Jasmine = require('jasmine');
 
 log.task('Jasmine Bower Latex');
-concat([
+bfs.concatSync([
   'node_modules/opal-runtime/src/opal.js',
   'build/asciidoctor-extensions.js',
   'build/asciidoctor-latex.js',

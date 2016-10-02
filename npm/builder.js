@@ -7,52 +7,15 @@ var path = require('path');
 var https = require('https');
 var http = require('http');
 var os = require('os');
-var zlib = require('zlib');
-var tar = require('tar-fs');
-var concat = require('./concat.js');
 var OpalCompiler = require('./opal-compiler.js');
 var log = require('bestikk-log');
-var jdkEA = require('bestikk-jdk-ea');
+var jdk = require('bestikk-jdk-ea');
+var bfs = require('bestikk-fs');
 
 var stdout;
 
 String.prototype.endsWith = function(suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
-};
-
-var deleteFolderRecursive = function(path) {
-  var files = [];
-  if (fs.existsSync(path)) {
-    files = fs.readdirSync(path);
-    files.forEach(function(file){
-      var curPath = path + "/" + file;
-      if (fs.lstatSync(curPath).isDirectory()) { // recurse
-        deleteFolderRecursive(curPath);
-      } else { // delete file
-        fs.unlinkSync(curPath);
-      }
-    });
-    fs.rmdirSync(path);
-  }
-};
-
-var walk = function(currentDirPath, callback) {
-  fs.readdirSync(currentDirPath).forEach(function(name) {
-    var filePath = path.join(currentDirPath, name);
-    var stat = fs.statSync(filePath);
-    if (stat.isFile()) {
-      callback(filePath, stat);
-    } else if (stat.isDirectory()) {
-      walk(filePath, callback);
-    }
-  });
-};
-
-var javaVersionText = function() {
-  var result = child_process.execSync('java -version 2>&1', {encoding: 'utf8'});
-  var firstLine = result.split('\n')[0];
-  var javaVersion = firstLine.match(/"(.*?)"/i)[1];
-  return javaVersion.replace(/\./g, '').replace(/_/g, '');
 };
 
 var isWin = function() {
@@ -99,7 +62,7 @@ Builder.prototype.build = function(callback) {
 
 Builder.prototype.clean = function(callback) {
   log.task('clean');
-  this.deleteBuildFolder(); // delete build folder
+  this.removeBuildDirSync(); // remove build directory
   callback();
 };
 
@@ -111,31 +74,14 @@ Builder.prototype.downloadDependencies = function(callback) {
     function(callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
     function(callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor-latex/tar.gz/' + builder.asciidoctorLatexVersion, 'build/asciidoctor-latex.tar.gz', callback); },
     function(callback) { builder.getContentFromURL('https://codeload.github.com/threedaymonk/htmlentities/tar.gz/v' + builder.htmlEntitiesVersion, 'build/htmlentities.tar.gz', callback); },
-    function(callback) { builder.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); },
-    function(callback) { builder.untar('build/asciidoctor-latex.tar.gz', 'asciidoctor-latex', 'build', callback); },
-    function(callback) { builder.untar('build/htmlentities.tar.gz', 'htmlentities', 'build', callback); }
+    function(callback) { bfs.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); },
+    function(callback) { bfs.untar('build/asciidoctor-latex.tar.gz', 'asciidoctor-latex', 'build', callback); },
+    function(callback) { bfs.untar('build/htmlentities.tar.gz', 'htmlentities', 'build', callback); }
   ], function() {
     typeof callback === 'function' && callback();
   });
 }
 
-Builder.prototype.untar = function(source, baseDirName, destinationDir, callback) {
-  var stream = fs.createReadStream(source).pipe(zlib.createGunzip()).pipe(tar.extract(destinationDir, {
-    map: function (header) {
-      // REMIND Do NOT user path.sep!
-      // In this case, even on Windows, the separator is '/'.
-      var paths = header.name.split('/');
-      // replace base directory with 'baseDirName'
-      paths.shift();
-      paths.unshift(baseDirName);
-      header.name = paths.join('/');
-      return header;
-    }
-  }));
-  stream.on('finish', function () {
-    callback();
-  });
-}
 Builder.prototype.concatJavaScripts = function(callback) {
   log.task('concat');
   this.concatCore();
@@ -171,10 +117,10 @@ Builder.prototype.prepareRelease = function(releaseVersion, callback) {
 
   if (process.env.DRY_RUN) {
     log.warn('Dry run! To perform the release, run the command again without DRY_RUN environment variable');
+  } else {
+    bfs.updateFileSync('package.json', /"version": "(.*?)"/g, '"version": "' + releaseVersion + '"');
+    bfs.updateFileSync('bower.json', /"version": "(.*?)"/g, '"version": "' + releaseVersion + '"');
   }
-
-  this.replaceFileSync('package.json', /"version": "(.*?)"/g, '"version": "' + releaseVersion + '"');
-  this.replaceFileSync('bower.json', /"version": "(.*?)"/g, '"version": "' + releaseVersion + '"');
   callback();
 };
 
@@ -186,7 +132,7 @@ Builder.prototype.commit = function(releaseVersion, callback) {
 };
 
 Builder.prototype.prepareNextIteration = function(callback) {
-  this.deleteDistFolder();
+  this.removeDistDirSync();
   this.execSync('git add -A .');
   this.execSync('git commit -m "Prepare for next development iteration"');
   callback();
@@ -218,7 +164,7 @@ Builder.prototype.completeRelease = function(releaseVersion, callback) {
 
 Builder.prototype.concat = function(message, files, destination) {
   log.debug(message);
-  concat(files, destination);
+  bfs.concatSync(files, destination);
 };
 
 Builder.prototype.concatCore = function() {
@@ -273,28 +219,17 @@ Builder.prototype.concatBowerAll = function() {
   this.concat('Bower all', files, 'build/asciidoctor-all.js');
 };
 
-Builder.prototype.deleteBuildFolder = function() {
-  log.debug('delete build directory');
-  deleteFolderRecursive('build');
-  fs.mkdirSync('build');
-  fs.mkdirSync('build/npm');
+Builder.prototype.removeBuildDirSync = function() {
+  log.debug('remove build directory');
+  bfs.removeSync('build');
+  bfs.mkdirsSync('build/npm');
 };
 
-Builder.prototype.deleteDistFolder = function() {
-  log.debug('delete dist directory');
-  deleteFolderRecursive('dist');
-  fs.mkdirSync('dist');
-  fs.mkdirSync('dist/css');
-  fs.mkdirSync('dist/npm');
-};
-
-Builder.prototype.replaceFileSync = function(file, regexp, newSubString) {
-  log.debug('update ' + file);
-  if (!process.env.DRY_RUN) {
-    var data = fs.readFileSync(file, 'utf8');
-    var dataUpdated = data.replace(regexp, newSubString);
-    fs.writeFileSync(file, dataUpdated, 'utf8');
-  }
+Builder.prototype.removeDistDirSync = function() {
+  log.debug('remove dist directory');
+  bfs.removeSync('dist');
+  bfs.mkdirsSync('dist/css');
+  bfs.mkdirsSync('dist/npm');
 };
 
 Builder.prototype.execSync = function(command) {
@@ -339,9 +274,9 @@ Builder.prototype.copyToDist = function(callback) {
   var builder = this;
 
   log.task('copy to dist/');
-  builder.deleteDistFolder();
-  builder.copy('build/asciidoctor.css', 'dist/css/asciidoctor.css');
-  walk('build', function(filePath) {
+  bfs.removeDistDirSync('dist');
+  bfs.copySync('build/asciidoctor.css', 'dist/css/asciidoctor.css');
+  bfs.walk('build', function(filePath) {
     var basename = path.basename(filePath);
     var paths = path.dirname(filePath).split(path.sep);
     if (filePath.endsWith('.js')
@@ -360,35 +295,18 @@ Builder.prototype.copyToDist = function(callback) {
       paths.unshift('dist');
       paths.push(basename);
       var destination = paths.join(path.sep);
-      builder.copy(filePath, destination);
+      bfs.copySync(filePath, destination);
     }
   });
   typeof callback === 'function' && callback();
 };
 
 Builder.prototype.copyToExamplesBuildDir = function(file) {
-  this.copyToDir(file, this.examplesBuildDir);
+  bfs.copyToDirSync(file, this.examplesBuildDir);
 };
 
 Builder.prototype.copyToExamplesImagesBuildDir = function(file) {
-  this.copyToDir(file, this.examplesImagesBuildDir);
-};
-
-Builder.prototype.copyToDir = function(from, toDir) {
-  var basename = path.basename(from);
-  this.copy(from, toDir + '/' + basename);
-};
-
-Builder.prototype.copy = function(from, to) {
-  log.transform('copy', from, to);
-  var data = fs.readFileSync(from);
-  fs.writeFileSync(to, data);
-};
-
-Builder.prototype.mkdirSync = function(path) {
-  if (!fs.existsSync(path)) {
-    fs.mkdirSync(path);
-  }
+  bfs.copyToDirSync(file, this.examplesImagesBuildDir);
 };
 
 Builder.prototype.examples = function(callback) {
@@ -412,7 +330,7 @@ Builder.prototype.examples = function(callback) {
 
 Builder.prototype.compileExamples = function(callback) {
   log.task('compile examples');
-  this.mkdirSync(this.examplesBuildDir);
+  bfs.mkdirsSync(this.examplesBuildDir);
   var opalCompiler = new OpalCompiler();
   opalCompiler.compile('examples/asciidoctor_example.rb', this.examplesBuildDir + '/asciidoctor_example.js');
   opalCompiler.compile('examples/userguide_test.rb', this.examplesBuildDir + '/userguide_test.js');
@@ -476,7 +394,7 @@ Builder.prototype.compile = function(callback) {
     opalCompiler.compile(name, 'build/asciidoctor-' + name + '.js', ['extensions-lab/lib']);
   };
 
-  this.mkdirSync('build');
+  bfs.mkdirsSync('build');
 
   log.task('compile latex');
   opalCompiler.compile('asciidoctor-latex', 'build/asciidoctor-latex.js', ['build/asciidoctor-latex/lib', 'build/htmlentities/lib']);
@@ -520,8 +438,8 @@ Builder.prototype.benchmark = function(runner, callback) {
   async.series([
     function(callback) { builder.build(callback); },
     function(callback) {
-      builder.mkdirSync(builder.benchmarkBuildDir);
-      builder.copyToDir('benchmark/run.js', builder.benchmarkBuildDir);
+      bfs.mkdirsSync(builder.benchmarkBuildDir);
+      bfs.copyToDirSync('benchmark/run.js', builder.benchmarkBuildDir);
       callback();
     },
     function(callback) {
@@ -611,7 +529,7 @@ Builder.prototype.jdk8EA = function(callback) {
   var builder = this;
   async.series([
     function(callback) {
-      jdkEA.installJDK8EA('build/jdk8', callback);
+      jdk.installJDK8EA('build/jdk8', callback);
     },
     function(callback) {
       builder.nashornRun('jdk1.8.0-ea', 'build/jdk8');
@@ -626,7 +544,7 @@ Builder.prototype.jdk9EA = function(callback) {
   var builder = this;
   async.series([
     function(callback) {
-      jdkEA.installJDK9EA('build/jdk9', callback);
+      jdk.installJDK9EA('build/jdk9', callback);
     },
     function(callback) {
       builder.nashornRun('jdk1.9.0-ea', 'build/jdk9');

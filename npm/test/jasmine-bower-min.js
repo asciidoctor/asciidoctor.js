@@ -1,4 +1,4 @@
-var concat = require('../concat.js');
+var bfs = require('bestikk-fs');
 var log = require('bestikk-log');
 var Jasmine = require('jasmine');
 
@@ -7,7 +7,7 @@ if (!process.env.MINIFY) {
   return;
 }
 log.task('Jasmine Bower.min');
-concat([
+bfs.concatSync([
   'build/asciidoctor-all.min.js',
   'build/asciidoctor-docbook.min.js',
   'spec/share/common-specs.js',
