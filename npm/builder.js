@@ -27,7 +27,6 @@ function Builder() {
     'src/npm/prepend-core.js',
     'build/asciidoctor-core.js'
   ];
-  this.asciidoctorCoreVersion = '1.5.4';
   this.asciidoctorLatexVersion = '0.2';
   this.htmlEntitiesVersion = '4.3.3';
   this.benchmarkBuildDir = 'build' + path.sep + 'benchmark';
@@ -71,7 +70,7 @@ Builder.prototype.downloadDependencies = function(callback) {
 
   var builder = this;
   async.series([
-    function(callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
+    function(callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/master', 'build/asciidoctor.tar.gz', callback); },
     function(callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor-latex/tar.gz/' + builder.asciidoctorLatexVersion, 'build/asciidoctor-latex.tar.gz', callback); },
     function(callback) { builder.getContentFromURL('https://codeload.github.com/threedaymonk/htmlentities/tar.gz/v' + builder.htmlEntitiesVersion, 'build/htmlentities.tar.gz', callback); },
     function(callback) { bfs.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); },
