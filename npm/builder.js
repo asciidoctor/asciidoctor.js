@@ -27,7 +27,7 @@ function Builder() {
     'src/npm/prepend-core.js',
     'build/asciidoctor-core.js'
   ];
-  this.asciidoctorCoreVersion = '1.5.4';
+  this.asciidoctorCoreVersion = '1.5.5';
   this.asciidoctorLatexVersion = '0.2';
   this.htmlEntitiesVersion = '4.3.3';
   this.benchmarkBuildDir = 'build' + path.sep + 'benchmark';

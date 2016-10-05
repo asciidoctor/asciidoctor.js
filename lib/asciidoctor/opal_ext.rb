@@ -39,6 +39,7 @@ require 'asciidoctor/opal_ext/thread_safe'
 require 'asciidoctor/converter'
 require 'asciidoctor/converter/composite'
 require 'asciidoctor/converter/html5'
+require 'asciidoctor/opal_ext/string'
 
 case JAVASCRIPT_PLATFORM
   when 'java-nashorn'
