@@ -8,5 +8,8 @@ jdk:
 before_script:
   - npm install
 
-script: "npm run package"
+script:
+ - npm run lint
+ - npm run package
+
 sudo: false

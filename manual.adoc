@@ -9,12 +9,12 @@ You can set document attributes after loading AsciiDoc content.
 [source,javascript]
 ----
 var content = '== Title';
-var doc = Opal.Asciidoctor.$load(content);
-console.log(doc.$attr('data-uri')); // prints nil
-console.log(doc.$attr('data-uri', 'false')); // prints 'false'
+var doc = Opal.Asciidoctor.load(content);
+console.log(doc.getAttribute('data-uri')); // prints undefined
+console.log(doc.getAttribute('data-uri', 'false')); // prints 'false'
 
-doc.$set_attribute('data-uri', 'true');
-console.log(doc.$attr('data-uri')); // prints 'true'
+doc.setAttribute('data-uri', 'true');
+console.log(doc.getAttribute('data-uri')); // prints 'true'
 ----
 
 === How to unset/delete document attribute
@@ -24,11 +24,10 @@ You can unset document attributes after loading AsciiDoc content.
 [source,javascript]
 ----
 var content = '== Title';
-var doc = Opal.Asciidoctor.$load(content);
-doc.$set_attribute('data-uri', 'true');
-console.log(doc.$attr('data-uri')); // prints 'true'
+var doc = Opal.Asciidoctor.load(content);
+doc.setAttribute('data-uri', 'true');
+console.log(doc.getAttribute('data-uri')); // prints 'true'
 
-doc.attributes.$delete('data-uri');
-doc.attribute_overrides.$delete('data-uri');
-console.log(doc.$attr('data-uri')); // prints nil
+doc.removeAttribute('data-uri');
+console.log(doc.getAttribute('data-uri')); // prints undefined
 ----

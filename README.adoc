@@ -59,7 +59,7 @@ Here is a simple example that converts AsciiDoc to HTML5:
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to the browser!";
-var html = Opal.Asciidoctor.$convert(content); // <1>
+var html = Opal.Asciidoctor.convert(content); // <1>
 console.log(html); // <2>
 ```
 
@@ -93,7 +93,7 @@ else {
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to Node.js!";
-var html = processor.$convert(content); // <5>
+var html = processor.convert(content); // <5>
 console.log(html); // <6>
 ```
 

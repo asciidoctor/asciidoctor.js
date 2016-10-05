@@ -168,17 +168,18 @@ Builder.prototype.concat = function(message, files, destination) {
 };
 
 Builder.prototype.concatCore = function() {
-  this.concat('npm core', this.npmCoreFiles.concat(['src/npm/append-core.js']), 'build/npm/asciidoctor-core.js');
+  this.concat('npm core', this.npmCoreFiles.concat(['src/asciidoctor-core-api.js', 'src/npm/append-core.js']), 'build/npm/asciidoctor-core.js');
 };
 
 Builder.prototype.concatCoreMin = function() {
-  this.concat('npm core.min', this.npmCoreFiles.concat(['src/npm/append-core-min.js']), 'build/npm/asciidoctor-core-min.js');
+  this.concat('npm core.min', this.npmCoreFiles.concat(['src/asciidoctor-core-api.js', 'src/npm/append-core-min.js']), 'build/npm/asciidoctor-core-min.js');
 };
 
 Builder.prototype.concatNpmExtensions = function() {
   var files = [
     'src/npm/prepend-extensions.js',
     'build/asciidoctor-extensions.js',
+    'src/asciidoctor-extensions-api.js',
     'src/npm/append-extensions.js'
   ];
   this.concat('npm extensions', files, 'build/npm/asciidoctor-extensions.js');
@@ -197,7 +198,8 @@ Builder.prototype.concatNpmDocbook = function() {
 Builder.prototype.concatBowerCoreExtensions = function() {
   var files = [
     'build/asciidoctor-core.js',
-    'build/asciidoctor-extensions.js'
+    'build/asciidoctor-extensions.js',
+    'src/asciidoctor-core-api.js'
   ];
   this.concat('Bower core + extensions', files, 'build/asciidoctor.js');
 };
@@ -214,7 +216,9 @@ Builder.prototype.concatBowerAll = function() {
   var files = [
     'node_modules/opal-runtime/src/opal.js',
     'build/asciidoctor-core.js',
-    'build/asciidoctor-extensions.js'
+    'build/asciidoctor-extensions.js',
+    'src/asciidoctor-core-api.js',
+    'src/asciidoctor-extensions-api.js'
   ];
   this.concat('Bower all', files, 'build/asciidoctor-all.js');
 };
