@@ -39,6 +39,11 @@ function Builder() {
 }
 
 Builder.prototype.build = function(callback) {
+  if (process.env.SKIP_BUILD) {
+    log.info('SKIP_BUILD environment variable is true, skipping "build" task');
+    callback();
+    return;
+  }
   if (process.env.DRY_RUN) {
     log.debug('build');
     callback();
@@ -332,15 +337,9 @@ Builder.prototype.examples = function(callback) {
   var builder = this;
 
   async.series([
-    function(callback) {
-      builder.build(callback); // Step 1: Build
-    },
-    function(callback) {
-      builder.compileExamples(callback); // Step 2: Compile examples
-    },
-    function(callback) {
-      builder.copyExamplesResources(callback); // Step 3: Copy examples resources
-    }
+    function(callback) { builder.build(callback); }, // Build
+    function(callback) { builder.compileExamples(callback); }, // Compile examples
+    function(callback) { builder.copyExamplesResources(callback); }, // Copy examples resources
   ], function() {
     log.info('');
     log.info('In order to visualize the result, a local HTTP server must be started within the root of this project otherwise you will have cross-origin issues.');

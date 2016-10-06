@@ -11,6 +11,6 @@ before_script:
 script:
  - npm run lint
  - npm run package
- - npm run examples
+ - SKIP_BUILD=1 npm run examples
 
 sudo: false
