@@ -150,17 +150,24 @@ describe('Node.js', function () {
     });
 
     it('should be able to use a custom backend', function () {
-      var options = Opal.hash({'safe': 'safe', 'header_footer': true});
+      var options = {safe: 'safe', 'header_footer': true};
       var content = '= Title\n' +
                     ':backend: revealjs\n\n' +
                     '== Slide 1\n\n' +
                     'Content 1\n\n' +
                     '== Slide 2\n\n' +
                     'Content 2';
-      var result = Asciidoctor.$convert(content, options);
+      var result = Asciidoctor.convert(content, options);
       expect(result).toContain('<section id="_slide_1"');
       expect(result).toContain('<section id="_slide_2"');
       expect(result).toContain('<script src="reveal.js/js/reveal.js"></script>');
+    });
+
+    it('should be able to convert a file and include the default stylesheet', function () {
+      var options = {safe: 'safe', header_footer: true};
+      var html = Asciidoctor.convert('=== Test', options);
+      expect(html).toContain('Asciidoctor default stylesheet');
+      expect(html).toContain('Test');
     });
   });
 });
