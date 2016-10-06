@@ -11,5 +11,6 @@ before_script:
 script:
  - npm run lint
  - npm run package
+ - npm run examples
 
 sudo: false
