@@ -4,7 +4,8 @@
   "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
   "main": "dist/npm/asciidoctor-core.min.js",
   "engines": {
-    "node": ">=0.12"
+    "node": ">=0.12",
+    "npm": ">=3.0.0"
   },
   "files": [
     "dist/npm/asciidoctor-core.js",
@@ -23,6 +24,7 @@
     "lint": "eslint src spec",
     "package": "cross-env MINIFY=1 node npm/build.js && cross-env MINIFY=1 npm run test",
     "examples": "node npm/examples.js",
+    "server": "node npm/server.js",
     "benchmark": "node npm/benchmark.js",
     "release": "cross-env MINIFY=1 node npm/release.js"
   },
@@ -52,6 +54,8 @@
     "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
+    "asciidoctor-reveal.js": "1.5.5-2",
+    "asciidoctor-template.js": "1.5.5-3",
     "async": "^1.5.0",
     "bestikk-fs": "^0.1.0",
     "bestikk-jdk-ea": "^0.1.0",
@@ -61,6 +65,7 @@
     "browserify": "^13.0.0",
     "cross-env": "^1.0.8",
     "eslint": "^2.11.0",
+    "http-server": "^0.9.0",
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.22",
