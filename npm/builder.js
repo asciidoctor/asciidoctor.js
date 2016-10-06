@@ -113,6 +113,19 @@ Builder.prototype.release = function(releaseVersion) {
   });
 };
 
+Builder.prototype.dist = function() {
+  var builder = this;
+  var start = process.hrtime();
+
+  async.series([
+    function(callback) { builder.build(callback); },
+    function(callback) { builder.runTest(callback); },
+    function(callback) { builder.copyToDist(callback); },
+  ], function() {
+    log.success('Done in ' + process.hrtime(start)[0] + 's');
+  });
+};
+
 Builder.prototype.prepareRelease = function(releaseVersion, callback) {
   log.task('Release version: ' + releaseVersion);
 
@@ -280,7 +293,7 @@ Builder.prototype.copyToDist = function(callback) {
   var builder = this;
 
   log.task('copy to dist/');
-  bfs.removeDistDirSync();
+  builder.removeDistDirSync();
   bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css');
   bfs.walk('build', function(filePath) {
     var basename = path.basename(filePath);
