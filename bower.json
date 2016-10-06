@@ -17,7 +17,7 @@
   ],
   "license": "MIT",
   "main": [
-    "dist/asciidoctor-all.js",
+    "dist/asciidoctor.js",
     "dist/css/asciidoctor.css"
   ],
   "dependencies": {

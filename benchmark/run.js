@@ -23,7 +23,7 @@ var Asciidoctor;
 var verbose = false;
 if (typeof load === 'function') {
   load('./node_modules/opal-runtime/src/opal.js');
-  load('./build/asciidoctor-core.js'); //or... load('./build/asciidoctor-all.js');
+  load('./build/asciidoctor-core.js'); //or... load('./build/asciidoctor.js');
   Opal.require('asciidoctor');
   Asciidoctor = Opal.Asciidoctor;
   verbose = $ENV.VERBOSE;

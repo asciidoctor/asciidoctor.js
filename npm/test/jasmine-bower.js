@@ -4,9 +4,9 @@ var Jasmine = require('jasmine');
 
 log.task('Jasmine Bower');
 bfs.concatSync([
-  'build/asciidoctor-all.js',
+  'build/asciidoctor.js',
   'build/asciidoctor-docbook.js',
-  'spec/share/common-specs.js',
+  'spec/share/common-spec.js',
   'spec/bower/bower.spec.js'
 ], 'build/bower.spec.all.js');
 

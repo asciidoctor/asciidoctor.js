@@ -1,5 +1,5 @@
-var commonSpec = require('../share/common-specs.js');
-var asciidoctor = require('../../build/npm/asciidoctor-core.js')(false, XMLHttpRequest);
+var commonSpec = require('../share/common-spec.js');
+var asciidoctor = require('../../build/npm/asciidoctor.js')(false, XMLHttpRequest);
 var testOptions = {
   platform: 'CommonJS',
   baseDir: 'http://localhost:9876/base'

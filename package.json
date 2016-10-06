@@ -8,10 +8,8 @@
     "npm": ">=3.0.0"
   },
   "files": [
-    "dist/npm/asciidoctor-core.js",
-    "dist/npm/asciidoctor-core.min.js",
-    "dist/npm/asciidoctor-extensions.js",
-    "dist/npm/asciidoctor-extensions.min.js",
+    "dist/npm/asciidoctor.js",
+    "dist/npm/asciidoctor.min.js",
     "dist/npm/asciidoctor-docbook.js",
     "dist/npm/asciidoctor-docbook.min.js",
     "dist/css/asciidoctor.css",
