@@ -8,7 +8,7 @@
       var content = "http://asciidoctor.org[*Asciidoctor*] " +
         "running on http://opalrb.org[_Opal_] " +
         "brings AsciiDoc to the browser!";
-      var options = Opal.hash({doctype: 'inline', attributes: ['showtitle']});
+      var options = {doctype: 'inline', attributes: ['showtitle']};
       var html = Opal.Asciidoctor.convert(content, options);
       console.log('html', html);
     </script>
