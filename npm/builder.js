@@ -534,6 +534,9 @@ Builder.prototype.nashornRun = function(name, jdkInstallDir) {
   log.task('run against ' + name);
 
   var start = process.hrtime();
+  if (isWin()) {
+    jdkInstallDir = jdkInstallDir.replace(/\\\//, '\\\\').replace(/\//, '\\\\');
+  }
   var jdkBinDir = jdkInstallDir + path.sep + 'bin';
   var jjsBin = jdkBinDir + path.sep + 'jjs';
   var javacBin = jdkBinDir + path.sep + 'javac';
