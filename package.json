@@ -61,6 +61,7 @@
     "bestikk-fs": "^0.1.0",
     "bestikk-jdk-ea": "0.1.1",
     "bestikk-log": "0.1.0",
+    "bestikk-opal-compiler": "0.2.0",
     "bestikk-uglify": "0.1.1",
     "bower": "^1.5.3",
     "browserify": "^13.0.0",
@@ -73,7 +74,6 @@
     "karma-browserify": "^5.0.3",
     "karma-jasmine": "^0.3.8",
     "karma-phantomjs-launcher": "^1.0.0",
-    "opal-compiler": "0.10.1-integration2",
     "phantomjs-prebuilt": "^2.1.7",
     "watchify": "^3.7.0"
   }
