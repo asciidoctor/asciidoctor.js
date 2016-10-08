@@ -6,7 +6,6 @@ var fs = require('fs');
 var path = require('path');
 var https = require('https');
 var http = require('http');
-var os = require('os');
 var OpalCompiler = require('bestikk-opal-compiler');
 var log = require('bestikk-log');
 var jdk = require('bestikk-jdk-ea');
@@ -14,15 +13,15 @@ var bfs = require('bestikk-fs');
 
 var stdout;
 
-String.prototype.endsWith = function(suffix) {
+String.prototype.endsWith = function (suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
-var isWin = function() {
+var isWin = function () {
   return /^win/.test(process.platform);
 };
 
-function Builder() {
+function Builder () {
   this.npmCoreFiles = [
     'src/npm/prepend-core.js',
     'build/asciidoctor-core.js'
@@ -32,13 +31,10 @@ function Builder() {
   this.htmlEntitiesVersion = '4.3.3';
   this.benchmarkBuildDir = 'build' + path.sep + 'benchmark';
   this.examplesBuildDir = 'build' + path.sep + 'examples';
-  this.examplesImagesBuildDir = this.examplesBuildDir + path.sep + 'images';
-  var asciidocRepoURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc';
-  var asciidocRepoHash = 'd43faae38c4a8bf366dcba545971da99f2b2d625';
-  this.asciidocRepoBaseURI = asciidocRepoURI + '/' + asciidocRepoHash;
+  this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625';
 }
 
-Builder.prototype.build = function(callback) {
+Builder.prototype.build = function (callback) {
   if (process.env.SKIP_BUILD) {
     log.info('SKIP_BUILD environment variable is true, skipping "build" task');
     callback();
@@ -53,42 +49,42 @@ Builder.prototype.build = function(callback) {
   var start = process.hrtime();
 
   async.series([
-    function(callback) { builder.clean(callback); }, // clean
-    function(callback) { builder.downloadDependencies(callback); }, // download dependencies
-    function(callback) { builder.compile(callback); }, // compile
-    function(callback) { builder.replaceUnsupportedFeatures(callback); }, // replace unsupported features
-    function(callback) { builder.replaceDefaultStylesheetPath(callback); }, // replace unsupported features
-    function(callback) { builder.concatJavaScripts(callback); }, // concat
-    function(callback) { builder.uglify(callback); } // uglify (optional)
-  ], function() {
+    function (callback) { builder.clean(callback); }, // clean
+    function (callback) { builder.downloadDependencies(callback); }, // download dependencies
+    function (callback) { builder.compile(callback); }, // compile
+    function (callback) { builder.replaceUnsupportedFeatures(callback); }, // replace unsupported features
+    function (callback) { builder.replaceDefaultStylesheetPath(callback); }, // replace unsupported features
+    function (callback) { builder.concatJavaScripts(callback); }, // concat
+    function (callback) { builder.uglify(callback); } // uglify (optional)
+  ], function () {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
     typeof callback === 'function' && callback();
   });
 };
 
-Builder.prototype.clean = function(callback) {
+Builder.prototype.clean = function (callback) {
   log.task('clean');
   this.removeBuildDirSync(); // remove build directory
   callback();
 };
 
-Builder.prototype.downloadDependencies = function(callback) {
+Builder.prototype.downloadDependencies = function (callback) {
   log.task('download dependencies');
 
   var builder = this;
   async.series([
-    function(callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
-    function(callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor-latex/tar.gz/' + builder.asciidoctorLatexVersion, 'build/asciidoctor-latex.tar.gz', callback); },
-    function(callback) { builder.getContentFromURL('https://codeload.github.com/threedaymonk/htmlentities/tar.gz/v' + builder.htmlEntitiesVersion, 'build/htmlentities.tar.gz', callback); },
-    function(callback) { bfs.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); },
-    function(callback) { bfs.untar('build/asciidoctor-latex.tar.gz', 'asciidoctor-latex', 'build', callback); },
-    function(callback) { bfs.untar('build/htmlentities.tar.gz', 'htmlentities', 'build', callback); }
-  ], function() {
+    function (callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
+    function (callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor-latex/tar.gz/' + builder.asciidoctorLatexVersion, 'build/asciidoctor-latex.tar.gz', callback); },
+    function (callback) { builder.getContentFromURL('https://codeload.github.com/threedaymonk/htmlentities/tar.gz/v' + builder.htmlEntitiesVersion, 'build/htmlentities.tar.gz', callback); },
+    function (callback) { bfs.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); },
+    function (callback) { bfs.untar('build/asciidoctor-latex.tar.gz', 'asciidoctor-latex', 'build', callback); },
+    function (callback) { bfs.untar('build/htmlentities.tar.gz', 'htmlentities', 'build', callback); }
+  ], function () {
     typeof callback === 'function' && callback();
   });
-}
+};
 
-Builder.prototype.concatJavaScripts = function(callback) {
+Builder.prototype.concatJavaScripts = function (callback) {
   log.task('concat');
   this.concatCore();
   this.concatCoreMin();
@@ -100,38 +96,38 @@ Builder.prototype.concatJavaScripts = function(callback) {
   callback();
 };
 
-Builder.prototype.release = function(releaseVersion) {
+Builder.prototype.release = function (releaseVersion) {
   var builder = this;
   var start = process.hrtime();
 
   async.series([
-    function(callback) { builder.prepareRelease(releaseVersion, callback); },
-    function(callback) { builder.build(callback); },
-    function(callback) { builder.runTest(callback); },
-    function(callback) { builder.copyToDist(callback); },
-    function(callback) { builder.commit(releaseVersion, callback); },
-    function(callback) { builder.publish(callback); },
-    function(callback) { builder.prepareNextIteration(callback); },
-    function(callback) { builder.completeRelease(releaseVersion, callback); }
-  ], function() {
+    function (callback) { builder.prepareRelease(releaseVersion, callback); },
+    function (callback) { builder.build(callback); },
+    function (callback) { builder.runTest(callback); },
+    function (callback) { builder.copyToDist(callback); },
+    function (callback) { builder.commit(releaseVersion, callback); },
+    function (callback) { builder.publish(callback); },
+    function (callback) { builder.prepareNextIteration(callback); },
+    function (callback) { builder.completeRelease(releaseVersion, callback); }
+  ], function () {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
   });
 };
 
-Builder.prototype.dist = function() {
+Builder.prototype.dist = function () {
   var builder = this;
   var start = process.hrtime();
 
   async.series([
-    function(callback) { builder.build(callback); },
-    function(callback) { builder.runTest(callback); },
-    function(callback) { builder.copyToDist(callback); },
-  ], function() {
+    function (callback) { builder.build(callback); },
+    function (callback) { builder.runTest(callback); },
+    function (callback) { builder.copyToDist(callback); }
+  ], function () {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
   });
 };
 
-Builder.prototype.prepareRelease = function(releaseVersion, callback) {
+Builder.prototype.prepareRelease = function (releaseVersion, callback) {
   log.task('Release version: ' + releaseVersion);
 
   if (process.env.DRY_RUN) {
@@ -143,26 +139,26 @@ Builder.prototype.prepareRelease = function(releaseVersion, callback) {
   callback();
 };
 
-Builder.prototype.commit = function(releaseVersion, callback) {
+Builder.prototype.commit = function (releaseVersion, callback) {
   this.execSync('git add -A .');
   this.execSync('git commit -m "Release ' + releaseVersion + '"');
   this.execSync('git tag v' + releaseVersion);
   callback();
 };
 
-Builder.prototype.prepareNextIteration = function(callback) {
+Builder.prototype.prepareNextIteration = function (callback) {
   this.removeDistDirSync();
   this.execSync('git add -A .');
   this.execSync('git commit -m "Prepare for next development iteration"');
   callback();
 };
 
-Builder.prototype.runTest = function(callback) {
+Builder.prototype.runTest = function (callback) {
   this.execSync('npm run test');
   callback();
 };
 
-Builder.prototype.publish = function(callback) {
+Builder.prototype.publish = function (callback) {
   if (process.env.SKIP_PUBLISH) {
     log.info('SKIP_PUBLISH environment variable is defined, skipping "publish" task');
     callback();
@@ -172,29 +168,29 @@ Builder.prototype.publish = function(callback) {
   callback();
 };
 
-Builder.prototype.completeRelease = function(releaseVersion, callback) {
-  console.log('');
+Builder.prototype.completeRelease = function (releaseVersion, callback) {
+  log.info('');
   log.info('To complete the release, you need to:');
-  log.info("[ ] push changes upstream: 'git push origin master && git push origin v" + releaseVersion + "'");
-  log.info("[ ] publish a release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/new");
+  log.info('[ ] push changes upstream: `git push origin master && git push origin v' + releaseVersion + '`');
+  log.info('[ ] publish a release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/new');
   log.info('[ ] create an issue here: https://github.com/webjars/asciidoctor.js to update Webjars');
   callback();
 };
 
-Builder.prototype.concat = function(message, files, destination) {
+Builder.prototype.concat = function (message, files, destination) {
   log.debug(message);
   bfs.concatSync(files, destination);
 };
 
-Builder.prototype.concatCore = function() {
+Builder.prototype.concatCore = function () {
   this.concat('npm core', this.npmCoreFiles.concat(['src/asciidoctor-core-api.js', 'src/npm/append-core.js']), 'build/npm/asciidoctor-core.js');
 };
 
-Builder.prototype.concatCoreMin = function() {
+Builder.prototype.concatCoreMin = function () {
   this.concat('npm core.min', this.npmCoreFiles.concat(['src/asciidoctor-core-api.js', 'src/npm/append-core-min.js']), 'build/npm/asciidoctor-core-min.js');
 };
 
-Builder.prototype.concatNpmExtensions = function() {
+Builder.prototype.concatNpmExtensions = function () {
   var files = [
     'src/npm/prepend-extensions.js',
     'build/asciidoctor-extensions.js',
@@ -204,7 +200,7 @@ Builder.prototype.concatNpmExtensions = function() {
   this.concat('npm extensions', files, 'build/npm/asciidoctor-extensions.js');
 };
 
-Builder.prototype.concatNpmDocbook = function() {
+Builder.prototype.concatNpmDocbook = function () {
   var files = [
     'src/npm/prepend-extensions.js',
     'build/asciidoctor-docbook45.js',
@@ -214,7 +210,7 @@ Builder.prototype.concatNpmDocbook = function() {
   this.concat('npm docbook', files, 'build/npm/asciidoctor-docbook.js');
 };
 
-Builder.prototype.concatBowerCoreExtensions = function() {
+Builder.prototype.concatBowerCoreExtensions = function () {
   var files = [
     'build/asciidoctor-core.js',
     'build/asciidoctor-extensions.js',
@@ -223,7 +219,7 @@ Builder.prototype.concatBowerCoreExtensions = function() {
   this.concat('Bower core + extensions', files, 'build/asciidoctor.js');
 };
 
-Builder.prototype.concatBowerDocbook = function() {
+Builder.prototype.concatBowerDocbook = function () {
   var files = [
     'build/asciidoctor-docbook45.js',
     'build/asciidoctor-docbook5.js'
@@ -231,7 +227,7 @@ Builder.prototype.concatBowerDocbook = function() {
   this.concat('Bower docbook', files, 'build/asciidoctor-docbook.js');
 };
 
-Builder.prototype.concatBowerAll = function() {
+Builder.prototype.concatBowerAll = function () {
   var files = [
     'node_modules/opal-runtime/src/opal.js',
     'build/asciidoctor-core.js',
@@ -242,21 +238,21 @@ Builder.prototype.concatBowerAll = function() {
   this.concat('Bower all', files, 'build/asciidoctor-all.js');
 };
 
-Builder.prototype.removeBuildDirSync = function() {
+Builder.prototype.removeBuildDirSync = function () {
   log.debug('remove build directory');
   bfs.removeSync('build');
   bfs.mkdirsSync('build/npm');
   bfs.mkdirsSync('build/css');
 };
 
-Builder.prototype.removeDistDirSync = function() {
+Builder.prototype.removeDistDirSync = function () {
   log.debug('remove dist directory');
   bfs.removeSync('dist');
   bfs.mkdirsSync('dist/css');
   bfs.mkdirsSync('dist/npm');
 };
 
-Builder.prototype.execSync = function(command) {
+Builder.prototype.execSync = function (command) {
   log.debug(command);
   if (!process.env.DRY_RUN) {
     stdout = child_process.execSync(command);
@@ -264,7 +260,7 @@ Builder.prototype.execSync = function(command) {
   }
 };
 
-Builder.prototype.uglify = function(callback) {
+Builder.prototype.uglify = function (callback) {
   // Preconditions
   // - MINIFY environment variable is defined
   if (!process.env.MINIFY) {
@@ -275,44 +271,46 @@ Builder.prototype.uglify = function(callback) {
   var uglify = require('bestikk-uglify');
   log.task('uglify');
   var files = [
-    {source: 'build/npm/asciidoctor-core-min.js', destination: 'build/npm/asciidoctor-core.min.js' },
-    {source: 'build/npm/asciidoctor-extensions.js', destination: 'build/npm/asciidoctor-extensions.min.js' },
-    {source: 'build/npm/asciidoctor-docbook.js', destination: 'build/npm/asciidoctor-docbook.min.js' },
-    {source: 'build/asciidoctor-core.js', destination: 'build/asciidoctor-core.min.js' },
-    {source: 'build/asciidoctor-extensions.js', destination: 'build/asciidoctor-extensions.min.js' },
-    {source: 'build/asciidoctor-docbook.js', destination: 'build/asciidoctor-docbook.min.js' },
-    {source: 'build/asciidoctor-all.js', destination: 'build/asciidoctor-all.min.js' }
+    {source: 'build/npm/asciidoctor-core-min.js', destination: 'build/npm/asciidoctor-core.min.js'},
+    {source: 'build/npm/asciidoctor-extensions.js', destination: 'build/npm/asciidoctor-extensions.min.js'},
+    {source: 'build/npm/asciidoctor-docbook.js', destination: 'build/npm/asciidoctor-docbook.min.js'},
+    {source: 'build/asciidoctor-core.js', destination: 'build/asciidoctor-core.min.js'},
+    {source: 'build/asciidoctor-extensions.js', destination: 'build/asciidoctor-extensions.min.js'},
+    {source: 'build/asciidoctor-docbook.js', destination: 'build/asciidoctor-docbook.min.js'},
+    {source: 'build/asciidoctor-all.js', destination: 'build/asciidoctor-all.min.js'}
   ];
 
   var tasks = [];
-  files.forEach(function(file) {
+  files.forEach(function (file) {
     var source = file.source;
     var destination = file.destination;
     log.transform('minify', source, destination);
-    tasks.push(function(callback) { uglify.minify(source, destination, callback) });
+    tasks.push(function (callback) {
+      uglify.minify(source, destination, callback);
+    });
   });
   async.parallelLimit(tasks, 4, callback);
 };
 
-Builder.prototype.copyToDist = function(callback) {
+Builder.prototype.copyToDist = function (callback) {
   var builder = this;
 
   log.task('copy to dist/');
   builder.removeDistDirSync();
   bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css');
-  bfs.walk('build', function(filePath) {
+  bfs.walk('build', function (filePath) {
     var basename = path.basename(filePath);
     var paths = path.dirname(filePath).split(path.sep);
     if (filePath.endsWith('.js')
-         && paths.indexOf('examples') == -1
-         && paths.indexOf('benchmark') == -1
-         && paths.indexOf('asciidoctor-latex') == -1
-         && paths.indexOf('htmlentities') == -1
-         && paths.indexOf('asciidoctor') == -1
-         && filePath.indexOf('spec') == -1
-         && !filePath.endsWith('-min.js')
-         && !filePath.endsWith('-docbook45.js')
-         && !filePath.endsWith('-docbook5.js')) {
+      && paths.indexOf('examples') == -1
+      && paths.indexOf('benchmark') == -1
+      && paths.indexOf('asciidoctor-latex') == -1
+      && paths.indexOf('htmlentities') == -1
+      && paths.indexOf('asciidoctor') == -1
+      && filePath.indexOf('spec') == -1
+      && !filePath.endsWith('-min.js')
+      && !filePath.endsWith('-docbook45.js')
+      && !filePath.endsWith('-docbook5.js')) {
       // remove 'build' base directory
       paths.shift();
       // add 'dist' base directory
@@ -320,27 +318,23 @@ Builder.prototype.copyToDist = function(callback) {
       paths.push(basename);
       var destination = paths.join(path.sep);
       bfs.copySync(filePath, destination);
-    }
+    }
   });
   typeof callback === 'function' && callback();
 };
 
-Builder.prototype.copyToExamplesBuildDir = function(file) {
+Builder.prototype.copyToExamplesBuildDir = function (file) {
   bfs.copyToDirSync(file, this.examplesBuildDir);
 };
 
-Builder.prototype.copyToExamplesImagesBuildDir = function(file) {
-  bfs.copyToDirSync(file, this.examplesImagesBuildDir);
-};
-
-Builder.prototype.examples = function(callback) {
+Builder.prototype.examples = function (callback) {
   var builder = this;
 
   async.series([
-    function(callback) { builder.build(callback); }, // Build
-    function(callback) { builder.compileExamples(callback); }, // Compile examples
-    function(callback) { builder.copyExamplesResources(callback); }, // Copy examples resources
-  ], function() {
+    function (callback) { builder.build(callback); }, // Build
+    function (callback) { builder.compileExamples(callback); }, // Compile examples
+    function (callback) { builder.copyExamplesResources(callback); } // Copy examples resources
+  ], function () {
     log.info('');
     log.info('In order to visualize the result, a local HTTP server must be started within the root of this project otherwise you will have cross-origin issues.');
     log.info('For this purpose, you can run the following command to start a HTTP server locally: npm run server');
@@ -352,7 +346,7 @@ Builder.prototype.examples = function(callback) {
   });
 };
 
-Builder.prototype.compileExamples = function(callback) {
+Builder.prototype.compileExamples = function (callback) {
   log.task('compile examples');
   bfs.mkdirsSync(this.examplesBuildDir);
   var opalCompiler = new OpalCompiler({defaultPaths: ['build/asciidoctor/lib']});
@@ -361,11 +355,11 @@ Builder.prototype.compileExamples = function(callback) {
   callback();
 };
 
-Builder.prototype.getContentFromAsciiDocRepo = function(source, target, callback) {
+Builder.prototype.getContentFromAsciiDocRepo = function (source, target, callback) {
   this.getContentFromURL(this.asciidocRepoBaseURI + '/doc/' + source, target, callback);
 };
 
-Builder.prototype.getContentFromURL = function(source, target, callback) {
+Builder.prototype.getContentFromURL = function (source, target, callback) {
   log.transform('get', source, target);
   var targetStream = fs.createWriteStream(target);
   var downloadModule;
@@ -375,7 +369,7 @@ Builder.prototype.getContentFromURL = function(source, target, callback) {
   } else {
     downloadModule = http;
   }
-  downloadModule.get(source, function(response) {
+  downloadModule.get(source, function (response) {
     response.pipe(targetStream);
     targetStream.on('finish', function () {
       targetStream.close(callback);
@@ -383,7 +377,7 @@ Builder.prototype.getContentFromURL = function(source, target, callback) {
   });
 };
 
-Builder.prototype.copyExamplesResources = function(callback) {
+Builder.prototype.copyExamplesResources = function (callback) {
   var builder = this;
 
   log.task('copy resources to ' + this.examplesBuildDir + '/');
@@ -394,27 +388,25 @@ Builder.prototype.copyExamplesResources = function(callback) {
 
   log.task('download sample data from AsciiDoc repository');
   async.series([
-    function(callback) {
+    function (callback) {
       builder.getContentFromAsciiDocRepo('asciidoc.txt', builder.examplesBuildDir + '/userguide.adoc', callback);
     },
-    function(callback) {
+    function (callback) {
       builder.getContentFromAsciiDocRepo('customers.csv', builder.examplesBuildDir + '/customers.csv', callback);
     }
-  ], function() {
+  ], function () {
     typeof callback === 'function' && callback();
   });
 };
 
-Builder.prototype.compile = function(callback) {
-  var builder = this;
-
+Builder.prototype.compile = function (callback) {
   var opalCompiler = new OpalCompiler({dynamicRequireLevel: 'ignore', defaultPaths: ['build/asciidoctor/lib']});
 
-  var opalCompileExtensions = function(names) {
+  var opalCompileExtensions = function (names) {
     names.forEach(opalCompileExtension);
   };
 
-  var opalCompileExtension = function(name) {
+  var opalCompileExtension = function (name) {
     opalCompiler.compile(name, 'build/asciidoctor-' + name + '.js', ['extensions-lab/lib']);
   };
 
@@ -433,8 +425,8 @@ Builder.prototype.compile = function(callback) {
   if (fs.existsSync('extensions-lab/lib')) {
     opalCompileExtensions(['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro', 'chart-block-macro']);
   } else {
-    log.error("Unable to cross-compile extensions because git submodule 'extensions-lab' is not initialized.");
-    log.info("To initialize the submodule use the following command `git submodule init` and `git submodule update`.");
+    log.error('Unable to cross-compile extensions because git submodule `extensions-lab` is not initialized.');
+    log.info('To initialize the submodule use the following command `git submodule init` and `git submodule update`.');
     process.exit(9);
   }
 
@@ -446,17 +438,17 @@ Builder.prototype.compile = function(callback) {
   callback();
 };
 
-Builder.prototype.replaceUnsupportedFeatures = function(callback) {
+Builder.prototype.replaceUnsupportedFeatures = function (callback) {
   log.task('Replace unsupported features');
   var path = 'build/asciidoctor-core.js';
   var data = fs.readFileSync(path, 'utf8');
   log.debug('Replace (g)sub! with (g)sub');
-  data = data.replace(/(\(\$\w+ = \(\$\w+ = (\w+)\))\['(\$g?sub)!'\]/g, "$2 = $1['$3']");
+  data = data.replace(/(\(\$\w+ = \(\$\w+ = (\w+)\))\['(\$g?sub)!'\]/g, '$2 = $1[\'$3\']');
   fs.writeFileSync(path, data, 'utf8');
   callback();
 };
 
-Builder.prototype.replaceDefaultStylesheetPath = function(callback) {
+Builder.prototype.replaceDefaultStylesheetPath = function (callback) {
   log.task('Replace default stylesheet path');
   var path = 'build/asciidoctor-core.js';
   var data = fs.readFileSync(path, 'utf8');
@@ -471,34 +463,34 @@ Builder.prototype.replaceDefaultStylesheetPath = function(callback) {
   data = data.replace(/(ːprimary_stylesheet_data\(\)\ {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2');
   fs.writeFileSync(path, data, 'utf8');
   callback();
-}
+};
 
-Builder.prototype.benchmark = function(runner, callback) {
+Builder.prototype.benchmark = function (runner, callback) {
   var builder = this;
 
   async.series([
-    function(callback) { builder.build(callback); },
-    function(callback) {
+    function (callback) { builder.build(callback); },
+    function (callback) {
       bfs.mkdirsSync(builder.benchmarkBuildDir);
       bfs.copyToDirSync('benchmark/run.js', builder.benchmarkBuildDir);
       callback();
     },
-    function(callback) {
+    function (callback) {
       log.task('download sample data from AsciiDoc repository');
       callback();
     },
-    function(callback) { builder.getContentFromAsciiDocRepo('asciidoc.txt', 'build/benchmark/userguide.adoc', callback); },
-    function(callback) { builder.getContentFromAsciiDocRepo('customers.csv', 'build/benchmark/customers.csv', callback); },
-    function() {
+    function (callback) { builder.getContentFromAsciiDocRepo('asciidoc.txt', 'build/benchmark/userguide.adoc', callback); },
+    function (callback) { builder.getContentFromAsciiDocRepo('customers.csv', 'build/benchmark/customers.csv', callback); },
+    function () {
       log.task('run benchmark');
       builder.execSync(runner + ' ' + builder.benchmarkBuildDir + '/run.js');
     }
-  ], function() {
+  ], function () {
     typeof callback === 'function' && callback();
   });
 };
 
-Builder.prototype.nashornCheckConvert = function(result, testName) {
+Builder.prototype.nashornCheckConvert = function (result, testName) {
   if (result.indexOf('<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>') == -1) {
     log.error(testName + ' failed, AsciiDoc source is not converted');
     process.stdout.write(result);
@@ -509,7 +501,7 @@ Builder.prototype.nashornCheckConvert = function(result, testName) {
   }
 };
 
-Builder.prototype.nashornJJSRun = function(specName, jjsBin) {
+Builder.prototype.nashornJJSRun = function (specName, jjsBin) {
   log.debug('running ' + specName);
   var start = process.hrtime();
   var result = child_process.execSync(jjsBin + ' ' + specName).toString('utf8');
@@ -517,7 +509,7 @@ Builder.prototype.nashornJJSRun = function(specName, jjsBin) {
   return result;
 };
 
-Builder.prototype.nashornJavaCompileAndRun = function(specName, className, javacBin, javaBin) {
+Builder.prototype.nashornJavaCompileAndRun = function (specName, className, javacBin, javaBin) {
   // Compile
   log.debug('compiling ' + specName + ' to build/');
   child_process.execSync(javacBin + ' ./' + specName + ' -d ./build');
@@ -530,7 +522,7 @@ Builder.prototype.nashornJavaCompileAndRun = function(specName, className, javac
   return result;
 };
 
-Builder.prototype.nashornRun = function(name, jdkInstallDir) {
+Builder.prototype.nashornRun = function (name, jdkInstallDir) {
   log.task('run against ' + name);
 
   var start = process.hrtime();
@@ -559,7 +551,7 @@ Builder.prototype.nashornRun = function(name, jdkInstallDir) {
 
   log.info('run Nashorn jjs');
   this.nashornJJSRun(basicSpec, jjsBin);
-  var jjsResult =  this.nashornJJSRun(asciidoctorSpec, jjsBin);
+  var jjsResult = this.nashornJJSRun(asciidoctorSpec, jjsBin);
   this.nashornCheckConvert(jjsResult, 'run with ' + name + ' jjs');
 
   log.info('run Nashorn java');
@@ -569,32 +561,28 @@ Builder.prototype.nashornRun = function(name, jdkInstallDir) {
   log.success('Done ' + name + ' in ' + process.hrtime(start)[0] + 's');
 };
 
-Builder.prototype.jdk8EA = function(callback) {
+Builder.prototype.jdk8EA = function (callback) {
   var builder = this;
   async.series([
-    function(callback) {
-      jdk.installJDK8EA('build/jdk8', callback);
-    },
-    function(callback) {
+    function (callback) { jdk.installJDK8EA('build/jdk8', callback); },
+    function (callback) {
       builder.nashornRun('jdk1.8.0-ea', 'build/jdk8');
       callback();
     }
-  ], function() {
+  ], function () {
     typeof callback === 'function' && callback();
   });
 };
 
-Builder.prototype.jdk9EA = function(callback) {
+Builder.prototype.jdk9EA = function (callback) {
   var builder = this;
   async.series([
-    function(callback) {
-      jdk.installJDK9EA('build/jdk9', callback);
-    },
-    function(callback) {
+    function (callback) { jdk.installJDK9EA('build/jdk9', callback); },
+    function (callback) {
       builder.nashornRun('jdk1.9.0-ea', 'build/jdk9');
       callback();
     }
-  ], function() {
+  ], function () {
     typeof callback === 'function' && callback();
   });
 };
