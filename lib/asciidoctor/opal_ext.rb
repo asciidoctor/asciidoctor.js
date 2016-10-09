@@ -5,6 +5,7 @@
       isNashorn = typeof Java !== 'undefined' && Java.type,
       isRhino = typeof java !== 'undefined',
       isPhantomJS = typeof window !== 'undefined' && typeof window.phantom !== 'undefined',
+      isWebWorker = typeof importScripts === 'function',
       isSpiderMonkey = typeof JSRuntime !== 'undefined',
       platform = '',
       engine = '',
@@ -40,17 +41,19 @@
     platform = 'standalone';
     framework = 'spidermonkey';
   }
+  // NOTE: WebWorker are not limited to browser
+  if (isWebWorker) {
+    framework = 'webworker';
+  }
 
   // IO Module
   if (framework === 'spidermonkey') {
     ioModule = 'spidermonkey';
-  } else if (framework === 'phantomjs') {
+  } else if (framework === 'phantomjs' || platform === 'node') {
     ioModule = 'node';
   } else if (engine === 'nashorn') {
     ioModule = 'java_nio'
-  } else if (platform === 'node') {
-    ioModule = 'node'
-  } else if (platform === 'browser') {
+  } else if (platform === 'browser' || typeof XmlHTTPRequest !== 'undefined') {
     ioModule = 'xmlhttprequest'
   }
 )
