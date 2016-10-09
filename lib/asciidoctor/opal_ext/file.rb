@@ -94,10 +94,10 @@ class File
   end
 
   def self.read(path)
-    case JAVASCRIPT_PLATFORM
+    case JAVASCRIPT_IO_MODULE
     when 'node'
       %x(return require('fs').readFileSync(path, 'utf8');)
-    when 'java-nashorn'
+    when 'java_nio'
       %x(
         var Paths = Java.type('java.nio.file.Paths');
         var Files = Java.type('java.nio.file.Files');
@@ -106,8 +106,7 @@ class File
         lines.forEach(function(line) { data.push(line); });
         return data.join("\n");
       )
-    #when 'java-rhino'
-    when 'browser'
+    when 'xmlhttprequest'
       %x(
         var data = '';
         var status = -1;
@@ -133,8 +132,7 @@ class File
         }
         return data;
       )
-    # NOTE we're assuming standalone is SpiderMonkey
-    when 'standalone'
+    when 'spidermonkey'
       %x(return read(path);)
     else
       ''

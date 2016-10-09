@@ -4,34 +4,62 @@
       isBrowser = typeof window !== 'undefined',
       isNashorn = typeof Java !== 'undefined' && Java.type,
       isRhino = typeof java !== 'undefined',
-      value;
+      isPhantomJS = typeof window !== 'undefined' && typeof window.phantom !== 'undefined',
+      isSpiderMonkey = typeof JSRuntime !== 'undefined',
+      platform = '',
+      engine = '',
+      framework = '',
+      ioModule = '';
 
-  // The order of the if statements is important because 'module' will be defined in a Browserify environment
+  // Auto-detect the platform, engine and framework of the JavaScript environment
+  // NOTE: The order of the if statements is important because, for instance, 'module' will be defined in a Browserify environment
   if (isBrowser) {
-    value = 'browser';
+    platform = 'browser';
+    if (isPhantomJS) {
+      framework = 'phantomjs';
+    }
   }
   else if (isNode) {
+    platform = 'node';
+    engine = 'v8';
     if (isElectron) {
-      value = 'node-electron';
-    } else {
-      value = 'node';
+      framework = 'electron';
     }
     Opal.load("nodejs");
     Opal.load("pathname");
   }
   else if (isNashorn) {
-    value = 'java-nashorn';
+    platform = 'java';
+    engine = 'nashorn';
   }
   else if (isRhino) {
-    value = 'java-rhino';
+    platform = 'java';
+    engine = 'rhino';
   }
-  else {
-    // standalone most likely SpiderMonkey
-    value = 'standalone';
+  else if (isSpiderMonkey) {
+    platform = 'standalone';
+    framework = 'spidermonkey';
   }
-  Opal.load('base64');
+
+  // IO Module
+  if (framework === 'spidermonkey') {
+    ioModule = 'spidermonkey';
+  } else if (framework === 'phantomjs') {
+    ioModule = 'node';
+  } else if (engine === 'nashorn') {
+    ioModule = 'java_nio'
+  } else if (platform === 'node') {
+    ioModule = 'node'
+  } else if (platform === 'browser') {
+    ioModule = 'xmlhttprequest'
+  }
 )
-JAVASCRIPT_PLATFORM = %x(value)
+
+JAVASCRIPT_IO_MODULE = %x(ioModule)
+JAVASCRIPT_PLATFORM = %x(platform)
+JAVASCRIPT_ENGINE = %x(engine)
+JAVASCRIPT_FRAMEWORK = %x(framework)
+
 require 'strscan'
 require 'asciidoctor/opal_ext/file'
 require 'asciidoctor/opal_ext/match_data'
@@ -43,12 +71,12 @@ require 'asciidoctor/converter/html5'
 require 'asciidoctor/opal_ext/string'
 require 'asciidoctor/extensions'
 
-case JAVASCRIPT_PLATFORM
-  when 'java-nashorn'
-    require 'asciidoctor/opal_ext/nashorn/io'
-  when 'node-electron'
-    require 'asciidoctor/opal_ext/electron/io'
-  when 'node'
-    require 'asciidoctor/opal_ext/node/io'
-  else
+if JAVASCRIPT_ENGINE == 'nashorn'
+  require 'asciidoctor/opal_ext/nashorn/io'
+end
+if JAVASCRIPT_FRAMEWORK == 'electron'
+  require 'asciidoctor/opal_ext/electron/io'
+end
+if JAVASCRIPT_PLATFORM == 'node'
+  require 'asciidoctor/opal_ext/node/io'
 end

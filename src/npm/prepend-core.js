@@ -1,11 +1,6 @@
-module.exports = function(opalParam, xmlHttpRequestParam) {
-  var Opal = opalParam || require('opal-runtime').Opal;
-
-  if (xmlHttpRequestParam !== false) {
-    var XMLHttpRequest = xmlHttpRequestParam || require('xmlhttprequest').XMLHttpRequest;
-    // Define overrideMimeType, not define by default in wrapper
-    XMLHttpRequest.prototype.overrideMimeType = function() {};
-  }
+module.exports = function() {
+  var opalRuntime = require('opal-runtime');
+  var Opal = this.Opal || opalRuntime.Opal;
 
   return {
     Opal: Opal,
