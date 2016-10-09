@@ -2,6 +2,23 @@
 
 == API
 
+=== How to convert a list of AsciiDoc files contained within a folder (using Node.js)
+
+```javascript
+var glob = require('glob');
+var asciidoctor = require('asciidoctor.js')();
+
+var processor = asciidoctor.Asciidoctor();
+
+glob('documentation/*.adoc', function (err, files) { // <1>
+  files.each(function(file) {
+    processor.convertFile(file); // <2>
+  });
+});
+```
+<1> We are using `glob` module to iterate through every .adoc file inside the directory
+<2> Convert each file using the `convertFile` method
+
 === How to set document attribute
 
 You can set document attributes after loading AsciiDoc content.
