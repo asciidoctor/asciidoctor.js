@@ -7,7 +7,7 @@ var path = require('path');
 var https = require('https');
 var http = require('http');
 var os = require('os');
-var OpalCompiler = require('./opal-compiler.js');
+var OpalCompiler = require('bestikk-opal-compiler');
 var log = require('bestikk-log');
 var jdk = require('bestikk-jdk-ea');
 var bfs = require('bestikk-fs');
@@ -355,7 +355,7 @@ Builder.prototype.examples = function(callback) {
 Builder.prototype.compileExamples = function(callback) {
   log.task('compile examples');
   bfs.mkdirsSync(this.examplesBuildDir);
-  var opalCompiler = new OpalCompiler();
+  var opalCompiler = new OpalCompiler({defaultPaths: ['build/asciidoctor/lib']});
   opalCompiler.compile('examples/asciidoctor_example.rb', this.examplesBuildDir + '/asciidoctor_example.js');
   opalCompiler.compile('examples/userguide_test.rb', this.examplesBuildDir + '/userguide_test.js');
   callback();
@@ -408,7 +408,7 @@ Builder.prototype.copyExamplesResources = function(callback) {
 Builder.prototype.compile = function(callback) {
   var builder = this;
 
-  var opalCompiler = new OpalCompiler({dynamicRequireLevel: 'ignore'});
+  var opalCompiler = new OpalCompiler({dynamicRequireLevel: 'ignore', defaultPaths: ['build/asciidoctor/lib']});
 
   var opalCompileExtensions = function(names) {
     names.forEach(opalCompileExtension);
