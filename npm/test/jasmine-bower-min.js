@@ -18,7 +18,7 @@ var jasmine = new Jasmine();
 jasmine.loadConfig({
   spec_dir: 'build',
   spec_files: [
-    'bower.spec.all.min.js',
+    'bower.spec.all.min.js'
   ]
 });
 
@@ -29,7 +29,7 @@ window = {};
 if (typeof XMLHttpRequest === 'undefined') {
   XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
   // Define overrideMimeType, not define by default in wrapper
-  XMLHttpRequest.prototype.overrideMimeType = function() {};
+  XMLHttpRequest.prototype.overrideMimeType = function () {};
 }
 //--------------------------------------------------
 

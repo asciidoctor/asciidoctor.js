@@ -22,7 +22,7 @@
     "test": "node npm/test/unsupported-features.js && node npm/test/jasmine-bower.js && node npm/test/jasmine-bower-min.js && node npm/test/jasmine-npm.js && node npm/test/jasmine-bower-latex.js && karma start",
     "build": "node npm/build.js && npm run test",
     "dist": "cross-env MINIFY=1 node npm/dist.js",
-    "lint": "eslint src spec",
+    "lint": "eslint src spec npm",
     "package": "cross-env MINIFY=1 node npm/build.js && cross-env MINIFY=1 npm run test",
     "examples": "node npm/examples.js",
     "server": "node npm/server.js",

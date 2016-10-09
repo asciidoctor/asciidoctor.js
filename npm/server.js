@@ -7,12 +7,12 @@ var port = args[0];
 
 var server = httpServer.createServer({});
 
-var listen = function(port) {
-  server.listen(port, function(){
+var listen = function (port) {
+  server.listen(port, function (){
     // Callback triggered when server is successfully listening. Hurray!
     log.info('Server listening on: http://localhost:' + port);
   });
-}
+};
 
 if (!port) {
   portfinder.basePort = 8080;

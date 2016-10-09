@@ -6,7 +6,7 @@ log.task('Jasmine npm');
 jasmine.loadConfig({
   spec_dir: 'spec',
   spec_files: [
-    'npm/asciidoctor-all.spec.js',
+    'npm/asciidoctor-all.spec.js'
   ]
 });
 jasmine.execute();
