@@ -84,17 +84,25 @@ To build the examples, simply run the npm `examples` task from the root of the p
 
  $ npm run examples
 
-This command produces another JavaScript file in the [path]_build_ directory, [path]_asciidoctor_example.js_.
-This script includes:
+This command produces 3 examples in the [path]_build/examples_ directory:
 
-* a string that contains an AsciiDoc source document
-* a call to the Asciidoctor API to render the content of that string to HTML
-* an event listener that inserts the generated HTML into the page
+* `asciidoctor_example.html` and `userguide_test.html` demonstrate how a Ruby script can be compiled to JavaScript using the Opal Compiler and displayed within the browser as a normal HTML file.
+Both Ruby scripts `asciidoctor_example.rb` and `userguide_test.rb` include: 
+** a string that contains an AsciiDoc source document
+** a call to the Asciidoctor API to render the content of that string to HTML
+** an event listener that inserts the generated HTML into the page
+* `slide.html` demonstrates how to convert an AsciiDoc content to a Reveal.js presentation using the Asciidoctor Reveal.js backend templates
 
-All the JavaScript in that file was generated from a Ruby script by Opal.
+In order to visualize the result, a local http server must be started within the root of this project otherwise you will have a cross origin issue which prevents to load some resources and render the HTML.
+For this purpose, you can run the following command to start a HTTP server locally: `npm run server`
 
-Point your browser at [path]_build/asciidoctor_example.html_.
-You should see the Asciidoctor.js README.
+Once the server is listening, you can point your browser at: 
+
+* http://localhost:8080/build/examples/asciidoctor_example.html
+* http://localhost:8080/build/examples/build/examples/userguide_test.html
+* http://localhost:8080/build/examples/slide.html
+
+If you open the first link, you should see the Asciidoctor.js README.
 The content on the page was rendered from AsciiDoc by Asciidoctor.js when you loaded the page!
 
 === Building and running benchmark
