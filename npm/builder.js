@@ -26,8 +26,6 @@ function Builder () {
     'build/asciidoctor-core.js'
   ];
   this.asciidoctorCoreVersion = '1.5.5';
-  this.asciidoctorLatexVersion = '0.2';
-  this.htmlEntitiesVersion = '4.3.3';
   this.benchmarkBuildDir = 'build' + path.sep + 'benchmark';
   this.examplesBuildDir = 'build' + path.sep + 'examples';
   this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625';
@@ -73,11 +71,7 @@ Builder.prototype.downloadDependencies = function (callback) {
   var builder = this;
   async.series([
     function (callback) { download.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
-    function (callback) { download.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor-latex/tar.gz/' + builder.asciidoctorLatexVersion, 'build/asciidoctor-latex.tar.gz', callback); },
-    function (callback) { download.getContentFromURL('https://codeload.github.com/threedaymonk/htmlentities/tar.gz/v' + builder.htmlEntitiesVersion, 'build/htmlentities.tar.gz', callback); },
-    function (callback) { bfs.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); },
-    function (callback) { bfs.untar('build/asciidoctor-latex.tar.gz', 'asciidoctor-latex', 'build', callback); },
-    function (callback) { bfs.untar('build/htmlentities.tar.gz', 'htmlentities', 'build', callback); }
+    function (callback) { bfs.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); }
   ], function () {
     typeof callback === 'function' && callback();
   });
@@ -303,8 +297,6 @@ Builder.prototype.copyToDist = function (callback) {
     if (filePath.endsWith('.js')
       && paths.indexOf('examples') == -1
       && paths.indexOf('benchmark') == -1
-      && paths.indexOf('asciidoctor-latex') == -1
-      && paths.indexOf('htmlentities') == -1
       && paths.indexOf('asciidoctor') == -1
       && filePath.indexOf('spec') == -1
       && !filePath.endsWith('-min.js')
@@ -392,9 +384,6 @@ Builder.prototype.compile = function (callback) {
   };
 
   bfs.mkdirsSync('build');
-
-  log.task('compile latex');
-  opalCompiler.compile('asciidoctor-latex', 'build/asciidoctor-latex.js', ['build/asciidoctor-latex/lib', 'build/htmlentities/lib']);
 
   log.task('compile core lib');
   opalCompiler.compile('asciidoctor/converter/docbook5', 'build/asciidoctor-docbook5.js');
