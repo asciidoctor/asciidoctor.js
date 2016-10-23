@@ -29,10 +29,7 @@ if (typeof load === 'function') {
 }
 else {
   Asciidoctor = require('../npm/asciidoctor-core.js')().Asciidoctor();
-  // patch the FS module in PhantomJS so it maps to the FS API in Node
   if (typeof phantom !== 'undefined') {
-    var fs = require('fs');
-    fs.readFileSync = fs.read;
     var system = require('system');
     var env = system.env;
     verbose = env.VERBOSE;

@@ -97,6 +97,8 @@ class File
     case JAVASCRIPT_IO_MODULE
     when 'node'
       %x(return require('fs').readFileSync(path, 'utf8');)
+    when 'phantomjs'
+      %x(return require('fs').read(path);)
     when 'java_nio'
       %x(
         var Paths = Java.type('java.nio.file.Paths');

@@ -28,6 +28,7 @@
     }
     Opal.load("nodejs");
     Opal.load("pathname");
+    Opal.load("base64");
   }
   else if (isNashorn) {
     platform = 'java';
@@ -49,7 +50,9 @@
   // IO Module
   if (framework === 'spidermonkey') {
     ioModule = 'spidermonkey';
-  } else if (framework === 'phantomjs' || platform === 'node') {
+  } else if (framework === 'phantomjs') {
+    ioModule = 'phantomjs';
+  } else if (platform === 'node') {
     ioModule = 'node';
   } else if (engine === 'nashorn') {
     ioModule = 'java_nio'
