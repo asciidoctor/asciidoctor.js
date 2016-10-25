@@ -29,6 +29,7 @@
     // standalone most likely SpiderMonkey
     value = 'standalone';
   }
+  Opal.load('base64');
 )
 JAVASCRIPT_PLATFORM = %x(value)
 require 'strscan'
@@ -46,5 +47,7 @@ case JAVASCRIPT_PLATFORM
     require 'asciidoctor/opal_ext/nashorn/io'
   when 'node-electron'
     require 'asciidoctor/opal_ext/electron/io'
+  when 'node'
+    require 'asciidoctor/opal_ext/node/io'
   else
 end

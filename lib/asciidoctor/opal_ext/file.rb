@@ -19,12 +19,18 @@ class File
   attr_reader :lineno
   attr_reader :path
 
-  def initialize(path, mode = 'r')
+  def initialize(path, flags = 'r')
     @path = path
     @contents = nil
     @eof = false
     @lineno = 0
-    @fd = `require('fs').openSync(path, mode)` if JAVASCRIPT_PLATFORM == 'node'
+    # binary flag is unsupported
+    flags = flags.delete 'b'
+    # encoding flag is unsupported
+    encoding_flag_regexp = /:(.*)/
+    flags = flags.gsub(encoding_flag_regexp, '')
+    @flags = flags
+    @fd = `require('fs').openSync(path, flags)` if JAVASCRIPT_PLATFORM == 'node'
   end
 
   def read

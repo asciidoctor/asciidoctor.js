@@ -1,0 +1,9 @@
+= Image inside
+:data-uri:
+:imagesdir: spec/images
+
+== French frog
+
+[[french-frog]]
+.This is a frog
+image::litoria-chloris.jpg[width="40%"]
