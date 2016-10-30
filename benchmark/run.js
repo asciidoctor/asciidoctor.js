@@ -1,21 +1,21 @@
 // define console object in Nashorn
 if (typeof console === 'undefined') {
   console = {
-    log: function(str) {
+    log: function (str) {
       print(str);
     },
-    warn: function(str) {
+    warn: function (str) {
       print(str);
     }
   };
 }
 
-function currentTimeMillis() {
+function currentTimeMillis () {
   return new Date().getTime();
 }
 
-function secondsSince(start) {
-  return ((currentTimeMillis() - start) / 1000.0) + "s";
+function secondsSince (start) {
+  return ((currentTimeMillis() - start) / 1000.0) + 's';
 }
 
 var start = currentTimeMillis();
@@ -26,15 +26,10 @@ if (typeof load === 'function') {
   load('./build/asciidoctor-core.js'); //or... load('./build/asciidoctor.js');
   Opal.require('asciidoctor');
   Asciidoctor = Opal.Asciidoctor;
-  verbose = $ENV.VERBOSE;
 }
 else {
-  require('opal-runtime');
-  var Asciidoctor = require('../npm/asciidoctor-core.js')(this.Opal, (typeof phantom === 'undefined' ? null : false)).Asciidoctor();
-  // patch the FS module in PhantomJS so it maps to the FS API in Node
+  Asciidoctor = require('../npm/asciidoctor-core.js')().Asciidoctor();
   if (typeof phantom !== 'undefined') {
-    var fs = require('fs');
-    fs.readFileSync = fs.read;
     var system = require('system');
     var env = system.env;
     verbose = env.VERBOSE;
@@ -42,10 +37,10 @@ else {
     verbose = process.env.VERBOSE;
   }
 }
-console.log("Load scripts: " + secondsSince(start));
+console.log('Load scripts: ' + secondsSince(start));
 start = currentTimeMillis();
 
-var data = "include::build/benchmark/userguide.adoc[]";
+var data = 'include::build/benchmark/userguide.adoc[]';
 
 var options = Opal.hash({
   safe: 'safe',
@@ -60,7 +55,7 @@ for (var i = 1; i <= runs; i++) {
   start = currentTimeMillis();
   //doc = Asciidoctor.$load(data, options);
   html = Asciidoctor.$convert(data, options);
-  console.log("Run #" + i + ": " + secondsSince(start));
+  console.log('Run #' + i + ': ' + secondsSince(start));
 }
 
 if (verbose) {
