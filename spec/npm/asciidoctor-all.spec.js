@@ -169,6 +169,14 @@ describe('Node.js', function () {
       expect(html).toContain('Asciidoctor default stylesheet');
       expect(html).toContain('Test');
     });
+
+    it('should be able to convert a file and embed an image', function () {
+      var options = {safe: 'safe', header_footer: true};
+      var content = fs.readFileSync(path.resolve(__dirname, '../share/image.adoc'), 'utf8');
+      var html = Asciidoctor.convert(content, options);
+      expect(html).toContain('French frog');
+      expect(html).toContain('data:image/jpg;base64,');
+    });
   });
 });
 
