@@ -1,4 +1,5 @@
-load('./build/asciidoctor-all.js');
+load('./build/asciidoctor.js');
+var asciidoctor = Asciidoctor();
 
 var data = '= asciidoctor.js, AsciiDoc in JavaScript\n' +
 'Doc Writer <docwriter@example.com>\n\n' +
@@ -12,5 +13,5 @@ var data = '= asciidoctor.js, AsciiDoc in JavaScript\n' +
 'include::spec/share/include.adoc[]';
 
 var options = {'safe': 'server', attributes: ['showtitle']};
-var html = Opal.Asciidoctor.convert(data, options);
+var html = asciidoctor.convert(data, options);
 print(html);

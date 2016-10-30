@@ -2,11 +2,11 @@ var Jasmine = require('jasmine');
 var log = require('bestikk-log');
 var jasmine = new Jasmine();
 
-log.task('Jasmine npm');
+log.task('Jasmine Node.js');
 jasmine.loadConfig({
   spec_dir: 'spec',
   spec_files: [
-    'npm/asciidoctor.spec.js'
+    'node/asciidoctor.spec.js'
   ]
 });
 jasmine.execute();

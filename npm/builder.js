@@ -22,7 +22,8 @@ var isWin = function () {
 
 function Builder () {
   this.npmCoreFiles = [
-    'src/npm/prepend-core.js',
+    'src/prepend-core.js',
+    'node_modules/opal-runtime/src/opal.js',
     'build/asciidoctor-lib.js'
   ];
   this.asciidoctorCoreVersion = '1.5.5';
@@ -51,7 +52,7 @@ Builder.prototype.build = function (callback) {
     function (callback) { builder.compile(callback); }, // compile
     function (callback) { builder.replaceUnsupportedFeatures(callback); }, // replace unsupported features
     function (callback) { builder.replaceDefaultStylesheetPath(callback); }, // replace unsupported features
-    function (callback) { builder.concatJavaScripts(callback); }, // concat
+    function (callback) { builder.generateUMD(callback); }, // generate UMD
     function (callback) { builder.uglify(callback); } // uglify (optional)
   ], function () {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
@@ -77,13 +78,33 @@ Builder.prototype.downloadDependencies = function (callback) {
   });
 };
 
-Builder.prototype.concatJavaScripts = function (callback) {
-  log.task('concat');
-  this.concatCore();
-  this.concatNpmDocbook();
-  this.concatBowerCoreExtensions();
-  this.concatBowerDocbook();
-  this.concatBowerAll();
+var templateFile = function (templateFile, context, outputFile) {
+  var template = fs.readFileSync(templateFile, 'utf8');
+  var lines = template.split('\n');
+  lines.forEach(function (line, index, result) {
+    if (line in context) {
+      result[index] = context[line];
+    }
+  });
+  var content = lines.join('\n');
+  fs.writeFileSync(outputFile, content, 'utf8');
+};
+
+Builder.prototype.generateUMD = function (callback) {
+  log.task('generate UMD');
+
+  // Asciidoctor
+  var apiFiles = [
+    'src/asciidoctor-core-api.js',
+    'src/asciidoctor-extensions-api.js'
+  ];
+  this.concat('Asciidoctor API core + extensions', apiFiles, 'build/asciidoctor-api.js');
+  var asciidoctorTemplateContext = {
+    '//#{opalCode}': fs.readFileSync('node_modules/opal-runtime/src/opal.js', 'utf8'),
+    '//#{asciidoctorCode}': fs.readFileSync('build/asciidoctor-lib.js', 'utf8'),
+    '//#{asciidoctorAPI}': fs.readFileSync('build/asciidoctor-api.js', 'utf8')
+  };
+  templateFile('src/template-asciidoctor.js', asciidoctorTemplateContext, 'build/asciidoctor.js');
   callback();
 };
 
@@ -173,58 +194,18 @@ Builder.prototype.concat = function (message, files, destination) {
   bfs.concatSync(files, destination);
 };
 
-Builder.prototype.concatCore = function () {
-  this.concat('npm asciidoctor.js', this.npmCoreFiles.concat(['src/asciidoctor-core-api.js', 'src/npm/append-core.js']), 'build/npm/asciidoctor.js');
-};
-
-Builder.prototype.concatNpmDocbook = function () {
-  var files = [
-    'src/npm/prepend-extensions.js',
-    'build/asciidoctor-docbook45.js',
-    'build/asciidoctor-docbook5.js',
-    'src/npm/append-extensions.js'
-  ];
-  this.concat('npm docbook', files, 'build/npm/asciidoctor-docbook.js');
-};
-
-Builder.prototype.concatBowerCoreExtensions = function () {
-  var files = [
-    'build/asciidoctor-lib.js',
-    'src/asciidoctor-core-api.js'
-  ];
-  this.concat('Bower core', files, 'build/asciidoctor-core.js');
-};
-
-Builder.prototype.concatBowerDocbook = function () {
-  var files = [
-    'build/asciidoctor-docbook45.js',
-    'build/asciidoctor-docbook5.js'
-  ];
-  this.concat('Bower docbook', files, 'build/asciidoctor-docbook.js');
-};
-
-Builder.prototype.concatBowerAll = function () {
-  var files = [
-    'node_modules/opal-runtime/src/opal.js',
-    'build/asciidoctor-core.js',
-    'src/asciidoctor-core-api.js',
-    'src/asciidoctor-extensions-api.js'
-  ];
-  this.concat('Bower all', files, 'build/asciidoctor.js');
-};
-
 Builder.prototype.removeBuildDirSync = function () {
   log.debug('remove build directory');
   bfs.removeSync('build');
-  bfs.mkdirsSync('build/npm');
   bfs.mkdirsSync('build/css');
+  bfs.mkdirsSync('build/extensions');
 };
 
 Builder.prototype.removeDistDirSync = function () {
   log.debug('remove dist directory');
   bfs.removeSync('dist');
   bfs.mkdirsSync('dist/css');
-  bfs.mkdirsSync('dist/npm');
+  bfs.mkdirsSync('dist/extensions');
 };
 
 Builder.prototype.execSync = function (command) {
@@ -246,8 +227,6 @@ Builder.prototype.uglify = function (callback) {
   var uglify = require('bestikk-uglify');
   log.task('uglify');
   var files = [
-    {source: 'build/asciidoctor-core.js', destination: 'build/asciidoctor-core.min.js' },
-    {source: 'build/asciidoctor-docbook.js', destination: 'build/asciidoctor-docbook.min.js' },
     {source: 'build/asciidoctor.js', destination: 'build/asciidoctor.min.js' }
   ];
 
@@ -269,27 +248,9 @@ Builder.prototype.copyToDist = function (callback) {
   log.task('copy to dist/');
   builder.removeDistDirSync();
   bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css');
-  bfs.walk('build', function (filePath) {
-    var basename = path.basename(filePath);
-    var paths = path.dirname(filePath).split(path.sep);
-    if (filePath.endsWith('.js')
-      && paths.indexOf('examples') == -1
-      && paths.indexOf('benchmark') == -1
-      && paths.indexOf('asciidoctor') == -1
-      && filePath.indexOf('spec') == -1
-      && !filePath.endsWith('-lib.js')
-      && !filePath.endsWith('-min.js')
-      && !filePath.endsWith('-docbook45.js')
-      && !filePath.endsWith('-docbook5.js')) {
-      // remove 'build' base directory
-      paths.shift();
-      // add 'dist' base directory
-      paths.unshift('dist');
-      paths.push(basename);
-      var destination = paths.join(path.sep);
-      bfs.copySync(filePath, destination);
-    }
-  });
+  bfs.copySync('build/asciidoctor.js', 'dist/asciidoctor.js');
+  bfs.copySync('build/asciidoctor.min.js', 'dist/asciidoctor.min.js');
+  bfs.copySync('build/extensions', 'dist/extensions');
   typeof callback === 'function' && callback();
 };
 
@@ -359,14 +320,12 @@ Builder.prototype.compile = function (callback) {
   };
 
   var opalCompileExtension = function (name) {
-    opalCompiler.compile(name, 'build/asciidoctor-' + name + '.js', ['extensions-lab/lib']);
+    opalCompiler.compile(name, 'build/extensions/asciidoctor-' + name + '.js', ['extensions-lab/lib']);
   };
 
   bfs.mkdirsSync('build');
 
   log.task('compile core lib');
-  opalCompiler.compile('asciidoctor/converter/docbook5', 'build/asciidoctor-docbook5.js');
-  opalCompiler.compile('asciidoctor/converter/docbook45', 'build/asciidoctor-docbook45.js');
   opalCompiler.compile('asciidoctor', 'build/asciidoctor-lib.js');
 
   log.task('compile extensions-lab lib');
@@ -403,7 +362,7 @@ Builder.prototype.replaceDefaultStylesheetPath = function (callback) {
   log.debug('Replace primary_stylesheet_data method');
   var primaryStylesheetDataImpl = 'var stylesheetsPath;\n' +
     'if ($scope.get("JAVASCRIPT_PLATFORM")["$=="]("node") || $scope.get("JAVASCRIPT_PLATFORM")["$=="]("node-electron")) {\n' +
-    '  stylesheetsPath = Opal.get("File").$join(__dirname, "..", "css");\n' +
+    '  stylesheetsPath = Opal.get("File").$join(__dirname, "css");\n' +
     '} else {\n' +
     '  stylesheetsPath = "css";\n' +
     '}\n' +
