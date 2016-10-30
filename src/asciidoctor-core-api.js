@@ -8,7 +8,11 @@ var toHash = function (object) {
 // Asciidoctor API
 
 Opal.Asciidoctor['$$class'].$$proto.convert = function (input, options) {
-  return this.$convert(input, toHash(options));
+  var result = this.$convert(input, toHash(options));
+  if (result === Opal.nil) {
+    return '';
+  }
+  return result;
 };
 
 Opal.Asciidoctor['$$class'].$$proto.convertFile = function (filename, options) {
@@ -207,7 +211,11 @@ Opal.Asciidoctor.Document.$$proto.removeAttribute = function (name) {
 };
 
 Opal.Asciidoctor.Document.$$proto.convert = function (options) {
-  return this.$convert(toHash(options));
+  var result = this.$convert(toHash(options));
+  if (result === Opal.nil) {
+    return '';
+  }
+  return result;
 };
 
 Opal.Asciidoctor.Document.$$proto.write = function (output, target) {

@@ -206,6 +206,18 @@ var commonSpec = function (testOptions, Opal, Asciidoctor) {
         expect(html).toContain('<h2 id="_test">Test</h2>');
       });
 
+      it('should return an empty string when there\'s no candidate for inline conversion', function () {
+        // Converting a document with inline document type should produce an empty string
+        // Read more: http://asciidoctor.org/docs/user-manual/#document-types
+        var options = {doctype: 'inline'};
+        var content = '= Document Title\n\n== Introduction\n\nA simple paragraph.';
+        var html = Asciidoctor.convert(content, options);
+        expect(html).toBe('');
+        var doc = Asciidoctor.load(content, options);
+        html = doc.convert();
+        expect(html).toBe('');
+      });
+
       it('should convert a simple document with a title 3', function () {
         var html = Asciidoctor.convert('=== Test', null);
         expect(html).toContain('<h3 id="_test">Test</h3>');
