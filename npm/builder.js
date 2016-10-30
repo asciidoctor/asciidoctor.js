@@ -4,12 +4,11 @@ var async = require('async');
 var child_process = require('child_process');
 var fs = require('fs');
 var path = require('path');
-var https = require('https');
-var http = require('http');
 var OpalCompiler = require('bestikk-opal-compiler');
 var log = require('bestikk-log');
 var jdk = require('bestikk-jdk-ea');
 var bfs = require('bestikk-fs');
+var download = require('bestikk-download');
 
 var stdout;
 
@@ -73,9 +72,9 @@ Builder.prototype.downloadDependencies = function (callback) {
 
   var builder = this;
   async.series([
-    function (callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
-    function (callback) { builder.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor-latex/tar.gz/' + builder.asciidoctorLatexVersion, 'build/asciidoctor-latex.tar.gz', callback); },
-    function (callback) { builder.getContentFromURL('https://codeload.github.com/threedaymonk/htmlentities/tar.gz/v' + builder.htmlEntitiesVersion, 'build/htmlentities.tar.gz', callback); },
+    function (callback) { download.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
+    function (callback) { download.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor-latex/tar.gz/' + builder.asciidoctorLatexVersion, 'build/asciidoctor-latex.tar.gz', callback); },
+    function (callback) { download.getContentFromURL('https://codeload.github.com/threedaymonk/htmlentities/tar.gz/v' + builder.htmlEntitiesVersion, 'build/htmlentities.tar.gz', callback); },
     function (callback) { bfs.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); },
     function (callback) { bfs.untar('build/asciidoctor-latex.tar.gz', 'asciidoctor-latex', 'build', callback); },
     function (callback) { bfs.untar('build/htmlentities.tar.gz', 'htmlentities', 'build', callback); }
@@ -356,25 +355,7 @@ Builder.prototype.compileExamples = function (callback) {
 };
 
 Builder.prototype.getContentFromAsciiDocRepo = function (source, target, callback) {
-  this.getContentFromURL(this.asciidocRepoBaseURI + '/doc/' + source, target, callback);
-};
-
-Builder.prototype.getContentFromURL = function (source, target, callback) {
-  log.transform('get', source, target);
-  var targetStream = fs.createWriteStream(target);
-  var downloadModule;
-  // startWith alternative
-  if (source.lastIndexOf('https', 0) === 0) {
-    downloadModule = https;
-  } else {
-    downloadModule = http;
-  }
-  downloadModule.get(source, function (response) {
-    response.pipe(targetStream);
-    targetStream.on('finish', function () {
-      targetStream.close(callback);
-    });
-  });
+  download.getContentFromURL(this.asciidocRepoBaseURI + '/doc/' + source, target, callback);
 };
 
 Builder.prototype.copyExamplesResources = function (callback) {
