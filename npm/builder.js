@@ -80,7 +80,6 @@ Builder.prototype.downloadDependencies = function (callback) {
 Builder.prototype.concatJavaScripts = function (callback) {
   log.task('concat');
   this.concatCore();
-  this.concatCoreMin();
   this.concatNpmDocbook();
   this.concatBowerCoreExtensions();
   this.concatBowerDocbook();
@@ -178,10 +177,6 @@ Builder.prototype.concatCore = function () {
   this.concat('npm asciidoctor.js', this.npmCoreFiles.concat(['src/asciidoctor-core-api.js', 'src/npm/append-core.js']), 'build/npm/asciidoctor.js');
 };
 
-Builder.prototype.concatCoreMin = function () {
-  this.concat('npm asciidoctor-min.js', this.npmCoreFiles.concat(['src/asciidoctor-core-api.js', 'src/npm/append-core-min.js']), 'build/npm/asciidoctor-min.js');
-};
-
 Builder.prototype.concatNpmDocbook = function () {
   var files = [
     'src/npm/prepend-extensions.js',
@@ -251,8 +246,6 @@ Builder.prototype.uglify = function (callback) {
   var uglify = require('bestikk-uglify');
   log.task('uglify');
   var files = [
-    {source: 'build/npm/asciidoctor-min.js', destination: 'build/npm/asciidoctor.min.js' },
-    {source: 'build/npm/asciidoctor-docbook.js', destination: 'build/npm/asciidoctor-docbook.min.js' },
     {source: 'build/asciidoctor-core.js', destination: 'build/asciidoctor-core.min.js' },
     {source: 'build/asciidoctor-docbook.js', destination: 'build/asciidoctor-docbook.min.js' },
     {source: 'build/asciidoctor.js', destination: 'build/asciidoctor.min.js' }
