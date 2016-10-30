@@ -1,7 +1,7 @@
 var path = require('path');
 var fs = require('fs');
-var commonSpec = require('../share/common-specs.js');
-var asciidoctor = require('../../build/npm/asciidoctor-core.js')();
+var commonSpec = require('../share/common-spec.js');
+var asciidoctor = require('../../build/npm/asciidoctor.js')();
 
 var testOptions = {
   platform: 'Node.js',

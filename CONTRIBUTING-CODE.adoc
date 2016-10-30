@@ -62,16 +62,13 @@ These changes are made at build time to keep the Ruby code as fast as possible.
 This command produces some files in the [path]_build_ directory:
 
 build/::
-* *asciidoctor.js* -- includes core and extensions
-* *asciidoctor-core.js* -- no extensions API
-* *asciidoctor-extensions.js* -- extensions API only
+* *asciidoctor-core.js* -- core + extensions API
 * *asciidoctor-docbook.js* -- DocBook (4.5 and 5) converters
-* *asciidoctor-all.js* -- core, extensions API and Opal +
+* *asciidoctor.js* -- core + extensions API + Opal +
   _(DocBook isn't the main target of webapp. For this reason, we choose to keep it separate.)_
 
 build/npm/::
-* *asciidoctor-core.js* -- no extensions API, will automatically load the DocBook converters
-* *asciidoctor-extensions.js* -- extensions API only
+* *asciidoctor.js* -- core + extensions API (will automatically load the DocBook converters)
 * *asciidoctor-docbook.js* -- DocBook (4.5 and 5) converters
 
 Each file has a minified (`.min.js`) version.

@@ -37,12 +37,12 @@ You can use Asciidoctor.js either for back-end development using {uri-nodejs}[No
 Once the package installed, you can add the following `script` tag to your HTML page:
 
 ```html
-<script src="bower_components/asciidoctor.js/dist/asciidoctor-all.min.js"></script>
+<script src="bower_components/asciidoctor.js/dist/asciidoctor.min.js"></script>
 <!-- If you need docbook backends -->
 <script src="bower_components/asciidoctor.js/dist/asciidoctor-docbook.min.js"></script>
 ```
 
-If you don't want to use *extensions*, you can load files separately :
+If you want to load Opal separately, you can use `asciidoctor-core.min.js` instead of `asciidoctor.min.js`:
 
 ```html
 <script src="bower_components/opal/opal/current/opal.min.js"></script>
@@ -80,29 +80,20 @@ Once the package is installed, the first thing to do is to load the `asciidoctor
 var asciidoctor = require('asciidoctor.js')(); // <1>
 var opal = asciidoctor.Opal; // <2>
 
-var processor = null;
-var useExtensions = true;
-
-if (useExtensions) {
-  processor = asciidoctor.Asciidoctor(true); // <3>
-}
-else {
-  processor = asciidoctor.Asciidoctor(); // <4>
-}
+var processor = asciidoctor.Asciidoctor(); // <3>
 
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to Node.js!";
-var html = processor.convert(content); // <5>
-console.log(html); // <6>
+var html = processor.convert(content); // <4>
+console.log(html); // <5>
 ```
 
 <1> Load the Asciidoctor.js library
 <2> Retrieve and alias the top-level Opal namespace
-<3> Instantiate Asciidoctor with extensions enabled
-<4> Instantiate Asciidoctor without extensions
-<5> Convert AsciiDoc content to HTML5 using Asciidoctor.js
-<6> Print the HTML5 output to the console
+<3> Instantiate Asciidoctor (extensions API enabled by default)
+<4> Convert AsciiDoc content to HTML5 using Asciidoctor.js
+<5> Print the HTML5 output to the console
 
 Save the file as `sample.js` and run it using the `node` command:
 

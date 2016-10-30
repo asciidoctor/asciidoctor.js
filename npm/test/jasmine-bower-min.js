@@ -8,9 +8,9 @@ if (!process.env.MINIFY) {
 }
 log.task('Jasmine Bower.min');
 bfs.concatSync([
-  'build/asciidoctor-all.min.js',
+  'build/asciidoctor.min.js',
   'build/asciidoctor-docbook.min.js',
-  'spec/share/common-specs.js',
+  'spec/share/common-spec.js',
   'spec/bower/bower.spec.js'
 ], 'build/bower.spec.all.min.js');
 
