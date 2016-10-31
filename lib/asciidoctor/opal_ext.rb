@@ -1,6 +1,6 @@
 %x(
   var isNode = typeof module !== 'undefined' && module.exports,
-      isElectron = typeof process === 'object' && process.versions === 'object' && process.versions.electron === 'string',
+      isElectron = typeof process === 'object' && typeof process.versions === 'object' && typeof process.versions.electron === 'string',
       isBrowser = typeof window !== 'undefined',
       isNashorn = typeof Java !== 'undefined' && Java.type,
       isRhino = typeof java !== 'undefined',
