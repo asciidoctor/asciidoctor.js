@@ -15,7 +15,7 @@
     "README.adoc"
   ],
   "scripts": {
-    "test": "node npm/test/unsupported-features.js && node npm/test/jasmine-bower.js && node npm/test/jasmine-bower-min.js && node npm/test/jasmine-npm.js && karma start",
+    "test": "node npm/test/unsupported-features.js && node npm/test/jasmine-bower.js && node npm/test/jasmine-bower-min.js && node npm/test/jasmine-npm.js && node npm/test/jasmine-webpack.js && karma start",
     "build": "node npm/build.js && npm run test",
     "dist": "cross-env MINIFY=1 node npm/dist.js",
     "lint": "eslint src spec npm",
@@ -72,6 +72,7 @@
     "karma-jasmine": "^0.3.8",
     "karma-phantomjs-launcher": "^1.0.0",
     "phantomjs-prebuilt": "^2.1.7",
-    "watchify": "^3.7.0"
+    "watchify": "^3.7.0",
+    "webpack": "^1.13.3"
   }
 }
