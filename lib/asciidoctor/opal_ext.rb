@@ -1,64 +1,103 @@
 %x(
-  var isNode = typeof module !== 'undefined' && module.exports,
-      isElectron = typeof process === 'object' && typeof process.versions === 'object' && typeof process.versions.electron === 'string',
-      isBrowser = typeof window !== 'undefined',
-      isNashorn = typeof Java !== 'undefined' && Java.type,
-      isRhino = typeof java !== 'undefined',
-      isPhantomJS = typeof window !== 'undefined' && typeof window.phantom !== 'undefined',
+  var isNode = typeof process === 'object' && typeof process.versions === 'object' && process.browser != true,
+      isElectron = typeof navigator === 'object' && typeof navigator.userAgent === 'string' && typeof navigator.userAgent.indexOf('Electron') !== -1,
+      isBrowser = typeof window === 'object',
+      isNashorn = typeof Java === 'object' && Java.type,
+      isRhino = typeof java === 'object',
+      isPhantomJS = typeof window === 'object' && typeof window.phantom === 'object',
       isWebWorker = typeof importScripts === 'function',
-      isSpiderMonkey = typeof JSRuntime !== 'undefined',
-      platform = '',
-      engine = '',
-      framework = '',
-      ioModule = '';
+      isSpiderMonkey = typeof JSRuntime === 'object',
+      platform,
+      engine,
+      framework,
+      ioModule;
 
-  // Auto-detect the platform, engine and framework of the JavaScript environment
-  // NOTE: The order of the if statements is important because, for instance, 'module' will be defined in a Browserify environment
-  if (isBrowser) {
-    platform = 'browser';
-    if (isPhantomJS) {
-      framework = 'phantomjs';
+  // Load common modules
+  Opal.load("pathname");
+  Opal.load("base64");
+
+  if (typeof config === 'object' && typeof config.runtime === 'object') {
+    var runtime = config.runtime;
+    platform = runtime.platform;
+    engine = runtime.engine;
+    framework = runtime.framework;
+    ioModule = runtime.ioModule;
+  }
+
+  if (typeof platform === 'undefined') {
+    // Try to automatically detect the JavaScript platform, engine and framework
+    if (isNode) {
+      platform = platform || 'node';
+      engine = engine || 'v8';
+      if (isElectron) {
+        framework = framework || 'electron';
+      }
+    }
+    else if (isNashorn) {
+      platform = plaform || 'java';
+      engine = engine || 'nashorn';
+    }
+    else if (isRhino) {
+      platform = platform || 'java';
+      engine = engine || 'rhino';
+    }
+    else if (isSpiderMonkey) {
+      platform = platform || 'standalone';
+      framework = framework || 'spidermonkey';
+    }
+    else if (isBrowser) {
+      platform = platform || 'browser';
+      if (isPhantomJS) {
+        framework = framework || 'phantomjs';
+      }
+    }
+    // NOTE: WebWorker are not limited to browser
+    if (isWebWorker) {
+      framework = framework || 'webworker';
     }
   }
-  else if (isNode) {
-    platform = 'node';
-    engine = 'v8';
-    if (isElectron) {
-      framework = 'electron';
-    }
+
+  if (typeof platform === 'undefined') {
+    throw new Error('Unable to automatically detect the JavaScript platform, please configure Asciidoctor.js: `Asciidoctor({runtime: {platform: \'node\'}})`');
+  }
+
+  if (platform === 'node') {
     Opal.load("nodejs");
-    Opal.load("pathname");
-    Opal.load("base64");
   }
-  else if (isNashorn) {
-    platform = 'java';
-    engine = 'nashorn';
+
+  // Optional information
+  if (typeof framework === 'undefined') {
+    framework = '';
   }
-  else if (isRhino) {
-    platform = 'java';
-    engine = 'rhino';
-  }
-  else if (isSpiderMonkey) {
-    platform = 'standalone';
-    framework = 'spidermonkey';
-  }
-  // NOTE: WebWorker are not limited to browser
-  if (isWebWorker) {
-    framework = 'webworker';
+  if (typeof engine === 'undefined') {
+    engine = '';
   }
 
   // IO Module
-  if (framework === 'spidermonkey') {
-    ioModule = 'spidermonkey';
-  } else if (framework === 'phantomjs') {
-    ioModule = 'phantomjs';
-  } else if (platform === 'node') {
-    ioModule = 'node';
-  } else if (engine === 'nashorn') {
-    ioModule = 'java_nio'
-  } else if (platform === 'browser' || typeof XmlHTTPRequest !== 'undefined') {
-    ioModule = 'xmlhttprequest'
+  if (typeof ioModule !== 'undefined') {
+    if (ioModule != 'spidermonkey'
+         && ioModule != 'phantomjs'
+         && ioModule != 'node'
+         && ioModule != 'java_nio'
+         && ioModule != 'xmlhttprequest') {
+      throw new Error('Invalid IO module, `config.ioModule` must be one of: spidermonkey, phantomjs, node, java_nio or xmlhttprequest');
+    }
+  } else {
+    if (framework === 'spidermonkey') {
+      ioModule = 'spidermonkey';
+    } else if (framework === 'phantomjs') {
+      ioModule = 'phantomjs';
+    } else if (platform === 'node') {
+      ioModule = 'node';
+    } else if (engine === 'nashorn') {
+      ioModule = 'java_nio'
+    } else if (platform === 'browser' || typeof XmlHTTPRequest !== 'undefined') {
+      ioModule = 'xmlhttprequest'
+    } else {
+      throw new Error('Unable to automatically detect the IO module, please configure Asciidoctor.js: `Asciidoctor({runtime: {ioModule: \'node\'}})`');
+    }
   }
+
 )
 
 JAVASCRIPT_IO_MODULE = %x(ioModule)

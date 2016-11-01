@@ -30,7 +30,7 @@ class File
     encoding_flag_regexp = /:(.*)/
     flags = flags.gsub(encoding_flag_regexp, '')
     @flags = flags
-    @fd = `require('fs').openSync(path, flags)` if JAVASCRIPT_PLATFORM == 'node'
+    @fd = `require('fs').openSync(path, flags)` if JAVASCRIPT_IO_MODULE == 'node'
   end
 
   def read

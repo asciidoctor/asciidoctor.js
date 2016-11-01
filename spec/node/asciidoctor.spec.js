@@ -1,7 +1,14 @@
 var path = require('path');
 var fs = require('fs');
 var commonSpec = require('../share/common-spec.js');
-var asciidoctor = require('../../build/asciidoctor.js')();
+var config = {
+  runtime: {
+    platform: 'node',
+    engine: 'v12',
+    framework: 'lollipop'
+  }
+};
+var asciidoctor = require('../../build/asciidoctor.js')(config);
 require('asciidoctor-docbook.js');
 require('asciidoctor-template.js');
 
