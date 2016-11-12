@@ -50,8 +50,9 @@ Builder.prototype.build = function (callback) {
     function (callback) { builder.clean(callback); }, // clean
     function (callback) { builder.downloadDependencies(callback); }, // download dependencies
     function (callback) { builder.compile(callback); }, // compile
+    function (callback) { builder.patchAsciidoctorCore(callback); }, // patch Asciidoctor core. TODO: remove once Asciidoctor 1.5.6 is released
     function (callback) { builder.replaceUnsupportedFeatures(callback); }, // replace unsupported features
-    function (callback) { builder.replaceDefaultStylesheetPath(callback); }, // replace unsupported features
+    function (callback) { builder.replaceDefaultStylesheetPath(callback); }, // replace the default stylesheet path
     function (callback) { builder.generateUMD(callback); }, // generate UMD
     function (callback) { builder.uglify(callback); } // uglify (optional)
   ], function () {
@@ -342,6 +343,16 @@ Builder.prototype.compile = function (callback) {
   var asciidoctorPath = 'build/asciidoctor';
   var asciidoctorCSSFile = asciidoctorPath + '/data/stylesheets/asciidoctor-default.css';
   fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/css/asciidoctor.css'));
+  callback();
+};
+
+Builder.prototype.patchAsciidoctorCore = function (callback) {
+  log.task('Patch Asciidoctor core');
+  var path = 'build/asciidoctor-lib.js';
+  var data = fs.readFileSync(path, 'utf8');
+  log.debug('Apply pull-request #1925');
+  data = data.replace(/path\['\$start_with\?'\]\("file:\/\/\/"\)/g, 'path[\'\$start_with?\']("file://")');
+  fs.writeFileSync(path, data, 'utf8');
   callback();
 };
 
