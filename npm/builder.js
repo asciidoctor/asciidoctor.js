@@ -361,7 +361,7 @@ Builder.prototype.replaceDefaultStylesheetPath = function (callback) {
   var data = fs.readFileSync(path, 'utf8');
   log.debug('Replace primary_stylesheet_data method');
   var primaryStylesheetDataImpl = 'var stylesheetsPath;\n' +
-    'if ($scope.get("JAVASCRIPT_PLATFORM")["$=="]("node") || $scope.get("JAVASCRIPT_PLATFORM")["$=="]("node-electron")) {\n' +
+    'if ($scope.get("JAVASCRIPT_PLATFORM")["$=="]("node")) {\n' +
     '  stylesheetsPath = Opal.get("File").$join(__dirname, "css");\n' +
     '} else {\n' +
     '  stylesheetsPath = "css";\n' +
