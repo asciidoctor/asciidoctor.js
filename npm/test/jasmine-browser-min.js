@@ -2,19 +2,21 @@ var bfs = require('bestikk-fs');
 var log = require('bestikk-log');
 var Jasmine = require('jasmine');
 
-log.task('Jasmine Bower');
+if (!process.env.MINIFY) {
+  log.info('MINIFY environment variable is not defined, skipping "Jasmine Bower.min" task');
+  return;
+}
+log.task('Jasmine Browser (minified)');
 bfs.concatSync([
-  'build/asciidoctor.js',
-  'build/asciidoctor-docbook.js',
   'spec/share/common-spec.js',
-  'spec/bower/bower.spec.js'
-], 'build/bower.spec.all.js');
+  'spec/browser/asciidoctor.spec.js'
+], 'build/bower.spec.all.min.js');
 
 var jasmine = new Jasmine();
 jasmine.loadConfig({
   spec_dir: 'build',
   spec_files: [
-    'bower.spec.all.js'
+    'bower.spec.all.min.js'
   ]
 });
 

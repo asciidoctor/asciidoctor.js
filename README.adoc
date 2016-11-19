@@ -42,29 +42,22 @@ Once the package installed, you can add the following `script` tag to your HTML 
 <script src="bower_components/asciidoctor.js/dist/asciidoctor-docbook.min.js"></script>
 ```
 
-If you want to load Opal separately, you can use `asciidoctor-core.min.js` instead of `asciidoctor.min.js`:
-
-```html
-<script src="bower_components/opal/opal/current/opal.min.js"></script>
-<script src="bower_components/asciidoctor.js/dist/asciidoctor-core.min.js"></script>
-<!-- If you need docbook backends -->
-<script src="bower_components/asciidoctor.js/dist/asciidoctor-docbook.min.js"></script>
-```
-
 Here is a simple example that converts AsciiDoc to HTML5:
 
 .sample.js
 
 ```javascript
+var asciidoctor = Asciidoctor(); <1>
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to the browser!";
-var html = Opal.Asciidoctor.convert(content); // <1>
+var html = asciidoctor.convert(content); // <2>
 console.log(html); // <2>
 ```
 
-<1> Convert AsciiDoc content to HTML5 using Asciidoctor.js
-<2> Print the HTML5 output to the console
+<1> Instantiate the Asciidoctor.js library
+<2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
+<3> Print the HTML5 output to the console
 
 ## Back-end development
 
@@ -78,26 +71,20 @@ Once the package is installed, the first thing to do is to load the `asciidoctor
 
 ```javascript
 var asciidoctor = require('asciidoctor.js')(); // <1>
-var opal = asciidoctor.Opal; // <2>
-
-var processor = asciidoctor.Asciidoctor(); // <3>
-
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to Node.js!";
-var html = processor.convert(content); // <4>
-console.log(html); // <5>
+var html = asciidoctor.convert(content); // <2>
+console.log(html); // <3>
 ```
 
-<1> Load the Asciidoctor.js library
-<2> Retrieve and alias the top-level Opal namespace
-<3> Instantiate Asciidoctor (extensions API enabled by default)
-<4> Convert AsciiDoc content to HTML5 using Asciidoctor.js
-<5> Print the HTML5 output to the console
+<1> Instantiate the Asciidoctor.js library
+<2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
+<3> Print the HTML5 output to the console
 
 Save the file as `sample.js` and run it using the `node` command:
 
-    $ node sample.js
+ $ node sample.js
 
 You should see the following output in your terminal:
 

@@ -1,21 +1,16 @@
 var path = require('path');
 var fs = require('fs');
 var commonSpec = require('../share/common-spec.js');
-var asciidoctor = require('../../build/npm/asciidoctor.js')();
+var asciidoctor = require('../../build/asciidoctor.js')();
+require('asciidoctor-docbook.js');
+require('asciidoctor-template.js');
 
 var testOptions = {
   platform: 'Node.js',
   baseDir: path.join(__dirname, '..', '..')
 };
-var Asciidoctor = asciidoctor.Asciidoctor(true);
-var Opal = asciidoctor.Opal;
 
-Opal.load('nodejs');
-Opal.load('pathname');
-
-require('asciidoctor-template.js');
-
-commonSpec(testOptions, Opal, Asciidoctor);
+commonSpec(testOptions, asciidoctor);
 
 function fileExists (path) {
   try {
@@ -36,12 +31,12 @@ describe('Node.js', function () {
 
   describe('Loading file', function () {
     it('should be able to load a file', function () {
-      var doc = Asciidoctor.loadFile(__dirname + '/test.adoc', null);
+      var doc = asciidoctor.loadFile(__dirname + '/test.adoc', null);
       expect(doc.getAttribute('docname')).toBe('test');
     });
 
     it('should be able to retrieve structural content from file', function () {
-      var doc = Asciidoctor.loadFile(__dirname + '/documentblocks.adoc');
+      var doc = asciidoctor.loadFile(__dirname + '/documentblocks.adoc');
       var header = doc.getHeader();
       expect(header.level).toBe(0);
       expect(header.title).toBe('Sample Document');
@@ -84,7 +79,7 @@ describe('Node.js', function () {
       var expectFilePath = __dirname + '/test.html';
       removeFile(expectFilePath);
       try {
-        Asciidoctor.convertFile(__dirname + '/test.adoc', null);
+        asciidoctor.convertFile(__dirname + '/test.adoc', null);
         expect(fileExists(expectFilePath)).toBe(true);
         var content = fs.readFileSync(expectFilePath, 'utf8');
         expect(content).toContain('Hello world');
@@ -98,7 +93,7 @@ describe('Node.js', function () {
       removeFile(expectFilePath);
       try {
         var options = {attributes: ['stylesheet=simple.css', 'stylesdir=css']};
-        Asciidoctor.convertFile(__dirname + '/test.adoc', options);
+        asciidoctor.convertFile(__dirname + '/test.adoc', options);
         expect(fileExists(expectFilePath)).toBe(true);
         var content = fs.readFileSync(expectFilePath, 'utf8');
         expect(content).toContain('css/simple.css');
@@ -112,7 +107,7 @@ describe('Node.js', function () {
       removeFile(expectFilePath);
       try {
         var options = {safe: 'server', attributes: ['stylesheet=simple.css', 'stylesdir=css']};
-        Asciidoctor.convertFile(__dirname + '/test.adoc', options);
+        asciidoctor.convertFile(__dirname + '/test.adoc', options);
         expect(fileExists(expectFilePath)).toBe(true);
         var content = fs.readFileSync(expectFilePath, 'utf8');
         expect(content).toContain('h1 { color: #4078c0; }');
@@ -125,8 +120,8 @@ describe('Node.js', function () {
       var expectFilePath = __dirname + '/target/test.html';
       removeFile(expectFilePath);
       try {
-        var options = {to_dir: './spec/npm/target'};
-        Asciidoctor.convertFile(__dirname + '/test.adoc', options);
+        var options = {to_dir: './spec/node/target'};
+        asciidoctor.convertFile(__dirname + '/test.adoc', options);
         expect(fileExists(expectFilePath)).toBe(true);
         var content = fs.readFileSync(expectFilePath, 'utf8');
         expect(content).toContain('Hello world');
@@ -139,8 +134,8 @@ describe('Node.js', function () {
       var expectFilePath = __dirname + '/target/output.html';
       removeFile(expectFilePath);
       try {
-        var options = {to_dir: './spec/npm/target', to_file: 'output.html'};
-        Asciidoctor.convertFile(__dirname + '/test.adoc', options);
+        var options = {to_dir: './spec/node/target', to_file: 'output.html'};
+        asciidoctor.convertFile(__dirname + '/test.adoc', options);
         expect(fileExists(expectFilePath)).toBe(true);
         var content = fs.readFileSync(expectFilePath, 'utf8');
         expect(content).toContain('Hello world');
@@ -157,7 +152,7 @@ describe('Node.js', function () {
                     'Content 1\n\n' +
                     '== Slide 2\n\n' +
                     'Content 2';
-      var result = Asciidoctor.convert(content, options);
+      var result = asciidoctor.convert(content, options);
       expect(result).toContain('<section id="_slide_1"');
       expect(result).toContain('<section id="_slide_2"');
       expect(result).toContain('<script src="reveal.js/js/reveal.js"></script>');
@@ -165,7 +160,7 @@ describe('Node.js', function () {
 
     it('should be able to convert a file and include the default stylesheet', function () {
       var options = {safe: 'safe', header_footer: true};
-      var html = Asciidoctor.convert('=== Test', options);
+      var html = asciidoctor.convert('=== Test', options);
       expect(html).toContain('Asciidoctor default stylesheet');
       expect(html).toContain('Test');
     });
@@ -173,7 +168,7 @@ describe('Node.js', function () {
     it('should be able to convert a file and embed an image', function () {
       var options = {safe: 'safe', header_footer: true};
       var content = fs.readFileSync(path.resolve(__dirname, '../share/image.adoc'), 'utf8');
-      var html = Asciidoctor.convert(content, options);
+      var html = asciidoctor.convert(content, options);
       expect(html).toContain('French frog');
       expect(html).toContain('data:image/jpg;base64,');
     });
