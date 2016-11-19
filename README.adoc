@@ -38,8 +38,6 @@ Once the package installed, you can add the following `script` tag to your HTML 
 
 ```html
 <script src="bower_components/asciidoctor.js/dist/asciidoctor.min.js"></script>
-<!-- If you need docbook backends -->
-<script src="bower_components/asciidoctor.js/dist/asciidoctor-docbook.min.js"></script>
 ```
 
 Here is a simple example that converts AsciiDoc to HTML5:
