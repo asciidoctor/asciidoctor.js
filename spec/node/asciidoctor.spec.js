@@ -77,6 +77,7 @@ describe('Node.js', function () {
       expect(blocks[2].getBlocks().length).toBe(2);
 
       expect(blocks[2].getBlocks()[0].getContext()).toBe('image');
+      expect(blocks[2].getBlocks()[0].getTitle()).toBe('');
       expect(blocks[2].getBlocks()[1].getContext()).toBe('image');
     });
   });
