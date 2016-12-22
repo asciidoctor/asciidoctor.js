@@ -8,6 +8,9 @@ var toHash = function (object) {
 // Asciidoctor API
 
 Opal.Asciidoctor['$$class'].$$proto.convert = function (input, options) {
+  if (typeof input === 'object' && input.constructor.name === 'Buffer') {
+    input = input.toString('utf8'); 
+  }
   var result = this.$convert(input, toHash(options));
   if (result === Opal.nil) {
     return '';
@@ -20,6 +23,9 @@ Opal.Asciidoctor['$$class'].$$proto.convertFile = function (filename, options) {
 };
 
 Opal.Asciidoctor['$$class'].$$proto.load = function (input, options) {
+  if (typeof input === 'object' && input.constructor.name === 'Buffer') {
+    input = input.toString('utf8'); 
+  }
   return this.$load(input, toHash(options));
 };
 

@@ -42,6 +42,11 @@ describe('Node.js', function () {
       expect(doc.getAttribute('docname')).toBe('test');
     });
 
+    it('should be able to load a buffer', function () {
+      var doc = asciidoctor.load(fs.readFileSync(path.resolve(__dirname + '/test.adoc')), null);
+      expect(doc.getDoctitle()).toBe('Document title');
+    });
+
     it('should be able to retrieve structural content from file', function () {
       var doc = asciidoctor.loadFile(__dirname + '/documentblocks.adoc');
       var header = doc.getHeader();
@@ -178,6 +183,13 @@ describe('Node.js', function () {
       var html = asciidoctor.convert(content, options);
       expect(html).toContain('French frog');
       expect(html).toContain('data:image/jpg;base64,');
+    });
+
+    it('should be able to convert a buffer', function () {
+      var options = {safe: 'safe', header_footer: true};
+      var content = fs.readFileSync(path.resolve(__dirname + '/test.adoc'));
+      var html = asciidoctor.convert(content, options);
+      expect(html).toContain('Hello world');
     });
   });
 });
