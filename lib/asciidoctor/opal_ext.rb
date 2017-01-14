@@ -16,8 +16,8 @@
   Opal.load("pathname");
   Opal.load("base64");
 
-  if (typeof config === 'object' && typeof config.runtime === 'object') {
-    var runtime = config.runtime;
+  if (typeof moduleConfig === 'object' && typeof moduleConfig.runtime === 'object') {
+    var runtime = moduleConfig.runtime;
     platform = runtime.platform;
     engine = runtime.engine;
     framework = runtime.framework;

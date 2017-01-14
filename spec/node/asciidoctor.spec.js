@@ -9,6 +9,7 @@ var config = {
   }
 };
 var asciidoctor = require('../../build/asciidoctor.js')(config);
+var Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js');
 require('asciidoctor-template.js');
 
@@ -35,6 +36,15 @@ function removeFile (path) {
 }
 
 describe('Node.js', function () {
+
+  describe('Configuring Asciidoctor module', function () {
+    it('should be able to configure Asciidoctor module', function () {
+      expect(Opal.get('JAVASCRIPT_IO_MODULE')).toBe('node');
+      expect(Opal.get('JAVASCRIPT_PLATFORM')).toBe('node');
+      expect(Opal.get('JAVASCRIPT_ENGINE')).toBe('v12');
+      expect(Opal.get('JAVASCRIPT_FRAMEWORK')).toBe('lollipop');
+    });
+  });
 
   describe('Loading file', function () {
     it('should be able to load a file', function () {
