@@ -72,7 +72,7 @@ Opal.Asciidoctor.AbstractBlock.$$proto.delegate = function () {
 };
 
 Opal.Asciidoctor.AbstractBlock.$$proto.findBy = function (selector) {
-  return this.$find_by(selector);
+  return this.$find_by(toHash(selector));
 };
 
 Opal.Asciidoctor.AbstractBlock.$$proto.convert = function () {
