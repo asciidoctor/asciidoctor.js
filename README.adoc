@@ -24,6 +24,8 @@ Asciidoctor.js brings AsciiDoc to the JavaScript world!
 This project uses {uri-opal}[Opal] to transpile http://asciidoctor.org[Asciidoctor], a modern implementation of AsciiDoc, from Ruby to JavaScript to produce _asciidoctor.js_.
 The _asciidoctor.js_ script can be run on any JavaScript platform, including Node.js, Nashorn and, of course, a web browser.
 
+NOTE:: Asciidoctor.js follows the identical release versions for *Asciidoctor (Ruby)*, *AsciidoctorJ (Java)* and *Javascript*. So it is highly recommended to define exact version `(without ^)` in your package.json file. Since future releases with breaking changes will be ignored by semver resulting in broken code.
+
 ## Introduction
 
 You can use Asciidoctor.js either for back-end development using {uri-nodejs}[Node.js] or front-end development using a browser.
