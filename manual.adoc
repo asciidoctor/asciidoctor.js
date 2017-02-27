@@ -6,12 +6,10 @@
 
 ```javascript
 var glob = require('glob');
-var asciidoctor = require('asciidoctor.js')();
-
-var processor = asciidoctor.Asciidoctor();
+var processor = require('asciidoctor.js')();
 
 glob('documentation/*.adoc', function (err, files) { // <1>
-  files.each(function(file) {
+  files.forEach(function(file) {
     processor.convertFile(file); // <2>
   });
 });
@@ -26,7 +24,7 @@ You can set document attributes after loading AsciiDoc content.
 [source,javascript]
 ----
 var content = '== Title';
-var doc = Opal.Asciidoctor.load(content);
+var doc = processor.load(content);
 console.log(doc.getAttribute('data-uri')); // prints undefined
 console.log(doc.getAttribute('data-uri', 'false')); // prints 'false'
 
@@ -41,7 +39,7 @@ You can unset document attributes after loading AsciiDoc content.
 [source,javascript]
 ----
 var content = '== Title';
-var doc = Opal.Asciidoctor.load(content);
+var doc = processor.load(content);
 doc.setAttribute('data-uri', 'true');
 console.log(doc.getAttribute('data-uri')); // prints 'true'
 
