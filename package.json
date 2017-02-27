@@ -51,9 +51,9 @@
     "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
-    "asciidoctor-docbook.js": "^1.5.5-1",
+    "asciidoctor-docbook.js": "1.5.5-4",
     "asciidoctor-reveal.js": "1.0.1",
-    "asciidoctor-template.js": "1.5.5-3",
+    "asciidoctor-template.js": "1.5.5-4",
     "async": "^1.5.0",
     "bestikk-download": "^0.1.0",
     "bestikk-fs": "^0.1.0",
