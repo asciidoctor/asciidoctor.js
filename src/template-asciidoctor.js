@@ -4,6 +4,7 @@ if (typeof Opal === 'undefined' && typeof module === 'object' && module.exports)
 
 if (typeof Opal === 'undefined') {
 //#{opalCode}
+  Opal.require('opal');
 }
 
 // UMD Module

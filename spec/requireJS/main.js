@@ -21,7 +21,9 @@ require.config({
 
   config: {
     'asciidoctor': {
-      'ioModule': 'phantomjs'
+      'runtime': {
+        'ioModule': 'xmlhttprequest'
+      }
     }
   },
 
