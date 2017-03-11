@@ -1,6 +1,8 @@
 module Kernel
+  # Redefine Kernel#freeze to suppress "not supported" warning message from Opal.
+  # TODO Remove once https://github.com/opal/opal/issues/1253 is resolved.
+  # NOTE Opal should define freeze on Object, not Kernel.
   def freeze
-    # noop, suppress "not supported" warning message
-	# TODO Remove when https://github.com/opal/opal/issues/1253 will be resolved
+    self
   end
 end
