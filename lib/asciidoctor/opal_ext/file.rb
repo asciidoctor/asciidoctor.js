@@ -12,8 +12,6 @@ module Kernel
 end
 
 class File
-  SEPARATOR = '/'
-  ALT_SEPARATOR = nil
 
   attr_reader :eof
   attr_reader :lineno
