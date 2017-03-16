@@ -52,7 +52,7 @@ var content = "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to the browser!";
 var html = asciidoctor.convert(content); // <2>
-console.log(html); // <2>
+console.log(html); // <3>
 ```
 
 <1> Instantiate the Asciidoctor.js library
