@@ -19,21 +19,25 @@ function secondsSince (start) {
 }
 
 var start = currentTimeMillis();
-var Asciidoctor;
+var asciidoctor;
 var verbose = false;
 if (typeof load === 'function') {
   load('./node_modules/opal-runtime/src/opal.js');
-  load('./build/asciidoctor-core.js'); //or... load('./build/asciidoctor.js');
+  load('./build/asciidoctor.js');
   Opal.require('asciidoctor');
-  Asciidoctor = Opal.Asciidoctor;
+  var Asciidoctor = Opal.Asciidoctor;
+  asciidoctor = Asciidoctor();
 }
 else {
-  Asciidoctor = require('../npm/asciidoctor-core.js')().Asciidoctor();
   if (typeof phantom !== 'undefined') {
+    require('../../node_modules/opal-runtime/src/opal.js');
+    asciidoctor = require('../asciidoctor.js')({'runtime': {'ioModule': 'phantomjs'}});
     var system = require('system');
     var env = system.env;
     verbose = env.VERBOSE;
-  } else {
+  }
+  else {
+    asciidoctor = require('../asciidoctor.js')({'runtime': {'platform': 'node'}});
     verbose = process.env.VERBOSE;
   }
 }
@@ -42,19 +46,17 @@ start = currentTimeMillis();
 
 var data = 'include::build/benchmark/userguide.adoc[]';
 
-var options = Opal.hash({
+var options = {
   safe: 'safe',
   doctype: 'article',
   header_footer: true,
   attributes: 'linkcss copycss! toc! numbered! icons! compat-mode'
-});
-//var doc = Asciidoctor.$load(data, options);
+};
 var html;
 var runs = 4;
 for (var i = 1; i <= runs; i++) {
   start = currentTimeMillis();
-  //doc = Asciidoctor.$load(data, options);
-  html = Asciidoctor.$convert(data, options);
+  html = asciidoctor.convert(data, options);
   console.log('Run #' + i + ': ' + secondsSince(start));
 }
 
