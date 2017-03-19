@@ -73,10 +73,10 @@ Opal.Asciidoctor.AbstractBlock.$$proto.delegate = function () {
 
 Opal.Asciidoctor.AbstractBlock.$$proto.findBy = function (selector, block) {
   if (typeof block === 'undefined' && typeof selector === 'function') {
-    return Opal.block_send(this, 'find_by', selector);
+    return Opal.send(this, 'find_by', null, selector);
   }
   else if (typeof block === 'function') {
-    return Opal.block_send(this, 'find_by', block, toHash(selector));
+    return Opal.send(this, 'find_by', toHash(selector), block);
   }
   else {
     return this.$find_by(toHash(selector));
