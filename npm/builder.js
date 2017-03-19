@@ -26,7 +26,11 @@ function Builder () {
     'node_modules/opal-runtime/src/opal.js',
     'build/asciidoctor-lib.js'
   ];
-  this.asciidoctorCoreVersion = '1.5.5';
+  if (process.env.ASCIIDOCTOR_CORE_VERSION) {
+    this.asciidoctorCoreVersion = process.env.ASCIIDOCTOR_CORE_VERSION;
+  } else {
+    this.asciidoctorCoreVersion = 'master'; // or v1.5.5 to build against a release
+  }
   this.benchmarkBuildDir = 'build' + path.sep + 'benchmark';
   this.examplesBuildDir = 'build' + path.sep + 'examples';
   this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625';
@@ -72,7 +76,7 @@ Builder.prototype.downloadDependencies = function (callback) {
 
   var builder = this;
   async.series([
-    function (callback) { download.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
+    function (callback) { download.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
     function (callback) { bfs.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); }
   ], function () {
     typeof callback === 'function' && callback();

@@ -1,4 +1,7 @@
 language: node_js
+env:
+  - ASCIIDOCTOR_CORE_VERSION=v1.5.5
+  - ASCIIDOCTOR_CORE_VERSION=master
 node_js:
   - "4"
   - "6"
