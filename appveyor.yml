@@ -8,6 +8,11 @@ environment:
 install:
 - git submodule update --init --recursive
 - npm install
-- npm install -g bower
 build_script:
 - node npm/appveyor.js
+- node npm/test/unsupported-features.js
+- node npm/test/jasmine-browser.js
+- node npm/test/jasmine-node.js
+- node npm/test/jasmine-webpack.js
+- npm run test_karma_browserify
+- npm run test_karma_requirejs
