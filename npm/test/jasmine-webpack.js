@@ -28,7 +28,7 @@ webpack(config, function () {
 
   // This code is necessary to fake a browser for Opal
   //--------------------------------------------------
-  window = {};
+  window = global;
 
   if (typeof XMLHttpRequest === 'undefined') {
     XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;

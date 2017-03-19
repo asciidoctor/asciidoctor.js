@@ -18,7 +18,6 @@ jasmine.loadConfig({
 
 // This code is necessary to fake a browser for Opal
 //--------------------------------------------------
-window = {};
 process.browser = true;
 
 if (typeof XMLHttpRequest === 'undefined') {

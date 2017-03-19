@@ -350,7 +350,7 @@ Builder.prototype.replaceUnsupportedFeatures = function (callback) {
   var path = 'build/asciidoctor-lib.js';
   var data = fs.readFileSync(path, 'utf8');
   log.debug('Replace (g)sub! with (g)sub');
-  data = data.replace(/(\(\$\w+ = \(\$\w+ = (\w+)\))\['(\$g?sub)!'\]/g, '$2 = $1[\'$3\']');
+  data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send\($1, \'$2\'');
   fs.writeFileSync(path, data, 'utf8');
   callback();
 };
@@ -367,7 +367,7 @@ Builder.prototype.replaceDefaultStylesheetPath = function (callback) {
     '  stylesheetsPath = "css";\n' +
     '}\n' +
     'return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != null) ? $a : self.primary_stylesheet_data = Opal.get("IO").$read(Opal.get("File").$join(stylesheetsPath, "asciidoctor.css")).$chomp());';
-  data = data.replace(/(ːprimary_stylesheet_data\(\)\ {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2');
+  data = data.replace(/(function \$\$primary_stylesheet_data\(\)\ {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2');
   fs.writeFileSync(path, data, 'utf8');
   callback();
 };
