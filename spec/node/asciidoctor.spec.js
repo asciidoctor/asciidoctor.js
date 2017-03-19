@@ -95,6 +95,18 @@ describe('Node.js', function () {
       expect(blocks[2].getBlocks()[0].getTitle()).toBe('');
       expect(blocks[2].getBlocks()[1].getContext()).toBe('image');
     });
+
+    it('should be able to find blocks', function () {
+      var doc = asciidoctor.loadFile(__dirname + '/documentblocks.adoc');
+      var quoteBlocks = doc.findBy(function(b) { return b.getStyle() === 'quote' });
+      expect(quoteBlocks.length).toBe(1);
+
+      var sectionBlocks = doc.findBy({'context': 'section'});
+      expect(sectionBlocks.length).toBe(4);
+
+      var abstractSectionBlocks = doc.findBy({'context': 'section'}, function(b) { return b.getTitle() === 'Second Section' });
+      expect(abstractSectionBlocks.length).toBe(1);
+    });
   });
 
   describe('Converting file', function () {
