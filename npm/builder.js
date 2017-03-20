@@ -26,7 +26,11 @@ function Builder () {
     'node_modules/opal-runtime/src/opal.js',
     'build/asciidoctor-lib.js'
   ];
-  this.asciidoctorCoreVersion = '1.5.5';
+  if (process.env.ASCIIDOCTOR_CORE_VERSION) {
+    this.asciidoctorCoreVersion = process.env.ASCIIDOCTOR_CORE_VERSION;
+  } else {
+    this.asciidoctorCoreVersion = 'master'; // or v1.5.5 to build against a release
+  }
   this.benchmarkBuildDir = 'build' + path.sep + 'benchmark';
   this.examplesBuildDir = 'build' + path.sep + 'examples';
   this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625';
@@ -62,6 +66,11 @@ Builder.prototype.build = function (callback) {
 };
 
 Builder.prototype.clean = function (callback) {
+  if (process.env.SKIP_CLEAN) {
+    log.info('SKIP_CLEAN environment variable is true, skipping "clean" task');
+    callback();
+    return;
+  }
   log.task('clean');
   this.removeBuildDirSync(); // remove build directory
   callback();
@@ -71,9 +80,24 @@ Builder.prototype.downloadDependencies = function (callback) {
   log.task('download dependencies');
 
   var builder = this;
+  var target = 'build/asciidoctor.tar.gz';
   async.series([
-    function (callback) { download.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/v' + builder.asciidoctorCoreVersion, 'build/asciidoctor.tar.gz', callback); },
-    function (callback) { bfs.untar('build/asciidoctor.tar.gz', 'asciidoctor', 'build', callback); }
+    function (callback) {
+      if (fs.existsSync(target)) {
+        log.info(target + ' file already exists, skipping "download" task');
+        callback();
+      } else {
+        download.getContentFromURL('https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/' + builder.asciidoctorCoreVersion, target, callback);
+      }
+    },
+    function (callback) {
+      if (fs.existsSync('build/asciidoctor')) {
+        log.info('build/asciidoctor directory already exists, skipping "untar" task');
+        callback();
+      } else {
+        bfs.untar(target, 'asciidoctor', 'build', callback);
+      }
+    }
   ], function () {
     typeof callback === 'function' && callback();
   });

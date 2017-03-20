@@ -7,11 +7,13 @@ class String
   end unless method_defined? :limit_bytesize
   alias :limit :limit_bytesize unless method_defined? :limit
 
+  alias :_original_unpack :unpack
+
   def unpack format
     if format == 'C3'
       self[0, 3].bytes.select.with_index {|_, i| i.even? }
     else
-      raise %(undefined method `unpack' for #{inspect}#{self.class})
+      _original_unpack format
     end
-  end unless method_defined? :unpack
+  end
 end
