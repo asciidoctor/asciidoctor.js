@@ -1,0 +1,7 @@
+= Extension
+
+Should process smiley inline macro!
+
+smiley:wink[]
+smiley:happy[]
+smiley:x[]

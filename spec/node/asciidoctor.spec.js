@@ -12,6 +12,7 @@ var asciidoctor = require('../../build/asciidoctor.js')(config);
 var Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js');
 require('asciidoctor-template.js');
+require('../share/extensions/smiley-macro.js');
 
 var testOptions = {
   platform: 'Node.js',
@@ -191,6 +192,13 @@ describe('Node.js', function () {
       expect(result).toContain('<section id="_slide_1"');
       expect(result).toContain('<section id="_slide_2"');
       expect(result).toContain('<script src="reveal.js/js/reveal.js"></script>');
+    });
+
+    it('should be able to process smiley extension', function () {
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/extension.adoc')), null);
+      expect(result).toContain(':D');
+      expect(result).toContain(';)');
+      expect(result).toContain(':)');
     });
 
     it('should be able to convert a file and include the default stylesheet', function () {
