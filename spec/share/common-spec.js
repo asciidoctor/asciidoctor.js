@@ -224,6 +224,18 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(html).toContain('<div class="listingblock">\n<div class="content">\n<pre class="highlight"><code>package main\nimport "fmt"\n\nfunc main() {\n  fmt.Println("Hello, playground")\n}</code></pre>\n</div>\n</div>');
       });
 
+      it('should convert a document with unicode', function () {
+        var asciidoctorVersion = asciidoctor.$$scope.VERSION;
+        var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
+        // Available only in Asciidoctor core 1.5.6 and greater.
+        if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {
+          var html = asciidoctor.convert('= HubPress\nAnthonny Quérouil\n\n{doctitle} was written by {firstname} {lastname}.\n\n[[bière]]\n== La bière\n\nLa bière c\'est la vie.\n\n[[ビール]]\n== ビール', null);
+          expect(html).toContain('was written by Anthonny Quérouil.');
+          expect(html).toContain('id="ビール"');
+          expect(html).toContain('id="bière"');
+        } 
+      });
+
       it('should embed assets', function () {
         var options = {doctype: 'article', safe: 'unsafe', header_footer: true, attributes: ['showtitle', 'stylesheet=asciidoctor.css', 'stylesdir=' + testOptions.baseDir + '/build/css']};
         var html = asciidoctor.convert('=== Test', options);
