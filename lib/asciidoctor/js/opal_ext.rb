@@ -61,10 +61,6 @@
     throw new Error('Unable to automatically detect the JavaScript platform, please configure Asciidoctor.js: `Asciidoctor({runtime: {platform: \'node\'}})`');
   }
 
-  if (platform === 'node') {
-    Opal.load("nodejs");
-  }
-
   // Optional information
   if (typeof framework === 'undefined') {
     framework = '';
@@ -119,4 +115,5 @@ if JAVASCRIPT_FRAMEWORK == 'electron'
 end
 if JAVASCRIPT_PLATFORM == 'node'
   require 'asciidoctor/js/opal_ext/node/io'
+  `Opal.load("nodejs")`
 end

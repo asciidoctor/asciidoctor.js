@@ -208,6 +208,14 @@ describe('Node.js', function () {
       expect(html).toContain('Test');
     });
 
+    it('should issue a warning if an include file is not found', function () {
+      var options = {safe: 'safe', header_footer: true};
+      var html = asciidoctor.convert('= Test\n\ninclude::nonexistent.adoc[]', options);
+      expect(html).toContain('Test');
+      expect(html).toContain('Unresolved directive');
+      expect(html).toContain('include::nonexistent.adoc[]');
+    });
+
     it('should be able to convert a file and embed an image', function () {
       var options = {safe: 'safe', header_footer: true};
       var content = fs.readFileSync(path.resolve(__dirname, '../share/image.adoc'), 'utf8');
