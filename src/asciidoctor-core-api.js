@@ -71,8 +71,16 @@ Opal.Asciidoctor.AbstractBlock.$$proto.delegate = function () {
   return this.$delegate();
 };
 
-Opal.Asciidoctor.AbstractBlock.$$proto.findBy = function (selector) {
-  return this.$find_by(toHash(selector));
+Opal.Asciidoctor.AbstractBlock.$$proto.findBy = function (selector, block) {
+  if (typeof block === 'undefined' && typeof selector === 'function') {
+    return Opal.send(this, 'find_by', null, selector);
+  }
+  else if (typeof block === 'function') {
+    return Opal.send(this, 'find_by', toHash(selector), block);
+  }
+  else {
+    return this.$find_by(toHash(selector));
+  }
 };
 
 Opal.Asciidoctor.AbstractBlock.$$proto.convert = function () {
