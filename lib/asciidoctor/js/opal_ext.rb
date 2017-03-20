@@ -105,23 +105,18 @@ JAVASCRIPT_PLATFORM = %x(platform)
 JAVASCRIPT_ENGINE = %x(engine)
 JAVASCRIPT_FRAMEWORK = %x(framework)
 
-require 'strscan'
-require 'asciidoctor/opal_ext/file'
-require 'asciidoctor/opal_ext/match_data'
-require 'asciidoctor/opal_ext/kernel'
-require 'asciidoctor/opal_ext/thread_safe'
-require 'asciidoctor/converter'
-require 'asciidoctor/converter/composite'
-require 'asciidoctor/converter/html5'
-require 'asciidoctor/opal_ext/string'
-require 'asciidoctor/extensions'
+require 'asciidoctor/js/opal_ext/file'
+require 'asciidoctor/js/opal_ext/match_data'
+require 'asciidoctor/js/opal_ext/kernel'
+require 'asciidoctor/js/opal_ext/thread_safe'
+require 'asciidoctor/js/opal_ext/string'
 
 if JAVASCRIPT_ENGINE == 'nashorn'
-  require 'asciidoctor/opal_ext/nashorn/io'
+  require 'asciidoctor/js/opal_ext/nashorn/io'
 end
 if JAVASCRIPT_FRAMEWORK == 'electron'
-  require 'asciidoctor/opal_ext/electron/io'
+  require 'asciidoctor/js/opal_ext/electron/io'
 end
 if JAVASCRIPT_PLATFORM == 'node'
-  require 'asciidoctor/opal_ext/node/io'
+  require 'asciidoctor/js/opal_ext/node/io'
 end
