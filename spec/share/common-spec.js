@@ -34,6 +34,15 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(doc.getAttribute('data-uri')).toBeUndefined();
       });
 
+      it('should load document with hash attributes', function () {
+        // NOTE we might want to look into the fact that sectids: false does not work
+        var options = { attributes: { icons: 'font', sectids: null } };
+        var doc = asciidoctor.load('== Test', options);
+        expect(doc.getAttribute('icons')).toBe('font');
+        expect(doc.getAttribute('sectids')).toBeUndefined();
+        expect(doc.findBy({ context: 'section' })[0].getId()).toBe(Opal.nil);
+      });
+
       it('should load document with boolean attributes', function () {
         var options = {attributes: 'sectnums=true'};
         var doc = asciidoctor.load('== Test', options);
@@ -53,11 +62,17 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(doc.getAuthor()).toBe('Guillaume Grossetie');
       });
 
+      it('should return attributes as JSON object', function () {
+        var doc = asciidoctor.load('= Authors\nGuillaume Grossetie;Anders Nawroth\n');
+        expect(doc.getAttributes()['author']).toBe('Guillaume Grossetie');
+        expect(doc.getAttributes()['authors']).toBe('Guillaume Grossetie, Anders Nawroth');
+      });
+
       it('should get icon uri string reference', function () {
         var options = {attributes: 'data-uri!'};
         var doc = asciidoctor.load('== Test', options);
         // FIXME: On browser icon URI is './images/icons/note.png' but on Node.js icon URI is 'images/icons/note.png'
-        expect(doc.getIconURI('note')).toContain('images/icons/note.png');
+        expect(doc.getIconUri('note')).toContain('images/icons/note.png');
       });
 
 // FIXME: Skipping spec because the following error is thrown "SecurityError: Jail is not an absolute path: ."
@@ -65,20 +80,20 @@ var commonSpec = function (testOptions, asciidoctor) {
       it('should get icon uri', function () {
         var options = {safe: 'safe', attributes: ['data-uri', 'icons=fonts']};
         var doc = asciidoctor.load('== Test', options);
-        expect(doc.getIconURI('note')).toBe('data:image/png:base64,');
+        expect(doc.getIconUri('note')).toBe('data:image/png:base64,');
       });
 */
 
       it('should get media uri', function () {
         var doc = asciidoctor.load('== Test', null);
-        expect(doc.getMediaURI('target')).toBe('target');
+        expect(doc.getMediaUri('target')).toBe('target');
       });
 
       it('should get image uri', function () {
         var options = {attributes: 'data-uri!'};
         var doc = asciidoctor.load('== Test', options);
-        expect(doc.getImageURI('target.jpg')).toBe('target.jpg');
-        expect(doc.getImageURI('target.jpg', 'imagesdir')).toBe('target.jpg');
+        expect(doc.getImageUri('target.jpg')).toBe('target.jpg');
+        expect(doc.getImageUri('target.jpg', 'imagesdir')).toBe('target.jpg');
       });
 
       it('should modify document attributes', function () {
