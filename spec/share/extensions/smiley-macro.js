@@ -2,8 +2,8 @@ var Extensions = Opal.Asciidoctor.$$scope.Extensions;
 
 Extensions.register(function () {
   this.inlineMacro('smiley', function () {
-    var inlineMacro = this;
-    inlineMacro.process(function (parent, target) {
+    var self = this;
+    self.process(function (parent, target) {
       var text;
       if (target == 'happy') {
         text = ':D';
@@ -12,7 +12,7 @@ Extensions.register(function () {
       } else {
         text = ':)';
       }
-      return inlineMacro.createBlock(parent, 'literal', text).render();
+      return self.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert();
     }); 
   });
 });

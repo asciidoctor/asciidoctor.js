@@ -13,6 +13,7 @@ var Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js');
 require('asciidoctor-template.js');
 require('../share/extensions/smiley-macro.js');
+require('../share/extensions/shout-block.js');
 
 var testOptions = {
   platform: 'Node.js',
@@ -196,9 +197,14 @@ describe('Node.js', function () {
 
     it('should be able to process smiley extension', function () {
       var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/extension.adoc')), null);
-      expect(result).toContain(':D');
-      expect(result).toContain(';)');
-      expect(result).toContain(':)');
+      expect(result).toContain('<strong>:D</strong>');
+      expect(result).toContain('<strong>;)</strong>');
+      expect(result).toContain('<strong>:)</strong>');
+    });
+
+    it('should be able to process custom block', function () {
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/shout-block-ex.adoc')), null);
+      expect(result).toContain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>');
     });
 
     it('should be able to convert a file and include the default stylesheet', function () {

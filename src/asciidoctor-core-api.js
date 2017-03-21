@@ -421,3 +421,7 @@ Opal.Asciidoctor.Document.Title.$$proto.isSanitized = function () {
 Opal.Asciidoctor.Document.Title.$$proto.hasSubtitle = function () {
   return this['$subtitle?']();
 };
+
+Opal.Asciidoctor.Inline.$$proto.convert = function () {
+  return this.$convert();
+};
