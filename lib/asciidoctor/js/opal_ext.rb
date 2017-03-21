@@ -115,5 +115,6 @@ if JAVASCRIPT_FRAMEWORK == 'electron'
 end
 if JAVASCRIPT_PLATFORM == 'node'
   require 'asciidoctor/js/opal_ext/node/io'
+  require 'asciidoctor/js/opal_ext/node/file'
   `Opal.load("nodejs")`
 end
