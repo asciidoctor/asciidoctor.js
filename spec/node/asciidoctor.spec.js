@@ -91,7 +91,7 @@ describe('Node.js', function () {
       expect(blocks[1].getBlocks()[2].getRole()).toBe('feature-list');
 
       expect(blocks[2].getTitle()).toBe('Second Section');
-      expect(blocks[2].getBlocks().length).toBe(2);
+      expect(blocks[2].getBlocks().length).toBe(3);
 
       expect(blocks[2].getBlocks()[0].getContext()).toBe('image');
       expect(blocks[2].getBlocks()[0].getTitle()).toBe('');

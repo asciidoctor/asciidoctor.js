@@ -41,3 +41,8 @@ Conclusion of the lead.
 [Images]
 image::sunset.jpg[Sunset]
 image::sunset2.jpg[Sunset2] 
+
+.Second Section
+Actually, not a section.
+Just a paragraph.
+We lied.
