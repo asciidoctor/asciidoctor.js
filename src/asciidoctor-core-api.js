@@ -5,13 +5,24 @@ var toHash = function (object) {
   return object;
 };
 
+var prepareOptions = function (options) {
+  if (options = toHash(options)) {
+    var attrs = options['$[]']('attributes');
+    if (attrs && typeof attrs === 'object' && attrs.constructor.name === 'Object') {
+      options = options.$dup();
+      options['$[]=']('attributes', toHash(attrs));
+    }
+  }
+  return options;
+};
+
 // Asciidoctor API
 
 Opal.Asciidoctor['$$class'].$$proto.convert = function (input, options) {
   if (typeof input === 'object' && input.constructor.name === 'Buffer') {
-    input = input.toString('utf8'); 
+    input = input.toString('utf8');
   }
-  var result = this.$convert(input, toHash(options));
+  var result = this.$convert(input, prepareOptions(options));
   if (result === Opal.nil) {
     return '';
   }
@@ -19,18 +30,18 @@ Opal.Asciidoctor['$$class'].$$proto.convert = function (input, options) {
 };
 
 Opal.Asciidoctor['$$class'].$$proto.convertFile = function (filename, options) {
-  return this.$convert_file(filename, toHash(options));
+  return this.$convert_file(filename, prepareOptions(options));
 };
 
 Opal.Asciidoctor['$$class'].$$proto.load = function (input, options) {
   if (typeof input === 'object' && input.constructor.name === 'Buffer') {
-    input = input.toString('utf8'); 
+    input = input.toString('utf8');
   }
-  return this.$load(input, toHash(options));
+  return this.$load(input, prepareOptions(options));
 };
 
 Opal.Asciidoctor['$$class'].$$proto.loadFile = function (filename, options) {
-  return this.$load_file(filename, toHash(options));
+  return this.$load_file(filename, prepareOptions(options));
 };
 
 // AbstractBlock API
@@ -67,10 +78,6 @@ Opal.Asciidoctor.AbstractBlock.$$proto.convert = function () {
   return this.$convert();
 };
 
-Opal.Asciidoctor.AbstractBlock.$$proto.delegate = function () {
-  return this.$delegate();
-};
-
 Opal.Asciidoctor.AbstractBlock.$$proto.findBy = function (selector, block) {
   if (typeof block === 'undefined' && typeof selector === 'function') {
     return Opal.send(this, 'find_by', null, selector);
@@ -90,7 +97,12 @@ Opal.Asciidoctor.AbstractBlock.$$proto.convert = function () {
 // AbstractNode API
 
 Opal.Asciidoctor.AbstractNode.$$proto.getAttributes = function () {
-  return this.attributes;
+  var to = {}, from = this.attributes;
+  for (var i = 0, key, keys = from.$$keys, data = from.$$smap, len = keys.length; i < len; i++) {
+    key = keys[i];
+    to[key] = data[key];
+  }
+  return to;
 };
 
 Opal.Asciidoctor.AbstractNode.$$proto.getAttribute = function (name, defaultValue, inherit) {
@@ -157,7 +169,7 @@ Opal.Asciidoctor.AbstractNode.$$proto.getReftext = function () {
 };
 
 Opal.Asciidoctor.AbstractNode.$$proto.getContext = function () {
-  var context =  this.context;
+  var context = this.context;
   if (context && typeof context.$to_s === 'function') {
     // Convert Ruby Symbol to String
     return context.$to_s();
@@ -177,15 +189,15 @@ Opal.Asciidoctor.AbstractNode.$$proto.setOption = function (name) {
   return this.$set_option(name);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getIconURI = function (name) {
+Opal.Asciidoctor.AbstractNode.$$proto.getIconUri = function (name) {
   return this.$icon_uri(name);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getMediaURI = function (target, assetDirKey) {
+Opal.Asciidoctor.AbstractNode.$$proto.getMediaUri = function (target, assetDirKey) {
   return this.$media_uri(target, assetDirKey);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getImageURI = function (targetImage, assetDirKey) {
+Opal.Asciidoctor.AbstractNode.$$proto.getImageUri = function (targetImage, assetDirKey) {
   return this.$image_uri(targetImage, assetDirKey);
 };
 
@@ -201,8 +213,8 @@ Opal.Asciidoctor.AbstractNode.$$proto.readAsset = function (path, options) {
   return this.$read_asset(path, toHash(options));
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.normalizeWebPath = function (target, start, preserveTargetURI) {
-  return this.$normalize_web_path(target, start, preserveTargetURI);
+Opal.Asciidoctor.AbstractNode.$$proto.normalizeWebPath = function (target, start, preserveTargetUri) {
+  return this.$normalize_web_path(target, start, preserveTargetUri);
 };
 
 Opal.Asciidoctor.AbstractNode.$$proto.normalizeSystemPath = function (target, start, jail, options) {
@@ -292,11 +304,11 @@ Opal.Asciidoctor.Document.$$proto.setTitle = function (title) {
   return this['$title='](title);
 };
 
-Opal.Asciidoctor.Document.$$proto.getDoctitle = function (options) {
+Opal.Asciidoctor.Document.$$proto.getDoctitle = Opal.Asciidoctor.Document.$$proto.getDocumentTitle = function (options) {
   return this.$doctitle(toHash(options));
 };
 
-Opal.Asciidoctor.Document.$$proto.getRevdate = function () {
+Opal.Asciidoctor.Document.$$proto.getRevdate = Opal.Asciidoctor.Document.$$proto.getRevisionDate = function () {
   return this.$revdate();
 };
 

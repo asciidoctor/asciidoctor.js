@@ -9,6 +9,7 @@ module.exports = {
             "error",
             "always"
         ],
+        "no-cond-assign": "off",
         "no-undef": "off",
         "indent": [
             "error",
