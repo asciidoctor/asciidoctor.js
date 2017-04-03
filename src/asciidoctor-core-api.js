@@ -47,7 +47,7 @@ Opal.Asciidoctor['$$class'].$$proto.loadFile = function (filename, options) {
 // AbstractBlock API
 
 Opal.Asciidoctor.AbstractBlock.$$proto.getTitle = function () {
-  var result = this.title;
+  var result = this.$title();
   if (result === Opal.nil) {
     return '';
   }

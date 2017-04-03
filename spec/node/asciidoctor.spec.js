@@ -72,7 +72,7 @@ describe('Node.js', function () {
       expect(header.getAttribute('email')).toBe('doc.writer@asciidoc.org');
 
       var blocks = doc.getBlocks();
-      expect(blocks.length).toBe(3);
+      expect(blocks.length).toBe(4);
       expect(blocks[0].getContext()).toBe('section');
       expect(blocks[0].getTitle()).toBe('Abstract');
       expect(blocks[0].getBlocks().length).toBe(1);
@@ -96,6 +96,8 @@ describe('Node.js', function () {
       expect(blocks[2].getBlocks()[0].getContext()).toBe('image');
       expect(blocks[2].getBlocks()[0].getTitle()).toBe('');
       expect(blocks[2].getBlocks()[1].getContext()).toBe('image');
+
+      expect(blocks[3].getTitle()).toBe('Got <span class="icon">[file pdf o]</span>?');
     });
 
     it('should be able to find blocks', function () {
@@ -104,7 +106,7 @@ describe('Node.js', function () {
       expect(quoteBlocks.length).toBe(1);
 
       var sectionBlocks = doc.findBy({'context': 'section'});
-      expect(sectionBlocks.length).toBe(4);
+      expect(sectionBlocks.length).toBe(5);
 
       var abstractSectionBlocks = doc.findBy({'context': 'section'}, function (b) { return b.getTitle() === 'Second Section'; });
       expect(abstractSectionBlocks.length).toBe(1);
