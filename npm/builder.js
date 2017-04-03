@@ -105,7 +105,7 @@ Builder.prototype.downloadDependencies = function (callback) {
 
 var templateFile = function (templateFile, context, outputFile) {
   var template = fs.readFileSync(templateFile, 'utf8');
-  var lines = template.split('\n');
+  var lines = template.replace(/\r\n/g, '\n').split('\n');
   lines.forEach(function (line, index, result) {
     if (line in context) {
       result[index] = context[line];
