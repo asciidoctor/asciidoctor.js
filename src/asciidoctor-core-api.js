@@ -50,9 +50,9 @@ var Asciidoctor = Opal.Asciidoctor['$$class'];
  *
  * Accepts input as a Buffer or String.
  *
- * @param {String|Buffer} input - AsciiDoc input as String or Buffer
+ * @param {string|Buffer} input - AsciiDoc input as String or Buffer
  * @param {Object} options - a JSON of options to control processing (default: {})
- * @returns {String|Document} - returns the {@link Document} object if the converted String is written to a file,
+ * @returns {string|Document} - returns the {@link Document} object if the converted String is written to a file,
  * otherwise the converted String
  * @memberof Asciidoctor
  * @example
@@ -79,9 +79,9 @@ Asciidoctor.$$proto.convert = function (input, options) {
 /**
  * Parse the AsciiDoc source input into an {@link Document} and convert it to the specified backend format.
  *
- * @param {String} filename - source filename
+ * @param {string} filename - source filename
  * @param {Object} options - a JSON of options to control processing (default: {})
- * @returns {String|Document} - returns the {@link Document} object if the converted String is written to a file,
+ * @returns {string|Document} - returns the {@link Document} object if the converted String is written to a file,
  * otherwise the converted String
  * @memberof Asciidoctor
  * @example
@@ -96,7 +96,7 @@ Asciidoctor.$$proto.convertFile = function (filename, options) {
  *
  * Accepts input as a Buffer or String.
  *
- * @param {String|Buffer} input - AsciiDoc input as String or Buffer
+ * @param {string|Buffer} input - AsciiDoc input as String or Buffer
  * @param {Object} options - a JSON of options to control processing (default: {})
  * @returns {Document} - returns the {@link Document} object
  * @memberof Asciidoctor
@@ -111,7 +111,7 @@ Asciidoctor.$$proto.load = function (input, options) {
 /**
  * Parse the contents of the AsciiDoc source file into an {@link Document}
  *
- * @param {String} filename - source filename
+ * @param {string} filename - source filename
  * @param {Object} options - a JSON of options to control processing (default: {})
  * @returns {Document} - returns the {@link Document} object
  * @memberof Asciidoctor
@@ -307,7 +307,7 @@ Opal.Asciidoctor.AbstractNode.$$proto.normalizeAssetPath = function (assetRef, a
 var Document = Opal.Asciidoctor.Document;
 
 /**
- * @returns {String} - returns the level-0 section
+ * @returns {string} - returns the level-0 section
  * @memberof Document
  */
 Document.$$proto.getHeader = function () {
@@ -348,7 +348,7 @@ Document.$$proto.write = function (output, target) {
 };
 
 /**
- * @returns {String} - returns the full name of the author as a String
+ * @returns {string} - returns the full name of the author as a String
  * @memberof Document
  */
 Document.$$proto.getAuthor = function () {
