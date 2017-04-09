@@ -18,7 +18,54 @@ var prepareOptions = function (options) {
 
 // Asciidoctor API
 
-Opal.Asciidoctor['$$class'].$$proto.convert = function (input, options) {
+/**
+ * @namespace
+ * @description
+ * Methods for parsing AsciiDoc input files and converting documents.
+ *
+ * AsciiDoc documents comprise a header followed by zero or more sections.
+ * Sections are composed of blocks of content. For example:
+ * <pre>
+ *   = Doc Title
+ *
+ *   == Section 1
+ *
+ *   This is a paragraph block in the first section.
+ *
+ *   == Section 2
+ *
+ *   This section has a paragraph block and an olist block.
+ *
+ *   . Item 1
+ *   . Item 2
+ * </pre>
+ *
+ * @example
+ * asciidoctor.convertFile('sample.adoc');
+ */
+var Asciidoctor = Opal.Asciidoctor['$$class'];
+
+/**
+ * Parse the AsciiDoc source input into an {@link Document} and convert it to the specified backend format.
+ *
+ * Accepts input as a Buffer or String.
+ *
+ * @param {string|Buffer} input - AsciiDoc input as String or Buffer
+ * @param {Object} options - a JSON of options to control processing (default: {})
+ * @returns {string|Document} - returns the {@link Document} object if the converted String is written to a file,
+ * otherwise the converted String
+ * @memberof Asciidoctor
+ * @example
+ * var input = '= Hello, AsciiDoc!\n' +
+ *   'Guillaume Grossetie <ggrossetie@example.com>\n\n' +
+ *   'An introduction to http://asciidoc.org[AsciiDoc].\n\n' +
+ *   '== First Section\n\n' +
+ *   '* item 1\n' +
+ *   '* item 2\n';
+ *
+ * var html = asciidoctor.convert(input);
+ */
+Asciidoctor.$$proto.convert = function (input, options) {
   if (typeof input === 'object' && input.constructor.name === 'Buffer') {
     input = input.toString('utf8');
   }
@@ -29,18 +76,47 @@ Opal.Asciidoctor['$$class'].$$proto.convert = function (input, options) {
   return result;
 };
 
-Opal.Asciidoctor['$$class'].$$proto.convertFile = function (filename, options) {
+/**
+ * Parse the AsciiDoc source input into an {@link Document} and convert it to the specified backend format.
+ *
+ * @param {string} filename - source filename
+ * @param {Object} options - a JSON of options to control processing (default: {})
+ * @returns {string|Document} - returns the {@link Document} object if the converted String is written to a file,
+ * otherwise the converted String
+ * @memberof Asciidoctor
+ * @example
+ * var html = asciidoctor.convertFile('./document.adoc');
+ */
+Asciidoctor.$$proto.convertFile = function (filename, options) {
   return this.$convert_file(filename, prepareOptions(options));
 };
 
-Opal.Asciidoctor['$$class'].$$proto.load = function (input, options) {
+/**
+ * Parse the AsciiDoc source input into an {@link Document}
+ *
+ * Accepts input as a Buffer or String.
+ *
+ * @param {string|Buffer} input - AsciiDoc input as String or Buffer
+ * @param {Object} options - a JSON of options to control processing (default: {})
+ * @returns {Document} - returns the {@link Document} object
+ * @memberof Asciidoctor
+ */
+Asciidoctor.$$proto.load = function (input, options) {
   if (typeof input === 'object' && input.constructor.name === 'Buffer') {
     input = input.toString('utf8');
   }
   return this.$load(input, prepareOptions(options));
 };
 
-Opal.Asciidoctor['$$class'].$$proto.loadFile = function (filename, options) {
+/**
+ * Parse the contents of the AsciiDoc source file into an {@link Document}
+ *
+ * @param {string} filename - source filename
+ * @param {Object} options - a JSON of options to control processing (default: {})
+ * @returns {Document} - returns the {@link Document} object
+ * @memberof Asciidoctor
+ */
+Asciidoctor.$$proto.loadFile = function (filename, options) {
   return this.$load_file(filename, prepareOptions(options));
 };
 
@@ -227,20 +303,36 @@ Opal.Asciidoctor.AbstractNode.$$proto.normalizeAssetPath = function (assetRef, a
 
 // Document API
 
-Opal.Asciidoctor.Document.$$proto.getHeader = function () {
+/** @namespace */
+var Document = Opal.Asciidoctor.Document;
+
+/**
+ * @returns {string} - returns the level-0 section
+ * @memberof Document
+ */
+Document.$$proto.getHeader = function () {
   return this.header;
 };
 
-Opal.Asciidoctor.Document.$$proto.setAttribute = function (name, value) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.setAttribute = function (name, value) {
   return this.$set_attribute(name, value);
 };
 
-Opal.Asciidoctor.Document.$$proto.removeAttribute = function (name) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.removeAttribute = function (name) {
   this.attributes.$delete(name);
   this.attribute_overrides.$delete(name);
 };
 
-Opal.Asciidoctor.Document.$$proto.convert = function (options) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.convert = function (options) {
   var result = this.$convert(toHash(options));
   if (result === Opal.nil) {
     return '';
@@ -248,163 +340,284 @@ Opal.Asciidoctor.Document.$$proto.convert = function (options) {
   return result;
 };
 
-Opal.Asciidoctor.Document.$$proto.write = function (output, target) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.write = function (output, target) {
   return this.$write(output, target);
 };
 
-Opal.Asciidoctor.Document.$$proto.getAuthor = function () {
+/**
+ * @returns {string} - returns the full name of the author as a String
+ * @memberof Document
+ */
+Document.$$proto.getAuthor = function () {
   return this.$author();
 };
 
-Opal.Asciidoctor.Document.$$proto.getSource = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getSource = function () {
   return this.$source();
 };
 
-Opal.Asciidoctor.Document.$$proto.getSourceLines = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getSourceLines = function () {
   return this.$source_lines();
 };
 
-Opal.Asciidoctor.Document.$$proto.isNested = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.isNested = function () {
   return this['$nested?']();
 };
 
-Opal.Asciidoctor.Document.$$proto.hasFootnotes = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.hasFootnotes = function () {
   return this['$footnotes?']();
 };
 
-Opal.Asciidoctor.Document.$$proto.getFootnotes = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getFootnotes = function () {
   return this.$footnotes();
 };
 
-Opal.Asciidoctor.Document.$$proto.isEmbedded = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.isEmbedded = function () {
   return this['$embedded?']();
 };
 
-Opal.Asciidoctor.Document.$$proto.hasExtensions = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.hasExtensions = function () {
   return this['$extensions?']();
 };
 
-Opal.Asciidoctor.Document.$$proto.getDoctype = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getDoctype = function () {
   return this.$doctype();
 };
 
-Opal.Asciidoctor.Document.$$proto.getBackend = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getBackend = function () {
   return this.$backend();
 };
 
-Opal.Asciidoctor.Document.$$proto.isBasebackend = function (base) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.isBasebackend = function (base) {
   return this['$basebackend?'](base);
 };
 
-Opal.Asciidoctor.Document.$$proto.getTitle = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getTitle = function () {
   return this.$title();
 };
 
-Opal.Asciidoctor.Document.$$proto.setTitle = function (title) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.setTitle = function (title) {
   return this['$title='](title);
 };
 
-Opal.Asciidoctor.Document.$$proto.getDoctitle = Opal.Asciidoctor.Document.$$proto.getDocumentTitle = function (options) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getDoctitle = Document.$$proto.getDocumentTitle = function (options) {
   return this.$doctitle(toHash(options));
 };
 
-Opal.Asciidoctor.Document.$$proto.getRevdate = Opal.Asciidoctor.Document.$$proto.getRevisionDate = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getRevdate = Document.$$proto.getRevisionDate = function () {
   return this.$revdate();
 };
 
-Opal.Asciidoctor.Document.$$proto.getNotitle = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getNotitle = function () {
   return this.$notitle();
 };
 
-Opal.Asciidoctor.Document.$$proto.getNoheader = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getNoheader = function () {
   return this.$noheader();
 };
 
-Opal.Asciidoctor.Document.$$proto.getNofooter = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getNofooter = function () {
   return this.$nofooter();
 };
 
-Opal.Asciidoctor.Document.$$proto.hasHeader = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.hasHeader = function () {
   return this['$header?']();
 };
 
-Opal.Asciidoctor.Document.$$proto.deleteAttribute = function (name) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.deleteAttribute = function (name) {
   return this.$delete_attribute(name);
 };
 
-Opal.Asciidoctor.Document.$$proto.isAttributeLocked = function (name) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.isAttributeLocked = function (name) {
   return this['$attribute_locked?'](name);
 };
 
-Opal.Asciidoctor.Document.$$proto.parse = function (data) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.parse = function (data) {
   return this.$parse(data);
 };
 
-Opal.Asciidoctor.Document.$$proto.getDocinfo = function (docinfoLocation, suffix) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getDocinfo = function (docinfoLocation, suffix) {
   return this.$docinfo(docinfoLocation, suffix);
 };
 
-Opal.Asciidoctor.Document.$$proto.hasDocinfoProcessors = function (docinfoLocation) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.hasDocinfoProcessors = function (docinfoLocation) {
   return this['$docinfo_processors?'](docinfoLocation);
 };
 
-Opal.Asciidoctor.Document.$$proto.counterIncrement = function (counterName, block) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.counterIncrement = function (counterName, block) {
   return this.$counter_increment(counterName, block);
 };
 
-Opal.Asciidoctor.Document.$$proto.counter = function (name, seed) {
+/**
+ * @memberof Document
+ */
+Document.$$proto.counter = function (name, seed) {
   return this.$counter(name, seed);
 };
 
-Opal.Asciidoctor.Document.$$proto.getSafe = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getSafe = function () {
   return this.$safe;
 };
 
-Opal.Asciidoctor.Document.$$proto.getCompatMode = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getCompatMode = function () {
   return this.$compat_mode;
 };
 
-Opal.Asciidoctor.Document.$$proto.getSourcemap = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getSourcemap = function () {
   return this.$sourcemap;
 };
 
-Opal.Asciidoctor.Document.$$proto.getReferences = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getReferences = function () {
   return this.$references;
 };
 
-Opal.Asciidoctor.Document.$$proto.getCounters = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getCounters = function () {
   return this.$counters;
 };
 
-Opal.Asciidoctor.Document.$$proto.getCallouts = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getCallouts = function () {
   return this.$callouts;
 };
 
-Opal.Asciidoctor.Document.$$proto.getBaseDir = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getBaseDir = function () {
   return this.$base_dir;
 };
 
-Opal.Asciidoctor.Document.$$proto.getOptions = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getOptions = function () {
   return this.$options;
 };
 
-Opal.Asciidoctor.Document.$$proto.getOutfilesuffix = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getOutfilesuffix = function () {
   return this.$outfilesuffix;
 };
 
-Opal.Asciidoctor.Document.$$proto.getParentDocument = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getParentDocument = function () {
   return this.$parent_document;
 };
 
-Opal.Asciidoctor.Document.$$proto.getReader = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getReader = function () {
   return this.$reader;
 };
 
-Opal.Asciidoctor.Document.$$proto.getConverter = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getConverter = function () {
   return this.$converter;
 };
 
-Opal.Asciidoctor.Document.$$proto.getExtensions = function () {
+/**
+ * @memberof Document
+ */
+Document.$$proto.getExtensions = function () {
   return this.$extensions;
 };
 

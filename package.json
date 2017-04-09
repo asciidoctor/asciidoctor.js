@@ -15,9 +15,9 @@
     "README.adoc"
   ],
   "scripts": {
-    "test_karma_browserify": "karma start karma-browserify.conf.js",
-    "test_karma_requirejs": "karma start karma-requirejs.conf.js",
-    "test": "node npm/test/unsupported-features.js && node npm/test/jasmine-browser.js && node npm/test/jasmine-browser-min.js && node npm/test/jasmine-node.js && node npm/test/jasmine-webpack.js && npm run test_karma_browserify && npm run test_karma_requirejs",
+    "test:karmaBrowserify": "karma start karma-browserify.conf.js",
+    "test:karmaRequirejs": "karma start karma-requirejs.conf.js",
+    "test": "node npm/test/unsupported-features.js && node npm/test/jasmine-browser.js && node npm/test/jasmine-browser-min.js && node npm/test/jasmine-node.js && node npm/test/jasmine-webpack.js && npm run test:karmaBrowserify && npm run test:karmaRequirejs",
     "build": "node npm/build.js && npm run test",
     "dist": "cross-env MINIFY=1 node npm/dist.js",
     "lint": "eslint src spec npm",
@@ -25,7 +25,11 @@
     "examples": "node npm/examples.js",
     "server": "node npm/server.js",
     "benchmark": "node npm/benchmark.js",
-    "release": "cross-env MINIFY=1 node npm/release.js"
+    "release": "cross-env MINIFY=1 node npm/release.js",
+    "docs:lint": "documentation lint src/**",
+    "docs:build": "documentation build src/** -f html -o docs -g",
+    "docs:serve": "documentation serve src/** -g -w",
+    "docs": "npm run docs:lint && npm run docs:build"
   },
   "repository": {
     "type": "git",
@@ -66,6 +70,7 @@
     "bower": "^1.5.3",
     "browserify": "^13.0.0",
     "cross-env": "^1.0.8",
+    "documentation": "^4.0.0-beta.18",
     "eslint": "^2.11.0",
     "http-server": "^0.9.0",
     "jasmine": "^2.4.1",
