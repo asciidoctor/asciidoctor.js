@@ -6,7 +6,43 @@ var toBlock = function (block) {
   return block;
 };
 
-/** @namespace */
+/**
+ * @namespace
+ * @description
+ * Extensions provide a way to participate in the parsing and converting
+ * phases of the AsciiDoc processor or extend the AsciiDoc syntax.
+ *
+ * The various extensions participate in AsciiDoc processing as follows:
+ *
+ * 1. After the source lines are normalized, {Preprocessor}s modify or replace
+ *    the source lines before parsing begins. {IncludeProcessor}s are used to
+ *    process include directives for targets which they claim to handle.
+ * 2. The Parser parses the block-level content into an abstract syntax tree.
+ *    Custom blocks and block macros are processed by associated {{@link Extensions/Processor/BlockProcessor}}s
+ *    and {BlockMacroProcessor}s, respectively.
+ * 3. {Treeprocessor}s are run on the abstract syntax tree.
+ * 4. Conversion of the document begins, at which point inline markup is processed
+ *    and converted. Custom inline macros are processed by associated {InlineMacroProcessor}s.
+ * 5. {Postprocessor}s modify or replace the converted document.
+ * 6. The output is written to the output stream.
+ *
+ * Extensions may be registered globally using the {Extensions.register} method
+ * or added to a custom {Registry} instance and passed as an option to a single
+ * Asciidoctor processor.
+ *
+ * @example
+ * Opal.Asciidoctor.$$scope.Extensions.register(function () {
+ *   this.block(function () {
+ *     var self = this;
+ *     self.named('shout');
+ *     self.onContext('paragraph');
+ *     self.process(function (parent, reader) {
+ *       var lines = reader.$lines().map(function (l) { return l.toUpperCase(); });
+ *       return self.createBlock(parent, 'paragraph', lines);
+ *     });
+ *   });
+ * });
+ */
 var Extensions = Opal.Asciidoctor.$$scope.Extensions;
 
 /**

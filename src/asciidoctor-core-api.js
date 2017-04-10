@@ -129,7 +129,17 @@ Asciidoctor.$$proto.loadFile = function (filename, options) {
 var AbstractBlock = Opal.Asciidoctor.AbstractBlock;
 
 /**
+ * Get the String title of this Block with title substitions applied
+ *
+ * The following substitutions are applied to block and section titles:
+ *
+ * <code>specialcharacters</code>, <code>quotes</code>, <code>replacements</code>, <code>macros</code>, <code>attributes</code> and <code>post_replacements</code>
+ *
  * @memberof AbstractBlock
+ * @returns {string} - returns the converted String title for this Block, or an empty string if the assigned title is falsy
+ * @example
+ * block.title // "Foo 3^ # {two-colons} Bar(1)"
+ * block.getTitle(); // "Foo 3^ # :: Bar(1)"
  */
 AbstractBlock.$$proto.getTitle = function () {
   var result = this.$title();
@@ -548,6 +558,9 @@ Document.$$proto.isBasebackend = function (base) {
 };
 
 /**
+ * Get the title explicitly defined in the document attributes.
+ * @returns {string}
+ * @see {@link AbstractNode#getAttributes}
  * @memberof Document
  */
 Document.$$proto.getTitle = function () {
@@ -563,6 +576,7 @@ Document.$$proto.setTitle = function (title) {
 
 /**
  * @memberof Document
+ * @returns {Document/Title} - returns a {@link Document/Title}
  */
 Document.$$proto.getDocumentTitle = function (options) {
   return this.$doctitle(toHash(options));
@@ -570,7 +584,7 @@ Document.$$proto.getDocumentTitle = function (options) {
 
 /**
  * @memberof Document
- * @see Document#getDocumentTitle
+ * @see {@link Document#getDocumentTitle}
  */
 Document.$$proto.getDoctitle = function (options) {
   return this.getDocumentTitle(options);

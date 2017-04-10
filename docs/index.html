@@ -859,7 +859,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L46-L46'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L46-L46'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -929,7 +929,7 @@ Sections are composed of blocks of content. For example:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L68-L77'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L68-L77'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1031,7 +1031,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L90-L92'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L90-L92'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1125,7 +1125,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L104-L109'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L104-L109'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1213,7 +1213,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L119-L121'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L119-L121'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1308,7 +1308,7 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L129-L129'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L129-L129'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1362,33 +1362,51 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L134-L140'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L144-L150'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
   </div>
   
 
-  
+  <p>Get the String title of this Block with title substitions applied</p>
+<p>The following substitutions are applied to block and section titles:</p>
+<p><code>specialcharacters</code>, <code>quotes</code>, <code>replacements</code>, <code>macros</code>, <code>attributes</code> and <code>post_replacements</code></p>
 
-  <div class='pre p1 fill-light mt0'>getTitle()</div>
-  
-  
 
-  
-  
-  
+  <div class='pre p1 fill-light mt0'>getTitle(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
   
-
+  
+  
+  
   
 
   
 
   
 
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+        returns the converted String title for this Block, or an empty string if the assigned title is falsy
+
+      
+    
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Example</div>
+    
+      
+      <pre class='p1 overflow-auto round fill-light'>block.title <span class="hljs-comment">// "Foo 3^ # {two-colons} Bar(1)"</span>
+block.getTitle(); <span class="hljs-comment">// "Foo 3^ # :: Bar(1)"</span></pre>
+    
   
 
   
@@ -1415,7 +1433,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L145-L147'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L155-L157'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1468,7 +1486,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L152-L154'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L162-L164'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1521,7 +1539,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L159-L161'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L169-L171'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1574,7 +1592,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L166-L168'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L176-L178'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1627,7 +1645,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L173-L175'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L183-L185'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1680,7 +1698,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L180-L182'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L190-L192'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1733,7 +1751,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L202-L204'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L212-L214'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1786,7 +1804,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L187-L197'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L197-L207'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1868,7 +1886,7 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L211-L211'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L221-L221'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1915,7 +1933,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L216-L223'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L226-L233'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1968,7 +1986,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L228-L234'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L238-L244'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2050,7 +2068,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L239-L245'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L249-L255'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2132,7 +2150,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L250-L255'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L260-L265'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2214,7 +2232,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L260-L262'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L270-L272'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2267,7 +2285,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L267-L269'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L277-L279'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2320,7 +2338,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L274-L276'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L284-L286'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2386,7 +2404,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L281-L283'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L291-L293'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2439,7 +2457,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L288-L290'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L298-L300'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2505,7 +2523,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L295-L297'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L305-L307'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2558,7 +2576,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L302-L304'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L312-L314'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2624,7 +2642,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L309-L311'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L319-L321'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2690,7 +2708,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L316-L318'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L326-L328'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2743,7 +2761,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L323-L325'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L333-L335'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2796,7 +2814,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L330-L337'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L340-L347'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2849,7 +2867,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L342-L344'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L352-L354'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2902,7 +2920,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L349-L351'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L359-L361'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2968,7 +2986,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L356-L358'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L366-L368'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3034,7 +3052,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L363-L365'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L373-L375'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3100,7 +3118,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L370-L372'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L380-L382'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3174,7 +3192,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L377-L379'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L387-L389'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3248,7 +3266,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L384-L386'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L394-L396'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3301,7 +3319,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L391-L393'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L401-L403'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3375,7 +3393,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L398-L400'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L408-L410'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3449,7 +3467,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L405-L407'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L415-L417'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3531,7 +3549,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L412-L414'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L422-L424'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3621,7 +3639,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L419-L421'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L429-L431'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3711,7 +3729,7 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L429-L429'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L439-L439'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3765,7 +3783,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L435-L437'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L445-L447'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3826,7 +3844,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L442-L444'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L452-L454'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3900,7 +3918,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L449-L452'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L459-L462'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3966,7 +3984,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L457-L463'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L467-L473'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4032,7 +4050,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L468-L470'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L478-L480'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4106,7 +4124,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L476-L478'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L486-L488'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4167,7 +4185,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L483-L485'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L493-L495'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4220,7 +4238,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L490-L492'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L500-L502'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4273,7 +4291,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L497-L499'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L507-L509'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4326,7 +4344,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L504-L506'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L514-L516'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4379,7 +4397,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L511-L513'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L521-L523'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4432,7 +4450,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L518-L520'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L528-L530'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4485,7 +4503,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L525-L527'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L535-L537'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4538,7 +4556,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L532-L534'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L542-L544'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4591,7 +4609,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L539-L541'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L549-L551'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4644,7 +4662,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L546-L548'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L556-L558'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4710,29 +4728,38 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L553-L555'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L566-L568'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
   </div>
   
 
-  
+  <p>Get the title explicitly defined in the document attributes.</p>
 
-  <div class='pre p1 fill-light mt0'>getTitle()</div>
-  
-  
 
-  
-  
-  
+  <div class='pre p1 fill-light mt0'>getTitle(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
   
+  
+  
+  
+  
 
   
 
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+        
+
+      
+    
   
 
   
@@ -4763,7 +4790,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L560-L562'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L573-L575'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4829,7 +4856,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L567-L569'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L581-L583'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4838,7 +4865,7 @@ otherwise the converted String
 
   
 
-  <div class='pre p1 fill-light mt0'>getDocumentTitle(options: any)</div>
+  <div class='pre p1 fill-light mt0'>getDocumentTitle(options: any): <a href="#documenttitle">Document/Title</a></div>
   
   
 
@@ -4865,6 +4892,15 @@ otherwise the converted String
 
   
 
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#documenttitle">Document/Title</a></code>:
+        returns a 
+<a href="#documenttitle">Document/Title</a>
+
+      
+    
   
 
   
@@ -4895,7 +4931,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L575-L577'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L589-L591'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4961,7 +4997,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L582-L584'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L596-L598'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5014,7 +5050,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L590-L592'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L604-L606'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5067,7 +5103,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L597-L599'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L611-L613'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5120,7 +5156,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L604-L606'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L618-L620'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5173,7 +5209,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L611-L613'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L625-L627'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5226,7 +5262,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L618-L620'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L632-L634'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5279,7 +5315,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L625-L627'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L639-L641'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5345,7 +5381,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L632-L634'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L646-L648'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5411,7 +5447,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L639-L641'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L653-L655'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5477,7 +5513,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L646-L648'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L660-L662'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5551,7 +5587,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L653-L655'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L667-L669'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5617,7 +5653,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L660-L662'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L674-L676'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5691,7 +5727,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L667-L669'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L681-L683'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5765,7 +5801,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L674-L676'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L688-L690'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5818,7 +5854,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L681-L683'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L695-L697'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5871,7 +5907,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L688-L690'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L702-L704'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5924,7 +5960,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L695-L697'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L709-L711'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5977,7 +6013,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L702-L704'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L716-L718'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6030,7 +6066,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L709-L711'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L723-L725'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6083,7 +6119,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L716-L718'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L730-L732'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6136,7 +6172,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L723-L725'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L737-L739'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6189,7 +6225,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L730-L732'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L744-L746'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6242,7 +6278,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L737-L739'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L751-L753'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6295,7 +6331,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L744-L746'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L758-L760'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6348,7 +6384,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L751-L753'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L765-L767'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6401,7 +6437,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L758-L760'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L772-L774'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6462,7 +6498,7 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L768-L768'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L782-L782'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6509,7 +6545,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L773-L775'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L787-L789'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6562,7 +6598,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L780-L782'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L794-L796'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6615,7 +6651,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L787-L789'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L801-L803'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6668,7 +6704,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L794-L800'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L808-L814'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6721,7 +6757,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L805-L807'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L819-L821'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6782,7 +6818,7 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L812-L812'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L826-L826'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6829,7 +6865,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-core-api.js#L818-L820'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-core-api.js#L832-L834'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6897,14 +6933,33 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L10-L10'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L46-L46'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
   </div>
   
 
-  
+  <p>Extensions provide a way to participate in the parsing and converting
+phases of the AsciiDoc processor or extend the AsciiDoc syntax.</p>
+<p>The various extensions participate in AsciiDoc processing as follows:</p>
+<ol>
+<li>After the source lines are normalized, {Preprocessor}s modify or replace
+the source lines before parsing begins. {IncludeProcessor}s are used to
+process include directives for targets which they claim to handle.</li>
+<li>The Parser parses the block-level content into an abstract syntax tree.
+Custom blocks and block macros are processed by associated {<a href="#extensionsprocessorblockprocessor">Extensions/Processor/BlockProcessor</a>}s
+and {BlockMacroProcessor}s, respectively.</li>
+<li>{Treeprocessor}s are run on the abstract syntax tree.</li>
+<li>Conversion of the document begins, at which point inline markup is processed
+and converted. Custom inline macros are processed by associated {InlineMacroProcessor}s.</li>
+<li>{Postprocessor}s modify or replace the converted document.</li>
+<li>The output is written to the output stream.</li>
+</ol>
+<p>Extensions may be registered globally using the {Extensions.register} method
+or added to a custom {Registry} instance and passed as an option to a single
+Asciidoctor processor.</p>
+
 
   <div class='pre p1 fill-light mt0'>Extensions</div>
   
@@ -6925,6 +6980,22 @@ otherwise the converted String
   
 
   
+    <div class='py1 quiet mt1 prose-big'>Example</div>
+    
+      
+      <pre class='p1 overflow-auto round fill-light'>Opal.Asciidoctor.$$scope.Extensions.register(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">this</span>.block(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> self = <span class="hljs-keyword">this</span>;
+    self.named(<span class="hljs-string">'shout'</span>);
+    self.onContext(<span class="hljs-string">'paragraph'</span>);
+    self.process(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">parent, reader</span>) </span>{
+      <span class="hljs-keyword">var</span> lines = reader.$lines().map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">l</span>) </span>{ <span class="hljs-keyword">return</span> l.toUpperCase(); });
+      <span class="hljs-keyword">return</span> self.createBlock(parent, <span class="hljs-string">'paragraph'</span>, lines);
+    });
+  });
+});</pre>
+    
+  
 
   
     <div class='py1 quiet mt1 prose-big'>Static Members</div>
@@ -6944,7 +7015,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L15-L21'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L51-L57'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7026,7 +7097,7 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L27-L27'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L63-L63'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7073,7 +7144,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L32-L38'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L68-L74'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7147,7 +7218,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L43-L49'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L79-L85'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7229,7 +7300,7 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L55-L55'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L91-L91'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7276,7 +7347,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L60-L62'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L96-L98'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7342,7 +7413,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L67-L69'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L103-L105'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7440,7 +7511,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L74-L76'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L110-L112'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7530,7 +7601,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L81-L83'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L117-L119'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7620,7 +7691,7 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L89-L89'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L125-L125'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7667,7 +7738,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L94-L96'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L130-L132'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -7733,7 +7804,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/84817c03d4b857e323a47029ffdbf17fc1d8007d/src/asciidoctor-extensions-api.js#L101-L103'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/3e92a62fa8414511130b04aee8fd42108f833d81/src/asciidoctor-extensions-api.js#L137-L139'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
