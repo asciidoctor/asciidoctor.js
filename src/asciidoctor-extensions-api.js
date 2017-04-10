@@ -18,7 +18,7 @@ var toBlock = function (block) {
  *    the source lines before parsing begins. {IncludeProcessor}s are used to
  *    process include directives for targets which they claim to handle.
  * 2. The Parser parses the block-level content into an abstract syntax tree.
- *    Custom blocks and block macros are processed by associated {{@link Extensions/Processor/BlockProcessor}}s
+ *    Custom blocks and block macros are processed by associated {{@link Extensions/BlockProcessor}}s
  *    and {BlockMacroProcessor}s, respectively.
  * 3. {Treeprocessor}s are run on the abstract syntax tree.
  * 4. Conversion of the document begins, at which point inline markup is processed
