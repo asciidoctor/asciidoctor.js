@@ -97,7 +97,7 @@ You should see the following output in your terminal:
 
 ## JavaScript API
 
-You can find the documentation of the public API at http://asciidoctor.github.io/asciidoctor.js/index.html
+You can find the documentation of the public API at http://asciidoctor.github.io/asciidoctor.js
 
 ## Advanced topics
 
