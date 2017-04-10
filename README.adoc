@@ -17,6 +17,7 @@ ifdef::env-github[]
 image:https://img.shields.io/travis/asciidoctor/asciidoctor.js/master.svg[Travis build status, link=https://travis-ci.org/asciidoctor/asciidoctor.js]
 image:https://ci.appveyor.com/api/projects/status/i69sqvvyr95sf6i7/branch/master?svg=true[Appveyor build status, link=https://ci.appveyor.com/project/asciidoctor/asciidoctor-js]
 image:http://img.shields.io/npm/v/asciidoctor.js.svg[npm version, link=https://www.npmjs.org/package/asciidoctor.js]
+image:https://img.shields.io/badge/jsdoc-master-blue.svg[JSDoc, link=http://asciidoctor.github.io/asciidoctor.js]
 endif::[]
 
 Asciidoctor.js brings AsciiDoc to the JavaScript world!
@@ -94,10 +95,6 @@ You should see the following output in your terminal:
 <p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.org"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
 </div>
 ....
-
-## JavaScript API
-
-You can find the documentation of the public API at http://asciidoctor.github.io/asciidoctor.js
 
 ## Advanced topics
 
