@@ -14,5 +14,5 @@ build_script:
 - node npm/test/jasmine-browser.js
 - node npm/test/jasmine-node.js
 - node npm/test/jasmine-webpack.js
-- npm run test_karma_browserify
-- npm run test_karma_requirejs
+- npm run test:karmaBrowserify
+- npm run test:karmaRequirejs
