@@ -120,19 +120,19 @@ Processor.$$proto.parseContent = function (parent, content, attrs) {
 
 /**
  * @namespace
- * @module Extensions/Processor/BlockProcessor
+ * @module Extensions/BlockProcessor
  */
-var BlockProcessor = Processor.BlockProcessor;
+var BlockProcessor = Extensions.BlockProcessor;
 
 /**
- * @memberof Extensions/Processor/BlockProcessor
+ * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.$$proto.named = function (name) {
   return this.$named(name);
 };
 
 /**
- * @memberof Extensions/Processor/BlockProcessor
+ * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.$$proto.onContext = function (context) {
   return this.$on_context(context);
