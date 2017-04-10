@@ -5,9 +5,13 @@ var toBlock = function (block) {
   block.$$arity = block.length;
   return block;
 };
- 
+
+/** @namespace */
 var Extensions = Opal.Asciidoctor.$$scope.Extensions;
 
+/**
+ * @memberof Extensions
+ */
 Extensions.register = function (name, block) {
   if (typeof name === 'function' && typeof block === 'undefined') {
     return Opal.send(this, 'register', null, toBlock(name));
@@ -16,7 +20,16 @@ Extensions.register = function (name, block) {
   }
 };
 
-Extensions.Registry.$$proto.block = function (name, block) {
+/**
+ * @namespace
+ * @module Extensions/Registry
+ */
+var Registry = Extensions.Registry;
+
+/**
+ * @memberof Extensions/Registry
+ */
+Registry.$$proto.block = function (name, block) {
   if (typeof name === 'function' && typeof block === 'undefined') {
     return Opal.send(this, 'block', null, toBlock(name));
   } else {
@@ -24,7 +37,10 @@ Extensions.Registry.$$proto.block = function (name, block) {
   }
 };
 
-Extensions.Registry.$$proto.inlineMacro = function (name, block) {
+/**
+ * @memberof Extensions/Registry
+ */
+Registry.$$proto.inlineMacro = function (name, block) {
   if (typeof name === 'function' && typeof block === 'undefined') {
     return Opal.send(this, 'inline_macro', null, toBlock(name));
   } else {
@@ -32,26 +48,56 @@ Extensions.Registry.$$proto.inlineMacro = function (name, block) {
   }
 };
 
-Extensions.Processor.$$proto.process = function (block) {
+/**
+ * @namespace
+ * @module Extensions/Processor
+ */
+var Processor = Extensions.Processor;
+
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.$$proto.process = function (block) {
   return Opal.send(this, 'process', null, toBlock(block));
 };
 
-Extensions.Processor.$$proto.createBlock = function (parent, context, source, attrs, opts) {
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.$$proto.createBlock = function (parent, context, source, attrs, opts) {
   return this.$create_block(parent, context, source, toHash(attrs), toHash(opts));
 };
 
-Extensions.Processor.$$proto.createInline = function (parent, context, text, opts) {
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.$$proto.createInline = function (parent, context, text, opts) {
   return this.$create_inline(parent, context, text, toHash(opts));
 };
 
-Extensions.Processor.$$proto.parseContent = function (parent, content, attrs) {
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.$$proto.parseContent = function (parent, content, attrs) {
   return this.$parse_content(parent, content, attrs);
 };
 
-Extensions.BlockProcessor.$$proto.named = function (name) {
+/**
+ * @namespace
+ * @module Extensions/Processor/BlockProcessor
+ */
+var BlockProcessor = Processor.BlockProcessor;
+
+/**
+ * @memberof Extensions/Processor/BlockProcessor
+ */
+BlockProcessor.$$proto.named = function (name) {
   return this.$named(name);
 };
 
-Extensions.BlockProcessor.$$proto.onContext = function (context) {
+/**
+ * @memberof Extensions/Processor/BlockProcessor
+ */
+BlockProcessor.$$proto.onContext = function (context) {
   return this.$on_context(context);
 };

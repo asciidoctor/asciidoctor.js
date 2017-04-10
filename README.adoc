@@ -95,6 +95,10 @@ You should see the following output in your terminal:
 </div>
 ....
 
+## JavaScript API
+
+You can find the documentation of the public API at http://asciidoctor.github.io/asciidoctor.js/index.html
+
 ## Advanced topics
 
 If you want to know more about _Asciidoctor.js_, please read the {uri-user-manual}[User Manual].

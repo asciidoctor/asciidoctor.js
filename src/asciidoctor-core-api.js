@@ -122,7 +122,16 @@ Asciidoctor.$$proto.loadFile = function (filename, options) {
 
 // AbstractBlock API
 
-Opal.Asciidoctor.AbstractBlock.$$proto.getTitle = function () {
+/**
+ * @namespace
+ * @extends AbstractNode
+ */
+var AbstractBlock = Opal.Asciidoctor.AbstractBlock;
+
+/**
+ * @memberof AbstractBlock
+ */
+AbstractBlock.$$proto.getTitle = function () {
   var result = this.$title();
   if (result === Opal.nil) {
     return '';
@@ -130,31 +139,52 @@ Opal.Asciidoctor.AbstractBlock.$$proto.getTitle = function () {
   return result;
 };
 
-Opal.Asciidoctor.AbstractBlock.$$proto.getStyle = function () {
+/**
+ * @memberof AbstractBlock
+ */
+AbstractBlock.$$proto.getStyle = function () {
   return this.style;
 };
 
-Opal.Asciidoctor.AbstractBlock.$$proto.getCaption = function () {
+/**
+ * @memberof AbstractBlock
+ */
+AbstractBlock.$$proto.getCaption = function () {
   return this.caption;
 };
 
-Opal.Asciidoctor.AbstractBlock.$$proto.getLevel = function () {
+/**
+ * @memberof AbstractBlock
+ */
+AbstractBlock.$$proto.getLevel = function () {
   return this.level;
 };
 
-Opal.Asciidoctor.AbstractBlock.$$proto.getBlocks = function () {
+/**
+ * @memberof AbstractBlock
+ */
+AbstractBlock.$$proto.getBlocks = function () {
   return this.blocks;
 };
 
-Opal.Asciidoctor.AbstractBlock.$$proto.getContent = function () {
+/**
+ * @memberof AbstractBlock
+ */
+AbstractBlock.$$proto.getContent = function () {
   return this.$content();
 };
 
-Opal.Asciidoctor.AbstractBlock.$$proto.convert = function () {
+/**
+ * @memberof AbstractBlock
+ */
+AbstractBlock.$$proto.convert = function () {
   return this.$convert();
 };
 
-Opal.Asciidoctor.AbstractBlock.$$proto.findBy = function (selector, block) {
+/**
+ * @memberof AbstractBlock
+ */
+AbstractBlock.$$proto.findBy = function (selector, block) {
   if (typeof block === 'undefined' && typeof selector === 'function') {
     return Opal.send(this, 'find_by', null, selector);
   }
@@ -166,13 +196,24 @@ Opal.Asciidoctor.AbstractBlock.$$proto.findBy = function (selector, block) {
   }
 };
 
-Opal.Asciidoctor.AbstractBlock.$$proto.convert = function () {
+/**
+ * @memberof AbstractBlock
+ */
+AbstractBlock.$$proto.convert = function () {
   return this.$convert();
 };
 
 // AbstractNode API
 
-Opal.Asciidoctor.AbstractNode.$$proto.getAttributes = function () {
+/**
+ * @namespace
+ */
+var AbstractNode = Opal.Asciidoctor.AbstractNode;
+
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getAttributes = function () {
   var to = {}, from = this.attributes;
   for (var i = 0, key, keys = from.$$keys, data = from.$$smap, len = keys.length; i < len; i++) {
     key = keys[i];
@@ -181,7 +222,10 @@ Opal.Asciidoctor.AbstractNode.$$proto.getAttributes = function () {
   return to;
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getAttribute = function (name, defaultValue, inherit) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getAttribute = function (name, defaultValue, inherit) {
   var value = this.$attr(name, defaultValue, inherit);
   if (value === Opal.nil) {
     return undefined;
@@ -189,7 +233,10 @@ Opal.Asciidoctor.AbstractNode.$$proto.getAttribute = function (name, defaultValu
   return value;
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.isAttribute = function (name, expectedValue, inherit) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.isAttribute = function (name, expectedValue, inherit) {
   var value = this['$attr?'](name, expectedValue, inherit);
   if (value === Opal.nil) {
     return undefined;
@@ -197,54 +244,90 @@ Opal.Asciidoctor.AbstractNode.$$proto.isAttribute = function (name, expectedValu
   return value;
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.setAttribute = function (name, value, overwrite) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.setAttribute = function (name, value, overwrite) {
   if (typeof overwrite === 'undefined') {
     overwrite = true;
   }
   return this.$set_attribute(name, value, overwrite);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.isInline = function () {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.isInline = function () {
   return this['$inline?']();
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.isBlock = function () {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.isBlock = function () {
   return this['$block?']();
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.isRole = function (expected) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.isRole = function (expected) {
   return this['$role?'](expected);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getRole = function () {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getRole = function () {
   return this.$role();
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.hasRole = function (name) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.hasRole = function (name) {
   return this['$has_role?'](name);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getRoles = function () {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getRoles = function () {
   return this.$roles();
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.addRole = function (name) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.addRole = function (name) {
   return this.$add_role(name);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.removeRole = function (name) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.removeRole = function (name) {
   return this.$remove_role(name);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.isReftext = function () {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.isReftext = function () {
   return this['$reftext?']();
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getReftext = function () {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getReftext = function () {
   return this.$reftext();
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getContext = function () {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getContext = function () {
   var context = this.context;
   if (context && typeof context.$to_s === 'function') {
     // Convert Ruby Symbol to String
@@ -253,57 +336,96 @@ Opal.Asciidoctor.AbstractNode.$$proto.getContext = function () {
   return context;
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getId = function () {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getId = function () {
   return this.id;
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.isOption = function (name) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.isOption = function (name) {
   return this['$option?'](name);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.setOption = function (name) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.setOption = function (name) {
   return this.$set_option(name);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getIconUri = function (name) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getIconUri = function (name) {
   return this.$icon_uri(name);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getMediaUri = function (target, assetDirKey) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getMediaUri = function (target, assetDirKey) {
   return this.$media_uri(target, assetDirKey);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getImageUri = function (targetImage, assetDirKey) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getImageUri = function (targetImage, assetDirKey) {
   return this.$image_uri(targetImage, assetDirKey);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.getConverter = function () {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.getConverter = function () {
   return this.$converter();
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.readContents = function (target, options) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.readContents = function (target, options) {
   return this.$read_contents(target, toHash(options));
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.readAsset = function (path, options) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.readAsset = function (path, options) {
   return this.$read_asset(path, toHash(options));
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.normalizeWebPath = function (target, start, preserveTargetUri) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.normalizeWebPath = function (target, start, preserveTargetUri) {
   return this.$normalize_web_path(target, start, preserveTargetUri);
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.normalizeSystemPath = function (target, start, jail, options) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.normalizeSystemPath = function (target, start, jail, options) {
   return this.$normalize_system_path(target, start, jail, toHash(options));
 };
 
-Opal.Asciidoctor.AbstractNode.$$proto.normalizeAssetPath = function (assetRef, assetName, autoCorrect) {
+/**
+ * @memberof AbstractNode
+ */
+AbstractNode.$$proto.normalizeAssetPath = function (assetRef, assetName, autoCorrect) {
   return this.$normalize_asset_path(assetRef, assetName, autoCorrect);
 };
 
 // Document API
 
-/** @namespace */
+/**
+ * @namespace
+ * @extends AbstractBlock
+ */
 var Document = Opal.Asciidoctor.Document;
 
 /**
@@ -442,15 +564,31 @@ Document.$$proto.setTitle = function (title) {
 /**
  * @memberof Document
  */
-Document.$$proto.getDoctitle = Document.$$proto.getDocumentTitle = function (options) {
+Document.$$proto.getDocumentTitle = function (options) {
   return this.$doctitle(toHash(options));
 };
 
 /**
  * @memberof Document
+ * @see Document#getDocumentTitle
  */
-Document.$$proto.getRevdate = Document.$$proto.getRevisionDate = function () {
+Document.$$proto.getDoctitle = function (options) {
+  return this.getDocumentTitle(options);
+};
+
+/**
+ * @memberof Document
+ */
+Document.$$proto.getRevisionDate = function () {
   return this.$revdate();
+};
+
+/**
+ * @memberof Document
+ * @see Document#getRevisionDate
+ */
+Document.$$proto.getRevdate = function () {
+  return this.getRevisionDate();
 };
 
 /**
@@ -623,19 +761,37 @@ Document.$$proto.getExtensions = function () {
 
 // Document.Title API
 
-Opal.Asciidoctor.Document.Title.$$proto.getMain = function () {
+/**
+ * @namespace
+ * @module Document/Title
+ */
+var Title = Document.Title;
+
+/**
+ * @memberof Document/Title
+ */
+Title.$$proto.getMain = function () {
   return this.main;
 };
 
-Opal.Asciidoctor.Document.Title.$$proto.getCombined = function () {
+/**
+ * @memberof Document/Title
+ */
+Title.$$proto.getCombined = function () {
   return this.combined;
 };
 
-Opal.Asciidoctor.Document.Title.$$proto.getSubtitle = function () {
+/**
+ * @memberof Document/Title
+ */
+Title.$$proto.getSubtitle = function () {
   return this.subtitle;
 };
 
-Opal.Asciidoctor.Document.Title.$$proto.isSanitized = function () {
+/**
+ * @memberof Document/Title
+ */
+Title.$$proto.isSanitized = function () {
   var sanitized = this['$sanitized?']();
   if (sanitized === Opal.nil) {
     return false;
@@ -643,10 +799,22 @@ Opal.Asciidoctor.Document.Title.$$proto.isSanitized = function () {
   return sanitized;
 };
 
-Opal.Asciidoctor.Document.Title.$$proto.hasSubtitle = function () {
+/**
+ * @memberof Document/Title
+ */
+Title.$$proto.hasSubtitle = function () {
   return this['$subtitle?']();
 };
 
-Opal.Asciidoctor.Inline.$$proto.convert = function () {
+// Inline API
+
+/** @namespace */
+var Inline = Opal.Asciidoctor.Inline;
+
+/**
+ * @memberof Inline
+ * @extends AbstractNode
+ */
+Inline.$$proto.convert = function () {
   return this.$convert();
 };
