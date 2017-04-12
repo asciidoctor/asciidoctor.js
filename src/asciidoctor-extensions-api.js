@@ -15,7 +15,7 @@ var toBlock = function (block) {
  * The various extensions participate in AsciiDoc processing as follows:
  *
  * 1. After the source lines are normalized, {Preprocessor}s modify or replace
- *    the source lines before parsing begins. {IncludeProcessor}s are used to
+ *    the source lines before parsing begins. {{@link Extensions/IncludeProcessor}}s are used to
  *    process include directives for targets which they claim to handle.
  * 2. The Parser parses the block-level content into an abstract syntax tree.
  *    Custom blocks and block macros are processed by associated {{@link Extensions/BlockProcessor}}s
@@ -85,6 +85,17 @@ Registry.$$proto.inlineMacro = function (name, block) {
 };
 
 /**
+ * @memberof Extensions/Registry
+ */
+Registry.$$proto.includeProcessor = function (name, block) {
+  if (typeof name === 'function' && typeof block === 'undefined') {
+    return Opal.send(this, 'include_processor', null, toBlock(name));
+  } else {
+    return Opal.send(this, 'include_processor', [name], toBlock(block));
+  }
+};
+
+/**
  * @namespace
  * @module Extensions/Processor
  */
@@ -136,4 +147,17 @@ BlockProcessor.$$proto.named = function (name) {
  */
 BlockProcessor.$$proto.onContext = function (context) {
   return this.$on_context(context);
+};
+
+/**
+ * @namespace
+ * @module Extensions/IncludeProcessor
+ */
+var IncludeProcessor = Extensions.IncludeProcessor;
+
+/**
+ * @memberof Extensions/IncludeProcessor
+ */
+IncludeProcessor.$$proto.handles = function (block) {
+  return Opal.send(this, 'handles?', null, toBlock(block));
 };
