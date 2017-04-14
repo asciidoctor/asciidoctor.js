@@ -114,7 +114,7 @@ describe('Node.js', function () {
 
     it('should be able to find blocks with line number', function () {
       var doc = asciidoctor.loadFile(__dirname + '/documentblocks.adoc', {sourcemap: true});
-      var blocks = doc.findBy(function (b) { return true; });
+      var blocks = doc.findBy(function () { return true; });
       expect(blocks.length).toBe(26);
 
       var blocksWithLineNumber = doc.findBy(function (b) { return typeof b.getLineNumber() !== 'undefined'; });
