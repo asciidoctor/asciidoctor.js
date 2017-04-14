@@ -188,8 +188,8 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(blocks.length).toBe(2);
         // preamble
         expect(blocks[0].getLineNumber()).toBeUndefined();
-        expect(blocks[0].getBlocks().length).toBe(1)
-        expect(blocks[0].getBlocks()[0].getLineNumber()).toBe(3)
+        expect(blocks[0].getBlocks().length).toBe(1);
+        expect(blocks[0].getBlocks()[0].getLineNumber()).toBe(3);
         // first section
         expect(blocks[1].getLineNumber()).toBe(5);
       });
@@ -201,7 +201,7 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(blocks.length).toBe(2);
         // preamble
         expect(blocks[0].getLineNumber()).toBeUndefined();
-        expect(blocks[0].getBlocks().length).toBe(1)
+        expect(blocks[0].getBlocks().length).toBe(1);
         expect(blocks[0].getBlocks()[0].getLineNumber()).toBeUndefined();
         // first section
         expect(blocks[1].getLineNumber()).toBeUndefined();
