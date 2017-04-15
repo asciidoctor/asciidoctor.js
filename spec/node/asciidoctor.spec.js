@@ -111,6 +111,15 @@ describe('Node.js', function () {
       var abstractSectionBlocks = doc.findBy({'context': 'section'}, function (b) { return b.getTitle() === 'Second Section'; });
       expect(abstractSectionBlocks.length).toBe(1);
     });
+
+    it('should be able to find blocks with line number', function () {
+      var doc = asciidoctor.loadFile(__dirname + '/documentblocks.adoc', {sourcemap: true});
+      var blocks = doc.findBy(function () { return true; });
+      expect(blocks.length).toBe(26);
+
+      var blocksWithLineNumber = doc.findBy(function (b) { return typeof b.getLineNumber() !== 'undefined'; });
+      expect(blocksWithLineNumber.length).toBe(18);
+    });
   });
 
   describe('Converting file', function () {

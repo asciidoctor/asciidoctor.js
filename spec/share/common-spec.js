@@ -181,6 +181,32 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(doc.getDoctitle()).toBe('The Dangerous &amp; Thrilling Documentation');
       });
 
+      it('should get the line of number of a block when sourcemap is enabled', function () {
+        var options = {sourcemap: true};
+        var doc = asciidoctor.load('= Document Title\n\nPreamble\n\n== First section\n\nTrue story!', options);
+        var blocks = doc.getBlocks();
+        expect(blocks.length).toBe(2);
+        // preamble
+        expect(blocks[0].getLineNumber()).toBeUndefined();
+        expect(blocks[0].getBlocks().length).toBe(1);
+        expect(blocks[0].getBlocks()[0].getLineNumber()).toBe(3);
+        // first section
+        expect(blocks[1].getLineNumber()).toBe(5);
+      });
+
+      it('should return undefined when sourcemap is disabled', function () {
+        var options = {};
+        var doc = asciidoctor.load('= Document Title\n\nPreamble\n\n== First section\n\nTrue story!', options);
+        var blocks = doc.getBlocks();
+        expect(blocks.length).toBe(2);
+        // preamble
+        expect(blocks[0].getLineNumber()).toBeUndefined();
+        expect(blocks[0].getBlocks().length).toBe(1);
+        expect(blocks[0].getBlocks()[0].getLineNumber()).toBeUndefined();
+        // first section
+        expect(blocks[1].getLineNumber()).toBeUndefined();
+      });
+
       it('should get doctitle', function () {
         var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n\n== The Ravages of Writing', null);
         expect(doc.getDoctitle()).toBe('The Dangerous Documentation Chronicles: Based on True Events');

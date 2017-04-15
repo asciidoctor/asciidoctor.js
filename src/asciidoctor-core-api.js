@@ -213,6 +213,14 @@ AbstractBlock.$$proto.convert = function () {
   return this.$convert();
 };
 
+Opal.Asciidoctor.AbstractBlock.$$proto.getLineNumber = function () {
+  var value = this.$lineno();
+  if (value === Opal.nil) {
+    return undefined;
+  }
+  return value;
+};
+
 // AbstractNode API
 
 /**
