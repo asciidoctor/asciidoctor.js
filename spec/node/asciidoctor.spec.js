@@ -9,11 +9,20 @@ var config = {
   }
 };
 var asciidoctor = require('../../build/asciidoctor.js')(config);
+function asciidoctorVersionGreaterThan (version) {
+  var currentVersion = asciidoctor.$$scope.VERSION;
+  var currentVersionNumeric = parseInt(currentVersion.replace('.dev', '').replace(/\./g, ''));
+  var versionNumeric = version.replace(/\./g, '');
+  return currentVersionNumeric > versionNumeric; 
+}
 var Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js');
 require('asciidoctor-template.js');
 require('../share/extensions/smiley-macro.js');
 require('../share/extensions/shout-block.js');
+if (asciidoctorVersionGreaterThan('1.5.5')) {
+  require('../share/extensions/foo-include.js');
+}
 
 var testOptions = {
   platform: 'Node.js',
@@ -50,12 +59,12 @@ describe('Node.js', function () {
 
   describe('Loading file', function () {
     it('should be able to load a file', function () {
-      var doc = asciidoctor.loadFile(__dirname + '/test.adoc', null);
+      var doc = asciidoctor.loadFile(__dirname + '/test.adoc');
       expect(doc.getAttribute('docname')).toBe('test');
     });
 
     it('should be able to load a buffer', function () {
-      var doc = asciidoctor.load(fs.readFileSync(path.resolve(__dirname + '/test.adoc')), null);
+      var doc = asciidoctor.load(fs.readFileSync(path.resolve(__dirname + '/test.adoc')));
       expect(doc.getDoctitle()).toBe('Document title');
     });
 
@@ -127,7 +136,7 @@ describe('Node.js', function () {
       var expectFilePath = __dirname + '/test.html';
       removeFile(expectFilePath);
       try {
-        asciidoctor.convertFile(__dirname + '/test.adoc', null);
+        asciidoctor.convertFile(__dirname + '/test.adoc');
         expect(fileExists(expectFilePath)).toBe(true);
         var content = fs.readFileSync(expectFilePath, 'utf8');
         expect(content).toContain('Hello world');
@@ -207,15 +216,29 @@ describe('Node.js', function () {
     });
 
     it('should be able to process smiley extension', function () {
-      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/extension.adoc')), null);
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/extension.adoc')));
       expect(result).toContain('<strong>:D</strong>');
       expect(result).toContain('<strong>;)</strong>');
       expect(result).toContain('<strong>:)</strong>');
     });
 
     it('should be able to process custom block', function () {
-      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/shout-block-ex.adoc')), null);
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/shout-block-ex.adoc')));
       expect(result).toContain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>');
+    });
+
+    it('should be able to process custom include processor when target does match', function () {
+      if (asciidoctorVersionGreaterThan('1.5.5')) {
+        var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-include-ex.adoc')));
+        expect(result).toContain('foo\nfoo');
+      }
+    });
+
+    it('should not process custom include processor when target does not match', function () {
+      if (asciidoctorVersionGreaterThan('1.5.5')) {
+        var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/bar-include-ex.adoc')));
+        expect(result).toContain('bar');
+      }
     });
 
     it('should be able to convert a file and include the default stylesheet', function () {

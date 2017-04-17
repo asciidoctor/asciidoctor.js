@@ -840,3 +840,15 @@ var Inline = Opal.Asciidoctor.Inline;
 Inline.$$proto.convert = function () {
   return this.$convert();
 };
+
+// Reader API
+
+/** @namespace */
+var Reader = Opal.Asciidoctor.Reader;
+
+/**
+ * @memberof Reader
+ */
+Reader.$$proto.pushInclude = function (data, file, path, lineno, attributes) {
+  return this.$push_include(data, file, path, lineno, attributes);
+};

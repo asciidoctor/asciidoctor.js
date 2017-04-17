@@ -85,7 +85,7 @@ var commonSpec = function (testOptions, asciidoctor) {
 */
 
       it('should get media uri', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.getMediaUri('target')).toBe('target');
       });
 
@@ -108,27 +108,27 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should get source', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.getSource()).toBe('== Test');
       });
 
       it('should get source lines', function () {
-        var doc = asciidoctor.load('== Test\nThis is the first paragraph.\n\nThis is a second paragraph.', null);
+        var doc = asciidoctor.load('== Test\nThis is the first paragraph.\n\nThis is a second paragraph.');
         expect(doc.getSourceLines()).toEqual([ '== Test', 'This is the first paragraph.', '', 'This is a second paragraph.' ]);
       });
 
       it('should not be nested', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.isNested()).toBe(false);
       });
 
       it('should not have footnotes', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.hasFootnotes()).toBe(false);
       });
 
       it('should get footnotes', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.getFootnotes()).toEqual([]);
       });
 
@@ -139,17 +139,17 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should be embedded', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.isEmbedded()).toBe(true);
       });
 
       it('should have extensions', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.hasExtensions()).toBe(true);
       });
 
       it('should get default doctype', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.getDoctype()).toBe('article');
       });
 
@@ -160,7 +160,7 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should get default backend', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.getBackend()).toBe('html5');
       });
 
@@ -171,12 +171,12 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should get title', function () {
-        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n:title: The Actual Dangerous Documentation Chronicles\n== The Ravages of Writing', null);
+        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n:title: The Actual Dangerous Documentation Chronicles\n== The Ravages of Writing');
         expect(doc.getTitle()).toBe('The Actual Dangerous Documentation Chronicles');
       });
 
       it('should set title', function () {
-        var doc = asciidoctor.load('= The Dangerous Documentation\n\n== The Ravages of Writing', null);
+        var doc = asciidoctor.load('= The Dangerous Documentation\n\n== The Ravages of Writing');
         doc.setTitle('The Dangerous & Thrilling Documentation');
         expect(doc.getDoctitle()).toBe('The Dangerous &amp; Thrilling Documentation');
       });
@@ -208,12 +208,12 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should get doctitle', function () {
-        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n\n== The Ravages of Writing', null);
+        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n\n== The Ravages of Writing');
         expect(doc.getDoctitle()).toBe('The Dangerous Documentation Chronicles: Based on True Events');
       });
 
       it('should get partitioned doctitle', function () {
-        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n\n== The Ravages of Writing', null);
+        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n\n== The Ravages of Writing');
         var doctitle = doc.getDoctitle({partition: true});
         expect(doctitle.main).toBe('The Dangerous Documentation Chronicles');
         expect(doctitle.subtitle).toBe('Based on True Events');
@@ -239,7 +239,7 @@ var commonSpec = function (testOptions, asciidoctor) {
 
     describe('Parsing', function () {
       it('should convert a simple document with a title 2', function () {
-        var html = asciidoctor.convert('== Test', null);
+        var html = asciidoctor.convert('== Test');
         expect(html).toContain('<h2 id="_test">Test</h2>');
       });
 
@@ -256,12 +256,12 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should convert a simple document with a title 3', function () {
-        var html = asciidoctor.convert('=== Test', null);
+        var html = asciidoctor.convert('=== Test');
         expect(html).toContain('<h3 id="_test">Test</h3>');
       });
 
       it('should convert a document with tabsize', function () {
-        var html = asciidoctor.convert('= Learn Go\n:tabsize: 2\n\n[source]\n----\npackage main\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("Hello, playground")\n}', null);
+        var html = asciidoctor.convert('= Learn Go\n:tabsize: 2\n\n[source]\n----\npackage main\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("Hello, playground")\n}');
         expect(html).toContain('<div class="listingblock">\n<div class="content">\n<pre class="highlight"><code>package main\nimport "fmt"\n\nfunc main() {\n  fmt.Println("Hello, playground")\n}</code></pre>\n</div>\n</div>');
       });
 
@@ -270,7 +270,7 @@ var commonSpec = function (testOptions, asciidoctor) {
         var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
         // Available only in Asciidoctor core 1.5.6 and greater.
         if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {
-          var html = asciidoctor.convert('= HubPress\nAnthonny Quérouil\n\n{doctitle} was written by {firstname} {lastname}.\n\n[[bière]]\n== La bière\n\nLa bière c\'est la vie.\n\n[[ビール]]\n== ビール', null);
+          var html = asciidoctor.convert('= HubPress\nAnthonny Quérouil\n\n{doctitle} was written by {firstname} {lastname}.\n\n[[bière]]\n== La bière\n\nLa bière c\'est la vie.\n\n[[ビール]]\n== ビール');
           expect(html).toContain('was written by Anthonny Quérouil.');
           expect(html).toContain('id="ビール"');
           expect(html).toContain('id="bière"');
