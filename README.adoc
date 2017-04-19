@@ -96,6 +96,27 @@ You should see the following output in your terminal:
 </div>
 ....
 
+## Node.js examples
+
+This project contain 2 ruby examples `asciidoctor_example.rb` and `userguide_test.rb` which demonstrate how ruby scripts could be converted into javascript using the Opal Runtime
+and next displayed within the browser as a normal HTML file.
+
+The ruby examples are available under the directory `examples` and to build them, a node.js script has been created under the `npm` folder
+
+```
+node npm/examples.js
+```
+
+In order to visualize the result, a local http server must be started within the root of this project otherwise you will have a cross origin issue which prevents to load some resources
+and render the html. You can use for this purpose the node.js module `http-server`.
+
+```
+http-server -a localhost
+```
+
+Next, you can visualize the asciidoc documents rendered within your browser at this address `http://localhost:8080/build/examples/asciidoctor_example.html`
+
+
 ## Advanced topics
 
 If you want to know more about _Asciidoctor.js_, please read the {uri-user-manual}[User Manual].
