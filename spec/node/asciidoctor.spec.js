@@ -68,6 +68,23 @@ describe('Node.js', function () {
       expect(doc.getDoctitle()).toBe('Document title');
     });
 
+    it('should return empty revision info', function () {
+      var doc = asciidoctor.load('= Begin Again\n\n== First section');
+      expect(doc.getRevisionDate()).toBe(undefined);
+      expect(doc.getRevisionNumber()).toBe(undefined);
+      expect(doc.getRevisionRemark()).toBe(undefined);
+
+      expect(doc.hasRevisionInfo()).toBe(false);
+      var revisionInfo = doc.getRevisionInfo();
+      expect(revisionInfo.isEmpty()).toBe(true);
+      expect(revisionInfo.getDate()).toBe(undefined);
+      expect(revisionInfo.getNumber()).toBe(undefined);
+      expect(revisionInfo.getRemark()).toBe(undefined);
+      expect(revisionInfo.date).toBe(undefined);
+      expect(revisionInfo.number).toBe(undefined);
+      expect(revisionInfo.remark).toBe(undefined);
+    });
+
     it('should be able to retrieve structural content from file', function () {
       var doc = asciidoctor.loadFile(__dirname + '/documentblocks.adoc');
       var header = doc.getHeader();
@@ -76,6 +93,21 @@ describe('Node.js', function () {
       expect(header.getAttribute('revdate')).toBe('2013-05-20');
       expect(header.getAttribute('revnumber')).toBe('1.0');
       expect(header.getAttribute('revremark')).toBe('First draft');
+
+      expect(doc.getRevisionDate()).toBe('2013-05-20');
+      expect(doc.getRevisionNumber()).toBe('1.0');
+      expect(doc.getRevisionRemark()).toBe('First draft');
+
+      expect(doc.hasRevisionInfo()).toBe(true);
+      var revisionInfo = doc.getRevisionInfo();
+      expect(revisionInfo.isEmpty()).toBe(false);
+      expect(revisionInfo.getDate()).toBe('2013-05-20');
+      expect(revisionInfo.getNumber()).toBe('1.0');
+      expect(revisionInfo.getRemark()).toBe('First draft');
+      expect(revisionInfo.date).toBe('2013-05-20');
+      expect(revisionInfo.number).toBe('1.0');
+      expect(revisionInfo.remark).toBe('First draft');
+
       expect(header.getAttribute('tags')).toBe('[document, example]');
       expect(header.getAttribute('author')).toBe('Doc Writer');
       expect(header.getAttribute('email')).toBe('doc.writer@asciidoc.org');

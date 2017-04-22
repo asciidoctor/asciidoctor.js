@@ -599,10 +599,11 @@ Document.$$proto.getDoctitle = function (options) {
 };
 
 /**
+ * Get the document revision date from document header (document attribute <code>revdate</code>).
  * @memberof Document
  */
 Document.$$proto.getRevisionDate = function () {
-  return this.$revdate();
+  return this.getAttribute('revdate');
 };
 
 /**
@@ -611,6 +612,86 @@ Document.$$proto.getRevisionDate = function () {
  */
 Document.$$proto.getRevdate = function () {
   return this.getRevisionDate();
+};
+
+/**
+ * Get the document revision number from document header (document attribute <code>revnumber</code>).
+ * @memberof Document
+ */
+Document.$$proto.getRevisionNumber = function () {
+  return this.getAttribute('revnumber');
+};
+
+/**
+ * Get the document revision remark from document header (document attribute <code>revremark</code>).
+ * @memberof Document
+ */
+Document.$$proto.getRevisionRemark = function () {
+  return this.getAttribute('revremark');
+};
+
+// private constructor
+Document.RevisionInfo = function (date, number, remark) {
+  this.date = date;
+  this.number = number;
+  this.remark = remark;
+};
+
+/**
+ * @class
+ * @namespace
+ * @module Document/RevisionInfo
+ */
+var RevisionInfo = Document.RevisionInfo;
+
+/**
+ * Get the document revision date from document header (document attribute <code>revdate</code>).
+ * @memberof Document/RevisionInfo
+ */
+RevisionInfo.prototype.getDate = function () {
+  return this.date;
+};
+
+/**
+ * Get the document revision number from document header (document attribute <code>revnumber</code>).
+ * @memberof Document/RevisionInfo
+ */
+RevisionInfo.prototype.getNumber = function () {
+  return this.number;
+};
+
+/**
+ * Get the document revision remark from document header (document attribute <code>revremark</code>).
+ * A short summary of changes in this document revision.
+ * @memberof Document/RevisionInfo
+ */
+RevisionInfo.prototype.getRemark = function () {
+  return this.remark;
+};
+
+/**
+ * @memberof Document/RevisionInfo
+ * @returns {Boolean} - returns true if the revision info is empty (ie. not defined), otherwise false
+ */
+RevisionInfo.prototype.isEmpty = function () {
+  return this.date === undefined && this.number === undefined && this.remark === undefined;
+};
+
+/**
+ * @memberof Document
+ * @returns {Document/RevisionInfo} - returns a {@link Document/RevisionInfo}
+ */
+Document.$$proto.getRevisionInfo = function () {
+  return new Document.RevisionInfo(this.getRevisionDate(), this.getRevisionNumber(), this.getRevisionRemark());
+};
+
+/**
+ * @memberof Document
+ * @returns {Boolean} - returns true if the document contains revision info, otherwise false
+ */
+Document.$$proto.hasRevisionInfo = function () {
+  var revisionInfo = this.getRevisionInfo();
+  return !revisionInfo.isEmpty();
 };
 
 /**
