@@ -96,6 +96,17 @@ Registry.$$proto.includeProcessor = function (name, block) {
 };
 
 /**
+ * @memberof Extensions/Registry
+ */
+Registry.$$proto.blockMacro = function (name, block) {
+  if (typeof name === 'function' && typeof block === 'undefined') {
+    return Opal.send(this, 'block_macro', null, toBlock(name));
+  } else {
+    return Opal.send(this, 'block_macro', [name], toBlock(block));
+  }
+};
+
+/**
  * @namespace
  * @module Extensions/Processor
  */
@@ -147,6 +158,19 @@ BlockProcessor.$$proto.named = function (name) {
  */
 BlockProcessor.$$proto.onContext = function (context) {
   return this.$on_context(context);
+};
+
+/**
+ * @namespace
+ * @module Extensions/BlockMacroProcessor
+ */
+var BlockMacroProcessor = Extensions.BlockMacroProcessor;
+
+/**
+ * @memberof Extensions/BlockMacroProcessor
+ */
+BlockMacroProcessor.$$proto.named = function (name) {
+  return this.$named(name);
 };
 
 /**
