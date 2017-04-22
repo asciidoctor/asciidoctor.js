@@ -18,11 +18,12 @@ function asciidoctorVersionGreaterThan (version) {
 var Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js');
 require('asciidoctor-template.js');
-require('../share/extensions/smiley-macro.js');
+require('../share/extensions/smiley-inline-macro.js');
 require('../share/extensions/shout-block.js');
 if (asciidoctorVersionGreaterThan('1.5.5')) {
   require('../share/extensions/foo-include.js');
 }
+require('../share/extensions/lorem-block-macro.js');
 
 var testOptions = {
   platform: 'Node.js',
@@ -239,6 +240,11 @@ describe('Node.js', function () {
         var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/bar-include-ex.adoc')));
         expect(result).toContain('bar');
       }
+    });
+
+    it('should be able to process lorem extension', function () {
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/lorem-block-macro-ex.adoc')));
+      expect(result).toContain('Lorem ipsum dolor sit amet');
     });
 
     it('should be able to convert a file and include the default stylesheet', function () {
