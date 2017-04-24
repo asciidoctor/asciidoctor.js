@@ -224,6 +224,14 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(doctitle.isSanitized()).toBe(false);
       });
 
+      it('should get and set attribute on block', function () {
+        var doc = asciidoctor.load('= Blocks story: Based on True Events\n\n== Once upon a time\n\n[bold-statement="on"]\nBlocks are amazing!');
+        var paragraphBlock = doc.getBlocks()[0].getBlocks()[0];
+        expect(paragraphBlock.getAttribute('bold-statement')).toBe('on');
+        paragraphBlock.setAttribute('bold-statement', 'off');
+        expect(paragraphBlock.getAttribute('bold-statement')).toBe('off');
+      });
+
     });
 
     describe('Modifying', function () {

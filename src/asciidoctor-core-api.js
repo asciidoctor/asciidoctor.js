@@ -269,7 +269,7 @@ AbstractNode.$$proto.setAttribute = function (name, value, overwrite) {
   if (typeof overwrite === 'undefined') {
     overwrite = true;
   }
-  return this.$set_attribute(name, value, overwrite);
+  return this.$set_attr(name, value, overwrite);
 };
 
 /**
