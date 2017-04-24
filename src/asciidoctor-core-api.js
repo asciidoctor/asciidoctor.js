@@ -671,7 +671,7 @@ RevisionInfo.prototype.getRemark = function () {
 
 /**
  * @memberof Document/RevisionInfo
- * @returns {Boolean} - returns true if the revision info is empty (ie. not defined), otherwise false
+ * @returns {boolean} - returns true if the revision info is empty (ie. not defined), otherwise false
  */
 RevisionInfo.prototype.isEmpty = function () {
   return this.date === undefined && this.number === undefined && this.remark === undefined;
@@ -687,7 +687,7 @@ Document.$$proto.getRevisionInfo = function () {
 
 /**
  * @memberof Document
- * @returns {Boolean} - returns true if the document contains revision info, otherwise false
+ * @returns {boolean} - returns true if the document contains revision info, otherwise false
  */
 Document.$$proto.hasRevisionInfo = function () {
   var revisionInfo = this.getRevisionInfo();
