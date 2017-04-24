@@ -17,7 +17,7 @@ ifdef::env-github[]
 image:https://img.shields.io/travis/asciidoctor/asciidoctor.js/master.svg[Travis build status, link=https://travis-ci.org/asciidoctor/asciidoctor.js]
 image:https://ci.appveyor.com/api/projects/status/i69sqvvyr95sf6i7/branch/master?svg=true[Appveyor build status, link=https://ci.appveyor.com/project/asciidoctor/asciidoctor-js]
 image:http://img.shields.io/npm/v/asciidoctor.js.svg[npm version, link=https://www.npmjs.org/package/asciidoctor.js]
-image:https://img.shields.io/badge/jsdoc-master-blue.svg[JSDoc, link=http://asciidoctor.github.io/asciidoctor.js]
+image:https://img.shields.io/badge/jsdoc-master-blue.svg[JSDoc, link=http://asciidoctor.github.io/asciidoctor.js/master]
 endif::[]
 
 Asciidoctor.js brings AsciiDoc to the JavaScript world!

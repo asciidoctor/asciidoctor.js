@@ -27,7 +27,7 @@
     "benchmark": "node npm/benchmark.js",
     "release": "cross-env MINIFY=1 node npm/release.js",
     "docs:lint": "documentation lint src/**",
-    "docs:build": "documentation build src/** -f html -o docs -g",
+    "docs:build": "documentation build src/** -f html -o build/docs -g",
     "docs:serve": "documentation serve src/** -g -w",
     "docs": "npm run docs:lint && npm run docs:build"
   },
