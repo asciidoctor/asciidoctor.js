@@ -26,7 +26,7 @@
 
   if (typeof platform === 'undefined') {
     // Try to automatically detect the JavaScript platform, engine and framework
-    if (isNode) {
+    if (isNode) {
       platform = platform || 'node';
       engine = engine || 'v8';
       if (isElectron) {
