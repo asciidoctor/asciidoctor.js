@@ -279,6 +279,24 @@ describe('Node.js', function () {
       expect(result).toContain('Lorem ipsum dolor sit amet');
     });
 
+    it('should be able to pass an extension registry to the processor', function () {
+      var registry = Opal.Asciidoctor.$$scope.Extensions.create(function () {
+        this.block(function () {
+          var self = this;
+          self.named('whisper');
+          self.onContext('paragraph');
+          self.process(function (parent, reader) {
+            var lines = reader.$lines().map(function (l) { return l.toLowerCase().replace('!', '.'); });
+            return self.createBlock(parent, 'paragraph', lines);
+          });
+        });
+      });
+      var opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      var result = asciidoctor.convert('[whisper]\nWE HAVE LIFTOFF!', opts);
+      expect(result).toContain('we have liftoff.');
+    });
+
     it('should be able to convert a file and include the default stylesheet', function () {
       var options = {safe: 'safe', header_footer: true};
       var html = asciidoctor.convert('=== Test', options);
