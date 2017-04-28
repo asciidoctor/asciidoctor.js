@@ -48,6 +48,17 @@ var Extensions = Opal.Asciidoctor.$$scope.Extensions;
 /**
  * @memberof Extensions
  */
+Extensions.create = function (name, block) {
+  if (typeof name === 'function' && typeof block === 'undefined') {
+    return Opal.send(this, 'build_registry', null, toBlock(name));
+  } else {
+    return Opal.send(this, 'build_registry', [name], toBlock(block));
+  }
+};
+
+/**
+ * @memberof Extensions
+ */
 Extensions.register = function (name, block) {
   if (typeof name === 'function' && typeof block === 'undefined') {
     return Opal.send(this, 'register', null, toBlock(name));
