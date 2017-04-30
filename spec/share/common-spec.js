@@ -165,9 +165,10 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should get backend', function () {
-        var options = {backend: 'revealjs'};
+        var options = {backend: 'xhtml5'};
         var doc = asciidoctor.load('== Test', options);
-        expect(doc.getBackend()).toBe('revealjs');
+        expect(doc.getBackend()).toBe('html5');
+        expect(doc.getAttribute('htmlsyntax')).toBe('xml');
       });
 
       it('should get title', function () {
