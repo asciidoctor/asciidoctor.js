@@ -98,12 +98,8 @@ Registry.$$proto.inlineMacro = function (name, block) {
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.includeProcessor = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'include_processor', null, toBlock(name));
-  } else {
-    return Opal.send(this, 'include_processor', [name], toBlock(block));
-  }
+Registry.$$proto.includeProcessor = function (block) {
+  return Opal.send(this, 'include_processor', null, toBlock(block));
 };
 
 /**
