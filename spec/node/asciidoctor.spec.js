@@ -249,10 +249,22 @@ describe('Node.js', function () {
     });
 
     it('should be able to process smiley extension', function () {
-      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/extension.adoc')));
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/smiley-inline-macro-ex.adoc')));
       expect(result).toContain('<strong>:D</strong>');
       expect(result).toContain('<strong>;)</strong>');
       expect(result).toContain('<strong>:)</strong>');
+    });
+
+    it('should be able to process love extension', function () {
+      var registry = asciidoctor.Extensions.create();
+      var opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      require('../share/extensions/love-tree-processor.js')(registry);
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/love-tree-processor-ex.adoc')), opts);
+      expect(result).toContain('Made with icon:heart[]');
+
+      result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/love-tree-processor-ex.adoc')));
+      expect(result).toContain('How this document was made ?');
     });
 
     it('should be able to process custom block', function () {
@@ -280,7 +292,7 @@ describe('Node.js', function () {
     });
 
     it('should be able to pass an extension registry to the processor', function () {
-      var registry = Opal.Asciidoctor.$$scope.Extensions.create(function () {
+      var registry = asciidoctor.Extensions.create(function () {
         this.block(function () {
           var self = this;
           self.named('whisper');

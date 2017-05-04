@@ -1,5 +1,8 @@
 // Extensions API
 
+/**
+ * @private
+ */
 var toBlock = function (block) {
   // arity is a mandatory field
   block.$$arity = block.length;
@@ -20,7 +23,7 @@ var toBlock = function (block) {
  * 2. The Parser parses the block-level content into an abstract syntax tree.
  *    Custom blocks and block macros are processed by associated {{@link Extensions/BlockProcessor}}s
  *    and {BlockMacroProcessor}s, respectively.
- * 3. {Treeprocessor}s are run on the abstract syntax tree.
+ * 3. {{@link Extensions/TreeProcessor}}s are run on the abstract syntax tree.
  * 4. Conversion of the document begins, at which point inline markup is processed
  *    and converted. Custom inline macros are processed by associated {InlineMacroProcessor}s.
  * 5. {Postprocessor}s modify or replace the converted document.
@@ -45,14 +48,23 @@ var toBlock = function (block) {
  */
 var Extensions = Opal.Asciidoctor.$$scope.Extensions;
 
+// Alias
+Opal.Asciidoctor.Extensions = Extensions;
+
 /**
+ * Create a new {@link Extensions/Registry}.
+ * @param {string} name
+ * @param {function} block
  * @memberof Extensions
+ * @returns {Extensions/Registry} - returns a {@link Extensions/Registry}
  */
 Extensions.create = function (name, block) {
   if (typeof name === 'function' && typeof block === 'undefined') {
     return Opal.send(this, 'build_registry', null, toBlock(name));
-  } else {
+  } else if (typeof block === 'function') {
     return Opal.send(this, 'build_registry', [name], toBlock(block));
+  } else {
+    return this.$build_registry();
   }
 };
 
@@ -114,6 +126,17 @@ Registry.$$proto.blockMacro = function (name, block) {
     return Opal.send(this, 'block_macro', null, toBlock(name));
   } else {
     return Opal.send(this, 'block_macro', [name], toBlock(block));
+  }
+};
+
+/**
+ * @memberof Extensions/Registry
+ */
+Registry.$$proto.treeProcessor = function (name, block) {
+  if (typeof name === 'function' && typeof block === 'undefined') {
+    return Opal.send(this, 'treeprocessor', null, toBlock(name));
+  } else {
+    return Opal.send(this, 'treeprocessor', [name], toBlock(block));
   }
 };
 
@@ -195,4 +218,17 @@ var IncludeProcessor = Extensions.IncludeProcessor;
  */
 IncludeProcessor.$$proto.handles = function (block) {
   return Opal.send(this, 'handles?', null, toBlock(block));
+};
+
+/**
+ * @namespace
+ * @module Extensions/TreeProcessor
+ */
+var TreeProcessor = Extensions.Treeprocessor;
+
+/**
+ * @memberof Extensions/TreeProcessor
+ */
+TreeProcessor.$$proto.process = function (block) {
+  return Opal.send(this, 'process', null, toBlock(block));
 };
