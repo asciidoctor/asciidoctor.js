@@ -255,7 +255,7 @@ describe('Node.js', function () {
       expect(result).toContain('<strong>:)</strong>');
     });
 
-    it('should be able to process love extension', function () {
+    it('should be able to process love tree processor extension', function () {
       var registry = asciidoctor.Extensions.create();
       var opts = {};
       opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
@@ -265,6 +265,20 @@ describe('Node.js', function () {
 
       result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/love-tree-processor-ex.adoc')));
       expect(result).toContain('How this document was made ?');
+    });
+
+    it('should be able to process foo bar postprocessor extension', function () {
+      var registry = asciidoctor.Extensions.create();
+      var opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      require('../share/extensions/foo-bar-postprocessor.js')(registry);
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-bar-postprocessor-ex.adoc')), opts);
+      expect(result).toContain('bar, qux, bar.');
+      expect(result).not.toContain('foo');
+
+      result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-bar-postprocessor-ex.adoc')));
+      expect(result).toContain('foo, qux, foo.');
+      expect(result).not.toContain('bar');
     });
 
     it('should be able to process custom block', function () {

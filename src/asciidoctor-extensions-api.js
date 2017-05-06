@@ -26,7 +26,7 @@ var toBlock = function (block) {
  * 3. {{@link Extensions/TreeProcessor}}s are run on the abstract syntax tree.
  * 4. Conversion of the document begins, at which point inline markup is processed
  *    and converted. Custom inline macros are processed by associated {InlineMacroProcessor}s.
- * 5. {Postprocessor}s modify or replace the converted document.
+ * 5. {{@link Extensions/Postprocessor}}s modify or replace the converted document.
  * 6. The output is written to the output stream.
  *
  * Extensions may be registered globally using the {Extensions.register} method
@@ -137,6 +137,17 @@ Registry.$$proto.treeProcessor = function (name, block) {
 };
 
 /**
+ * @memberof Extensions/Registry
+ */
+Registry.$$proto.postprocessor = function (name, block) {
+  if (typeof name === 'function' && typeof block === 'undefined') {
+    return Opal.send(this, 'postprocessor', null, toBlock(name));
+  } else {
+    return Opal.send(this, 'postprocessor', [name], toBlock(block));
+  }
+};
+
+/**
  * @namespace
  * @module Extensions/Processor
  */
@@ -234,3 +245,10 @@ if (typeof Extensions.TreeProcessor !== 'undefined') {
 TreeProcessor.$$proto.process = function (block) {
   return Opal.send(this, 'process', null, toBlock(block));
 };
+
+/**
+ * @namespace
+ * @module Extensions/Postprocessor
+ */
+// eslint-disable-next-line no-unused-vars
+var Postprocessor = Extensions.Postprocessor;
