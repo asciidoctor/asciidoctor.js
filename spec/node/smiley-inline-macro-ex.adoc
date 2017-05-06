@@ -1,4 +1,4 @@
-= Extension
+= Smiley!
 
 Should process smiley inline macro!
 
