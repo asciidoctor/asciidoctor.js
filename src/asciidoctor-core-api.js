@@ -1,3 +1,7 @@
+/**
+ * Convert a JSON to an (Opal) Hash.
+ * @private
+ */
 var toHash = function (object) {
   if (object && !object.smap) {
     return Opal.hash(object);
@@ -5,6 +9,9 @@ var toHash = function (object) {
   return object;
 };
 
+/**
+ * @private
+ */
 var prepareOptions = function (options) {
   if (options = toHash(options)) {
     var attrs = options['$[]']('attributes');
@@ -150,49 +157,81 @@ AbstractBlock.$$proto.getTitle = function () {
 };
 
 /**
+ * Get the style (block type qualifier) for this block.
  * @memberof AbstractBlock
+ * @returns {string} - returns the style for this block
  */
 AbstractBlock.$$proto.getStyle = function () {
   return this.style;
 };
 
 /**
+ * Get the caption for this block.
  * @memberof AbstractBlock
+ * @returns {string} - returns the caption for this block
  */
 AbstractBlock.$$proto.getCaption = function () {
   return this.caption;
 };
 
 /**
+ * Get the level of this section or the section level in which this block resides.
  * @memberof AbstractBlock
+ * @returns {number} - returns the level of this section
  */
 AbstractBlock.$$proto.getLevel = function () {
   return this.level;
 };
 
 /**
+ * Get the list of {@link AbstractBlock} sub-blocks for this block.
  * @memberof AbstractBlock
+ * @returns {Array} - returns a list of {@link AbstractBlock} sub-blocks
  */
 AbstractBlock.$$proto.getBlocks = function () {
   return this.blocks;
 };
 
 /**
+ * Get the converted result of the child blocks by converting the children appropriate to content model that this block supports.
  * @memberof AbstractBlock
+ * @returns {string} - returns the converted result of the child blocks
  */
 AbstractBlock.$$proto.getContent = function () {
   return this.$content();
 };
 
 /**
+ * Get the converted content for this block.
+ * If the block has child blocks, the content method should cause them to be converted
+ * and returned as content that can be included in the parent block's template.
  * @memberof AbstractBlock
+ * @returns {string} - returns the converted String content for this block
  */
 AbstractBlock.$$proto.convert = function () {
   return this.$convert();
 };
 
 /**
+ * Query for all descendant block-level nodes in the document tree
+ * that match the specified selector (context, style, id, and/or role).
+ * If a function block is given, it's used as an additional filter.
+ * If no selector or function block is supplied, all block-level nodes in the tree are returned.
+ * @param {Object} [selector]
+ * @param {function} [block]
+ * @example
+ * doc.findBy({'context': 'section'});
+ * // => { level: 0, title: "Hello, AsciiDoc!", blocks: 0 }
+ * // => { level: 1, title: "First Section", blocks: 1 }
+ *
+ * doc.findBy({'context': 'section'}, function (section) { return section.getLevel() === 1; });
+ * // => { level: 1, title: "First Section", blocks: 1 }
+ *
+ * doc.findBy({'context': 'listing', 'style': 'source'});
+ * // => { context: :listing, content_model: :verbatim, style: "source", lines: 1 }
+ *
  * @memberof AbstractBlock
+ * @returns {Array} - returns a list of block-level nodes that match the filter or an empty list if no matches are found
  */
 AbstractBlock.$$proto.findBy = function (selector, block) {
   if (typeof block === 'undefined' && typeof selector === 'function') {
@@ -207,13 +246,11 @@ AbstractBlock.$$proto.findBy = function (selector, block) {
 };
 
 /**
+ * Get the source line number where this block started.
  * @memberof AbstractBlock
+ * @returns {number} - returns the source line number where this block started
  */
-AbstractBlock.$$proto.convert = function () {
-  return this.$convert();
-};
-
-Opal.Asciidoctor.AbstractBlock.$$proto.getLineNumber = function () {
+AbstractBlock.$$proto.getLineNumber = function () {
   var value = this.$lineno();
   if (value === Opal.nil) {
     return undefined;
