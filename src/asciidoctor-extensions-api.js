@@ -221,7 +221,7 @@ IncludeProcessor.$$proto.handles = function (block) {
  * @module Extensions/TreeProcessor
  */
 var TreeProcessor;
-if (Extensions.TreeProcessor !== 'undefined') {
+if (typeof Extensions.TreeProcessor !== 'undefined') {
   TreeProcessor = Extensions.TreeProcessor;
 } else {
   // NOTE: for backward compatibility, Treeprocessor was renamed to TreeProcessor in 1.5.6
