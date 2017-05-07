@@ -6,7 +6,6 @@ clone_depth: 10
 environment:
   nodejs_version: 0.12
 install:
-- git submodule update --init --recursive
 - npm install
 build_script:
 - node npm/appveyor.js

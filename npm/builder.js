@@ -222,14 +222,12 @@ Builder.prototype.removeBuildDirSync = function () {
   log.debug('remove build directory');
   bfs.removeSync('build');
   bfs.mkdirsSync('build/css');
-  bfs.mkdirsSync('build/extensions');
 };
 
 Builder.prototype.removeDistDirSync = function () {
   log.debug('remove dist directory');
   bfs.removeSync('dist');
   bfs.mkdirsSync('dist/css');
-  bfs.mkdirsSync('dist/extensions');
 };
 
 Builder.prototype.execSync = function (command) {
@@ -274,7 +272,6 @@ Builder.prototype.copyToDist = function (callback) {
   bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css');
   bfs.copySync('build/asciidoctor.js', 'dist/asciidoctor.js');
   bfs.copySync('build/asciidoctor.min.js', 'dist/asciidoctor.min.js');
-  bfs.copySync('build/extensions', 'dist/extensions');
   typeof callback === 'function' && callback();
 };
 
@@ -339,27 +336,10 @@ Builder.prototype.copyExamplesResources = function (callback) {
 Builder.prototype.compile = function (callback) {
   var opalCompiler = new OpalCompiler({dynamicRequireLevel: 'ignore', defaultPaths: ['build/asciidoctor/lib']});
 
-  var opalCompileExtensions = function (names) {
-    names.forEach(opalCompileExtension);
-  };
-
-  var opalCompileExtension = function (name) {
-    opalCompiler.compile(name, 'build/extensions/asciidoctor-' + name + '.js', ['extensions-lab/lib']);
-  };
-
   bfs.mkdirsSync('build');
 
   log.task('compile core lib');
   opalCompiler.compile('asciidoctor', 'build/asciidoctor-lib.js');
-
-  log.task('compile extensions-lab lib');
-  if (fs.existsSync('extensions-lab/lib')) {
-    opalCompileExtensions(['chrome-inline-macro', 'man-inline-macro', 'emoji-inline-macro', 'chart-block-macro']);
-  } else {
-    log.error('Unable to cross-compile extensions because git submodule `extensions-lab` is not initialized.');
-    log.info('To initialize the submodule use the following command `git submodule init` and `git submodule update`.');
-    process.exit(9);
-  }
 
   log.task('copy resources');
   log.debug('copy asciidoctor.css');
