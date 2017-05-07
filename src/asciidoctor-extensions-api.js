@@ -17,7 +17,7 @@ var toBlock = function (block) {
  *
  * The various extensions participate in AsciiDoc processing as follows:
  *
- * 1. After the source lines are normalized, {Preprocessor}s modify or replace
+ * 1. After the source lines are normalized, {{@link Extensions/Preprocessor}}s modify or replace
  *    the source lines before parsing begins. {{@link Extensions/IncludeProcessor}}s are used to
  *    process include directives for targets which they claim to handle.
  * 2. The Parser parses the block-level content into an abstract syntax tree.
@@ -148,6 +148,17 @@ Registry.$$proto.postprocessor = function (name, block) {
 };
 
 /**
+ * @memberof Extensions/Registry
+ */
+Registry.$$proto.preprocessor = function (name, block) {
+  if (typeof name === 'function' && typeof block === 'undefined') {
+    return Opal.send(this, 'preprocessor', null, toBlock(name));
+  } else {
+    return Opal.send(this, 'preprocessor', [name], toBlock(block));
+  }
+};
+
+/**
  * @namespace
  * @module Extensions/Processor
  */
@@ -252,3 +263,10 @@ TreeProcessor.$$proto.process = function (block) {
  */
 // eslint-disable-next-line no-unused-vars
 var Postprocessor = Extensions.Postprocessor;
+
+/**
+ * @namespace
+ * @module Extensions/Preprocessor
+ */
+// eslint-disable-next-line no-unused-vars
+var Preprocessor = Extensions.Preprocessor;
