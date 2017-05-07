@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Asciidoctor in JavaScript powered by Opal</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
-  <link rel="stylesheet" href="../asciidoctor.css">
+  <link rel="stylesheet" href="../css/asciidoctor.css">
   <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
   <style>
     .left {
@@ -47,19 +47,24 @@ Content 2
 </div>
 <button id="convertBtn">Convert</button>
 <script src="../../node_modules/jade/jade.js"></script>
-<script src="../../bower_components/opal/opal/current/opal.js"></script>
-<script src="../asciidoctor-core.js"></script>
+<script src="../asciidoctor.js"></script>
+<script>
+  // Instantiate Asciidoctor.js
+  // NOTE: Asciidoctor template.js should not be automatically loaded :|
+  Asciidoctor();
+</script>
 <script src="../../node_modules/asciidoctor-template.js/dist/main.js"></script>
 <script>
-  var options = Opal.hash({
+  var asciidoctor = Asciidoctor();
+  var options = {
     safe: 'safe',
     header_footer: true,
     template_dir: '../../node_modules/asciidoctor-reveal.js/templates'
-  });
+  };
   function convertSlide() {
     var content = $("#editor").val();
-    var doc = Opal.Asciidoctor.$load(content, options);
-    var rendered = doc.$convert();
+    var doc = asciidoctor.load(content, options);
+    var rendered = doc.convert();
     var iframe = document.querySelector("iframe");
     iframe.contentWindow.document.open();
     iframe.contentWindow.document.write(rendered);
