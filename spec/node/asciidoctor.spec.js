@@ -305,6 +305,18 @@ describe('Node.js', function () {
       expect(result).toContain('Lorem ipsum dolor sit amet');
     });
 
+    it('should be able to process draft preprocessor extension', function () {
+      var registry = asciidoctor.Extensions.create();
+      var opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      require('../share/extensions/draft-preprocessor.js')(registry);
+      var doc = asciidoctor.load(fs.readFileSync(path.resolve(__dirname + '/draft-preprocessor-ex.adoc')), opts);
+      expect(doc.getAttribute('status')).toBe('DRAFT');
+      var result = doc.convert();
+      expect(result).toContain('Important');
+      expect(result).toContain('This section is a draft: we need to talk about Y.');
+    });
+
     it('should be able to pass an extension registry to the processor', function () {
       var registry = asciidoctor.Extensions.create(function () {
         this.block(function () {
