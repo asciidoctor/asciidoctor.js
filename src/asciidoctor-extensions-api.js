@@ -231,6 +231,7 @@ IncludeProcessor.$$proto.handles = function (block) {
  * @namespace
  * @module Extensions/TreeProcessor
  */
+// eslint-disable-next-line no-unused-vars
 var TreeProcessor;
 if (typeof Extensions.TreeProcessor !== 'undefined') {
   TreeProcessor = Extensions.TreeProcessor;
@@ -238,13 +239,6 @@ if (typeof Extensions.TreeProcessor !== 'undefined') {
   // NOTE: for backward compatibility, Treeprocessor was renamed to TreeProcessor in 1.5.6
   TreeProcessor = Extensions.Treeprocessor;
 }
-
-/**
- * @memberof Extensions/TreeProcessor
- */
-TreeProcessor.$$proto.process = function (block) {
-  return Opal.send(this, 'process', null, toBlock(block));
-};
 
 /**
  * @namespace
