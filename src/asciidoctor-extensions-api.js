@@ -22,7 +22,7 @@ var toBlock = function (block) {
  *    process include directives for targets which they claim to handle.
  * 2. The Parser parses the block-level content into an abstract syntax tree.
  *    Custom blocks and block macros are processed by associated {{@link Extensions/BlockProcessor}}s
- *    and {BlockMacroProcessor}s, respectively.
+ *    and {{@link Extensions/BlockMacroProcessor}}s, respectively.
  * 3. {{@link Extensions/TreeProcessor}}s are run on the abstract syntax tree.
  * 4. Conversion of the document begins, at which point inline markup is processed
  *    and converted. Custom inline macros are processed by associated {InlineMacroProcessor}s.
