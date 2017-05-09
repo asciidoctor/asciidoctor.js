@@ -970,3 +970,13 @@ var Reader = Opal.Asciidoctor.Reader;
 Reader.$$proto.pushInclude = function (data, file, path, lineno, attributes) {
   return this.$push_include(data, file, path, lineno, attributes);
 };
+
+/**
+ * Get the current location of the reader's cursor, which encapsulates the
+ * file, dir, path, and lineno of the file being read.
+ *
+ * @memberof Reader
+ */
+Reader.$$proto.getCursor = function () {
+  return this.$cursor();
+};
