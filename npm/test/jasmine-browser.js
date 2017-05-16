@@ -6,13 +6,13 @@ log.task('Jasmine Browser');
 bfs.concatSync([
   'spec/share/common-spec.js',
   'spec/browser/asciidoctor.spec.js'
-], 'build/bower.spec.all.js');
+], 'build/browser.spec.all.js');
 
 var jasmine = new Jasmine();
 jasmine.loadConfig({
   spec_dir: 'build',
   spec_files: [
-    'bower.spec.all.js'
+    'browser.spec.all.js'
   ]
 });
 

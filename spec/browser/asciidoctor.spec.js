@@ -1,7 +1,7 @@
 var path = require('path');
 
 var testOptions = {
-  platform: 'Bower',
+  platform: 'Browser',
   baseDir: 'file://' + path.join(__dirname, '..')
 };
 
