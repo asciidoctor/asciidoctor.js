@@ -1,4 +1,4 @@
-Opal.Asciidoctor.$$scope.Extensions.register(function () {
+Opal.Asciidoctor.Extensions.register(function () {
   this.block(function () {
     var self = this;
     self.named('shout');

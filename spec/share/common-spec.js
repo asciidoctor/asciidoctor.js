@@ -275,7 +275,7 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should convert a document with unicode', function () {
-        var asciidoctorVersion = asciidoctor.$$scope.VERSION;
+        var asciidoctorVersion = asciidoctor.$$const.VERSION;
         var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
         // Available only in Asciidoctor core 1.5.6 and greater.
         if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {
