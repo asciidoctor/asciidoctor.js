@@ -310,6 +310,16 @@ AbstractNode.$$proto.setAttribute = function (name, value, overwrite) {
 };
 
 /**
+ * Get the {@link Document} to which this node belongs.
+ *
+ * @memberof AbstractNode
+ * @returns {Document} - returns the {@link Document} object to which this node belongs.
+ */
+AbstractNode.$$proto.getDocument = function () {
+  return this.$document();
+};
+
+/**
  * @memberof AbstractNode
  */
 AbstractNode.$$proto.isInline = function () {
