@@ -395,12 +395,12 @@ Builder.prototype.replaceDefaultStylesheetPath = function (callback) {
   var data = fs.readFileSync(path, 'utf8');
   log.debug('Replace primary_stylesheet_data method');
   var primaryStylesheetDataImpl = 'var stylesheetsPath;\n' +
-    'if ($scope.get("JAVASCRIPT_PLATFORM")["$=="]("node")) {\n' +
-    '  stylesheetsPath = Opal.get("File").$join(__dirname, "css");\n' +
+    'if (Opal.const_get_relative([], "JAVASCRIPT_PLATFORM")["$=="]("node")) {\n' +
+    '  stylesheetsPath = Opal.const_get_relative([], "File").$join(__dirname, "css");\n' +
     '} else {\n' +
     '  stylesheetsPath = "css";\n' +
     '}\n' +
-    'return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != null) ? $a : self.primary_stylesheet_data = Opal.get("IO").$read(Opal.get("File").$join(stylesheetsPath, "asciidoctor.css")).$chomp());';
+    'return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != null) ? $a : self.primary_stylesheet_data = Opal.const_get_relative([], "IO").$read(Opal.const_get_relative([], "File").$join(stylesheetsPath, "asciidoctor.css")).$chomp());';
   data = data.replace(/(function \$\$primary_stylesheet_data\(\)\ {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2');
   fs.writeFileSync(path, data, 'utf8');
   callback();

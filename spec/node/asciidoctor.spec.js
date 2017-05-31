@@ -10,7 +10,7 @@ var config = {
 };
 var asciidoctor = require('../../build/asciidoctor.js')(config);
 function asciidoctorVersionGreaterThan (version) {
-  var currentVersion = asciidoctor.$$scope.VERSION;
+  var currentVersion = asciidoctor.$$const.VERSION;
   var currentVersionNumeric = parseInt(currentVersion.replace('.dev', '').replace(/\./g, ''));
   var versionNumeric = version.replace(/\./g, '');
   return currentVersionNumeric > versionNumeric; 
@@ -51,10 +51,10 @@ describe('Node.js', function () {
 
   describe('Configuring Asciidoctor module', function () {
     it('should be able to configure Asciidoctor module', function () {
-      expect(Opal.get('JAVASCRIPT_IO_MODULE')).toBe('node');
-      expect(Opal.get('JAVASCRIPT_PLATFORM')).toBe('node');
-      expect(Opal.get('JAVASCRIPT_ENGINE')).toBe('v12');
-      expect(Opal.get('JAVASCRIPT_FRAMEWORK')).toBe('lollipop');
+      expect(Opal.JAVASCRIPT_IO_MODULE).toBe('node');
+      expect(Opal.JAVASCRIPT_PLATFORM).toBe('node');
+      expect(Opal.JAVASCRIPT_ENGINE).toBe('v12');
+      expect(Opal.JAVASCRIPT_FRAMEWORK).toBe('lollipop');
     });
   });
 

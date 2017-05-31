@@ -53,19 +53,19 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "opal-runtime": "0.11.0-integration6",
+    "opal-runtime": "0.11.0-integration7",
     "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
-    "asciidoctor-docbook.js": "1.5.5-integration2",
+    "asciidoctor-docbook.js": "1.5.5-integration3",
     "asciidoctor-reveal.js": "1.0.1",
-    "asciidoctor-template.js": "1.5.5-integration1",
+    "asciidoctor-template.js": "1.5.5-integration3",
     "async": "^1.5.0",
     "bestikk-download": "^0.1.0",
     "bestikk-fs": "^0.1.0",
     "bestikk-jdk-ea": "0.1.1",
     "bestikk-log": "0.1.0",
-    "bestikk-opal-compiler": "0.3.0-integration5",
+    "bestikk-opal-compiler": "0.3.0-integration6",
     "bestikk-uglify": "0.1.1",
     "browserify": "^13.0.0",
     "cross-env": "^1.0.8",

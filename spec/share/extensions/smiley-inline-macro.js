@@ -1,4 +1,4 @@
-var Extensions = Opal.Asciidoctor.$$scope.Extensions;
+var Extensions = Opal.Asciidoctor.Extensions;
 
 Extensions.register(function () {
   this.inlineMacro('smiley', function () {

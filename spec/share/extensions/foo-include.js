@@ -1,4 +1,4 @@
-Opal.Asciidoctor.$$scope.Extensions.register(function () {
+Opal.Asciidoctor.Extensions.register(function () {
   this.includeProcessor(function () {
     var self = this;
     self.handles(function (target) {

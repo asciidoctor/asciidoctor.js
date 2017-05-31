@@ -1,4 +1,4 @@
-var Extensions = Opal.Asciidoctor.$$scope.Extensions;
+var Extensions = Opal.Asciidoctor.Extensions;
 
 // NOTE: Below we are using a minimalist implementation to generate lorem ipsum text.
 // If you need a complete implementation, you can use the following Node package:

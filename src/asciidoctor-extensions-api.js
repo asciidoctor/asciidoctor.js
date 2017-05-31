@@ -34,7 +34,7 @@ var toBlock = function (block) {
  * Asciidoctor processor.
  *
  * @example
- * Opal.Asciidoctor.$$scope.Extensions.register(function () {
+ * Opal.Asciidoctor.Extensions.register(function () {
  *   this.block(function () {
  *     var self = this;
  *     self.named('shout');
@@ -46,7 +46,7 @@ var toBlock = function (block) {
  *   });
  * });
  */
-var Extensions = Opal.Asciidoctor.$$scope.Extensions;
+var Extensions = Opal.const_get_qualified(Opal.Asciidoctor, 'Extensions');
 
 // Alias
 Opal.Asciidoctor.Extensions = Extensions;
