@@ -972,7 +972,7 @@ var Inline = Opal.Asciidoctor.Inline;
  */
 Inline.$$proto.convert = function () {
   return this.$convert();
-}
+};
 
 /**
  * Get the converted String text of this Inline node, if applicable.
