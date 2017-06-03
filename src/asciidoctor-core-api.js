@@ -310,6 +310,16 @@ AbstractNode.$$proto.setAttribute = function (name, value, overwrite) {
 };
 
 /**
+ * Get the {@link Document} to which this node belongs.
+ *
+ * @memberof AbstractNode
+ * @returns {Document} - returns the {@link Document} object to which this node belongs.
+ */
+AbstractNode.$$proto.getDocument = function () {
+  return this.$document();
+};
+
+/**
  * @memberof AbstractNode
  */
 AbstractNode.$$proto.isInline = function () {
@@ -948,15 +958,55 @@ Title.$$proto.hasSubtitle = function () {
 
 // Inline API
 
-/** @namespace */
+/**
+ * @namespace
+ * @extends AbstractNode
+ */
 var Inline = Opal.Asciidoctor.Inline;
 
 /**
+ * Get the converted content for this inline node.
+ *
  * @memberof Inline
- * @extends AbstractNode
+ * @returns {string} - returns the converted String content for this inline node
  */
 Inline.$$proto.convert = function () {
   return this.$convert();
+};
+
+/**
+ * Get the converted String text of this Inline node, if applicable.
+ *
+ * @memberof Inline
+ * @returns {string} - returns the converted String text for this Inline node, or undefined if not applicable for this node.
+ */
+Inline.$$proto.getText = function () {
+  var text = this.$text();
+  return text === Opal.nil ? undefined : text;
+};
+
+/**
+ * Get the String sub-type (aka qualifier) of this Inline node.
+ *
+ * This value is used to distinguish different variations of the same node
+ * category, such as different types of anchors.
+ *
+ * @memberof Inline
+ * @returns {string} - returns the string sub-type of this Inline node.
+ */
+Inline.$$proto.getType = function () {
+  return this.$type();
+};
+
+/**
+ * Get the primary String target of this Inline node.
+ *
+ * @memberof Inline
+ * @returns {string} - returns the string target of this Inline node.
+ */
+Inline.$$proto.getTarget = function () {
+  var target = this.$target();
+  return target === Opal.nil ? undefined : target;
 };
 
 // Reader API
