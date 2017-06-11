@@ -335,6 +335,17 @@ describe('Node.js', function () {
       expect(result).toContain('we have liftoff.');
     });
 
+    it('should be able to process emoji inline macro processor extension', function () {
+      var registry = asciidoctor.Extensions.create();
+      var opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      require('../share/extensions/emoji-inline-macro.js')(registry);
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/emoji-inline-macro-ex.adoc')), opts);
+      expect(result).toContain('1f422.svg');
+      expect(result).toContain('2764.svg');
+      expect(result).toContain('twemoji.maxcdn.com');
+    });
+
     it('should be able to convert a file and include the default stylesheet', function () {
       var options = {safe: 'safe', header_footer: true};
       var html = asciidoctor.convert('=== Test', options);

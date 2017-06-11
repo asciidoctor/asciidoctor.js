@@ -174,6 +174,13 @@ Processor.$$proto.process = function (block) {
 /**
  * @memberof Extensions/Processor
  */
+Processor.$$proto.named = function (name) {
+  return this.$named(name);
+};
+
+/**
+ * @memberof Extensions/Processor
+ */
 Processor.$$proto.createBlock = function (parent, context, source, attrs, opts) {
   return this.$create_block(parent, context, source, toHash(attrs), toHash(opts));
 };
@@ -193,17 +200,22 @@ Processor.$$proto.parseContent = function (parent, content, attrs) {
 };
 
 /**
+ * @memberof Extensions/Processor
+ */
+Processor.$$proto.positionalAttributes = function (value) {
+  if (typeof this.$positional_attrs === 'function') {
+    return this.$positional_attrs(value);
+  } else {
+    // NOTE: for backward compatibility, this function was renamed to positional_attrs in 1.5.6
+    return this.$positional_attributes(value);
+  }
+};
+
+/**
  * @namespace
  * @module Extensions/BlockProcessor
  */
 var BlockProcessor = Extensions.BlockProcessor;
-
-/**
- * @memberof Extensions/BlockProcessor
- */
-BlockProcessor.$$proto.named = function (name) {
-  return this.$named(name);
-};
 
 /**
  * @memberof Extensions/BlockProcessor
@@ -216,14 +228,8 @@ BlockProcessor.$$proto.onContext = function (context) {
  * @namespace
  * @module Extensions/BlockMacroProcessor
  */
+// eslint-disable-next-line no-unused-vars
 var BlockMacroProcessor = Extensions.BlockMacroProcessor;
-
-/**
- * @memberof Extensions/BlockMacroProcessor
- */
-BlockMacroProcessor.$$proto.named = function (name) {
-  return this.$named(name);
-};
 
 /**
  * @namespace
