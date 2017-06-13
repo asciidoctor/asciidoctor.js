@@ -1,22 +1,47 @@
 language: node_js
 env:
-  - ASCIIDOCTOR_CORE_VERSION=v1.5.5
-  - ASCIIDOCTOR_CORE_VERSION=master
+- ASCIIDOCTOR_CORE_VERSION=v1.5.5
+- ASCIIDOCTOR_CORE_VERSION=master
 node_js:
-  - "4"
-  - "6"
-  - "node"
-
+- '4'
+- '6'
+- node
 jdk:
-  - oraclejdk8
-
+- oraclejdk8
 before_script:
-  - npm install
-
+- npm install
 script:
- - npm run lint
- - npm run package
- - npm run docs
- - SKIP_BUILD=1 npm run examples
-
+- npm run lint
+- npm run package
+- npm run docs
+- SKIP_BUILD=1 npm run examples
 sudo: false
+
+before_deploy:
+- npm run build
+- npm run dist
+- npm config set git-tag-version false
+- if [[ "$TRAVIS_BRANCH" == master ]]; then npm version "$(npm view . version)+git.$(git log -n1 --pretty=format:%h)"; fi
+- if [[ "$TRAVIS_BRANCH" == master ]]; then npm config set tag dev; fi
+
+deploy:
+- provider: npm
+  skip_cleanup: true
+  email: ascii@doctor.org
+  api_key:
+    secure: OOM/FNDuhWGeZgD5EKzn/Kuv3Nf/uU1rVLoYyJ5/SKo8UeJ95acZyDisG2Y9ZOF1VeFEpmXXfgMxAs5ZKO7GwrGhah9Mvnbex5UQZBiR6Mw2Emq+Zgo+J4qFsTevU280ShQFACw6j5AQM9pFBeg+EcqrD5Q4iloJxG5g0qkUsZQ=
+  on:
+    tags: true
+    repo: asciidoctor/asciidoctor.js
+    condition: "$ASCIIDOCTOR_CORE_VERSION = 'v1.5.5'"
+    node: node
+- provider: npm
+  skip_cleanup: true
+  email: ascii@doctor.org
+  api_key:
+    secure: OOM/FNDuhWGeZgD5EKzn/Kuv3Nf/uU1rVLoYyJ5/SKo8UeJ95acZyDisG2Y9ZOF1VeFEpmXXfgMxAs5ZKO7GwrGhah9Mvnbex5UQZBiR6Mw2Emq+Zgo+J4qFsTevU280ShQFACw6j5AQM9pFBeg+EcqrD5Q4iloJxG5g0qkUsZQ=
+  on:
+    branch: master
+    repo: asciidoctor/asciidoctor.js
+    condition: "$ASCIIDOCTOR_CORE_VERSION = 'v1.5.5'"
+    node: node
