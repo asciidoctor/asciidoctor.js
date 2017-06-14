@@ -16,7 +16,6 @@ script:
 sudo: false
 
 before_deploy:
-- npm run build
 - npm run dist
 - if [[ "$TRAVIS_BRANCH" == master ]]; then npm --no-git-tag-version version "$(npm view . version)+git.$(git log -n1 --pretty=format:%h)"; fi
 - if [[ "$TRAVIS_BRANCH" == master ]]; then npm config set tag dev; fi
