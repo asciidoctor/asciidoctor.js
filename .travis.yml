@@ -24,9 +24,8 @@ before_deploy:
 deploy:
 - provider: npm
   skip_cleanup: true
-  email: ascii@doctor.org
-  api_key:
-    secure: OOM/FNDuhWGeZgD5EKzn/Kuv3Nf/uU1rVLoYyJ5/SKo8UeJ95acZyDisG2Y9ZOF1VeFEpmXXfgMxAs5ZKO7GwrGhah9Mvnbex5UQZBiR6Mw2Emq+Zgo+J4qFsTevU280ShQFACw6j5AQM9pFBeg+EcqrD5Q4iloJxG5g0qkUsZQ=
+  email: $NPM_USER_EMAIL
+  api_key: $NPM_USER_API_KEY
   on:
     tags: true
     repo: asciidoctor/asciidoctor.js
@@ -34,9 +33,8 @@ deploy:
     node: node
 - provider: npm
   skip_cleanup: true
-  email: ascii@doctor.org
-  api_key:
-    secure: OOM/FNDuhWGeZgD5EKzn/Kuv3Nf/uU1rVLoYyJ5/SKo8UeJ95acZyDisG2Y9ZOF1VeFEpmXXfgMxAs5ZKO7GwrGhah9Mvnbex5UQZBiR6Mw2Emq+Zgo+J4qFsTevU280ShQFACw6j5AQM9pFBeg+EcqrD5Q4iloJxG5g0qkUsZQ=
+  email: $NPM_USER_EMAIL
+  api_key: $NPM_USER_API_KEY
   on:
     branch: master
     repo: asciidoctor/asciidoctor.js
