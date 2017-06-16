@@ -159,6 +159,18 @@ Registry.$$proto.preprocessor = function (name, block) {
 };
 
 /**
+ * @memberof Extensions/Registry
+ */
+
+Registry.$$proto.docinfoProcessor = function (name, block) {
+  if (typeof name === 'function' && typeof block === 'undefined') {
+    return Opal.send(this, 'docinfo_processor', null, toBlock(name));
+  } else {
+    return Opal.send(this, 'docinfo_processor', [name], toBlock(block));
+  }
+};
+
+/**
  * @namespace
  * @module Extensions/Processor
  */
@@ -264,3 +276,16 @@ var Postprocessor = Extensions.Postprocessor;
  */
 // eslint-disable-next-line no-unused-vars
 var Preprocessor = Extensions.Preprocessor;
+
+/**
+ * @namespace
+ * @module Extensions/DocinfoProcessor
+ */
+var DocinfoProcessor = Extensions.DocinfoProcessor;
+
+/**
+ * @memberof Extensions/DocinfoProcessor
+ */
+DocinfoProcessor.$$proto.atLocation = function (value) {
+  this.$at_location(value);
+};

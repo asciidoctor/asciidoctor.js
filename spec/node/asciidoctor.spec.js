@@ -317,6 +317,18 @@ describe('Node.js', function () {
       expect(result).toContain('This section is a draft: we need to talk about Y.');
     });
 
+    it('should be able to process moar footer docinfo processor extension', function () {
+      var registry = asciidoctor.Extensions.create();
+      var opts = {'safe': 'server', 'header_footer': true};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      require('../share/extensions/moar-footer-docinfo-processor.js')(registry);
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/moar-footer-docinfo-processor-ex.adoc')), opts);
+      expect(result).toContain('moar footer');
+
+      result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/moar-footer-docinfo-processor-ex.adoc')));
+      expect(result).not.toContain('moar footer');
+    });
+
     it('should be able to pass an extension registry to the processor', function () {
       var registry = asciidoctor.Extensions.create(function () {
         this.block(function () {
