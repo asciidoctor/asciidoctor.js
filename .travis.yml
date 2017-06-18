@@ -17,8 +17,6 @@ sudo: false
 
 before_deploy:
 - npm run dist
-- if [[ "$TRAVIS_BRANCH" == master ]]; then npm --no-git-tag-version version "$(npm view . version)+git.$(git log -n1 --pretty=format:%h)"; fi
-- if [[ "$TRAVIS_BRANCH" == master ]]; then npm config set tag dev; fi
 
 deploy:
 - provider: npm
@@ -28,14 +26,4 @@ deploy:
   on:
     tags: true
     repo: asciidoctor/asciidoctor.js
-    condition: "$ASCIIDOCTOR_CORE_VERSION = 'v1.5.5'"
-    node: node
-- provider: npm
-  skip_cleanup: true
-  email: $NPM_USER_EMAIL
-  api_key: $NPM_USER_API_KEY
-  on:
-    branch: master
-    repo: asciidoctor/asciidoctor.js
-    condition: "$ASCIIDOCTOR_CORE_VERSION = 'v1.5.5'"
     node: node
