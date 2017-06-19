@@ -27,3 +27,4 @@ deploy:
     tags: true
     repo: asciidoctor/asciidoctor.js
     node: node
+    condition: "$ASCIIDOCTOR_CORE_VERSION -ne 'master'"
