@@ -336,7 +336,7 @@ describe('Node.js', function () {
           self.named('whisper');
           self.onContext('paragraph');
           self.process(function (parent, reader) {
-            var lines = reader.$lines().map(function (l) { return l.toLowerCase().replace('!', '.'); });
+            var lines = reader.getLines().map(function (l) { return l.toLowerCase().replace('!', '.'); });
             return self.createBlock(parent, 'paragraph', lines);
           });
         });

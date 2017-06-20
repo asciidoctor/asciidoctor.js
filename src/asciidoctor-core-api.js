@@ -1030,3 +1030,13 @@ Reader.$$proto.pushInclude = function (data, file, path, lineno, attributes) {
 Reader.$$proto.getCursor = function () {
   return this.$cursor();
 };
+
+/**
+ * Get a copy of the remaining {Array} of String lines managed by this Reader.
+ *
+ * @memberof Reader
+ * @returns {Array} - returns A copy of the String {Array} of lines remaining in this Reader.
+ */
+Reader.$$proto.getLines = function () {
+  return this.$lines();
+};

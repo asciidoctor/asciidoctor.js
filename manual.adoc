@@ -4,16 +4,17 @@
 
 === How to convert a list of AsciiDoc files contained within a folder (using Node.js)
 
-```javascript
+[source,javascript]
+----
 var glob = require('glob');
-var processor = require('asciidoctor.js')();
+var asciidoctor = require('asciidoctor.js')();
 
 glob('documentation/*.adoc', function (err, files) { // <1>
   files.forEach(function(file) {
-    processor.convertFile(file); // <2>
+    asciidoctor.convertFile(file); // <2>
   });
 });
-```
+----
 <1> We are using `glob` module to iterate through every .adoc file inside the directory
 <2> Convert each file using the `convertFile` method
 
@@ -24,7 +25,7 @@ You can set document attributes after loading AsciiDoc content.
 [source,javascript]
 ----
 var content = '== Title';
-var doc = processor.load(content);
+var doc = asciidoctor.load(content);
 console.log(doc.getAttribute('data-uri')); // prints undefined
 console.log(doc.getAttribute('data-uri', 'false')); // prints 'false'
 
@@ -39,10 +40,103 @@ You can unset document attributes after loading AsciiDoc content.
 [source,javascript]
 ----
 var content = '== Title';
-var doc = processor.load(content);
+var doc = asciidoctor.load(content);
 doc.setAttribute('data-uri', 'true');
 console.log(doc.getAttribute('data-uri')); // prints 'true'
 
 doc.removeAttribute('data-uri');
 console.log(doc.getAttribute('data-uri')); // prints undefined
 ----
+
+=== How to register an extension ?
+
+You can register an extension globally as follows:
+
+[source,javascript]
+----
+var asciidoctor = require('asciidoctor.js')();
+asciidoctor.register(function () {
+  this.block(function () {
+    var self = this;
+    self.named('shout');
+    self.onContext('paragraph');
+    self.process(function (parent, reader) {
+      var lines = reader.getLines().map(function (l) { return l.toUpperCase(); });
+      return self.createBlock(parent, 'paragraph', lines);
+    });
+  });
+});
+
+const text = `[shout]\
+\nSay it loud.\
+\nSay it proud.`;
+
+const html = asciidoctor.convert(text);
+console.log(html);
+
+// <div class="paragraph">
+// <p>SAY IT LOUD.
+// SAY IT PROUD.</p>
+// </div>
+----
+
+You can also create one or more registries.
+It can be useful when you want to convert the same text with different extensions enabled.
+
+[source,javascript]
+----
+const asciidoctor = require('asciidoctor.js')();
+
+const registryA = asciidoctor.Extension.create();
+const registryB = asciidoctor.Extension.create();
+
+registryA.block(function () {
+  var self = this;
+  self.named('shout');
+  self.onContext('paragraph');
+  self.process(function (parent, reader) {
+    // Transform text to uppercase
+    const lines = reader.getLines().map(function (l) { return l.toUpperCase(); });
+    return self.createBlock(parent, 'paragraph', lines);
+  });
+});
+
+registryB.block(function () {
+  var self = this;
+  self.named('shout');
+  self.onContext('paragraph');
+  self.process(function (parent, reader) {
+    // Replace period at end of line with three three exclamation marks
+    const lines = reader.getLines().map(function (l) { return l.replace(/\.$/g, ' !!!'); });
+    return self.createBlock(parent, 'paragraph', lines);
+  });
+});
+
+const text = `[shout]\
+\nSay it loud.\
+\nSay it proud.`;
+
+console.log(asciidoctor.convert(text, {'extension_registry': registryA}));
+console.log('');
+console.log(asciidoctor.convert(text, {'extension_registry': registryB}));
+
+// <div class="paragraph">
+// <p>SAY IT LOUD.
+// SAY IT PROUD.</p>
+// </div>
+//
+// <div class="paragraph">
+// <p>Say it loud !!!
+// Say it proud !!!</p>
+// </div>
+----
+
+In the example above, we've created two registries:
+
+* `registryA`
+* `registryB`
+
+Both registry have a `[shout]` block extension registered with a specific implementation.
+
+The first block extension is registered in the `registryA` and will transform the text to uppercase. 
+The other one is registered in the `registryB` and will replace `.` by `{nbsp}!!!`.
