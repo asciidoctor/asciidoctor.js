@@ -1,22 +1,29 @@
 language: node_js
 env:
-  - ASCIIDOCTOR_CORE_VERSION=v1.5.5
-  - ASCIIDOCTOR_CORE_VERSION=master
+- ASCIIDOCTOR_CORE_VERSION=v1.5.5
+- ASCIIDOCTOR_CORE_VERSION=master
 node_js:
-  - "4"
-  - "6"
-  - "node"
-
+- '4'
+- '6'
+- node
 jdk:
-  - oraclejdk8
-
-before_script:
-  - npm install
-
+- oraclejdk8
 script:
- - npm run lint
- - npm run package
- - npm run docs
- - SKIP_BUILD=1 npm run examples
-
+- npm run lint
+- npm run package
+- npm run docs
+- SKIP_BUILD=1 npm run examples
 sudo: false
+
+before_deploy:
+- npm run dist
+
+deploy:
+- provider: npm
+  skip_cleanup: true
+  email: $NPM_USER_EMAIL
+  api_key: $NPM_USER_API_KEY
+  on:
+    tags: true
+    repo: asciidoctor/asciidoctor.js
+    node: node
