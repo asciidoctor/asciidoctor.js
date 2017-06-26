@@ -217,10 +217,9 @@ Processor.$$proto.parseContent = function (parent, content, attrs) {
 Processor.$$proto.positionalAttributes = function (value) {
   if (typeof this.$positional_attrs === 'function') {
     return this.$positional_attrs(value);
-  } else {
-    // NOTE: for backward compatibility, this function was renamed to positional_attrs in 1.5.6
-    return this.$positional_attributes(value);
   }
+  // NOTE: for backward compatibility, this function was renamed to positional_attrs in 1.5.6
+  return this.$positional_attributes(value);
 };
 
 /**

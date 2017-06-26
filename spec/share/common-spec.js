@@ -62,6 +62,13 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(doc.getAuthor()).toBe('Guillaume Grossetie');
       });
 
+      it('should populate the catalog', function () {
+        var doc = asciidoctor.load('link:index.html[Docs]', {'safe': 'safe', 'catalog_assets': true});
+        doc.convert();
+        var links = doc.getCatalog().links;
+        expect(links).toEqual(['index.html']);
+      });
+
       it('should return attributes as JSON object', function () {
         var doc = asciidoctor.load('= Authors\nGuillaume Grossetie;Anders Nawroth\n');
         expect(doc.getAttributes()['author']).toBe('Guillaume Grossetie');
