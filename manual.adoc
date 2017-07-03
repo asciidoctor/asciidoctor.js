@@ -55,7 +55,7 @@ You can register an extension globally as follows:
 [source,javascript]
 ----
 var asciidoctor = require('asciidoctor.js')();
-asciidoctor.register(function () {
+asciidoctor.Extensions.register(function () {
   this.block(function () {
     var self = this;
     self.named('shout');
@@ -87,8 +87,8 @@ It can be useful when you want to convert the same text with different extension
 ----
 const asciidoctor = require('asciidoctor.js')();
 
-const registryA = asciidoctor.Extension.create();
-const registryB = asciidoctor.Extension.create();
+const registryA = asciidoctor.Extensions.create();
+const registryB = asciidoctor.Extensions.create();
 
 registryA.block(function () {
   var self = this;
