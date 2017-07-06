@@ -10,6 +10,19 @@ var toHash = function (object) {
 };
 
 /**
+ * Convert an (Opal) Hash to JSON.
+ * @private
+ */
+var fromHash = function (hash) {
+  var to = {};
+  for (var i = 0, key, keys = hash.$$keys, data = hash.$$smap, len = keys.length; i < len; i++) {
+    key = keys[i];
+    to[key] = data[key];
+  }
+  return to;
+};
+
+/**
  * @private
  */
 var prepareOptions = function (options) {
@@ -269,12 +282,7 @@ var AbstractNode = Opal.Asciidoctor.AbstractNode;
  * @memberof AbstractNode
  */
 AbstractNode.$$proto.getAttributes = function () {
-  var to = {}, from = this.attributes;
-  for (var i = 0, key, keys = from.$$keys, data = from.$$smap, len = keys.length; i < len; i++) {
-    key = keys[i];
-    to[key] = data[key];
-  }
-  return to;
+  return fromHash(this.attributes);
 };
 
 /**
@@ -643,6 +651,18 @@ Document.$$proto.getDocumentTitle = function (options) {
  */
 Document.$$proto.getDoctitle = function (options) {
   return this.getDocumentTitle(options);
+};
+
+/**
+ * Get the document catalog Hash.
+ * @memberof Document
+ */
+Document.$$proto.getCatalog = function () {
+  if (typeof this.catalog === 'undefined') {
+    // NOTE: for backward compatibility, references was renamed to catalog in 1.5.6
+    return fromHash(this.references);
+  }
+  return fromHash(this.catalog);
 };
 
 /**
