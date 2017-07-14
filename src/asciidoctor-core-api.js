@@ -184,7 +184,16 @@ AbstractBlock.$$proto.getStyle = function () {
  * @returns {string} - returns the caption for this block
  */
 AbstractBlock.$$proto.getCaption = function () {
-  return this.caption;
+  return this.$caption();
+};
+
+/**
+ * Set the caption for this block.
+ * @param {string} caption - Caption
+ * @memberof AbstractBlock
+ */
+AbstractBlock.$$proto.setCaption = function (caption) {
+  this.caption = caption;
 };
 
 /**
@@ -316,6 +325,23 @@ AbstractNode.$$proto.setAttribute = function (name, value, overwrite) {
   }
   return this.$set_attr(name, value, overwrite);
 };
+
+// NOTE: Available only in Asciidoctor 1.5.6
+if (typeof AbstractNode.$$proto.$remove_attr === 'function') {
+  /**
+   * Remove the attribute from the current node.
+   * @param {string} name - The String attribute name to remove
+   * @returns {string} - returns the previous {String} value, or undefined if the attribute was not present.
+   * @memberof AbstractNode
+   */
+  AbstractNode.$$proto.removeAttribute = function (name) {
+    var result = this.$remove_attr(name);
+    if (result === Opal.nil) {
+      return undefined;
+    }
+    return result;
+  };
+}
 
 /**
  * Get the {@link Document} to which this node belongs.
