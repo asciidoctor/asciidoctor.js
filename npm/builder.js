@@ -1,3 +1,4 @@
+'use strict';
 module.exports = Builder;
 
 var async = require('async');
@@ -139,13 +140,12 @@ Builder.prototype.release = function (releaseVersion) {
 
   async.series([
     function (callback) { builder.prepareRelease(releaseVersion, callback); },
-    function (callback) { builder.build(callback); },
-    function (callback) { builder.runTest(callback); },
-    function (callback) { builder.copyToDist(callback); },
-    function (callback) { builder.commit(releaseVersion, callback); },
-    function (callback) { builder.publish(callback); },
-    function (callback) { builder.prepareNextIteration(callback); },
-    function (callback) { builder.completeRelease(releaseVersion, callback); }
+    function (callback) {
+      /* eslint-disable no-unused-vars */
+      const releasePushed = builder.pushRelease(callback);
+      callback();
+    },
+    function (callback) { builder.completeRelease(releasePushed, releaseVersion, callback); }
   ], function () {
     log.success('Done in ' + process.hrtime(start)[0] + 's');
   });
@@ -170,22 +170,8 @@ Builder.prototype.prepareRelease = function (releaseVersion, callback) {
   if (process.env.DRY_RUN) {
     log.warn('Dry run! To perform the release, run the command again without DRY_RUN environment variable');
   } else {
-    bfs.updateFileSync('package.json', /"version": "(.*?)"/g, '"version": "' + releaseVersion + '"');
+    this.execSync('npm version ' + releaseVersion);
   }
-  callback();
-};
-
-Builder.prototype.commit = function (releaseVersion, callback) {
-  this.execSync('git add -A .');
-  this.execSync('git commit -m "Release ' + releaseVersion + '"');
-  this.execSync('git tag v' + releaseVersion);
-  callback();
-};
-
-Builder.prototype.prepareNextIteration = function (callback) {
-  this.removeDistDirSync();
-  this.execSync('git add -A .');
-  this.execSync('git commit -m "Prepare for next development iteration"');
   callback();
 };
 
@@ -194,21 +180,30 @@ Builder.prototype.runTest = function (callback) {
   callback();
 };
 
-Builder.prototype.publish = function (callback) {
-  if (process.env.SKIP_PUBLISH) {
-    log.info('SKIP_PUBLISH environment variable is defined, skipping "publish" task');
-    callback();
-    return;
+Builder.prototype.pushRelease = function () {
+  const remoteName = child_process.execSync('git remote -v').toString('utf8')
+    .split(/\r?\n/)
+    .filter(line => line.includes('(push)') && line.includes('asciidoctor/asciidoctor.js.git'))
+    .map(line => line.split('\t')[0])
+    .reduce((a, b) => a + b, '');
+
+  if (remoteName) {
+    this.execSync('git push ' + remoteName + ' master');
+    this.execSync('git push ' + remoteName + ' --tags');
+    return true;
+  } else {
+    log.warn('Unable to find the remote name of the original repository asciidoctor/asciidoctor.js');
+    return false;
   }
-  this.execSync('npm publish');
-  callback();
 };
 
-Builder.prototype.completeRelease = function (releaseVersion, callback) {
+Builder.prototype.completeRelease = function (releasePushed, releaseVersion, callback) {
   log.info('');
   log.info('To complete the release, you need to:');
-  log.info('[ ] push changes upstream: `git push origin master && git push origin v' + releaseVersion + '`');
-  log.info('[ ] publish a release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/new');
+  if (!releasePushed) {
+    log.info('[ ] push changes upstream: `git push origin master && git push origin --tags');
+  }
+  log.info('[ ] edit the release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/tag/v' + releaseVersion);
   log.info('[ ] create an issue here: https://github.com/webjars/asciidoctor.js to update Webjars');
   callback();
 };
@@ -235,6 +230,7 @@ Builder.prototype.execSync = function (command) {
   if (!process.env.DRY_RUN) {
     stdout = child_process.execSync(command);
     process.stdout.write(stdout);
+    return stdout;
   }
 };
 
