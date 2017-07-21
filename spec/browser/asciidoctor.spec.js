@@ -8,4 +8,4 @@ var testOptions = {
 var asciidoctor = require('./asciidoctor.js')({runtime: {platform: 'browser'}});
 require('asciidoctor-docbook.js');
 
-commonSpec(testOptions, asciidoctor);
+shareSpec(testOptions, asciidoctor);

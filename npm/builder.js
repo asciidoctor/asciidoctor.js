@@ -293,7 +293,8 @@ Builder.prototype.examples = function (callback) {
     log.success('You can now open:'
       + '\n - build/examples/asciidoctor_example.html'
       + '\n - build/examples/userguide_test.html'
-      + '\n - build/examples/slide.html');
+      + '\n - build/examples/slide.html'
+      + '\n - build/examples/basic.html');
     typeof callback === 'function' && callback();
   });
 };
@@ -318,6 +319,7 @@ Builder.prototype.copyExamplesResources = function (callback) {
   this.copyToExamplesBuildDir('examples/asciidoctor_example.html');
   this.copyToExamplesBuildDir('examples/userguide_test.html');
   this.copyToExamplesBuildDir('examples/slide.html');
+  this.copyToExamplesBuildDir('examples/basic.html');
   this.copyToExamplesBuildDir('README.adoc');
 
   log.task('download sample data from AsciiDoc repository');

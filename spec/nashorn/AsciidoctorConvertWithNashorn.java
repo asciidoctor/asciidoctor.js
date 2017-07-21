@@ -8,6 +8,6 @@ public class AsciidoctorConvertWithNashorn {
   public static void main(String... args) throws Throwable {
     ScriptEngineManager engineManager = new ScriptEngineManager();
     ScriptEngine engine = engineManager.getEngineByName("nashorn");
-    engine.eval(new FileReader("./spec/share/asciidoctor-convert.js"));
+    engine.eval(new FileReader("./spec/nashorn/asciidoctor-convert.js"));
   }
 }

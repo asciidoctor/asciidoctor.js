@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-var commonSpec = require('../share/common-spec.js');
+var shareSpec = require('../share/asciidoctor.spec.js');
 var config = {
   runtime: {
     platform: 'node',
@@ -30,7 +30,7 @@ var testOptions = {
   baseDir: path.join(__dirname, '..', '..')
 };
 
-commonSpec(testOptions, asciidoctor);
+shareSpec(testOptions, asciidoctor);
 
 function fileExists (path) {
   try {

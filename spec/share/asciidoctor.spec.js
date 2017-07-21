@@ -1,4 +1,4 @@
-var commonSpec = function (testOptions, asciidoctor) {
+var shareSpec = function (testOptions, asciidoctor) {
 
   describe(testOptions.platform, function () {
 
@@ -388,10 +388,10 @@ var commonSpec = function (testOptions, asciidoctor) {
 
 if (typeof module !== 'undefined' && module.exports) {
   // Node.
-  module.exports = commonSpec;
+  module.exports = shareSpec;
 } else if (typeof define === 'function' && define.amd) {
   // AMD. Register a named module.
-  define('common-spec', [''], function () {
-    return commonSpec;
+  define('asciidoctor-share-spec', [''], function () {
+    return shareSpec;
   });
 }
