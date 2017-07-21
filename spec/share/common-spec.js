@@ -240,6 +240,32 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(paragraphBlock.getAttribute('bold-statement')).toBe('off');
       });
 
+      it('should assign sectname, caption, and numeral to appendix section by default', function () {
+        var doc = asciidoctor.load('[appendix]\n== Attribute Options\n\nDetails');
+        var appendix = doc.getBlocks()[0];
+        expect(appendix.sectname).toBe('appendix');
+        expect(appendix.caption).toBe('Appendix A: ');
+        expect(appendix.getCaption()).toBe('Appendix A: ');
+        var asciidoctorVersion = asciidoctor.$$const.VERSION;
+        var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
+        if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {
+          expect(appendix.number).toBe('A');
+          expect(appendix.numbered).toBe(true);
+        }
+      });
+
+      it ('remove_attr should remove attribute and return previous value', function () {
+        var asciidoctorVersion = asciidoctor.$$const.VERSION;
+        var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
+        // Available only in Asciidoctor core 1.5.6 and greater.
+        if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {
+          var doc = asciidoctor.load('= Document\n\n== First section\n\n[foo="bar"]\nThis is a paragraph.');
+          var paragraphBlock = doc.getBlocks()[0].getBlocks()[0];
+          expect(paragraphBlock.getAttribute('foo')).toBe('bar');
+          expect(paragraphBlock.removeAttribute('foo')).toBe('bar');
+          expect(paragraphBlock.removeAttribute('foo')).toBeUndefined();
+        }
+      });
     });
 
     describe('Modifying', function () {
