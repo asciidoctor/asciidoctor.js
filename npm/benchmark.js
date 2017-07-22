@@ -1,9 +1,9 @@
-var log = require('bestikk-log');
-var Builder = require('./builder.js');
-var builder = new Builder();
+const log = require('bestikk-log');
+const Builder = require('./builder.js');
+const builder = new Builder();
 
-var args = process.argv.slice(2);
-var runner = args[0];
+const args = process.argv.slice(2);
+const runner = args[0];
 
 if (typeof runner === 'undefined') {
   log.error('Runner is undefined, please specify a runner \'npm run benchmark [node|phantomjs|jjs]\'');

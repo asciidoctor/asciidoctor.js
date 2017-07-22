@@ -1,14 +1,14 @@
-var httpServer = require('http-server');
-var portfinder = require('portfinder');
-var log = require('bestikk-log');
+const httpServer = require('http-server');
+const portfinder = require('portfinder');
+const log = require('bestikk-log');
 
-var args = process.argv.slice(2);
-var port = args[0];
+const args = process.argv.slice(2);
+const port = args[0];
 
-var server = httpServer.createServer({});
+const server = httpServer.createServer({});
 
-var listen = function (port) {
-  server.listen(port, function (){
+const listen = function (port) {
+  server.listen(port, function () {
     // Callback triggered when server is successfully listening. Hurray!
     log.info('Server listening on: http://localhost:' + port);
   });
@@ -16,8 +16,10 @@ var listen = function (port) {
 
 if (!port) {
   portfinder.basePort = 8080;
-  portfinder.getPort(function (err, port) {
-    if (err) { throw err; }
+  portfinder.getPort((err, port) => {
+    if (err) {
+      throw err;
+    }
     listen(port);
   });
 } else {
