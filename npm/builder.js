@@ -104,6 +104,20 @@ Builder.prototype.downloadDependencies = function (callback) {
   ], () => typeof callback === 'function' && callback());
 };
 
+const parseTemplate = function (templateFile, templateModel) {
+  return fs.readFileSync(templateFile, 'utf8')
+    .replace(/\r\n/g, '\n')
+    .split('\n')
+    .map(line => {
+      if(line in templateModel){
+        return templateModel[line];
+      } else {
+        return line;
+      }
+    })
+    .join('\n');
+};
+
 Builder.prototype.generateUMD = function (callback) {
   log.task('generate UMD');
 
@@ -114,26 +128,14 @@ Builder.prototype.generateUMD = function (callback) {
   ];
   this.concat('Asciidoctor API core + extensions', apiFiles, 'build/asciidoctor-api.js');
 
-  const asciidoctorTemplateContext = {
+  const templateModel = {
     '//#{opalCode}': fs.readFileSync('node_modules/opal-runtime/src/opal.js', 'utf8'),
     '//#{asciidoctorCode}': fs.readFileSync('build/asciidoctor-lib.js', 'utf8'),
     '//#{asciidoctorAPI}': fs.readFileSync('build/asciidoctor-api.js', 'utf8')
   };
 
-  const content = fs.readFileSync('src/template-asciidoctor.js', 'utf8')
-    .replace(/\r\n/g, '\n')
-    .split('\n')
-    .map(line => {
-      if(line in asciidoctorTemplateContext){
-        return asciidoctorTemplateContext[line];
-      } else {
-        return line;
-      }
-    })
-    .join('\n');
-
+  const content = parseTemplate('src/template-asciidoctor.js', templateModel);
   fs.writeFileSync('build/asciidoctor.js', content, 'utf8');
-
   callback();
 };
 
