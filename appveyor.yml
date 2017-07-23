@@ -1,12 +1,21 @@
 version: '{build}'
+
 skip_tags: true
 skip_commits:
   message: /\[ci skip\]/
+
 clone_depth: 10
+
+# Test against the latest version of this Node.js version
 environment:
-  nodejs_version: 0.12
+  nodejs_version: "4"
+
+# Install scripts. (runs after repo cloning)
 install:
-- npm install
+  # Get the latest stable version of Node.js
+  - ps: Install-Product node $env:nodejs_version
+  - npm install
+
 build_script:
 - node npm/appveyor.js
 - node npm/test/unsupported-features.js
