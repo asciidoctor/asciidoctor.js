@@ -8,10 +8,8 @@ const port = args[0];
 const server = httpServer.createServer({});
 
 const listen = function (port) {
-  server.listen(port, function () {
-    // Callback triggered when server is successfully listening. Hurray!
-    log.info('Server listening on: http://localhost:' + port);
-  });
+  // Callback triggered when server is successfully listening. Hurray!
+  server.listen(port, () => log.info(`Server listening on: http://localhost:${port}`));
 };
 
 if (!port) {

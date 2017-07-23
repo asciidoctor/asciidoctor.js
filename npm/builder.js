@@ -104,18 +104,6 @@ Builder.prototype.downloadDependencies = function (callback) {
   ], () => typeof callback === 'function' && callback());
 };
 
-const templateFile = function (templateFile, context, outputFile) {
-  var template = fs.readFileSync(templateFile, 'utf8');
-  var lines = template.replace(/\r\n/g, '\n').split('\n');
-  lines.forEach(function (line, index, result) {
-    if (line in context) {
-      result[index] = context[line];
-    }
-  });
-  var content = lines.join('\n');
-  fs.writeFileSync(outputFile, content, 'utf8');
-};
-
 Builder.prototype.generateUMD = function (callback) {
   log.task('generate UMD');
 
@@ -125,12 +113,27 @@ Builder.prototype.generateUMD = function (callback) {
     'src/asciidoctor-extensions-api.js'
   ];
   this.concat('Asciidoctor API core + extensions', apiFiles, 'build/asciidoctor-api.js');
+
   const asciidoctorTemplateContext = {
     '//#{opalCode}': fs.readFileSync('node_modules/opal-runtime/src/opal.js', 'utf8'),
     '//#{asciidoctorCode}': fs.readFileSync('build/asciidoctor-lib.js', 'utf8'),
     '//#{asciidoctorAPI}': fs.readFileSync('build/asciidoctor-api.js', 'utf8')
   };
-  templateFile('src/template-asciidoctor.js', asciidoctorTemplateContext, 'build/asciidoctor.js');
+
+  const content = fs.readFileSync('src/template-asciidoctor.js', 'utf8')
+    .replace(/\r\n/g, '\n')
+    .split('\n')
+    .map(line => {
+      if(line in asciidoctorTemplateContext){
+        return asciidoctorTemplateContext[line];
+      } else {
+        return line;
+      }
+    })
+    .join('\n');
+
+  fs.writeFileSync('build/asciidoctor.js', content, 'utf8');
+
   callback();
 };
 
@@ -244,8 +247,8 @@ Builder.prototype.uglify = function (callback) {
   const tasks = [
     {source: 'build/asciidoctor.js', destination: 'build/asciidoctor.min.js' }
   ].map(file => {
-    var source = file.source;
-    var destination = file.destination;
+    const source = file.source;
+    const destination = file.destination;
     log.transform('minify', source, destination);
     return callback => uglify.minify(source, destination, callback);
   });
@@ -264,8 +267,8 @@ Builder.prototype.copyToDist = function (callback) {
   typeof callback === 'function' && callback();
 };
 
-Builder.prototype.copyToExamplesBuildDir = function (file) {
-  bfs.copyToDirSync(file, this.examplesBuildDir);
+Builder.prototype.copyToExamplesBuildDir = function (files) {
+  files.forEach(file => bfs.copyToDirSync(file, this.examplesBuildDir));
 };
 
 Builder.prototype.examples = function (callback) {
@@ -276,14 +279,14 @@ Builder.prototype.examples = function (callback) {
     callback => builder.compileExamples(callback), // Compile examples
     callback => builder.copyExamplesResources(callback) // Copy examples resources
   ], () => {
-    log.info('');
-    log.info('In order to visualize the result, a local HTTP server must be started within the root of this project otherwise you will have cross-origin issues.');
-    log.info('For this purpose, you can run the following command to start a HTTP server locally: npm run server');
-    log.success('You can now open:'
-      + '\n - build/examples/asciidoctor_example.html'
-      + '\n - build/examples/userguide_test.html'
-      + '\n - build/examples/slide.html'
-      + '\n - build/examples/basic.html');
+    log.info(`
+In order to visualize the result, a local HTTP server must be started within the root of this project otherwise you will have cross-origin issues.
+For this purpose, you can run the following command to start a HTTP server locally: 'npm run server'.`);
+    log.success(`You can now open:
+ - build/examples/asciidoctor_example.html
+ - build/examples/userguide_test.html
+ - build/examples/slide.html
+ - build/examples/basic.html`);
     typeof callback === 'function' && callback();
   });
 };
@@ -298,20 +301,21 @@ Builder.prototype.compileExamples = function (callback) {
 };
 
 Builder.prototype.getContentFromAsciiDocRepo = function (source, target, callback) {
-  download.getContentFromURL(this.asciidocRepoBaseURI + '/doc/' + source, target, callback);
+  download.getContentFromURL(`${this.asciidocRepoBaseURI}/doc/${source}`, target, callback);
 };
 
 Builder.prototype.copyExamplesResources = function (callback) {
   const builder = this;
 
   log.task(`copy resources to ${this.examplesBuildDir}/`);
-  this.copyToExamplesBuildDir('examples/asciidoctor_example.html');
-  this.copyToExamplesBuildDir('examples/userguide_test.html');
-  this.copyToExamplesBuildDir('examples/slide.html');
-  this.copyToExamplesBuildDir('examples/basic.html');
-  this.copyToExamplesBuildDir('README.adoc');
+  this.copyToExamplesBuildDir([
+    'examples/asciidoctor_example.html',
+    'examples/userguide_test.html',
+    'examples/slide.html',
+    'README.adoc'
+  ]);
 
-  log.task('download sample data from AsciiDoc repository');
+  log.task('Download sample data from AsciiDoc repository');
   async.series([
     callback => builder.getContentFromAsciiDocRepo('asciidoc.txt', path.join(builder.examplesBuildDir, 'userguide.adoc'), callback),
     callback => builder.getContentFromAsciiDocRepo('customers.csv', path.join(builder.examplesBuildDir, 'customers.csv'), callback)
@@ -359,13 +363,15 @@ Builder.prototype.replaceDefaultStylesheetPath = function (callback) {
   const path = 'build/asciidoctor-lib.js';
   let data = fs.readFileSync(path, 'utf8');
   log.debug('Replace primary_stylesheet_data method');
-  const primaryStylesheetDataImpl = 'var stylesheetsPath;\n' +
-    'if (Opal.const_get_relative([], "JAVASCRIPT_PLATFORM")["$=="]("node")) {\n' +
-    '  stylesheetsPath = Opal.const_get_relative([], "File").$join(__dirname, "css");\n' +
-    '} else {\n' +
-    '  stylesheetsPath = "css";\n' +
-    '}\n' +
-    'return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != null) ? $a : self.primary_stylesheet_data = Opal.const_get_relative([], "IO").$read(Opal.const_get_relative([], "File").$join(stylesheetsPath, "asciidoctor.css")).$chomp());';
+  const primaryStylesheetDataImpl = `
+var stylesheetsPath;
+if (Opal.const_get_relative([], "JAVASCRIPT_PLATFORM")["$=="]("node")) {
+  stylesheetsPath = Opal.const_get_relative([], "File").$join(__dirname, "css");
+} else {
+  stylesheetsPath = "css";
+}
+return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != null) ? $a : self.primary_stylesheet_data = Opal.const_get_relative([], "IO").$read(Opal.const_get_relative([], "File").$join(stylesheetsPath, "asciidoctor.css")).$chomp());
+  `;
   data = data.replace(/(function \$\$primary_stylesheet_data\(\)\ {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2');
   fs.writeFileSync(path, data, 'utf8');
   callback();
@@ -427,7 +433,7 @@ Builder.prototype.nashornJavaCompileAndRun = function (specName, className, java
 };
 
 Builder.prototype.nashornRun = function (name, jdkInstallDir) {
-  log.task('run against ' + name);
+  log.task(`run against ${name}`);
 
   const start = process.hrtime();
 
@@ -468,6 +474,7 @@ Builder.prototype.nashornRun = function (name, jdkInstallDir) {
 
 Builder.prototype.jdk8EA = function (callback) {
   const builder = this;
+
   async.series([
     callback => jdk.installJDK8EA('build/jdk8', callback),
     callback => {
@@ -479,6 +486,7 @@ Builder.prototype.jdk8EA = function (callback) {
 
 Builder.prototype.jdk9EA = function (callback) {
   const builder = this;
+
   async.series([
     callback => jdk.installJDK9EA('build/jdk9', callback),
     callback => {
