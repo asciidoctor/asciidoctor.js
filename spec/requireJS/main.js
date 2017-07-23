@@ -15,7 +15,7 @@ require.config({
   baseUrl: '/base',
   paths: {
     'asciidoctor': 'build/asciidoctor',
-    'common-spec': 'spec/share/common-spec',
+    'asciidoctor-share-spec': 'spec/share/asciidoctor.spec',
     'asciidoctor/docbook': 'node_modules/asciidoctor-docbook.js/dist/main'
   },
 
