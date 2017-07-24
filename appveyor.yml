@@ -17,6 +17,7 @@ install:
   - npm install
 
 build_script:
+- node npm/test/builder.js
 - node npm/appveyor.js
 - node npm/test/unsupported-features.js
 - node npm/test/jasmine-browser.js
