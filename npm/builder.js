@@ -198,13 +198,13 @@ Builder.prototype.pushRelease = function () {
   }
 };
 
-Builder.prototype.completeRelease = function (releasePushed, callback) {
+Builder.prototype.completeRelease = function (releasePushed, releaseVersion, callback) {
   log.info('');
   log.info('To complete the release, you need to:');
   if (!releasePushed) {
     log.info('[ ] push changes upstream: `git push origin master && git push origin --tags');
   }
-  log.info('[ ] publish a release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/new');
+  log.info(`[ ] publish a release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/tag/${releaseVersion}`);
   log.info('[ ] create an issue here: https://github.com/webjars/asciidoctor.js to update Webjars');
   callback();
 };
