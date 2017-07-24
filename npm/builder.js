@@ -204,7 +204,7 @@ Builder.prototype.completeRelease = function (releasePushed, releaseVersion, cal
   if (!releasePushed) {
     log.info('[ ] push changes upstream: `git push origin master && git push origin --tags');
   }
-  log.info(`[ ] publish a release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/tag/${releaseVersion}`);
+  log.info(`[ ] edit the release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/tag/${releaseVersion}`);
   log.info('[ ] create an issue here: https://github.com/webjars/asciidoctor.js to update Webjars');
   callback();
 };
