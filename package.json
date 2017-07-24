@@ -17,7 +17,7 @@
   "scripts": {
     "test:karmaBrowserify": "karma start karma-browserify.conf.js",
     "test:karmaRequirejs": "karma start karma-requirejs.conf.js",
-    "test": "node npm/test/unsupported-features.js && node npm/test/jasmine-browser.js && node npm/test/jasmine-browser-min.js && node npm/test/jasmine-node.js && node npm/test/jasmine-webpack.js && npm run test:karmaBrowserify && npm run test:karmaRequirejs",
+    "test": "node npm/test/builder.js && node npm/test/unsupported-features.js && node npm/test/jasmine-browser.js && node npm/test/jasmine-browser-min.js && node npm/test/jasmine-node.js && node npm/test/jasmine-webpack.js && npm run test:karmaBrowserify && npm run test:karmaRequirejs",
     "build": "node npm/build.js && npm run test",
     "dist": "cross-env MINIFY=1 node npm/dist.js",
     "lint": "eslint src spec npm",
@@ -84,6 +84,7 @@
     "karma-requirejs": "1.1.0",
     "phantomjs-prebuilt": "^2.1.7",
     "requirejs": "2.1.0",
+    "sinon": "2.3.8",
     "watchify": "^3.7.0",
     "webpack": "^1.13.3"
   }
