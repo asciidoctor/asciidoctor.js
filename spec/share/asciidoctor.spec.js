@@ -246,7 +246,7 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(appendix.sectname).toBe('appendix');
         expect(appendix.caption).toBe('Appendix A: ');
         expect(appendix.getCaption()).toBe('Appendix A: ');
-        var asciidoctorVersion = asciidoctor.$$const.VERSION;
+        var asciidoctorVersion = asciidoctor.getCoreVersion();
         var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
         if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {
           expect(appendix.number).toBe('A');
@@ -255,7 +255,7 @@ var shareSpec = function (testOptions, asciidoctor) {
       });
 
       it ('remove_attr should remove attribute and return previous value', function () {
-        var asciidoctorVersion = asciidoctor.$$const.VERSION;
+        var asciidoctorVersion = asciidoctor.getCoreVersion();
         var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
         // Available only in Asciidoctor core 1.5.6 and greater.
         if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {
@@ -308,7 +308,7 @@ var shareSpec = function (testOptions, asciidoctor) {
       });
 
       it('should convert a document with unicode', function () {
-        var asciidoctorVersion = asciidoctor.$$const.VERSION;
+        var asciidoctorVersion = asciidoctor.getCoreVersion();
         var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
         // Available only in Asciidoctor core 1.5.6 and greater.
         if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {

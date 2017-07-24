@@ -10,7 +10,7 @@ var config = {
 };
 var asciidoctor = require('../../build/asciidoctor.js')(config);
 function asciidoctorVersionGreaterThan (version) {
-  var currentVersion = asciidoctor.$$const.VERSION;
+  var currentVersion = asciidoctor.getCoreVersion();
   var currentVersionNumeric = parseInt(currentVersion.replace('.dev', '').replace(/\./g, ''));
   var versionNumeric = version.replace(/\./g, '');
   return currentVersionNumeric > versionNumeric; 
@@ -24,6 +24,7 @@ if (asciidoctorVersionGreaterThan('1.5.5')) {
   require('../share/extensions/foo-include.js');
 }
 require('../share/extensions/lorem-block-macro.js');
+var packageJson = require('../../package.json');
 
 var testOptions = {
   platform: 'Node.js',
@@ -48,6 +49,12 @@ function removeFile (path) {
 }
 
 describe('Node.js', function () {
+
+  describe('Asciidoctor.js API', function () {
+    it('should return Asciidoctor.js version', function () {
+      expect(asciidoctor.getVersion()).toBe(packageJson.version);
+    });
+  });
 
   describe('Configuring Asciidoctor module', function () {
     it('should be able to configure Asciidoctor module', function () {

@@ -128,10 +128,12 @@ Builder.prototype.generateUMD = function (callback) {
   ];
   this.concat('Asciidoctor API core + extensions', apiFiles, 'build/asciidoctor-api.js');
 
+  var packageJson = require('../package.json');
   const templateModel = {
     '//#{opalCode}': fs.readFileSync('node_modules/opal-runtime/src/opal.js', 'utf8'),
     '//#{asciidoctorCode}': fs.readFileSync('build/asciidoctor-lib.js', 'utf8'),
-    '//#{asciidoctorAPI}': fs.readFileSync('build/asciidoctor-api.js', 'utf8')
+    '//#{asciidoctorAPI}': fs.readFileSync('build/asciidoctor-api.js', 'utf8'),
+    '//#{asciidoctorVersion}': `var ASCIIDOCTOR_JS_VERSION = '${packageJson.version}';`
   };
 
   const content = parseTemplate('src/template-asciidoctor.js', templateModel);
