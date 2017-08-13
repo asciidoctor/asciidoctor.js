@@ -1,3 +1,6 @@
+sudo: false
+dist: trusty
+
 language: node_js
 
 env:
@@ -18,8 +21,6 @@ script:
 - npm run package
 - npm run docs
 - SKIP_BUILD=1 npm run examples
-
-sudo: false
 
 before_deploy:
 - >
