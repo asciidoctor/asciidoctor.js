@@ -358,6 +358,10 @@ Builder.prototype.replaceUnsupportedFeatures = function (callback) {
   let data = fs.readFileSync(path, 'utf8');
   log.debug('Replace (g)sub! with (g)sub');
   data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send\($1, \'$2\'');
+  // replace dot wildcard with negated line feed in single-line match expressions
+  data = data.replace(/Opal\.const_set\([^']+'[^']+Rx', *\/.+\/\);$/gm, function (m) {
+    return m.replace(/\.([*+])/g, '[^\\n]$1');
+  });
   fs.writeFileSync(path, data, 'utf8');
   callback();
 };
