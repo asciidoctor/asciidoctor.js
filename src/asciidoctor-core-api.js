@@ -66,6 +66,16 @@ var prepareOptions = function (options) {
 var Asciidoctor = Opal.Asciidoctor['$$class'];
 
 /**
+ * Get Asciidoctor core version number.
+ *
+ * @memberof Asciidoctor
+ * @returns {string} - returns the version number of Asciidoctor core.
+ */
+Asciidoctor.$$proto.getCoreVersion = function () {
+  return this.$$const.VERSION;
+};
+
+/**
  * Parse the AsciiDoc source input into an {@link Document} and convert it to the specified backend format.
  *
  * Accepts input as a Buffer or String.
