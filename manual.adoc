@@ -2,12 +2,85 @@
 
 == API
 
+=== How to convert an AsciiDoc content
+
+[source,javascript]
+----
+const asciidoctor = require('asciidoctor.js')();
+const content = 'Hello, _Asciidoctor_';
+const html = asciidoctor.convert(content);
+console.log(html);
+// <div class="paragraph">
+// <p>Hello, <em>Asciidoctor</em></p>
+// </div>
+----
+
+=== How to use conversion options
+
+[source,javascript]
+----
+const asciidoctor = require('asciidoctor.js')();
+const content = '= Document title';
+const html = asciidoctor.convert(content, {safe: 'safe', attributes: {showtitle: true, icons: 'fonts'}});
+console.log(html);
+// <h1>Document title</h1>
+----
+
+=== How to parse a file into an Asciidoctor Document object
+
+[source,javascript]
+----
+const asciidoctor = require('asciidoctor.js')();
+const doc = asciidoctor.loadFile('sample.adoc');
+console.log(doc.getAuthor());
+----
+
+=== How to configure the runtime environment
+
+NOTE: By default, Asciidoctor.js will try his best to automatically detect the runtime environment.
+
+If you want to explicitly define the runtime environment, you can use a `runtime` configuration object when instantiating Asciidoctor.js: 
+
+[source,javascript]
+----
+const asciidoctor = require('asciidoctor.js')({ 
+  runtime: {
+    platform: 'browser', 
+    engine: 'v8', 
+    framework: 'webextensions'
+  }
+});
+----
+
+=== How to configure the I/O module
+
+NOTE: By default, Asciidoctor.js will determine the I/O module upon the runtime environment.
+
+If you want to explicitly define the I/O module, you can specify the attribute `runtime.ioModule` when instantiating Asciidoctor.js: 
+
+[source,javascript]
+----
+const asciidoctor = require('asciidoctor.js')({
+  runtime: {
+    ioModule: 'xmlhttprequest'
+  }
+});
+----
+
+`ioModule` can be one of:
+
+* `spidermonkey`
+* `phantomjs`
+* `node`
+* `java_nio`
+* `xmlhttprequest`
+
 === How to convert a list of AsciiDoc files contained within a folder (using Node.js)
 
 [source,javascript]
 ----
-var glob = require('glob');
-var asciidoctor = require('asciidoctor.js')();
+const glob = require('glob');
+const asciidoctor = require('asciidoctor.js')();
 
 glob('documentation/*.adoc', function (err, files) { // <1>
   files.forEach(function(file) {
@@ -24,8 +97,8 @@ You can set document attributes after loading AsciiDoc content.
 
 [source,javascript]
 ----
-var content = '== Title';
-var doc = asciidoctor.load(content);
+const content = '== Title';
+const doc = asciidoctor.load(content);
 console.log(doc.getAttribute('data-uri')); // prints undefined
 console.log(doc.getAttribute('data-uri', 'false')); // prints 'false'
 
@@ -39,8 +112,8 @@ You can unset document attributes after loading AsciiDoc content.
 
 [source,javascript]
 ----
-var content = '== Title';
-var doc = asciidoctor.load(content);
+const content = '== Title';
+const doc = asciidoctor.load(content);
 doc.setAttribute('data-uri', 'true');
 console.log(doc.getAttribute('data-uri')); // prints 'true'
 
@@ -54,14 +127,14 @@ You can register an extension globally as follows:
 
 [source,javascript]
 ----
-var asciidoctor = require('asciidoctor.js')();
+const asciidoctor = require('asciidoctor.js')();
 asciidoctor.Extensions.register(function () {
   this.block(function () {
-    var self = this;
+    const self = this;
     self.named('shout');
     self.onContext('paragraph');
     self.process(function (parent, reader) {
-      var lines = reader.getLines().map(function (l) { return l.toUpperCase(); });
+      const lines = reader.getLines().map(function (l) { return l.toUpperCase(); });
       return self.createBlock(parent, 'paragraph', lines);
     });
   });
@@ -91,7 +164,7 @@ const registryA = asciidoctor.Extensions.create();
 const registryB = asciidoctor.Extensions.create();
 
 registryA.block(function () {
-  var self = this;
+  const self = this;
   self.named('shout');
   self.onContext('paragraph');
   self.process(function (parent, reader) {
@@ -102,7 +175,7 @@ registryA.block(function () {
 });
 
 registryB.block(function () {
-  var self = this;
+  const self = this;
   self.named('shout');
   self.onContext('paragraph');
   self.process(function (parent, reader) {
