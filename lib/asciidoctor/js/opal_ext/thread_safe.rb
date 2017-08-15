@@ -1,5 +1,4 @@
 module ThreadSafe
-end
-
-class Cache < ::Hash
+  class Cache < ::Hash
+  end
 end
