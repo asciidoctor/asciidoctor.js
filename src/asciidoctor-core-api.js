@@ -180,6 +180,22 @@ AbstractBlock.$$proto.getTitle = function () {
 };
 
 /**
+ * Convenience method that returns the interpreted title of the Block 
+ * with the caption prepended.
+ * Concatenates the value of this Block's caption instance variable and the
+ * return value of this Block's title method. No space is added between the
+ * two values. If the Block does not have a caption, the interpreted title is
+ * returned.
+ *
+ * @memberof AbstractBlock
+ * @returns {string} - the converted String title prefixed with the caption, or just the
+ * converted String title if no caption is set
+ */
+AbstractBlock.$$proto.getCaptionedTitle = function () {
+  return this.$captioned_title();
+};
+
+/**
  * Get the style (block type qualifier) for this block.
  * @memberof AbstractBlock
  * @returns {string} - returns the style for this block

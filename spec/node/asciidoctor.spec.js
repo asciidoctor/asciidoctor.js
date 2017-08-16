@@ -124,6 +124,7 @@ describe('Node.js', function () {
       expect(blocks.length).toBe(4);
       expect(blocks[0].getContext()).toBe('section');
       expect(blocks[0].getTitle()).toBe('Abstract');
+      expect(blocks[0].getCaptionedTitle()).toBe('Abstract');
       expect(blocks[0].getBlocks().length).toBe(1);
       expect(blocks[0].getBlocks()[0].getStyle()).toBe('abstract');
       expect(blocks[0].getBlocks()[0].getContext()).toBe('open');
