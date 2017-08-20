@@ -181,6 +181,7 @@ var shareSpec = function (testOptions, asciidoctor) {
       it('should get title', function () {
         var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n:title: The Actual Dangerous Documentation Chronicles\n== The Ravages of Writing');
         expect(doc.getTitle()).toBe('The Actual Dangerous Documentation Chronicles');
+        expect(doc.getCaptionedTitle()).toBe('The Actual Dangerous Documentation Chronicles');
       });
 
       it('should set title', function () {
@@ -246,6 +247,7 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(appendix.sectname).toBe('appendix');
         expect(appendix.caption).toBe('Appendix A: ');
         expect(appendix.getCaption()).toBe('Appendix A: ');
+        expect(appendix.getCaptionedTitle()).toBe('Appendix A: Attribute Options');
         var asciidoctorVersion = asciidoctor.getCoreVersion();
         var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
         if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {
