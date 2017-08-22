@@ -6,6 +6,6 @@ var testOptions = {
 };
 
 var asciidoctor = require('./asciidoctor.js')({runtime: {platform: 'browser'}});
-require('asciidoctor-docbook.js');
+require('asciidoctor-docbook.js')();
 
 shareSpec(testOptions, asciidoctor);
