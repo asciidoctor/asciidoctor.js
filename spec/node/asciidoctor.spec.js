@@ -19,7 +19,7 @@ function asciidoctorVersionGreaterThan (version) {
 
 var Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js');
-require('asciidoctor-template.js');
+require('asciidoctor-template.js')();
 var packageJson = require('../../package.json');
 
 var testOptions = {

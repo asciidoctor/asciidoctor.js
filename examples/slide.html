@@ -48,14 +48,10 @@ Content 2
 <button id="convertBtn">Convert</button>
 <script src="../../node_modules/jade/jade.js"></script>
 <script src="../asciidoctor.js"></script>
-<script>
-  // Instantiate Asciidoctor.js
-  // NOTE: Asciidoctor template.js should not be automatically loaded :|
-  Asciidoctor();
-</script>
 <script src="../../node_modules/asciidoctor-template.js/dist/main.js"></script>
 <script>
   var asciidoctor = Asciidoctor();
+  Asciidoctor.Template(); // Load Asciidoctor Template.js
   var options = {
     safe: 'safe',
     header_footer: true,
