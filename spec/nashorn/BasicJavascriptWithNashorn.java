@@ -8,6 +8,6 @@ public class BasicJavascriptWithNashorn {
   public static void main(String... args) throws Throwable {
     ScriptEngineManager engineManager = new ScriptEngineManager();
     ScriptEngine engine = engineManager.getEngineByName("nashorn");
-    engine.eval(new FileReader("./spec/share/basic.js"));
+    engine.eval(new FileReader("./spec/nashorn/basic.js"));
   }
 }

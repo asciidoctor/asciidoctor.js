@@ -26,7 +26,7 @@
 
   if (typeof platform === 'undefined') {
     // Try to automatically detect the JavaScript platform, engine and framework
-    if (isNode) {
+    if (isNode) {
       platform = platform || 'node';
       engine = engine || 'v8';
       if (isElectron) {
@@ -114,7 +114,6 @@ if JAVASCRIPT_FRAMEWORK == 'electron'
   require 'asciidoctor/js/opal_ext/electron/io'
 end
 if JAVASCRIPT_PLATFORM == 'node'
-  require 'asciidoctor/js/opal_ext/node/io'
   require 'asciidoctor/js/opal_ext/node/file'
   `Opal.load("nodejs")`
 end

@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <script src="../asciidoctor.js"></script>
+  </head>
+        
+  <body>
+    <h2>Raw content</h2>
+    <code id="raw">http://asciidoctor.org[*Asciidoctor*] running on http://opalrb.org[_Opal_] brings AsciiDoc to the browser!</code>
+    <h2>Rendered content</h2>
+    <div id="target"></div>
+    <script>
+      var content = document.getElementById('raw').textContent;
+      var asciidoctor = Asciidoctor();
+      var html = asciidoctor.convert(content, {doctype: 'inline'});
+      document.getElementById('target').innerHTML = html;
+    </script>
+  </body>
+</html>

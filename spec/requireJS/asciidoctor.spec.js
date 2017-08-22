@@ -1,9 +1,9 @@
-define(['asciidoctor', 'asciidoctor/docbook', 'common-spec'], function (asciidoctor, asciidoctorDocbook, commonSpec) {
+define(['asciidoctor', 'asciidoctor/docbook', 'asciidoctor-share-spec'], function (asciidoctor, asciidoctorDocbook, shareSpec) {
 
   var testOptions = {
     platform: 'RequireJS',
     baseDir: 'http://localhost:9876/base'
   };
 
-  commonSpec(testOptions, asciidoctor);
+  shareSpec(testOptions, asciidoctor);
 });

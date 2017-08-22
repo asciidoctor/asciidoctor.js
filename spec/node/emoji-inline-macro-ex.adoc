@@ -1,0 +1,5 @@
+= Emoji Inline Macro Extension
+
+Faster than a emoji:turtle[1x]!
+
+This is an example of how you can emoji:heart[lg] Asciidoctor and Twitter Emoji.

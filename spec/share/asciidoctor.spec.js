@@ -1,4 +1,10 @@
-var commonSpec = function (testOptions, asciidoctor) {
+var shareSpec = function (testOptions, asciidoctor) {
+
+  var getCoreVersionNumber = function (asciidoctor) {
+    var asciidoctorVersion = asciidoctor.getCoreVersion();
+    // ignore the fourth number, keep only major, minor and patch numbers
+    return parseInt(asciidoctorVersion.replace(/(\.|dev)/g, '').substring(0, 3));
+  };
 
   describe(testOptions.platform, function () {
 
@@ -62,6 +68,13 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(doc.getAuthor()).toBe('Guillaume Grossetie');
       });
 
+      it('should populate the catalog', function () {
+        var doc = asciidoctor.load('link:index.html[Docs]', {'safe': 'safe', 'catalog_assets': true});
+        doc.convert();
+        var links = doc.getCatalog().links;
+        expect(links).toEqual(['index.html']);
+      });
+
       it('should return attributes as JSON object', function () {
         var doc = asciidoctor.load('= Authors\nGuillaume Grossetie;Anders Nawroth\n');
         expect(doc.getAttributes()['author']).toBe('Guillaume Grossetie');
@@ -85,7 +98,7 @@ var commonSpec = function (testOptions, asciidoctor) {
 */
 
       it('should get media uri', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.getMediaUri('target')).toBe('target');
       });
 
@@ -108,27 +121,27 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should get source', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.getSource()).toBe('== Test');
       });
 
       it('should get source lines', function () {
-        var doc = asciidoctor.load('== Test\nThis is the first paragraph.\n\nThis is a second paragraph.', null);
+        var doc = asciidoctor.load('== Test\nThis is the first paragraph.\n\nThis is a second paragraph.');
         expect(doc.getSourceLines()).toEqual([ '== Test', 'This is the first paragraph.', '', 'This is a second paragraph.' ]);
       });
 
       it('should not be nested', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.isNested()).toBe(false);
       });
 
       it('should not have footnotes', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.hasFootnotes()).toBe(false);
       });
 
       it('should get footnotes', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.getFootnotes()).toEqual([]);
       });
 
@@ -139,17 +152,32 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should be embedded', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.isEmbedded()).toBe(true);
       });
 
-      it('should have extensions', function () {
-        var doc = asciidoctor.load('== Test', null);
-        expect(doc.hasExtensions()).toBe(true);
+      it('should not have extensions enabled by default', function () {
+        var asciidoctorVersionNumber = getCoreVersionNumber(asciidoctor);
+        if (asciidoctorVersionNumber >= 157) {
+          var doc = asciidoctor.load('== Test');
+          // extensions should not be enabled by default
+          expect(doc.hasExtensions()).toBe(false);
+        }
+      });
+
+      it('should have extensions enabled after being autoloaded', function () {
+        try {
+          asciidoctor.Extensions.register(function () {});
+          var doc = asciidoctor.load('== Test');
+          // extensions should be enabled after being autoloaded
+          expect(doc.hasExtensions()).toBe(true);
+        } finally {
+          asciidoctor.Extensions.unregisterAll();
+        }
       });
 
       it('should get default doctype', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.getDoctype()).toBe('article');
       });
 
@@ -160,34 +188,62 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should get default backend', function () {
-        var doc = asciidoctor.load('== Test', null);
+        var doc = asciidoctor.load('== Test');
         expect(doc.getBackend()).toBe('html5');
       });
 
       it('should get backend', function () {
-        var options = {backend: 'revealjs'};
+        var options = {backend: 'xhtml5'};
         var doc = asciidoctor.load('== Test', options);
-        expect(doc.getBackend()).toBe('revealjs');
+        expect(doc.getBackend()).toBe('html5');
+        expect(doc.getAttribute('htmlsyntax')).toBe('xml');
       });
 
       it('should get title', function () {
-        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n:title: The Actual Dangerous Documentation Chronicles\n== The Ravages of Writing', null);
+        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n:title: The Actual Dangerous Documentation Chronicles\n== The Ravages of Writing');
         expect(doc.getTitle()).toBe('The Actual Dangerous Documentation Chronicles');
+        expect(doc.getCaptionedTitle()).toBe('The Actual Dangerous Documentation Chronicles');
       });
 
       it('should set title', function () {
-        var doc = asciidoctor.load('= The Dangerous Documentation\n\n== The Ravages of Writing', null);
+        var doc = asciidoctor.load('= The Dangerous Documentation\n\n== The Ravages of Writing');
         doc.setTitle('The Dangerous & Thrilling Documentation');
         expect(doc.getDoctitle()).toBe('The Dangerous &amp; Thrilling Documentation');
       });
 
+      it('should get the line of number of a block when sourcemap is enabled', function () {
+        var options = {sourcemap: true};
+        var doc = asciidoctor.load('= Document Title\n\nPreamble\n\n== First section\n\nTrue story!', options);
+        var blocks = doc.getBlocks();
+        expect(blocks.length).toBe(2);
+        // preamble
+        expect(blocks[0].getLineNumber()).toBeUndefined();
+        expect(blocks[0].getBlocks().length).toBe(1);
+        expect(blocks[0].getBlocks()[0].getLineNumber()).toBe(3);
+        // first section
+        expect(blocks[1].getLineNumber()).toBe(5);
+      });
+
+      it('should return undefined when sourcemap is disabled', function () {
+        var options = {};
+        var doc = asciidoctor.load('= Document Title\n\nPreamble\n\n== First section\n\nTrue story!', options);
+        var blocks = doc.getBlocks();
+        expect(blocks.length).toBe(2);
+        // preamble
+        expect(blocks[0].getLineNumber()).toBeUndefined();
+        expect(blocks[0].getBlocks().length).toBe(1);
+        expect(blocks[0].getBlocks()[0].getLineNumber()).toBeUndefined();
+        // first section
+        expect(blocks[1].getLineNumber()).toBeUndefined();
+      });
+
       it('should get doctitle', function () {
-        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n\n== The Ravages of Writing', null);
+        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n\n== The Ravages of Writing');
         expect(doc.getDoctitle()).toBe('The Dangerous Documentation Chronicles: Based on True Events');
       });
 
       it('should get partitioned doctitle', function () {
-        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n\n== The Ravages of Writing', null);
+        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n\n== The Ravages of Writing');
         var doctitle = doc.getDoctitle({partition: true});
         expect(doctitle.main).toBe('The Dangerous Documentation Chronicles');
         expect(doctitle.subtitle).toBe('Based on True Events');
@@ -198,6 +254,39 @@ var commonSpec = function (testOptions, asciidoctor) {
         expect(doctitle.isSanitized()).toBe(false);
       });
 
+      it('should get and set attribute on block', function () {
+        var doc = asciidoctor.load('= Blocks story: Based on True Events\n\n== Once upon a time\n\n[bold-statement="on"]\nBlocks are amazing!');
+        var paragraphBlock = doc.getBlocks()[0].getBlocks()[0];
+        expect(paragraphBlock.getAttribute('bold-statement')).toBe('on');
+        paragraphBlock.setAttribute('bold-statement', 'off');
+        expect(paragraphBlock.getAttribute('bold-statement')).toBe('off');
+      });
+
+      it('should assign sectname, caption, and numeral to appendix section by default', function () {
+        var doc = asciidoctor.load('[appendix]\n== Attribute Options\n\nDetails');
+        var appendix = doc.getBlocks()[0];
+        expect(appendix.sectname).toBe('appendix');
+        expect(appendix.caption).toBe('Appendix A: ');
+        expect(appendix.getCaption()).toBe('Appendix A: ');
+        expect(appendix.getCaptionedTitle()).toBe('Appendix A: Attribute Options');
+        var asciidoctorVersionNumber = getCoreVersionNumber(asciidoctor);
+        if (asciidoctorVersionNumber >= 156) {
+          expect(appendix.number).toBe('A');
+          expect(appendix.numbered).toBe(true);
+        }
+      });
+
+      it ('remove_attr should remove attribute and return previous value', function () {
+        // Available only in Asciidoctor core 1.5.6 and greater.
+        var asciidoctorVersionNumber = getCoreVersionNumber(asciidoctor);
+        if (asciidoctorVersionNumber >= 156) {
+          var doc = asciidoctor.load('= Document\n\n== First section\n\n[foo="bar"]\nThis is a paragraph.');
+          var paragraphBlock = doc.getBlocks()[0].getBlocks()[0];
+          expect(paragraphBlock.getAttribute('foo')).toBe('bar');
+          expect(paragraphBlock.removeAttribute('foo')).toBe('bar');
+          expect(paragraphBlock.removeAttribute('foo')).toBeUndefined();
+        }
+      });
     });
 
     describe('Modifying', function () {
@@ -213,7 +302,7 @@ var commonSpec = function (testOptions, asciidoctor) {
 
     describe('Parsing', function () {
       it('should convert a simple document with a title 2', function () {
-        var html = asciidoctor.convert('== Test', null);
+        var html = asciidoctor.convert('== Test');
         expect(html).toContain('<h2 id="_test">Test</h2>');
       });
 
@@ -230,21 +319,20 @@ var commonSpec = function (testOptions, asciidoctor) {
       });
 
       it('should convert a simple document with a title 3', function () {
-        var html = asciidoctor.convert('=== Test', null);
+        var html = asciidoctor.convert('=== Test');
         expect(html).toContain('<h3 id="_test">Test</h3>');
       });
 
       it('should convert a document with tabsize', function () {
-        var html = asciidoctor.convert('= Learn Go\n:tabsize: 2\n\n[source]\n----\npackage main\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("Hello, playground")\n}', null);
+        var html = asciidoctor.convert('= Learn Go\n:tabsize: 2\n\n[source]\n----\npackage main\nimport "fmt"\n\nfunc main() {\n\tfmt.Println("Hello, playground")\n}');
         expect(html).toContain('<div class="listingblock">\n<div class="content">\n<pre class="highlight"><code>package main\nimport "fmt"\n\nfunc main() {\n  fmt.Println("Hello, playground")\n}</code></pre>\n</div>\n</div>');
       });
 
       it('should convert a document with unicode', function () {
-        var asciidoctorVersion = asciidoctor.$$scope.VERSION;
-        var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
         // Available only in Asciidoctor core 1.5.6 and greater.
-        if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {
-          var html = asciidoctor.convert('= HubPress\nAnthonny Quérouil\n\n{doctitle} was written by {firstname} {lastname}.\n\n[[bière]]\n== La bière\n\nLa bière c\'est la vie.\n\n[[ビール]]\n== ビール', null);
+        var asciidoctorVersionNumber = getCoreVersionNumber(asciidoctor);
+        if (asciidoctorVersionNumber >= 156) {
+          var html = asciidoctor.convert('= HubPress\nAnthonny Quérouil\n\n{doctitle} was written by {firstname} {lastname}.\n\n[[bière]]\n== La bière\n\nLa bière c\'est la vie.\n\n[[ビール]]\n== ビール');
           expect(html).toContain('was written by Anthonny Quérouil.');
           expect(html).toContain('id="ビール"');
           expect(html).toContain('id="bière"');
@@ -320,10 +408,10 @@ var commonSpec = function (testOptions, asciidoctor) {
 
 if (typeof module !== 'undefined' && module.exports) {
   // Node.
-  module.exports = commonSpec;
+  module.exports = shareSpec;
 } else if (typeof define === 'function' && define.amd) {
   // AMD. Register a named module.
-  define('common-spec', [''], function () {
-    return commonSpec;
+  define('asciidoctor-share-spec', [''], function () {
+    return shareSpec;
   });
 }

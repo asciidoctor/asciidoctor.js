@@ -8,15 +8,15 @@ if (!process.env.MINIFY) {
 }
 log.task('Jasmine Browser (minified)');
 bfs.concatSync([
-  'spec/share/common-spec.js',
+  'spec/share/asciidoctor.spec.js',
   'spec/browser/asciidoctor.spec.js'
-], 'build/bower.spec.all.min.js');
+], 'build/browser.spec.all.min.js');
 
 var jasmine = new Jasmine();
 jasmine.loadConfig({
   spec_dir: 'build',
   spec_files: [
-    'bower.spec.all.min.js'
+    'browser.spec.all.min.js'
   ]
 });
 

@@ -15,9 +15,9 @@
     "README.adoc"
   ],
   "scripts": {
-    "test_karma_browserify": "karma start karma-browserify.conf.js",
-    "test_karma_requirejs": "karma start karma-requirejs.conf.js",
-    "test": "node npm/test/unsupported-features.js && node npm/test/jasmine-browser.js && node npm/test/jasmine-browser-min.js && node npm/test/jasmine-node.js && node npm/test/jasmine-webpack.js && npm run test_karma_browserify && npm run test_karma_requirejs",
+    "test:karmaBrowserify": "karma start karma-browserify.conf.js",
+    "test:karmaRequirejs": "karma start karma-requirejs.conf.js",
+    "test": "node npm/test/builder.js && node npm/test/unsupported-features.js && node npm/test/jasmine-browser.js && node npm/test/jasmine-browser-min.js && node npm/test/jasmine-node.js && node npm/test/jasmine-webpack.js && npm run test:karmaBrowserify && npm run test:karmaRequirejs",
     "build": "node npm/build.js && npm run test",
     "dist": "cross-env MINIFY=1 node npm/dist.js",
     "lint": "eslint src spec npm",
@@ -25,11 +25,18 @@
     "examples": "node npm/examples.js",
     "server": "node npm/server.js",
     "benchmark": "node npm/benchmark.js",
-    "release": "cross-env MINIFY=1 node npm/release.js"
+    "release": "cross-env MINIFY=1 node npm/release.js",
+    "docs:lint": "documentation lint src/**",
+    "docs:build": "documentation build src/** -f html -o build/docs -g",
+    "docs:serve": "documentation serve src/** -g -w",
+    "docs": "npm run docs:lint && npm run docs:build"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/asciidoctor/asciidoctor.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "asciidoc",
@@ -49,23 +56,23 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "opal-runtime": "0.11.0-integration6",
+    "opal-runtime": "0.11.0-integration8",
     "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
-    "asciidoctor-docbook.js": "1.5.5-integration2",
+    "asciidoctor-docbook.js": "1.5.5-integration3",
     "asciidoctor-reveal.js": "1.0.1",
-    "asciidoctor-template.js": "1.5.5-integration1",
+    "asciidoctor-template.js": "1.5.5-integration3",
     "async": "^1.5.0",
     "bestikk-download": "^0.1.0",
     "bestikk-fs": "^0.1.0",
     "bestikk-jdk-ea": "0.1.1",
     "bestikk-log": "0.1.0",
-    "bestikk-opal-compiler": "0.3.0-integration5",
+    "bestikk-opal-compiler": "0.3.0-integration7",
     "bestikk-uglify": "0.1.1",
-    "bower": "^1.5.3",
     "browserify": "^13.0.0",
     "cross-env": "^1.0.8",
+    "documentation": "^4.0.0-beta.18",
     "eslint": "^2.11.0",
     "http-server": "^0.9.0",
     "jasmine": "^2.4.1",
@@ -77,6 +84,7 @@
     "karma-requirejs": "1.1.0",
     "phantomjs-prebuilt": "^2.1.7",
     "requirejs": "2.1.0",
+    "sinon": "2.3.8",
     "watchify": "^3.7.0",
     "webpack": "^1.13.3"
   }

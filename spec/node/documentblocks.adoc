@@ -46,3 +46,5 @@ image::sunset2.jpg[Sunset2]
 Actually, not a section.
 Just a paragraph.
 We lied.
+
+== Got icon:file-pdf-o[fw]?

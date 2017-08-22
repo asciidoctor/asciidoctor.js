@@ -1,8 +1,8 @@
-var async = require('async');
-var Builder = require('./builder.js');
-var builder = new Builder();
+const async = require('async');
+const Builder = require('./builder.js');
+const builder = new Builder();
 
 async.series([
-  function (callback) { builder.jdk8EA(callback); },
-  function (callback) { builder.jdk9EA(callback); }
+  callback => builder.jdk8EA(callback),
+  callback => builder.jdk9EA(callback)
 ]);

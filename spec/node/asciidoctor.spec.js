@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-var commonSpec = require('../share/common-spec.js');
+var shareSpec = require('../share/asciidoctor.spec.js');
 var config = {
   runtime: {
     platform: 'node',
@@ -9,18 +9,25 @@ var config = {
   }
 };
 var asciidoctor = require('../../build/asciidoctor.js')(config);
+function asciidoctorVersionGreaterThan (version) {
+  var currentVersion = asciidoctor.getCoreVersion();
+  // ignore the fourth number, keep only major, minor and patch numbers
+  var currentVersionNumeric = parseInt(currentVersion.replace('.dev', '').replace(/\./g, '').substring(0, 3));
+  var versionNumeric = version.replace(/\./g, '');
+  return currentVersionNumeric > versionNumeric; 
+}
+
 var Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js');
 require('asciidoctor-template.js');
-require('../share/extensions/smiley-macro.js');
-require('../share/extensions/shout-block.js');
+var packageJson = require('../../package.json');
 
 var testOptions = {
   platform: 'Node.js',
   baseDir: path.join(__dirname, '..', '..')
 };
 
-commonSpec(testOptions, asciidoctor);
+shareSpec(testOptions, asciidoctor);
 
 function fileExists (path) {
   try {
@@ -39,24 +46,47 @@ function removeFile (path) {
 
 describe('Node.js', function () {
 
+  describe('Asciidoctor.js API', function () {
+    it('should return Asciidoctor.js version', function () {
+      expect(asciidoctor.getVersion()).toBe(packageJson.version);
+    });
+  });
+
   describe('Configuring Asciidoctor module', function () {
     it('should be able to configure Asciidoctor module', function () {
-      expect(Opal.get('JAVASCRIPT_IO_MODULE')).toBe('node');
-      expect(Opal.get('JAVASCRIPT_PLATFORM')).toBe('node');
-      expect(Opal.get('JAVASCRIPT_ENGINE')).toBe('v12');
-      expect(Opal.get('JAVASCRIPT_FRAMEWORK')).toBe('lollipop');
+      expect(Opal.JAVASCRIPT_IO_MODULE).toBe('node');
+      expect(Opal.JAVASCRIPT_PLATFORM).toBe('node');
+      expect(Opal.JAVASCRIPT_ENGINE).toBe('v12');
+      expect(Opal.JAVASCRIPT_FRAMEWORK).toBe('lollipop');
     });
   });
 
   describe('Loading file', function () {
     it('should be able to load a file', function () {
-      var doc = asciidoctor.loadFile(__dirname + '/test.adoc', null);
+      var doc = asciidoctor.loadFile(__dirname + '/test.adoc');
       expect(doc.getAttribute('docname')).toBe('test');
     });
 
     it('should be able to load a buffer', function () {
-      var doc = asciidoctor.load(fs.readFileSync(path.resolve(__dirname + '/test.adoc')), null);
+      var doc = asciidoctor.load(fs.readFileSync(path.resolve(__dirname + '/test.adoc')));
       expect(doc.getDoctitle()).toBe('Document title');
+    });
+
+    it('should return empty revision info', function () {
+      var doc = asciidoctor.load('= Begin Again\n\n== First section');
+      expect(doc.getRevisionDate()).toBe(undefined);
+      expect(doc.getRevisionNumber()).toBe(undefined);
+      expect(doc.getRevisionRemark()).toBe(undefined);
+
+      expect(doc.hasRevisionInfo()).toBe(false);
+      var revisionInfo = doc.getRevisionInfo();
+      expect(revisionInfo.isEmpty()).toBe(true);
+      expect(revisionInfo.getDate()).toBe(undefined);
+      expect(revisionInfo.getNumber()).toBe(undefined);
+      expect(revisionInfo.getRemark()).toBe(undefined);
+      expect(revisionInfo.date).toBe(undefined);
+      expect(revisionInfo.number).toBe(undefined);
+      expect(revisionInfo.remark).toBe(undefined);
     });
 
     it('should be able to retrieve structural content from file', function () {
@@ -67,14 +97,30 @@ describe('Node.js', function () {
       expect(header.getAttribute('revdate')).toBe('2013-05-20');
       expect(header.getAttribute('revnumber')).toBe('1.0');
       expect(header.getAttribute('revremark')).toBe('First draft');
+
+      expect(doc.getRevisionDate()).toBe('2013-05-20');
+      expect(doc.getRevisionNumber()).toBe('1.0');
+      expect(doc.getRevisionRemark()).toBe('First draft');
+
+      expect(doc.hasRevisionInfo()).toBe(true);
+      var revisionInfo = doc.getRevisionInfo();
+      expect(revisionInfo.isEmpty()).toBe(false);
+      expect(revisionInfo.getDate()).toBe('2013-05-20');
+      expect(revisionInfo.getNumber()).toBe('1.0');
+      expect(revisionInfo.getRemark()).toBe('First draft');
+      expect(revisionInfo.date).toBe('2013-05-20');
+      expect(revisionInfo.number).toBe('1.0');
+      expect(revisionInfo.remark).toBe('First draft');
+
       expect(header.getAttribute('tags')).toBe('[document, example]');
       expect(header.getAttribute('author')).toBe('Doc Writer');
       expect(header.getAttribute('email')).toBe('doc.writer@asciidoc.org');
 
       var blocks = doc.getBlocks();
-      expect(blocks.length).toBe(3);
+      expect(blocks.length).toBe(4);
       expect(blocks[0].getContext()).toBe('section');
       expect(blocks[0].getTitle()).toBe('Abstract');
+      expect(blocks[0].getCaptionedTitle()).toBe('Abstract');
       expect(blocks[0].getBlocks().length).toBe(1);
       expect(blocks[0].getBlocks()[0].getStyle()).toBe('abstract');
       expect(blocks[0].getBlocks()[0].getContext()).toBe('open');
@@ -96,6 +142,8 @@ describe('Node.js', function () {
       expect(blocks[2].getBlocks()[0].getContext()).toBe('image');
       expect(blocks[2].getBlocks()[0].getTitle()).toBe('');
       expect(blocks[2].getBlocks()[1].getContext()).toBe('image');
+
+      expect(blocks[3].getTitle()).toBe('Got <span class="icon">[file pdf o]</span>?');
     });
 
     it('should be able to find blocks', function () {
@@ -104,10 +152,19 @@ describe('Node.js', function () {
       expect(quoteBlocks.length).toBe(1);
 
       var sectionBlocks = doc.findBy({'context': 'section'});
-      expect(sectionBlocks.length).toBe(4);
+      expect(sectionBlocks.length).toBe(5);
 
       var abstractSectionBlocks = doc.findBy({'context': 'section'}, function (b) { return b.getTitle() === 'Second Section'; });
       expect(abstractSectionBlocks.length).toBe(1);
+    });
+
+    it('should be able to find blocks with line number', function () {
+      var doc = asciidoctor.loadFile(__dirname + '/documentblocks.adoc', {sourcemap: true});
+      var blocks = doc.findBy(function () { return true; });
+      expect(blocks.length).toBe(26);
+
+      var blocksWithLineNumber = doc.findBy(function (b) { return typeof b.getLineNumber() !== 'undefined'; });
+      expect(blocksWithLineNumber.length).toBe(18);
     });
   });
 
@@ -116,7 +173,7 @@ describe('Node.js', function () {
       var expectFilePath = __dirname + '/test.html';
       removeFile(expectFilePath);
       try {
-        asciidoctor.convertFile(__dirname + '/test.adoc', null);
+        asciidoctor.convertFile(__dirname + '/test.adoc');
         expect(fileExists(expectFilePath)).toBe(true);
         var content = fs.readFileSync(expectFilePath, 'utf8');
         expect(content).toContain('Hello world');
@@ -196,15 +253,133 @@ describe('Node.js', function () {
     });
 
     it('should be able to process smiley extension', function () {
-      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/extension.adoc')), null);
-      expect(result).toContain('<strong>:D</strong>');
-      expect(result).toContain('<strong>;)</strong>');
-      expect(result).toContain('<strong>:)</strong>');
+      try {
+        require('../share/extensions/smiley-inline-macro.js');
+        var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/smiley-inline-macro-ex.adoc')));
+        expect(result).toContain('<strong>:D</strong>');
+        expect(result).toContain('<strong>;)</strong>');
+        expect(result).toContain('<strong>:)</strong>');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
+    });
+
+    it('should be able to process love tree processor extension', function () {
+      var registry = asciidoctor.Extensions.create();
+      var opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      require('../share/extensions/love-tree-processor.js')(registry);
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/love-tree-processor-ex.adoc')), opts);
+      expect(result).toContain('Made with icon:heart[]');
+
+      result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/love-tree-processor-ex.adoc')));
+      expect(result).toContain('How this document was made ?');
+    });
+
+    it('should be able to process foo bar postprocessor extension', function () {
+      var registry = asciidoctor.Extensions.create();
+      var opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      require('../share/extensions/foo-bar-postprocessor.js')(registry);
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-bar-postprocessor-ex.adoc')), opts);
+      expect(result).toContain('bar, qux, bar.');
+      expect(result).not.toContain('foo');
+
+      result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-bar-postprocessor-ex.adoc')));
+      expect(result).toContain('foo, qux, foo.');
+      expect(result).not.toContain('bar');
     });
 
     it('should be able to process custom block', function () {
-      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/shout-block-ex.adoc')), null);
-      expect(result).toContain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>');
+      try {
+        require('../share/extensions/shout-block.js');
+        var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/shout-block-ex.adoc')));
+        expect(result).toContain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
+    });
+
+    it('should be able to process custom include processor when target does match', function () {
+      if (asciidoctorVersionGreaterThan('1.5.5')) {
+        try {
+          require('../share/extensions/foo-include.js');
+          var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-include-ex.adoc')));
+          expect(result).toContain('foo\nfoo');
+        } finally {
+          asciidoctor.Extensions.unregisterAll();
+        }
+      }
+    });
+
+    it('should not process custom include processor when target does not match', function () {
+      if (asciidoctorVersionGreaterThan('1.5.5')) {
+        var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/bar-include-ex.adoc')));
+        expect(result).toContain('bar');
+      }
+    });
+
+    it('should be able to process lorem extension', function () {
+      try {
+        require('../share/extensions/lorem-block-macro.js');
+        var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/lorem-block-macro-ex.adoc')));
+        expect(result).toContain('Lorem ipsum dolor sit amet');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
+    });
+
+    it('should be able to process draft preprocessor extension', function () {
+      var registry = asciidoctor.Extensions.create();
+      var opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      require('../share/extensions/draft-preprocessor.js')(registry);
+      var doc = asciidoctor.load(fs.readFileSync(path.resolve(__dirname + '/draft-preprocessor-ex.adoc')), opts);
+      expect(doc.getAttribute('status')).toBe('DRAFT');
+      var result = doc.convert();
+      expect(result).toContain('Important');
+      expect(result).toContain('This section is a draft: we need to talk about Y.');
+    });
+
+    it('should be able to process moar footer docinfo processor extension', function () {
+      var registry = asciidoctor.Extensions.create();
+      var opts = {'safe': 'server', 'header_footer': true};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      require('../share/extensions/moar-footer-docinfo-processor.js')(registry);
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/moar-footer-docinfo-processor-ex.adoc')), opts);
+      expect(result).toContain('moar footer');
+
+      result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/moar-footer-docinfo-processor-ex.adoc')));
+      expect(result).not.toContain('moar footer');
+    });
+
+    it('should be able to pass an extension registry to the processor', function () {
+      var registry = asciidoctor.Extensions.create(function () {
+        this.block(function () {
+          var self = this;
+          self.named('whisper');
+          self.onContext('paragraph');
+          self.process(function (parent, reader) {
+            var lines = reader.getLines().map(function (l) { return l.toLowerCase().replace('!', '.'); });
+            return self.createBlock(parent, 'paragraph', lines);
+          });
+        });
+      });
+      var opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      var result = asciidoctor.convert('[whisper]\nWE HAVE LIFTOFF!', opts);
+      expect(result).toContain('we have liftoff.');
+    });
+
+    it('should be able to process emoji inline macro processor extension', function () {
+      var registry = asciidoctor.Extensions.create();
+      var opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      require('../share/extensions/emoji-inline-macro.js')(registry);
+      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/emoji-inline-macro-ex.adoc')), opts);
+      expect(result).toContain('1f422.svg');
+      expect(result).toContain('2764.svg');
+      expect(result).toContain('twemoji.maxcdn.com');
     });
 
     it('should be able to convert a file and include the default stylesheet', function () {

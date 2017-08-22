@@ -29,5 +29,16 @@ if (typeof Opal === 'undefined') {
 
 //#{asciidoctorAPI}
 
+//#{asciidoctorVersion}
+
+  /**
+   * Get Asciidoctor.js version number.
+   *
+   * @memberof Asciidoctor
+   * @returns {string} - returns the version number of Asciidoctor.js.
+   */
+  Asciidoctor.$$proto.getVersion = function () {
+    return ASCIIDOCTOR_JS_VERSION;
+  };
   return Opal.Asciidoctor;
 }));

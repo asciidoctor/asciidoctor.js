@@ -1,21 +1,55 @@
+sudo: false
+dist: trusty
+
 language: node_js
+
 env:
-  - ASCIIDOCTOR_CORE_VERSION=v1.5.5
-  - ASCIIDOCTOR_CORE_VERSION=master
+- ASCIIDOCTOR_CORE_VERSION=v1.5.5
+- ASCIIDOCTOR_CORE_VERSION=v1.5.6.1
+- ASCIIDOCTOR_CORE_VERSION=master
+
 node_js:
-  - "4"
-  - "6"
-  - "node"
+- '4'
+- '6'
+- node
 
 jdk:
-  - oraclejdk8
-
-before_script:
-  - npm install
+- oraclejdk8
 
 script:
- - npm run lint
- - npm run package
- - SKIP_BUILD=1 npm run examples
+- npm run lint
+- npm run package
+- npm run docs
+- SKIP_BUILD=1 npm run examples
 
-sudo: false
+before_deploy:
+- >
+  if ! [ "$BEFORE_DEPLOY_RUN" ]; then
+    export BEFORE_DEPLOY_RUN=1;
+    export ASCIIDOCTOR_CORE_VERSION="${ASCIIDOCTOR_CORE_VERSION_PUBLISH}";
+    npm run dist;
+    mkdir bin
+    cd dist/;
+    zip -r ../bin/asciidoctor.js.dist.zip .;
+    tar -zcvf ../bin/asciidoctor.js.dist.tar.gz .;
+    cd ..;
+  fi
+
+deploy:
+- provider: npm
+  skip_cleanup: true
+  email: ${NPM_USER_EMAIL}
+  api_key: ${NPM_USER_API_KEY}
+  on:
+    tags: true
+    repo: asciidoctor/asciidoctor.js
+    node: node
+- provider: releases
+  api_key: ${GITHUB_TOKEN}
+  file: bin/asciidoctor.js.dist.*
+  skip_cleanup: true
+  file_glob: true
+  on:
+    repo: asciidoctor/asciidoctor.js
+    tags: true
+    node: node

@@ -1,4 +1,4 @@
-var Builder = require('./builder.js');
-var builder = new Builder();
+const Builder = require('./builder.js');
+const builder = new Builder();
 
 builder.build();

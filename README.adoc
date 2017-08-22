@@ -17,7 +17,11 @@ ifdef::env-github[]
 image:https://img.shields.io/travis/asciidoctor/asciidoctor.js/master.svg[Travis build status, link=https://travis-ci.org/asciidoctor/asciidoctor.js]
 image:https://ci.appveyor.com/api/projects/status/i69sqvvyr95sf6i7/branch/master?svg=true[Appveyor build status, link=https://ci.appveyor.com/project/asciidoctor/asciidoctor-js]
 image:http://img.shields.io/npm/v/asciidoctor.js.svg[npm version, link=https://www.npmjs.org/package/asciidoctor.js]
+image:https://img.shields.io/cdnjs/v/asciidoctor.js.svg[cdnjs, link=https://cdnjs.com/libraries/asciidoctor.js]
+image:https://img.shields.io/badge/jsdoc-master-blue.svg[JSDoc, link=http://asciidoctor.github.io/asciidoctor.js/master]
+image:https://inch-ci.org/github/asciidoctor/asciidoctor.js.svg?branch=master[InchCI, link=https://inch-ci.org/github/asciidoctor/asciidoctor.js]
 endif::[]
+
 
 Asciidoctor.js brings AsciiDoc to the JavaScript world!
 
@@ -32,14 +36,14 @@ You can use Asciidoctor.js either for back-end development using {uri-nodejs}[No
 
 ## Front-end development
 
-.Installing Asciidoctor.js with Bower
+.Installing Asciidoctor.js with npm
 
-    $ bower install asciidoctor.js --save
+    $ npm install asciidoctor.js --save
 
 Once the package installed, you can add the following `script` tag to your HTML page:
 
 ```html
-<script src="bower_components/asciidoctor.js/dist/asciidoctor.min.js"></script>
+<script src="node_modules/asciidoctor.js/dist/asciidoctor.min.js"></script>
 ```
 
 Here is a simple example that converts AsciiDoc to HTML5:

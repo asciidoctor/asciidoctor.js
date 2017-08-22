@@ -1,4 +1,4 @@
-var commonSpec = require('../share/common-spec.js');
+var shareSpec = require('../share/asciidoctor.spec.js');
 var asciidoctor = require('../../build/asciidoctor.js')();
 require('asciidoctor-docbook.js');
 
@@ -7,7 +7,7 @@ var testOptions = {
   baseDir: 'http://localhost:9876/base'
 };
 
-commonSpec(testOptions, asciidoctor);
+shareSpec(testOptions, asciidoctor);
 
 describe('Include', function () {
   it('Should include file', function () {
