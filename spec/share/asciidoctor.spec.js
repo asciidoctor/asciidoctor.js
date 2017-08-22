@@ -269,23 +269,16 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(appendix.caption).toBe('Appendix A: ');
         expect(appendix.getCaption()).toBe('Appendix A: ');
         expect(appendix.getCaptionedTitle()).toBe('Appendix A: Attribute Options');
-        var asciidoctorVersionNumber = getCoreVersionNumber(asciidoctor);
-        if (asciidoctorVersionNumber >= 156) {
-          expect(appendix.number).toBe('A');
-          expect(appendix.numbered).toBe(true);
-        }
+        expect(appendix.number).toBe('A');
+        expect(appendix.numbered).toBe(true);
       });
 
       it ('remove_attr should remove attribute and return previous value', function () {
-        // Available only in Asciidoctor core 1.5.6 and greater.
-        var asciidoctorVersionNumber = getCoreVersionNumber(asciidoctor);
-        if (asciidoctorVersionNumber >= 156) {
-          var doc = asciidoctor.load('= Document\n\n== First section\n\n[foo="bar"]\nThis is a paragraph.');
-          var paragraphBlock = doc.getBlocks()[0].getBlocks()[0];
-          expect(paragraphBlock.getAttribute('foo')).toBe('bar');
-          expect(paragraphBlock.removeAttribute('foo')).toBe('bar');
-          expect(paragraphBlock.removeAttribute('foo')).toBeUndefined();
-        }
+        var doc = asciidoctor.load('= Document\n\n== First section\n\n[foo="bar"]\nThis is a paragraph.');
+        var paragraphBlock = doc.getBlocks()[0].getBlocks()[0];
+        expect(paragraphBlock.getAttribute('foo')).toBe('bar');
+        expect(paragraphBlock.removeAttribute('foo')).toBe('bar');
+        expect(paragraphBlock.removeAttribute('foo')).toBeUndefined();
       });
     });
 
@@ -329,14 +322,10 @@ var shareSpec = function (testOptions, asciidoctor) {
       });
 
       it('should convert a document with unicode', function () {
-        // Available only in Asciidoctor core 1.5.6 and greater.
-        var asciidoctorVersionNumber = getCoreVersionNumber(asciidoctor);
-        if (asciidoctorVersionNumber >= 156) {
-          var html = asciidoctor.convert('= HubPress\nAnthonny Quérouil\n\n{doctitle} was written by {firstname} {lastname}.\n\n[[bière]]\n== La bière\n\nLa bière c\'est la vie.\n\n[[ビール]]\n== ビール');
-          expect(html).toContain('was written by Anthonny Quérouil.');
-          expect(html).toContain('id="ビール"');
-          expect(html).toContain('id="bière"');
-        } 
+        var html = asciidoctor.convert('= HubPress\nAnthonny Quérouil\n\n{doctitle} was written by {firstname} {lastname}.\n\n[[bière]]\n== La bière\n\nLa bière c\'est la vie.\n\n[[ビール]]\n== ビール');
+        expect(html).toContain('was written by Anthonny Quérouil.');
+        expect(html).toContain('id="ビール"');
+        expect(html).toContain('id="bière"');
       });
 
       it('should embed assets', function () {
