@@ -11,19 +11,15 @@ var config = {
 var asciidoctor = require('../../build/asciidoctor.js')(config);
 function asciidoctorVersionGreaterThan (version) {
   var currentVersion = asciidoctor.getCoreVersion();
-  var currentVersionNumeric = parseInt(currentVersion.replace('.dev', '').replace(/\./g, ''));
+  // ignore the fourth number, keep only major, minor and patch numbers
+  var currentVersionNumeric = parseInt(currentVersion.replace('.dev', '').replace(/\./g, '').substring(0, 3));
   var versionNumeric = version.replace(/\./g, '');
   return currentVersionNumeric > versionNumeric; 
 }
+
 var Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js');
 require('asciidoctor-template.js');
-require('../share/extensions/smiley-inline-macro.js');
-require('../share/extensions/shout-block.js');
-if (asciidoctorVersionGreaterThan('1.5.5')) {
-  require('../share/extensions/foo-include.js');
-}
-require('../share/extensions/lorem-block-macro.js');
 var packageJson = require('../../package.json');
 
 var testOptions = {
@@ -257,10 +253,15 @@ describe('Node.js', function () {
     });
 
     it('should be able to process smiley extension', function () {
-      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/smiley-inline-macro-ex.adoc')));
-      expect(result).toContain('<strong>:D</strong>');
-      expect(result).toContain('<strong>;)</strong>');
-      expect(result).toContain('<strong>:)</strong>');
+      try {
+        require('../share/extensions/smiley-inline-macro.js');
+        var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/smiley-inline-macro-ex.adoc')));
+        expect(result).toContain('<strong>:D</strong>');
+        expect(result).toContain('<strong>;)</strong>');
+        expect(result).toContain('<strong>:)</strong>');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
     });
 
     it('should be able to process love tree processor extension', function () {
@@ -290,14 +291,24 @@ describe('Node.js', function () {
     });
 
     it('should be able to process custom block', function () {
-      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/shout-block-ex.adoc')));
-      expect(result).toContain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>');
+      try {
+        require('../share/extensions/shout-block.js');
+        var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/shout-block-ex.adoc')));
+        expect(result).toContain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
     });
 
     it('should be able to process custom include processor when target does match', function () {
       if (asciidoctorVersionGreaterThan('1.5.5')) {
-        var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-include-ex.adoc')));
-        expect(result).toContain('foo\nfoo');
+        try {
+          require('../share/extensions/foo-include.js');
+          var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-include-ex.adoc')));
+          expect(result).toContain('foo\nfoo');
+        } finally {
+          asciidoctor.Extensions.unregisterAll();
+        }
       }
     });
 
@@ -309,8 +320,13 @@ describe('Node.js', function () {
     });
 
     it('should be able to process lorem extension', function () {
-      var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/lorem-block-macro-ex.adoc')));
-      expect(result).toContain('Lorem ipsum dolor sit amet');
+      try {
+        require('../share/extensions/lorem-block-macro.js');
+        var result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/lorem-block-macro-ex.adoc')));
+        expect(result).toContain('Lorem ipsum dolor sit amet');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
     });
 
     it('should be able to process draft preprocessor extension', function () {

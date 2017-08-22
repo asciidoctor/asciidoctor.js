@@ -268,9 +268,15 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(appendix.sectname).toBe('appendix');
         expect(appendix.caption).toBe('Appendix A: ');
         expect(appendix.getCaption()).toBe('Appendix A: ');
+<<<<<<< HEAD
         expect(appendix.getCaptionedTitle()).toBe('Appendix A: Attribute Options');
+        var asciidoctorVersion = asciidoctor.getCoreVersion();
+        var asciidoctorVersionNumber = parseInt(asciidoctorVersion.replace(/(\.|dev)/g, ''));
+        if (asciidoctorVersion === '1.5.6' || asciidoctorVersionNumber > 156) {
+=======
         var asciidoctorVersionNumber = getCoreVersionNumber(asciidoctor);
         if (asciidoctorVersionNumber >= 156) {
+>>>>>>> Reduce statically-registered extensions scope in tests
           expect(appendix.number).toBe('A');
           expect(appendix.numbered).toBe(true);
         }

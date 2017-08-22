@@ -80,6 +80,14 @@ Extensions.register = function (name, block) {
 };
 
 /**
+ * Unregister all statically-registered extension groups.
+ * @memberof Extensions
+ */
+Extensions.unregisterAll = function () {
+  this.$unregister_all();
+};
+
+/**
  * @namespace
  * @module Extensions/Registry
  */
