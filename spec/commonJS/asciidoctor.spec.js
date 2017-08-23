@@ -1,6 +1,6 @@
 var shareSpec = require('../share/asciidoctor.spec.js');
 var asciidoctor = require('../../build/asciidoctor.js')();
-require('asciidoctor-docbook.js');
+require('asciidoctor-docbook.js')();
 
 var testOptions = {
   platform: 'CommonJS',

@@ -60,7 +60,7 @@
     "xmlhttprequest": "~1.7.0"
   },
   "devDependencies": {
-    "asciidoctor-docbook.js": "1.5.5-integration3",
+    "asciidoctor-docbook.js": "1.5.6-preview.2",
     "asciidoctor-reveal.js": "1.0.1",
     "asciidoctor-template.js": "1.5.6-preview.1",
     "async": "^1.5.0",
