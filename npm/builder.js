@@ -30,7 +30,7 @@ function Builder () {
   if (process.env.ASCIIDOCTOR_CORE_VERSION) {
     this.asciidoctorCoreVersion = process.env.ASCIIDOCTOR_CORE_VERSION;
   } else {
-    this.asciidoctorCoreVersion = 'master'; // or v1.5.5 to build against a release
+    this.asciidoctorCoreVersion = 'v1.5.5';
   }
   this.benchmarkBuildDir = path.join('build', 'benchmark');
   this.examplesBuildDir =  path.join('build', 'examples');
