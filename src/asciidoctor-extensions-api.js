@@ -223,11 +223,7 @@ Processor.$$proto.parseContent = function (parent, content, attrs) {
  * @memberof Extensions/Processor
  */
 Processor.$$proto.positionalAttributes = function (value) {
-  if (typeof this.$positional_attrs === 'function') {
-    return this.$positional_attrs(value);
-  }
-  // NOTE: for backward compatibility, this function was renamed to positional_attrs in 1.5.6
-  return this.$positional_attributes(value);
+  return this.$positional_attrs(value);
 };
 
 /**
@@ -268,13 +264,7 @@ IncludeProcessor.$$proto.handles = function (block) {
  * @module Extensions/TreeProcessor
  */
 // eslint-disable-next-line no-unused-vars
-var TreeProcessor;
-if (typeof Extensions.TreeProcessor !== 'undefined') {
-  TreeProcessor = Extensions.TreeProcessor;
-} else {
-  // NOTE: for backward compatibility, Treeprocessor was renamed to TreeProcessor in 1.5.6
-  TreeProcessor = Extensions.Treeprocessor;
-}
+var TreeProcessor = Extensions.TreeProcessor;
 
 /**
  * @namespace
