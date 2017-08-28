@@ -31,7 +31,7 @@ To build Asciidoctor.js, you'll need some tools:
 
 Start by cloning the source from GitHub:
 
- $ git clone --recursive git://github.com/asciidoctor/asciidoctor.js
+ $ git clone https://github.com/asciidoctor/asciidoctor.js.git
 
 Next, switch to the _asciidoctor.js_ directory and run npm's `install` command:
 
