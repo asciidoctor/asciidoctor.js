@@ -220,17 +220,13 @@ Let's say you want to use the following Asciidoctor extension (written in Ruby) 
 
 .lib/tel-inline-macro.rb
 ```ruby
-require 'asciidoctor/extensions' unless RUBY_ENGINE == 'opal' # <1>
-
-include ::Asciidoctor
-
 # An inline macro that turns URIs with the tel: URI scheme into links.
 #
 # Usage
 #
 #   tel:1-800-555-1212[]
 #
-Extensions.register do
+Asciidoctor::Extensions.register do
   inline_macro do
     named :tel
     parse_content_as :text
@@ -239,12 +235,11 @@ Extensions.register do
         text = target
       end
       target = %(tel:#{target})
-      (create_anchor parent, text, type: :link, target: target).render
+      (create_anchor parent, text, type: :link, target: target)
     end
   end
 end
 ```
-<1> Conditional `require` because the compiler can not resolve this dependency but Asciidoctor.js will provide it at runtime
 
 To compile this extension, you will need to install the `opal-compiler` package:
 
@@ -271,7 +266,7 @@ Then run it:
 
  node compile.js
 
-The above command will create a file named `tel-inline-macro.js` containing the extension code in JavaScript.
+The above command will create a file named [.path]_tel-inline-macro.js_ containing the extension code in JavaScript.
 
 === How to use an Asciidoctor extension
 
@@ -294,14 +289,13 @@ Next we create a Node script to convert this document:
 .convert.js
 [source,javascript]
 ----
-const fs = require('fs');
 const asciidoctor = require('asciidoctor.js')();
 require('./tel-inline-macro.js'); // <1>
 
-const html = asciidoctor.convert(fs.readFileSync('document.adoc', 'utf-8')); // <2>
+const html = asciidoctor.convertFile('document.adoc', { to_file: false }); // <2>
 console.log(html);
 ----
-<1> Load the local extension named `tel-inline-macro.js`
+<1> Load the local extension named [.path]_tel-inline-macro.js_
 <2> Convert the document with the `tel` inline macro extension enabled
 
 Then we run it:
