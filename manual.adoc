@@ -298,6 +298,8 @@ console.log(html);
 <1> Load the local extension named [.path]_tel-inline-macro.js_
 <2> Convert the document with the `tel` inline macro extension enabled
 
+NOTE: Asciidoctor.js must be installed: `npm install asciidoctor.js`
+
 Then we run it:
 
  node convert.js
