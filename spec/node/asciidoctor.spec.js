@@ -1,5 +1,6 @@
 var path = require('path');
 var fs = require('fs');
+var process = require('process');
 var shareSpec = require('../share/asciidoctor.spec.js');
 var config = {
   runtime: {
@@ -58,6 +59,13 @@ describe('Node.js', function () {
       expect(Opal.JAVASCRIPT_PLATFORM).toBe('node');
       expect(Opal.JAVASCRIPT_ENGINE).toBe('v12');
       expect(Opal.JAVASCRIPT_FRAMEWORK).toBe('lollipop');
+    });
+  });
+
+  describe('Loading document', function () {
+    it('should get the base directory', function () {
+      var doc = asciidoctor.load('== Test');
+      expect(doc.getBaseDir()).toBe(process.cwd());
     });
   });
 
