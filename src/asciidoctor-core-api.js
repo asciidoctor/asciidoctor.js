@@ -929,7 +929,7 @@ Document.$$proto.getCallouts = function () {
  * @memberof Document
  */
 Document.$$proto.getBaseDir = function () {
-  return this.$base_dir;
+  return this.base_dir;
 };
 
 /**
