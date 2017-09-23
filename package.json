@@ -87,5 +87,8 @@
     "sinon": "2.3.8",
     "watchify": "^3.7.0",
     "webpack": "^1.13.3"
+  },
+  "resolutions": {
+    "reveal.js": "3.5.0"
   }
 }
