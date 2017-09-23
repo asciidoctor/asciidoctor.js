@@ -1,6 +1,6 @@
 module Asciidoctor
 class PreprocessorReader < Reader
-  def resolve_include_target target, attrlist, attributes
+  def resolve_include_path target, attrlist, attributes
     # NOTE when the IO module is xmlhttprequest, the only way to check if the file exists is to catch a 404 response
     p_target = (@path_resolver ||= PathResolver.new '\\').posixify target
     target_type, base_dir = :file, @document.base_dir

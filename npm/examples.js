@@ -2,18 +2,24 @@
 
 const async = require('async');
 const path = require('path');
+const fs = require('fs');
 const log = require('bestikk-log');
 const bfs = require('bestikk-fs');
 const download = require('bestikk-download');
-const OpalCompiler = require('bestikk-opal-compiler');
+const OpalBuilder = require('opal-compiler').Builder;
 const BuilderModule = require('./module/builder');
 
 const compileExamples = (callback) => {
   log.task('compile examples');
   bfs.mkdirsSync(builder.examplesBuildDir);
-  const opalCompiler = new OpalCompiler({defaultPaths: ['build/asciidoctor/lib']});
-  opalCompiler.compile('examples/asciidoctor_example.rb', path.join(builder.examplesBuildDir, 'asciidoctor_example.js'));
-  opalCompiler.compile('examples/userguide_test.rb', path.join(builder.examplesBuildDir, 'userguide_test.js'));
+
+  const opalBuilder = OpalBuilder.create();
+  opalBuilder.appendPaths('build/asciidoctor/lib');
+  opalBuilder.appendPaths('node_modules/opal-compiler/src/stdlib');
+  opalBuilder.appendPaths('lib');
+
+  fs.writeFileSync(path.join(builder.examplesBuildDir, 'asciidoctor_example.js'), opalBuilder.build('examples/asciidoctor_example.rb').toString(), 'utf8');
+  fs.writeFileSync(path.join(builder.examplesBuildDir, 'userguide_test.js'), opalBuilder.build('examples/userguide_test.rb').toString(), 'utf8');
   callback();
 };
 

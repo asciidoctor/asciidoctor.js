@@ -32,4 +32,10 @@ if JAVASCRIPT_FRAMEWORK == 'electron'
   require 'asciidoctor/js/opal_ext/electron/io'
 end
 
-`Opal.load("nodejs")`
+%x(
+// Load Opal modules
+Opal.load("pathname");
+Opal.load("base64");
+Opal.load("open-uri");
+Opal.load("nodejs");
+)

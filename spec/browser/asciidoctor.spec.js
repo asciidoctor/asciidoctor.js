@@ -10,6 +10,7 @@ require('asciidoctor-docbook.js')();
 
 shareSpec(testOptions, asciidoctor);
 includeHttpsSpec(testOptions, asciidoctor);
+includeFileSpec(testOptions, asciidoctor);
 
 describe('Browser', function () {
   describe('Include', function () {
@@ -22,14 +23,11 @@ describe('Browser', function () {
     });
     */
 
-    // FIXME: Does not work because the resolved path is `{base_dir}/file:///path/to/file.adoc`
-    /*
     it('Should include file with an absolute path (base_dir is explicitly defined)', function () {
       var opts = {safe: 'safe', base_dir: testOptions.baseDir};
       var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/share/include.adoc[]', opts);
       expect(html).toContain('include content');
     });
-    */
   });
 });
 

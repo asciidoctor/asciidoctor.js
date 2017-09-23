@@ -3,20 +3,38 @@ const fs = require('fs');
 const path = require('path');
 const bfs = require('bestikk-fs');
 const log = require('bestikk-log');
-const OpalCompiler = require('bestikk-opal-compiler');
+const OpalBuilder = require('opal-compiler').Builder;
+
+const compileRuntimeEnvironments = (environments) => {
+  log.task('compile runtime environments');
+
+  environments.forEach((environment) => {
+    // Build a new instance each time, otherwise the context is shared.
+    const opalBuilder = OpalBuilder.create();
+    opalBuilder.appendPaths('lib');
+    opalBuilder.setCompilerOptions({dynamic_require_severity: 'ignore', requirable: true});
+    let module = `asciidoctor/js/opal_ext/${environment}`;
+    log.debug(module);
+    let data = opalBuilder.build(module).toString();
+    fs.writeFileSync(`build/opal-ext-${environment}.js`, data, 'utf8');
+  });
+};
+
+const compileAsciidoctorCore = () => {
+  log.task('compile core lib');
+  const opalBuilder = OpalBuilder.create();
+  opalBuilder.appendPaths('build/asciidoctor/lib');
+  opalBuilder.appendPaths('node_modules/opal-compiler/src/stdlib');
+  opalBuilder.appendPaths('lib');
+  opalBuilder.setCompilerOptions({dynamic_require_severity: 'ignore'});
+  fs.writeFileSync('build/asciidoctor-core.js', opalBuilder.build('asciidoctor').toString(), 'utf8');
+};
 
 module.exports.compile = (environments, callback) => {
   bfs.mkdirsSync('build');
 
-  log.task('compile specific implementation');
-  const opalCompiler = new OpalCompiler({dynamicRequireLevel: 'ignore', requirable: true});
-  environments.forEach((environment) => {
-    opalCompiler.compile(`asciidoctor/js/opal_ext/${environment}`, `build/opal-ext-${environment}.js`);
-  });
-
-  log.task('compile core lib');
-  new OpalCompiler({dynamicRequireLevel: 'ignore', defaultPaths: ['build/asciidoctor/lib']})
-    .compile('asciidoctor', 'build/asciidoctor-core.js');
+  compileRuntimeEnvironments(environments);
+  compileAsciidoctorCore();
 
   log.task('copy resources');
   log.debug('copy asciidoctor.css');

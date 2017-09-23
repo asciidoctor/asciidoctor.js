@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const process = require('process');
 const shareSpec = require('../share/asciidoctor.spec.js');
+const includeHttpsSpec = require('../share/asciidoctor-include-https.spec');
 const config = {
   runtime: {
     platform: 'node',
@@ -29,8 +30,7 @@ const testOptions = {
 };
 
 shareSpec(testOptions, asciidoctor);
-// FIXME: Does not work because 'fs.readFileSync' is used on a URI
-//includeHttpsSpec(testOptions, asciidoctor);
+includeHttpsSpec(testOptions, asciidoctor);
 
 function fileExists (path) {
   try {
@@ -413,6 +413,12 @@ Content 2`;
       const html = asciidoctor.convert('=== Test', options);
       expect(html).toContain('Asciidoctor default stylesheet');
       expect(html).toContain('Test');
+    });
+
+    it('should include a file with a relative path', () => {
+      var options = {safe: 'unsafe', header_footer: false, 'to_file': false};
+      var html = asciidoctor.convertFile('spec/share/chapter-01/index.adoc', options);
+      expect(html).toContain('We recommend to use version 1.2.3');
     });
 
     it('should issue a warning if an include file is not found', () => {
