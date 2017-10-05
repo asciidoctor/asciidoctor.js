@@ -376,7 +376,48 @@ var shareSpec = function (testOptions, asciidoctor) {
         var html = asciidoctor.convert('= Document\n\nThis is a simple document.\n\n== Section\n\nCAUTION: This is important!', options);
         expect(html).toContain('<i class="fa icon-caution" title="Caution"></i>');
       });
+    });
 
+    describe('Wildcard character match', function () {
+      it('should replace wildcard with negated line feed', function () {
+        expect(asciidoctor.$$const.UnorderedListRx.source).not.toContain('.*');
+        expect(asciidoctor.$$const.UnorderedListRx.source).toContain('[^\\n]*');
+      });
+
+      it('should match list item in an undered list item that has a trailing line separator', function () {
+        var html = asciidoctor.convert('* a\n* b\u2028\n* c');
+        expect(html).toContain('<li>\n<p>b</p>\n</li>');
+      });
+
+      it('should match line separator in text of list item in an unordered list', function () {
+        var html = asciidoctor.convert('* a\n* b\u2028b');
+        expect(html).toContain('<li>\n<p>b\u2028b</p>\n</li>');
+      });
+
+      it('should match line separator in text of list item in an ordered list', function () {
+        var html = asciidoctor.convert('. a\n. b\u2028b');
+        expect(html).toContain('<li>\n<p>b\u2028b</p>\n</li>');
+      });
+
+      it('should match line separator in text of list item in a description list', function () {
+        var html = asciidoctor.convert('a:: a\nb:: b\u2028b');
+        expect(html).toContain('<dd>\n<p>b\u2028b</p>\n</dd>');
+      });
+
+      it('should match line separator in text of list item in a nested description list', function () {
+        var html = asciidoctor.convert('a:: a\nb:: b\nc::: c\u2028c\nd:: d');
+        expect(html).toContain('<dd>\n<p>c\u2028c</p>\n</dd>');
+      });
+
+      it('should match line separator in text of list item in a callout list', function () {
+        var html = asciidoctor.convert('----\nline 1 <1>\nline 2 <2>\n----\n<1> a\n<2> b\u2028b');
+        expect(html).toContain('<li>\n<p>b\u2028b</p>\n</li>');
+      });
+
+      it('should match line separator in block title', function () {
+        var html = asciidoctor.convert('.block\u2028title\ncontent');
+        expect(html).toContain('<div class="title">block\u2028title</div>');
+      });
     });
 
     describe('Include', function () {
