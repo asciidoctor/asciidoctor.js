@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "asciidoctor-docbook.js": "1.5.6-preview.2",
-    "asciidoctor-reveal.js": "1.0.1",
+    "asciidoctor-reveal.js": "1.0.3",
     "asciidoctor-template.js": "1.5.6-preview.1",
     "async": "^1.5.0",
     "bestikk-download": "^0.1.0",
@@ -80,12 +80,15 @@
     "karma": "^0.13.22",
     "karma-browserify": "^5.0.3",
     "karma-jasmine": "^0.3.8",
-    "karma-phantomjs-launcher": "^1.0.0",
+    "karma-phantomjs-launcher": "^1.0.4",
     "karma-requirejs": "1.1.0",
-    "phantomjs-prebuilt": "^2.1.7",
+    "phantomjs-prebuilt": "^2.1.15",
     "requirejs": "2.1.0",
     "sinon": "2.3.8",
     "watchify": "^3.7.0",
     "webpack": "^1.13.3"
+  },
+  "resolutions": {
+    "reveal.js": "3.5.0"
   }
 }

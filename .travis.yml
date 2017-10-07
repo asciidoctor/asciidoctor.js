@@ -7,6 +7,9 @@ env:
 - ASCIIDOCTOR_CORE_VERSION=v1.5.6.1
 - ASCIIDOCTOR_CORE_VERSION=master
 
+cache:
+  yarn: true
+
 node_js:
 - '4'
 - '6'
@@ -14,6 +17,10 @@ node_js:
 
 jdk:
 - oraclejdk8
+
+before_install:
+- curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.1.0
+- export PATH=$HOME/.yarn/bin:$PATH
 
 script:
 - npm run lint
