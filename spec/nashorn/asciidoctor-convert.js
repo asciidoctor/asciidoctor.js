@@ -12,6 +12,6 @@ var data = '= asciidoctor.js, AsciiDoc in JavaScript\n' +
 'NOTE: That\'s all she wrote!!!\n\n' +
 'include::spec/share/include.adoc[]';
 
-var options = {'safe': 'server', attributes: ['showtitle']};
+var options = {safe: 'server', attributes: {showtitle: true}};
 var html = asciidoctor.convert(data, options);
 print(html);

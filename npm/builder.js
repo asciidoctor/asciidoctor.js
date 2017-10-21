@@ -445,13 +445,24 @@ Builder.prototype.nashornRun = function (name, jdkInstallDir) {
 
   const start = process.hrtime();
 
-  if (isWin()) {
-    jdkInstallDir = jdkInstallDir.replace(/\\\//, '\\\\').replace(/\//, '\\\\');
+  let jjsBin;
+  let javacBin;
+  let javaBin;
+  if (jdkInstallDir) {
+    if (isWin()) {
+      jdkInstallDir = jdkInstallDir.replace(/\\\//, '\\\\').replace(/\//, '\\\\');
+    }
+    const jdkBinDir = path.join(jdkInstallDir, 'bin');
+    jjsBin = path.join(jdkBinDir, 'jjs');
+    javacBin = path.join(jdkBinDir, 'javac');
+    javaBin = path.join(jdkBinDir, 'java');
+  } else {
+    // Should be available in PATH
+    jjsBin = 'jjs';
+    javacBin = 'javac';
+    javaBin = 'java';
   }
-  const jdkBinDir = path.join(jdkInstallDir, 'bin');
-  let jjsBin = path.join(jdkBinDir, 'jjs');
-  let javacBin = path.join(jdkBinDir, 'javac');
-  let javaBin = path.join(jdkBinDir, 'java');
+
   if (isWin()) {
     jjsBin = jjsBin + '.exe';
     javacBin = javacBin + '.exe';
@@ -459,8 +470,8 @@ Builder.prototype.nashornRun = function (name, jdkInstallDir) {
   }
 
   // jjs scripts
-  const basicSpec = 'spec/share/basic.js';
-  const asciidoctorSpec = 'spec/share/asciidoctor-convert.js';
+  const basicSpec = 'spec/nashorn/basic.js';
+  const asciidoctorSpec = 'spec/nashorn/asciidoctor-convert.js';
 
   // Nashorn classes
   const basicNashornClassName = 'BasicJavascriptWithNashorn';
