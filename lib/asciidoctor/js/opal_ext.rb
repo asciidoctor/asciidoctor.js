@@ -34,7 +34,7 @@
       }
     }
     else if (isNashorn) {
-      platform = plaform || 'java';
+      platform = platform || 'java';
       engine = engine || 'nashorn';
     }
     else if (isRhino) {
