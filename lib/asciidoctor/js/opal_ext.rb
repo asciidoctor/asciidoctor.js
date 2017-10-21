@@ -109,6 +109,7 @@ require 'asciidoctor/js/opal_ext/string'
 
 if JAVASCRIPT_ENGINE == 'nashorn'
   require 'asciidoctor/js/opal_ext/nashorn/io'
+  require 'asciidoctor/js/opal_ext/nashorn/dir'
 end
 if JAVASCRIPT_FRAMEWORK == 'electron'
   require 'asciidoctor/js/opal_ext/electron/io'
