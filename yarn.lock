@@ -1088,9 +1088,9 @@ bestikk-opal-compiler@0.3.0-integration7:
     bestikk-log "^0.1.0"
     opal-compiler "0.11.0-integration8"
 
-bestikk-uglify@0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/bestikk-uglify/-/bestikk-uglify-0.1.1.tgz#199890dff56987aa8e7451a3db3bb78682c487a7"
+bestikk-uglify@0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/bestikk-uglify/-/bestikk-uglify-0.2.1.tgz#10cb510984dc010d95037f3b20bd386c0aad0329"
   dependencies:
     bestikk-log "0.1.0"
 
