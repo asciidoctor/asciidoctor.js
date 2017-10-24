@@ -16,6 +16,7 @@ require.config({
   paths: {
     'asciidoctor': 'build/asciidoctor',
     'asciidoctor-share-spec': 'spec/share/asciidoctor.spec',
+    'asciidoctor-share-include-https-spec': 'spec/share/asciidoctor-include-https.spec',
     'asciidoctor/docbook': 'node_modules/asciidoctor-docbook.js/dist/main'
   },
 
