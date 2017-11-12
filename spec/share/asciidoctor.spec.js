@@ -439,13 +439,13 @@ var shareSpec = function (testOptions, asciidoctor) {
       });
 
       it('should include file with an absolute path (base_dir is not defined)', function () {
-        var opts = {safe: 'safe'};
+        var opts = {safe: 'safe', attributes: {'allow-uri-read': true}};
         var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/share/include.adoc[]', opts);
         expect(html).toContain('include content');
       });
 
       it('should include file with an absolute expandable path (base_dir is not defined)', function () {
-        var opts = {safe: 'safe'};
+        var opts = {safe: 'safe', attributes: {'allow-uri-read': true}};
         var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/../spec/share/include.adoc[]', opts);
         expect(html).toContain('include content');
       });
