@@ -172,7 +172,9 @@ describe('Node.js', function () {
       expect(blocks.length).toBe(26);
 
       var blocksWithLineNumber = doc.findBy(function (b) { return typeof b.getLineNumber() !== 'undefined'; });
-      expect(blocksWithLineNumber.length).toBe(18);
+      // since https://github.com/asciidoctor/asciidoctor/commit/46700a9c12d1cfe551db2790dd232baa0bec8195
+      // When the sourcemap option is specified, the source location (and as a consequence the line number) is defined on the Document object.
+      expect(blocksWithLineNumber.length >= 18).toBe(true);
     });
   });
 
