@@ -114,7 +114,7 @@ The {uri-contribute}[Contributing] guide provides information on how to contribu
 
 ## Copyright
 
-Copyright (C) 2016 Dan Allen, Guillaume Grossetie, Anthonny Quérouil and the Asciidoctor Project.
+Copyright (C) 2017 Dan Allen, Guillaume Grossetie, Anthonny Quérouil and the Asciidoctor Project.
 Free use of this software is granted under the terms of the MIT License.
 
 See the {license}[LICENSE] file for details.
