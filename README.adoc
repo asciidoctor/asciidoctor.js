@@ -6,12 +6,13 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Guillaume Grossetie <h
 :uri-opal: http://opalrb.org
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
 :uri-freesoftware: https://www.gnu.org/philosophy/free-sw.html
-:uri-rel-file-base: link:
+ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
 :uri-contribute: {uri-rel-file-base}CONTRIBUTING.adoc
 :uri-user-manual: {uri-rel-file-base}manual.adoc
 :license: {uri-repo}/blob/master/LICENSE
 :experimental:
 :endash:
+
 
 ifdef::env-github[]
 image:https://img.shields.io/travis/asciidoctor/asciidoctor.js/master.svg[Travis build status, link=https://travis-ci.org/asciidoctor/asciidoctor.js]
