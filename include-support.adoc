@@ -1,62 +1,78 @@
 = Include directive support
 
-[cols="1m,1m,1,1", options="header"]
+[cols="1m,1m,1,1,1", options="header"]
 |===
 |Path
 |Base dir
 |XMLHttpRequest/V8
 |Node.js
+|MRI
 
 |+path/to/file.adoc+
 |+file:///root+
 |:ok_hand:
 |:ok_hand:
+|:x: +
+The resolved path is `/root/file:/root/path/to/file.adoc`.
 
 |+path/../path/to/file.adoc+
 |+file:///root+
 |:ok_hand:
 |:ok_hand:
+|:x: +
+The resolved path is `/root/file:/root/path/to/file.adoc`.
 
 |+file:///root/path/to/file.adoc+
 |
 |:ok_hand:
 |:ok_hand:
+|:x: +
+include uri not readable: `file:///root/path/to/file.adoc`.
 
 |+file:///root/path/../path/to/file.adoc+
 |
 |:ok_hand:
 |:ok_hand:
+|:x: +
+include uri not readable: `file:///root/path/../path/to/file.adoc`.
 
 |+path/to/file.adoc+
 |
 |:x: +
 Unable to get the current directory in a reliable way.
 |:ok_hand:
+|:ok_hand:
 
-|+file:///path/to/file.adoc+
-|+file:///path/to+
+|+file:///root/path/to/file.adoc+
+|+file:///root/path/to+
 |:x: +
-The resolved path is `{base_dir}/file:///path/to/file.adoc`. +
+The resolved path is `{base_dir}/file:///root/path/to/file.adoc`. +
 https://github.com/asciidoctor/asciidoctor/blob/5f4e6b1eaf23ab2541957a872e392f24dc7b1c1d/lib/asciidoctor/reader.rb#L851[Source code]
 |:ok_hand:
+|:x: +
+include uri not readable: `file:///root/path/to/file.adoc`.
 
 |+https://raw.com/master/file.adoc+
 |+https://raw.com/master+
 |:ok_hand:
 |:x: +
 `fs.readFileSync` is used on a URI.
+|:ok_hand:
 
 |+https://raw.com/master/file.adoc+
 |
 |:ok_hand:
 |:x: +
 `fs.readFileSync` is used on a URI.
+|:ok_hand:
 
 |+file.adoc+
 |+https://raw.com/master+
 |:ok_hand:
 |:x: +
 `SecurityError: Jail is not an absolute path: https://raw.com/master`
+|:x: +
+include file not found: `{local_pwd}/https:/raw.com/master/file.adoc`.
 
 |+../v1.5.0/file.adoc+
 |+https://raw.com/master+
@@ -64,6 +80,8 @@ https://github.com/asciidoctor/asciidoctor/blob/5f4e6b1eaf23ab2541957a872e392f24
 `XMLHttpRequest` returns a 404.
 |:x: +
 `SecurityError: Jail is not an absolute path: https://raw.com/master`
+|:x: +
+include file not found: `{local_pwd}/https:/raw.com/master/file.adoc`.
 
 |+https://raw.com/master/../v1.5.0/file.adoc+
 |
@@ -71,5 +89,6 @@ https://github.com/asciidoctor/asciidoctor/blob/5f4e6b1eaf23ab2541957a872e392f24
 `XMLHttpRequest` returns a 404.
 |:x: +
 `fs.readFileSync` is used on a URI.
+|:ok_hand:
 
 |===
