@@ -142,7 +142,10 @@ describe('Node.js', function () {
       expect(blocks[1].getBlocks()[1].getStyle()).toBe('quote');
       expect(blocks[1].getBlocks()[1].getAttribute('attribution')).toBe('Abraham Lincoln');
 
+      expect(blocks[1].getBlocks()[2].getContext()).toBe('ulist');
       expect(blocks[1].getBlocks()[2].getRole()).toBe('feature-list');
+      expect(blocks[1].getBlocks()[2].getItems().length).toBe(4);
+      expect(blocks[1].getBlocks()[2].getItems()[0].getText()).toBe('<em>lightweight</em>');
 
       expect(blocks[2].getTitle()).toBe('Second Section');
       expect(blocks[2].getBlocks().length).toBe(3);

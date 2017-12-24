@@ -17,7 +17,7 @@ The abstract is a built-in role (called a style). When a built-in role is not av
 This is some section with title and id and attributes
 
 [role="feature-list"] 
-* lightweight 
+* _lightweight_
 * reusable 
 * readable 
 * etc... 
