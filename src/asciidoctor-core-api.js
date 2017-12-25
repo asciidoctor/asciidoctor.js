@@ -1074,6 +1074,36 @@ Inline.$$proto.getTarget = function () {
   return target === Opal.nil ? undefined : target;
 };
 
+// List API
+
+/** @namespace */
+var List = Opal.Asciidoctor.List;
+
+/**
+ * Get the Array of {@link ListItem} nodes for this {@link List}.
+ *
+ * @memberof List
+ * @returns {Array} - returns an Array of {@link ListItem} nodes.
+ */
+List.$$proto.getItems = function () {
+  return this.blocks;
+};
+
+// ListItem API
+
+/** @namespace */
+var ListItem = Opal.Asciidoctor.ListItem;
+
+/**
+ * Get the converted String text of this ListItem node.
+ *
+ * @memberof ListItem
+ * @returns {string} - returns the converted String text for this ListItem node.
+ */
+ListItem.$$proto.getText = function () {
+  return this.$text();
+};
+
 // Reader API
 
 /** @namespace */
