@@ -306,6 +306,29 @@ AbstractBlock.$$proto.getLineNumber = function () {
   return value;
 };
 
+/**
+ * @namespace
+ */
+var Block = Opal.Asciidoctor.Block;
+
+/**
+ * Get the source of this block.
+ * @memberof Block
+ * @returns {string} - returns the String source of this block.
+ */
+Block.$$proto.getSource = function () {
+  return this.$source();
+};
+
+/**
+ * Get the source lines of this block.
+ * @memberof Block
+ * @returns {Array} - returns the String {Array} of source lines for this block.
+ */
+Block.$$proto.getSourceLines = function () {
+  return this.$lines();
+};
+
 // AbstractNode API
 
 /**
