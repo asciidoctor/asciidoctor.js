@@ -14,7 +14,8 @@ The abstract is a built-in role (called a style). When a built-in role is not av
 .Block title
 [[blockid]]
 [quote, attribution="Abraham Lincoln", Soldiers' National Cemetery Dedication]
-This is some section with title and id and attributes
+This is a quote.
+It has a title, id, and attribution.
 
 [role="feature-list"] 
 * _lightweight_
