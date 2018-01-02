@@ -53,12 +53,7 @@ Builder.prototype.build = function (callback) {
   const start = process.hrtime();
 
   async.series([
-    callback => builder.clean(callback), // clean
-    callback => builder.downloadDependencies(callback), // download dependencies
-    callback => builder.compile(callback), // compile
-    callback => builder.patchAsciidoctorCore(callback), // patch Asciidoctor core. TODO: remove once Asciidoctor 1.5.6 is released
-    callback => builder.replaceUnsupportedFeatures(callback), // replace unsupported features
-    callback => builder.replaceDefaultStylesheetPath(callback), // replace the default stylesheet path
+    callback => builder.rebuild(callback), // rebuild from Asciidoctor core
     callback => builder.generateUMD(callback), // generate UMD
     callback => builder.uglify(callback) // uglify (optional)
   ], () => {
@@ -67,15 +62,38 @@ Builder.prototype.build = function (callback) {
   });
 };
 
+Builder.prototype.rebuild = function (callback) {
+  const target = 'build/asciidoctor-lib.js';
+  const args = process.argv.slice(2);
+  if (fs.existsSync(target) && !args.includes('--rebuild')) {
+    log.info(`${target} file already exists, skipping "rebuild" task.\nTIP: Use "npm run build -- --rebuild" to rebuild from Asciidoctor core.`);
+    callback();
+    return;
+  }
+
+  const builder = this;
+
+  async.series([
+    callback => builder.clean(callback), // clean
+    callback => builder.downloadDependencies(callback), // download dependencies
+    callback => builder.compile(callback), // compile
+    callback => builder.patchAsciidoctorCore(callback), // patch Asciidoctor core. TODO: remove once Asciidoctor 1.5.6 is released
+    callback => builder.replaceUnsupportedFeatures(callback), // replace unsupported features
+    callback => builder.replaceDefaultStylesheetPath(callback) // replace the default stylesheet path
+  ], () => {
+    typeof callback === 'function' && callback();
+  });
+};
+
 Builder.prototype.clean = function (callback) {
   if (process.env.SKIP_CLEAN) {
     log.info('SKIP_CLEAN environment variable is true, skipping "clean" task');
-    callback();
+    typeof callback === 'function' && callback();
     return;
   }
   log.task('clean');
   this.removeBuildDirSync(); // remove build directory
-  callback();
+  typeof callback === 'function' && callback();
 };
 
 Builder.prototype.downloadDependencies = function (callback) {
