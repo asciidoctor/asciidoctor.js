@@ -699,7 +699,8 @@ Document.$$proto.isBasebackend = function (base) {
  * @memberof Document
  */
 Document.$$proto.getTitle = function () {
-  return this.$title();
+  var result = this.$title();
+  return result === Opal.nil ? undefined : result;
 };
 
 /**
@@ -714,7 +715,8 @@ Document.$$proto.setTitle = function (title) {
  * @returns {Document/Title} - returns a {@link Document/Title}
  */
 Document.$$proto.getDocumentTitle = function (options) {
-  return this.$doctitle(toHash(options));
+  var result = this.$doctitle(toHash(options));
+  return result === Opal.nil ? undefined : result;
 };
 
 /**

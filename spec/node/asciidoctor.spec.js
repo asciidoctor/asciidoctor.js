@@ -80,6 +80,12 @@ describe('Node.js', function () {
       expect(doc.getDoctitle()).toBe('Document title');
     });
 
+    it('should return empty document title if not specified', function () {
+      var doc = asciidoctor.load('paragraph');
+      expect(doc.getDocumentTitle()).toBe(undefined);
+      expect(doc.getTitle()).toBe(undefined);
+    });
+
     it('should return empty revision info', function () {
       var doc = asciidoctor.load('= Begin Again\n\n== First section');
       expect(doc.getRevisionDate()).toBe(undefined);
@@ -99,6 +105,7 @@ describe('Node.js', function () {
 
     it('should be able to retrieve structural content from file', function () {
       var doc = asciidoctor.loadFile(__dirname + '/documentblocks.adoc');
+      expect(doc.getDocumentTitle()).toBe('Sample Document');
       var header = doc.getHeader();
       expect(header.level).toBe(0);
       expect(header.title).toBe('Sample Document');
