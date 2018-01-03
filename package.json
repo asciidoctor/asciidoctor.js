@@ -20,6 +20,7 @@
     "test:karmaRequirejs": "karma start karma-requirejs.conf.js",
     "test": "node npm/test/builder.js && node npm/test/unsupported-features.js && node npm/test/jasmine-browser.js && node npm/test/jasmine-browser-min.js && node npm/test/jasmine-node.js && node npm/test/jasmine-webpack.js && npm run test:karmaBrowserify && npm run test:karmaRequirejs && node npm/test/nashorn.js",
     "build": "npm run lint && node npm/build.js && npm run test",
+    "clean": "node npm/clean.js",
     "dist": "cross-env MINIFY=1 node npm/dist.js",
     "lint": "eslint src spec npm",
     "package": "cross-env MINIFY=1 node npm/build.js && cross-env MINIFY=1 npm run test",
