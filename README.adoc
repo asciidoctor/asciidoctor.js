@@ -1,4 +1,4 @@
-# Asciidoctor.js: AsciiDoc in JavaScript powered by Asciidoctor
+= Asciidoctor.js: AsciiDoc in JavaScript powered by Asciidoctor
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Guillaume Grossetie <https://github.com/mogztter[@mogztter]>; Anthonny Quérouil <https://github.com/anthonny[@anthonny]>
 :idprefix:
 :idseparator: -
@@ -13,7 +13,6 @@ ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
 :experimental:
 :endash:
 
-
 ifdef::env-github[]
 image:https://img.shields.io/travis/asciidoctor/asciidoctor.js/master.svg[Travis build status, link=https://travis-ci.org/asciidoctor/asciidoctor.js]
 image:https://ci.appveyor.com/api/projects/status/i69sqvvyr95sf6i7/branch/master?svg=true[Appveyor build status, link=https://ci.appveyor.com/project/asciidoctor/asciidoctor-js]
@@ -23,7 +22,6 @@ image:https://img.shields.io/badge/jsdoc-master-blue.svg[JSDoc, link=http://asci
 image:https://inch-ci.org/github/asciidoctor/asciidoctor.js.svg?branch=master[InchCI, link=https://inch-ci.org/github/asciidoctor/asciidoctor.js]
 endif::[]
 
-
 Asciidoctor.js brings AsciiDoc to the JavaScript world!
 
 This project uses {uri-opal}[Opal] to transpile http://asciidoctor.org[Asciidoctor], a modern implementation of AsciiDoc, from Ruby to JavaScript to produce _asciidoctor.js_.
@@ -31,11 +29,11 @@ The _asciidoctor.js_ script can be run on any JavaScript platform, including Nod
 
 IMPORTANT: Asciidoctor.js does _not_ use Semantic Versioning as the release versions are aligned on _Asciidoctor (Ruby)_. It's *highly recommended* to define the exact version in your `package.json` file (ie. without `^`). Please read the release notes when upgrading to the latest version as breaking changes can be introduced in non major release.
 
-## Introduction
+== Introduction
 
 You can use Asciidoctor.js either for back-end development using {uri-nodejs}[Node.js] or front-end development using a browser.
 
-## Front-end development
+== Front-end development
 
 .Installing Asciidoctor.js with npm
 
@@ -52,7 +50,7 @@ Here is a simple example that converts AsciiDoc to HTML5:
 .sample.js
 
 ```javascript
-var asciidoctor = Asciidoctor(); <1>
+var asciidoctor = Asciidoctor(); // <1>
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
     "running on http://opalrb.org[_Opal_] " +
     "brings AsciiDoc to the browser!";
@@ -64,7 +62,7 @@ console.log(html); // <3>
 <2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
 <3> Print the HTML5 output to the console
 
-## Back-end development
+== Back-end development
 
 .Installing Asciidoctor.js with npm
 
@@ -94,17 +92,16 @@ Save the file as `sample.js` and run it using the `node` command:
 You should see the following output in your terminal:
 
 [.output]
-....
-<div class="paragraph">
-<p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.org"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
-</div>
-....
 
-## Advanced topics
+    <div class="paragraph">
+    <p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.org"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
+    </div>
+
+== Advanced topics
 
 If you want to know more about _Asciidoctor.js_, please read the {uri-user-manual}[User Manual].
 
-## Contributing
+== Contributing
 
 In the spirit of {uri-freesoftware}[free software], _everyone_ is encouraged to help improve this project.
 If you discover errors or omissions in the source code, documentation, or website content, please don't hesitate to submit an issue or open a pull request with a fix.
@@ -112,7 +109,7 @@ New contributors are always welcome!
 
 The {uri-contribute}[Contributing] guide provides information on how to contribute.
 
-## Copyright
+== Copyright
 
 Copyright (C) 2018 Dan Allen, Guillaume Grossetie, Anthonny Quérouil and the Asciidoctor Project.
 Free use of this software is granted under the terms of the MIT License.
