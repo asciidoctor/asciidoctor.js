@@ -31,7 +31,9 @@
     "docs:lint": "documentation lint src/**",
     "docs:build": "documentation build src/** -f html -o build/docs -g",
     "docs:serve": "documentation serve src/** -g -w",
-    "docs": "npm run docs:lint && npm run docs:build"
+    "docs": "npm run docs:lint && npm run docs:build",
+    "prepublishOnly": "node npm/prepublish.js",
+    "postpublish": "node npm/postpublish.js"
   },
   "repository": {
     "type": "git",
