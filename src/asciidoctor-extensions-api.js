@@ -10,9 +10,11 @@ var toBlock = function (block) {
 };
 
 var registerExtension = function (registry, type, processor, name) {
-  if (processor.$$is_class) {
+  if (typeof processor === 'object' || processor.$$is_class) {
+    // processor is an instance or a class
     return registry['$' + type](processor, name);
   } else {
+    // processor is a function/lambda
     return Opal.send(registry, type, name && [name], toBlock(processor));
   }
 };
@@ -173,8 +175,12 @@ Registry.prototype.inlineMacro = function (name, processor) {
 /**
  * @memberof Extensions/Registry
  */
-Registry.prototype.includeProcessor = function (processor) {
-  return registerExtension(this, 'include_processor', processor);
+Registry.prototype.includeProcessor = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
+  }
+  return registerExtension(this, 'include_processor', processor, name);
 };
 
 /**
@@ -380,6 +386,224 @@ var DocinfoProcessor = Extensions.DocinfoProcessor;
  */
 DocinfoProcessor.prototype.atLocation = function (value) {
   this.$at_location(value);
+};
+
+function initializeProcessorClass (superclassName, className, functions) {
+  var superclass = Opal.const_get_qualified(Extensions, superclassName);
+  var scope = Opal.klass(Opal.Object, superclass, className, function () {});
+  var postConstructFunction;
+  var initializeFunction;
+  var isHandlesFunctionDefined = false;
+  for (var key in functions) {
+    if (functions.hasOwnProperty(key)) {
+      (function (key) {
+        var userFunction = functions[key];
+        if (key === 'postConstruct') {
+          postConstructFunction = userFunction;
+        } else if (key === 'initialize') {
+          initializeFunction = userFunction;
+        } else {
+          if (key === 'handles?') {
+            isHandlesFunctionDefined = true;
+          }
+          Opal.def(scope, '$' + key, function () {
+            return userFunction.apply(this, arguments);
+          });
+        }
+      }(key));
+    }
+  }
+  var initialize;
+  if (typeof initializeFunction === 'function') {
+    initialize = function () {
+      initializeFunction.apply(this, arguments);
+      if (typeof postConstructFunction === 'function') {
+        postConstructFunction.bind(this)();
+      }
+    };
+  } else {
+    initialize = function () {
+      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
+      if (typeof postConstructFunction === 'function') {
+        postConstructFunction.bind(this)();
+      }
+    };
+  }
+  Opal.def(scope, '$initialize', initialize);
+  Opal.def(scope, 'super', function (func) {
+    if (typeof func === 'function') {
+      Opal.send(this, Opal.find_super_dispatcher(this, func.name, func));
+    } else {
+      // Bind the initialize function to super();
+      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
+    }
+  });
+  if (!isHandlesFunctionDefined) {
+    Opal.def(scope, '$handles?', function () {
+      return true;
+    });
+  }
+  return scope;
+}
+
+// Postprocessor
+
+/**
+ * Create a postprocessor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.createPostprocessor = function (name, functions) {
+  return initializeProcessorClass('Postprocessor', name, functions);
+};
+
+/**
+ * Create and instantiate a postprocessor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.newPostprocessor = function (name, functions) {
+  return this.createPostprocessor(name, functions).$new();
+};
+
+// Preprocessor
+
+/**
+ * Create a preprocessor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.createPreprocessor = function (name, functions) {
+  return initializeProcessorClass('Preprocessor', name, functions);
+};
+
+/**
+ * Create and instantiate a preprocessor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.newPreprocessor = function (name, functions) {
+  return this.createPreprocessor(name, functions).$new();
+};
+
+// Tree Processor
+
+/**
+ * Create a tree processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.createTreeProcessor = function (name, functions) {
+  return initializeProcessorClass('TreeProcessor', name, functions);
+};
+
+/**
+ * Create and instantiate a tree processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.newTreeProcessor = function (name, functions) {
+  return this.createTreeProcessor(name, functions).$new();
+};
+
+// Include Processor
+
+/**
+ * Create an include processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.createIncludeProcessor = function (name, functions) {
+  return initializeProcessorClass('IncludeProcessor', name, functions);
+};
+
+/**
+ * Create and instantiate an include processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.newIncludeProcessor = function (name, functions) {
+  return this.createIncludeProcessor(name, functions).$new();
+};
+
+// Docinfo Processor
+
+/**
+ * Create a Docinfo processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.createDocinfoProcessor = function (name, functions) {
+  return initializeProcessorClass('DocinfoProcessor', name, functions);
+};
+
+/**
+ * Create and instantiate a Docinfo processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.newDocinfoProcessor = function (name, functions) {
+  return this.createDocinfoProcessor(name, functions).$new();
+};
+
+// Block Processor
+
+/**
+ * Create a block processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.createBlockProcessor = function (name, functions) {
+  return initializeProcessorClass('BlockProcessor', name, functions);
+};
+
+/**
+ * Create and instantiate a block processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.newBlockProcessor = function (name, functions) {
+  return this.createBlockProcessor(name, functions).$new();
+};
+
+// Inline Macro Processor
+
+/**
+ * Create an inline macro processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.createInlineMacroProcessor = function (name, functions) {
+  return initializeProcessorClass('InlineMacroProcessor', name, functions);
+};
+
+/**
+ * Create and instantiate an inline macro processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.newInlineMacroProcessor = function (name, functions) {
+  return this.createInlineMacroProcessor(name, functions).$new();
+};
+
+// Block Macro Processor
+
+/**
+ * Create a block macro processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.createBlockMacroProcessor = function (name, functions) {
+  return initializeProcessorClass('BlockMacroProcessor', name, functions);
+};
+
+/**
+ * Create and instantiate a block macro processor
+ * @description this API is experimental and subject to change
+ * @memberof Extensions
+ */
+Extensions.newBlockMacroProcessor = function (name, functions) {
+  return this.createBlockMacroProcessor(name, functions).$new();
 };
 
 // Converter API
