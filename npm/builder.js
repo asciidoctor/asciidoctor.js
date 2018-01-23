@@ -64,9 +64,8 @@ Builder.prototype.build = function (callback) {
 
 Builder.prototype.rebuild = function (callback) {
   const target = 'build/asciidoctor-lib.js';
-  const args = process.argv.slice(2);
-  if (fs.existsSync(target) && !args.includes('--rebuild')) {
-    log.info(`${target} file already exists, skipping "rebuild" task.\nTIP: Use "npm run build -- --rebuild" to rebuild from Asciidoctor core.`);
+  if (fs.existsSync(target)) {
+    log.info(`${target} file already exists, skipping "rebuild" task.\nTIP: Use "npm run clean" to rebuild from Asciidoctor core.`);
     callback();
     return;
   }
