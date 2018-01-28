@@ -4,8 +4,8 @@ const verbose = process.env.VERBOSE;
 const include = process.env.INCLUDE;
 const runs = process.env.RUNS || 4;
 
-const start = new Date().getTime()
-const Asciidoctor = require('../asciidoctor.js');
+const start = new Date().getTime();
+const Asciidoctor = require('../asciidoctor-node.js');
 console.log(`Load scripts: ${((new Date().getTime() - start) / 1000.0)}s`);
 
 const baseDir = __dirname;
@@ -25,7 +25,7 @@ if (include) {
   content = fs.readFileSync(`${baseDir}/userguide.adoc`, 'utf-8');
 }
 let html;
-for (var i = 1; i <= runs; i++) {
+for (let i = 1; i <= runs; i++) {
   let start = new Date().getTime();
   html = asciidoctor.convert(content, options);
   let duration = new Date().getTime() - start;

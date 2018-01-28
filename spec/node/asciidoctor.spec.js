@@ -9,13 +9,13 @@ const config = {
     framework: 'lollipop'
   }
 };
-const asciidoctor = require('../../build/asciidoctor.js')(config);
+const asciidoctor = require('../../build/asciidoctor-node.js')(config);
 function asciidoctorVersionGreaterThan (version) {
   const currentVersion = asciidoctor.getCoreVersion();
   // ignore the fourth number, keep only major, minor and patch numbers
   const currentVersionNumeric = parseInt(currentVersion.replace('.dev', '').replace(/\./g, '').substring(0, 3));
   const versionNumeric = version.replace(/\./g, '');
-  return currentVersionNumeric > versionNumeric; 
+  return currentVersionNumeric > versionNumeric;
 }
 
 const Opal = require('opal-runtime').Opal; // for testing purpose only

@@ -91,49 +91,8 @@ class File
   end
 
   def self.read(path)
-    case JAVASCRIPT_IO_MODULE
-    when 'phantomjs'
-      %x(return require('fs').read(path);)
-    when 'java_nio'
-      %x(
-        var Paths = Java.type('java.nio.file.Paths');
-        var Files = Java.type('java.nio.file.Files');
-        var lines = Files.readAllLines(Paths.get(path), Java.type('java.nio.charset.StandardCharsets').UTF_8);
-        var data = [];
-        lines.forEach(function(line) { data.push(line); });
-        return data.join("\n");
-      )
-    when 'xmlhttprequest'
-      %x(
-        var data = '';
-        var status = -1;
-        try {
-          var xhr = new XMLHttpRequest();
-          xhr.open('GET', path, false);
-          xhr.addEventListener('load', function() {
-            status = this.status;
-            // status is 0 for local file mode (i.e., file://)
-            if (status == 0 || status == 200) {
-              data = this.responseText;
-            }
-          });
-          xhr.overrideMimeType('text/plain');
-          xhr.send();
-        }
-        catch (e) {
-          throw #{IOError.new `'Error reading file or directory: ' + path + '; reason: ' + e.message`};
-        }
-        // assume that no data in local file mode means it doesn't exist
-        if (status === 404 || (status === 0 && !data)) {
-          throw #{IOError.new `'No such file or directory: ' + path`};
-        }
-        return data;
-      )
-    when 'spidermonkey'
-      %x(return read(path);)
-    else
-      ''
-    end
+    # REMIND will be overriden by a specific implementation
+    ''
   end
 
 end

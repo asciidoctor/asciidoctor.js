@@ -13,28 +13,20 @@ const download = require('bestikk-download');
 
 let stdout;
 
-String.prototype.endsWith = function (suffix) {
-  return this.indexOf(suffix, this.length - suffix.length) !== -1;
-};
-
 const isWin = function () {
   return /^win/.test(process.platform);
 };
 
 function Builder () {
-  this.npmCoreFiles = [
-    'src/prepend-core.js',
-    'node_modules/opal-runtime/src/opal.js',
-    'build/asciidoctor-lib.js'
-  ];
   if (process.env.ASCIIDOCTOR_CORE_VERSION) {
     this.asciidoctorCoreVersion = process.env.ASCIIDOCTOR_CORE_VERSION;
   } else {
-    this.asciidoctorCoreVersion = 'master'; // or v1.5.5 to build against a release
+    this.asciidoctorCoreVersion = 'master'; // or v1.5.6.1 to build against a release
   }
   this.benchmarkBuildDir = path.join('build', 'benchmark');
-  this.examplesBuildDir =  path.join('build', 'examples');
+  this.examplesBuildDir = path.join('build', 'examples');
   this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625';
+  this.environments = ['umd', 'node', 'nashorn', 'browser'];
 }
 
 Builder.prototype.build = function (callback) {
@@ -76,7 +68,6 @@ Builder.prototype.rebuild = function (callback) {
     callback => builder.clean(callback), // clean
     callback => builder.downloadDependencies(callback), // download dependencies
     callback => builder.compile(callback), // compile
-    callback => builder.patchAsciidoctorCore(callback), // patch Asciidoctor core. TODO: remove once Asciidoctor 1.5.6 is released
     callback => builder.replaceUnsupportedFeatures(callback), // replace unsupported features
     callback => builder.replaceDefaultStylesheetPath(callback) // replace the default stylesheet path
   ], () => {
@@ -121,12 +112,15 @@ Builder.prototype.downloadDependencies = function (callback) {
   ], () => typeof callback === 'function' && callback());
 };
 
-const parseTemplate = function (templateFile, templateModel) {
-  return fs.readFileSync(templateFile, 'utf8')
+const parseTemplateFile = (templateFile, templateModel) =>
+  parseTemplateData(fs.readFileSync(templateFile, 'utf8'), templateModel);
+
+const parseTemplateData = (data, templateModel) => {
+  return data
     .replace(/\r\n/g, '\n')
     .split('\n')
     .map(line => {
-      if(line in templateModel){
+      if (line in templateModel) {
         return templateModel[line];
       } else {
         return line;
@@ -138,23 +132,45 @@ const parseTemplate = function (templateFile, templateModel) {
 Builder.prototype.generateUMD = function (callback) {
   log.task('generate UMD');
 
-  // Asciidoctor
+  // Asciidoctor core + extensions
   const apiFiles = [
     'src/asciidoctor-core-api.js',
     'src/asciidoctor-extensions-api.js'
   ];
   this.concat('Asciidoctor API core + extensions', apiFiles, 'build/asciidoctor-api.js');
 
-  var packageJson = require('../package.json');
+  const packageJson = require('../package.json');
   const templateModel = {
-    '//#{opalCode}': fs.readFileSync('node_modules/opal-runtime/src/opal.js', 'utf8'),
-    '//#{asciidoctorCode}': fs.readFileSync('build/asciidoctor-lib.js', 'utf8'),
-    '//#{asciidoctorAPI}': fs.readFileSync('build/asciidoctor-api.js', 'utf8'),
-    '//#{asciidoctorVersion}': `var ASCIIDOCTOR_JS_VERSION = '${packageJson.version}';`
+    '//{{opalCode}}': fs.readFileSync('node_modules/opal-runtime/src/opal.js', 'utf8'),
+    '//{{asciidoctorAPI}}': fs.readFileSync('build/asciidoctor-api.js', 'utf8'),
+    '//{{asciidoctorVersion}}': `var ASCIIDOCTOR_JS_VERSION = '${packageJson.version}';`
   };
 
-  const content = parseTemplate('src/template-asciidoctor.js', templateModel);
-  fs.writeFileSync('build/asciidoctor.js', content, 'utf8');
+  // Build a dedicated JavaScript file for each environment
+  this.environments.forEach((environment) => {
+    const opalExtData = fs.readFileSync(`build/opal-ext-${environment}.js`, 'utf8');
+    const asciidoctorCoreData = fs.readFileSync('build/asciidoctor-core.js', 'utf8');
+    let moduleData = parseTemplateData(opalExtData.concat('\n').concat(asciidoctorCoreData), {
+      '//{{asciidoctorRuntimeEnvironment}}': `self.$require("asciidoctor/js/opal_ext/${environment}");`
+    });
+    let templateFile;
+    let target = `build/asciidoctor-${environment}.js`;
+    if (['node', 'electron'].includes(environment)) {
+      templateFile = 'src/template-asciidoctor-node.js';
+    } else if (environment === 'nashorn') {
+      templateFile = 'src/template-asciidoctor-nashorn.js';
+    } else {
+      templateFile = 'src/template-asciidoctor-umd.js';
+    }
+    templateModel['//{{asciidoctorCode}}'] = moduleData;
+    const content = parseTemplateFile(templateFile, templateModel);
+    fs.writeFileSync(target, content, 'utf8');
+    // To be backward compatible
+    if (environment === 'umd') {
+      fs.writeFileSync('build/asciidoctor.js', content, 'utf8');
+    }
+  });
+
   callback();
 };
 
@@ -243,6 +259,7 @@ Builder.prototype.removeDistDirSync = function () {
   log.debug('remove dist directory');
   bfs.removeSync('dist');
   bfs.mkdirsSync('dist/css');
+  this.environments.forEach(environment => bfs.mkdirsSync(`dist/${environment}`));
 };
 
 Builder.prototype.execSync = function (command) {
@@ -266,7 +283,7 @@ Builder.prototype.uglify = function (callback) {
   log.task('uglify');
 
   const tasks = [
-    {source: 'build/asciidoctor.js', destination: 'build/asciidoctor.min.js' }
+    {source: 'build/asciidoctor.js', destination: 'build/asciidoctor.min.js'}
   ].map(file => {
     const source = file.source;
     const destination = file.destination;
@@ -285,6 +302,9 @@ Builder.prototype.copyToDist = function (callback) {
   bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css');
   bfs.copySync('build/asciidoctor.js', 'dist/asciidoctor.js');
   bfs.copySync('build/asciidoctor.min.js', 'dist/asciidoctor.min.js');
+  this.environments.forEach((environment) => {
+    bfs.copySync(`build/asciidoctor-${environment}.js`, `dist/${environment}/asciidoctor.js`);
+  });
   typeof callback === 'function' && callback();
 };
 
@@ -315,7 +335,7 @@ For this purpose, you can run the following command to start a HTTP server local
 Builder.prototype.compileExamples = function (callback) {
   log.task('compile examples');
   bfs.mkdirsSync(this.examplesBuildDir);
-  var opalCompiler = new OpalCompiler({defaultPaths: ['build/asciidoctor/lib']});
+  const opalCompiler = new OpalCompiler({defaultPaths: ['build/asciidoctor/lib']});
   opalCompiler.compile('examples/asciidoctor_example.rb', path.join(this.examplesBuildDir, 'asciidoctor_example.js'));
   opalCompiler.compile('examples/userguide_test.rb', path.join(this.examplesBuildDir, 'userguide_test.js'));
   callback();
@@ -344,34 +364,29 @@ Builder.prototype.copyExamplesResources = function (callback) {
 };
 
 Builder.prototype.compile = function (callback) {
-  var opalCompiler = new OpalCompiler({dynamicRequireLevel: 'ignore', defaultPaths: ['build/asciidoctor/lib']});
-
   bfs.mkdirsSync('build');
 
+  log.task('compile specific implementation');
+  const opalCompiler = new OpalCompiler({dynamicRequireLevel: 'ignore', requirable: true});
+  this.environments.forEach((environment) => {
+    opalCompiler.compile(`asciidoctor/js/opal_ext/${environment}`, `build/opal-ext-${environment}.js`);
+  });
+
   log.task('compile core lib');
-  opalCompiler.compile('asciidoctor', 'build/asciidoctor-lib.js');
+  new OpalCompiler({dynamicRequireLevel: 'ignore', defaultPaths: ['build/asciidoctor/lib']})
+    .compile('asciidoctor', 'build/asciidoctor-core.js');
 
   log.task('copy resources');
   log.debug('copy asciidoctor.css');
-  var asciidoctorPath = 'build/asciidoctor';
-  var asciidoctorCSSFile = path.join(asciidoctorPath, 'data/stylesheets/asciidoctor-default.css');
+  const asciidoctorPath = 'build/asciidoctor';
+  const asciidoctorCSSFile = path.join(asciidoctorPath, 'data/stylesheets/asciidoctor-default.css');
   fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/css/asciidoctor.css'));
-  callback();
-};
-
-Builder.prototype.patchAsciidoctorCore = function (callback) {
-  log.task('Patch Asciidoctor core');
-  var path = 'build/asciidoctor-lib.js';
-  var data = fs.readFileSync(path, 'utf8');
-  log.debug('Apply pull-request #1925');
-  data = data.replace(/path\['\$start_with\?'\]\("file:\/\/\/"\)/g, 'path[\'$start_with?\']("file://")');
-  fs.writeFileSync(path, data, 'utf8');
   callback();
 };
 
 Builder.prototype.replaceUnsupportedFeatures = function (callback) {
   log.task('Replace unsupported features');
-  const path = 'build/asciidoctor-lib.js';
+  const path = 'build/asciidoctor-core.js';
   let data = fs.readFileSync(path, 'utf8');
   log.debug('Replace (g)sub! with (g)sub');
   data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'');
@@ -385,7 +400,7 @@ Builder.prototype.replaceUnsupportedFeatures = function (callback) {
 
 Builder.prototype.replaceDefaultStylesheetPath = function (callback) {
   log.task('Replace default stylesheet path');
-  const path = 'build/asciidoctor-lib.js';
+  const path = 'build/asciidoctor-core.js';
   let data = fs.readFileSync(path, 'utf8');
   log.debug('Replace primary_stylesheet_data method');
   const primaryStylesheetDataImpl = `
@@ -434,11 +449,11 @@ Builder.prototype.benchmark = function (runner, callback) {
 };
 
 Builder.prototype.nashornCheckConvert = function (result, testName) {
-  if (result.indexOf('<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>') == -1) {
+  if (result.indexOf('<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>') === -1) {
     log.error(`${testName} failed, AsciiDoc source is not converted`);
     process.stdout.write(result);
   }
-  if (result.indexOf('include content') == -1) {
+  if (result.indexOf('include content') === -1) {
     log.error(`${testName} failed, include directive is not processed`);
     process.stdout.write(result);
   }

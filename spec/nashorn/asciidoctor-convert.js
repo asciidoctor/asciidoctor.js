@@ -1,4 +1,4 @@
-load('./build/asciidoctor.js');
+load('./build/asciidoctor-nashorn.js');
 var asciidoctor = Asciidoctor();
 
 var data = '= asciidoctor.js, AsciiDoc in JavaScript\n' +

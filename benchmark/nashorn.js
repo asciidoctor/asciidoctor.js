@@ -30,7 +30,7 @@ if (typeof $ENV !== 'undefined') {
 }
 
 var start = currentTimeMillis();
-load('./build/asciidoctor.js');
+load('./build/asciidoctor-nashorn.js');
 console.log('Load scripts: ' + secondsSince(start));
 
 var asciidoctor = Asciidoctor();
