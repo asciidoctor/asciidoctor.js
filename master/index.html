@@ -2,19 +2,19 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>asciidoctor.js 1.5.6-preview.4 | Documentation</title>
+  <title>asciidoctor.js 1.5.6-preview.5 | Documentation</title>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' type='text/css' rel='stylesheet' />
   <link href='assets/style.css' type='text/css' rel='stylesheet' />
   <link href='assets/github.css' type='text/css' rel='stylesheet' />
+  <link href='assets/split.css' type='text/css' rel='stylesheet' />
 </head>
-<body class='documentation'>
-  <div class='max-width-4 mx-auto'>
-    <div class='clearfix md-mxn2'>
-      <div class='fixed xs-hide fix-3 overflow-auto max-height-100'>
+<body class='documentation m0'>
+    <div class='flex'>
+      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>asciidoctor.js</h3>
-          <div class='mb1'><code>1.5.6-preview.4</code></div>
+          <div class='mb1'><code>1.5.6-preview.5</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -1266,7 +1266,7 @@
           </div>
         </div>
       </div>
-      <div class='fix-margin-3'>
+      <div id='split-right' class='relative overflow-auto height-viewport-100'>
         
           
             <section class='p2 mb2 clearfix bg-white minishadow'>
@@ -1279,7 +1279,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L66-L66'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L66-L66'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1350,7 +1350,7 @@ Sections are composed of blocks of content. For example:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L74-L76'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L74-L76'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1360,7 +1360,7 @@ Sections are composed of blocks of content. For example:</p>
   <p>Get Asciidoctor core version number.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getCoreVersion(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getCoreVersion(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -1378,7 +1378,7 @@ Sections are composed of blocks of content. For example:</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the version number of Asciidoctor core.
 
       
@@ -1413,7 +1413,7 @@ Sections are composed of blocks of content. For example:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L98-L107'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L98-L107'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1424,7 +1424,7 @@ Sections are composed of blocks of content. For example:</p>
 <p>Accepts input as a Buffer or String.</p>
 
 
-  <div class='pre p1 fill-light mt0'>convert(input: (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://nodejs.org/api/buffer.html">Buffer</a>), options: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#document">Document</a>)</div>
+  <div class='pre p1 fill-light mt0'>convert(input: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://nodejs.org/api/buffer.html">Buffer</a>), options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#document">Document</a>)</div>
   
   
 
@@ -1441,7 +1441,7 @@ Sections are composed of blocks of content. For example:</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>input</span> <code class='quiet'>((<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://nodejs.org/api/buffer.html">Buffer</a>))</code>
+            <span class='code bold'>input</span> <code class='quiet'>((<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://nodejs.org/api/buffer.html">Buffer</a>))</code>
 	    AsciiDoc input as String or Buffer
 
           </div>
@@ -1450,7 +1450,7 @@ Sections are composed of blocks of content. For example:</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
 	    a JSON of options to control processing (default: {})
 
           </div>
@@ -1465,7 +1465,7 @@ Sections are composed of blocks of content. For example:</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#document">Document</a>)</code>:
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#document">Document</a>)</code>:
         returns the 
 <a href="#document">Document</a>
  object if the converted String is written to a file,
@@ -1516,7 +1516,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L120-L122'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L120-L122'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1526,7 +1526,7 @@ otherwise the converted String
   <p>Parse the AsciiDoc source input into an <a href="#document">Document</a> and convert it to the specified backend format.</p>
 
 
-  <div class='pre p1 fill-light mt0'>convertFile(filename: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, options: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#document">Document</a>)</div>
+  <div class='pre p1 fill-light mt0'>convertFile(filename: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#document">Document</a>)</div>
   
   
 
@@ -1543,7 +1543,7 @@ otherwise the converted String
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>filename</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+            <span class='code bold'>filename</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    source filename
 
           </div>
@@ -1552,7 +1552,7 @@ otherwise the converted String
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
 	    a JSON of options to control processing (default: {})
 
           </div>
@@ -1567,7 +1567,7 @@ otherwise the converted String
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#document">Document</a>)</code>:
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#document">Document</a>)</code>:
         returns the 
 <a href="#document">Document</a>
  object if the converted String is written to a file,
@@ -1611,7 +1611,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L134-L139'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L134-L139'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1622,7 +1622,7 @@ otherwise the converted String
 <p>Accepts input as a Buffer or String.</p>
 
 
-  <div class='pre p1 fill-light mt0'>load(input: (<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://nodejs.org/api/buffer.html">Buffer</a>), options: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="#document">Document</a></div>
+  <div class='pre p1 fill-light mt0'>load(input: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://nodejs.org/api/buffer.html">Buffer</a>), options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="#document">Document</a></div>
   
   
 
@@ -1639,7 +1639,7 @@ otherwise the converted String
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>input</span> <code class='quiet'>((<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://nodejs.org/api/buffer.html">Buffer</a>))</code>
+            <span class='code bold'>input</span> <code class='quiet'>((<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://nodejs.org/api/buffer.html">Buffer</a>))</code>
 	    AsciiDoc input as String or Buffer
 
           </div>
@@ -1648,7 +1648,7 @@ otherwise the converted String
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
 	    a JSON of options to control processing (default: {})
 
           </div>
@@ -1700,7 +1700,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L149-L151'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L149-L151'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1710,7 +1710,7 @@ otherwise the converted String
   <p>Parse the contents of the AsciiDoc source file into an <a href="#document">Document</a></p>
 
 
-  <div class='pre p1 fill-light mt0'>loadFile(filename: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, options: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="#document">Document</a></div>
+  <div class='pre p1 fill-light mt0'>loadFile(filename: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="#document">Document</a></div>
   
   
 
@@ -1727,7 +1727,7 @@ otherwise the converted String
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>filename</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+            <span class='code bold'>filename</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    source filename
 
           </div>
@@ -1736,7 +1736,7 @@ otherwise the converted String
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
 	    a JSON of options to control processing (default: {})
 
           </div>
@@ -1788,7 +1788,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/template-asciidoctor.js#L40-L42'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/template-asciidoctor.js#L40-L42'>
       <span>src/template-asciidoctor.js</span>
       </a>
     
@@ -1798,7 +1798,7 @@ otherwise the converted String
   <p>Get Asciidoctor.js version number.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getVersion(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getVersion(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -1816,7 +1816,7 @@ otherwise the converted String
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the version number of Asciidoctor.js.
 
       
@@ -1859,7 +1859,7 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L159-L159'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L159-L159'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1914,7 +1914,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L174-L180'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L174-L180'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1926,7 +1926,7 @@ otherwise the converted String
 <p><code>specialcharacters</code>, <code>quotes</code>, <code>replacements</code>, <code>macros</code>, <code>attributes</code> and <code>post_replacements</code></p>
 
 
-  <div class='pre p1 fill-light mt0'>getTitle(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getTitle(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -1944,7 +1944,7 @@ otherwise the converted String
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the converted String title for this Block, or an empty string if the assigned title is falsy
 
       
@@ -1986,7 +1986,7 @@ block.getTitle(); <span class="hljs-comment">// "Foo 3^ # :: Bar(1)"</span></pre
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L194-L196'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L194-L196'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2001,7 +2001,7 @@ two values. If the Block does not have a caption, the interpreted title is
 returned.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getCaptionedTitle(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getCaptionedTitle(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -2019,7 +2019,7 @@ returned.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         the converted String title prefixed with the caption, or just the
 converted String title if no caption is set
 
@@ -2055,7 +2055,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L203-L205'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L203-L205'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2065,7 +2065,7 @@ converted String title if no caption is set
   <p>Get the style (block type qualifier) for this block.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getStyle(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getStyle(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -2083,7 +2083,7 @@ converted String title if no caption is set
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the style for this block
 
       
@@ -2118,7 +2118,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L212-L214'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L212-L214'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2128,7 +2128,7 @@ converted String title if no caption is set
   <p>Get the caption for this block.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getCaption(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getCaption(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -2146,7 +2146,7 @@ converted String title if no caption is set
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the caption for this block
 
       
@@ -2181,7 +2181,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L221-L223'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L221-L223'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2191,7 +2191,7 @@ converted String title if no caption is set
   <p>Set the caption for this block.</p>
 
 
-  <div class='pre p1 fill-light mt0'>setCaption(caption: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+  <div class='pre p1 fill-light mt0'>setCaption(caption: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
   
   
 
@@ -2208,7 +2208,7 @@ converted String title if no caption is set
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>caption</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+            <span class='code bold'>caption</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    Caption
 
           </div>
@@ -2250,7 +2250,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L230-L232'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L230-L232'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2260,7 +2260,7 @@ converted String title if no caption is set
   <p>Get the level of this section or the section level in which this block resides.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getLevel(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  <div class='pre p1 fill-light mt0'>getLevel(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
   
   
 
@@ -2278,7 +2278,7 @@ converted String title if no caption is set
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
         returns the level of this section
 
       
@@ -2313,7 +2313,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L239-L241'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L239-L241'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2323,7 +2323,7 @@ converted String title if no caption is set
   <p>Get the list of <a href="#abstractblock">AbstractBlock</a> sub-blocks for this block.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getBlocks(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
+  <div class='pre p1 fill-light mt0'>getBlocks(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
   
   
 
@@ -2341,7 +2341,7 @@ converted String title if no caption is set
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
         returns a list of 
 <a href="#abstractblock">AbstractBlock</a>
  sub-blocks
@@ -2378,7 +2378,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L248-L250'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L248-L250'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2388,7 +2388,7 @@ converted String title if no caption is set
   <p>Get the converted result of the child blocks by converting the children appropriate to content model that this block supports.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getContent(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getContent(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -2406,7 +2406,7 @@ converted String title if no caption is set
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the converted result of the child blocks
 
       
@@ -2441,7 +2441,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L259-L261'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L259-L261'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2453,7 +2453,7 @@ If the block has child blocks, the content method should cause them to be conver
 and returned as content that can be included in the parent block's template.</p>
 
 
-  <div class='pre p1 fill-light mt0'>convert(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>convert(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -2471,7 +2471,7 @@ and returned as content that can be included in the parent block's template.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the converted String content for this block
 
       
@@ -2506,7 +2506,7 @@ and returned as content that can be included in the parent block's template.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L284-L294'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L284-L294'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2519,7 +2519,7 @@ If a function block is given, it's used as an additional filter.
 If no selector or function block is supplied, all block-level nodes in the tree are returned.</p>
 
 
-  <div class='pre p1 fill-light mt0'>findBy(selector: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?, block: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function">function</a>?): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
+  <div class='pre p1 fill-light mt0'>findBy(selector: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?, block: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
   
   
 
@@ -2536,7 +2536,7 @@ If no selector or function block is supplied, all block-level nodes in the tree 
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>selector</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?)</code>
+            <span class='code bold'>selector</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?)</code>
 	    
           </div>
           
@@ -2544,7 +2544,7 @@ If no selector or function block is supplied, all block-level nodes in the tree 
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>block</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function">function</a>?)</code>
+            <span class='code bold'>block</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>?)</code>
 	    
           </div>
           
@@ -2558,7 +2558,7 @@ If no selector or function block is supplied, all block-level nodes in the tree 
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
         returns a list of block-level nodes that match the filter or an empty list if no matches are found
 
       
@@ -2607,7 +2607,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L301-L307'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L301-L307'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2617,7 +2617,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <p>Get the source line number where this block started.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getLineNumber(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  <div class='pre p1 fill-light mt0'>getLineNumber(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
   
   
 
@@ -2635,7 +2635,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
         returns the source line number where this block started
 
       
@@ -2678,7 +2678,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L312-L312'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L312-L312'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2726,7 +2726,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L319-L321'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L319-L321'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2736,7 +2736,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <p>Get the source of this block.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getSource(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getSource(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -2754,7 +2754,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the String source of this block.
 
       
@@ -2789,7 +2789,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L328-L330'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L328-L330'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2799,7 +2799,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <p>Get the source lines of this block.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getSourceLines(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
+  <div class='pre p1 fill-light mt0'>getSourceLines(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
   
   
 
@@ -2817,7 +2817,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
         returns the String {Array} of source lines for this block.
 
       
@@ -2860,7 +2860,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L337-L337'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L337-L337'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2908,7 +2908,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L342-L344'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L342-L344'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2962,7 +2962,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L349-L355'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L349-L355'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3045,7 +3045,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L360-L366'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L360-L366'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3128,7 +3128,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L371-L376'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L371-L376'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3211,7 +3211,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L384-L390'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L384-L390'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3221,7 +3221,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <p>Remove the attribute from the current node.</p>
 
 
-  <div class='pre p1 fill-light mt0'>removeAttribute(name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>removeAttribute(name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -3238,7 +3238,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The String attribute name to remove
 
           </div>
@@ -3253,7 +3253,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the previous {String} value, or undefined if the attribute was not present.
 
       
@@ -3288,7 +3288,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L398-L400'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L398-L400'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3353,7 +3353,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L405-L407'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L405-L407'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3407,7 +3407,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L412-L414'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L412-L414'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3461,7 +3461,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L419-L421'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L419-L421'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3528,7 +3528,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L426-L428'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L426-L428'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3582,7 +3582,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L433-L435'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L433-L435'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3649,7 +3649,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L440-L442'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L440-L442'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3703,7 +3703,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L447-L449'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L447-L449'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3770,7 +3770,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L454-L456'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L454-L456'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3837,7 +3837,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L461-L463'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L461-L463'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3891,7 +3891,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L468-L470'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L468-L470'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3945,7 +3945,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L475-L482'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L475-L482'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3999,7 +3999,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L487-L489'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L487-L489'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4053,7 +4053,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L494-L496'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L494-L496'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4120,7 +4120,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L501-L503'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L501-L503'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4187,7 +4187,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L508-L510'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L508-L510'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4254,7 +4254,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L515-L517'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L515-L517'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4329,7 +4329,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L522-L524'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L522-L524'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4404,7 +4404,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L529-L531'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L529-L531'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4458,7 +4458,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L536-L538'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L536-L538'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4533,7 +4533,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L543-L545'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L543-L545'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4608,7 +4608,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L550-L552'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L550-L552'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4691,7 +4691,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L557-L559'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L557-L559'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4782,7 +4782,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L564-L566'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L564-L566'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4873,7 +4873,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L574-L574'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L574-L574'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4928,7 +4928,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L580-L582'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L580-L582'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4937,7 +4937,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
 
   
 
-  <div class='pre p1 fill-light mt0'>getHeader(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getHeader(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -4955,7 +4955,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the level-0 section
 
       
@@ -4990,7 +4990,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L587-L589'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L587-L589'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5065,7 +5065,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L594-L597'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L594-L597'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5132,7 +5132,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L602-L608'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L602-L608'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5199,7 +5199,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L613-L615'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L613-L615'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5274,7 +5274,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L621-L623'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L621-L623'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5283,7 +5283,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
 
   
 
-  <div class='pre p1 fill-light mt0'>getAuthor(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getAuthor(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -5301,7 +5301,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the full name of the author as a String
 
       
@@ -5336,7 +5336,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L628-L630'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L628-L630'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5390,7 +5390,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L635-L637'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L635-L637'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5444,7 +5444,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L642-L644'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L642-L644'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5498,7 +5498,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L649-L651'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L649-L651'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5552,7 +5552,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L656-L658'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L656-L658'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5606,7 +5606,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L663-L665'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L663-L665'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5660,7 +5660,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L670-L672'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L670-L672'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5714,7 +5714,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L677-L679'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L677-L679'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5768,7 +5768,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L684-L686'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L684-L686'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5822,7 +5822,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L691-L693'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L691-L693'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5889,7 +5889,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L701-L704'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L701-L704'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5899,7 +5899,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <p>Get the title explicitly defined in the document attributes.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getTitle(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getTitle(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -5917,7 +5917,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         
 
       
@@ -5952,7 +5952,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L709-L711'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L709-L711'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6019,7 +6019,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L717-L720'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L717-L720'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6095,7 +6095,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L726-L728'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L726-L728'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6162,7 +6162,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L734-L736'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L734-L736'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6217,7 +6217,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L742-L744'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L742-L744'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6272,7 +6272,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L750-L752'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L750-L752'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6326,7 +6326,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L758-L760'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L758-L760'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6381,7 +6381,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L766-L768'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L766-L768'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6436,7 +6436,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L821-L823'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L821-L823'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6499,7 +6499,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L829-L832'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L829-L832'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6508,7 +6508,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
 
   
 
-  <div class='pre p1 fill-light mt0'>hasRevisionInfo(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+  <div class='pre p1 fill-light mt0'>hasRevisionInfo(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
   
   
 
@@ -6526,7 +6526,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
         returns true if the document contains revision info, otherwise false
 
       
@@ -6561,7 +6561,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L837-L839'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L837-L839'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6615,7 +6615,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L844-L846'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L844-L846'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6669,7 +6669,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L851-L853'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L851-L853'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6723,7 +6723,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L858-L860'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L858-L860'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6777,7 +6777,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L865-L867'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L865-L867'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6844,7 +6844,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L872-L874'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L872-L874'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6911,7 +6911,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L879-L881'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L879-L881'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6978,7 +6978,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L886-L888'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L886-L888'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7053,7 +7053,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L893-L895'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L893-L895'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7120,7 +7120,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L900-L902'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L900-L902'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7195,7 +7195,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L907-L909'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L907-L909'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7270,7 +7270,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L914-L916'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L914-L916'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7324,7 +7324,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L921-L923'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L921-L923'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7378,7 +7378,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L928-L930'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L928-L930'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7432,7 +7432,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L935-L937'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L935-L937'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7486,7 +7486,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L942-L944'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L942-L944'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7540,7 +7540,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L949-L951'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L949-L951'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7594,7 +7594,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L956-L958'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L956-L958'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7648,7 +7648,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L963-L965'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L963-L965'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7702,7 +7702,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L970-L972'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L970-L972'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7756,7 +7756,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L977-L979'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L977-L979'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7810,7 +7810,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L984-L986'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L984-L986'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7864,7 +7864,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L991-L993'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L991-L993'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7918,7 +7918,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L998-L1000'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L998-L1000'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7980,7 +7980,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L782-L782'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L782-L782'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8028,7 +8028,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L788-L790'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L788-L790'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8083,7 +8083,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L796-L798'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L796-L798'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8138,7 +8138,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L805-L807'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L805-L807'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8194,7 +8194,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L813-L815'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L813-L815'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8203,7 +8203,7 @@ A short summary of changes in this document revision.</p>
 
   
 
-  <div class='pre p1 fill-light mt0'>isEmpty(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+  <div class='pre p1 fill-light mt0'>isEmpty(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
   
   
 
@@ -8221,7 +8221,7 @@ A short summary of changes in this document revision.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
         returns true if the revision info is empty (ie. not defined), otherwise false
 
       
@@ -8264,7 +8264,7 @@ A short summary of changes in this document revision.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1008-L1008'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1008-L1008'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8312,7 +8312,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1013-L1015'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1013-L1015'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8366,7 +8366,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1020-L1022'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1020-L1022'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8420,7 +8420,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1027-L1029'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1027-L1029'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8474,7 +8474,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1034-L1040'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1034-L1040'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8528,7 +8528,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1045-L1047'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1045-L1047'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8590,7 +8590,7 @@ A short summary of changes in this document revision.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1055-L1055'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1055-L1055'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8645,7 +8645,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1063-L1065'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1063-L1065'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8655,7 +8655,7 @@ A short summary of changes in this document revision.</p>
   <p>Get the converted content for this inline node.</p>
 
 
-  <div class='pre p1 fill-light mt0'>convert(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>convert(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -8673,7 +8673,7 @@ A short summary of changes in this document revision.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the converted String content for this inline node
 
       
@@ -8708,7 +8708,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1073-L1076'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1073-L1076'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8718,7 +8718,7 @@ A short summary of changes in this document revision.</p>
   <p>Get the converted String text of this Inline node, if applicable.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getText(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getText(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -8736,7 +8736,7 @@ A short summary of changes in this document revision.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the converted String text for this Inline node, or undefined if not applicable for this node.
 
       
@@ -8771,7 +8771,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1087-L1089'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1087-L1089'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8783,7 +8783,7 @@ A short summary of changes in this document revision.</p>
 category, such as different types of anchors.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getType(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getType(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -8801,7 +8801,7 @@ category, such as different types of anchors.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the string sub-type of this Inline node.
 
       
@@ -8836,7 +8836,7 @@ category, such as different types of anchors.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1097-L1100'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1097-L1100'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8846,7 +8846,7 @@ category, such as different types of anchors.</p>
   <p>Get the primary String target of this Inline node.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getTarget(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getTarget(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -8864,7 +8864,7 @@ category, such as different types of anchors.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the string target of this Inline node.
 
       
@@ -8907,7 +8907,7 @@ category, such as different types of anchors.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1105-L1105'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1105-L1105'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8955,7 +8955,7 @@ category, such as different types of anchors.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1113-L1115'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1113-L1115'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8965,7 +8965,7 @@ category, such as different types of anchors.</p>
   <p>Get the Array of <a href="#listitem">ListItem</a> nodes for this <a href="#list">List</a>.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getItems(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
+  <div class='pre p1 fill-light mt0'>getItems(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
   
   
 
@@ -8983,7 +8983,7 @@ category, such as different types of anchors.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
         returns an Array of 
 <a href="#listitem">ListItem</a>
  nodes.
@@ -9028,7 +9028,7 @@ category, such as different types of anchors.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1120-L1120'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1120-L1120'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9076,7 +9076,7 @@ category, such as different types of anchors.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1128-L1130'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1128-L1130'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9086,7 +9086,7 @@ category, such as different types of anchors.</p>
   <p>Get the converted String text of this ListItem node.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getText(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  <div class='pre p1 fill-light mt0'>getText(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -9104,7 +9104,7 @@ category, such as different types of anchors.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         returns the converted String text for this ListItem node.
 
       
@@ -9147,7 +9147,7 @@ category, such as different types of anchors.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1135-L1135'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1135-L1135'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9195,7 +9195,7 @@ category, such as different types of anchors.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1140-L1142'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1140-L1142'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9294,7 +9294,7 @@ category, such as different types of anchors.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1150-L1152'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1150-L1152'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9350,7 +9350,7 @@ file, dir, path, and lineno of the file being read.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-core-api.js#L1160-L1162'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-core-api.js#L1160-L1162'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9360,7 +9360,7 @@ file, dir, path, and lineno of the file being read.</p>
   <p>Get a copy of the remaining {Array} of String lines managed by this Reader.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getLines(): <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
+  <div class='pre p1 fill-light mt0'>getLines(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
   
   
 
@@ -9378,7 +9378,7 @@ file, dir, path, and lineno of the file being read.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
         returns A copy of the String {Array} of lines remaining in this Reader.
 
       
@@ -9421,7 +9421,7 @@ file, dir, path, and lineno of the file being read.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L49-L49'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L49-L49'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -9504,7 +9504,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L61-L69'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L61-L69'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -9514,7 +9514,7 @@ Asciidoctor processor.</p>
   <p>Create a new <a href="#extensionsregistry">Extensions/Registry</a>.</p>
 
 
-  <div class='pre p1 fill-light mt0'>create(name: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, block: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function">function</a>): <a href="#extensionsregistry">Extensions/Registry</a></div>
+  <div class='pre p1 fill-light mt0'>create(name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, block: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>): <a href="#extensionsregistry">Extensions/Registry</a></div>
   
   
 
@@ -9531,7 +9531,7 @@ Asciidoctor processor.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    
           </div>
           
@@ -9539,7 +9539,7 @@ Asciidoctor processor.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>block</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function">function</a>)</code>
+            <span class='code bold'>block</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>)</code>
 	    
           </div>
           
@@ -9589,7 +9589,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L74-L80'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L74-L80'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -9664,7 +9664,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L86-L88'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L86-L88'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -9727,7 +9727,7 @@ Asciidoctor processor.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L94-L94'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L94-L94'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -9775,7 +9775,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L99-L105'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L99-L105'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -9850,7 +9850,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L110-L116'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L110-L116'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -9925,7 +9925,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L121-L123'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L121-L123'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -9992,7 +9992,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L128-L134'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L128-L134'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10067,7 +10067,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L139-L145'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L139-L145'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10142,7 +10142,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L150-L156'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L150-L156'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10217,7 +10217,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L161-L167'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L161-L167'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10292,7 +10292,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L173-L179'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L173-L179'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10375,7 +10375,7 @@ Asciidoctor processor.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L185-L185'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L185-L185'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10423,7 +10423,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L190-L192'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L190-L192'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10490,7 +10490,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L197-L199'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L197-L199'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10557,7 +10557,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L204-L206'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L204-L206'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10656,7 +10656,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L211-L213'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L211-L213'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10747,7 +10747,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L218-L220'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L218-L220'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10830,7 +10830,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L225-L227'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L225-L227'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10905,7 +10905,7 @@ Asciidoctor processor.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L233-L233'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L233-L233'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -10953,7 +10953,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L238-L240'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L238-L240'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11028,7 +11028,7 @@ Asciidoctor processor.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L247-L247'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L247-L247'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11078,7 +11078,7 @@ Asciidoctor processor.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L253-L253'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L253-L253'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11126,7 +11126,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L258-L260'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L258-L260'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11201,7 +11201,7 @@ Asciidoctor processor.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L267-L267'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L267-L267'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11251,7 +11251,7 @@ Asciidoctor processor.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L274-L274'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L274-L274'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11301,7 +11301,7 @@ Asciidoctor processor.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L281-L281'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L281-L281'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11351,7 +11351,7 @@ Asciidoctor processor.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L287-L287'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L287-L287'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11399,7 +11399,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/70eb220f558fc026b9bd8658bc4b1787d8e7adac/src/asciidoctor-extensions-api.js#L292-L294'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/Mogztter/asciidoctor.js/blob/66c674e2da93780477211fa514977458d441e016/src/asciidoctor-extensions-api.js#L292-L294'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11465,8 +11465,8 @@ Asciidoctor processor.</p>
         
       </div>
     </div>
-  </div>
   <script src='assets/anchor.js'></script>
+  <script src='assets/split.js'></script>
   <script src='assets/site.js'></script>
 </body>
 </html>
