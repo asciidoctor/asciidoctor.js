@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "asciidoctor-docbook.js": "1.5.6-preview.2",
-    "asciidoctor-reveal.js": "1.0.3",
+    "asciidoctor-reveal.js": "1.1.1",
     "asciidoctor-template.js": "1.5.6-preview.1",
     "async": "2.6.0",
     "bestikk-download": "0.1.0",
@@ -90,8 +90,5 @@
     "watchify": "3.10.0",
     "webpack": "3.10.0",
     "xmlhttprequest": "1.8.0"
-  },
-  "resolutions": {
-    "reveal.js": "3.5.0"
   }
 }

@@ -21,6 +21,7 @@ function asciidoctorVersionGreaterThan (version) {
 var Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js')();
 require('asciidoctor-template.js')();
+require('asciidoctor-reveal.js');
 var packageJson = require('../../package.json');
 
 var testOptions = {
@@ -261,17 +262,19 @@ describe('Node.js', function () {
     });
 
     it('should be able to use a custom backend', function () {
-      var options = {safe: 'safe', 'header_footer': true};
-      var content = '= Title\n' +
-                    ':backend: revealjs\n\n' +
-                    '== Slide 1\n\n' +
-                    'Content 1\n\n' +
-                    '== Slide 2\n\n' +
-                    'Content 2';
+      var options = {safe: 'safe', 'header_footer': true, attributes: {revealjsdir: 'node_modules/reveal.js@'}};
+      var content = `= Title
+:backend: revealjs
+
+== Slide 1
+Content 1
+
+== Slide 2
+Content 2`;
       var result = asciidoctor.convert(content, options);
-      expect(result).toContain('<section id="_slide_1"');
-      expect(result).toContain('<section id="_slide_2"');
-      expect(result).toContain('<script src="reveal.js/js/reveal.js"></script>');
+      expect(result).toContain('<section id="slide_1"');
+      expect(result).toContain('<section id="slide_2"');
+      expect(result).toContain('<script src="node_modules/reveal.js/js/reveal.js">');
     });
 
     it('should be able to process smiley extension', function () {
