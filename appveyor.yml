@@ -25,3 +25,5 @@ build_script:
 - node npm/test/jasmine-webpack.js
 - npm run test:karmaBrowserify
 - npm run test:karmaRequirejs
+
+test: off
