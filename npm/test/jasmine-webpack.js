@@ -6,7 +6,7 @@ var Jasmine = require('jasmine');
 var config = {
   entry: './spec/webpack/asciidoctor.spec.js',
   output: {
-    path: './build',
+    path: __dirname + '../../../build',
     filename: 'webpack-bundle.js'
   }
 };

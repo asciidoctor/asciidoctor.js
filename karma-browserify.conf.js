@@ -1,7 +1,7 @@
 'use strict';
 
-module.exports = function(karma) {
-  karma.set({
+module.exports = function(config) {
+  config.set({
     frameworks: [ 'jasmine', 'browserify' ],
 
     files: [
@@ -17,9 +17,15 @@ module.exports = function(karma) {
       'spec/commonJS/asciidoctor.spec.js': [ 'browserify' ]
     },
 
-    browsers: [ 'PhantomJS' ],
+    browsers: ['ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
+      }
+    },
 
-    logLevel: 'LOG_DEBUG',
+    logLevel: config.LOG_DEBUG,
 
     singleRun: true,
     autoWatch: false,
