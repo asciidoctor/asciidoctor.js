@@ -88,14 +88,14 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(doc.getIconUri('note')).toContain('images/icons/note.png');
       });
 
-// FIXME: Skipping spec because the following error is thrown "SecurityError: Jail is not an absolute path: ."
-/*
+      // FIXME: Skipping spec because the following error is thrown "SecurityError: Jail is not an absolute path: ."
+      /*
       it('should get icon uri', function () {
         var options = {safe: 'safe', attributes: ['data-uri', 'icons=fonts']};
         var doc = asciidoctor.load('== Test', options);
         expect(doc.getIconUri('note')).toBe('data:image/png:base64,');
       });
-*/
+      */
 
       it('should get media uri', function () {
         var doc = asciidoctor.load('== Test');

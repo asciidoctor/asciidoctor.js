@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 
-const RefMacroRx = new RegExp('(image:)?(?:(https?:[^\\[]+)|\{([a-z0-9_-]+)\})\\[(|.*?[^\\\\])\\]', 'g');
+const RefMacroRx = new RegExp('(image:)?(?:(https?:[^\\[]+)|{([a-z0-9_-]+)})\\[(|.*?[^\\\\])\\]', 'g');
 
 function markdownify (asciidoc) {
   const attrs = asciidoc
