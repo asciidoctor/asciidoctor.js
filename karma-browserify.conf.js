@@ -17,7 +17,13 @@ module.exports = function(config) {
       'spec/commonJS/asciidoctor.spec.js': [ 'browserify' ]
     },
 
-    browsers: [ 'ChromeHeadless' ],
+    browsers: ['ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
+      }
+    },
 
     logLevel: config.LOG_DEBUG,
 
