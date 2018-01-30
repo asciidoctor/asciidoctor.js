@@ -364,7 +364,7 @@ Builder.prototype.patchAsciidoctorCore = function (callback) {
   var path = 'build/asciidoctor-lib.js';
   var data = fs.readFileSync(path, 'utf8');
   log.debug('Apply pull-request #1925');
-  data = data.replace(/path\['\$start_with\?'\]\("file:\/\/\/"\)/g, 'path[\'\$start_with?\']("file://")');
+  data = data.replace(/path\['\$start_with\?'\]\("file:\/\/\/"\)/g, 'path[\'$start_with?\']("file://")');
   fs.writeFileSync(path, data, 'utf8');
   callback();
 };
@@ -374,7 +374,7 @@ Builder.prototype.replaceUnsupportedFeatures = function (callback) {
   const path = 'build/asciidoctor-lib.js';
   let data = fs.readFileSync(path, 'utf8');
   log.debug('Replace (g)sub! with (g)sub');
-  data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send\($1, \'$2\'');
+  data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'');
   // replace dot wildcard with negated line feed in single-line match expressions
   data = data.replace(/Opal\.const_set\([^']+'[^']+Rx', *\/.+\/\);$/gm, function (m) {
     return m.replace(/\.([*+])/g, '[^\\n]$1');
@@ -397,7 +397,7 @@ if (Opal.const_get_relative([], "JAVASCRIPT_PLATFORM")["$=="]("node")) {
 }
 return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != null) ? $a : self.primary_stylesheet_data = Opal.const_get_relative([], "IO").$read(Opal.const_get_relative([], "File").$join(stylesheetsPath, "asciidoctor.css")).$chomp());
   `;
-  data = data.replace(/(function \$\$primary_stylesheet_data\(\)\ {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2');
+  data = data.replace(/(function \$\$primary_stylesheet_data\(\) {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2');
   fs.writeFileSync(path, data, 'utf8');
   callback();
 };

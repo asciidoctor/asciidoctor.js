@@ -76,8 +76,8 @@
     "browserify": "^13.0.0",
     "cross-env": "^1.0.8",
     "documentation": "5.3.5",
-    "eslint": "^2.11.0",
-    "http-server": "^0.11.1",
+    "eslint": "4.16.0",
+    "http-server": "0.11.1",
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
     "karma": "2.0.0",
@@ -89,7 +89,7 @@
     "sinon": "2.3.8",
     "watchify": "3.10.0",
     "webpack": "3.10.0",
-    "xmlhttprequest": "^1.7.0"
+    "xmlhttprequest": "1.8.0"
   },
   "resolutions": {
     "reveal.js": "3.5.0"
