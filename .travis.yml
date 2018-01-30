@@ -25,17 +25,17 @@ before_install:
 - export PATH=$HOME/.yarn/bin:$PATH
 
 script:
-- npm run lint
-- npm run package
-- npm run docs
-- SKIP_BUILD=1 npm run examples
+- yarn run lint
+- yarn run package
+- yarn run docs
+- SKIP_BUILD=1 yarn run examples
 
 before_deploy:
 - >
   if ! [ "$BEFORE_DEPLOY_RUN" ]; then
     export BEFORE_DEPLOY_RUN=1;
     export ASCIIDOCTOR_CORE_VERSION="${ASCIIDOCTOR_CORE_VERSION_PUBLISH}";
-    npm run dist;
+    yarn run dist;
     mkdir bin
     cd dist/;
     zip -r ../bin/asciidoctor.js.dist.zip .;
