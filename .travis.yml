@@ -13,9 +13,9 @@ cache:
   yarn: true
 
 node_js:
-- '4'
 - '6'
-- node
+- 'lts/*'
+- 'node'
 
 jdk:
 - oraclejdk8
