@@ -3,7 +3,7 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Guillaume Grossetie <h
 :idprefix:
 :idseparator: -
 :uri-nodejs: http://nodejs.org
-:uri-opal: http://opalrb.org
+:uri-opal: http://opalrb.com
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
 :uri-freesoftware: https://www.gnu.org/philosophy/free-sw.html
 ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
@@ -52,7 +52,7 @@ Here is a simple example that converts AsciiDoc to HTML5:
 ```javascript
 var asciidoctor = Asciidoctor(); // <1>
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
-    "running on http://opalrb.org[_Opal_] " +
+    "running on http://opalrb.com[_Opal_] " +
     "brings AsciiDoc to the browser!";
 var html = asciidoctor.convert(content); // <2>
 console.log(html); // <3>
@@ -75,7 +75,7 @@ Once the package is installed, the first thing to do is to load the `asciidoctor
 ```javascript
 var asciidoctor = require('asciidoctor.js')(); // <1>
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
-    "running on http://opalrb.org[_Opal_] " +
+    "running on http://opalrb.com[_Opal_] " +
     "brings AsciiDoc to Node.js!";
 var html = asciidoctor.convert(content); // <2>
 console.log(html); // <3>
@@ -94,7 +94,7 @@ You should see the following output in your terminal:
 [.output]
 
     <div class="paragraph">
-    <p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.org"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
+    <p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.com"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
     </div>
 
 == Advanced topics
