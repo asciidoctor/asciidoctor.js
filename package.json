@@ -4,7 +4,7 @@
   "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
   "main": "dist/asciidoctor.js",
   "engines": {
-    "node": ">=4",
+    "node": ">=6.12",
     "npm": ">=3.0.0",
     "yarn": ">=1.1.0"
   },
@@ -85,6 +85,7 @@
     "karma-chrome-launcher": "2.2.0",
     "karma-jasmine": "1.1.1",
     "karma-requirejs": "1.1.0",
+    "puppeteer": "1.0.0",
     "requirejs": "2.3.5",
     "sinon": "4.2.2",
     "watchify": "3.10.0",

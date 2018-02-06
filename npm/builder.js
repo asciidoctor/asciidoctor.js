@@ -409,7 +409,7 @@ Builder.prototype.benchmark = function (runner, callback) {
     callback => builder.build(callback),
     callback => {
       bfs.mkdirsSync(builder.benchmarkBuildDir);
-      bfs.copyToDirSync('benchmark/run.js', builder.benchmarkBuildDir);
+      ['node', 'nashorn', 'chrome'].forEach(runner => bfs.copyToDirSync(`benchmark/${runner}.js`, builder.benchmarkBuildDir));
       callback();
     },
     callback => {
@@ -420,7 +420,15 @@ Builder.prototype.benchmark = function (runner, callback) {
     callback => builder.getContentFromAsciiDocRepo('customers.csv', 'build/benchmark/customers.csv', callback),
     () => {
       log.task('run benchmark');
-      builder.execSync(runner + ' ' + path.join(builder.benchmarkBuildDir, 'run.js'));
+      if (runner === 'chrome') {
+        builder.execSync('node ' + path.join(builder.benchmarkBuildDir, 'chrome.js'));
+      } else if (runner === 'nashorn') {
+        builder.execSync('jjs ' + path.join(builder.benchmarkBuildDir, 'nashorn.js'));
+      } else if (runner === 'node') {
+        builder.execSync('node ' + path.join(builder.benchmarkBuildDir, 'node.js'));
+      } else {
+        log.error(`${runner} runner is unsupported!`);
+      }
     }
   ], () => typeof callback === 'function' && callback());
 };
