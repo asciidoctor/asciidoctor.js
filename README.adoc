@@ -2,8 +2,8 @@
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Guillaume Grossetie <https://github.com/mogztter[@mogztter]>; Anthonny Quérouil <https://github.com/anthonny[@anthonny]>
 :idprefix:
 :idseparator: -
-:uri-nodejs: http://nodejs.org
-:uri-opal: http://opalrb.org
+:uri-nodejs: https://nodejs.org
+:uri-opal: https://opalrb.com
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
 :uri-freesoftware: https://www.gnu.org/philosophy/free-sw.html
 ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
@@ -16,7 +16,7 @@ ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
 ifdef::env-github[]
 image:https://img.shields.io/travis/asciidoctor/asciidoctor.js/master.svg[Travis build status, link=https://travis-ci.org/asciidoctor/asciidoctor.js]
 image:https://ci.appveyor.com/api/projects/status/i69sqvvyr95sf6i7/branch/master?svg=true[Appveyor build status, link=https://ci.appveyor.com/project/asciidoctor/asciidoctor-js]
-image:http://img.shields.io/npm/v/asciidoctor.js.svg[npm version, link=https://www.npmjs.org/package/asciidoctor.js]
+image:https://img.shields.io/npm/v/asciidoctor.js.svg[npm version, link=https://www.npmjs.org/package/asciidoctor.js]
 image:https://img.shields.io/cdnjs/v/asciidoctor.js.svg[cdnjs, link=https://cdnjs.com/libraries/asciidoctor.js]
 image:https://img.shields.io/badge/jsdoc-master-blue.svg[JSDoc, link=http://asciidoctor.github.io/asciidoctor.js/master]
 image:https://inch-ci.org/github/asciidoctor/asciidoctor.js.svg?branch=master[InchCI, link=https://inch-ci.org/github/asciidoctor/asciidoctor.js]
@@ -52,7 +52,7 @@ Here is a simple example that converts AsciiDoc to HTML5:
 ```javascript
 var asciidoctor = Asciidoctor(); // <1>
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
-    "running on http://opalrb.org[_Opal_] " +
+    "running on https://opalrb.com[_Opal_] " +
     "brings AsciiDoc to the browser!";
 var html = asciidoctor.convert(content); // <2>
 console.log(html); // <3>
@@ -75,7 +75,7 @@ Once the package is installed, the first thing to do is to load the `asciidoctor
 ```javascript
 var asciidoctor = require('asciidoctor.js')(); // <1>
 var content = "http://asciidoctor.org[*Asciidoctor*] " +
-    "running on http://opalrb.org[_Opal_] " +
+    "running on https://opalrb.com[_Opal_] " +
     "brings AsciiDoc to Node.js!";
 var html = asciidoctor.convert(content); // <2>
 console.log(html); // <3>
@@ -94,7 +94,7 @@ You should see the following output in your terminal:
 [.output]
 
     <div class="paragraph">
-    <p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.org"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
+    <p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.com"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
     </div>
 
 == Advanced topics
