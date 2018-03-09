@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "asciidoctor-docbook.js": "1.5.6-preview.2",
-    "asciidoctor-reveal.js": "1.1.1",
+    "asciidoctor-reveal.js": "1.1.3",
     "asciidoctor-template.js": "1.5.6-preview.1",
     "async": "2.6.0",
     "bestikk-download": "0.1.0",

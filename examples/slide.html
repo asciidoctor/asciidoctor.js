@@ -5,7 +5,7 @@
   <title>Asciidoctor in JavaScript powered by Opal</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
   <link rel="stylesheet" href="../css/asciidoctor.css">
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
   <style>
     .left {
       width: 50%;
@@ -28,8 +28,6 @@
   <textarea id="editor" cols="30" rows="10">
 = Title
 :backend: revealjs
-// depending on your npm version, you might have to try the other 'revealjsdir' value.
-//:revealjsdir: ../../node_modules/asciidoctor-reveal.js/node_modules/reveal.js
 :revealjsdir: ../../node_modules/reveal.js
 
 == Slide 1
@@ -46,16 +44,16 @@ Content 2
   <iframe id="output"></iframe>
 </div>
 <button id="convertBtn">Convert</button>
-<script src="../../node_modules/jade/jade.js"></script>
 <script src="../asciidoctor.js"></script>
-<script src="../../node_modules/asciidoctor-template.js/dist/main.js"></script>
 <script>
+  // Initialize Asciidoctor.js
   var asciidoctor = Asciidoctor();
-  Asciidoctor.Template(); // Load Asciidoctor Template.js
+</script>
+<script src="../../node_modules/asciidoctor-reveal.js/dist/main.js"></script>
+<script>
   var options = {
     safe: 'safe',
     header_footer: true,
-    template_dir: '../../node_modules/asciidoctor-reveal.js/templates'
   };
   function convertSlide() {
     var content = $("#editor").val();
