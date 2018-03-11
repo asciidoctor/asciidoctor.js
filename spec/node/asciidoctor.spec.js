@@ -161,7 +161,7 @@ describe('Node.js', () => {
       expect(blocks[2].getBlocks().length).toBe(3);
 
       expect(blocks[2].getBlocks()[0].getContext()).toBe('image');
-      expect(blocks[2].getBlocks()[0].getTitle()).toBe('');
+      expect(blocks[2].getBlocks()[0].getTitle()).toBe(undefined);
       expect(blocks[2].getBlocks()[1].getContext()).toBe('image');
 
       expect(blocks[3].getTitle()).toBe('Got <span class="icon">[file pdf o]</span>?');

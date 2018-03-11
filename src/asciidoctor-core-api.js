@@ -166,17 +166,14 @@ var AbstractBlock = Opal.Asciidoctor.AbstractBlock;
  * <code>specialcharacters</code>, <code>quotes</code>, <code>replacements</code>, <code>macros</code>, <code>attributes</code> and <code>post_replacements</code>
  *
  * @memberof AbstractBlock
- * @returns {string} - returns the converted String title for this Block, or an empty string if the assigned title is falsy
+ * @returns {string} - returns the converted String title for this Block, or undefined if the title is not set.
  * @example
  * block.title // "Foo 3^ # {two-colons} Bar(1)"
  * block.getTitle(); // "Foo 3^ # :: Bar(1)"
  */
 AbstractBlock.$$proto.getTitle = function () {
   var result = this.$title();
-  if (result === Opal.nil) {
-    return '';
-  }
-  return result;
+  return result === Opal.nil ? undefined : result;
 };
 
 /**
