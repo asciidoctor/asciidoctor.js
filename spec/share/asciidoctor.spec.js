@@ -50,9 +50,11 @@ var shareSpec = function (testOptions, asciidoctor) {
       });
 
       it('should load document with boolean attributes', function () {
-        var options = {attributes: 'sectnums=true'};
+        var options = {attributes: 'sectnums'};
         var doc = asciidoctor.load('== Test', options);
-        expect(doc.getAttribute('sectnums')).toBe('true');
+        expect(doc.getAttribute('sectnums')).toBe('');
+        expect(doc.isAttribute('sectnums')).toBe(true);
+        expect(doc.isAttribute('sectanchors')).toBe(false);
       });
 
       it('should load document authors', function () {
