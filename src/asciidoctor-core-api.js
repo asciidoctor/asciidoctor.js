@@ -359,10 +359,7 @@ AbstractNode.$$proto.getAttribute = function (name, defaultValue, inherit) {
  */
 AbstractNode.$$proto.isAttribute = function (name, expectedValue, inherit) {
   var value = this['$attr?'](name, expectedValue, inherit);
-  if (value === Opal.nil) {
-    return undefined;
-  }
-  return value;
+  return value === Opal.nil ? false : value;
 };
 
 /**
