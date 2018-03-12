@@ -124,10 +124,10 @@ class File
           xhr.send();
         }
         catch (e) {
-          status = 0;
+          throw #{IOError.new `'Error reading file or directory: ' + path + '; reason: ' + e.message`};
         }
         // assume that no data in local file mode means it doesn't exist
-        if (status == 404 || (status == 0 && data == '')) {
+        if (status === 404 || (status === 0 && !data)) {
           throw #{IOError.new `'No such file or directory: ' + path`};
         }
         return data;
