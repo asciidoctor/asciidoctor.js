@@ -352,6 +352,16 @@ AbstractNode.$$proto.getAttribute = function (name, defaultValue, inherit) {
 };
 
 /**
+ * Check whether the specified attribute is present on this node.
+ *
+ * @memberof AbstractNode
+ * @returns {boolean} true if the attribute is present, otherwise false
+ */
+AbstractNode.$$proto.hasAttribute = function (name) {
+  return name in this.attributes.$$smap;
+};
+
+/**
  * @memberof AbstractNode
  */
 AbstractNode.$$proto.isAttribute = function (name, expectedValue, inherit) {
