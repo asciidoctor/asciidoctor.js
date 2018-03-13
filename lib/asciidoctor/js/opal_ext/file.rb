@@ -28,7 +28,6 @@ class File
     encoding_flag_regexp = /:(.*)/
     flags = flags.gsub(encoding_flag_regexp, '')
     @flags = flags
-    @fd = `require('fs').openSync(path, flags)` if JAVASCRIPT_IO_MODULE == 'node'
   end
 
   def read
@@ -93,8 +92,6 @@ class File
 
   def self.read(path)
     case JAVASCRIPT_IO_MODULE
-    when 'node'
-      %x(return require('fs').readFileSync(path, 'utf8');)
     when 'phantomjs'
       %x(return require('fs').read(path);)
     when 'java_nio'
