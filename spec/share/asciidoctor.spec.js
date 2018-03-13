@@ -54,7 +54,10 @@ var shareSpec = function (testOptions, asciidoctor) {
         var doc = asciidoctor.load('== Test', options);
         expect(doc.getAttribute('sectnums')).toBe('');
         expect(doc.isAttribute('sectnums')).toBe(true);
+        expect(doc.isAttribute('sectnums', 'not this')).toBe(false);
         expect(doc.isAttribute('sectanchors')).toBe(false);
+        expect(doc.hasAttribute('sectnums')).toBe(true);
+        expect(doc.hasAttribute('sectanchors')).toBe(false);
       });
 
       it('should load document authors', function () {
