@@ -42,7 +42,7 @@ You can use Asciidoctor.js either for back-end development using {uri-nodejs}[No
 Once the package installed, you can add the following `script` tag to your HTML page:
 
 ```html
-<script src="node_modules/asciidoctor.js/dist/asciidoctor.min.js"></script>
+<script src="node_modules/asciidoctor.js/dist/browser/asciidoctor.js"></script>
 ```
 
 Here is a simple example that converts AsciiDoc to HTML5:

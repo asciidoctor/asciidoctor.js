@@ -3,7 +3,7 @@ if (typeof Opal === 'undefined' && typeof module === 'object' && module.exports)
 }
 
 if (typeof Opal === 'undefined') {
-//#{opalCode}
+//{{opalCode}}
   Opal.require('opal');
 }
 
@@ -25,11 +25,11 @@ if (typeof Opal === 'undefined') {
   }
 // eslint-disable-next-line no-unused-vars
 }(this, function (moduleConfig) {
-//#{asciidoctorCode}
+//{{asciidoctorCode}}
 
-//#{asciidoctorAPI}
+//{{asciidoctorAPI}}
 
-//#{asciidoctorVersion}
+//{{asciidoctorVersion}}
 
   /**
    * Get Asciidoctor.js version number.

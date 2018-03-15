@@ -1129,9 +1129,9 @@ bestikk-log@0.1.0, bestikk-log@^0.1.0:
   dependencies:
     colors "1.1.2"
 
-bestikk-opal-compiler@0.3.0-integration7:
-  version "0.3.0-integration7"
-  resolved "https://registry.yarnpkg.com/bestikk-opal-compiler/-/bestikk-opal-compiler-0.3.0-integration7.tgz#274698bc80a00c8854e6e93b768908f7986ce50e"
+bestikk-opal-compiler@0.3.1-integration7:
+  version "0.3.1-integration7"
+  resolved "https://registry.yarnpkg.com/bestikk-opal-compiler/-/bestikk-opal-compiler-0.3.1-integration7.tgz#4fcb76e8ff15bcd4f1213a5cb01d519a1ebe4d88"
   dependencies:
     bestikk-log "^0.1.0"
     opal-compiler "0.11.0-integration8"
