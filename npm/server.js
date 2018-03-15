@@ -1,3 +1,5 @@
+'use strict';
+
 const httpServer = require('http-server');
 const portfinder = require('portfinder');
 const log = require('bestikk-log');

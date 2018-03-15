@@ -1,6 +1,5 @@
 const log = require('bestikk-log');
-const Builder = require('../builder.js');
-const builder = new Builder();
+const nashornModule = require('../module/nashorn');
 
 log.task('Nashorn');
-builder.nashornRun('jdk1.8.0');
+nashornModule.nashornRun('jdk1.8.0');

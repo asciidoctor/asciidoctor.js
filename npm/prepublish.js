@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const RefMacroRx = new RegExp('(image:)?(?:(https?:[^\\[]+)|{([a-z0-9_-]+)})\\[(|.*?[^\\\\])\\]', 'g');
 
-function markdownify (asciidoc) {
+const markdownify = (asciidoc) => {
   const attrs = asciidoc
     .split('\n\n')[0]
     .split('\n')
@@ -34,7 +34,7 @@ function markdownify (asciidoc) {
       return line;
     })
     .join('\n');
-}
+};
 
 // Transform README.adoc into README.md and hide README.adoc
 fs.readFile('README.adoc', 'utf8', (readErr, asciidoc) => {
