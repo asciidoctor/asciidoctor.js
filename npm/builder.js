@@ -18,10 +18,18 @@ const isWin = function () {
 };
 
 function Builder () {
-  if (process.env.ASCIIDOCTOR_CORE_VERSION) {
-    this.asciidoctorCoreVersion = process.env.ASCIIDOCTOR_CORE_VERSION;
+  const asciidoctorRef = process.env.ASCIIDOCTOR_CORE_VERSION;
+  if (asciidoctorRef && asciidoctorRef.includes('/')) {
+    // check if ASCIIDOCTOR_CORE_VERSION is user/repo#branch
+    let segments = asciidoctorRef.split('/');
+    this.asciidoctorCoreUser = segments[0];
+    segments = segments[1].split('#');
+    this.asciidoctorCoreRepo = segments[0];
+    this.asciidoctorCoreVersion = segments[1];
   } else {
-    this.asciidoctorCoreVersion = 'master'; // or v1.5.6.1 to build against a release
+    // assume ASCIIDOCTOR_CORE_VERSION is a ref (branch or tag) in asciidoctor/asciidoctor
+    this.asciidoctorCoreUser = this.asciidoctorCoreRepo = 'asciidoctor';
+    this.asciidoctorCoreVersion = asciidoctorRef || 'master';
   }
   this.benchmarkBuildDir = path.join('build', 'benchmark');
   this.examplesBuildDir = path.join('build', 'examples');
@@ -98,7 +106,7 @@ Builder.prototype.downloadDependencies = function (callback) {
         log.info(target + ' file already exists, skipping "download" task');
         callback();
       } else {
-        download.getContentFromURL(`https://codeload.github.com/asciidoctor/asciidoctor/tar.gz/${builder.asciidoctorCoreVersion}`, target, callback);
+        download.getContentFromURL(`https://codeload.github.com/${builder.asciidoctorCoreUser}/${builder.asciidoctorCoreRepo}/tar.gz/${builder.asciidoctorCoreVersion}`, target, callback);
       }
     },
     callback => {
