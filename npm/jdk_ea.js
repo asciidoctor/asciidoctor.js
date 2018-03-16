@@ -1,8 +1,9 @@
+'use strict';
+
 const async = require('async');
-const Builder = require('./builder.js');
-const builder = new Builder();
+const nashornModule = require('./module/nashorn');
 
 async.series([
-  callback => builder.jdk8EA(callback),
-  callback => builder.jdk9EA(callback)
+  callback => nashornModule.jdk8EA(callback),
+  callback => nashornModule.jdk9EA(callback)
 ]);

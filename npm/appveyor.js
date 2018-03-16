@@ -1,21 +1,23 @@
+'use strict';
+
 const async = require('async');
 const log = require('bestikk-log');
-const Builder = require('./builder.js');
-const builder = new Builder();
+const nashornModule = require('./module/nashorn');
+const BuilderModule = require('./module/builder');
 
 log.task('Appveyor');
 async.series([
-  callback => builder.build(callback),
+  callback => new BuilderModule().build(callback),
   callback => {
     if (process.env.APPVEYOR_SCHEDULED_BUILD) {
-      builder.jdk8EA(callback);
+      nashornModule.jdk8EA(callback);
     } else {
       callback();
     }
   },
   callback => {
     if (process.env.APPVEYOR_SCHEDULED_BUILD) {
-      builder.jdk9EA(callback);
+      nashornModule.jdk9EA(callback);
     } else {
       callback();
     }

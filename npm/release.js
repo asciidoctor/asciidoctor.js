@@ -1,6 +1,7 @@
+'use strict';
+
 const log = require('bestikk-log');
-const Builder = require('./builder.js');
-const builder = new Builder();
+const releaseModule = require('./module/release');
 
 const args = process.argv.slice(2);
 const releaseVersion = args[0];
@@ -11,4 +12,4 @@ if (!releaseVersion) {
   process.exit(9);
 }
 
-builder.release(releaseVersion);
+releaseModule.release(releaseVersion);

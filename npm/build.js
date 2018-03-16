@@ -1,4 +1,4 @@
-const Builder = require('./builder.js');
-const builder = new Builder();
+'use strict';
 
-builder.build();
+const BuilderModule = require('./module/builder');
+new BuilderModule().build();
