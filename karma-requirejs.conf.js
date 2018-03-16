@@ -9,6 +9,7 @@ module.exports = function(config) {
       {pattern: 'spec/share/sales.csv', watched: false, included: false, served: true},
       {pattern: 'spec/requireJS/asciidoctor.spec.js', watched: false, included: false, served: true},
       {pattern: 'spec/share/asciidoctor.spec.js', watched: false, included: false, served: true},
+      {pattern: 'spec/share/asciidoctor-include-https.spec.js', watched: false, included: false, served: true},
       {pattern: 'build/asciidoctor.js', watched: false, included: false, served: true},
       {pattern: 'node_modules/asciidoctor-docbook.js/dist/main.js', watched: false, included: false, served: true},
       {pattern: 'build/css/asciidoctor.css', watched: false, included: false, served: true},

@@ -20,7 +20,6 @@ function asciidoctorVersionGreaterThan (version) {
 
 const Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js')();
-require('asciidoctor-template.js')();
 require('asciidoctor-reveal.js');
 const packageJson = require('../../package.json');
 
@@ -30,6 +29,8 @@ const testOptions = {
 };
 
 shareSpec(testOptions, asciidoctor);
+// FIXME: Does not work because 'fs.readFileSync' is used on a URI
+//includeHttpsSpec(testOptions, asciidoctor);
 
 function fileExists (path) {
   try {
@@ -420,6 +421,18 @@ Content 2`;
       expect(html).toContain('Test');
       expect(html).toContain('Unresolved directive');
       expect(html).toContain('include::nonexistent.adoc[]');
+    });
+
+    it('Should include file with a relative path (base_dir is not defined)', function () {
+      const opts = {safe: 'safe'};
+      const html = asciidoctor.convert('include::spec/share/include.adoc[]', opts);
+      expect(html).toContain('include content');
+    });
+
+    it('Should include file with an absolute path (base_dir is explicitly defined)', function () {
+      const opts = {safe: 'safe', base_dir: testOptions.baseDir};
+      const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/share/include.adoc[]', opts);
+      expect(html).toContain('include content');
     });
 
     it('should be able to convert a file and embed an image', () => {
