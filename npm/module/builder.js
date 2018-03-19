@@ -13,8 +13,7 @@ const uglifyModule = require('./uglify');
 const downloadDependencies = (asciidoctorCoreDependency, callback) => {
   log.task('download dependencies');
 
-  const target = 'build/asciidoctor.tar.gz';
-
+  const target = asciidoctorCoreDependency.target;
   async.series([
     callback => {
       if (fs.existsSync(target)) {
@@ -35,9 +34,9 @@ const downloadDependencies = (asciidoctorCoreDependency, callback) => {
   ], () => typeof callback === 'function' && callback());
 };
 
-const replaceUnsupportedFeatures = (callback) => {
+const replaceUnsupportedFeatures = (asciidoctorCoreDependency, callback) => {
   log.task('Replace unsupported features');
-  const path = 'build/asciidoctor-core.js';
+  const path = asciidoctorCoreDependency.target;
   let data = fs.readFileSync(path, 'utf8');
   log.debug('Replace (g)sub! with (g)sub');
   data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'');
@@ -49,9 +48,9 @@ const replaceUnsupportedFeatures = (callback) => {
   callback();
 };
 
-const replaceDefaultStylesheetPath = (callback) => {
+const replaceDefaultStylesheetPath = (asciidoctorCoreDependency, callback) => {
   log.task('Replace default stylesheet path');
-  const path = 'build/asciidoctor-core.js';
+  const path = asciidoctorCoreDependency.target;
   let data = fs.readFileSync(path, 'utf8');
   log.debug('Replace primary_stylesheet_data method');
   const primaryStylesheetDataImpl = `
@@ -69,7 +68,7 @@ return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != nu
 };
 
 const rebuild = (asciidoctorCoreDependency, environments, callback) => {
-  const target = 'build/asciidoctor-lib.js';
+  const target = asciidoctorCoreDependency.target;
   if (fs.existsSync(target)) {
     log.info(`${target} file already exists, skipping "rebuild" task.\nTIP: Use "npm run clean" to rebuild from Asciidoctor core.`);
     callback();
@@ -80,8 +79,8 @@ const rebuild = (asciidoctorCoreDependency, environments, callback) => {
     callback => cleanModule.clean(callback), // clean
     callback => downloadDependencies(asciidoctorCoreDependency, callback), // download dependencies
     callback => compilerModule.compile(environments, callback), // compile
-    callback => replaceUnsupportedFeatures(callback), // replace unsupported features
-    callback => replaceDefaultStylesheetPath(callback) // replace the default stylesheet path
+    callback => replaceUnsupportedFeatures(asciidoctorCoreDependency, callback), // replace unsupported features
+    callback => replaceDefaultStylesheetPath(asciidoctorCoreDependency, callback) // replace the default stylesheet path
   ], () => {
     typeof callback === 'function' && callback();
   });
@@ -109,7 +108,7 @@ const parseTemplateData = (data, templateModel) => {
     .join('\n');
 };
 
-const generateUMD = (environments, callback) => {
+const generateUMD = (asciidoctorCoreTarget, environments, callback) => {
   log.task('generate UMD');
 
   // Asciidoctor core + extensions
@@ -117,19 +116,21 @@ const generateUMD = (environments, callback) => {
     'src/asciidoctor-core-api.js',
     'src/asciidoctor-extensions-api.js'
   ];
-  concat('Asciidoctor API core + extensions', apiFiles, 'build/asciidoctor-api.js');
+
+  const apiBundle = 'build/asciidoctor-api.js';
+  concat('Asciidoctor API core + extensions', apiFiles, apiBundle);
 
   const packageJson = require('../../package.json');
   const templateModel = {
     '//{{opalCode}}': fs.readFileSync('node_modules/opal-runtime/src/opal.js', 'utf8'),
-    '//{{asciidoctorAPI}}': fs.readFileSync('build/asciidoctor-api.js', 'utf8'),
+    '//{{asciidoctorAPI}}': fs.readFileSync(apiBundle, 'utf8'),
     '//{{asciidoctorVersion}}': `var ASCIIDOCTOR_JS_VERSION = '${packageJson.version}';`
   };
 
   // Build a dedicated JavaScript file for each environment
   environments.forEach((environment) => {
     const opalExtData = fs.readFileSync(`build/opal-ext-${environment}.js`, 'utf8');
-    const asciidoctorCoreData = fs.readFileSync('build/asciidoctor-core.js', 'utf8');
+    const asciidoctorCoreData = fs.readFileSync(asciidoctorCoreTarget, 'utf8');
     let moduleData = parseTemplateData(opalExtData.concat('\n').concat(asciidoctorCoreData), {
       '//{{asciidoctorRuntimeEnvironment}}': `self.$require("asciidoctor/js/opal_ext/${environment}");`
     });
@@ -173,6 +174,7 @@ module.exports = class Builder {
     this.examplesBuildDir = path.join('build', 'examples');
     this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625';
     this.environments = ['umd', 'node', 'nashorn', 'browser'];
+    this.asciidoctorCoreTarget = path.join('build', 'asciidoctor-core.js');
   }
 
   build (callback) {
@@ -192,11 +194,12 @@ module.exports = class Builder {
     const asciidoctorCoreDependency = {
       user: this.asciidoctorCoreUser,
       repo: this.asciidoctorCoreRepo,
-      version: this.asciidoctorCoreVersion
+      version: this.asciidoctorCoreVersion,
+      target: this.asciidoctorCoreTarget
     };
     async.series([
       callback => rebuild(asciidoctorCoreDependency, this.environments, callback), // rebuild from Asciidoctor core
-      callback => generateUMD(this.environments, callback), // generate UMD
+      callback => generateUMD(this.asciidoctorCoreTarget, this.environments, callback), // generate UMD
       callback => uglifyModule.uglify(callback) // uglify (optional)
     ], () => {
       log.success(`Done in ${process.hrtime(start)[0]} s`);
