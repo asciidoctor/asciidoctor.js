@@ -1,0 +1,71 @@
+= Include directive processing in the browser
+
+This document describes how the include directive is processed in the browser environment (xmlhttprequest IO module).
+This handling has slightly different rules than when a file-based document.
+The rules are listed in the order in which they are applied.
+
+In these definitions, there are several commonly occurring terms that pertain to the include directive:
+
+* target - the target of the include directive as specified in the document
+* include path - the resolved path of the include; usually an absolute path or URL
+* relative path - the path of the include relative to the root document unless the include path is absolute
+* base dir - the base directory defined on the processor; usually matches the directory of the root document
+* parent dir - the directory of the file containing a nested include; nested includes are resolved relative to the file in which they occur
+
+Since the browser doesn't know the environment the document was intended for, the path resolver is initialized to consider paths with both forward and backslashes.
+
+== Top-level include
+
+* If the target starts with file://, the target is used as both the include path and the relative path.
+In this case, the base dir value has no impact.
+
+* If the target is an absolute URL (i.e., starts with http:// or https:// scheme), the target must either descend from the base dir or the allow-uri-read attribute must be set on the document.
+If either test succeeds, the target is used as both the include path and the relative path.
+// QUESTION should we try to compute the relative path starting from the base dir in this case?
+If both these tests fail, the include is replaced with a link.
+
+* If the target is an absolute path (i.e., starts with a posix root, a Windows drive letter, or a UNC path), the file:// scheme (or file:/// if the path starts with a Windows drive letter) is prepended to the target and the result is used as both the include path and the relative path.
+In this case, the base dir value has no impact.
+
+* If the target is relative and the base dir equals `.`, the target is used as both the include path and the relative path.
+The include path will be resolved relative to the window.location.href (per the behavior of XMLHttpRequest).
+
+* If the target is relative and the base dir begins with file://, the base dir is prepended to the target to create the include path.
+The target is used as the relative path.
+
+* If the target is relative and the base dir is relative, the base dir is prepended to the target to create the include path.
+The include path will be resolved relative to the window.location.href (per the behavior of XMLHttpRequest).
+The target is used as the relative path.
+
+* If the target is relative and the base dir is an absolute URL (i.e., starts with http:// or https:// scheme), the base dir is prepended to the target and used as the include path.
+The target is used as the relative path.
+
+== Nested include
+
+* If the target starts with file://, the target is used as both the include path and the relative path.
+In this case, the base dir value has no impact.
+
+* If the target is a URL (starts with http:// or https:// scheme), the target must either descend from the base dir or the allow-uri-read attribute must be set on the document.
+If both these tests fail, the include is replaced with a link.
+If either test succeeds, the target is used as both the include path and the relative path.
+
+* If the target is an absolute path (i.e., starts with a posix root, a Windows drive letter, or a UNC path), the file:// scheme (or file:/// when the path starts with a Windows drive letter) is prepended to the target and the result is used as both the include path and the relative path.
+In this case, the base dir value has no impact.
+
+* If the target is relative and the parent dir equals `.`, the target is used as both the include path and the relative path.
+The include path will be resolved relative to window.location.href (per the behavior of XMLHttpRequest).
+
+* If the target is relative and the parent dir begins with file://, the parent dir is prepended to the target to create the include path.
+If the base dir equals `.`, or the include path does not descend from the base dir, the include path is used as the relative path.
+If the include path descends from the base dir, the relative path is the path difference.
+
+* If the target is relative and the parent dir is relative, the parent dir is prepended to the target to create the include path.
+The include path will be resolved relative to the window.location.href (per the behavior of XMLHttpRequest).
+If the base dir equals `.`, or the include path does not descend from the base dir, the include path is used as the relative path.
+If the include path descends from the base dir, the relative path is the path difference.
+
+* If the target is relative and the parent dir is an absolute URL (i.e., starts with http:// or https:// scheme), the parent dir must descend from the base dir or the allow-uri-read attribute must be set on the document.
+If either test succeeds, the parent dir is prepended to the target and used as the include path.
+If the parent dir descends from the base dir, the relative path is the path difference.
+Otherwise, the relative path is the target.
+If both these tests fail, the include is replaced with a link.
