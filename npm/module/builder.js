@@ -13,7 +13,7 @@ const uglifyModule = require('./uglify');
 const downloadDependencies = (asciidoctorCoreDependency, callback) => {
   log.task('download dependencies');
 
-  const target = asciidoctorCoreDependency.target;
+  const target = 'build/asciidoctor.tar.gz';
   async.series([
     callback => {
       if (fs.existsSync(target)) {
