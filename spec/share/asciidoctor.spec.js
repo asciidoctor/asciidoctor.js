@@ -135,6 +135,16 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(doc.getSourceLines()).toEqual([ '== Test', 'This is the first paragraph.', '', 'This is a second paragraph.' ]);
       });
 
+      it('should get reader lines', function () {
+        var doc = asciidoctor.load('line one\nline two\nline three', { parse: false });
+        expect(doc.getReader().getLines()).toEqual(['line one', 'line two', 'line three']);
+      });
+
+      it('should get reader string', function () {
+        var doc = asciidoctor.load('line one\nline two\nline three', { parse: false });
+        expect(doc.getReader().getString()).toBe('line one\nline two\nline three');
+      });
+
       it('should not be nested', function () {
         var doc = asciidoctor.load('== Test');
         expect(doc.isNested()).toBe(false);

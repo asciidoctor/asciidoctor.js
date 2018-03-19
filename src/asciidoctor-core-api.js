@@ -986,7 +986,7 @@ Document.$$proto.getParentDocument = function () {
  * @memberof Document
  */
 Document.$$proto.getReader = function () {
-  return this.$reader;
+  return this.reader;
 };
 
 /**
@@ -1163,4 +1163,14 @@ Reader.$$proto.getCursor = function () {
  */
 Reader.$$proto.getLines = function () {
   return this.$lines();
+};
+
+/**
+ * Get the remaining lines managed by this Reader as a String.
+ *
+ * @memberof Reader
+ * @returns {string} - returns The remaining lines managed by this Reader as a String (joined by linefeed characters).
+ */
+Reader.$$proto.getString = function () {
+  return this.$string();
 };
