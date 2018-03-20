@@ -397,6 +397,21 @@ Content 2`;
       expect(result).toContain('we have liftoff.');
     });
 
+    it('should be able to create an image block from a processor extension', () => {
+      const registry = asciidoctor.Extensions.create(function () {
+        this.blockMacro(function () {
+          this.named('img');
+          this.process((parent, target) => {
+            return this.createImageBlock(parent, { target: target + '.png' });
+          });
+        });
+      });
+      const opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      const result = asciidoctor.convert('img::image-name[]', opts);
+      expect(result).toContain('<img src="image-name.png" alt="image name">');
+    });
+
     it('should be able to process emoji inline macro processor extension', () => {
       const registry = asciidoctor.Extensions.create();
       const opts = {};
