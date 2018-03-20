@@ -80,6 +80,14 @@ Extensions.register = function (name, block) {
 };
 
 /**
+ * Get statically-registerd extension groups.
+ * @memberof Extensions
+ */
+Extensions.getGroups = function () {
+  return fromHash(this.groups);
+};
+
+/**
  * Unregister all statically-registered extension groups.
  * @memberof Extensions
  */
@@ -99,11 +107,11 @@ Extensions.unregister = function () {
   var names = Array.isArray(arguments[0]) ? arguments[0] : arguments;
   var groups = this.groups;
   var groupNameIdx = {};
-  for (var i = 0, groupSymbolNames = groups.$$keys, l1 = groupSymbolNames.length; i < l1; i++) {
+  for (var i = 0, groupSymbolNames = groups.$$keys; i < groupSymbolNames.length; i++) {
     var groupSymbolName = groupSymbolNames[i];
     groupNameIdx[groupSymbolName.toString()] = groupSymbolName;
   }
-  for (var j = 0, l2 = names.length; j < l2; j++) {
+  for (var j = 0; j < names.length; j++) {
     var groupStringName = names[j];
     if (groupStringName in groupNameIdx) Opal.hash_delete(groups, groupNameIdx[groupStringName]);
   }
@@ -118,15 +126,13 @@ var Registry = Extensions.Registry;
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.getGroups = function () {
-  return fromHash(this.groups);
-};
+Registry.$$proto.getGroups = Extensions.getGroups;
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.$$proto.unregisterAll = function () {
-  this.groups = Opal.hash2();
+  this.groups = Opal.hash();
 };
 
 /**
