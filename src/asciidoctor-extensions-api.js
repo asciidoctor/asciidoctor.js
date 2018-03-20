@@ -88,6 +88,28 @@ Extensions.unregisterAll = function () {
 };
 
 /**
+ * Unregister the specified statically-registered extension groups.
+ *
+ * NOTE Opal cannot delete an entry from a Hash that is indexed by symbol, so
+ * we have to resort to using low-level operations in this method.
+ *
+ * @memberof Extensions
+ */
+Extensions.unregister = function () {
+  var names = Array.isArray(arguments[0]) ? arguments[0] : arguments;
+  var groups = this.groups;
+  var groupNameIdx = {};
+  for (let i = 0, groupSymbolNames = groups.$$keys, len = groupSymbolNames.length; i < len; i++) {
+    var groupSymbolName = groupSymbolNames[i];
+    groupNameIdx[groupSymbolName.toString()] = groupSymbolName;
+  }
+  for (let i = 0, len = names.length; i < len; i++) {
+    var groupStringName = names[i];
+    if (groupStringName in groupNameIdx) Opal.hash_delete(groups, groupNameIdx[groupStringName]);
+  }
+};
+
+/**
  * @namespace
  * @module Extensions/Registry
  */

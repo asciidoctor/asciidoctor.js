@@ -355,6 +355,69 @@ Content 2`;
       }
     });
 
+    it('should be able to unregister a single extension group', () => {
+      var extensions = asciidoctor.Extensions;
+      try {
+        extensions.register('test', function () {
+          this.blockMacro(function () {
+            this.named('test');
+            this.process((parent) => {
+              return this.createBlock(parent, 'paragraph', 'this was only a test');
+            });
+          });
+        });
+        let html = asciidoctor.convert('test::[]');
+        expect(html).toContain('<p>this was only a test</p>');
+        extensions.unregister('test');
+        html = asciidoctor.convert('test::[]');
+        expect(html).toContain('test::[]');
+        expect(html).not.toContain('<p>this was only a test</p>');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
+    });
+
+    it('should be able to unregister multiple extension groups', () => {
+      var extensions = asciidoctor.Extensions;
+      try {
+        extensions.register('test', function () {
+          this.blockMacro(function () {
+            this.named('test');
+            this.process((parent) => {
+              return this.createBlock(parent, 'paragraph', 'this was only a test');
+            });
+          });
+        });
+        extensions.register('foo', function () {
+          this.blockMacro(function () {
+            this.named('foo');
+            this.process((parent) => {
+              return this.createBlock(parent, 'paragraph', 'foo means foo');
+            });
+          });
+        });
+        extensions.register('bar', function () {
+          this.blockMacro(function () {
+            this.named('bar');
+            this.process((parent) => {
+              return this.createBlock(parent, 'paragraph', 'bar or bust');
+            });
+          });
+        });
+        let html = asciidoctor.convert('test::[]\n\nfoo::[]\n\nbar::[]');
+        expect(html).toContain('<p>this was only a test</p>');
+        expect(html).toContain('<p>foo means foo</p>');
+        expect(html).toContain('<p>bar or bust</p>');
+        extensions.unregister('foo', 'bar');
+        html = asciidoctor.convert('test::[]\n\nfoo::[]\n\nbar::[]');
+        expect(html).toContain('<p>this was only a test</p>');
+        expect(html).toContain('foo::[]');
+        expect(html).toContain('bar::[]');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
+    });
+
     it('should be able to process draft preprocessor extension', () => {
       const registry = asciidoctor.Extensions.create();
       const opts = {};
