@@ -143,73 +143,101 @@ Registry.$$proto.unregister = Extensions.unregister;
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.block = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'block', null, toBlock(name));
+Registry.$$proto.block = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
+  }
+  if (typeof processor === 'function') {
+    return Opal.send(this, 'block', name && [name], toBlock(processor));
   } else {
-    return Opal.send(this, 'block', [name], toBlock(block));
+    return this.$block(processor, name);
   }
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.inlineMacro = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'inline_macro', null, toBlock(name));
+Registry.$$proto.inlineMacro = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
+  }
+  if (typeof processor === 'function') {
+    return Opal.send(this, 'inline_macro', name && [name], toBlock(processor));
   } else {
-    return Opal.send(this, 'inline_macro', [name], toBlock(block));
+    return this.$inline_macro(processor, name);
   }
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.includeProcessor = function (block) {
-  return Opal.send(this, 'include_processor', null, toBlock(block));
-};
-
-/**
- * @memberof Extensions/Registry
- */
-Registry.$$proto.blockMacro = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'block_macro', null, toBlock(name));
+Registry.$$proto.includeProcessor = function (processor) {
+  if (typeof processor === 'function') {
+    return Opal.send(this, 'include_processor', null, toBlock(processor));
   } else {
-    return Opal.send(this, 'block_macro', [name], toBlock(block));
+    return this.$include_processor(processor);
   }
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.treeProcessor = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'treeprocessor', null, toBlock(name));
+Registry.$$proto.blockMacro = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
+  }
+  if (typeof processor === 'function') {
+    return Opal.send(this, 'block_macro', name && [name], toBlock(processor));
   } else {
-    return Opal.send(this, 'treeprocessor', [name], toBlock(block));
+    return this.$block_macro(processor, name);
   }
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.postprocessor = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'postprocessor', null, toBlock(name));
+Registry.$$proto.treeProcessor = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
+  }
+  if (typeof processor === 'function') {
+    return Opal.send(this, 'tree_processor', name && [name], toBlock(processor));
   } else {
-    return Opal.send(this, 'postprocessor', [name], toBlock(block));
+    return this.$tree_processor(processor, name);
   }
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.preprocessor = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'preprocessor', null, toBlock(name));
+Registry.$$proto.postprocessor = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
+  }
+  if (typeof processor === 'function') {
+    return Opal.send(this, 'postprocessor', name && [name], toBlock(processor));
   } else {
-    return Opal.send(this, 'preprocessor', [name], toBlock(block));
+    return this.$postprocessor(processor, name);
+  }
+};
+
+/**
+ * @memberof Extensions/Registry
+ */
+Registry.$$proto.preprocessor = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
+  }
+  if (typeof processor === 'function') {
+    return Opal.send(this, 'preprocessor', name && [name], toBlock(processor));
+  } else {
+    return this.$preprocessor(processor, name);
   }
 };
 
@@ -217,11 +245,15 @@ Registry.$$proto.preprocessor = function (name, block) {
  * @memberof Extensions/Registry
  */
 
-Registry.$$proto.docinfoProcessor = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'docinfo_processor', null, toBlock(name));
+Registry.$$proto.docinfoProcessor = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
+  }
+  if (typeof processor === 'function') {
+    return Opal.send(this, 'docinfo_processor', name && [name], toBlock(processor));
   } else {
-    return Opal.send(this, 'docinfo_processor', [name], toBlock(block));
+    return this.$docinfo_processor(processor, name);
   }
 };
 
