@@ -3,10 +3,7 @@
  * @private
  */
 var toHash = function (object) {
-  if (object && !object.smap) {
-    return Opal.hash(object);
-  }
-  return object;
+  return object && !('$$smap' in object) ? Opal.hash(object) : object;
 };
 
 /**
@@ -14,12 +11,12 @@ var toHash = function (object) {
  * @private
  */
 var fromHash = function (hash) {
-  var to = {};
-  for (var i = 0, key, keys = hash.$$keys, data = hash.$$smap, len = keys.length; i < len; i++) {
-    key = keys[i];
-    to[key] = data[key];
+  var object = {};
+  for (var i = 0, keys = hash.$$keys, data = hash.$$smap, len = keys.length; i < len; i++) {
+    var key = keys[i];
+    object[key] = data[key];
   }
-  return to;
+  return object;
 };
 
 /**
