@@ -3,10 +3,7 @@
  * @private
  */
 var toHash = function (object) {
-  if (object && !object.smap) {
-    return Opal.hash(object);
-  }
-  return object;
+  return object && !('$$smap' in object) ? Opal.hash(object) : object;
 };
 
 /**
@@ -14,12 +11,12 @@ var toHash = function (object) {
  * @private
  */
 var fromHash = function (hash) {
-  var to = {};
-  for (var i = 0, key, keys = hash.$$keys, data = hash.$$smap, len = keys.length; i < len; i++) {
-    key = keys[i];
-    to[key] = data[key];
+  var object = {};
+  for (var i = 0, keys = hash.$$keys, data = hash.$$smap, len = keys.length; i < len; i++) {
+    var key = keys[i];
+    object[key] = data[key];
   }
-  return to;
+  return object;
 };
 
 /**
@@ -100,10 +97,7 @@ Asciidoctor.$$proto.convert = function (input, options) {
     input = input.toString('utf8');
   }
   var result = this.$convert(input, prepareOptions(options));
-  if (result === Opal.nil) {
-    return '';
-  }
-  return result;
+  return result === Opal.nil ? '' : result;
 };
 
 /**
@@ -172,8 +166,8 @@ var AbstractBlock = Opal.Asciidoctor.AbstractBlock;
  * block.getTitle(); // "Foo 3^ # :: Bar(1)"
  */
 AbstractBlock.$$proto.getTitle = function () {
-  var result = this.$title();
-  return result === Opal.nil ? undefined : result;
+  var title = this.$title();
+  return title === Opal.nil ? undefined : title;
 };
 
 /**
@@ -296,11 +290,8 @@ AbstractBlock.$$proto.findBy = function (selector, block) {
  * @returns {number} - returns the source line number where this block started
  */
 AbstractBlock.$$proto.getLineNumber = function () {
-  var value = this.$lineno();
-  if (value === Opal.nil) {
-    return undefined;
-  }
-  return value;
+  var lineno = this.$lineno();
+  return lineno === Opal.nil ? undefined : lineno;
 };
 
 /**
@@ -345,10 +336,7 @@ AbstractNode.$$proto.getAttributes = function () {
  */
 AbstractNode.$$proto.getAttribute = function (name, defaultValue, inherit) {
   var value = this.$attr(name, defaultValue, inherit);
-  if (value === Opal.nil) {
-    return undefined;
-  }
-  return value;
+  return value === Opal.nil ? undefined : value;
 };
 
 /**
@@ -365,17 +353,15 @@ AbstractNode.$$proto.hasAttribute = function (name) {
  * @memberof AbstractNode
  */
 AbstractNode.$$proto.isAttribute = function (name, expectedValue, inherit) {
-  var value = this['$attr?'](name, expectedValue, inherit);
-  return value === Opal.nil ? false : value;
+  var result = this['$attr?'](name, expectedValue, inherit);
+  return result === Opal.nil ? false : result;
 };
 
 /**
  * @memberof AbstractNode
  */
 AbstractNode.$$proto.setAttribute = function (name, value, overwrite) {
-  if (typeof overwrite === 'undefined') {
-    overwrite = true;
-  }
+  if (typeof overwrite === 'undefined') overwrite = true;
   return this.$set_attr(name, value, overwrite);
 };
 
@@ -386,11 +372,8 @@ AbstractNode.$$proto.setAttribute = function (name, value, overwrite) {
  * @memberof AbstractNode
  */
 AbstractNode.$$proto.removeAttribute = function (name) {
-  var result = this.$remove_attr(name);
-  if (result === Opal.nil) {
-    return undefined;
-  }
-  return result;
+  var value = this.$remove_attr(name);
+  return value === Opal.nil ? undefined : value;
 };
 
 /**
@@ -478,11 +461,8 @@ AbstractNode.$$proto.getReftext = function () {
  */
 AbstractNode.$$proto.getContext = function () {
   var context = this.context;
-  if (context && typeof context.$to_s === 'function') {
-    // Convert Ruby Symbol to String
-    return context.$to_s();
-  }
-  return context;
+  // Automatically convert Opal pseudo-symbol to String
+  return typeof context === 'string' ? context : context.toString();
 };
 
 /**
@@ -593,6 +573,7 @@ Document.$$proto.setAttribute = function (name, value) {
 };
 
 /**
+
  * @memberof Document
  */
 Document.$$proto.removeAttribute = function (name) {
@@ -605,10 +586,7 @@ Document.$$proto.removeAttribute = function (name) {
  */
 Document.$$proto.convert = function (options) {
   var result = this.$convert(toHash(options));
-  if (result === Opal.nil) {
-    return '';
-  }
-  return result;
+  return result === Opal.nil ? '' : result;
 };
 
 /**
@@ -703,8 +681,8 @@ Document.$$proto.isBasebackend = function (base) {
  * @memberof Document
  */
 Document.$$proto.getTitle = function () {
-  var result = this.$title();
-  return result === Opal.nil ? undefined : result;
+  var title = this.$title();
+  return title === Opal.nil ? undefined : title;
 };
 
 /**
@@ -719,17 +697,15 @@ Document.$$proto.setTitle = function (title) {
  * @returns {Document/Title} - returns a {@link Document/Title}
  */
 Document.$$proto.getDocumentTitle = function (options) {
-  var result = this.$doctitle(toHash(options));
-  return result === Opal.nil ? undefined : result;
+  var doctitle = this.$doctitle(toHash(options));
+  return doctitle === Opal.nil ? undefined : doctitle;
 };
 
 /**
  * @memberof Document
  * @see {@link Document#getDocumentTitle}
  */
-Document.$$proto.getDoctitle = function (options) {
-  return this.getDocumentTitle(options);
-};
+Document.$$proto.getDoctitle = Document.$$proto.getDocumentTitle;
 
 /**
  * Get the document catalog Hash.
@@ -1037,10 +1013,7 @@ Title.$$proto.getSubtitle = function () {
  */
 Title.$$proto.isSanitized = function () {
   var sanitized = this['$sanitized?']();
-  if (sanitized === Opal.nil) {
-    return false;
-  }
-  return sanitized;
+  return sanitized === Opal.nil ? false : sanitized;
 };
 
 /**

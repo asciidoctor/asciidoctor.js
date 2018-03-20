@@ -208,6 +208,13 @@ Processor.$$proto.createBlock = function (parent, context, source, attrs, opts) 
 /**
  * @memberof Extensions/Processor
  */
+Processor.$$proto.createImageBlock = function (parent, attrs, opts) {
+  return this.$create_image_block(parent, toHash(attrs), toHash(opts));
+};
+
+/**
+ * @memberof Extensions/Processor
+ */
 Processor.$$proto.createInline = function (parent, context, text, opts) {
   return this.$create_inline(parent, context, text, toHash(opts));
 };
