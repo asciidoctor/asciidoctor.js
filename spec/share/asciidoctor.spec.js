@@ -529,6 +529,27 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(html).toContain('March');
       });
     });
+
+    describe('Converter', function () {
+      it('should get converter factory', function () {
+        var factory = asciidoctor.Converter.Factory.getDefault(false);
+        expect(factory).toBeDefined();
+        expect(factory.$$class.$name()).toBe('Asciidoctor::Converter::Factory');
+      });
+
+      it('should create instance of html5 converter', function () {
+        var converter = asciidoctor.Converter.Factory.getDefault(false).create('html5');
+        expect(converter).toBeDefined();
+        expect(converter.$$class.$name()).toBe('Asciidoctor::Converter::Html5Converter');
+      });
+
+      it('should be able to convert node using converter instance retrieved from factory', function () {
+        var converter = asciidoctor.Converter.Factory.getDefault(false).create('html5');
+        var para = asciidoctor.load('text').getBlocks()[0];
+        var result = converter.convert(para);
+        expect(result).toContain('<p>text</p>');
+      });
+    });
   });
 };
 
