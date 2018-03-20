@@ -314,7 +314,7 @@ Block.$$proto.getSource = function () {
  * @returns {Array} - returns the String {Array} of source lines for this block.
  */
 Block.$$proto.getSourceLines = function () {
-  return this.$lines();
+  return this.lines;
 };
 
 // AbstractNode API
@@ -383,7 +383,7 @@ AbstractNode.$$proto.removeAttribute = function (name) {
  * @returns {Document} - returns the {@link Document} object to which this node belongs.
  */
 AbstractNode.$$proto.getDocument = function () {
-  return this.$document();
+  return this.document;
 };
 
 /**
@@ -657,14 +657,14 @@ Document.$$proto.hasExtensions = function () {
  * @memberof Document
  */
 Document.$$proto.getDoctype = function () {
-  return this.$doctype();
+  return this.doctype;
 };
 
 /**
  * @memberof Document
  */
 Document.$$proto.getBackend = function () {
-  return this.$backend();
+  return this.backend;
 };
 
 /**
@@ -714,6 +714,11 @@ Document.$$proto.getDoctitle = Document.$$proto.getDocumentTitle;
 Document.$$proto.getCatalog = function () {
   return fromHash(this.catalog);
 };
+
+/**
+ * @memberof Document
+ */
+Document.$$proto.getReferences = Document.$$proto.getCatalog;
 
 /**
  * Get the document revision date from document header (document attribute <code>revdate</code>).
@@ -892,42 +897,35 @@ Document.$$proto.counter = function (name, seed) {
  * @memberof Document
  */
 Document.$$proto.getSafe = function () {
-  return this.$safe;
+  return this.safe;
 };
 
 /**
  * @memberof Document
  */
 Document.$$proto.getCompatMode = function () {
-  return this.$compat_mode;
+  return this.compat_mode;
 };
 
 /**
  * @memberof Document
  */
 Document.$$proto.getSourcemap = function () {
-  return this.$sourcemap;
-};
-
-/**
- * @memberof Document
- */
-Document.$$proto.getReferences = function () {
-  return this.$references;
+  return this.sourcemap;
 };
 
 /**
  * @memberof Document
  */
 Document.$$proto.getCounters = function () {
-  return this.$counters;
+  return fromHash(this.counters);
 };
 
 /**
  * @memberof Document
  */
 Document.$$proto.getCallouts = function () {
-  return this.$callouts;
+  return this.$callouts();
 };
 
 /**
@@ -941,21 +939,21 @@ Document.$$proto.getBaseDir = function () {
  * @memberof Document
  */
 Document.$$proto.getOptions = function () {
-  return this.$options;
+  return fromHash(this.options);
 };
 
 /**
  * @memberof Document
  */
 Document.$$proto.getOutfilesuffix = function () {
-  return this.$outfilesuffix;
+  return this.outfilesuffix;
 };
 
 /**
  * @memberof Document
  */
 Document.$$proto.getParentDocument = function () {
-  return this.$parent_document;
+  return this.parent_document;
 };
 
 /**
@@ -969,14 +967,14 @@ Document.$$proto.getReader = function () {
  * @memberof Document
  */
 Document.$$proto.getConverter = function () {
-  return this.$converter;
+  return this.converter;
 };
 
 /**
  * @memberof Document
  */
 Document.$$proto.getExtensions = function () {
-  return this.$extensions;
+  return this.extensions;
 };
 
 // Document.Title API
