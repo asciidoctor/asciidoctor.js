@@ -921,7 +921,7 @@ Document.$$proto.getSourcemap = function () {
  * @memberof Document
  */
 Document.$$proto.getCounters = function () {
-  return this.counters;
+  return fromHash(this.counters);
 };
 
 /**
@@ -942,7 +942,7 @@ Document.$$proto.getBaseDir = function () {
  * @memberof Document
  */
 Document.$$proto.getOptions = function () {
-  return this.options;
+  return fromHash(this.options);
 };
 
 /**

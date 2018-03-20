@@ -180,12 +180,32 @@ var shareSpec = function (testOptions, asciidoctor) {
         }
       });
 
+      it('should get document', function () {
+        var options = {};
+        var doc = asciidoctor.load('= Document Title\n\ncontent', options);
+        expect(doc.getDocument()).toBe(doc);
+        expect(doc.getBlocks()[0].getDocument()).toBe(doc);
+      });
+
+      it('should get parent document', function () {
+        var options = {};
+        var doc = asciidoctor.load('= Document Title\n\n|===\na|subdoc\n|===', options);
+        var table = doc.getBlocks()[0];
+        expect(table.getContext()).toBe('table');
+        var subdoc = table.rows.body[0][0].inner_document;
+        expect(subdoc).not.toBe(doc);
+        expect(subdoc.getParentDocument()).toBe(doc);
+      });
+
       it('should have extensions enabled after being autoloaded', function () {
         try {
           asciidoctor.Extensions.register(function () {});
           var doc = asciidoctor.load('== Test');
           // extensions should be enabled after being autoloaded
           expect(doc.hasExtensions()).toBe(true);
+          var extensions = doc.getExtensions();
+          expect(extensions).toBeDefined();
+          expect('groups' in extensions).toBe(true);
         } finally {
           asciidoctor.Extensions.unregisterAll();
         }
@@ -214,6 +234,40 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(doc.getAttribute('htmlsyntax')).toBe('xml');
       });
 
+      it('should get safe mode', function () {
+        var options = { safe: 'server' };
+        var doc = asciidoctor.load('== Test', options);
+        expect(doc.getSafe()).toBe(asciidoctor.$$const.SafeMode.$$const.SERVER);
+        expect(doc.getAttribute('safe-mode-name')).toBe('server');
+      });
+
+      it('should get compat mode', function () {
+        var options = {};
+        var doc = asciidoctor.load('Document Title\n==============\n\ncontent', options);
+        expect(doc.getCompatMode()).toBe(true);
+      });
+
+      it('should get options', function () {
+        var options = { header_footer: true };
+        var doc = asciidoctor.load('= Document Title', options);
+        expect(doc.getOptions()).toBeDefined();
+        expect(doc.getOptions().header_footer).toBe(true);
+      });
+
+      it('should get outfilesuffix', function () {
+        var options = {};
+        var doc = asciidoctor.load('= Document Title', options);
+        expect(doc.getOutfilesuffix()).toBe('.html');
+      });
+
+      it('should get converter', function () {
+        var options = { backend: 'xhtml' };
+        var doc = asciidoctor.load('= Document Title', options);
+        var converter = doc.getConverter();
+        expect(converter).toBeDefined();
+        expect(converter.xml_mode).toBe(true);
+      });
+
       it('should get title', function () {
         var doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n:title: The Actual Dangerous Documentation Chronicles\n== The Ravages of Writing');
         expect(doc.getTitle()).toBe('The Actual Dangerous Documentation Chronicles');
@@ -229,6 +283,7 @@ var shareSpec = function (testOptions, asciidoctor) {
       it('should get the line of number of a block when sourcemap is enabled', function () {
         var options = {sourcemap: true};
         var doc = asciidoctor.load('= Document Title\n\nPreamble\n\n== First section\n\nTrue story!', options);
+        expect(doc.getSourcemap()).toBe(true);
         var blocks = doc.getBlocks();
         expect(blocks.length).toBe(2);
         // preamble
@@ -267,6 +322,14 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(doctitle.getCombined()).toBe('The Dangerous Documentation Chronicles: Based on True Events');
         expect(doctitle.hasSubtitle()).toBe(true);
         expect(doctitle.isSanitized()).toBe(false);
+      });
+
+      it('should get counters', function () {
+        var doc = asciidoctor.load('{counter:countme}\n\n{counter:countme}');
+        doc.convert();
+        var counters = doc.getCounters();
+        expect(counters).toBeDefined();
+        expect(counters.countme).toBe(2);
       });
 
       it('should get and set attribute on block', function () {
