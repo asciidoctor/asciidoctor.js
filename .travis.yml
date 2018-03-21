@@ -6,7 +6,7 @@ addons:
   chrome: stable
 
 env:
-- ASCIIDOCTOR_CORE_VERSION=asciidoctor/asciidoctor#v1.5.6.x
+- ASCIIDOCTOR_CORE_VERSION=v1.5.6.2
 - ASCIIDOCTOR_CORE_VERSION=master
 
 cache:

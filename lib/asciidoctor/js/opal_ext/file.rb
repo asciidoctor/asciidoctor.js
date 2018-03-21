@@ -54,7 +54,6 @@ class File
         var chomped  = #{lines.chomp},
             trailing = lines.length != chomped.length,
             splitted = chomped.split(separator);
-
         for (var i = 0, length = splitted.length; i < length; i++) {
           self.lineno += 1;
           if (i < length - 1 || trailing) {
@@ -76,25 +75,27 @@ class File
     File.readlines(@path)
   end
 
-  def self.readlines(path, separator = $/)
-    content = File.read(path)
-    content.split(separator)
-  end
+  class << self
 
-  # TODO use XMLHttpRequest HEAD request unless in local file mode
-  def self.file?(path)
-    true
-  end
+    def readlines(path, separator = $/)
+      content = File.read(path)
+      content.split(separator)
+    end
 
-  def self.readable?(path)
-    true
-  end
+    # TODO use XMLHttpRequest HEAD request unless in local file mode
+    def file?(path)
+      true
+    end
 
-  def self.read(path)
-    # REMIND will be overriden by a specific implementation
-    ''
-  end
+    def readable?(path)
+      true
+    end
 
+    def read(path)
+      # REMIND will be overriden by a specific implementation
+      ''
+    end
+  end
 end
 
 class IO

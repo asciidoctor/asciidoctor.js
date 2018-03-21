@@ -1,7 +1,7 @@
 class File
 
   def self.read(path)
-    %x(return require('fs').read(path);)
+    %x(return require('fs').read(path))
   end
 
 end

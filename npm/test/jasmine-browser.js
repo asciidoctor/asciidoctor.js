@@ -6,6 +6,7 @@ log.task('Jasmine Browser');
 bfs.concatSync([
   'spec/share/asciidoctor.spec.js',
   'spec/share/asciidoctor-include-https.spec.js',
+  'spec/share/asciidoctor-include-file.spec.js',
   'spec/browser/asciidoctor.spec.js'
 ], 'build/browser.spec.all.js');
 
