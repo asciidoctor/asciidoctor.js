@@ -20,7 +20,7 @@ const removeDistDirSync = (environments) => {
 
 const copyToDist = (environments, callback) => {
   log.task('copy to dist/');
-  removeDistDirSync();
+  removeDistDirSync(environments);
   bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css');
   bfs.copySync('build/asciidoctor.js', 'dist/asciidoctor.js');
   bfs.copySync('build/asciidoctor.min.js', 'dist/asciidoctor.min.js');
@@ -37,5 +37,5 @@ const start = process.hrtime();
 async.series([
   callback => builderModule.build(callback),
   callback => runTest(callback),
-  callback => copyToDist(callback)
+  callback => copyToDist(['browser', 'nashorn', 'node', 'umd'], callback)
 ], () => log.success(`Done in ${process.hrtime(start)[0]} s`));
