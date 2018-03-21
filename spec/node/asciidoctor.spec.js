@@ -355,6 +355,121 @@ Content 2`;
       }
     });
 
+    it('should be able to unregister a single statically-registered extension group', () => {
+      var extensions = asciidoctor.Extensions;
+      try {
+        extensions.register('test', function () {
+          this.blockMacro(function () {
+            this.named('test');
+            this.process((parent) => {
+              return this.createBlock(parent, 'paragraph', 'this was only a test');
+            });
+          });
+        });
+        const groups = extensions.getGroups();
+        expect(groups).toBeDefined();
+        expect(Object.keys(groups).length).toBe(1);
+        expect('test' in groups).toBe(true);
+        let html = asciidoctor.convert('test::[]');
+        expect(html).toContain('<p>this was only a test</p>');
+        extensions.unregister('test');
+        html = asciidoctor.convert('test::[]');
+        expect(html).toContain('test::[]');
+        expect(html).not.toContain('<p>this was only a test</p>');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
+    });
+
+    it('should be able to unregister multiple statically-registered extension groups', () => {
+      var extensions = asciidoctor.Extensions;
+      try {
+        extensions.register('test', function () {
+          this.blockMacro(function () {
+            this.named('test');
+            this.process((parent) => {
+              return this.createBlock(parent, 'paragraph', 'this was only a test');
+            });
+          });
+        });
+        extensions.register('foo', function () {
+          this.blockMacro(function () {
+            this.named('foo');
+            this.process((parent) => {
+              return this.createBlock(parent, 'paragraph', 'foo means foo');
+            });
+          });
+        });
+        extensions.register('bar', function () {
+          this.blockMacro(function () {
+            this.named('bar');
+            this.process((parent) => {
+              return this.createBlock(parent, 'paragraph', 'bar or bust');
+            });
+          });
+        });
+        const groups = extensions.getGroups();
+        expect(groups).toBeDefined();
+        expect(Object.keys(groups).length).toBe(3);
+        expect(Object.keys(groups)).toEqual(['test', 'foo', 'bar']);
+        let html = asciidoctor.convert('test::[]\n\nfoo::[]\n\nbar::[]');
+        expect(html).toContain('<p>this was only a test</p>');
+        expect(html).toContain('<p>foo means foo</p>');
+        expect(html).toContain('<p>bar or bust</p>');
+        extensions.unregister('foo', 'bar');
+        html = asciidoctor.convert('test::[]\n\nfoo::[]\n\nbar::[]');
+        expect(html).toContain('<p>this was only a test</p>');
+        expect(html).toContain('foo::[]');
+        expect(html).toContain('bar::[]');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
+    });
+
+    it('should be able to unregister a single extension group from a custom registry', () => {
+      var registry = asciidoctor.Extensions.create('test', function () {
+        this.blockMacro(function () {
+          this.named('test');
+          this.process((parent) => {
+            return this.createBlock(parent, 'paragraph', 'this was only a test');
+          });
+        });
+      });
+      const groups = registry.getGroups();
+      expect(groups).toBeDefined();
+      expect('test' in groups).toBe(true);
+      const opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      let html = asciidoctor.convert('test::[]', opts);
+      expect(html).toContain('<p>this was only a test</p>');
+      registry.unregister('test');
+      html = asciidoctor.convert('test::[]');
+      expect(html).toContain('test::[]');
+      expect(html).not.toContain('<p>this was only a test</p>');
+    });
+
+    it('should be able to unregister all extension groups from a custom registry', () => {
+      var registry = asciidoctor.Extensions.create('test', function () {
+        this.blockMacro(function () {
+          this.named('test');
+          this.process((parent) => {
+            return this.createBlock(parent, 'paragraph', 'this was only a test');
+          });
+        });
+      });
+      const groups = registry.getGroups();
+      expect(groups).toBeDefined();
+      expect('test' in groups).toBe(true);
+      const opts = {};
+      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      let html = asciidoctor.convert('test::[]', opts);
+      expect(html).toContain('<p>this was only a test</p>');
+      registry.unregisterAll();
+      html = asciidoctor.convert('test::[]');
+      expect(html).toContain('test::[]');
+      expect(html).not.toContain('<p>this was only a test</p>');
+    });
+
     it('should be able to process draft preprocessor extension', () => {
       const registry = asciidoctor.Extensions.create();
       const opts = {};
