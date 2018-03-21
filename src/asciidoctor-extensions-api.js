@@ -9,6 +9,14 @@ var toBlock = function (block) {
   return block;
 };
 
+var registerExtension = function (registry, type, processor, name) {
+  if (typeof processor === 'function') {
+    return Opal.send(registry, type, name && [name], toBlock(processor));
+  } else {
+    return registry['$' + type](processor, name);
+  }
+};
+
 /**
  * @namespace
  * @description
@@ -148,11 +156,7 @@ Registry.$$proto.block = function (name, processor) {
     processor = name;
     name = null;
   }
-  if (typeof processor === 'function') {
-    return Opal.send(this, 'block', name && [name], toBlock(processor));
-  } else {
-    return this.$block(processor, name);
-  }
+  return registerExtension(this, 'block', processor, name);
 };
 
 /**
@@ -163,22 +167,14 @@ Registry.$$proto.inlineMacro = function (name, processor) {
     processor = name;
     name = null;
   }
-  if (typeof processor === 'function') {
-    return Opal.send(this, 'inline_macro', name && [name], toBlock(processor));
-  } else {
-    return this.$inline_macro(processor, name);
-  }
+  return registerExtension(this, 'inline_macro', processor, name);
 };
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.$$proto.includeProcessor = function (processor) {
-  if (typeof processor === 'function') {
-    return Opal.send(this, 'include_processor', null, toBlock(processor));
-  } else {
-    return this.$include_processor(processor);
-  }
+  return registerExtension(this, 'include_processor', processor);
 };
 
 /**
@@ -189,11 +185,7 @@ Registry.$$proto.blockMacro = function (name, processor) {
     processor = name;
     name = null;
   }
-  if (typeof processor === 'function') {
-    return Opal.send(this, 'block_macro', name && [name], toBlock(processor));
-  } else {
-    return this.$block_macro(processor, name);
-  }
+  return registerExtension(this, 'block_macro', processor, name);
 };
 
 /**
@@ -204,11 +196,7 @@ Registry.$$proto.treeProcessor = function (name, processor) {
     processor = name;
     name = null;
   }
-  if (typeof processor === 'function') {
-    return Opal.send(this, 'tree_processor', name && [name], toBlock(processor));
-  } else {
-    return this.$tree_processor(processor, name);
-  }
+  return registerExtension(this, 'tree_processor', processor, name);
 };
 
 /**
@@ -219,11 +207,7 @@ Registry.$$proto.postprocessor = function (name, processor) {
     processor = name;
     name = null;
   }
-  if (typeof processor === 'function') {
-    return Opal.send(this, 'postprocessor', name && [name], toBlock(processor));
-  } else {
-    return this.$postprocessor(processor, name);
-  }
+  return registerExtension(this, 'postprocessor', processor, name);
 };
 
 /**
@@ -234,11 +218,7 @@ Registry.$$proto.preprocessor = function (name, processor) {
     processor = name;
     name = null;
   }
-  if (typeof processor === 'function') {
-    return Opal.send(this, 'preprocessor', name && [name], toBlock(processor));
-  } else {
-    return this.$preprocessor(processor, name);
-  }
+  return registerExtension(this, 'preprocessor', processor, name);
 };
 
 /**
@@ -250,11 +230,7 @@ Registry.$$proto.docinfoProcessor = function (name, processor) {
     processor = name;
     name = null;
   }
-  if (typeof processor === 'function') {
-    return Opal.send(this, 'docinfo_processor', name && [name], toBlock(processor));
-  } else {
-    return this.$docinfo_processor(processor, name);
-  }
+  return registerExtension(this, 'docinfo_processor', processor, name);
 };
 
 /**
