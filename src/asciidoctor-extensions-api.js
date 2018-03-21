@@ -346,3 +346,65 @@ var DocinfoProcessor = Extensions.DocinfoProcessor;
 DocinfoProcessor.$$proto.atLocation = function (value) {
   this.$at_location(value);
 };
+
+// Converter API
+
+/**
+ * @namespace
+ * @module Converter
+ */
+var Converter = Opal.const_get_qualified(Opal.Asciidoctor, 'Converter');
+
+// Alias
+Opal.Asciidoctor.Converter = Converter;
+
+/**
+ * Convert the specified node.
+ *
+ * @param {AbstractNode} node - the AbstractNode to convert
+ * @param {string} transform - an optional String transform that hints at
+ * which transformation should be applied to this node.
+ * @param {Object} opts - a JSON of options that provide additional hints about
+ * how to convert the node (default: {})
+ * @returns the {Object} result of the conversion, typically a {string}.
+ * @memberof Converter
+ */
+Converter.$$proto.convert = function (node, transform, opts) {
+  return this.$convert(node, transform, toHash(opts));
+};
+
+// The built-in converter doesn't include Converter, so we have to force it
+Converter.BuiltIn.$$proto.convert = Converter.$$proto.convert;
+
+// Converter Factory API
+
+/**
+ * @namespace
+ * @module Converter/Factory
+ */
+var ConverterFactory = Opal.Asciidoctor.Converter.Factory;
+
+/**
+ * Retrieves the singleton instance of the converter factory.
+ *
+ * @param {boolean} initialize - instantiate the singleton if it has not yet
+ * been instantiated. If this value is false and the singleton has not yet been
+ * instantiated, this method returns a fresh instance.
+ * @returns {Converter/Factory} an instance of the converter factory.
+ * @memberof Converter/Factory
+ */
+ConverterFactory.getDefault = function (initialize) {
+  return this.$default(initialize);
+};
+
+/**
+ * Create an instance of the converter bound to the specified backend.
+ *
+ * @param {string} backend - look for a converter bound to this keyword.
+ * @param {Object} opts - a JSON of options to pass to the converter (default: {})
+ * @returns {Converter} - a converter instance for converting nodes in an Asciidoctor AST.
+ * @memberof Converter/Factory
+ */
+ConverterFactory.$$proto.create = function (backend, opts) {
+  return this.$create(backend, toHash(opts));
+};
