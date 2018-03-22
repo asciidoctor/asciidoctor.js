@@ -12,6 +12,10 @@ const nashornCheckConvert = (result, testName) => {
     log.error(`${testName} failed, AsciiDoc source is not converted`);
     process.stdout.write(result);
   }
+  if (result.indexOf('Asciidoctor default stylesheet') === -1) {
+    log.error(`${testName} failed, default stylesheet not embedded in converted document`);
+    process.stdout.write(result);
+  }
   if (result.indexOf('include content') === -1) {
     log.error(`${testName} failed, include directive is not processed`);
     process.stdout.write(result);
