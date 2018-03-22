@@ -8,7 +8,7 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Guillaume Grossetie <h
 :uri-freesoftware: https://www.gnu.org/philosophy/free-sw.html
 ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
 :uri-contribute: {uri-rel-file-base}CONTRIBUTING.adoc
-:uri-user-manual: {uri-rel-file-base}manual.adoc
+:uri-user-manual: {uri-rel-file-base}/docs/manual.adoc
 :license: {uri-repo}/blob/master/LICENSE
 :experimental:
 :endash:
