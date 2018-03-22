@@ -9,6 +9,14 @@ var toBlock = function (block) {
   return block;
 };
 
+var registerExtension = function (registry, type, processor, name) {
+  if (typeof processor === 'function') {
+    return Opal.send(registry, type, name && [name], toBlock(processor));
+  } else {
+    return registry['$' + type](processor, name);
+  }
+};
+
 /**
  * @namespace
  * @description
@@ -143,86 +151,86 @@ Registry.$$proto.unregister = Extensions.unregister;
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.block = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'block', null, toBlock(name));
-  } else {
-    return Opal.send(this, 'block', [name], toBlock(block));
+Registry.$$proto.block = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
   }
+  return registerExtension(this, 'block', processor, name);
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.inlineMacro = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'inline_macro', null, toBlock(name));
-  } else {
-    return Opal.send(this, 'inline_macro', [name], toBlock(block));
+Registry.$$proto.inlineMacro = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
   }
+  return registerExtension(this, 'inline_macro', processor, name);
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.includeProcessor = function (block) {
-  return Opal.send(this, 'include_processor', null, toBlock(block));
+Registry.$$proto.includeProcessor = function (processor) {
+  return registerExtension(this, 'include_processor', processor);
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.blockMacro = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'block_macro', null, toBlock(name));
-  } else {
-    return Opal.send(this, 'block_macro', [name], toBlock(block));
+Registry.$$proto.blockMacro = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
   }
+  return registerExtension(this, 'block_macro', processor, name);
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.treeProcessor = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'treeprocessor', null, toBlock(name));
-  } else {
-    return Opal.send(this, 'treeprocessor', [name], toBlock(block));
+Registry.$$proto.treeProcessor = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
   }
+  return registerExtension(this, 'tree_processor', processor, name);
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.postprocessor = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'postprocessor', null, toBlock(name));
-  } else {
-    return Opal.send(this, 'postprocessor', [name], toBlock(block));
+Registry.$$proto.postprocessor = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
   }
+  return registerExtension(this, 'postprocessor', processor, name);
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.preprocessor = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'preprocessor', null, toBlock(name));
-  } else {
-    return Opal.send(this, 'preprocessor', [name], toBlock(block));
+Registry.$$proto.preprocessor = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
   }
+  return registerExtension(this, 'preprocessor', processor, name);
 };
 
 /**
  * @memberof Extensions/Registry
  */
 
-Registry.$$proto.docinfoProcessor = function (name, block) {
-  if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'docinfo_processor', null, toBlock(name));
-  } else {
-    return Opal.send(this, 'docinfo_processor', [name], toBlock(block));
+Registry.$$proto.docinfoProcessor = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
   }
+  return registerExtension(this, 'docinfo_processor', processor, name);
 };
 
 /**

@@ -345,6 +345,19 @@ Content 2`;
       }
     });
 
+    it('should be able to register an include processor class', () => {
+      try {
+        const LoremIncludeProcessor = require('../share/extensions/include-processor-class.js');
+        asciidoctor.Extensions.register(function () {
+          this.includeProcessor(LoremIncludeProcessor);
+        });
+        const html = asciidoctor.convert('include::fake.adoc[]', { safe: 'safe' });
+        expect(html).toContain('Lorem ipsum');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
+    });
+
     it('should be able to process lorem extension', () => {
       try {
         require('../share/extensions/lorem-block-macro.js');
