@@ -2,6 +2,7 @@
 const child_process = require('child_process');
 const log = require('bestikk-log');
 const execModule = require('./exec');
+const async = require('async');
 
 const prepareRelease = (releaseVersion, callback) => {
   log.task(`Release version: ${releaseVersion}`);
