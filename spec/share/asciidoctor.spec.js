@@ -187,6 +187,13 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(doc.getBlocks()[0].getDocument()).toBe(doc);
       });
 
+      it('should get parent node', function () {
+        var options = {};
+        var doc = asciidoctor.load('= Document Title\n\ncontent', options);
+        expect(doc.getParent()).toBeUndefined();
+        expect(doc.getBlocks()[0].getParent()).toBe(doc);
+      });
+
       it('should get parent document', function () {
         var options = {};
         var doc = asciidoctor.load('= Document Title\n\n|===\na|subdoc\n|===', options);
