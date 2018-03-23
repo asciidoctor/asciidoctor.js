@@ -387,6 +387,18 @@ AbstractNode.$$proto.getDocument = function () {
 };
 
 /**
+ * Get the {@link AbstractNode} to which this node is attached.
+ *
+ * @memberof AbstractNode
+ * @returns {AbstractNode} - returns the {@link AbstractNode} object to which this node is attached,
+ * or undefined if this node has no parent.
+ */
+AbstractNode.$$proto.getParent = function () {
+  var parent = this.parent;
+  return parent === Opal.nil ? undefined : parent;
+};
+
+/**
  * @memberof AbstractNode
  */
 AbstractNode.$$proto.isInline = function () {
