@@ -223,6 +223,36 @@ AbstractBlock.$$proto.getLevel = function () {
 };
 
 /**
+ * Get the substitution keywords to be applied to the contents of this block.
+ *
+ * @memberof AbstractBlock
+ * @returns {Array} - the list of {string} substitution keywords associated with this block.
+ */
+AbstractBlock.$$proto.getSubstitutions = function () {
+  return this.subs;
+};
+
+/**
+ * Check whether a given substitution keyword is present in the substitutions for this block.
+ * 
+ * @memberof AbstractBlock
+ * @returns {boolean} - whether the substitution is present on this block.
+ */
+AbstractBlock.$$proto.hasSubstitution = function (substitution) {
+  return this['$sub?'](substitution);
+};
+
+/**
+ * Remove the specified substitution keyword from the list of substitutions for this block.
+ *
+ * @memberof AbstractBlock
+ * @returns undefined
+ */
+AbstractBlock.$$proto.removeSubstitution = function (substitution) {
+  this.$remove_sub(substitution);
+};
+
+/**
  * Get the list of {@link AbstractBlock} sub-blocks for this block.
  * @memberof AbstractBlock
  * @returns {Array} - returns a list of {@link AbstractBlock} sub-blocks
