@@ -368,6 +368,16 @@ Content 2`;
       }
     });
 
+    it('should return empty hash of groups if no extensions are registered', () => {
+      const groups = asciidoctor.Extensions.getGroups();
+      expect(groups).toBeDefined();
+      expect(Object.keys(groups).length).toBe(0);
+    });
+
+    it('should not fail to unregister extension groups if no extensions are defined', () => {
+      asciidoctor.Extensions.unregister('no-such-group');
+    });
+
     it('should be able to unregister a single statically-registered extension group', () => {
       var extensions = asciidoctor.Extensions;
       try {

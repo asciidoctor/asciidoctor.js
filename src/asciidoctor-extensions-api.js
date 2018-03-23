@@ -92,7 +92,7 @@ Extensions.register = function (name, block) {
  * @memberof Extensions
  */
 Extensions.getGroups = function () {
-  return fromHash(this.groups);
+  return fromHash(this.$groups());
 };
 
 /**
@@ -113,7 +113,7 @@ Extensions.unregisterAll = function () {
  */
 Extensions.unregister = function () {
   var names = Array.isArray(arguments[0]) ? arguments[0] : arguments;
-  var groups = this.groups;
+  var groups = this.$groups();
   var groupNameIdx = {};
   for (var i = 0, groupSymbolNames = groups.$$keys; i < groupSymbolNames.length; i++) {
     var groupSymbolName = groupSymbolNames[i];
