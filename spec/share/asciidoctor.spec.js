@@ -351,12 +351,25 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(appendix.numbered).toBe(true);
       });
 
-      it ('remove_attr should remove attribute and return previous value', function () {
+      it('remove_attr should remove attribute and return previous value', function () {
         var doc = asciidoctor.load('= Document\n\n== First section\n\n[foo="bar"]\nThis is a paragraph.');
         var paragraphBlock = doc.getBlocks()[0].getBlocks()[0];
         expect(paragraphBlock.getAttribute('foo')).toBe('bar');
         expect(paragraphBlock.removeAttribute('foo')).toBe('bar');
         expect(paragraphBlock.removeAttribute('foo')).toBeUndefined();
+      });
+
+      it('should get list of substitutions for block', function () {
+        var source = '----\nverbatim <1>\n----\n<1> verbatim text';
+        var listingBlock = asciidoctor.load(source).findBy({ context: 'listing' })[0];
+        expect(listingBlock.getSubstitutions()).toEqual(['specialcharacters', 'callouts']);
+      });
+
+      it('should return whether substitution exists', function () {
+        var source = '----\nverbatim <1>\n----\n<1> verbatim text';
+        var listingBlock = asciidoctor.load(source).findBy({ context: 'listing' })[0];
+        expect(listingBlock.hasSubstitution('callouts')).toBe(true);
+        expect(listingBlock.hasSubstitution('macros')).toBe(false);
       });
     });
 
@@ -368,6 +381,14 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(doc.getAttribute('lang')).toBe('us');
         var html = doc.convert();
         expect(html).toContain('content is in us');
+      });
+
+      it('should be able to remove substitution from block', function () {
+        var source = '....\n<foobar>\n....';
+        var literalBlock = asciidoctor.load(source).findBy({ context: 'literal' })[0];
+        literalBlock.removeSubstitution('specialcharacters');
+        expect(literalBlock.hasSubstitution('specialcharacters')).toBe(false);
+        expect(literalBlock.getContent()).toBe('<foobar>');
       });
     });
 
