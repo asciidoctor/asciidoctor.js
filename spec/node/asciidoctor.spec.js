@@ -326,6 +326,25 @@ Content 2`;
       }
     });
 
+    it('should be able to process custom block on multiple contexts', () => {
+      try {
+        asciidoctor.Extensions.register(function () {
+          this.block(function () {
+            this.named('cloak');
+            this.onContexts('paragraph', 'literal');
+            this.process((parent, reader, attrs) => {
+              return this.createBlock(parent, 'paragraph', 'cloaked: ' + Opal.hash_get(attrs, 'cloaked-context'));
+            });
+          });
+        });
+        const result = asciidoctor.convert('[cloak]\nparagraph\n\n[cloak]\n....\nliteral\n....');
+        expect(result).toContain('<p>cloaked: paragraph</p>');
+        expect(result).toContain('<p>cloaked: literal</p>');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
+    });
+
     it('should be able to process custom include processor when target does match', () => {
       if (asciidoctorVersionGreaterThan('1.5.5')) {
         try {
