@@ -302,6 +302,13 @@ BlockProcessor.$$proto.onContext = function (context) {
 };
 
 /**
+ * @memberof Extensions/BlockProcessor
+ */
+BlockProcessor.$$proto.onContexts = function () {
+  return this.$on_contexts(Array.prototype.slice.call(arguments));
+};
+
+/**
  * @namespace
  * @module Extensions/BlockMacroProcessor
  */
