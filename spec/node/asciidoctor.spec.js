@@ -11,13 +11,6 @@ const config = {
   }
 };
 const asciidoctor = require('../../build/asciidoctor-node.js')(config);
-function asciidoctorVersionGreaterThan (version) {
-  const currentVersion = asciidoctor.getCoreVersion();
-  // ignore the fourth number, keep only major, minor and patch numbers
-  const currentVersionNumeric = parseInt(currentVersion.replace('.dev', '').replace(/\./g, '').substring(0, 3));
-  const versionNumeric = version.replace(/\./g, '');
-  return currentVersionNumeric > versionNumeric;
-}
 
 const Opal = require('opal-runtime').Opal; // for testing purpose only
 require('asciidoctor-docbook.js')();
@@ -292,8 +285,7 @@ Content 2`;
 
     it('should be able to process love tree processor extension', () => {
       const registry = asciidoctor.Extensions.create();
-      const opts = {};
-      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      const opts = {extension_registry: registry};
       require('../share/extensions/love-tree-processor.js')(registry);
       const resultWithExtension = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/love-tree-processor-ex.adoc')), opts);
       expect(resultWithExtension).toContain('Made with icon:heart[]');
@@ -304,8 +296,7 @@ Content 2`;
 
     it('should be able to process foo bar postprocessor extension', () => {
       const registry = asciidoctor.Extensions.create();
-      const opts = {};
-      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      const opts = {extension_registry: registry};
       require('../share/extensions/foo-bar-postprocessor.js')(registry);
       const resultWithExtension = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-bar-postprocessor-ex.adoc')), opts);
       expect(resultWithExtension).toContain('bar, qux, bar.');
@@ -346,22 +337,18 @@ Content 2`;
     });
 
     it('should be able to process custom include processor when target does match', () => {
-      if (asciidoctorVersionGreaterThan('1.5.5')) {
-        try {
-          require('../share/extensions/foo-include.js');
-          const result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-include-ex.adoc')));
-          expect(result).toContain('foo\nfoo');
-        } finally {
-          asciidoctor.Extensions.unregisterAll();
-        }
+      try {
+        require('../share/extensions/foo-include.js');
+        const result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/foo-include-ex.adoc')));
+        expect(result).toContain('foo\nfoo');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
       }
     });
 
     it('should not process custom include processor when target does not match', () => {
-      if (asciidoctorVersionGreaterThan('1.5.5')) {
-        const result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/bar-include-ex.adoc')));
-        expect(result).toContain('bar');
-      }
+      const result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/bar-include-ex.adoc')));
+      expect(result).toContain('bar');
     });
 
     it('should be able to register an include processor class', () => {
@@ -480,8 +467,7 @@ Content 2`;
       const groups = registry.getGroups();
       expect(groups).toBeDefined();
       expect('test' in groups).toBe(true);
-      const opts = {};
-      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      const opts = {extension_registry: registry};
       let html = asciidoctor.convert('test::[]', opts);
       expect(html).toContain('<p>this was only a test</p>');
       registry.unregister('test');
@@ -502,8 +488,7 @@ Content 2`;
       const groups = registry.getGroups();
       expect(groups).toBeDefined();
       expect('test' in groups).toBe(true);
-      const opts = {};
-      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      const opts = {extension_registry: registry};
       let html = asciidoctor.convert('test::[]', opts);
       expect(html).toContain('<p>this was only a test</p>');
       registry.unregisterAll();
@@ -514,8 +499,7 @@ Content 2`;
 
     it('should be able to process draft preprocessor extension', () => {
       const registry = asciidoctor.Extensions.create();
-      const opts = {};
-      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      const opts = {extension_registry: registry};
       require('../share/extensions/draft-preprocessor.js')(registry);
       const doc = asciidoctor.load(fs.readFileSync(path.resolve(__dirname + '/draft-preprocessor-ex.adoc')), opts);
       expect(doc.getAttribute('status')).toBe('DRAFT');
@@ -526,8 +510,7 @@ Content 2`;
 
     it('should be able to process moar footer docinfo processor extension', () => {
       const registry = asciidoctor.Extensions.create();
-      const opts = {'safe': 'server', 'header_footer': true};
-      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      const opts = {safe: 'server', header_footer: true, extension_registry: registry};
       require('../share/extensions/moar-footer-docinfo-processor.js')(registry);
       const resultWithExtension = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/moar-footer-docinfo-processor-ex.adoc')), opts);
       expect(resultWithExtension).toContain('moar footer');
@@ -548,8 +531,7 @@ Content 2`;
           });
         });
       });
-      const opts = {};
-      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      const opts = {extension_registry: registry};
       const result = asciidoctor.convert('[whisper]\nWE HAVE LIFTOFF!', opts);
       expect(result).toContain('we have liftoff.');
     });
@@ -563,16 +545,14 @@ Content 2`;
           });
         });
       });
-      const opts = {};
-      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      const opts = {extension_registry: registry};
       const result = asciidoctor.convert('img::image-name[]', opts);
       expect(result).toContain('<img src="image-name.png" alt="image name">');
     });
 
     it('should be able to process emoji inline macro processor extension', () => {
       const registry = asciidoctor.Extensions.create();
-      const opts = {};
-      opts[asciidoctorVersionGreaterThan('1.5.5') ? 'extension_registry' : 'extensions_registry'] = registry;
+      const opts = {extension_registry: registry};
       require('../share/extensions/emoji-inline-macro.js')(registry);
       const result = asciidoctor.convert(fs.readFileSync(path.resolve(__dirname + '/emoji-inline-macro-ex.adoc')), opts);
       expect(result).toContain('1f422.svg');
