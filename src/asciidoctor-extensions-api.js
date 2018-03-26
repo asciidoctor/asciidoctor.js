@@ -112,7 +112,7 @@ Extensions.unregisterAll = function () {
  * @memberof Extensions
  */
 Extensions.unregister = function () {
-  var names = Array.isArray(arguments[0]) ? arguments[0] : arguments;
+  var names = Array.prototype.concat.apply([], arguments);
   var groups = this.$groups();
   var groupNameIdx = {};
   for (var i = 0, groupSymbolNames = groups.$$keys; i < groupSymbolNames.length; i++) {
