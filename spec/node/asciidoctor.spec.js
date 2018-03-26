@@ -450,7 +450,7 @@ Content 2`;
             });
           });
         });
-        const groups = extensions.getGroups();
+        let groups = extensions.getGroups();
         expect(groups).toBeDefined();
         expect(Object.keys(groups).length).toBe(3);
         expect(Object.keys(groups)).toEqual(['test', 'foo', 'bar']);
@@ -459,10 +459,45 @@ Content 2`;
         expect(html).toContain('<p>foo means foo</p>');
         expect(html).toContain('<p>bar or bust</p>');
         extensions.unregister('foo', 'bar');
+        groups = extensions.getGroups();
+        expect(groups).toBeDefined();
+        expect(Object.keys(groups).length).toBe(1);
         html = asciidoctor.convert('test::[]\n\nfoo::[]\n\nbar::[]');
         expect(html).toContain('<p>this was only a test</p>');
         expect(html).toContain('foo::[]');
         expect(html).toContain('bar::[]');
+      } finally {
+        asciidoctor.Extensions.unregisterAll();
+      }
+    });
+
+    it('should be able to unregister multiple statically-registered extension groups as Array', () => {
+      var extensions = asciidoctor.Extensions;
+      try {
+        extensions.register('foo', function () {
+          this.blockMacro(function () {
+            this.named('foo');
+            this.process((parent) => {
+              return this.createBlock(parent, 'paragraph', 'foo means foo');
+            });
+          });
+        });
+        extensions.register('bar', function () {
+          this.blockMacro(function () {
+            this.named('bar');
+            this.process((parent) => {
+              return this.createBlock(parent, 'paragraph', 'bar or bust');
+            });
+          });
+        });
+        let groups = extensions.getGroups();
+        expect(groups).toBeDefined();
+        expect(Object.keys(groups).length).toBe(2);
+        expect(Object.keys(groups)).toEqual(['foo', 'bar']);
+        extensions.unregister(['foo', 'bar']);
+        groups = extensions.getGroups();
+        expect(groups).toBeDefined();
+        expect(Object.keys(groups).length).toBe(0);
       } finally {
         asciidoctor.Extensions.unregisterAll();
       }
