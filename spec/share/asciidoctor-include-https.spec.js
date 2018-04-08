@@ -10,6 +10,32 @@ var includeHttpsSpec = function (testOptions, asciidoctor) {
       expect(html).toContain('Asciidoctor.js');
     });
 
+    it('should partially include file with an absolute https URI (using tag)', function () {
+      var opts = {
+        safe: 'safe',
+        attributes: {'allow-uri-read': true}
+      };
+      // FIXME: Replace by https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-tag.adoc
+      var html = asciidoctor.convert('include::https://gist.githubusercontent.com/Mogztter/abbda92399727ebfb480a93223f0f901/raw/2ab345ec99066bdebc404285fef92a2af01fd2c6/include-tag.adoc[tag=a]', opts);
+      expect(html).toContain('tag-a');
+      html = asciidoctor.convert('include::https://gist.githubusercontent.com/Mogztter/abbda92399727ebfb480a93223f0f901/raw/2ab345ec99066bdebc404285fef92a2af01fd2c6/include-tag.adoc[tag=b]', opts);
+      expect(html).toContain('tag-b');
+    });
+
+    it('should partially include file with an absolute https URI (using lines)', function () {
+      var opts = {
+        safe: 'safe',
+        attributes: {'allow-uri-read': true}
+      };
+      // FIXME: Replace by https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-lines.adoc
+      var html = asciidoctor.convert('include::https://gist.githubusercontent.com/Mogztter/b939a2a8078ec7dd7b5f422898891278/raw/2124d99a15b1b6ac4a23109c6cbc216d87704d81/include-lines.adoc[lines=1..2]', opts);
+      expect(html).toContain('First line');
+      expect(html).toContain('Second line');
+      html = asciidoctor.convert('include::https://gist.githubusercontent.com/Mogztter/b939a2a8078ec7dd7b5f422898891278/raw/2124d99a15b1b6ac4a23109c6cbc216d87704d81/include-lines.adoc[lines=3..4]', opts);
+      expect(html).toContain('Third line');
+      expect(html).toContain('Fourth line');
+    });
+
     it('should include file with an absolute https URI (base_dir is not defined)', function () {
       var opts = {safe: 'safe', attributes: {'allow-uri-read': true}};
       var html = asciidoctor.convert('include::https://raw.githubusercontent.com/HubPress/dev.hubpress.io/gh-pages/README.adoc[]', opts);

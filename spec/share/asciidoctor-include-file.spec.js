@@ -8,6 +8,28 @@ var includeFileSpec = function (testOptions, asciidoctor) {
       var html = asciidoctor.convert('include::' + testOptions.baseDir + '/README.adoc[]', opts);
       expect(html).toContain('Asciidoctor.js');
     });
+
+    it('should partially include file with an absolute file URI (using tag)', function () {
+      var opts = {
+        safe: 'safe'
+      };
+      var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/share/include-tag.adoc[tag=a]', opts);
+      expect(html).toContain('tag-a');
+      html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/share/include-tag.adoc[tag=b]', opts);
+      expect(html).toContain('tag-b');
+    });
+
+    it('should partially include file with an absolute file URI (using lines)', function () {
+      var opts = {
+        safe: 'safe'
+      };
+      var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/share/include-lines.adoc[lines=1..2]', opts);
+      expect(html).toContain('First line');
+      expect(html).toContain('Second line');
+      html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/share/include-lines.adoc[lines=3..4]', opts);
+      expect(html).toContain('Third line');
+      expect(html).toContain('Fourth line');
+    });
   });
 };
 

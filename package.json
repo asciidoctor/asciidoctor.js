@@ -61,7 +61,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "opal-runtime": "1.0.2"
+    "opal-runtime": "1.0.3"
   },
   "devDependencies": {
     "asciidoctor-docbook.js": "1.5.6-preview.2",
@@ -85,7 +85,7 @@
     "karma-chrome-launcher": "2.2.0",
     "karma-jasmine": "1.1.1",
     "karma-requirejs": "1.1.0",
-    "opal-compiler": "1.0.2",
+    "opal-compiler": "1.0.3",
     "puppeteer": "1.0.0",
     "requirejs": "2.3.5",
     "sinon": "4.2.2",
