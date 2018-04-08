@@ -1,0 +1,5 @@
+= The Documentation Chronicles: Based on True Events
+Kismet Chameleon <kismet@asciidoctor.org>
+v1.0, October 2, 2018: First incarnation
+
+== The Ravages of Writing

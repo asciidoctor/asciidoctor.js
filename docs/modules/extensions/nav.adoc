@@ -1,0 +1,4 @@
+.Extend & Customize
+* xref:stylesheet.adoc[Stylesheet]
+* xref:templates.adoc[Templates]
+* xref:extensions.adoc[Extensions]

@@ -1,0 +1,108 @@
+= Extract information from a document
+ifndef::env-site,env-github[]
+include::_attributes.adoc[]
+endif::[]
+
+Assumptions:
+
+* [x] You've successfully installed Asciidoctor.js.
+
+To make it easier to understand, in the following examples, we will use this sample file:
+
+.sample.adoc
+[source,adoc]
+----
+include::{examplesdir}/sample.adoc[]
+----
+
+== Document header
+
+=== Get the document title
+
+[source,js]
+----
+include::{examplesdir}/test.js[tags=load-file;document-title]
+----
+
+By default, the document title is separated into a main title and subtitle using the industry standard, a colon followed by a space.
+You can partition the title from the API when calling the `getDocumentTitle` function:
+
+[source,js]
+----
+include::{examplesdir}/test.js[tags=load-file;doctitle-partition]
+----
+
+=== Get the author
+
+[source,js]
+----
+include::{examplesdir}/test.js[tags=load-file;author]
+----
+
+Asciidoctor uses the author's name and email to assign values to a number of built-in attributes that can be used throughout the document's body but also retrieve with the `getAttribute` function:
+
+[source,js]
+----
+include::{examplesdir}/test.js[tags=load-file;author-attributes]
+----
+
+These attributes include:
+
+author::
+The author's full name, which includes all of the characters or words prior to a semicolon (`;`), angle bracket (`<`) or the end of the line.
+
+firstname::
+The first word in the author attribute.
+
+lastname::
+The last word in the author attribute.
+
+middlename::
+If a firstname and lastname are present, any remaining words or characters found between these attributes are assigned to the middlename attribute.
+
+authorinitials::
+The first character of the firstname, middlename, and lastname attributes.
+
+email::
+An email address, delimited by angle brackets (<>).
+
+=== Get the document revision information
+
+[source,js]
+----
+include::{examplesdir}/test.js[tags=load-file;revision]
+----
+
+Alternatively, you can also get all the revision information at once:
+
+[source,js]
+----
+include::{examplesdir}/test.js[tags=load-file;revision-info]
+----
+
+You can also check if the document contains revision info with `hasRevisionInfo` function:
+
+[source,js]
+----
+include::{examplesdir}/test.js[tags=load-file;has-revision-info]
+----
+
+As with the author, revision information are also available as built-in attributes:
+
+[source,js]
+----
+include::{examplesdir}/test.js[tags=load-file;revision-attributes]
+----
+
+revdate::
+Date of document version
+
+revnumber::
+Version number of the document
+
+revremark::
+Version comments
+
+== What's next?
+
+You can read the http://asciidoctor.github.io/asciidoctor.js/master[API docs] to learn more about the API.

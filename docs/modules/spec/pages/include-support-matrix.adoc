@@ -1,10 +1,16 @@
-= Include directive support
+= Include directive support matrix
+
+This document describes how the include directive is resolved in the following environments:
+
+* Browser (XMLHttpRequest IO module)
+* Node.js
+* MRI (Ruby)
 
 [cols="1m,1m,1,1,1", options="header"]
 |===
 |Path
 |Base dir
-|XMLHttpRequest/V8
+|Browser
 |Node.js
 |MRI
 
@@ -68,7 +74,7 @@ include uri not readable: `file:///root/path/to/file.adoc`.
 |:x: +
 `SecurityError: Jail is not an absolute path: https://raw.com/master`
 |:x: +
-include file not found: `{local_pwd}/https:/raw.com/master/file.adoc`.
+include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
 
 |+../v1.5.0/file.adoc+
 |+https://raw.com/master+
@@ -76,7 +82,7 @@ include file not found: `{local_pwd}/https:/raw.com/master/file.adoc`.
 |:x: +
 `SecurityError: Jail is not an absolute path: https://raw.com/master`
 |:x: +
-include file not found: `{local_pwd}/https:/raw.com/master/file.adoc`.
+include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
 
 |+https://raw.com/master/../v1.5.0/file.adoc+
 |

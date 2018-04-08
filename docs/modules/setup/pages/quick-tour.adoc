@@ -1,0 +1,70 @@
+= A quick tour
+:uri-js-api-doc: http://asciidoctor.github.io/asciidoctor.js/master
+
+Asciidoctor.js is a _fast_ text processor for converting AsciiDoc content to HTML5, slidedecks and other formats.
+This is quick tour will give you an overview of how to convert AsciiDoc content to HTML5.
+
+== Your first conversion
+
+The first thing you need to do is instantiate Asciidoctor.js to get a http://asciidoctor.github.io/asciidoctor.js/master/#asciidoctor[processor]:
+
+```js
+var asciidoctor = Asciidoctor();
+```
+
+To convert an AsciiDoc content, just do this:
+
+```js
+var html = asciidoctor.convert('Hello, _Asciidoctor_');
+```
+
+Alternatively, you can also convert a file using `convertFile`:
+
+```js
+var html = asciidoctor.convertFile('/path/to/file.adoc');
+```
+
+[NOTE]
+====
+The convert functions also accept an optional argument to specify options. +
+Use of this argument is described in xref:processor:convert-options.adoc[Convert options section].
+====
+
+If you are using Node.js, you can use a `Buffer`:
+
+```js
+var html = asciidoctor.convert(fs.readFileSync('/path/to/file.adoc')); // <1>
+```
+<1> `readFileSync` will return a `Buffer`: https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
+
+== Load and convert
+
+To parse an AsciiDoc file into an {uri-js-api-doc}/#document[Asciidoctor.Document] object:
+
+```js
+var doc = asciidoctor.loadFile('file.adoc');
+```
+
+You can get information about the document:
+
+```js
+console.log(doc.getDocumentTitle());
+console.log(doc.getAttributes());
+```
+
+More than likely, you will want to convert the document.
+To convert an {uri-js-api-doc}/#document[Asciidoctor.Document] to HTML5, use:
+
+```js
+var doc = asciidoctor.loadFile('file.adoc');
+doc.convert();
+```
+
+As with the convert functions, it's also possible to load an AsciiDoc content and `Buffer`:
+
+```js
+var doc = asciidoctor.load('Hello, _Asciidoctor_');
+```
+```js
+var doc = asciidoctor.load(fs.readFileSync('/path/to/file.adoc'));
+```

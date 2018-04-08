@@ -1,0 +1,24 @@
+runtime:
+  cache_dir: ./.cache/antora
+site:
+  title: Asciidoctor.js Docs
+  url: https://asciidoctorjs-docs.netlify.com
+  start_page: asciidoctor.js::index.adoc
+content:
+  sources:
+  - url: https://github.com/asciidoctor/asciidoctor.js.git
+    branches: antora
+    start_path: docs
+asciidoc:
+  attributes:
+    experimental: ''
+    idprefix: ''
+    idseparator: '-'
+    linkattrs: ''
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/master/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./antora/supplemental-ui
+output:
+  dir: ./public
