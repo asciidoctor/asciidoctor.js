@@ -331,6 +331,16 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(doctitle.isSanitized()).toBe(false);
       });
 
+      it('should get partitioned doctitle without subtitle', function () {
+        var doc = asciidoctor.load('= The Dangerous Documentation Chronicles\n\n== The Ravages of Writing');
+        var doctitle = doc.getDoctitle({partition: true});
+        expect(doctitle.getMain()).toBe('The Dangerous Documentation Chronicles');
+        expect(doctitle.getSubtitle()).toBeUndefined();
+        expect(doctitle.getCombined()).toBe('The Dangerous Documentation Chronicles');
+        expect(doctitle.hasSubtitle()).toBe(false);
+        expect(doctitle.isSanitized()).toBe(false);
+      });
+
       it('should get counters', function () {
         var doc = asciidoctor.load('{counter:countme}\n\n{counter:countme}');
         doc.convert();
