@@ -171,7 +171,7 @@ AbstractBlock.$$proto.getTitle = function () {
 };
 
 /**
- * Convenience method that returns the interpreted title of the Block 
+ * Convenience method that returns the interpreted title of the Block
  * with the caption prepended.
  * Concatenates the value of this Block's caption instance variable and the
  * return value of this Block's title method. No space is added between the
@@ -234,7 +234,7 @@ AbstractBlock.$$proto.getSubstitutions = function () {
 
 /**
  * Check whether a given substitution keyword is present in the substitutions for this block.
- * 
+ *
  * @memberof AbstractBlock
  * @returns {boolean} - whether the substitution is present on this block.
  */
@@ -1045,7 +1045,8 @@ Title.$$proto.getCombined = function () {
  * @memberof Document/Title
  */
 Title.$$proto.getSubtitle = function () {
-  return this.subtitle;
+  var subtitle = this.subtitle;
+  return subtitle === Opal.nil ? undefined : subtitle;
 };
 
 /**
