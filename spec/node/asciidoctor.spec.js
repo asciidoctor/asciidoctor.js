@@ -29,7 +29,7 @@ function fileExists (path) {
   try {
     fs.statSync(path);
     return true;
-  } catch(err) {
+  } catch (err) {
     return !(err && err.code === 'ENOENT');
   }
 }
@@ -47,6 +47,33 @@ describe('Node.js', () => {
       expect(asciidoctor.getVersion()).toBe(packageJson.version);
     });
   });
+
+  if (asciidoctor.LoggerManager) {
+    describe('Logger', () => {
+      it('should warn if part has no sections', () => {
+        const input = `= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
+`;
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        const memoryLogger = asciidoctor.MemoryLogger.$new();
+        try {
+          asciidoctor.LoggerManager.setLogger(memoryLogger);
+          asciidoctor.convert(input);
+          const errorMessage = memoryLogger.getMessages()[0];
+          expect(errorMessage.severity.toString()).toBe('ERROR');
+          expect(errorMessage.message['text']).toBe('invalid part, must have at least one section (e.g., chapter, appendix, etc.)');
+          expect(errorMessage.message['source_location'].lineno).toBe(8);
+        } finally {
+          asciidoctor.LoggerManager.setLogger(defaultLogger);
+        }
+      });
+    });
+  }
 
   describe('Configuring Asciidoctor module', () => {
     it('should be able to configure Asciidoctor module', () => {
@@ -163,22 +190,22 @@ describe('Node.js', () => {
 
     it('should be able to find blocks', () => {
       const doc = asciidoctor.loadFile(__dirname + '/documentblocks.adoc');
-      const quoteBlocks = doc.findBy(function (b) { return b.getStyle() === 'quote'; });
+      const quoteBlocks = doc.findBy((b) => b.getStyle() === 'quote');
       expect(quoteBlocks.length).toBe(1);
 
       const sectionBlocks = doc.findBy({'context': 'section'});
       expect(sectionBlocks.length).toBe(5);
 
-      const abstractSectionBlocks = doc.findBy({'context': 'section'}, function (b) { return b.getTitle() === 'Second Section'; });
+      const abstractSectionBlocks = doc.findBy({'context': 'section'}, (b) => b.getTitle() === 'Second Section');
       expect(abstractSectionBlocks.length).toBe(1);
     });
 
     it('should be able to find blocks with line number', () => {
       const doc = asciidoctor.loadFile(__dirname + '/documentblocks.adoc', {sourcemap: true});
-      const blocks = doc.findBy(function () { return true; });
+      const blocks = doc.findBy(() => true);
       expect(blocks.length).toBe(26);
 
-      const blocksWithLineNumber = doc.findBy(function (b) { return typeof b.getLineNumber() !== 'undefined'; });
+      const blocksWithLineNumber = doc.findBy((b) => typeof b.getLineNumber() !== 'undefined');
       // since https://github.com/asciidoctor/asciidoctor/commit/46700a9c12d1cfe551db2790dd232baa0bec8195
       // When the sourcemap option is specified, the source location (and as a consequence the line number) is defined on the Document object.
       expect(blocksWithLineNumber.length >= 18).toBe(true);
@@ -357,7 +384,7 @@ Content 2`;
         asciidoctor.Extensions.register(function () {
           this.includeProcessor(LoremIncludeProcessor);
         });
-        const html = asciidoctor.convert('include::fake.adoc[]', { safe: 'safe' });
+        const html = asciidoctor.convert('include::fake.adoc[]', {safe: 'safe'});
         expect(html).toContain('Lorem ipsum');
       } finally {
         asciidoctor.Extensions.unregisterAll();
@@ -561,7 +588,7 @@ Content 2`;
           self.named('whisper');
           self.onContext('paragraph');
           self.process(function (parent, reader) {
-            const lines = reader.getLines().map(function (l) { return l.toLowerCase().replace('!', '.'); });
+            const lines = reader.getLines().map((l) => l.toLowerCase().replace('!', '.'));
             return self.createBlock(parent, 'paragraph', lines);
           });
         });
@@ -576,7 +603,7 @@ Content 2`;
         this.blockMacro(function () {
           this.named('img');
           this.process((parent, target) => {
-            return this.createImageBlock(parent, { target: target + '.png' });
+            return this.createImageBlock(parent, {target: target + '.png'});
           });
         });
       });

@@ -1188,3 +1188,47 @@ Reader.$$proto.getLines = function () {
 Reader.$$proto.getString = function () {
   return this.$string();
 };
+
+// Logger API (available in Asciidoctor 1.5.7+)
+// REMIND: we are using "skip_missing" because this API is only available starting with Asciidoctor 1.5.7
+
+/**
+ * @namespace
+ */
+var LoggerManager = Opal.const_get_qualified(Opal.Asciidoctor, 'LoggerManager', true);
+
+// Alias
+Opal.Asciidoctor.LoggerManager = LoggerManager;
+
+if (LoggerManager) {
+  LoggerManager.getLogger = function () {
+    return this.$logger();
+  };
+
+  LoggerManager.setLogger = function (logger) {
+    this.logger = logger;
+  };
+}
+
+/**
+ * @namespace
+ */
+var MemoryLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'MemoryLogger', true);
+
+// Alias
+Opal.Asciidoctor.MemoryLogger = MemoryLogger;
+
+if (MemoryLogger) {
+  MemoryLogger.$$proto.getMessages = function () {
+    var messages = this.messages;
+    var result = [];
+    for (var i = 0; i < messages.length; i++) {
+      var message = messages[i];
+      var messageObject = fromHash(message);
+      // also convert the message attribute
+      messageObject.message = fromHash(messageObject.message);
+      result.push(messageObject);
+    }
+    return result;
+  };
+}
