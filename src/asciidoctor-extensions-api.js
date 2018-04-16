@@ -48,7 +48,7 @@ var registerExtension = function (registry, type, processor, name) {
  *     self.named('shout');
  *     self.onContext('paragraph');
  *     self.process(function (parent, reader) {
- *       var lines = reader.$lines().map(function (l) { return l.toUpperCase(); });
+ *       var lines = reader.getLines().map(function (l) { return l.toUpperCase(); });
  *       return self.createBlock(parent, 'paragraph', lines);
  *     });
  *   });

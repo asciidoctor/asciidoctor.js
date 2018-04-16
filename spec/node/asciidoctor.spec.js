@@ -67,7 +67,11 @@ intro
           const errorMessage = memoryLogger.getMessages()[0];
           expect(errorMessage.severity.toString()).toBe('ERROR');
           expect(errorMessage.message['text']).toBe('invalid part, must have at least one section (e.g., chapter, appendix, etc.)');
-          expect(errorMessage.message['source_location'].lineno).toBe(8);
+          const sourceLocation = errorMessage.message['source_location'];
+          expect(sourceLocation.getLineNumber()).toBe(8);
+          expect(sourceLocation.getFile()).toBeUndefined();
+          expect(sourceLocation.getDirectory()).toBe(process.cwd());
+          expect(sourceLocation.getPath()).toBe('<stdin>');
         } finally {
           asciidoctor.LoggerManager.setLogger(defaultLogger);
         }

@@ -1189,6 +1189,49 @@ Reader.$$proto.getString = function () {
   return this.$string();
 };
 
+// Cursor API
+
+/** @namespace */
+var Cursor = Opal.Asciidoctor.Reader.Cursor;
+
+/**
+ * Get the file associated to the cursor.
+ * @memberof Cursor
+ */
+Cursor.$$proto.getFile = function () {
+  var file = this.file;
+  return file === Opal.nil ? undefined : file;
+};
+
+/**
+ * Get the directory associated to the cursor.
+ * @memberof Cursor
+ * @returns {string} - returns the directory associated to the cursor
+ */
+Cursor.$$proto.getDirectory = function () {
+  var dir = this.dir;
+  return dir === Opal.nil ? undefined : dir;
+};
+
+/**
+ * Get the path associated to the cursor.
+ * @memberof Cursor
+ * @returns {string} - returns the path associated to the cursor (or '<stdin>')
+ */
+Cursor.$$proto.getPath = function () {
+  var path = this.path;
+  return path === Opal.nil ? undefined : path;
+};
+
+/**
+ * Get the line number of the cursor.
+ * @memberof Cursor
+ * @returns {number} - returns the line number of the cursor
+ */
+Cursor.$$proto.getLineNumber = function () {
+  return this.lineno;
+};
+
 // Logger API (available in Asciidoctor 1.5.7+)
 // REMIND: we are using "skip_missing" because this API is only available starting with Asciidoctor 1.5.7
 
