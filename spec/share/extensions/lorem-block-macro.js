@@ -10,7 +10,7 @@ Extensions.register(function () {
     self.named('lorem');
     self.process(function (parent, target, attrs) {
       // FIXME: convert attrs to a JSON
-      var size = parseInt(attrs['$[]']('size'));
+      var size = parseInt(attrs.size);
       var result = lorem({ count: size, units: target });
       return self.createBlock(parent, 'paragraph', result);
     });
