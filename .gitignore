@@ -6,5 +6,7 @@
 /node_modules/
 /bower_components/
 /.idea/
+/public/
+/.cache/
 npm-debug.log
 yarn-error.log

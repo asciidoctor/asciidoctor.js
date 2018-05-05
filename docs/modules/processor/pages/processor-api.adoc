@@ -1,0 +1,13 @@
+////
+TODO Describe the following functions in detailed :
+
+.convert
+.convertFile
+
+.load
+.loadFile
+
+.getCoreVersion
+.getVersion
+
+////

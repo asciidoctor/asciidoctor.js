@@ -1,0 +1,103 @@
+= Convert options
+
+This document describes the list of options you can use when converting a document.
+[cols="15m,15a,15a,15a"]
+|====
+|Name |Description |Default{nbsp}value |Allowed{nbsp}values
+
+|attributes
+|Sets additional document attributes, which override equivalently-named attributes defined in the document unless the value ends with `@`.
+|_not set_
+|Any number of built-in or user-defined attributes in one of the following formats:
+
+JSON: +
+`{'name': 'value'}` +
+Array: +
+`['name=value']` +
+String: +
+`'name=value'` +
+
+|backend
+|Selects the converter to use (as registered with this keyword).
+|html5
+|html5, docbook5, or any backend registered through an active converter
+
+|base_dir
+|Sets the base (aka working) directory containing the document and resources.
+|The directory of the source file, or the working directory if the source is read from a stream.
+|file path
+
+|catalog_assets
+|If true, tells the parser to capture images and links in the reference table. (Normally only IDs, footnotes and indexterms are included). The reference table is available via the `references` property on the `document` AST object. _(Experimental)._
+|false
+|_boolean_
+
+|doctype
+|Sets the document type.
+|article
+|article, book, manpage or inline
+
+|extensions_registry
+|Overrides the extensions registry instance.
+Instead of providing a JavaScript function containing extensions to register, this option lets you replace the extension registry itself, giving you complete control over how extensions are registered for this processor.
+|_not set_
+|`Extensions.Registry` instance
+
+|header_footer
+|If true, add the document header and footer (i.e., framing) around the body content in the output.
+|false
+|_boolean_
+
+|mkdirs
+|If true, the processor will create the necessary output directories if they don't yet exist.
+|false
+|_boolean_
+
+|parse
+|If true, the source is parsed eagerly (i.e., as soon as the source is passed to the `load` or `loadFile` API). If false, parsing is deferred until the `parse` method is explicitly invoked.
+|true
+|_boolean_
+
+|safe
+|Sets the safe mode.
+|secure
+|unsafe, safe, server or secure
+
+|sourcemap
+|Keeps track of the file and line number for each parsed block.
+ (Useful for tooling applications where the association between the converted output and the source file is important).
+|false
+|_boolean_
+
+|template_dirs
+|An array of directories containing templates to be used instead of the default built-in templates.
+|_not set_
+|An array of file paths
+
+|to_dir
+|Destination directory for output file(s), relative to `base_dir`.
+|The directory containing the source file, or the working directory if the source is read from a stream.
+|file path
+
+|to_file
+|The name of the output file to write, or true to use the default output file (`docname` + `outfilesuffix`).
+|_not set_
+|true, file path
+|====
+
+== Usage
+
+In the following example, we define the `safe` option to `unsafe` and we also define two attributes:
+
+`showtitle`:: display the title of an embedded document
+`icons`:: use font icons instead of text for admonitions
+
+[source,javascript]
+----
+var content = '= Document title';
+var html = asciidoctor.convert(content, {safe: 'server', attributes: {showtitle: true, icons: 'font'}});
+console.log(html);
+// <h1>Document title</h1>
+----
+
+NOTE: You can read more about document attributes on https://asciidoctor.org/docs/user-manual/#attribute-catalog

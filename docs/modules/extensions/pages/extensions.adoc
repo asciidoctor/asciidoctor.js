@@ -1,127 +1,6 @@
-= Asciidoctor.js User Manual
+= Extensions
 
-== API
-
-=== How to convert an AsciiDoc content
-
-[source,javascript]
-----
-const asciidoctor = require('asciidoctor.js')();
-const content = 'Hello, _Asciidoctor_';
-const html = asciidoctor.convert(content);
-console.log(html);
-// <div class="paragraph">
-// <p>Hello, <em>Asciidoctor</em></p>
-// </div>
-----
-
-=== How to use conversion options
-
-[source,javascript]
-----
-const asciidoctor = require('asciidoctor.js')();
-const content = '= Document title';
-const html = asciidoctor.convert(content, {safe: 'safe', attributes: {showtitle: true, icons: 'font'}});
-console.log(html);
-// <h1>Document title</h1>
-----
-
-=== How to parse a file into an Asciidoctor Document object
-
-[source,javascript]
-----
-const asciidoctor = require('asciidoctor.js')();
-const doc = asciidoctor.loadFile('sample.adoc');
-console.log(doc.getAuthor());
-----
-
-=== How to configure the runtime environment
-
-NOTE: By default, Asciidoctor.js will try his best to automatically detect the runtime environment.
-
-If you want to explicitly define the runtime environment, you can use a `runtime` configuration object when instantiating Asciidoctor.js:
-
-[source,javascript]
-----
-const asciidoctor = require('asciidoctor.js')({
-  runtime: {
-    platform: 'browser',
-    engine: 'v8',
-    framework: 'webextensions'
-  }
-});
-----
-
-=== How to configure the I/O module
-
-NOTE: By default, Asciidoctor.js will determine the I/O module upon the runtime environment.
-
-If you want to explicitly define the I/O module, you can specify the attribute `runtime.ioModule` when instantiating Asciidoctor.js:
-
-[source,javascript]
-----
-const asciidoctor = require('asciidoctor.js')({
-  runtime: {
-    ioModule: 'xmlhttprequest'
-  }
-});
-----
-
-`ioModule` can be one of:
-
-* `spidermonkey`
-* `phantomjs`
-* `node`
-* `java_nio`
-* `xmlhttprequest`
-
-=== How to convert a list of AsciiDoc files contained within a folder (using Node.js)
-
-[source,javascript]
-----
-const glob = require('glob');
-const asciidoctor = require('asciidoctor.js')();
-
-glob('documentation/*.adoc', function (err, files) { // <1>
-  files.forEach(function(file) {
-    asciidoctor.convertFile(file); // <2>
-  });
-});
-----
-<1> We are using `glob` module to iterate through every .adoc file inside the directory
-<2> Convert each file using the `convertFile` method
-
-=== How to set document attribute
-
-You can set document attributes after loading AsciiDoc content.
-
-[source,javascript]
-----
-const content = '== Title';
-const doc = asciidoctor.load(content);
-console.log(doc.getAttribute('data-uri')); // prints undefined
-console.log(doc.getAttribute('data-uri', 'false')); // prints 'false'
-
-doc.setAttribute('data-uri', 'true');
-console.log(doc.getAttribute('data-uri')); // prints 'true'
-----
-
-=== How to unset/delete document attribute
-
-You can unset document attributes after loading AsciiDoc content.
-
-[source,javascript]
-----
-const content = '== Title';
-const doc = asciidoctor.load(content);
-doc.setAttribute('data-uri', 'true');
-console.log(doc.getAttribute('data-uri')); // prints 'true'
-
-doc.removeAttribute('data-uri');
-console.log(doc.getAttribute('data-uri')); // prints undefined
-----
-
-=== How to register an extension ?
+== How to register an extension
 
 You can register an extension globally as follows:
 
@@ -214,7 +93,7 @@ Both registry have a `[shout]` block extension registered with a specific implem
 The first block extension is registered in the `registryA` and will transform the text to uppercase.
 The other one is registered in the `registryB` and will replace `.` by `{nbsp}!!!`.
 
-=== How to compile a Ruby extension to JavaScript (Node.js)
+== How to compile a Ruby extension to JavaScript (Node.js)
 
 Let's say you want to use the following Asciidoctor extension (written in Ruby) in your JavaScript based application.
 
@@ -268,7 +147,7 @@ Then run it:
 
 The above command will create a file named [.path]_tel-inline-macro.js_ containing the extension code in JavaScript.
 
-=== How to use an Asciidoctor extension
+== How to use an Asciidoctor extension
 
 In the previous section, we showed how to compile a Ruby extension to JavaScript.
 In this section we will use this extension.
@@ -316,3 +195,4 @@ Then we run it:
 
 ```
 <1> The `tel` macro was converted to a link
+

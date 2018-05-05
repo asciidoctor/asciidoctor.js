@@ -1,0 +1,4 @@
+* Specifications
+** Include directive
+*** xref:browser-include-spec.adoc[Processing in the browser]
+*** xref:include-support-matrix.adoc[Support matrix]

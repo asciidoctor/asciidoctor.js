@@ -1,0 +1,68 @@
+= Install guide
+
+Assumptions:
+
+* [x] You've installed Node 6+ on your machine.
+
+On this page, you'll learn:
+
+* [x] How to install Asciidoctor.js.
+* [x] How to setup Asciidoctor.js in your JavaScript environment.
+
+== Install Asciidoctor.js
+
+Open a terminal and type:
+
+[source]
+$ npm i asciidoctor.js
+
+NOTE: If you prefer Yarn over npm, you can install Asciidoctor.js using `yarn add asciidoctor.js`.
+
+Asciidoctor.js provides different builds for different JavaScript environments.
+See below for a link to the right one and instructions on how to use it.
+
+== Basic browser setup
+
+Just include Asciidoctor.js in a script tag.
+You can instantiate a processor using the `Asciidoctor` global.
+
+```html
+<script src="node_modules/asciidoctor.js/dist/browser/asciidoctor.js"></script>
+```
+```js
+var asciidoctor = Asciidoctor();
+```
+
+== Node
+
+```js
+var asciidoctor = require('asciidoctor.js')();
+```
+
+== AMD (System.js, RequireJS, etc)
+
+```js
+requirejs(['asciidoctor'], function (asciidoctor) {
+  //...
+});
+```
+
+== Webpack
+
+```js
+import Asciidoctor from 'asciidoctor.js';
+
+const asciidoctor = Asciidoctor();
+```
+
+== Nashorn
+
+```js
+load('./node_modules/asciidoctor.js/dist/nashorn/asciidoctor.js');
+
+var asciidoctor = Asciidoctor();
+```
+
+== What's next?
+
+Now that Asciidoctor.js is installed, you are ready to take a xref:quick-tour.adoc[quick tour].

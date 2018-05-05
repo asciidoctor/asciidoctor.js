@@ -1,0 +1,7 @@
+= Asciidoctor.js Documentation
+:uri-opal: https://opalrb.com
+
+Asciidoctor.js brings AsciiDoc to the JavaScript world!
+
+This project uses {uri-opal}[Opal] to transpile https://asciidoctor.org[Asciidoctor], a modern implementation of AsciiDoc, from Ruby to JavaScript to produce _asciidoctor.js_.
+The _asciidoctor.js_ script can be run on any JavaScript platform, including Node.js, Nashorn and, of course, a web browser.
