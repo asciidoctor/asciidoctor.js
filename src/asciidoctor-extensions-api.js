@@ -243,7 +243,19 @@ var Processor = Extensions.Processor;
  * @memberof Extensions/Processor
  */
 Processor.$$proto.process = function (block) {
-  return Opal.send(this, 'process', null, toBlock(block));
+  var handler = {
+    apply: function (target, thisArg, argumentsList) {
+      for (var i = 0; i < argumentsList.length; i++) {
+        // convert all (Opal) Hash arguments to JSON.
+        if (typeof argumentsList[i] === 'object' && '$$smap' in argumentsList[i]) {
+          argumentsList[i] = fromHash(argumentsList[i]);
+        }
+      }
+      return target.apply(thisArg, argumentsList);
+    }
+  };
+  var blockProxy = new Proxy(block, handler);
+  return Opal.send(this, 'process', null, toBlock(blockProxy));
 };
 
 /**

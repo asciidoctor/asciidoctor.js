@@ -355,7 +355,7 @@ Content 2`;
             this.named('cloak');
             this.onContexts('paragraph', 'literal');
             this.process((parent, reader, attrs) => {
-              return this.createBlock(parent, 'paragraph', 'cloaked: ' + Opal.hash_get(attrs, 'cloaked-context'));
+              return this.createBlock(parent, 'paragraph', 'cloaked: ' + attrs['cloaked-context']);
             });
           });
         });
