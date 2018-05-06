@@ -4890,11 +4890,11 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-opal-compiler@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/opal-compiler/-/opal-compiler-1.0.3.tgz#0fd4af2dc34ca5b5c24918a5e6305da106472350"
+opal-compiler@1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/opal-compiler/-/opal-compiler-1.0.5.tgz#314e097bab157e015c64ffa5dc5a9797ea6ff7f3"
   dependencies:
-    opal-runtime "1.0.3"
+    opal-runtime "1.0.5"
 
 opal-runtime@0.11.0-integration8:
   version "0.11.0-integration8"
@@ -4905,6 +4905,13 @@ opal-runtime@0.11.0-integration8:
 opal-runtime@1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/opal-runtime/-/opal-runtime-1.0.3.tgz#e81e5c2a2568bbb0b05743b427d035dd901485b7"
+  dependencies:
+    glob "6.0.4"
+    xmlhttprequest "1.8.0"
+
+opal-runtime@1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/opal-runtime/-/opal-runtime-1.0.5.tgz#da97776ba119e4ae5d467f199b6080de89f2c157"
   dependencies:
     glob "6.0.4"
     xmlhttprequest "1.8.0"
