@@ -15,10 +15,9 @@ var includeHttpsSpec = function (testOptions, asciidoctor) {
         safe: 'safe',
         attributes: {'allow-uri-read': true}
       };
-      // FIXME: Replace by https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-tag.adoc
-      var html = asciidoctor.convert('include::https://gist.githubusercontent.com/Mogztter/abbda92399727ebfb480a93223f0f901/raw/2ab345ec99066bdebc404285fef92a2af01fd2c6/include-tag.adoc[tag=a]', opts);
+      var html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-tag.adoc[tag=a]', opts);
       expect(html).toContain('tag-a');
-      html = asciidoctor.convert('include::https://gist.githubusercontent.com/Mogztter/abbda92399727ebfb480a93223f0f901/raw/2ab345ec99066bdebc404285fef92a2af01fd2c6/include-tag.adoc[tag=b]', opts);
+      html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-tag.adoc[tag=b]', opts);
       expect(html).toContain('tag-b');
     });
 
@@ -27,11 +26,10 @@ var includeHttpsSpec = function (testOptions, asciidoctor) {
         safe: 'safe',
         attributes: {'allow-uri-read': true}
       };
-      // FIXME: Replace by https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-lines.adoc
-      var html = asciidoctor.convert('include::https://gist.githubusercontent.com/Mogztter/b939a2a8078ec7dd7b5f422898891278/raw/2124d99a15b1b6ac4a23109c6cbc216d87704d81/include-lines.adoc[lines=1..2]', opts);
+      var html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-lines.adoc[lines=1..2]', opts);
       expect(html).toContain('First line');
       expect(html).toContain('Second line');
-      html = asciidoctor.convert('include::https://gist.githubusercontent.com/Mogztter/b939a2a8078ec7dd7b5f422898891278/raw/2124d99a15b1b6ac4a23109c6cbc216d87704d81/include-lines.adoc[lines=3..4]', opts);
+      html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-lines.adoc[lines=3..4]', opts);
       expect(html).toContain('Third line');
       expect(html).toContain('Fourth line');
     });
