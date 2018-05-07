@@ -240,6 +240,14 @@ Registry.$$proto.docinfoProcessor = function (name, processor) {
 var Processor = Extensions.Processor;
 
 /**
+ * The extension will be added to the beginning of the list for that extension type. (default is append).
+ * @memberof Extensions/Processor
+ */
+Processor.$$proto.prepend = function () {
+  this.$option('position', '>>');
+};
+
+/**
  * @memberof Extensions/Processor
  */
 Processor.$$proto.process = function (block) {

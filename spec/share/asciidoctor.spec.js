@@ -42,11 +42,11 @@ var shareSpec = function (testOptions, asciidoctor) {
 
       it('should load document with hash attributes', function () {
         // NOTE we might want to look into the fact that sectids: false does not work
-        var options = { attributes: { icons: 'font', sectids: null } };
+        var options = {attributes: {icons: 'font', sectids: null}};
         var doc = asciidoctor.load('== Test', options);
         expect(doc.getAttribute('icons')).toBe('font');
         expect(doc.getAttribute('sectids')).toBeUndefined();
-        expect(doc.findBy({ context: 'section' })[0].getId()).toBe(Opal.nil);
+        expect(doc.findBy({context: 'section'})[0].getId()).toBe(Opal.nil);
       });
 
       it('should load document with boolean attributes', function () {
@@ -132,16 +132,16 @@ var shareSpec = function (testOptions, asciidoctor) {
 
       it('should get source lines', function () {
         var doc = asciidoctor.load('== Test\nThis is the first paragraph.\n\nThis is a second paragraph.');
-        expect(doc.getSourceLines()).toEqual([ '== Test', 'This is the first paragraph.', '', 'This is a second paragraph.' ]);
+        expect(doc.getSourceLines()).toEqual(['== Test', 'This is the first paragraph.', '', 'This is a second paragraph.']);
       });
 
       it('should get reader lines', function () {
-        var doc = asciidoctor.load('line one\nline two\nline three', { parse: false });
+        var doc = asciidoctor.load('line one\nline two\nline three', {parse: false});
         expect(doc.getReader().getLines()).toEqual(['line one', 'line two', 'line three']);
       });
 
       it('should get reader string', function () {
-        var doc = asciidoctor.load('line one\nline two\nline three', { parse: false });
+        var doc = asciidoctor.load('line one\nline two\nline three', {parse: false});
         expect(doc.getReader().getString()).toBe('line one\nline two\nline three');
       });
 
@@ -206,7 +206,8 @@ var shareSpec = function (testOptions, asciidoctor) {
 
       it('should have extensions enabled after being autoloaded', function () {
         try {
-          asciidoctor.Extensions.register(function () {});
+          asciidoctor.Extensions.register(function () {
+          });
           var doc = asciidoctor.load('== Test');
           // extensions should be enabled after being autoloaded
           expect(doc.hasExtensions()).toBe(true);
@@ -242,7 +243,7 @@ var shareSpec = function (testOptions, asciidoctor) {
       });
 
       it('should get safe mode', function () {
-        var options = { safe: 'server' };
+        var options = {safe: 'server'};
         var doc = asciidoctor.load('== Test', options);
         expect(doc.getSafe()).toBe(asciidoctor.$$const.SafeMode.$$const.SERVER);
         expect(doc.getAttribute('safe-mode-name')).toBe('server');
@@ -255,7 +256,7 @@ var shareSpec = function (testOptions, asciidoctor) {
       });
 
       it('should get options', function () {
-        var options = { header_footer: true };
+        var options = {header_footer: true};
         var doc = asciidoctor.load('= Document Title', options);
         expect(doc.getOptions()).toBeDefined();
         expect(doc.getOptions().header_footer).toBe(true);
@@ -268,7 +269,7 @@ var shareSpec = function (testOptions, asciidoctor) {
       });
 
       it('should get converter', function () {
-        var options = { backend: 'xhtml' };
+        var options = {backend: 'xhtml'};
         var doc = asciidoctor.load('= Document Title', options);
         var converter = doc.getConverter();
         expect(converter).toBeDefined();
@@ -378,13 +379,13 @@ var shareSpec = function (testOptions, asciidoctor) {
 
       it('should get list of substitutions for block', function () {
         var source = '----\nverbatim <1>\n----\n<1> verbatim text';
-        var listingBlock = asciidoctor.load(source).findBy({ context: 'listing' })[0];
+        var listingBlock = asciidoctor.load(source).findBy({context: 'listing'})[0];
         expect(listingBlock.getSubstitutions()).toEqual(['specialcharacters', 'callouts']);
       });
 
       it('should return whether substitution exists', function () {
         var source = '----\nverbatim <1>\n----\n<1> verbatim text';
-        var listingBlock = asciidoctor.load(source).findBy({ context: 'listing' })[0];
+        var listingBlock = asciidoctor.load(source).findBy({context: 'listing'})[0];
         expect(listingBlock.hasSubstitution('callouts')).toBe(true);
         expect(listingBlock.hasSubstitution('macros')).toBe(false);
       });
@@ -402,7 +403,7 @@ var shareSpec = function (testOptions, asciidoctor) {
 
       it('should be able to remove substitution from block', function () {
         var source = '....\n<foobar>\n....';
-        var literalBlock = asciidoctor.load(source).findBy({ context: 'literal' })[0];
+        var literalBlock = asciidoctor.load(source).findBy({context: 'literal'})[0];
         literalBlock.removeSubstitution('specialcharacters');
         expect(literalBlock.hasSubstitution('specialcharacters')).toBe(false);
         expect(literalBlock.getContent()).toBe('<foobar>');
@@ -445,7 +446,12 @@ var shareSpec = function (testOptions, asciidoctor) {
       });
 
       it('should embed assets', function () {
-        var options = {doctype: 'article', safe: 'unsafe', header_footer: true, attributes: ['showtitle', 'stylesheet=asciidoctor.css', 'stylesdir=' + testOptions.baseDir + '/build/css']};
+        var options = {
+          doctype: 'article',
+          safe: 'unsafe',
+          header_footer: true,
+          attributes: ['showtitle', 'stylesheet=asciidoctor.css', 'stylesdir=' + testOptions.baseDir + '/build/css']
+        };
         var html = asciidoctor.convert('=== Test', options);
         expect(html).toContain('Asciidoctor default stylesheet');
       });
@@ -454,37 +460,37 @@ var shareSpec = function (testOptions, asciidoctor) {
         var options = {attributes: ['backend=docbook45', 'doctype=book'], header_footer: true};
         var html = asciidoctor.convert(':doctitle: DocTitle\n:docdate: 2014-01-01\n== Test', options);
         expect(html).toBe('<?xml version="1.0" encoding="UTF-8"?>\n' +
-'<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">\n' +
-'<?asciidoc-toc?>\n' +
-'<?asciidoc-numbered?>\n' +
-'<book lang="en">\n' +
-'<bookinfo>\n' +
-'<title>DocTitle</title>\n' +
-'<date>2014-01-01</date>\n' +
-'</bookinfo>\n' +
-'<chapter id="_test">\n' +
-'<title>Test</title>\n' +
-'\n' +
-'</chapter>\n' +
-'</book>');
+          '<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">\n' +
+          '<?asciidoc-toc?>\n' +
+          '<?asciidoc-numbered?>\n' +
+          '<book lang="en">\n' +
+          '<bookinfo>\n' +
+          '<title>DocTitle</title>\n' +
+          '<date>2014-01-01</date>\n' +
+          '</bookinfo>\n' +
+          '<chapter id="_test">\n' +
+          '<title>Test</title>\n' +
+          '\n' +
+          '</chapter>\n' +
+          '</book>');
       });
 
       it('should produce a docbook5 document when backend=docbook5', function () {
         var options = {attributes: ['backend=docbook5', 'doctype=book'], header_footer: true};
         var html = asciidoctor.convert(':doctitle: DocTitle\n:docdate: 2014-01-01\n== Test', options);
         expect(html).toBe('<?xml version="1.0" encoding="UTF-8"?>\n' +
-'<?asciidoc-toc?>\n' +
-'<?asciidoc-numbered?>\n' +
-'<book xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">\n' +
-'<info>\n' +
-'<title>DocTitle</title>\n' +
-'<date>2014-01-01</date>\n' +
-'</info>\n' +
-'<chapter xml:id="_test">\n' +
-'<title>Test</title>\n' +
-'\n' +
-'</chapter>\n' +
-'</book>');
+          '<?asciidoc-toc?>\n' +
+          '<?asciidoc-numbered?>\n' +
+          '<book xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">\n' +
+          '<info>\n' +
+          '<title>DocTitle</title>\n' +
+          '<date>2014-01-01</date>\n' +
+          '</info>\n' +
+          '<chapter xml:id="_test">\n' +
+          '<title>Test</title>\n' +
+          '\n' +
+          '</chapter>\n' +
+          '</book>');
       });
 
       it('should produce a html5 document with font icons', function () {
@@ -586,6 +592,81 @@ var shareSpec = function (testOptions, asciidoctor) {
         var para = asciidoctor.load('text').getBlocks()[0];
         var result = converter.convert(para);
         expect(result).toContain('<p>text</p>');
+      });
+    });
+
+    describe('Extensions', function () {
+      it('should preprend the extension in the list', function () {
+        var registry = asciidoctor.Extensions.create();
+        var opts = {extension_registry: registry};
+        registry.preprocessor(function () {
+          var self = this;
+          self.process(function (doc, reader) {
+            var lines = reader.lines;
+            for (var i = 0; i < lines.length; i++) {
+              // starts with
+              var match = lines[i].match(/\/\/ smiley/);
+              if (match) {
+                lines[i] = ':)';
+              }
+            }
+            return reader;
+          });
+        });
+        // this extension is prepended (higher precedence)
+        registry.preprocessor(function () {
+          var self = this;
+          self.prepend();
+          self.process(function (doc, reader) {
+            var lines = reader.lines;
+            for (var i = 0; i < lines.length; i++) {
+              // starts with
+              var match = lines[i].match(/\/\/ smiley/);
+              if (match) {
+                lines[i] = ':(';
+              }
+            }
+            return reader;
+          });
+        });
+        var resultWithExtension = asciidoctor.convert('// smiley', opts);
+        expect(resultWithExtension).toContain(':('); // sad face because the second extension is prepended
+      });
+
+      it('should append the extension in the list (default)', function () {
+        var registry = asciidoctor.Extensions.create();
+        var opts = {extension_registry: registry};
+        registry.preprocessor(function () {
+          var self = this;
+          self.process(function (doc, reader) {
+            var lines = reader.lines;
+            for (var i = 0; i < lines.length; i++) {
+              // starts with
+              var match = lines[i].match(/\/\/ smiley/);
+              if (match) {
+                lines[i] = ':)';
+              }
+            }
+            return reader;
+          });
+        });
+        // this extension is appended by default (lower precedence)
+        registry.preprocessor(function () {
+          var self = this;
+          self.process(function (doc, reader) {
+            var lines = reader.lines;
+            for (var i = 0; i < lines.length; i++) {
+              // starts with
+              var match = lines[i].match(/\/\/ smiley/);
+              if (match) {
+                lines[i] = ':(';
+              }
+            }
+            return reader;
+          });
+        });
+        var resultWithExtension = asciidoctor.convert('// smiley', opts);
+        expect(resultWithExtension).toContain(':)'); // happy face because the second extension is appended
       });
     });
   });
