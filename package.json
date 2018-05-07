@@ -75,7 +75,7 @@
     "bestikk-uglify": "0.2.2",
     "browserify": "15.2.0",
     "cross-env": "5.1.3",
-    "documentation": "5.3.5",
+    "documentation": "6.3.2",
     "eslint": "4.16.0",
     "http-server": "0.11.1",
     "jasmine": "2.9.0",
