@@ -14,7 +14,12 @@ var fromHash = function (hash) {
   var object = {};
   for (var i = 0, keys = hash.$$keys, data = hash.$$smap, len = keys.length; i < len; i++) {
     var key = keys[i];
-    object[key] = data[key];
+    if ((typeof key === 'object') && ('key' in key)) {
+      object[key.key] = key.value;
+    }
+    else {
+      object[key] = data[key];
+    }
   }
   return object;
 };
