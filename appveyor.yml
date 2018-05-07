@@ -28,5 +28,6 @@ build_script:
 - node npm/test/jasmine-webpack.js
 - yarn run test:karmaBrowserify
 - yarn run test:karmaRequirejs
+- yarn run examples
 
 test: off
