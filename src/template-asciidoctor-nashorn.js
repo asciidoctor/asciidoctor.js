@@ -1,5 +1,4 @@
 //{{opalCode}}
-Opal.require('opal');
 
 // Nashorn Module
 (function (root, factory) {
