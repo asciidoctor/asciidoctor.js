@@ -38,6 +38,8 @@ const replaceUnsupportedFeatures = (asciidoctorCoreDependency, callback) => {
   log.task('Replace unsupported features');
   const path = asciidoctorCoreDependency.target;
   let data = fs.readFileSync(path, 'utf8');
+  log.debug('Adding missing continue to redo');
+  data = data.replace(/\$b = true;(?=})/g, '$&continue;');
   log.debug('Replace (g)sub! with (g)sub');
   data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'');
   // replace dot wildcard with negated line feed in single-line match expressions
