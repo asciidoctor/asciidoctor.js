@@ -542,6 +542,14 @@ var shareSpec = function (testOptions, asciidoctor) {
       });
     });
 
+    describe('Escaping', function () {
+      it('should escape table pipe', function () {
+        var html = asciidoctor.convert('|===\n|`-a\\|-b`|Options cannot be used together\n|===');
+        var columns = (html.match(/<td/g) || []).length;
+        expect(columns).toBe(2);
+      });
+    });
+
     describe('Include', function () {
       it('should include file with a relative path (base_dir is explicitly defined)', function () {
         var opts = {safe: 'safe', base_dir: testOptions.baseDir};
