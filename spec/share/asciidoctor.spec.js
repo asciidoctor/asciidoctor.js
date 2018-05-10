@@ -389,6 +389,56 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(listingBlock.hasSubstitution('callouts')).toBe(true);
         expect(listingBlock.hasSubstitution('macros')).toBe(false);
       });
+
+      it('should get no section', function () {
+        var source = '= Title\n\nNo section in here...';
+        var doc = asciidoctor.load(source);
+        expect(doc.hasSections()).toBe(false);
+        expect(doc.getSections().length).toBe(0);
+      });
+
+      it('should get sections', function () {
+        var source = '= Title\n:sectnums!:\n\n== First section\n\n:sectnums:\n== Second section\n\n[abstract]\n== Abstract section\n\n:appendix-caption: Appx\n[appendix]\n== Copyright and License';
+        var doc = asciidoctor.load(source);
+        expect(doc.hasSections()).toBe(true);
+        expect(doc.getSections().length).toBe(4);
+        var firstSection = doc.getSections()[0];
+        expect(firstSection.getIndex()).toBe(0);
+        expect(firstSection.getName()).toBe('First section');
+        expect(firstSection.getTitle()).toBe('First section');
+        expect(firstSection.title).toBe('First section');
+        expect(firstSection.getSectionName()).toBe('section');
+        expect(firstSection.isNumbered()).toBe(false);
+        expect(firstSection.isSpecial()).toBe(false);
+        expect(firstSection.getCaption()).toBeUndefined();
+        var secondSection = doc.getSections()[1];
+        expect(secondSection.getIndex()).toBe(1);
+        expect(secondSection.getName()).toBe('Second section');
+        expect(secondSection.getTitle()).toBe('Second section');
+        expect(secondSection.title).toBe('Second section');
+        expect(secondSection.getSectionName()).toBe('section');
+        expect(secondSection.isNumbered()).toBe(true);
+        expect(secondSection.isSpecial()).toBe(false);
+        expect(secondSection.getCaption()).toBeUndefined();
+        var abstractSection = doc.getSections()[2];
+        expect(abstractSection.getIndex()).toBe(2);
+        expect(abstractSection.getName()).toBe('Abstract section');
+        expect(abstractSection.getTitle()).toBe('Abstract section');
+        expect(abstractSection.title).toBe('Abstract section');
+        expect(abstractSection.getSectionName()).toBe('abstract');
+        expect(abstractSection.isNumbered()).toBe(false);
+        expect(abstractSection.isSpecial()).toBe(true);
+        expect(abstractSection.getCaption()).toBeUndefined();
+        var appendixSection = doc.getSections()[3];
+        expect(appendixSection.getIndex()).toBe(3);
+        expect(appendixSection.getName()).toBe('Copyright and License');
+        expect(appendixSection.getTitle()).toBe('Copyright and License');
+        expect(appendixSection.title).toBe('Copyright and License');
+        expect(appendixSection.getSectionName()).toBe('appendix');
+        expect(appendixSection.isNumbered()).toBe(true);
+        expect(appendixSection.isSpecial()).toBe(true);
+        expect(appendixSection.getCaption()).toBe('Appx A: ');
+      });
     });
 
     describe('Modifying', function () {
