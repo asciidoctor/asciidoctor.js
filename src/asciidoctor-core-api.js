@@ -325,6 +325,114 @@ AbstractBlock.$$proto.getLineNumber = function () {
 };
 
 /**
+ * Check whether this block has any child Section objects.
+ * Only applies to Document and Section instances.
+ * @memberof AbstractBlock
+ * @returns {boolean} - true if this block has child Section objects, otherwise false
+ */
+AbstractBlock.$$proto.hasSections = function () {
+  return this['$sections?']();
+};
+
+/**
+ * Get the Array of child Section objects.
+ * Only applies to Document and Section instances.
+ * @memberof AbstractBlock
+ * @returns {Array} - returns an {Array} of {@link Section} objects
+ */
+AbstractBlock.$$proto.getSections = function () {
+  return this.$sections();
+};
+
+// Section API
+
+/**
+ * @namespace
+ * @extends AbstractBlock
+ */
+var Section = Opal.Asciidoctor.Section;
+
+/**
+ * Get the 0-based index order of this section within the parent block.
+ * @memberof Section
+ * @returns {number}
+ */
+Section.$$proto.getIndex = function () {
+  return this.index;
+};
+
+/**
+ * Set the 0-based index order of this section within the parent block.
+ * @memberof Section
+ */
+Section.$$proto.setIndex = function (value) {
+  this.index = value;
+};
+
+/**
+ * Get the section name of this section.
+ * @memberof Section
+ * @returns {string}
+ */
+Section.$$proto.getSectionName = function () {
+  return this.sectname;
+};
+
+/**
+ * Set the section name of this section.
+ * @memberof Section
+ */
+Section.$$proto.setSectionName = function (value) {
+  this.sectname = value;
+};
+
+/**
+ * Get the flag to indicate whether this is a special section or a child of one.
+ * @memberof Section
+ * @returns {boolean}
+ */
+Section.$$proto.isSpecial = function () {
+  return this.special;
+};
+
+/**
+ * Set the flag to indicate whether this is a special section or a child of one.
+ * @memberof Section
+ */
+Section.$$proto.setSpecial = function (value) {
+  this.special = value;
+};
+
+/**
+ * Get the state of the numbered attribute at this section (need to preserve for creating TOC).
+ * @memberof Section
+ * @returns {boolean}
+ */
+Section.$$proto.isNumbered = function () {
+  return this.numbered;
+};
+
+/**
+ * Get the caption for this section (only relevant for appendices).
+ * @memberof Section
+ * @returns {string}
+ */
+Section.$$proto.getCaption = function () {
+  var value = this.caption;
+  return value === Opal.nil ? undefined : value;
+};
+
+/**
+ * Get the name of the Section (title)
+ * @memberof Section
+ * @returns {string}
+ * @see {@link AbstractBlock#getTitle}
+ */
+Section.$$proto.getName = function () {
+  return this.getTitle();
+};
+
+/**
  * @namespace
  */
 var Block = Opal.Asciidoctor.Block;
@@ -373,7 +481,7 @@ AbstractNode.$$proto.getAttribute = function (name, defaultValue, inherit) {
  * Check whether the specified attribute is present on this node.
  *
  * @memberof AbstractNode
- * @returns {boolean} true if the attribute is present, otherwise false
+ * @returns {boolean} - true if the attribute is present, otherwise false
  */
 AbstractNode.$$proto.hasAttribute = function (name) {
   return name in this.attributes.$$smap;
