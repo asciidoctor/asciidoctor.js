@@ -1,6 +1,6 @@
 = Image inside
 :data-uri:
-:imagesdir: spec/images
+:imagesdir: spec/fixtures/images
 
 == French frog
 

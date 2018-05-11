@@ -10,7 +10,7 @@ var data = '= asciidoctor.js, AsciiDoc in JavaScript\n' +
 '* Asciidoctor\n' +
 '* Opal\n\n' +
 'NOTE: That\'s all she wrote!!!\n\n' +
-'include::spec/share/include.adoc[]';
+'include::spec/fixtures/include.adoc[]';
 
 var options = {safe: 'server', header_footer: true, attributes: {showtitle: true}};
 var html = asciidoctor.convert(data, options);

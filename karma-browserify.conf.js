@@ -5,8 +5,8 @@ module.exports = function(config) {
     frameworks: [ 'jasmine', 'browserify' ],
 
     files: [
-      {pattern: 'spec/share/include.adoc', watched: false, included: false, served: true},
-      {pattern: 'spec/share/sales.csv', watched: false, included: false, served: true},
+      {pattern: 'spec/fixtures/include.adoc', watched: false, included: false, served: true},
+      {pattern: 'spec/fixtures/sales.csv', watched: false, included: false, served: true},
       {pattern: 'build/css/asciidoctor.css', watched: false, included: false, served: true},
       'spec/commonJS/asciidoctor.spec.js'
     ],

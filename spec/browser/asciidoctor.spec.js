@@ -18,14 +18,14 @@ describe('Browser', function () {
     /*
     it('Should include file with a relative path (base_dir is not defined)', function () {
       var opts = {safe: 'safe'};
-      var html = asciidoctor.convert('include::spec/share/include.adoc[]', opts);
+      var html = asciidoctor.convert('include::spec/fixtures/include.adoc[]', opts);
       expect(html).toContain('include content');
     });
     */
 
     it('Should include file with an absolute path (base_dir is explicitly defined)', function () {
       var opts = {safe: 'safe', base_dir: testOptions.baseDir};
-      var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/share/include.adoc[]', opts);
+      var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts);
       expect(html).toContain('include content');
     });
   });
