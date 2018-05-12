@@ -44,6 +44,8 @@ const replaceUnsupportedFeatures = (asciidoctorCoreDependency, callback) => {
   data = data.replace(/Opal\.const_set\([^']+'[^']+Rx', *\/.+\/\);$/gm, function (m) {
     return m.replace(/\.([*+])/g, '[^\\n]$1');
   });
+  // bypass use of IO.binread when reading include files in reader
+  data = data.replace(/inc_content *= *(.*?)if *\(target_type\['\$=='\]\("file"\)\)(.*)/, 'inc_content = $1if (false)$2');
   fs.writeFileSync(path, data, 'utf8');
   callback();
 };
