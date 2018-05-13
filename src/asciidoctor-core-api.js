@@ -14,12 +14,7 @@ var fromHash = function (hash) {
   var object = {};
   for (var i = 0, keys = hash.$$keys, data = hash.$$smap, len = keys.length; i < len; i++) {
     var key = keys[i];
-    if ((typeof key === 'object') && ('key' in key)) {
-      object[key.key] = key.value;
-    }
-    else {
-      object[key] = data[key];
-    }
+    object[key] = data[key];
   }
   return object;
 };
@@ -363,7 +358,9 @@ var AbstractNode = Opal.Asciidoctor.AbstractNode;
  * @memberof AbstractNode
  */
 AbstractNode.$$proto.getAttributes = function () {
-  return fromHash(this.attributes);
+  // Do not use fromHash here since we want to keep only entries
+  // whose key is a string. By definition this *is* $$smap
+  return Object.assign({}, this.attributes.$$smap);
 };
 
 /**
