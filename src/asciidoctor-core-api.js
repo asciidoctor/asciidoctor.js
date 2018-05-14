@@ -466,7 +466,9 @@ var AbstractNode = Opal.Asciidoctor.AbstractNode;
  * @memberof AbstractNode
  */
 AbstractNode.$$proto.getAttributes = function () {
-  return fromHash(this.attributes);
+  // Do not use fromHash here since we want to keep only entries
+  // whose key is a string. By definition this *is* $$smap
+  return Object.assign({}, this.attributes.$$smap);
 };
 
 /**

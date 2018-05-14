@@ -358,6 +358,13 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(paragraphBlock.getAttribute('bold-statement')).toBe('off');
       });
 
+      it('should hide positional attributes in getAttributes', function () {
+        var doc = asciidoctor.load('[positional1,positional2,attr=value]\ntext');
+        var block = doc.getBlocks()[0];
+        var attributes = block.getAttributes();
+        expect(Object.getOwnPropertyNames(attributes).sort()).toEqual(['attr', 'style'].sort());
+      });
+
       it('should assign sectname, caption, and numeral to appendix section by default', function () {
         var doc = asciidoctor.load('[appendix]\n== Attribute Options\n\nDetails');
         var appendix = doc.getBlocks()[0];
