@@ -1,0 +1,3 @@
+À propos des majuscules accentuées
+
+include::french.adoc[]

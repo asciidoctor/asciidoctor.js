@@ -639,6 +639,13 @@ Content 2`;
       expect(html).toContain('We recommend to use version 1.2.3');
     });
 
+    it('should include a file as a UTF-8 file', () => {
+      var options = {safe: 'unsafe', header_footer: false, 'to_file': false};
+      var html = asciidoctor.convertFile('spec/share/encoding.adoc', options);
+      expect(html).toContain('À propos des majuscules accentuées');
+      expect(html).toContain('Le français c&#8217;est pas compliqué :)');
+    });
+
     it('should issue a warning if an include file is not found', () => {
       const options = {safe: 'safe', header_footer: true};
       const html = asciidoctor.convert('= Test\n\ninclude::nonexistent.adoc[]', options);
