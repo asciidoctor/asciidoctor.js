@@ -3,6 +3,7 @@ module.exports = {
     'node': true,
     'browser': true
   },
+  "parserOptions": {"ecmaVersion": 8},
   'rules': {
     'space-before-function-paren': ['error', 'always'],
     'no-cond-assign': 'off',
