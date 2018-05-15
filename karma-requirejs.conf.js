@@ -5,8 +5,8 @@ module.exports = function(config) {
     frameworks: [ 'jasmine', 'requirejs' ],
 
     files: [
-      {pattern: 'spec/share/include.adoc', watched: false, included: false, served: true},
-      {pattern: 'spec/share/sales.csv', watched: false, included: false, served: true},
+      {pattern: 'spec/fixtures/include.adoc', watched: false, included: false, served: true},
+      {pattern: 'spec/fixtures/sales.csv', watched: false, included: false, served: true},
       {pattern: 'spec/requireJS/asciidoctor.spec.js', watched: false, included: false, served: true},
       {pattern: 'spec/share/asciidoctor.spec.js', watched: false, included: false, served: true},
       {pattern: 'spec/share/asciidoctor-include-https.spec.js', watched: false, included: false, served: true},

@@ -610,31 +610,31 @@ var shareSpec = function (testOptions, asciidoctor) {
     describe('Include', function () {
       it('should include file with a relative path (base_dir is explicitly defined)', function () {
         var opts = {safe: 'safe', base_dir: testOptions.baseDir};
-        var html = asciidoctor.convert('include::spec/share/include.adoc[]', opts);
+        var html = asciidoctor.convert('include::spec/fixtures/include.adoc[]', opts);
         expect(html).toContain('include content');
       });
 
       it('should include file with a relative expandable path (base_dir is explicitly defined)', function () {
         var opts = {safe: 'safe', base_dir: testOptions.baseDir};
-        var html = asciidoctor.convert('include::spec/../spec/share/include.adoc[]', opts);
+        var html = asciidoctor.convert('include::spec/../spec/fixtures/include.adoc[]', opts);
         expect(html).toContain('include content');
       });
 
       it('should include file with an absolute path (base_dir is not defined)', function () {
         var opts = {safe: 'safe', attributes: {'allow-uri-read': true}};
-        var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/share/include.adoc[]', opts);
+        var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts);
         expect(html).toContain('include content');
       });
 
       it('should include file with an absolute expandable path (base_dir is not defined)', function () {
         var opts = {safe: 'safe', attributes: {'allow-uri-read': true}};
-        var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/../spec/share/include.adoc[]', opts);
+        var html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/../spec/fixtures/include.adoc[]', opts);
         expect(html).toContain('include content');
       });
 
       it('should include csv file in table', function () {
         var opts = {safe: 'safe', base_dir: testOptions.baseDir};
-        var html = asciidoctor.convert(',===\ninclude::spec/share/sales.csv[]\n,===', opts);
+        var html = asciidoctor.convert(',===\ninclude::spec/fixtures/sales.csv[]\n,===', opts);
         expect(html).toContain('March');
       });
     });

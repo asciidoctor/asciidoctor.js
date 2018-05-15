@@ -1,3 +1,4 @@
+/* eslint-env node, es6 */
 const child_process = require('child_process');
 const execModule = require('../../npm/module/exec');
 const sinon = require('sinon');
