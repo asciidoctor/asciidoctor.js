@@ -21,5 +21,6 @@ module Asciidoctor
   CG_BLANK = '[ \\t]' # in AsciiDoc, we only consider space or tab when looking for a blank character
   CC_EOL = '(?=\\n|$)' # $ matches end of string (not line) unless multiline flag is set
   CG_GRAPH = '[^\s\x00-\x1F\x7F]' # non-blank character (equivalent to [^\p{Z}\p{C}])
-  CC_ALL = '[\s\S]' # any character, including newlines
+  CC_ALL = '[\s\S]' # matches all characters, including newlines
+  CC_ANY = '[^\n]' # matches any character, except newlines
 end
