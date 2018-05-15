@@ -15,9 +15,9 @@ var includeHttpsSpec = function (testOptions, asciidoctor) {
         safe: 'safe',
         attributes: {'allow-uri-read': true}
       };
-      var html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-tag.adoc[tag=a]', opts);
+      var html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/fixtures/include-tag.adoc[tag=a]', opts);
       expect(html).toContain('tag-a');
-      html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-tag.adoc[tag=b]', opts);
+      html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/fixtures/include-tag.adoc[tag=b]', opts);
       expect(html).toContain('tag-b');
     });
 
@@ -26,10 +26,10 @@ var includeHttpsSpec = function (testOptions, asciidoctor) {
         safe: 'safe',
         attributes: {'allow-uri-read': true}
       };
-      var html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-lines.adoc[lines=1..2]', opts);
+      var html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/fixtures/include-lines.adoc[lines=1..2]', opts);
       expect(html).toContain('First line');
       expect(html).toContain('Second line');
-      html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/share/include-lines.adoc[lines=3..4]', opts);
+      html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/fixtures/include-lines.adoc[lines=3..4]', opts);
       expect(html).toContain('Third line');
       expect(html).toContain('Fourth line');
     });
