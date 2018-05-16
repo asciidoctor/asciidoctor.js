@@ -21,7 +21,9 @@ install:
 
 build_script:
 - node npm/appveyor.js
-- yarn run test
+- node npm/test/unsupported-features.js
+- yarn run test:node
+- yarn run test:browser
 - yarn run examples
 
 test: off

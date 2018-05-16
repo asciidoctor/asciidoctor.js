@@ -15,9 +15,12 @@
     "README.adoc"
   ],
   "scripts": {
-    "test": "node npm/test/unsupported-features.js && mocha spec/*/*.spec.js && node spec/browser/run.js && node npm/test/nashorn.js",
+    "test:node": "mocha spec/*/*.spec.js",
+    "test:browser": "node spec/browser/run.js",
+    "test:nashorn": "node npm/test/nashorn.js",
+    "test": "node npm/test/unsupported-features.js && npm run test:node && npm run test:browser && npm run test:nashorn",
     "build": "node npm/build.js && npm run test && npm run lint",
-    "build:quick": "node npm/build.js && node npm/test/jasmine-node.js && npm run code:lint",
+    "build:quick": "node npm/build.js && npm run test:node && npm run code:lint",
     "clean": "node npm/clean.js",
     "dist": "cross-env MINIFY=1 node npm/dist.js",
     "lint": "npm run code:lint && npm run docs:lint",
