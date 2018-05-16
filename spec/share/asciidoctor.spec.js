@@ -446,6 +446,15 @@ var shareSpec = function (testOptions, asciidoctor) {
         expect(appendixSection.isSpecial()).toBe(true);
         expect(appendixSection.getCaption()).toBe('Appx A: ');
       });
+
+      it('should load a file with bom', function () {
+        var opts = {safe: 'safe', base_dir: testOptions.baseDir};
+        var doc = asciidoctor.load('\xef\xbb\xbf= Document Title\n:lang: fr\n:fixtures-dir: spec/fixtures\n\ncontent is in {lang}\n\ninclude::{fixtures-dir}/include.adoc[]', opts);
+        expect(doc.getAttribute('lang')).toBe('fr');
+        var html = doc.convert();
+        expect(html).toContain('content is in fr');
+        expect(html).toContain('include content');
+      });
     });
 
     describe('Modifying', function () {
