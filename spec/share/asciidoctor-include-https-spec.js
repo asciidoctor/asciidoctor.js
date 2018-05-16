@@ -8,7 +8,7 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
       };
       const html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/README.adoc[]', opts);
       expect(html).to.include('Asciidoctor.js');
-    });
+    }).timeout(5000);
 
     it('should partially include file with an absolute https URI (using tag)', function () {
       const opts = {
