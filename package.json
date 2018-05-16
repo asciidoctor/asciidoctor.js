@@ -5,8 +5,8 @@
   "main": "dist/node/asciidoctor.js",
   "browser": "dist/browser/asciidoctor.js",
   "engines": {
-    "node": ">=6.12",
-    "npm": ">=3.0.0",
+    "node": ">=8.11",
+    "npm": ">=5.0.0",
     "yarn": ">=1.1.0"
   },
   "files": [

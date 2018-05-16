@@ -13,7 +13,6 @@ cache:
   yarn: true
 
 node_js:
-- '6'
 - 'lts/*'
 - 'node'
 
