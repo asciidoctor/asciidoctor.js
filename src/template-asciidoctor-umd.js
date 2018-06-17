@@ -36,7 +36,7 @@ if (typeof Opal === 'undefined') {
    * @memberof Asciidoctor
    * @returns {string} - returns the version number of Asciidoctor.js.
    */
-  Asciidoctor.$$proto.getVersion = function () {
+  Asciidoctor.prototype.getVersion = function () {
     return ASCIIDOCTOR_JS_VERSION;
   };
   return Opal.Asciidoctor;

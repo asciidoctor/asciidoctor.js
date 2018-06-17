@@ -32,7 +32,6 @@ const copyExamplesResources = (callback) => {
   copyToExamplesBuildDir([
     'examples/asciidoctor_example.html',
     'examples/userguide_test.html',
-    'examples/slide.html',
     'README.adoc'
   ]);
 
@@ -62,7 +61,6 @@ For this purpose, you can run the following command to start a HTTP server local
   log.success(`You can now open:
  - build/examples/asciidoctor_example.html
  - build/examples/userguide_test.html
- - build/examples/slide.html
  - build/examples/basic.html`);
 });
 

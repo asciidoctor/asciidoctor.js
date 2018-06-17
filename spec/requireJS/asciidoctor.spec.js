@@ -1,4 +1,4 @@
-define(['asciidoctor', 'asciidoctor/docbook', 'asciidoctor-share-spec', 'asciidoctor-share-include-https-spec'], function (asciidoctor, asciidoctorDocbook, shareSpec, includeHttpsSpec) {
+define(['asciidoctor', 'asciidoctor-share-spec', 'asciidoctor-share-include-https-spec'], function (asciidoctor, shareSpec, includeHttpsSpec) {
 
   var testOptions = {
     platform: 'RequireJS',

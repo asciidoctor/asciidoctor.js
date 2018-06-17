@@ -68,7 +68,7 @@ var Asciidoctor = Opal.Asciidoctor['$$class'];
  * @memberof Asciidoctor
  * @returns {string} - returns the version number of Asciidoctor core.
  */
-Asciidoctor.$$proto.getCoreVersion = function () {
+Asciidoctor.prototype.getCoreVersion = function () {
   return this.$$const.VERSION;
 };
 
@@ -92,7 +92,7 @@ Asciidoctor.$$proto.getCoreVersion = function () {
  *
  * var html = asciidoctor.convert(input);
  */
-Asciidoctor.$$proto.convert = function (input, options) {
+Asciidoctor.prototype.convert = function (input, options) {
   if (typeof input === 'object' && input.constructor.name === 'Buffer') {
     input = input.toString('utf8');
   }
@@ -111,7 +111,7 @@ Asciidoctor.$$proto.convert = function (input, options) {
  * @example
  * var html = asciidoctor.convertFile('./document.adoc');
  */
-Asciidoctor.$$proto.convertFile = function (filename, options) {
+Asciidoctor.prototype.convertFile = function (filename, options) {
   return this.$convert_file(filename, prepareOptions(options));
 };
 
@@ -125,7 +125,7 @@ Asciidoctor.$$proto.convertFile = function (filename, options) {
  * @returns {Document} - returns the {@link Document} object
  * @memberof Asciidoctor
  */
-Asciidoctor.$$proto.load = function (input, options) {
+Asciidoctor.prototype.load = function (input, options) {
   if (typeof input === 'object' && input.constructor.name === 'Buffer') {
     input = input.toString('utf8');
   }
@@ -140,7 +140,7 @@ Asciidoctor.$$proto.load = function (input, options) {
  * @returns {Document} - returns the {@link Document} object
  * @memberof Asciidoctor
  */
-Asciidoctor.$$proto.loadFile = function (filename, options) {
+Asciidoctor.prototype.loadFile = function (filename, options) {
   return this.$load_file(filename, prepareOptions(options));
 };
 
@@ -165,7 +165,7 @@ var AbstractBlock = Opal.Asciidoctor.AbstractBlock;
  * block.title // "Foo 3^ # {two-colons} Bar(1)"
  * block.getTitle(); // "Foo 3^ # :: Bar(1)"
  */
-AbstractBlock.$$proto.getTitle = function () {
+AbstractBlock.prototype.getTitle = function () {
   var title = this.$title();
   return title === Opal.nil ? undefined : title;
 };
@@ -182,7 +182,7 @@ AbstractBlock.$$proto.getTitle = function () {
  * @returns {string} - the converted String title prefixed with the caption, or just the
  * converted String title if no caption is set
  */
-AbstractBlock.$$proto.getCaptionedTitle = function () {
+AbstractBlock.prototype.getCaptionedTitle = function () {
   return this.$captioned_title();
 };
 
@@ -191,7 +191,7 @@ AbstractBlock.$$proto.getCaptionedTitle = function () {
  * @memberof AbstractBlock
  * @returns {string} - returns the style for this block
  */
-AbstractBlock.$$proto.getStyle = function () {
+AbstractBlock.prototype.getStyle = function () {
   return this.style;
 };
 
@@ -200,7 +200,7 @@ AbstractBlock.$$proto.getStyle = function () {
  * @memberof AbstractBlock
  * @returns {string} - returns the caption for this block
  */
-AbstractBlock.$$proto.getCaption = function () {
+AbstractBlock.prototype.getCaption = function () {
   return this.$caption();
 };
 
@@ -209,7 +209,7 @@ AbstractBlock.$$proto.getCaption = function () {
  * @param {string} caption - Caption
  * @memberof AbstractBlock
  */
-AbstractBlock.$$proto.setCaption = function (caption) {
+AbstractBlock.prototype.setCaption = function (caption) {
   this.caption = caption;
 };
 
@@ -218,7 +218,7 @@ AbstractBlock.$$proto.setCaption = function (caption) {
  * @memberof AbstractBlock
  * @returns {number} - returns the level of this section
  */
-AbstractBlock.$$proto.getLevel = function () {
+AbstractBlock.prototype.getLevel = function () {
   return this.level;
 };
 
@@ -228,7 +228,7 @@ AbstractBlock.$$proto.getLevel = function () {
  * @memberof AbstractBlock
  * @returns {Array} - the list of {string} substitution keywords associated with this block.
  */
-AbstractBlock.$$proto.getSubstitutions = function () {
+AbstractBlock.prototype.getSubstitutions = function () {
   return this.subs;
 };
 
@@ -238,7 +238,7 @@ AbstractBlock.$$proto.getSubstitutions = function () {
  * @memberof AbstractBlock
  * @returns {boolean} - whether the substitution is present on this block.
  */
-AbstractBlock.$$proto.hasSubstitution = function (substitution) {
+AbstractBlock.prototype.hasSubstitution = function (substitution) {
   return this['$sub?'](substitution);
 };
 
@@ -248,7 +248,7 @@ AbstractBlock.$$proto.hasSubstitution = function (substitution) {
  * @memberof AbstractBlock
  * @returns undefined
  */
-AbstractBlock.$$proto.removeSubstitution = function (substitution) {
+AbstractBlock.prototype.removeSubstitution = function (substitution) {
   this.$remove_sub(substitution);
 };
 
@@ -257,7 +257,7 @@ AbstractBlock.$$proto.removeSubstitution = function (substitution) {
  * @memberof AbstractBlock
  * @returns {Array} - returns a list of {@link AbstractBlock} sub-blocks
  */
-AbstractBlock.$$proto.getBlocks = function () {
+AbstractBlock.prototype.getBlocks = function () {
   return this.blocks;
 };
 
@@ -266,7 +266,7 @@ AbstractBlock.$$proto.getBlocks = function () {
  * @memberof AbstractBlock
  * @returns {string} - returns the converted result of the child blocks
  */
-AbstractBlock.$$proto.getContent = function () {
+AbstractBlock.prototype.getContent = function () {
   return this.$content();
 };
 
@@ -277,7 +277,7 @@ AbstractBlock.$$proto.getContent = function () {
  * @memberof AbstractBlock
  * @returns {string} - returns the converted String content for this block
  */
-AbstractBlock.$$proto.convert = function () {
+AbstractBlock.prototype.convert = function () {
   return this.$convert();
 };
 
@@ -302,7 +302,7 @@ AbstractBlock.$$proto.convert = function () {
  * @memberof AbstractBlock
  * @returns {Array} - returns a list of block-level nodes that match the filter or an empty list if no matches are found
  */
-AbstractBlock.$$proto.findBy = function (selector, block) {
+AbstractBlock.prototype.findBy = function (selector, block) {
   if (typeof block === 'undefined' && typeof selector === 'function') {
     return Opal.send(this, 'find_by', null, selector);
   }
@@ -319,7 +319,7 @@ AbstractBlock.$$proto.findBy = function (selector, block) {
  * @memberof AbstractBlock
  * @returns {number} - returns the source line number where this block started
  */
-AbstractBlock.$$proto.getLineNumber = function () {
+AbstractBlock.prototype.getLineNumber = function () {
   var lineno = this.$lineno();
   return lineno === Opal.nil ? undefined : lineno;
 };
@@ -330,7 +330,7 @@ AbstractBlock.$$proto.getLineNumber = function () {
  * @memberof AbstractBlock
  * @returns {boolean} - true if this block has child Section objects, otherwise false
  */
-AbstractBlock.$$proto.hasSections = function () {
+AbstractBlock.prototype.hasSections = function () {
   return this['$sections?']();
 };
 
@@ -340,7 +340,7 @@ AbstractBlock.$$proto.hasSections = function () {
  * @memberof AbstractBlock
  * @returns {Array} - returns an {Array} of {@link Section} objects
  */
-AbstractBlock.$$proto.getSections = function () {
+AbstractBlock.prototype.getSections = function () {
   return this.$sections();
 };
 
@@ -357,7 +357,7 @@ var Section = Opal.Asciidoctor.Section;
  * @memberof Section
  * @returns {number}
  */
-Section.$$proto.getIndex = function () {
+Section.prototype.getIndex = function () {
   return this.index;
 };
 
@@ -365,7 +365,7 @@ Section.$$proto.getIndex = function () {
  * Set the 0-based index order of this section within the parent block.
  * @memberof Section
  */
-Section.$$proto.setIndex = function (value) {
+Section.prototype.setIndex = function (value) {
   this.index = value;
 };
 
@@ -374,7 +374,7 @@ Section.$$proto.setIndex = function (value) {
  * @memberof Section
  * @returns {string}
  */
-Section.$$proto.getSectionName = function () {
+Section.prototype.getSectionName = function () {
   return this.sectname;
 };
 
@@ -382,7 +382,7 @@ Section.$$proto.getSectionName = function () {
  * Set the section name of this section.
  * @memberof Section
  */
-Section.$$proto.setSectionName = function (value) {
+Section.prototype.setSectionName = function (value) {
   this.sectname = value;
 };
 
@@ -391,7 +391,7 @@ Section.$$proto.setSectionName = function (value) {
  * @memberof Section
  * @returns {boolean}
  */
-Section.$$proto.isSpecial = function () {
+Section.prototype.isSpecial = function () {
   return this.special;
 };
 
@@ -399,7 +399,7 @@ Section.$$proto.isSpecial = function () {
  * Set the flag to indicate whether this is a special section or a child of one.
  * @memberof Section
  */
-Section.$$proto.setSpecial = function (value) {
+Section.prototype.setSpecial = function (value) {
   this.special = value;
 };
 
@@ -408,7 +408,7 @@ Section.$$proto.setSpecial = function (value) {
  * @memberof Section
  * @returns {boolean}
  */
-Section.$$proto.isNumbered = function () {
+Section.prototype.isNumbered = function () {
   return this.numbered;
 };
 
@@ -417,7 +417,7 @@ Section.$$proto.isNumbered = function () {
  * @memberof Section
  * @returns {string}
  */
-Section.$$proto.getCaption = function () {
+Section.prototype.getCaption = function () {
   var value = this.caption;
   return value === Opal.nil ? undefined : value;
 };
@@ -428,7 +428,7 @@ Section.$$proto.getCaption = function () {
  * @returns {string}
  * @see {@link AbstractBlock#getTitle}
  */
-Section.$$proto.getName = function () {
+Section.prototype.getName = function () {
   return this.getTitle();
 };
 
@@ -442,7 +442,7 @@ var Block = Opal.Asciidoctor.Block;
  * @memberof Block
  * @returns {string} - returns the String source of this block.
  */
-Block.$$proto.getSource = function () {
+Block.prototype.getSource = function () {
   return this.$source();
 };
 
@@ -451,7 +451,7 @@ Block.$$proto.getSource = function () {
  * @memberof Block
  * @returns {Array} - returns the String {Array} of source lines for this block.
  */
-Block.$$proto.getSourceLines = function () {
+Block.prototype.getSourceLines = function () {
   return this.lines;
 };
 
@@ -465,7 +465,7 @@ var AbstractNode = Opal.Asciidoctor.AbstractNode;
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getAttributes = function () {
+AbstractNode.prototype.getAttributes = function () {
   // Do not use fromHash here since we want to keep only entries
   // whose key is a string. By definition this *is* $$smap
   return Object.assign({}, this.attributes.$$smap);
@@ -474,7 +474,7 @@ AbstractNode.$$proto.getAttributes = function () {
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getAttribute = function (name, defaultValue, inherit) {
+AbstractNode.prototype.getAttribute = function (name, defaultValue, inherit) {
   var value = this.$attr(name, defaultValue, inherit);
   return value === Opal.nil ? undefined : value;
 };
@@ -485,14 +485,14 @@ AbstractNode.$$proto.getAttribute = function (name, defaultValue, inherit) {
  * @memberof AbstractNode
  * @returns {boolean} - true if the attribute is present, otherwise false
  */
-AbstractNode.$$proto.hasAttribute = function (name) {
+AbstractNode.prototype.hasAttribute = function (name) {
   return name in this.attributes.$$smap;
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.isAttribute = function (name, expectedValue, inherit) {
+AbstractNode.prototype.isAttribute = function (name, expectedValue, inherit) {
   var result = this['$attr?'](name, expectedValue, inherit);
   return result === Opal.nil ? false : result;
 };
@@ -500,7 +500,7 @@ AbstractNode.$$proto.isAttribute = function (name, expectedValue, inherit) {
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.setAttribute = function (name, value, overwrite) {
+AbstractNode.prototype.setAttribute = function (name, value, overwrite) {
   if (typeof overwrite === 'undefined') overwrite = true;
   return this.$set_attr(name, value, overwrite);
 };
@@ -511,7 +511,7 @@ AbstractNode.$$proto.setAttribute = function (name, value, overwrite) {
  * @returns {string} - returns the previous {String} value, or undefined if the attribute was not present.
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.removeAttribute = function (name) {
+AbstractNode.prototype.removeAttribute = function (name) {
   var value = this.$remove_attr(name);
   return value === Opal.nil ? undefined : value;
 };
@@ -522,7 +522,7 @@ AbstractNode.$$proto.removeAttribute = function (name) {
  * @memberof AbstractNode
  * @returns {Document} - returns the {@link Document} object to which this node belongs.
  */
-AbstractNode.$$proto.getDocument = function () {
+AbstractNode.prototype.getDocument = function () {
   return this.document;
 };
 
@@ -533,7 +533,7 @@ AbstractNode.$$proto.getDocument = function () {
  * @returns {AbstractNode} - returns the {@link AbstractNode} object to which this node is attached,
  * or undefined if this node has no parent.
  */
-AbstractNode.$$proto.getParent = function () {
+AbstractNode.prototype.getParent = function () {
   var parent = this.parent;
   return parent === Opal.nil ? undefined : parent;
 };
@@ -541,77 +541,77 @@ AbstractNode.$$proto.getParent = function () {
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.isInline = function () {
+AbstractNode.prototype.isInline = function () {
   return this['$inline?']();
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.isBlock = function () {
+AbstractNode.prototype.isBlock = function () {
   return this['$block?']();
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.isRole = function (expected) {
+AbstractNode.prototype.isRole = function (expected) {
   return this['$role?'](expected);
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getRole = function () {
+AbstractNode.prototype.getRole = function () {
   return this.$role();
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.hasRole = function (name) {
+AbstractNode.prototype.hasRole = function (name) {
   return this['$has_role?'](name);
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getRoles = function () {
+AbstractNode.prototype.getRoles = function () {
   return this.$roles();
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.addRole = function (name) {
+AbstractNode.prototype.addRole = function (name) {
   return this.$add_role(name);
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.removeRole = function (name) {
+AbstractNode.prototype.removeRole = function (name) {
   return this.$remove_role(name);
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.isReftext = function () {
+AbstractNode.prototype.isReftext = function () {
   return this['$reftext?']();
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getReftext = function () {
+AbstractNode.prototype.getReftext = function () {
   return this.$reftext();
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getContext = function () {
+AbstractNode.prototype.getContext = function () {
   var context = this.context;
   // Automatically convert Opal pseudo-symbol to String
   return typeof context === 'string' ? context : context.toString();
@@ -620,84 +620,84 @@ AbstractNode.$$proto.getContext = function () {
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getId = function () {
+AbstractNode.prototype.getId = function () {
   return this.id;
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.isOption = function (name) {
+AbstractNode.prototype.isOption = function (name) {
   return this['$option?'](name);
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.setOption = function (name) {
+AbstractNode.prototype.setOption = function (name) {
   return this.$set_option(name);
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getIconUri = function (name) {
+AbstractNode.prototype.getIconUri = function (name) {
   return this.$icon_uri(name);
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getMediaUri = function (target, assetDirKey) {
+AbstractNode.prototype.getMediaUri = function (target, assetDirKey) {
   return this.$media_uri(target, assetDirKey);
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getImageUri = function (targetImage, assetDirKey) {
+AbstractNode.prototype.getImageUri = function (targetImage, assetDirKey) {
   return this.$image_uri(targetImage, assetDirKey);
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.getConverter = function () {
+AbstractNode.prototype.getConverter = function () {
   return this.$converter();
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.readContents = function (target, options) {
+AbstractNode.prototype.readContents = function (target, options) {
   return this.$read_contents(target, toHash(options));
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.readAsset = function (path, options) {
+AbstractNode.prototype.readAsset = function (path, options) {
   return this.$read_asset(path, toHash(options));
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.normalizeWebPath = function (target, start, preserveTargetUri) {
+AbstractNode.prototype.normalizeWebPath = function (target, start, preserveTargetUri) {
   return this.$normalize_web_path(target, start, preserveTargetUri);
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.normalizeSystemPath = function (target, start, jail, options) {
+AbstractNode.prototype.normalizeSystemPath = function (target, start, jail, options) {
   return this.$normalize_system_path(target, start, jail, toHash(options));
 };
 
 /**
  * @memberof AbstractNode
  */
-AbstractNode.$$proto.normalizeAssetPath = function (assetRef, assetName, autoCorrect) {
+AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoCorrect) {
   return this.$normalize_asset_path(assetRef, assetName, autoCorrect);
 };
 
@@ -713,14 +713,14 @@ var Document = Opal.Asciidoctor.Document;
  * @returns {string} - returns the level-0 section
  * @memberof Document
  */
-Document.$$proto.getHeader = function () {
+Document.prototype.getHeader = function () {
   return this.header;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.setAttribute = function (name, value) {
+Document.prototype.setAttribute = function (name, value) {
   return this.$set_attribute(name, value);
 };
 
@@ -728,7 +728,7 @@ Document.$$proto.setAttribute = function (name, value) {
 
  * @memberof Document
  */
-Document.$$proto.removeAttribute = function (name) {
+Document.prototype.removeAttribute = function (name) {
   this.attributes.$delete(name);
   this.attribute_overrides.$delete(name);
 };
@@ -736,7 +736,7 @@ Document.$$proto.removeAttribute = function (name) {
 /**
  * @memberof Document
  */
-Document.$$proto.convert = function (options) {
+Document.prototype.convert = function (options) {
   var result = this.$convert(toHash(options));
   return result === Opal.nil ? '' : result;
 };
@@ -744,7 +744,7 @@ Document.$$proto.convert = function (options) {
 /**
  * @memberof Document
  */
-Document.$$proto.write = function (output, target) {
+Document.prototype.write = function (output, target) {
   return this.$write(output, target);
 };
 
@@ -752,77 +752,77 @@ Document.$$proto.write = function (output, target) {
  * @returns {string} - returns the full name of the author as a String
  * @memberof Document
  */
-Document.$$proto.getAuthor = function () {
+Document.prototype.getAuthor = function () {
   return this.$author();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getSource = function () {
+Document.prototype.getSource = function () {
   return this.$source();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getSourceLines = function () {
+Document.prototype.getSourceLines = function () {
   return this.$source_lines();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.isNested = function () {
+Document.prototype.isNested = function () {
   return this['$nested?']();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.hasFootnotes = function () {
+Document.prototype.hasFootnotes = function () {
   return this['$footnotes?']();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getFootnotes = function () {
+Document.prototype.getFootnotes = function () {
   return this.$footnotes();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.isEmbedded = function () {
+Document.prototype.isEmbedded = function () {
   return this['$embedded?']();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.hasExtensions = function () {
+Document.prototype.hasExtensions = function () {
   return this['$extensions?']();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getDoctype = function () {
+Document.prototype.getDoctype = function () {
   return this.doctype;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getBackend = function () {
+Document.prototype.getBackend = function () {
   return this.backend;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.isBasebackend = function (base) {
+Document.prototype.isBasebackend = function (base) {
   return this['$basebackend?'](base);
 };
 
@@ -832,7 +832,7 @@ Document.$$proto.isBasebackend = function (base) {
  * @see {@link AbstractNode#getAttributes}
  * @memberof Document
  */
-Document.$$proto.getTitle = function () {
+Document.prototype.getTitle = function () {
   var title = this.$title();
   return title === Opal.nil ? undefined : title;
 };
@@ -840,7 +840,7 @@ Document.$$proto.getTitle = function () {
 /**
  * @memberof Document
  */
-Document.$$proto.setTitle = function (title) {
+Document.prototype.setTitle = function (title) {
   return this['$title='](title);
 };
 
@@ -848,7 +848,7 @@ Document.$$proto.setTitle = function (title) {
  * @memberof Document
  * @returns {Document/Title} - returns a {@link Document/Title}
  */
-Document.$$proto.getDocumentTitle = function (options) {
+Document.prototype.getDocumentTitle = function (options) {
   var doctitle = this.$doctitle(toHash(options));
   return doctitle === Opal.nil ? undefined : doctitle;
 };
@@ -857,26 +857,26 @@ Document.$$proto.getDocumentTitle = function (options) {
  * @memberof Document
  * @see {@link Document#getDocumentTitle}
  */
-Document.$$proto.getDoctitle = Document.$$proto.getDocumentTitle;
+Document.prototype.getDoctitle = Document.prototype.getDocumentTitle;
 
 /**
  * Get the document catalog Hash.
  * @memberof Document
  */
-Document.$$proto.getCatalog = function () {
+Document.prototype.getCatalog = function () {
   return fromHash(this.catalog);
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getReferences = Document.$$proto.getCatalog;
+Document.prototype.getReferences = Document.prototype.getCatalog;
 
 /**
  * Get the document revision date from document header (document attribute <code>revdate</code>).
  * @memberof Document
  */
-Document.$$proto.getRevisionDate = function () {
+Document.prototype.getRevisionDate = function () {
   return this.getAttribute('revdate');
 };
 
@@ -884,7 +884,7 @@ Document.$$proto.getRevisionDate = function () {
  * @memberof Document
  * @see Document#getRevisionDate
  */
-Document.$$proto.getRevdate = function () {
+Document.prototype.getRevdate = function () {
   return this.getRevisionDate();
 };
 
@@ -892,7 +892,7 @@ Document.$$proto.getRevdate = function () {
  * Get the document revision number from document header (document attribute <code>revnumber</code>).
  * @memberof Document
  */
-Document.$$proto.getRevisionNumber = function () {
+Document.prototype.getRevisionNumber = function () {
   return this.getAttribute('revnumber');
 };
 
@@ -900,7 +900,7 @@ Document.$$proto.getRevisionNumber = function () {
  * Get the document revision remark from document header (document attribute <code>revremark</code>).
  * @memberof Document
  */
-Document.$$proto.getRevisionRemark = function () {
+Document.prototype.getRevisionRemark = function () {
   return this.getAttribute('revremark');
 };
 
@@ -955,7 +955,7 @@ RevisionInfo.prototype.isEmpty = function () {
  * @memberof Document
  * @returns {Document/RevisionInfo} - returns a {@link Document/RevisionInfo}
  */
-Document.$$proto.getRevisionInfo = function () {
+Document.prototype.getRevisionInfo = function () {
   return new Document.RevisionInfo(this.getRevisionDate(), this.getRevisionNumber(), this.getRevisionRemark());
 };
 
@@ -963,7 +963,7 @@ Document.$$proto.getRevisionInfo = function () {
  * @memberof Document
  * @returns {boolean} - returns true if the document contains revision info, otherwise false
  */
-Document.$$proto.hasRevisionInfo = function () {
+Document.prototype.hasRevisionInfo = function () {
   var revisionInfo = this.getRevisionInfo();
   return !revisionInfo.isEmpty();
 };
@@ -971,161 +971,161 @@ Document.$$proto.hasRevisionInfo = function () {
 /**
  * @memberof Document
  */
-Document.$$proto.getNotitle = function () {
+Document.prototype.getNotitle = function () {
   return this.$notitle();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getNoheader = function () {
+Document.prototype.getNoheader = function () {
   return this.$noheader();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getNofooter = function () {
+Document.prototype.getNofooter = function () {
   return this.$nofooter();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.hasHeader = function () {
+Document.prototype.hasHeader = function () {
   return this['$header?']();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.deleteAttribute = function (name) {
+Document.prototype.deleteAttribute = function (name) {
   return this.$delete_attribute(name);
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.isAttributeLocked = function (name) {
+Document.prototype.isAttributeLocked = function (name) {
   return this['$attribute_locked?'](name);
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.parse = function (data) {
+Document.prototype.parse = function (data) {
   return this.$parse(data);
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getDocinfo = function (docinfoLocation, suffix) {
+Document.prototype.getDocinfo = function (docinfoLocation, suffix) {
   return this.$docinfo(docinfoLocation, suffix);
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.hasDocinfoProcessors = function (docinfoLocation) {
+Document.prototype.hasDocinfoProcessors = function (docinfoLocation) {
   return this['$docinfo_processors?'](docinfoLocation);
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.counterIncrement = function (counterName, block) {
+Document.prototype.counterIncrement = function (counterName, block) {
   return this.$counter_increment(counterName, block);
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.counter = function (name, seed) {
+Document.prototype.counter = function (name, seed) {
   return this.$counter(name, seed);
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getSafe = function () {
+Document.prototype.getSafe = function () {
   return this.safe;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getCompatMode = function () {
+Document.prototype.getCompatMode = function () {
   return this.compat_mode;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getSourcemap = function () {
+Document.prototype.getSourcemap = function () {
   return this.sourcemap;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getCounters = function () {
+Document.prototype.getCounters = function () {
   return fromHash(this.counters);
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getCallouts = function () {
+Document.prototype.getCallouts = function () {
   return this.$callouts();
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getBaseDir = function () {
+Document.prototype.getBaseDir = function () {
   return this.base_dir;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getOptions = function () {
+Document.prototype.getOptions = function () {
   return fromHash(this.options);
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getOutfilesuffix = function () {
+Document.prototype.getOutfilesuffix = function () {
   return this.outfilesuffix;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getParentDocument = function () {
+Document.prototype.getParentDocument = function () {
   return this.parent_document;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getReader = function () {
+Document.prototype.getReader = function () {
   return this.reader;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getConverter = function () {
+Document.prototype.getConverter = function () {
   return this.converter;
 };
 
 /**
  * @memberof Document
  */
-Document.$$proto.getExtensions = function () {
+Document.prototype.getExtensions = function () {
   return this.extensions;
 };
 
@@ -1140,21 +1140,21 @@ var Title = Document.Title;
 /**
  * @memberof Document/Title
  */
-Title.$$proto.getMain = function () {
+Title.prototype.getMain = function () {
   return this.main;
 };
 
 /**
  * @memberof Document/Title
  */
-Title.$$proto.getCombined = function () {
+Title.prototype.getCombined = function () {
   return this.combined;
 };
 
 /**
  * @memberof Document/Title
  */
-Title.$$proto.getSubtitle = function () {
+Title.prototype.getSubtitle = function () {
   var subtitle = this.subtitle;
   return subtitle === Opal.nil ? undefined : subtitle;
 };
@@ -1162,7 +1162,7 @@ Title.$$proto.getSubtitle = function () {
 /**
  * @memberof Document/Title
  */
-Title.$$proto.isSanitized = function () {
+Title.prototype.isSanitized = function () {
   var sanitized = this['$sanitized?']();
   return sanitized === Opal.nil ? false : sanitized;
 };
@@ -1170,7 +1170,7 @@ Title.$$proto.isSanitized = function () {
 /**
  * @memberof Document/Title
  */
-Title.$$proto.hasSubtitle = function () {
+Title.prototype.hasSubtitle = function () {
   return this['$subtitle?']();
 };
 
@@ -1188,7 +1188,7 @@ var Inline = Opal.Asciidoctor.Inline;
  * @memberof Inline
  * @returns {string} - returns the converted String content for this inline node
  */
-Inline.$$proto.convert = function () {
+Inline.prototype.convert = function () {
   return this.$convert();
 };
 
@@ -1198,7 +1198,7 @@ Inline.$$proto.convert = function () {
  * @memberof Inline
  * @returns {string} - returns the converted String text for this Inline node, or undefined if not applicable for this node.
  */
-Inline.$$proto.getText = function () {
+Inline.prototype.getText = function () {
   var text = this.$text();
   return text === Opal.nil ? undefined : text;
 };
@@ -1212,7 +1212,7 @@ Inline.$$proto.getText = function () {
  * @memberof Inline
  * @returns {string} - returns the string sub-type of this Inline node.
  */
-Inline.$$proto.getType = function () {
+Inline.prototype.getType = function () {
   return this.$type();
 };
 
@@ -1222,7 +1222,7 @@ Inline.$$proto.getType = function () {
  * @memberof Inline
  * @returns {string} - returns the string target of this Inline node.
  */
-Inline.$$proto.getTarget = function () {
+Inline.prototype.getTarget = function () {
   var target = this.$target();
   return target === Opal.nil ? undefined : target;
 };
@@ -1238,7 +1238,7 @@ var List = Opal.Asciidoctor.List;
  * @memberof List
  * @returns {Array} - returns an Array of {@link ListItem} nodes.
  */
-List.$$proto.getItems = function () {
+List.prototype.getItems = function () {
   return this.blocks;
 };
 
@@ -1253,7 +1253,7 @@ var ListItem = Opal.Asciidoctor.ListItem;
  * @memberof ListItem
  * @returns {string} - returns the converted String text for this ListItem node.
  */
-ListItem.$$proto.getText = function () {
+ListItem.prototype.getText = function () {
   return this.$text();
 };
 
@@ -1265,7 +1265,7 @@ var Reader = Opal.Asciidoctor.Reader;
 /**
  * @memberof Reader
  */
-Reader.$$proto.pushInclude = function (data, file, path, lineno, attributes) {
+Reader.prototype.pushInclude = function (data, file, path, lineno, attributes) {
   return this.$push_include(data, file, path, lineno, toHash(attributes));
 };
 
@@ -1275,7 +1275,7 @@ Reader.$$proto.pushInclude = function (data, file, path, lineno, attributes) {
  *
  * @memberof Reader
  */
-Reader.$$proto.getCursor = function () {
+Reader.prototype.getCursor = function () {
   return this.$cursor();
 };
 
@@ -1285,7 +1285,7 @@ Reader.$$proto.getCursor = function () {
  * @memberof Reader
  * @returns {Array} - returns A copy of the String {Array} of lines remaining in this Reader.
  */
-Reader.$$proto.getLines = function () {
+Reader.prototype.getLines = function () {
   return this.$lines();
 };
 
@@ -1295,7 +1295,7 @@ Reader.$$proto.getLines = function () {
  * @memberof Reader
  * @returns {string} - returns The remaining lines managed by this Reader as a String (joined by linefeed characters).
  */
-Reader.$$proto.getString = function () {
+Reader.prototype.getString = function () {
   return this.$string();
 };
 
@@ -1308,7 +1308,7 @@ var Cursor = Opal.Asciidoctor.Reader.Cursor;
  * Get the file associated to the cursor.
  * @memberof Cursor
  */
-Cursor.$$proto.getFile = function () {
+Cursor.prototype.getFile = function () {
   var file = this.file;
   return file === Opal.nil ? undefined : file;
 };
@@ -1318,7 +1318,7 @@ Cursor.$$proto.getFile = function () {
  * @memberof Cursor
  * @returns {string} - returns the directory associated to the cursor
  */
-Cursor.$$proto.getDirectory = function () {
+Cursor.prototype.getDirectory = function () {
   var dir = this.dir;
   return dir === Opal.nil ? undefined : dir;
 };
@@ -1328,7 +1328,7 @@ Cursor.$$proto.getDirectory = function () {
  * @memberof Cursor
  * @returns {string} - returns the path associated to the cursor (or '<stdin>')
  */
-Cursor.$$proto.getPath = function () {
+Cursor.prototype.getPath = function () {
   var path = this.path;
   return path === Opal.nil ? undefined : path;
 };
@@ -1338,7 +1338,7 @@ Cursor.$$proto.getPath = function () {
  * @memberof Cursor
  * @returns {number} - returns the line number of the cursor
  */
-Cursor.$$proto.getLineNumber = function () {
+Cursor.prototype.getLineNumber = function () {
   return this.lineno;
 };
 
@@ -1372,7 +1372,7 @@ var MemoryLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'MemoryLogger', tr
 Opal.Asciidoctor.MemoryLogger = MemoryLogger;
 
 if (MemoryLogger) {
-  MemoryLogger.$$proto.getMessages = function () {
+  MemoryLogger.prototype.getMessages = function () {
     var messages = this.messages;
     var result = [];
     for (var i = 0; i < messages.length; i++) {

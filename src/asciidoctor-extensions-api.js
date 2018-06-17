@@ -10,10 +10,10 @@ var toBlock = function (block) {
 };
 
 var registerExtension = function (registry, type, processor, name) {
-  if (typeof processor === 'function') {
-    return Opal.send(registry, type, name && [name], toBlock(processor));
-  } else {
+  if (processor.$$is_class) {
     return registry['$' + type](processor, name);
+  } else {
+    return Opal.send(registry, type, name && [name], toBlock(processor));
   }
 };
 
@@ -134,24 +134,24 @@ var Registry = Extensions.Registry;
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.getGroups = Extensions.getGroups;
+Registry.prototype.getGroups = Extensions.getGroups;
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.unregisterAll = function () {
+Registry.prototype.unregisterAll = function () {
   this.groups = Opal.hash();
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.unregister = Extensions.unregister;
+Registry.prototype.unregister = Extensions.unregister;
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.block = function (name, processor) {
+Registry.prototype.block = function (name, processor) {
   if (arguments.length === 1) {
     processor = name;
     name = null;
@@ -162,7 +162,7 @@ Registry.$$proto.block = function (name, processor) {
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.inlineMacro = function (name, processor) {
+Registry.prototype.inlineMacro = function (name, processor) {
   if (arguments.length === 1) {
     processor = name;
     name = null;
@@ -173,14 +173,14 @@ Registry.$$proto.inlineMacro = function (name, processor) {
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.includeProcessor = function (processor) {
+Registry.prototype.includeProcessor = function (processor) {
   return registerExtension(this, 'include_processor', processor);
 };
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.blockMacro = function (name, processor) {
+Registry.prototype.blockMacro = function (name, processor) {
   if (arguments.length === 1) {
     processor = name;
     name = null;
@@ -191,7 +191,7 @@ Registry.$$proto.blockMacro = function (name, processor) {
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.treeProcessor = function (name, processor) {
+Registry.prototype.treeProcessor = function (name, processor) {
   if (arguments.length === 1) {
     processor = name;
     name = null;
@@ -202,7 +202,7 @@ Registry.$$proto.treeProcessor = function (name, processor) {
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.postprocessor = function (name, processor) {
+Registry.prototype.postprocessor = function (name, processor) {
   if (arguments.length === 1) {
     processor = name;
     name = null;
@@ -213,7 +213,7 @@ Registry.$$proto.postprocessor = function (name, processor) {
 /**
  * @memberof Extensions/Registry
  */
-Registry.$$proto.preprocessor = function (name, processor) {
+Registry.prototype.preprocessor = function (name, processor) {
   if (arguments.length === 1) {
     processor = name;
     name = null;
@@ -225,7 +225,7 @@ Registry.$$proto.preprocessor = function (name, processor) {
  * @memberof Extensions/Registry
  */
 
-Registry.$$proto.docinfoProcessor = function (name, processor) {
+Registry.prototype.docinfoProcessor = function (name, processor) {
   if (arguments.length === 1) {
     processor = name;
     name = null;
@@ -243,14 +243,14 @@ var Processor = Extensions.Processor;
  * The extension will be added to the beginning of the list for that extension type. (default is append).
  * @memberof Extensions/Processor
  */
-Processor.$$proto.prepend = function () {
+Processor.prototype.prepend = function () {
   this.$option('position', '>>');
 };
 
 /**
  * @memberof Extensions/Processor
  */
-Processor.$$proto.process = function (block) {
+Processor.prototype.process = function (block) {
   var handler = {
     apply: function (target, thisArg, argumentsList) {
       for (var i = 0; i < argumentsList.length; i++) {
@@ -269,42 +269,42 @@ Processor.$$proto.process = function (block) {
 /**
  * @memberof Extensions/Processor
  */
-Processor.$$proto.named = function (name) {
+Processor.prototype.named = function (name) {
   return this.$named(name);
 };
 
 /**
  * @memberof Extensions/Processor
  */
-Processor.$$proto.createBlock = function (parent, context, source, attrs, opts) {
+Processor.prototype.createBlock = function (parent, context, source, attrs, opts) {
   return this.$create_block(parent, context, source, toHash(attrs), toHash(opts));
 };
 
 /**
  * @memberof Extensions/Processor
  */
-Processor.$$proto.createImageBlock = function (parent, attrs, opts) {
+Processor.prototype.createImageBlock = function (parent, attrs, opts) {
   return this.$create_image_block(parent, toHash(attrs), toHash(opts));
 };
 
 /**
  * @memberof Extensions/Processor
  */
-Processor.$$proto.createInline = function (parent, context, text, opts) {
+Processor.prototype.createInline = function (parent, context, text, opts) {
   return this.$create_inline(parent, context, text, toHash(opts));
 };
 
 /**
  * @memberof Extensions/Processor
  */
-Processor.$$proto.parseContent = function (parent, content, attrs) {
+Processor.prototype.parseContent = function (parent, content, attrs) {
   return this.$parse_content(parent, content, attrs);
 };
 
 /**
  * @memberof Extensions/Processor
  */
-Processor.$$proto.positionalAttributes = function (value) {
+Processor.prototype.positionalAttributes = function (value) {
   return this.$positional_attrs(value);
 };
 
@@ -317,14 +317,14 @@ var BlockProcessor = Extensions.BlockProcessor;
 /**
  * @memberof Extensions/BlockProcessor
  */
-BlockProcessor.$$proto.onContext = function (context) {
+BlockProcessor.prototype.onContext = function (context) {
   return this.$on_context(context);
 };
 
 /**
  * @memberof Extensions/BlockProcessor
  */
-BlockProcessor.$$proto.onContexts = function () {
+BlockProcessor.prototype.onContexts = function () {
   return this.$on_contexts(Array.prototype.slice.call(arguments));
 };
 
@@ -344,7 +344,7 @@ var IncludeProcessor = Extensions.IncludeProcessor;
 /**
  * @memberof Extensions/IncludeProcessor
  */
-IncludeProcessor.$$proto.handles = function (block) {
+IncludeProcessor.prototype.handles = function (block) {
   return Opal.send(this, 'handles?', null, toBlock(block));
 };
 
@@ -378,7 +378,7 @@ var DocinfoProcessor = Extensions.DocinfoProcessor;
 /**
  * @memberof Extensions/DocinfoProcessor
  */
-DocinfoProcessor.$$proto.atLocation = function (value) {
+DocinfoProcessor.prototype.atLocation = function (value) {
   this.$at_location(value);
 };
 
@@ -404,12 +404,12 @@ Opal.Asciidoctor.Converter = Converter;
  * @returns the {Object} result of the conversion, typically a {string}.
  * @memberof Converter
  */
-Converter.$$proto.convert = function (node, transform, opts) {
+Converter.prototype.convert = function (node, transform, opts) {
   return this.$convert(node, transform, toHash(opts));
 };
 
 // The built-in converter doesn't include Converter, so we have to force it
-Converter.BuiltIn.$$proto.convert = Converter.$$proto.convert;
+Converter.BuiltIn.prototype.convert = Converter.prototype.convert;
 
 // Converter Factory API
 
@@ -440,6 +440,6 @@ ConverterFactory.getDefault = function (initialize) {
  * @returns {Converter} - a converter instance for converting nodes in an Asciidoctor AST.
  * @memberof Converter/Factory
  */
-ConverterFactory.$$proto.create = function (backend, opts) {
+ConverterFactory.prototype.create = function (backend, opts) {
   return this.$create(backend, toHash(opts));
 };
