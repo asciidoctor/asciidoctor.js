@@ -1,4 +1,3 @@
-// FIXME: not working anymore, create a class with Opal
 module.exports = (function (Opal) {
   var includeProcessor = Opal.const_get_qualified(
     Opal.const_get_qualified(

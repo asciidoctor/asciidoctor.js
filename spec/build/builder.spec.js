@@ -1,4 +1,6 @@
 /* eslint-env node, es6 */
+const chai = require('chai');
+const expect = chai.expect;
 const child_process = require('child_process');
 const execModule = require('../../npm/module/exec');
 const sinon = require('sinon');
@@ -27,9 +29,9 @@ describe('Build', function () {
       execSyncStub.returns('void');
 
       const result = releaseModule.pushRelease();
-      expect(result).toBe(true);
-      expect(execSyncStub.getCall(0).args[0]).toBe('git push upstream master');
-      expect(execSyncStub.getCall(1).args[0]).toBe('git push upstream --tags');
+      expect(result).to.be.true;
+      expect(execSyncStub.getCall(0).args[0]).to.equal('git push upstream master');
+      expect(execSyncStub.getCall(1).args[0]).to.equal('git push upstream --tags');
       execSyncStub.restore();
     });
 
@@ -42,8 +44,8 @@ describe('Build', function () {
       execSyncStub.returns('void');
 
       const result = releaseModule.pushRelease();
-      expect(result).toBe(false);
-      expect(execSyncStub.called).toBe(false);
+      expect(result).to.be.false;
+      expect(execSyncStub.called).to.be.false;
       execSyncStub.restore();
     });
   });

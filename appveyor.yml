@@ -8,7 +8,7 @@ clone_depth: 10
 
 # Test against the latest version of this Node.js version
 environment:
-  nodejs_version: "6"
+  nodejs_version: "8"
 
 cache:
  - "%LOCALAPPDATA%\\Yarn"
@@ -20,14 +20,10 @@ install:
   - yarn
 
 build_script:
-- node npm/test/builder.js
 - node npm/appveyor.js
 - node npm/test/unsupported-features.js
-- node npm/test/jasmine-browser.js
-- node npm/test/jasmine-node.js
-- node npm/test/jasmine-webpack.js
-- yarn run test:karmaBrowserify
-- yarn run test:karmaRequirejs
+- yarn run test:node
+- yarn run test:browser
 - yarn run examples
 
 test: off
