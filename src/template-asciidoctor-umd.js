@@ -1,3 +1,5 @@
+const functionCall = Function.call;
+
 if (typeof Opal === 'undefined' && typeof module === 'object' && module.exports) {
   Opal = require('opal-runtime').Opal;
 }
@@ -5,6 +7,9 @@ if (typeof Opal === 'undefined' && typeof module === 'object' && module.exports)
 if (typeof Opal === 'undefined') {
 //{{opalCode}}
 }
+
+// save and restore Function.call until https://github.com/opal/opal/issues/1846 is fixed
+Function.call = functionCall;
 
 // UMD Module
 (function (root, factory) {
