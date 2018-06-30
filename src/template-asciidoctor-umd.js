@@ -1,4 +1,4 @@
-const functionCall = Function.call;
+var functionCall = Function.call;
 
 if (typeof Opal === 'undefined' && typeof module === 'object' && module.exports) {
   Opal = require('opal-runtime').Opal;
