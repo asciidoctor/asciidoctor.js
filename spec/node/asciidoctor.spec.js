@@ -14,8 +14,6 @@ const config = {
 const asciidoctor = require('../../build/asciidoctor-node.js')(config);
 
 const Opal = require('opal-runtime').Opal; // for testing purpose only
-require('asciidoctor-docbook.js')();
-require('asciidoctor-reveal.js');
 const packageJson = require('../../package.json');
 
 const testOptions = {
@@ -46,7 +44,6 @@ const resolveFixture = (name) => {
 };
 
 describe('Node.js', () => {
-
   describe('Asciidoctor.js API', () => {
     it('should return Asciidoctor.js version', () => {
       expect(asciidoctor.getVersion()).toBe(packageJson.version);
@@ -289,22 +286,6 @@ intro
       } finally {
         removeFile(expectFilePath);
       }
-    });
-
-    it('should be able to use a custom backend', () => {
-      const options = {safe: 'safe', 'header_footer': true, attributes: {revealjsdir: 'node_modules/reveal.js@'}};
-      const content = `= Title
-:backend: revealjs
-
-== Slide 1
-Content 1
-
-== Slide 2
-Content 2`;
-      const result = asciidoctor.convert(content, options);
-      expect(result).toContain('<section id="slide_1"');
-      expect(result).toContain('<section id="slide_2"');
-      expect(result).toContain('<script src="node_modules/reveal.js/js/reveal.js">');
     });
 
     it('should be able to process smiley extension', () => {

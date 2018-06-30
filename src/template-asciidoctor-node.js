@@ -1,5 +1,8 @@
 /* eslint-env node, es6 */
+const functionCall = Function.call;
 const Opal = require('opal-runtime').Opal;
+// save and restore Function.call until https://github.com/opal/opal/issues/1846 is fixed
+Function.call = functionCall;
 
 // Node module
 (function (root, factory) {
@@ -18,7 +21,7 @@ const Opal = require('opal-runtime').Opal;
    * @memberof Asciidoctor
    * @returns {string} - returns the version number of Asciidoctor.js.
    */
-  Asciidoctor.$$proto.getVersion = function () {
+  Asciidoctor.prototype.getVersion = function () {
     return ASCIIDOCTOR_JS_VERSION;
   };
   return Opal.Asciidoctor;
