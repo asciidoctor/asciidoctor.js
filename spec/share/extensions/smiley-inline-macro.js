@@ -5,14 +5,14 @@ Extensions.register(function () {
     var self = this;
     self.process(function (parent, target) {
       var text;
-      if (target == 'happy') {
+      if (target === 'happy') {
         text = ':D';
-      } else if (target == 'wink') {
+      } else if (target === 'wink') {
         text = ';)';
       } else {
         text = ':)';
       }
       return self.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert();
-    }); 
+    });
   });
 });

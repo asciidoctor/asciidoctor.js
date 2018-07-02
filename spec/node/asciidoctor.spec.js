@@ -294,328 +294,439 @@ intro
       }
     });
 
-    it('should be able to process smiley extension', () => {
-      try {
-        require('../share/extensions/smiley-inline-macro.js');
-        const result = asciidoctor.convert(fs.readFileSync(resolveFixture('smiley-inline-macro-ex.adoc')));
-        expect(result).to.contain('<strong>:D</strong>');
-        expect(result).to.contain('<strong>;)</strong>');
-        expect(result).to.contain('<strong>:)</strong>');
-      } finally {
-        asciidoctor.Extensions.unregisterAll();
-      }
-    });
+    describe('Extension', () => {
 
-    it('should be able to process love tree processor extension', () => {
-      const registry = asciidoctor.Extensions.create();
-      const opts = {extension_registry: registry};
-      require('../share/extensions/love-tree-processor.js')(registry);
-      const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('love-tree-processor-ex.adoc')), opts);
-      expect(resultWithExtension).to.contain('Made with icon:heart[]');
+      describe('Registry', () => {
+        it('should return empty hash of groups if no extensions are registered', () => {
+          const groups = asciidoctor.Extensions.getGroups();
+          expect(groups).to.be.instanceof(Object);
+          expect(Object.keys(groups).length).to.equal(0);
+        });
 
-      const resultWithoutExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('love-tree-processor-ex.adoc')));
-      expect(resultWithoutExtension).to.contain('How this document was made ?');
-    });
+        it('should not fail to unregister extension groups if no extensions are defined', () => {
+          asciidoctor.Extensions.unregister('no-such-group');
+        });
 
-    it('should be able to process foo bar postprocessor extension', () => {
-      const registry = asciidoctor.Extensions.create();
-      const opts = {extension_registry: registry};
-      require('../share/extensions/foo-bar-postprocessor.js')(registry);
-      const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-bar-postprocessor-ex.adoc')), opts);
-      expect(resultWithExtension).to.contain('bar, qux, bar.');
-      expect(resultWithExtension).not.to.contain('foo');
+        it('should be able to unregister a single statically-registered extension group', () => {
+          const extensions = asciidoctor.Extensions;
+          try {
+            extensions.register('test', function () {
+              this.blockMacro(function () {
+                this.named('test');
+                this.process((parent) => {
+                  return this.createBlock(parent, 'paragraph', 'this was only a test');
+                });
+              });
+            });
+            const groups = extensions.getGroups();
+            expect(groups).to.be.instanceof(Object);
+            expect(Object.keys(groups).length).to.equal(1);
+            expect('test' in groups).to.be.true;
+            let html = asciidoctor.convert('test::[]');
+            expect(html).to.contain('<p>this was only a test</p>');
+            extensions.unregister('test');
+            html = asciidoctor.convert('test::[]');
+            expect(html).to.contain('test::[]');
+            expect(html).not.to.contain('<p>this was only a test</p>');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
 
-      const resultWithoutExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-bar-postprocessor-ex.adoc')));
-      expect(resultWithoutExtension).to.contain('foo, qux, foo.');
-      expect(resultWithoutExtension).not.to.contain('bar');
-    });
+        it('should be able to unregister multiple statically-registered extension groups', () => {
+          const extensions = asciidoctor.Extensions;
+          try {
+            extensions.register('test', function () {
+              this.blockMacro(function () {
+                this.named('test');
+                this.process((parent) => {
+                  return this.createBlock(parent, 'paragraph', 'this was only a test');
+                });
+              });
+            });
+            extensions.register('foo', function () {
+              this.blockMacro(function () {
+                this.named('foo');
+                this.process((parent) => {
+                  return this.createBlock(parent, 'paragraph', 'foo means foo');
+                });
+              });
+            });
+            extensions.register('bar', function () {
+              this.blockMacro(function () {
+                this.named('bar');
+                this.process((parent) => {
+                  return this.createBlock(parent, 'paragraph', 'bar or bust');
+                });
+              });
+            });
+            let groups = extensions.getGroups();
+            expect(groups).to.be.instanceof(Object);
+            expect(Object.keys(groups).length).to.equal(3);
+            expect(Object.keys(groups)).to.have.members(['test', 'foo', 'bar']);
+            let html = asciidoctor.convert('test::[]\n\nfoo::[]\n\nbar::[]');
+            expect(html).to.contain('<p>this was only a test</p>');
+            expect(html).to.contain('<p>foo means foo</p>');
+            expect(html).to.contain('<p>bar or bust</p>');
+            extensions.unregister('foo', 'bar');
+            groups = extensions.getGroups();
+            expect(groups).to.be.instanceof(Object);
+            expect(Object.keys(groups).length).to.equal(1);
+            html = asciidoctor.convert('test::[]\n\nfoo::[]\n\nbar::[]');
+            expect(html).to.contain('<p>this was only a test</p>');
+            expect(html).to.contain('foo::[]');
+            expect(html).to.contain('bar::[]');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
 
-    it('should be able to process custom block', () => {
-      try {
-        require('../share/extensions/shout-block.js');
-        const result = asciidoctor.convert(fs.readFileSync(resolveFixture('shout-block-ex.adoc')));
-        expect(result).to.contain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>');
-      } finally {
-        asciidoctor.Extensions.unregisterAll();
-      }
-    });
+        it('should be able to unregister multiple statically-registered extension groups as Array', () => {
+          const extensions = asciidoctor.Extensions;
+          try {
+            extensions.register('foo', function () {
+              this.blockMacro(function () {
+                this.named('foo');
+                this.process((parent) => {
+                  return this.createBlock(parent, 'paragraph', 'foo means foo');
+                });
+              });
+            });
+            extensions.register('bar', function () {
+              this.blockMacro(function () {
+                this.named('bar');
+                this.process((parent) => {
+                  return this.createBlock(parent, 'paragraph', 'bar or bust');
+                });
+              });
+            });
+            let groups = extensions.getGroups();
+            expect(groups).to.be.instanceof(Object);
+            expect(Object.keys(groups).length).to.equal(2);
+            expect(Object.keys(groups)).to.have.members(['foo', 'bar']);
+            extensions.unregister(['foo', 'bar']);
+            groups = extensions.getGroups();
+            expect(groups).to.be.instanceof(Object);
+            expect(Object.keys(groups).length).to.equal(0);
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
 
-    it('should be able to process custom block on multiple contexts', () => {
-      try {
-        asciidoctor.Extensions.register(function () {
-          this.block(function () {
-            this.named('cloak');
-            this.onContexts('paragraph', 'literal');
-            this.process((parent, reader, attrs) => {
-              return this.createBlock(parent, 'paragraph', 'cloaked: ' + attrs['cloaked-context']);
+        it('should be able to unregister a single extension group from a custom registry', () => {
+          const registry = asciidoctor.Extensions.create('test', function () {
+            this.blockMacro(function () {
+              this.named('test');
+              this.process((parent) => {
+                return this.createBlock(parent, 'paragraph', 'this was only a test');
+              });
             });
           });
+          const groups = registry.getGroups();
+          expect(groups).to.be.instanceof(Object);
+          expect('test' in groups).to.be.true;
+          const opts = {extension_registry: registry};
+          let html = asciidoctor.convert('test::[]', opts);
+          expect(html).to.contain('<p>this was only a test</p>');
+          registry.unregister('test');
+          html = asciidoctor.convert('test::[]');
+          expect(html).to.contain('test::[]');
+          expect(html).not.to.contain('<p>this was only a test</p>');
         });
-        const result = asciidoctor.convert('[cloak]\nparagraph\n\n[cloak]\n....\nliteral\n....');
-        expect(result).to.contain('<p>cloaked: paragraph</p>');
-        expect(result).to.contain('<p>cloaked: literal</p>');
-      } finally {
-        asciidoctor.Extensions.unregisterAll();
-      }
-    });
 
-    it('should be able to process custom include processor when target does match', () => {
-      try {
-        require('../share/extensions/foo-include.js');
-        const result = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-include-ex.adoc')));
-        expect(result).to.contain('foo\nfoo');
-      } finally {
-        asciidoctor.Extensions.unregisterAll();
-      }
-    });
-
-    it('should not process custom include processor when target does not match', () => {
-      const result = asciidoctor.convert(fs.readFileSync(resolveFixture('bar-include-ex.adoc')));
-      expect(result).to.contain('bar');
-    });
-
-    it('should be able to register an include processor class', () => {
-      try {
-        const LoremIncludeProcessor = require('../share/extensions/include-processor-class.js');
-        asciidoctor.Extensions.register(function () {
-          this.includeProcessor(LoremIncludeProcessor);
-        });
-        const html = asciidoctor.convert('include::fake.adoc[]', {safe: 'safe'});
-        expect(html).to.contain('Lorem ipsum');
-      } finally {
-        asciidoctor.Extensions.unregisterAll();
-      }
-    });
-
-    it('should be able to process lorem extension', () => {
-      try {
-        require('../share/extensions/lorem-block-macro.js');
-        const result = asciidoctor.convert(fs.readFileSync(resolveFixture('lorem-block-macro-ex.adoc')));
-        expect(result).to.contain('Lorem ipsum dolor sit amet');
-      } finally {
-        asciidoctor.Extensions.unregisterAll();
-      }
-    });
-
-    it('should return empty hash of groups if no extensions are registered', () => {
-      const groups = asciidoctor.Extensions.getGroups();
-      expect(groups).to.be.instanceof(Object);
-      expect(Object.keys(groups).length).to.equal(0);
-    });
-
-    it('should not fail to unregister extension groups if no extensions are defined', () => {
-      asciidoctor.Extensions.unregister('no-such-group');
-    });
-
-    it('should be able to unregister a single statically-registered extension group', () => {
-      const extensions = asciidoctor.Extensions;
-      try {
-        extensions.register('test', function () {
-          this.blockMacro(function () {
-            this.named('test');
-            this.process((parent) => {
-              return this.createBlock(parent, 'paragraph', 'this was only a test');
+        it('should be able to unregister all extension groups from a custom registry', () => {
+          const registry = asciidoctor.Extensions.create('test', function () {
+            this.blockMacro(function () {
+              this.named('test');
+              this.process((parent) => {
+                return this.createBlock(parent, 'paragraph', 'this was only a test');
+              });
             });
           });
-        });
-        const groups = extensions.getGroups();
-        expect(groups).to.be.instanceof(Object);
-        expect(Object.keys(groups).length).to.equal(1);
-        expect('test' in groups).to.be.true;
-        let html = asciidoctor.convert('test::[]');
-        expect(html).to.contain('<p>this was only a test</p>');
-        extensions.unregister('test');
-        html = asciidoctor.convert('test::[]');
-        expect(html).to.contain('test::[]');
-        expect(html).not.to.contain('<p>this was only a test</p>');
-      } finally {
-        asciidoctor.Extensions.unregisterAll();
-      }
-    });
-
-    it('should be able to unregister multiple statically-registered extension groups', () => {
-      const extensions = asciidoctor.Extensions;
-      try {
-        extensions.register('test', function () {
-          this.blockMacro(function () {
-            this.named('test');
-            this.process((parent) => {
-              return this.createBlock(parent, 'paragraph', 'this was only a test');
-            });
-          });
-        });
-        extensions.register('foo', function () {
-          this.blockMacro(function () {
-            this.named('foo');
-            this.process((parent) => {
-              return this.createBlock(parent, 'paragraph', 'foo means foo');
-            });
-          });
-        });
-        extensions.register('bar', function () {
-          this.blockMacro(function () {
-            this.named('bar');
-            this.process((parent) => {
-              return this.createBlock(parent, 'paragraph', 'bar or bust');
-            });
-          });
-        });
-        let groups = extensions.getGroups();
-        expect(groups).to.be.instanceof(Object);
-        expect(Object.keys(groups).length).to.equal(3);
-        expect(Object.keys(groups)).to.have.members(['test', 'foo', 'bar']);
-        let html = asciidoctor.convert('test::[]\n\nfoo::[]\n\nbar::[]');
-        expect(html).to.contain('<p>this was only a test</p>');
-        expect(html).to.contain('<p>foo means foo</p>');
-        expect(html).to.contain('<p>bar or bust</p>');
-        extensions.unregister('foo', 'bar');
-        groups = extensions.getGroups();
-        expect(groups).to.be.instanceof(Object);
-        expect(Object.keys(groups).length).to.equal(1);
-        html = asciidoctor.convert('test::[]\n\nfoo::[]\n\nbar::[]');
-        expect(html).to.contain('<p>this was only a test</p>');
-        expect(html).to.contain('foo::[]');
-        expect(html).to.contain('bar::[]');
-      } finally {
-        asciidoctor.Extensions.unregisterAll();
-      }
-    });
-
-    it('should be able to unregister multiple statically-registered extension groups as Array', () => {
-      const extensions = asciidoctor.Extensions;
-      try {
-        extensions.register('foo', function () {
-          this.blockMacro(function () {
-            this.named('foo');
-            this.process((parent) => {
-              return this.createBlock(parent, 'paragraph', 'foo means foo');
-            });
-          });
-        });
-        extensions.register('bar', function () {
-          this.blockMacro(function () {
-            this.named('bar');
-            this.process((parent) => {
-              return this.createBlock(parent, 'paragraph', 'bar or bust');
-            });
-          });
-        });
-        let groups = extensions.getGroups();
-        expect(groups).to.be.instanceof(Object);
-        expect(Object.keys(groups).length).to.equal(2);
-        expect(Object.keys(groups)).to.have.members(['foo', 'bar']);
-        extensions.unregister(['foo', 'bar']);
-        groups = extensions.getGroups();
-        expect(groups).to.be.instanceof(Object);
-        expect(Object.keys(groups).length).to.equal(0);
-      } finally {
-        asciidoctor.Extensions.unregisterAll();
-      }
-    });
-
-    it('should be able to unregister a single extension group from a custom registry', () => {
-      const registry = asciidoctor.Extensions.create('test', function () {
-        this.blockMacro(function () {
-          this.named('test');
-          this.process((parent) => {
-            return this.createBlock(parent, 'paragraph', 'this was only a test');
-          });
+          const groups = registry.getGroups();
+          expect(groups).to.be.instanceof(Object);
+          expect('test' in groups).to.be.true;
+          const opts = {extension_registry: registry};
+          let html = asciidoctor.convert('test::[]', opts);
+          expect(html).to.contain('<p>this was only a test</p>');
+          registry.unregisterAll();
+          html = asciidoctor.convert('test::[]');
+          expect(html).to.contain('test::[]');
+          expect(html).not.to.contain('<p>this was only a test</p>');
         });
       });
-      const groups = registry.getGroups();
-      expect(groups).to.be.instanceof(Object);
-      expect('test' in groups).to.be.true;
-      const opts = {extension_registry: registry};
-      let html = asciidoctor.convert('test::[]', opts);
-      expect(html).to.contain('<p>this was only a test</p>');
-      registry.unregister('test');
-      html = asciidoctor.convert('test::[]');
-      expect(html).to.contain('test::[]');
-      expect(html).not.to.contain('<p>this was only a test</p>');
-    });
 
-    it('should be able to unregister all extension groups from a custom registry', () => {
-      const registry = asciidoctor.Extensions.create('test', function () {
-        this.blockMacro(function () {
-          this.named('test');
-          this.process((parent) => {
-            return this.createBlock(parent, 'paragraph', 'this was only a test');
-          });
+      describe('Post processor', () => {
+        it('should be able to process foo bar postprocessor extension', () => {
+          const registry = asciidoctor.Extensions.create();
+          const opts = {extension_registry: registry};
+          require('../share/extensions/foo-bar-postprocessor.js')(registry);
+          const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-bar-postprocessor-ex.adoc')), opts);
+          expect(resultWithExtension).to.contain('bar, qux, bar.');
+          expect(resultWithExtension).not.to.contain('foo');
+
+          const resultWithoutExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-bar-postprocessor-ex.adoc')));
+          expect(resultWithoutExtension).to.contain('foo, qux, foo.');
+          expect(resultWithoutExtension).not.to.contain('bar');
         });
       });
-      const groups = registry.getGroups();
-      expect(groups).to.be.instanceof(Object);
-      expect('test' in groups).to.be.true;
-      const opts = {extension_registry: registry};
-      let html = asciidoctor.convert('test::[]', opts);
-      expect(html).to.contain('<p>this was only a test</p>');
-      registry.unregisterAll();
-      html = asciidoctor.convert('test::[]');
-      expect(html).to.contain('test::[]');
-      expect(html).not.to.contain('<p>this was only a test</p>');
-    });
 
-    it('should be able to process draft preprocessor extension', () => {
-      const registry = asciidoctor.Extensions.create();
-      const opts = {extension_registry: registry};
-      require('../share/extensions/draft-preprocessor.js')(registry);
-      const doc = asciidoctor.load(fs.readFileSync(resolveFixture('draft-preprocessor-ex.adoc')), opts);
-      expect(doc.getAttribute('status')).to.equal('DRAFT');
-      const result = doc.convert();
-      expect(result).to.contain('Important');
-      expect(result).to.contain('This section is a draft: we need to talk about Y.');
-    });
+      describe('Tree processor', () => {
+        it('should be able to process love tree processor extension', () => {
+          const registry = asciidoctor.Extensions.create();
+          const opts = {extension_registry: registry};
+          require('../share/extensions/love-tree-processor.js')(registry);
+          const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('love-tree-processor-ex.adoc')), opts);
+          expect(resultWithExtension).to.contain('Made with icon:heart[]');
 
-    it('should be able to process moar footer docinfo processor extension', () => {
-      const registry = asciidoctor.Extensions.create();
-      const opts = {safe: 'server', header_footer: true, extension_registry: registry};
-      require('../share/extensions/moar-footer-docinfo-processor.js')(registry);
-      const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('moar-footer-docinfo-processor-ex.adoc')), opts);
-      expect(resultWithExtension).to.contain('moar footer');
-
-      const resultWithoutExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('moar-footer-docinfo-processor-ex.adoc')));
-      expect(resultWithoutExtension).not.to.contain('moar footer');
-    });
-
-    it('should be able to pass an extension registry to the processor', () => {
-      const registry = asciidoctor.Extensions.create(function () {
-        this.block(function () {
-          const self = this;
-          self.named('whisper');
-          self.onContext('paragraph');
-          self.process(function (parent, reader) {
-            const lines = reader.getLines().map((l) => l.toLowerCase().replace('!', '.'));
-            return self.createBlock(parent, 'paragraph', lines);
-          });
+          const resultWithoutExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('love-tree-processor-ex.adoc')));
+          expect(resultWithoutExtension).to.contain('How this document was made ?');
         });
       });
-      const opts = {extension_registry: registry};
-      const result = asciidoctor.convert('[whisper]\nWE HAVE LIFTOFF!', opts);
-      expect(result).to.contain('we have liftoff.');
-    });
 
-    it('should be able to create an image block from a processor extension', () => {
-      const registry = asciidoctor.Extensions.create(function () {
-        this.blockMacro(function () {
-          this.named('img');
-          this.process((parent, target) => {
-            return this.createImageBlock(parent, {target: target + '.png'});
-          });
+      describe('Preprocessor', () => {
+        it('should be able to process draft preprocessor extension', () => {
+          const registry = asciidoctor.Extensions.create();
+          const opts = {extension_registry: registry};
+          require('../share/extensions/draft-preprocessor.js')(registry);
+          const doc = asciidoctor.load(fs.readFileSync(resolveFixture('draft-preprocessor-ex.adoc')), opts);
+          expect(doc.getAttribute('status')).to.equal('DRAFT');
+          const result = doc.convert();
+          expect(result).to.contain('Important');
+          expect(result).to.contain('This section is a draft: we need to talk about Y.');
         });
       });
-      const opts = {extension_registry: registry};
-      const result = asciidoctor.convert('img::image-name[]', opts);
-      expect(result).to.contain('<img src="image-name.png" alt="image name">');
-    });
 
-    it('should be able to process emoji inline macro processor extension', () => {
-      const registry = asciidoctor.Extensions.create();
-      const opts = {extension_registry: registry};
-      require('../share/extensions/emoji-inline-macro.js')(registry);
-      const result = asciidoctor.convert(fs.readFileSync(resolveFixture('emoji-inline-macro-ex.adoc')), opts);
-      expect(result).to.contain('1f422.svg');
-      expect(result).to.contain('2764.svg');
-      expect(result).to.contain('twemoji.maxcdn.com');
+      describe('Docinfo processor', () => {
+        it('should be able to process moar footer docinfo processor extension', () => {
+          const registry = asciidoctor.Extensions.create();
+          const opts = {safe: 'server', header_footer: true, extension_registry: registry};
+          require('../share/extensions/moar-footer-docinfo-processor.js')(registry);
+          const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('moar-footer-docinfo-processor-ex.adoc')), opts);
+          expect(resultWithExtension).to.contain('moar footer');
+
+          const resultWithoutExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('moar-footer-docinfo-processor-ex.adoc')));
+          expect(resultWithoutExtension).not.to.contain('moar footer');
+        });
+      });
+
+      describe('Block processor', () => {
+        it('should be able to create, instantiate and register a block processor class', () => {
+          const registry = asciidoctor.Extensions.create();
+          var ShoutBlockProcessor = asciidoctor.Extensions.createBlockProcessor('ShoutBlockProcessor', {
+            process: function (parent, reader) {
+              const lines = reader.getLines().map((l) => l.toUpperCase());
+              return this.createBlock(parent, 'paragraph', lines);
+            }
+          });
+          registry.block('shout', ShoutBlockProcessor.$new());
+          const opts = {extension_registry: registry};
+          const result = asciidoctor.convert(fs.readFileSync(resolveFixture('shout-block-ex.adoc')), opts);
+          expect(result).to.contain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>');
+        });
+
+        it('should be able to process custom block', () => {
+          try {
+            require('../share/extensions/shout-block.js');
+            const result = asciidoctor.convert(fs.readFileSync(resolveFixture('shout-block-ex.adoc')));
+            expect(result).to.contain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
+
+        it('should be able to process custom block on multiple contexts', () => {
+          try {
+            asciidoctor.Extensions.register(function () {
+              this.block(function () {
+                this.named('cloak');
+                this.onContexts('paragraph', 'literal');
+                this.process((parent, reader, attrs) => {
+                  return this.createBlock(parent, 'paragraph', 'cloaked: ' + attrs['cloaked-context']);
+                });
+              });
+            });
+            const result = asciidoctor.convert('[cloak]\nparagraph\n\n[cloak]\n....\nliteral\n....');
+            expect(result).to.contain('<p>cloaked: paragraph</p>');
+            expect(result).to.contain('<p>cloaked: literal</p>');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
+
+        it('should be able to pass an extension registry to the processor', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.block(function () {
+              const self = this;
+              self.named('whisper');
+              self.onContext('paragraph');
+              self.process(function (parent, reader) {
+                const lines = reader.getLines().map((l) => l.toLowerCase().replace('!', '.'));
+                return self.createBlock(parent, 'paragraph', lines);
+              });
+            });
+          });
+          const opts = {extension_registry: registry};
+          const result = asciidoctor.convert('[whisper]\nWE HAVE LIFTOFF!', opts);
+          expect(result).to.contain('we have liftoff.');
+        });
+      });
+
+      describe('Inline macro processor', () => {
+        it('should be able to process smiley extension', () => {
+          try {
+            require('../share/extensions/smiley-inline-macro.js');
+            const result = asciidoctor.convert(fs.readFileSync(resolveFixture('smiley-inline-macro-ex.adoc')));
+            expect(result).to.contain('<strong>:D</strong>');
+            expect(result).to.contain('<strong>;)</strong>');
+            expect(result).to.contain('<strong>:)</strong>');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
+
+        it('should be able to process emoji inline macro processor extension', () => {
+          const registry = asciidoctor.Extensions.create();
+          const opts = {extension_registry: registry};
+          require('../share/extensions/emoji-inline-macro.js')(registry);
+          const result = asciidoctor.convert(fs.readFileSync(resolveFixture('emoji-inline-macro-ex.adoc')), opts);
+          expect(result).to.contain('1f422.svg');
+          expect(result).to.contain('2764.svg');
+          expect(result).to.contain('twemoji.maxcdn.com');
+        });
+      });
+
+      describe('Block processor', () => {
+        it('should be able to process lorem extension', () => {
+          try {
+            require('../share/extensions/lorem-block-macro.js');
+            const result = asciidoctor.convert(fs.readFileSync(resolveFixture('lorem-block-macro-ex.adoc')));
+            expect(result).to.contain('Lorem ipsum dolor sit amet');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
+
+        it('should be able to create an image block from a processor extension', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.blockMacro(function () {
+              this.named('img');
+              this.process((parent, target) => {
+                return this.createImageBlock(parent, {target: target + '.png'});
+              });
+            });
+          });
+          const opts = {extension_registry: registry};
+          const result = asciidoctor.convert('img::image-name[]', opts);
+          expect(result).to.contain('<img src="image-name.png" alt="image name">');
+        });
+      });
+
+      describe('Include processor', () => {
+        it('should process a custom include processor when target does match', () => {
+          try {
+            require('../share/extensions/foo-include.js');
+            const result = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-include-ex.adoc')));
+            expect(result).to.contain('foo\nfoo');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
+
+        it('should not process custom include processor when target does not match', () => {
+          try {
+            require('../share/extensions/foo-include.js');
+            const result = asciidoctor.convert(fs.readFileSync(resolveFixture('bar-include-ex.adoc')));
+            expect(result).to.contain('bar');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
+
+        it('should be able to register an include processor class', () => {
+          try {
+            const LoremIncludeProcessor = require('../share/extensions/include-processor-class.js');
+            asciidoctor.Extensions.register(function () {
+              this.includeProcessor(LoremIncludeProcessor);
+            });
+            const html = asciidoctor.convert('include::fake.adoc[]', {safe: 'safe'});
+            expect(html).to.contain('Lorem ipsum');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
+
+        it('should be able to create and register an include processor class', () => {
+          const registry = asciidoctor.Extensions.create();
+          registry.includeProcessor(asciidoctor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
+            process: (doc, reader, target, attrs) => {
+              reader.pushInclude(['included content'], target, target, 1, attrs);
+            }
+          }));
+          const opts = {};
+          opts['extension_registry'] = registry;
+          opts['safe'] = 'safe';
+          const result = asciidoctor.convert('include::whatever.adoc[]', opts);
+          expect(result).to.contain('included content');
+        });
+
+        it('should be able to register an include processor class with a state', () => {
+          const registry = asciidoctor.Extensions.create();
+          const $callback = Symbol('callback');
+          let includeProcessor = asciidoctor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
+            postConstruct: function () {
+              this[$callback] = (value => 'you should ' + value);
+            },
+            process: function (doc, reader, target, attrs) {
+              reader.pushInclude([this[$callback]('pass')], target, target, 1, attrs);
+            }
+          });
+          let includeProcessorInstance = includeProcessor.$new();
+          registry.includeProcessor(includeProcessorInstance);
+          const opts = {};
+          opts['extension_registry'] = registry;
+          opts['safe'] = 'safe';
+          const result = asciidoctor.convert('include::whatever.adoc[]', opts);
+          expect(result).to.contain('you should pass');
+        });
+
+        it('should be able to register an include processor class with a postConstruct and a custom initialize function', () => {
+          const registry = asciidoctor.Extensions.create();
+          let includeProcessor = asciidoctor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
+            initialize: function (value) {
+              this.value = value;
+              this.super();
+            },
+            postConstruct: function () {
+              this.bar = 'bar';
+            },
+            process: function (doc, reader, target, attrs) {
+              reader.pushInclude([this.value + this.bar], target, target, 1, attrs);
+            }
+          });
+          let includeProcessorInstance = includeProcessor.$new('foo');
+          registry.includeProcessor(includeProcessorInstance);
+          const opts = {};
+          opts['extension_registry'] = registry;
+          opts['safe'] = 'safe';
+          const result = asciidoctor.convert('include::whatever.adoc[]', opts);
+          expect(result).to.contain('foobar');
+        });
+
+        it('should be able to register an include processor instance', () => {
+          const registry = asciidoctor.Extensions.create();
+          registry.includeProcessor(asciidoctor.Extensions.newIncludeProcessor('StaticIncludeProcessor', {
+            process: function (doc, reader, target, attrs) {
+              reader.pushInclude(['included content'], target, target, 1, attrs);
+            }
+          }));
+          const opts = {};
+          opts['extension_registry'] = registry;
+          opts['safe'] = 'safe';
+          const result = asciidoctor.convert('include::whatever.adoc[]', opts);
+          expect(result).to.contain('included content');
+        });
+      });
     });
 
     it('should be able to convert a file and include the default stylesheet', () => {
