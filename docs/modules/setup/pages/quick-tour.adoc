@@ -12,25 +12,43 @@ The first thing you need to do is instantiate Asciidoctor.js to get a http://asc
 var asciidoctor = Asciidoctor();
 ```
 
-To convert an AsciiDoc content, just do this:
+To convert an AsciiDoc-formatted string:
 
 ```js
 var html = asciidoctor.convert('Hello, _Asciidoctor_');
 ```
 
-Alternatively, you can also convert a file using `convertFile`:
+[NOTE]
+====
+When converting a string, the header and footer are excluded by default to make Asciidoctor consistent with other lightweight markup engines like Markdown.
+If you want the header and footer, just enable it using the `header_footer` option:
 
 ```js
-var html = asciidoctor.convertFile('/path/to/file.adoc');
+var html = asciidoctor.convert('*This* is Asciidoctor.', {'header_footer': true});
+```
+====
+
+Alternatively, you can use the function `convertFile` to convert a file containing AsciiDoc markup to HTML 5:
+
+```js
+var doc = asciidoctor.convertFile('/path/to/file.adoc'); // <1>
+```
+<1> The command will output to the file `file.html` in the same directory. +
+The variable `doc` will contain an {uri-js-api-doc}/#document[Asciidoctor.Document] object.
+
+Alternatively, you can capture the HTML 5 output in a variable instead of writing it to a file:
+
+```js
+var html = asciidoctor.convertFile('/path/to/file.adoc', {'to_file': false, 'header_footer': true});
 ```
 
 [NOTE]
 ====
-The convert functions also accept an optional argument to specify options. +
-Use of this argument is described in xref:processor:convert-options.adoc[Convert options section].
+As seen above, the convert functions accept an optional argument to specify options. +
+Use of this argument is described in the xref:processor:convert-options.adoc[Convert options section].
 ====
 
-If you are using Node.js, you can use a `Buffer`:
+If you are using Node.js, you can also use a `Buffer`:
 
 ```js
 var html = asciidoctor.convert(fs.readFileSync('/path/to/file.adoc')); // <1>
@@ -53,18 +71,37 @@ console.log(doc.getAttributes());
 ```
 
 More than likely, you will want to convert the document.
-To convert an {uri-js-api-doc}/#document[Asciidoctor.Document] to HTML5, use:
+To convert an {uri-js-api-doc}/#document[Asciidoctor.Document] to HTML5, use the `convert` function on a `Document`:
 
 ```js
 var doc = asciidoctor.loadFile('file.adoc');
 doc.convert();
 ```
 
-As with the convert functions, it's also possible to load an AsciiDoc content and `Buffer`:
+As with the convert functions, it's also possible to load an AsciiDoc-formatted string and a `Buffer`:
 
 ```js
 var doc = asciidoctor.load('Hello, _Asciidoctor_');
 ```
 ```js
 var doc = asciidoctor.load(fs.readFileSync('/path/to/file.adoc'));
+```
+
+== Styling the HTML with CSS
+
+Asciidoctor.js uses CSS for HTML document styling.
+It comes bundled with a stylesheet, named `asciidoctor.css`.
+
+TIP: The default stylesheet is located at [.path]_node_modules/asciidoctor.js/dist/css/asciidoctor.css_
+
+When you generate a document using Node.js, the `asciidoctor.css` stylesheet is embedded into the HTML output by default (when the safe mode is less than `SECURE`).
+
+```js
+asciidoctor.convertFile('/path/to/file.adoc', {'safe': 'SAFE'});
+```
+
+To have your document link to the stylesheet, set the `linkcss` attribute:
+
+```js
+asciidoctor.convertFile('/path/to/file.adoc', {'safe': 'SAFE', 'attributes': {'linkcss': true}});
 ```
