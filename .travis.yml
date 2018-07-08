@@ -57,3 +57,7 @@ deploy:
     repo: asciidoctor/asciidoctor.js
     tags: true
     node: node
+
+# Trigger a deploy on asciidoctor/docs.asciidoctor.org
+after_success:
+- curl -X POST -d '' "$NETLIFY_WEBHOOK_URL"
