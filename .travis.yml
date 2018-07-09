@@ -60,4 +60,8 @@ deploy:
 
 # Trigger a deploy on asciidoctor/docs.asciidoctor.org
 after_success:
-- curl -X POST -d '' "$NETLIFY_WEBHOOK_URL"
+- >
+  if ! [ "$AFTER_SUCCESS_RUN" ]; then
+    export AFTER_SUCCESS_RUN=1;
+    curl -X POST -d '' "$NETLIFY_WEBHOOK_URL"
+  fi
