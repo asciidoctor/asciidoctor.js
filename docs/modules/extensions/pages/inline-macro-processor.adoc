@@ -1,0 +1,49 @@
+= Inline Macro Processor Extension Example
+
+Purpose::
+Replace the macro `smiley` with the corresponding text emoticon.
+
+== sample-smiley-doc.adoc
+
+```adoc
+= Smiley!
+
+Should process smiley inline macro!
+
+smiley:wink[]
+smiley:grin[]
+smiley:x[]
+```
+
+== SmileyInlineMacroProcessor
+
+.smiley-inline-macro-processor.js
+```js
+module.exports = function (registry) {
+  registry.inlineMacro(function () {
+    var self = this;
+    self.process(function (parent, target) {
+      var text;
+      if (target === 'grin') {
+        text = ':D';
+      } else if (target === 'wink') {
+        text = ';)';
+      } else {
+        text = ':)';
+      }
+      return self.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert();
+    });
+  });
+};
+```
+
+== Usage
+
+```js
+const asciidoctor = require('asciidoctor.js')();
+const registry = asciidoctor.Extensions.create();
+require('./smiley-inline-macro-processor.js')(registry);
+
+const html = asciidoctor.convertFile('sample-smiley-doc.adoc', {to_file: false, extension_registry: registry});
+console.log(html);
+```
