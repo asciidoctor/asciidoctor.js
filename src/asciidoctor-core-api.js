@@ -713,11 +713,11 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
  * Although the constructor can be used to create an empty document object,
  * more commonly, you'll load the document object from AsciiDoc source
  * using the primary API methods on {@link Asciidoctor}.
- * When using one of these APIs, you almost always want to set the safe mode to 'SAFE' (or 'UNSAFE')
+ * When using one of these APIs, you almost always want to set the safe mode to 'safe' (or 'unsafe')
  * to enable all of Asciidoctor's features.
  *
  * <pre>
- *   var doc = Asciidoctor.load('= Hello, AsciiDoc!', {'safe': 'SAFE'});
+ *   var doc = Asciidoctor.load('= Hello, AsciiDoc!', {'safe': 'safe'});
  *   // => Asciidoctor::Document { doctype: "article", doctitle: "Hello, Asciidoc!", blocks: 0 }
  * </pre>
  *
@@ -728,7 +728,7 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
  *
  * <pre>
  *  var source = '= Document Title';
- *  var doc = asciidoctor.load(source, {'safe': 'SAFE'});
+ *  var doc = asciidoctor.load(source, {'safe': 'safe'});
  *  console.log(doc.getTitle()); // 'Document Title'
  * </pre>
  *

@@ -94,14 +94,14 @@ It comes bundled with a stylesheet, named `asciidoctor.css`.
 
 TIP: The default stylesheet is located at [.path]_node_modules/asciidoctor.js/dist/css/asciidoctor.css_
 
-When you generate a document using Node.js, the `asciidoctor.css` stylesheet is embedded into the HTML output by default (when the safe mode is less than `SECURE`).
+When you generate a document using Node.js, the `asciidoctor.css` stylesheet is embedded into the HTML output by default (when the safe mode is less than `secure`).
 
 ```js
-asciidoctor.convertFile('/path/to/file.adoc', {'safe': 'SAFE'});
+asciidoctor.convertFile('/path/to/file.adoc', {'safe': 'safe'});
 ```
 
 To have your document link to the stylesheet, set the `linkcss` attribute:
 
 ```js
-asciidoctor.convertFile('/path/to/file.adoc', {'safe': 'SAFE', 'attributes': {'linkcss': true}});
+asciidoctor.convertFile('/path/to/file.adoc', {'safe': 'safe', 'attributes': {'linkcss': true}});
 ```
