@@ -1,0 +1,136 @@
+= Register Extensions
+:uri-js-api-doc: http://asciidoctor.github.io/asciidoctor.js/master
+
+These extension points are currently available.
+
+Preprocessor::
+Processes the raw source lines before they are passed to the parser.
+See xref:preprocessor.adoc[Preprocessor Example].
+
+Tree processor::
+Processes the {uri-js-api-doc}/#document[Asciidoctor.Document (AST)] once parsing is complete.
+See xref:tree-processor.adoc[Tree Processor Example].
+
+Postprocessor::
+Processes the output after the document has been converted, but before it's written to disk.
+See xref:postprocessor.adoc[Postprocessor Example].
+
+Docinfo Processor::
+Adds additional content to the header or footer regions of the generated document.
+See xref:docinfo-processor.adoc[Docinfo Processor Example].
+
+Block processor::
+Processes a block of content marked with a custom block style (i.e., `[custom]`). (similar to an AsciiDoc filter)
+See xref:block-processor.adoc[Block Processor Example].
+
+Block macro processor::
+Registers a custom block macro and processes it (e.g., `gist::12345[]`).
+See xref:block-macro-processor.adoc[Block Macro Processor Example].
+
+Inline macro processor::
+Registers a custom inline macro and processes it (e.g., `btn:[Save]`).
+See xref:inline-macro-processor.adoc[Inline Macro Processor Example].
+
+Include processor::
+Processes the `include::<filename>[]` directive.
+See xref:include-processor.adoc[Include Processor Example].
+
+== Register one or more extensions
+
+
+You can register an extension globally as follows:
+
+[source,javascript]
+----
+const asciidoctor = require('asciidoctor.js')();
+asciidoctor.Extensions.register(function () {
+  this.block(function () {
+    const self = this;
+    self.named('shout');
+    self.onContext('paragraph');
+    self.process(function (parent, reader) {
+      const lines = reader.getLines().map(l => l.toUpperCase());
+      return self.createBlock(parent, 'paragraph', lines);
+    });
+  });
+});
+
+const text = `[shout]\
+\nSay it loud.\
+\nSay it proud.`;
+
+const html = asciidoctor.convert(text);
+console.log(html);
+
+// <div class="paragraph">
+// <p>SAY IT LOUD.
+// SAY IT PROUD.</p>
+// </div>
+----
+
+You can register more than one processor of each type, though you can only have one processor per custom block or macro.
+Each registered class is instantiated when the {uri-js-api-doc}/#document[Asciidoctor.Document] is created.
+
+NOTE: There is currently no extension point for processing a built-in block, such as a normal paragraph.
+Look for that feature in a future Asciidoctor release.
+
+You can also create one or more registries.
+It can be useful when you want to convert the same text with different extensions enabled.
+
+[source,javascript]
+----
+const asciidoctor = require('asciidoctor.js')();
+
+const registryA = asciidoctor.Extensions.create();
+const registryB = asciidoctor.Extensions.create();
+
+registryA.block(function () {
+  const self = this;
+  self.named('shout');
+  self.onContext('paragraph');
+  self.process(function (parent, reader) {
+    // Transform text to uppercase
+    const lines = reader.getLines().map(l => l.toUpperCase());
+    return self.createBlock(parent, 'paragraph', lines);
+  });
+});
+
+registryB.block(function () {
+  const self = this;
+  self.named('shout');
+  self.onContext('paragraph');
+  self.process(function (parent, reader) {
+    // Replace period at end of line with three three exclamation marks
+    const lines = reader.getLines().map(l => l.replace(/\.$/g, ' !!!'));
+    return self.createBlock(parent, 'paragraph', lines);
+  });
+});
+
+const text = `[shout]\
+\nSay it loud.\
+\nSay it proud.`;
+
+console.log(asciidoctor.convert(text, {'extension_registry': registryA}));
+console.log('');
+console.log(asciidoctor.convert(text, {'extension_registry': registryB}));
+
+// <div class="paragraph">
+// <p>SAY IT LOUD.
+// SAY IT PROUD.</p>
+// </div>
+//
+// <div class="paragraph">
+// <p>Say it loud !!!
+// Say it proud !!!</p>
+// </div>
+----
+
+In the example above, we've created two registries:
+
+* `registryA`
+* `registryB`
+
+Both registry have a `[shout]` block extension registered with a specific implementation.
+
+The first block extension is registered in the `registryA` and will transform the text to uppercase.
+The other one is registered in the `registryB` and will replace `.` by `{nbsp}!!!`.

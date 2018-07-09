@@ -1,0 +1,40 @@
+= Docinfo Extension Example
+
+Purpose::
+Add the sentence "Made with <3" in the footer.
+
+== sample-love-doc.adoc
+
+```adoc
+= Love documentation
+
+== First section
+
+In this section, we are going to talk about G.
+```
+
+== LoveFooterDocinfoProcessor
+
+.love-footer-docinfo-processor.js
+```js
+module.exports = function (registry) {
+  registry.docinfoProcessor(function () {
+    var self = this;
+    self.atLocation('footer');
+    self.process(function () {
+      return 'Made with <3';
+    });
+  });
+};
+```
+
+== Usage
+
+```js
+const asciidoctor = require('asciidoctor.js')();
+const registry = asciidoctor.Extensions.create();
+require('./love-footer-docinfo-processor.js')(registry);
+
+const html = asciidoctor.convertFile('sample-love-doc.adoc', {to_file: false, extension_registry: registry});
+console.log(html);
+```

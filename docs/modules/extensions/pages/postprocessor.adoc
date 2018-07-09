@@ -1,0 +1,37 @@
+= Postprocessor Extension Example
+
+Purpose::
+Replace every occurrences of the word "digital" or "digitale" by "numérique"... Pretty useful right ? :)
+
+== sample-digital-doc.adoc
+
+```adoc
+= Le digital au service de la relation client
+
+Comment la révolution digitale va transformer votre entreprise.
+```
+
+== DigitalPostprocessor
+
+.digital-postprocessor.js
+```js
+module.exports = function (registry) {
+  registry.postprocessor(function () {
+    var self = this;
+    self.process(function (doc, output) {
+      return output.replace(/digitale?/g, 'numérique');
+    });
+  });
+};
+```
+
+== Usage
+
+```js
+const asciidoctor = require('asciidoctor.js')();
+const registry = asciidoctor.Extensions.create();
+require('./digital-postprocessor.js')(registry);
+
+const html = asciidoctor.convertFile('sample-digital-doc.adoc', {to_file: false, extension_registry: registry});
+console.log(html); // digital is gone... Long live numérique!
+```

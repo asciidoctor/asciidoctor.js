@@ -1,0 +1,110 @@
+= Compile Ruby Extensions to JavaScript
+
+On this page, you’ll learn how to compile an Asciidoctor extension written in Ruby to JavaScript using Opal.
+
+WARNING: This is an advanced technique that has some limitations.
+The recommended way to use extensions in Asciidoctor.js is to write them directly in JavaScript.
+
+
+Now that you've been warned, let's say you want to use the following Asciidoctor extension (written in Ruby) in your JavaScript based application.
+
+.lib/tel-inline-macro.rb
+```ruby
+# An inline macro that turns URIs with the tel: URI scheme into links.
+#
+# Usage
+#
+#   tel:1-800-555-1212[]
+#
+Asciidoctor::Extensions.register do
+  inline_macro do
+    named :tel
+    parse_content_as :text
+    process do |parent, target, attrs|
+      if (text = attrs['text']).empty?
+        text = target
+      end
+      target = %(tel:#{target})
+      (create_anchor parent, text, type: :link, target: target)
+    end
+  end
+end
+```
+
+== Compilation
+
+To compile this extension, you will need to install the `opal-compiler` package:
+
+ $ npm install opal-compiler
+
+Once this package is installed, you can write the following Node script to compile the extension:
+
+.compile.js
+```js
+const fs = require('fs');
+const Builder = require('opal-compiler').Builder;
+// Opal object will be available on the global scope
+
+const builder = Builder.create();
+builder.appendPaths('lib'); // <1>
+const result = builder.build('tel-inline-macro.rb'); // <2>
+fs.writeFileSync('tel-inline-macro.js', result.toString(), 'utf8'); // <3>
+```
+<1> The extension file is in the `lib` directory
+<2> The extension file is named `tel-inline-macro.rb`
+<3> A file named `tel-inline-macro.js` will be written
+
+Then run it:
+
+ $ node compile.js
+
+The above command will create a file named [.path]_tel-inline-macro.js_ containing the extension code in JavaScript.
+
+== Usage
+
+In the previous section, we've showed how to compile a Ruby extension to JavaScript.
+In this section we will use this extension.
+
+Let's create a simple document:
+
+.document.adoc
+```adoc
+= Contacts
+
+== Professional
+
+Guillaume Grossetie tel:1-800-555-1212[]
+```
+
+Next we create a Node script to convert this document:
+
+.convert.js
+[source,javascript]
+----
+const asciidoctor = require('asciidoctor.js')();
+require('./tel-inline-macro.js'); // <1>
+
+const html = asciidoctor.convertFile('document.adoc', { to_file: false }); // <2>
+console.log(html);
+----
+<1> Load the local extension named [.path]_tel-inline-macro.js_
+<2> Convert the document with the `tel` inline macro extension enabled
+
+NOTE: Asciidoctor.js must be installed: `npm install asciidoctor.js`
+
+Then we run it:
+
+ $ node convert.js
+
+```
+<div class="sect1">
+<h2 id="_professional">Professional</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Guillaume Grossetie <a href="tel:1-800-555-1212">1-800-555-1212</a></p> // <1>
+</div>
+</div>
+</div>
+
+```
+<1> The `tel` macro was converted to a link
