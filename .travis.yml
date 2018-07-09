@@ -57,11 +57,10 @@ deploy:
     repo: asciidoctor/asciidoctor.js
     tags: true
     node: node
-
-# Trigger a deploy on asciidoctor/docs.asciidoctor.org
-after_success:
-- >
-  if ! [ "$AFTER_SUCCESS_RUN" ]; then
-    export AFTER_SUCCESS_RUN=1;
-    curl -X POST -d '' "$NETLIFY_WEBHOOK_URL"
-  fi
+- provider: script
+  script: curl -X POST -d '' "$NETLIFY_WEBHOOK_URL"
+  on:
+    condition: '$ASCIIDOCTOR_CORE_VERSION = $ASCIIDOCTOR_CORE_VERSION_PUBLISH'
+    repo: asciidoctor/asciidoctor.js
+    tags: true
+    node: node
