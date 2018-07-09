@@ -704,6 +704,35 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
 // Document API
 
 /**
+ * The {@link Document} class represents a parsed AsciiDoc document.
+ *
+ * Document is the root node of a parsed AsciiDoc document.<br/>
+ * It provides an abstract syntax tree (AST) that represents the structure of the AsciiDoc document
+ * from which the Document object was parsed.
+ *
+ * Although the constructor can be used to create an empty document object,
+ * more commonly, you'll load the document object from AsciiDoc source
+ * using the primary API methods on {@link Asciidoctor}.
+ * When using one of these APIs, you almost always want to set the safe mode to 'safe' (or 'unsafe')
+ * to enable all of Asciidoctor's features.
+ *
+ * <pre>
+ *   var doc = Asciidoctor.load('= Hello, AsciiDoc!', {'safe': 'safe'});
+ *   // => Asciidoctor::Document { doctype: "article", doctitle: "Hello, Asciidoc!", blocks: 0 }
+ * </pre>
+ *
+ * Instances of this class can be used to extract information from the document or alter its structure.
+ * As such, the Document object is most often used in extensions and by integrations.
+ *
+ * The most basic usage of the Document object is to retrieve the document's title.
+ *
+ * <pre>
+ *  var source = '= Document Title';
+ *  var doc = asciidoctor.load(source, {'safe': 'safe'});
+ *  console.log(doc.getTitle()); // 'Document Title'
+ * </pre>
+ *
+ * You can also use the Document object to access document attributes defined in the header, such as the author and doctype.
  * @namespace
  * @extends AbstractBlock
  */
