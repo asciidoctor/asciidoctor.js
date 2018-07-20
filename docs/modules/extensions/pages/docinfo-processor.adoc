@@ -6,11 +6,11 @@ Add the sentence "Made with <3" in the footer.
 == sample-love-doc.adoc
 
 ```adoc
-= Love documentation
+= Title
 
 == First section
 
-In this section, we are going to talk about G.
+This is a paragraph.
 ```
 
 == LoveFooterDocinfoProcessor
