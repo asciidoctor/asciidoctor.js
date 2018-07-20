@@ -1,0 +1,61 @@
+= Stylesheets
+
+On this page, you'll learn:
+
+* [x] How to apply a theme.
+//* [x] How to create a new theme.
+
+[#apply-theme]
+== Applying a theme
+
+A custom stylesheet can be stored in the same directory as your document or in a separate directory.
+Like the default stylesheet, you can have the output document link to your custom stylesheet or embed it.
+
+If the stylesheet is in the same directory as your document, you can apply it when converting your document to HTML from the API.
+
+```js
+asciidoctor.convertFile('file.adoc', {attributes: {stylesheet: 'styles.css'}});
+```
+
+. Save your custom stylesheet in the same directory as `file.adoc`
+. Call the `asciidoctor` processor
+. Set the attribute `stylesheet`
+. Assign the stylesheet file's name to the `stylesheet` attribute
+. Enter your document file's name.
+
+Alternatively, let's set the `stylesheet` attribute in the header of `file.adoc`.
+
+----
+include::{examplesdir}/sample-stylesheet.adoc[]
+----
+
+When your document and the stylesheet are stored in different directories, you need to tell Asciidoctor where to look for the stylesheet in relation to your document.
+Asciidoctor uses the relative or absolute path you assign to the `stylesdir` attribute to find the stylesheet.
+Let's move `styles.css` into `docs/stylesheets/`.
+Our AsciiDoc document, `file.adoc`, is saved in the `docs/` directory.
+
+----
+include::{examplesdir}/sample-stylesdir.adoc[]
+----
+
+After processing `file.adoc`, its HTML output (`file.html`), which includes the embedded `styles.css` stylesheet, is created in the `docs/` directory.
+
+You can also set `stylesdir` in the API.
+
+```js
+asciidoctor.convertFile('file.adoc', {attributes: {stylesdir: 'stylesheets/', stylesheet: 'styles.css'}});
+```
+
+If you don't want to embed the `styles.css` stylesheet into your HTML output, make sure to set `linkcss`.
+
+----
+include::{examplesdir}/sample-stylesdir-link.adoc[]
+----
+
+After your document is converted, notice that a copy of `styles.css` was not created in the `docs/` directory.
+Unlike when you link to the default Asciidoctor stylesheet, any custom stylesheets you link to are not copied to the directory where your output is saved.
+
+//== Creating a theme
+// TODO: Explain how to create a new theme using https://github.com/mogztter/asciidoctor-stylesheets
+// TIP: If you are not familiar with https://sass-lang.com/[Sass], it might be easier to adapt an existing theme rather than creating a new one from scratch.
+

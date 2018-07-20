@@ -1,0 +1,26 @@
+= Extend & Customize
+
+Asciidoctor provides a default stylesheet and built-in converters so you can quickly process and convert your document,
+but it also lets you use custom stylesheets and converters.
+The Asciidoctor project includes alternative stylesheet themes from the stylesheet factory and specialized converters. +
+You can also create your own themes and converters.
+
+Asciidoctor is highly customizable and has different levels of customization.
+
+Built-in attributes::
+Asciidoctor has built-in document attributes that can be used to control the output.
+For instance, you can change the "Table Of Contents" location by using the `toc` attribute. +
+The https://asciidoctor.org/docs/user-manual/#builtin-attributes[Asciidoctor User Manual^] describes every built-in attributes that you can use.
+
+Stylesheets::
+As mentioned above, Asciidoctor provided a default stylesheet but you can xref:stylesheets/index.adoc#apply-theme[apply an alternative theme]. +
+You can also create your own themes.
+
+Template converter::
+A template converter is an implementation that uses templates to convert each block from a parsed AsciiDoc document tree to the output format.
+
+Extensions::
+Asciidoctor provides an xref:extensions/index.adoc[extension API] that offers a xref:extensions/register.adoc[list of extension points] that open up the language to new use cases.
+
+Custom converter::
+A custom converter is a specific implementation provided by the user that extends the `Asciidoctor.Converter` class.
