@@ -5,35 +5,35 @@ These extension points are currently available.
 
 Preprocessor::
 Processes the raw source lines before they are passed to the parser.
-See xref:preprocessor.adoc[Preprocessor Example].
+See xref:extensions/preprocessor.adoc[Preprocessor Example].
 
 Tree processor::
 Processes the {uri-js-api-doc}/#document[Asciidoctor.Document (AST)] once parsing is complete.
-See xref:tree-processor.adoc[Tree Processor Example].
+See xref:extensions/tree-processor.adoc[Tree Processor Example].
 
 Postprocessor::
 Processes the output after the document has been converted, but before it's written to disk.
-See xref:postprocessor.adoc[Postprocessor Example].
+See xref:extensions/postprocessor.adoc[Postprocessor Example].
 
 Docinfo Processor::
 Adds additional content to the header or footer regions of the generated document.
-See xref:docinfo-processor.adoc[Docinfo Processor Example].
+See xref:extensions/docinfo-processor.adoc[Docinfo Processor Example].
 
 Block processor::
 Processes a block of content marked with a custom block style (i.e., `[custom]`). (similar to an AsciiDoc filter)
-See xref:block-processor.adoc[Block Processor Example].
+See xref:extensions/block-processor.adoc[Block Processor Example].
 
 Block macro processor::
 Registers a custom block macro and processes it (e.g., `gist::12345[]`).
-See xref:block-macro-processor.adoc[Block Macro Processor Example].
+See xref:extensions/block-macro-processor.adoc[Block Macro Processor Example].
 
 Inline macro processor::
 Registers a custom inline macro and processes it (e.g., `btn:[Save]`).
-See xref:inline-macro-processor.adoc[Inline Macro Processor Example].
+See xref:extensions/inline-macro-processor.adoc[Inline Macro Processor Example].
 
 Include processor::
 Processes the `include::<filename>[]` directive.
-See xref:include-processor.adoc[Include Processor Example].
+See xref:extensions/include-processor.adoc[Include Processor Example].
 
 == Register one or more extensions
 
