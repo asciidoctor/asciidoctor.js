@@ -4,5 +4,5 @@ version: master
 nav:
 - modules/setup/nav.adoc
 - modules/processor/nav.adoc
-- modules/extensions/nav.adoc
+- modules/extend/nav.adoc
 - modules/spec/nav.adoc

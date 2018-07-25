@@ -1,5 +1,5 @@
-.Extend & Customize
-//* xref:stylesheet.adoc[Stylesheet]
+.xref:index.adoc[Extend & Customize]
+* xref:stylesheets/index.adoc[Stylesheets]
 //* xref:templates.adoc[Templates]
 * xref:extensions/index.adoc[Extensions]
 ** xref:extensions/register.adoc[Register Extensions]
