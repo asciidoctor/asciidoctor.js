@@ -14,7 +14,6 @@
 
   const expect = chai.expect;
   const asciidoctor = Asciidoctor({runtime: {platform: 'browser'}});
-  Asciidoctor.DocBook();
   const parts = window.location.href.split('/'); // break the string into an array
   parts.pop(); parts.pop(); parts.pop();
   const baseDir = parts.join('/');
