@@ -36,13 +36,19 @@ const log = async (msg) => {
       const args = await log(msg);
       if (args[0] === '%d failures') {
         process.exit(parseInt(args[1]));
+      } else if (args[0].startsWith('Unable to start the browser tests suite:')) {
+        process.exit(1);
       }
     });
     await page.goto('file://' + path.join(__dirname, 'index.html'), {waitUntil: 'networkidle2'});
     browser.close();
-  } catch (e) {
+  } catch (err) {
     // eslint-disable-next-line no-console
-    console.error('Unable to run tests using Puppeteer', e);
+    console.error('Unable to run tests using Puppeteer', err);
     process.exit(1);
   }
-})();
+})().catch((err) => {
+  // eslint-disable-next-line no-console
+  console.error('Unable to launch Chrome with Puppeteer', err);
+  process.exit(1);
+});

@@ -35,7 +35,6 @@
         expect(html).to.include('include content');
       });
       */
-
       it('Should include file with an absolute path (base_dir is explicitly defined)', function () {
         const opts = {safe: 'safe', base_dir: testOptions.baseDir};
         const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts);
@@ -51,5 +50,8 @@
     }
   });
 
-})();
+})().catch(err => {
+  // eslint-disable-next-line no-console
+  console.error('Unable to start the browser tests suite: ' + err);
+});
 
