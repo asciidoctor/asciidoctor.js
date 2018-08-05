@@ -1,2 +1,3 @@
 * xref:install.adoc[Install guide]
 * xref:quick-tour.adoc[A quick tour]
+* xref:runtime.adoc[Runtime]
