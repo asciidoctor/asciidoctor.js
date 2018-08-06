@@ -73,6 +73,21 @@ Asciidoctor.prototype.getCoreVersion = function () {
 };
 
 /**
+ * Get Asciidoctor.js runtime environment informations.
+ *
+ * @memberof Asciidoctor
+ * @returns {Object} - returns the runtime environement including the ioModule, the platform, the engine and the framework.
+ */
+Asciidoctor.prototype.getRuntime = function () {
+  return {
+    ioModule: Opal.const_get_qualified('::', 'JAVASCRIPT_IO_MODULE'),
+    platform: Opal.const_get_qualified('::', 'JAVASCRIPT_PLATFORM'),
+    engine: Opal.const_get_qualified('::', 'JAVASCRIPT_ENGINE'),
+    framework: Opal.const_get_qualified('::', 'JAVASCRIPT_FRAMEWORK')
+  };
+};
+
+/**
  * Parse the AsciiDoc source input into an {@link Document} and convert it to the specified backend format.
  *
  * Accepts input as a Buffer or String.

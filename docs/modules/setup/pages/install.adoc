@@ -36,7 +36,9 @@ var asciidoctor = Asciidoctor();
 == Node
 
 ```js
-var asciidoctor = require('asciidoctor.js')();
+const Asciidoctor = require('asciidoctor.js');
+
+const asciidoctor = Asciidoctor();
 ```
 
 == AMD (System.js, RequireJS, etc)

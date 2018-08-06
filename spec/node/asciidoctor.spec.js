@@ -93,6 +93,11 @@ intro
       expect(Opal.JAVASCRIPT_PLATFORM).to.equal('node');
       expect(Opal.JAVASCRIPT_ENGINE).to.equal('v12');
       expect(Opal.JAVASCRIPT_FRAMEWORK).to.equal('lollipop');
+      const runtime = asciidoctor.getRuntime();
+      expect(runtime.ioModule).to.equal('node');
+      expect(runtime.platform).to.equal('node');
+      expect(runtime.engine).to.equal('v12');
+      expect(runtime.framework).to.equal('lollipop');
     });
   });
 
@@ -785,4 +790,3 @@ intro
     });
   });
 });
-

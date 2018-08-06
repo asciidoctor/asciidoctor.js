@@ -1,0 +1,101 @@
+= Runtime environment
+:uri-xmlhttprequest: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
+:uri-java-nio: https://docs.oracle.com/javase/8/docs/api/java/nio/package-summary.html
+:uri-spidermonkey-read: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Introduction_to_the_JavaScript_shell#Built-in_functions
+:uri-phantomjs-read: http://phantomjs.org/api/fs/method/read.html
+:uri-node-fs: https://nodejs.org/api/fs.html
+
+:uri-v8: https://developers.google.com/v8
+:uri-nashorn: https://docs.oracle.com/javase/10/nashorn/introduction.htm#JSNUG136
+:uri-rhino: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino
+:uri-electron: https://electronjs.org
+:uri-phantomjs: http://phantomjs.org
+:uri-webworker: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
+:uri-spidermonkey: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
+
+By default, Asciidoctor.js will try his best to automatically detect the runtime environment using Duck typing.
+
+== Configure the Runtime environment
+
+CAUTION: The following section covers an advanced topic. For most use cases, you don't need to explicitly configure the runtime environment.
+
+Now that you have been warned,
+you can use the `runtime` configuration object when instantiating Asciidoctor.js
+to explicitly define the runtime environment:
+
+```js
+const asciidoctor = require('asciidoctor.js')({
+  runtime: {
+    platform: 'browser',
+    engine: 'v8',
+    framework: 'webextensions'
+  }
+});
+```
+
+The following values are recognized:
+
+`runtime.platform`::
+
+* `node`: Node.js
+* `java`: Java (Rhino, Nashorn)
+* `standalone`: Standalone (spidermonkey)
+* `browser`: Browser (Chrome, Firefox, Opera, Edge...)
+
+`runtime.engine`::
+
+* {uri-v8}[`v8`]
+* {uri-nashorn}[`nashorn`]
+* {uri-rhino}[`rhino`]
+
+`runtime.framework`::
+
+* {uri-electron}[`electron`]
+* {uri-webworker}[`webworker`]
+* {uri-spidermonkey}[`spidermonkey`]
+* {uri-phantomjs}[`phantomjs`]
+
+== I/O module
+
+The I/O module provides an implementation for reading files.
+
+By default, Asciidoctor.js will determine the I/O module upon the runtime environment.
+To explicitly define the I/O module,
+you can specify the attribute `runtime.ioModule` when instantiating Asciidoctor.js:
+
+```js
+const asciidoctor = require('asciidoctor.js')({
+  runtime: {
+    ioModule: 'xmlhttprequest'
+  }
+});
+```
+
+`ioModule` can be one of:
+
+`node`::
+The implementation will use the {uri-node-fs}[`fs` module].
+
+`xmlhttprequest`::
+The implementation will use the {uri-xmlhttprequest}[`XMLHttpRequest` object].
+
+`java_nio`::
+The implementation will use the {uri-java-nio}[`java.nio` package].
+
+`spidermonkey`::
+The implementation will use the {uri-spidermonkey-read}[`read` function].
+
+`phantomjs`::
+The implementation will use the {uri-phantomjs-read}[`fs.read` function].
+
+== Retrieve the runtime environment
+
+Once Asciidoctor.js is instantiated, you can retrieve the runtime environment with the `getRuntime` function:
+
+```js
+const asciidoctor = require('asciidoctor.js')();
+console.log(asciidoctor.getRuntime());
+// { ioModule: 'node', platform: 'node', engine: 'v8', framework: '' }
+```
+
+It can be useful to make sure that the runtime environment has been correctly determined.
