@@ -168,6 +168,18 @@ Asciidoctor.prototype.loadFile = function (filename, options) {
 var AbstractBlock = Opal.Asciidoctor.AbstractBlock;
 
 /**
+ * Append a block to this block's list of child blocks.
+ *
+ * @memberof AbstractBlock
+ * @returns {AbstractBlock} - the parent block to which this block was appended.
+ * 
+ */
+AbstractBlock.prototype.append = function (block) {
+  this.$append(block);
+  return this;
+};
+
+/**
  * Get the String title of this Block with title substitions applied
  *
  * The following substitutions are applied to block and section titles:
