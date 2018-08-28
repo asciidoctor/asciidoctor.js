@@ -12,8 +12,8 @@ var toHash = function (object) {
  */
 var fromHash = function (hash) {
   var object = {};
-  for (var i = 0, keys = hash.$$keys, data = hash.$$smap, len = keys.length; i < len; i++) {
-    var key = keys[i];
+  var data = hash.$$smap;
+  for (var key in data) {
     object[key] = data[key];
   }
   return object;
