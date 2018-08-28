@@ -577,6 +577,26 @@ intro
           const result = asciidoctor.convert('[whisper]\nWE HAVE LIFTOFF!', opts);
           expect(result).to.contain('we have liftoff.');
         });
+
+        it('should be able to append a block to the parent block', () => {
+          const extensions = asciidoctor.Extensions;
+          try {
+            extensions.register('test', function () {
+              this.block(function () {
+                this.named('test');
+                this.onContext('paragraph');
+                this.process((parent) => {
+                  parent.append(this.createBlock(parent, 'paragraph', 'this was only a test'));
+                });
+              });
+            });
+            let html = asciidoctor.convert('[test]\nreplace me');
+            expect(html).to.contain('<p>this was only a test</p>');
+            extensions.unregister('test');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
       });
 
       describe('Inline macro processor', () => {
