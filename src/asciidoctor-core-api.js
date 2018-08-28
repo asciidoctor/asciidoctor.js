@@ -268,6 +268,15 @@ AbstractBlock.prototype.removeSubstitution = function (substitution) {
 };
 
 /**
+ * Checks if the {@link AbstractBlock} contains any child blocks.
+ * @memberof AbstractBlock
+ * @returns {boolean} - whether the {@link AbstractBlock} has child blocks.
+ */
+AbstractBlock.prototype.hasBlocks = function () {
+  return this.blocks.length > 0;
+};
+
+/**
  * Get the list of {@link AbstractBlock} sub-blocks for this block.
  * @memberof AbstractBlock
  * @returns {Array} - returns a list of {@link AbstractBlock} sub-blocks
