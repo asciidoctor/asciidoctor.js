@@ -170,6 +170,7 @@ intro
       expect(header.getAttribute('author')).to.equal('Doc Writer');
       expect(header.getAttribute('email')).to.equal('doc.writer@asciidoc.org');
 
+      expect(doc.hasBlocks()).to.be.true;
       const blocks = doc.getBlocks();
       expect(blocks.length).to.equal(4);
       expect(blocks[0].getContext()).to.equal('section');
@@ -202,6 +203,7 @@ intro
       expect(blocks[2].getBlocks()[0].getTitle()).to.be.undefined;
       expect(blocks[2].getBlocks()[1].getContext()).to.equal('image');
 
+      expect(blocks[3].hasBlocks()).to.be.false;
       expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o]</span>?');
     });
 
