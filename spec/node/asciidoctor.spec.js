@@ -194,6 +194,8 @@ intro
       expect(blocks[1].getBlocks()[2].getRole()).to.equal('feature-list');
       expect(blocks[1].getBlocks()[2].getItems().length).to.equal(4);
       expect(blocks[1].getBlocks()[2].getItems()[0].getText()).to.equal('<em>lightweight</em>');
+      blocks[1].getBlocks()[2].getItems()[0].setText('*heavyweight*');
+      expect(blocks[1].getBlocks()[2].getItems()[0].getText()).to.equal('<strong>heavyweight</strong>');
 
       expect(blocks[2].getTitle()).to.equal('Second Section');
       expect(blocks[2].getBlocks().length).to.equal(3);

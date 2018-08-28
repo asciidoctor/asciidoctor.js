@@ -1301,6 +1301,15 @@ ListItem.prototype.getText = function () {
   return this.$text();
 };
 
+/**
+ * Set the String source text of this ListItem node.
+ *
+ * @memberof ListItem
+ */
+ListItem.prototype.setText = function (text) {
+  return this.text = text;
+};
+
 // Reader API
 
 /** @namespace */
