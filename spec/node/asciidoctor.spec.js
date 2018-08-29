@@ -301,6 +301,18 @@ intro
       }
     });
 
+    it('should be able to apply default inline substitutions to text', () => {
+      const doc = asciidoctor.load('para', { attributes: { start: 'start', finish: 'finish' } });
+      const para = doc.getBlocks()[0];
+      expect(para.applySubstitutions('{start}--{finish}')).to.equal('start&#8212;&#8203;finish');
+    });
+
+    it('should be able to apply specific inline substitutions to text', () => {
+      const doc = asciidoctor.load('para', { attributes: { start: 'start', finish: 'finish' } });
+      const para = doc.getBlocks()[0];
+      expect(para.applySubstitutions('{start}--{finish}', ['attributes'])).to.equal('start--finish');
+    });
+
     describe('Extension', () => {
 
       describe('Registry', () => {
