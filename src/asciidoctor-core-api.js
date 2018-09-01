@@ -12,8 +12,8 @@ var toHash = function (object) {
  */
 var fromHash = function (hash) {
   var object = {};
-  for (var i = 0, keys = hash.$$keys, data = hash.$$smap, len = keys.length; i < len; i++) {
-    var key = keys[i];
+  var data = hash.$$smap;
+  for (var key in data) {
     object[key] = data[key];
   }
   return object;
@@ -518,9 +518,7 @@ var AbstractNode = Opal.Asciidoctor.AbstractNode;
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getAttributes = function () {
-  // Do not use fromHash here since we want to keep only entries
-  // whose key is a string. By definition this *is* $$smap
-  return Object.assign({}, this.attributes.$$smap);
+  return fromHash(this.attributes);
 };
 
 /**
