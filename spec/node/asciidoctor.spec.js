@@ -230,6 +230,11 @@ intro
   });
 
   describe('Converting file', () => {
+    it ('should not hang', () => {
+      const content = 'Link the system library `+libconfig++.so.9+` located at `+/usr/lib64/libconfig++.so.9+`.';
+      asciidoctor.convert(content);
+    });
+
     it('should be able to convert a file', () => {
       const expectFilePath = resolveFixture('test.html');
       removeFile(expectFilePath);
