@@ -27,7 +27,7 @@ To interact with the generated code, you either invoke the JavaScript APIs direc
 
 To build Asciidoctor.js, you'll need some tools:
 
-* {uri-nodejs}[Node.js] >= 4 and npm (we recommend {uri-nvm}[nvm] to manage multiple active Node.js versions)
+* {uri-nodejs}[Node.js] >= 8 and npm (we recommend {uri-nvm}[nvm] to manage multiple active Node.js versions)
 
 Start by cloning the source from GitHub:
 
@@ -93,8 +93,8 @@ The content on the page was rendered from AsciiDoc by Asciidoctor.js when you lo
 Currently, you can run benchmark against 3 JavaScript environment:
 
  * node
- * phantomjs
- * jjs
+ * chrome
+ * nashorn
 
 The following command will run benchmark against Node.js:
 
@@ -102,7 +102,7 @@ The following command will run benchmark against Node.js:
 
 Once `build/benchmark` is initialized, you can run benchmark again (without building the project):
 
- $ node build/benchmark/run.js
+ $ node build/benchmark/node.js
 
 == Debugging
 
