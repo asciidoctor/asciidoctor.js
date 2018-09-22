@@ -372,7 +372,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         expect(appendix.caption).to.equal('Appendix A: ');
         expect(appendix.getCaption()).to.equal('Appendix A: ');
         expect(appendix.getCaptionedTitle()).to.equal('Appendix A: Attribute Options');
-        expect(appendix.number).to.equal('A');
+        expect(appendix.$number()).to.equal('A');
         expect(appendix.numbered).to.equal(true);
       });
 
