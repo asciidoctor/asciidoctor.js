@@ -17,13 +17,13 @@ cache:
 install:
   # Get the latest stable version of Node.js
   - ps: Install-Product node $env:nodejs_version
-  - yarn
+  - npm ci
 
 build_script:
 - node npm/appveyor.js
 - node npm/test/unsupported-features.js
-- yarn run test:node
-- yarn run test:browser
-- yarn run examples
+- npm run test:node
+- npm run test:browser
+- npm run examples
 
 test: off

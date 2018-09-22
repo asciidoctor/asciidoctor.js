@@ -10,9 +10,6 @@ env:
 - ASCIIDOCTOR_CORE_VERSION=v1.5.7.1
 - ASCIIDOCTOR_CORE_VERSION=master
 
-cache:
-  yarn: true
-
 node_js:
 - 'lts/*'
 - 'node'
@@ -20,11 +17,18 @@ node_js:
 jdk:
 - oraclejdk8
 
+install:
+- npm ci
+# keep the npm cache around to speed up installs
+cache:
+  directories:
+  - "$HOME/.npm"
+
 script:
-- yarn run lint
-- yarn run package
-- yarn run docs
-- SKIP_BUILD=1 yarn run examples
+- npm run lint
+- npm run package
+- npm run docs
+- SKIP_BUILD=1 npm run examples
 
 jobs:
   include:
