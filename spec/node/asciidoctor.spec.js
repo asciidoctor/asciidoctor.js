@@ -234,7 +234,7 @@ intro
   });
 
   describe('Converting file', () => {
-    it ('should not hang', () => {
+    it('should not hang', () => {
       const content = 'Link the system library `+libconfig++.so.9+` located at `+/usr/lib64/libconfig++.so.9+`.';
       asciidoctor.convert(content);
     });
