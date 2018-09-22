@@ -368,12 +368,18 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       it('should assign sectname, caption, and numeral to appendix section by default', function () {
         const doc = asciidoctor.load('[appendix]\n== Attribute Options\n\nDetails');
         const appendix = doc.getBlocks()[0];
-        expect(appendix.sectname).to.equal('appendix');
-        expect(appendix.caption).to.equal('Appendix A: ');
+        expect(appendix.getSectionName()).to.equal('appendix');
         expect(appendix.getCaption()).to.equal('Appendix A: ');
         expect(appendix.getCaptionedTitle()).to.equal('Appendix A: Attribute Options');
-        expect(appendix.$number()).to.equal('A');
-        expect(appendix.numbered).to.equal(true);
+        expect(appendix.getNumeral()).to.equal('A');
+        expect(appendix.getNumber()).to.equal('A'); // alias
+        appendix.setNumeral('B');
+        expect(appendix.getNumeral()).to.equal('B');
+        expect(appendix.getNumber()).to.equal('B'); // alias
+        appendix.setNumber('C');
+        expect(appendix.getNumeral()).to.equal('C');
+        expect(appendix.getNumber()).to.equal('C'); // alias
+        expect(appendix.isNumbered()).to.equal(true);
       });
 
       it('remove_attr should remove attribute and return previous value', function () {

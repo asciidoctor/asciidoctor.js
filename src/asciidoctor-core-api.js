@@ -396,6 +396,51 @@ AbstractBlock.prototype.getSections = function () {
   return this.$sections();
 };
 
+/**
+ * Get the numeral of this block (if section, relative to parent, otherwise absolute).
+ * Only assigned to section if automatic section numbering is enabled.
+ * Only assigned to formal block (block with title) if corresponding caption attribute is present.
+ * If the section is an appendix, the numeral is a letter (starting with A).
+ * @memberof AbstractBlock
+ * @returns {string} - returns the numeral
+ */
+AbstractBlock.prototype.getNumeral = function () {
+  if (typeof this.$numeral === 'function') {
+    // number was renamed to numeral
+    // https://github.com/asciidoctor/asciidoctor/commit/33ac4821e0375bcd5aa189c394ad7630717bcd55
+    return this.$numeral();
+  } else {
+    return this.$number();
+  }
+};
+
+/**
+ * @memberof AbstractBlock
+ * @see {@link AbstractBlock#getNumeral}
+ */
+AbstractBlock.prototype.getNumber = AbstractBlock.prototype.getNumeral;
+
+
+/**
+ * Set the numeral of this block.
+ * @memberof AbstractBlock
+ */
+AbstractBlock.prototype.setNumeral = function (value) {
+  if (typeof this['$numeral='] === 'function') {
+    // number was renamed to numeral
+    // https://github.com/asciidoctor/asciidoctor/commit/33ac4821e0375bcd5aa189c394ad7630717bcd55
+    return this['$numeral='](value);
+  } else {
+    return this['$number='](value);
+  }
+};
+
+/**
+ * @memberof AbstractBlock
+ * @see {@link AbstractBlock#setNumeral}
+ */
+AbstractBlock.prototype.setNumber = AbstractBlock.prototype.setNumeral;
+
 // Section API
 
 /**
