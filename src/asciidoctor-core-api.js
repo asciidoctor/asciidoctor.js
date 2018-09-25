@@ -405,13 +405,9 @@ AbstractBlock.prototype.getSections = function () {
  * @returns {string} - returns the numeral
  */
 AbstractBlock.prototype.getNumeral = function () {
-  if (typeof this.$numeral === 'function') {
-    // number was renamed to numeral
-    // https://github.com/asciidoctor/asciidoctor/commit/33ac4821e0375bcd5aa189c394ad7630717bcd55
-    return this.$numeral();
-  } else {
-    return this.$number();
-  }
+  // number was renamed to numeral
+  // https://github.com/asciidoctor/asciidoctor/commit/33ac4821e0375bcd5aa189c394ad7630717bcd55
+  return this.$number();
 };
 
 /**
@@ -426,13 +422,9 @@ AbstractBlock.prototype.getNumber = AbstractBlock.prototype.getNumeral;
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.setNumeral = function (value) {
-  if (typeof this['$numeral='] === 'function') {
-    // number was renamed to numeral
-    // https://github.com/asciidoctor/asciidoctor/commit/33ac4821e0375bcd5aa189c394ad7630717bcd55
-    return this['$numeral='](value);
-  } else {
-    return this['$number='](value);
-  }
+  // number was renamed to numeral
+  // https://github.com/asciidoctor/asciidoctor/commit/33ac4821e0375bcd5aa189c394ad7630717bcd55
+  return this['$number='](value);
 };
 
 /**
