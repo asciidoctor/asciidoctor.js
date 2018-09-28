@@ -411,13 +411,6 @@ AbstractBlock.prototype.getNumeral = function () {
 };
 
 /**
- * @memberof AbstractBlock
- * @see {@link AbstractBlock#getNumeral}
- */
-AbstractBlock.prototype.getNumber = AbstractBlock.prototype.getNumeral;
-
-
-/**
  * Set the numeral of this block.
  * @memberof AbstractBlock
  */
@@ -426,12 +419,6 @@ AbstractBlock.prototype.setNumeral = function (value) {
   // https://github.com/asciidoctor/asciidoctor/commit/33ac4821e0375bcd5aa189c394ad7630717bcd55
   return this['$number='](value);
 };
-
-/**
- * @memberof AbstractBlock
- * @see {@link AbstractBlock#setNumeral}
- */
-AbstractBlock.prototype.setNumber = AbstractBlock.prototype.setNumeral;
 
 // Section API
 

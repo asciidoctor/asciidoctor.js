@@ -372,13 +372,10 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         expect(appendix.getCaption()).to.equal('Appendix A: ');
         expect(appendix.getCaptionedTitle()).to.equal('Appendix A: Attribute Options');
         expect(appendix.getNumeral()).to.equal('A');
-        expect(appendix.getNumber()).to.equal('A'); // alias
         appendix.setNumeral('B');
         expect(appendix.getNumeral()).to.equal('B');
-        expect(appendix.getNumber()).to.equal('B'); // alias
-        appendix.setNumber('C');
+        appendix.setNumeral('C');
         expect(appendix.getNumeral()).to.equal('C');
-        expect(appendix.getNumber()).to.equal('C'); // alias
         expect(appendix.isNumbered()).to.equal(true);
       });
 
