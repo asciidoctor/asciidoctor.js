@@ -3,3 +3,4 @@
 ** xref:convert-options.adoc[Convert options]
 ** xref:extract-api.adoc[Extract information from a document]
 ** xref:manipulate-api.adoc[Manipulate a document]
+** xref:logging-api.adoc[Logging]
