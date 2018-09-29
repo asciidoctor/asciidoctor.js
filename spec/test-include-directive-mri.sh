@@ -1,10 +1,10 @@
 #!/bin/bash
 
 BASE_DIR=`pwd`
-REMOTE_BASE_DIR="https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master"
+REMOTE_BASE_DIR="https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec"
 
-RELATIVE_PATH="spec/share/include.adoc"
-RELATIVE_PATH_UNRESOLVED="spec/../spec/share/include.adoc"
+RELATIVE_PATH="fixtures/include.adoc"
+RELATIVE_PATH_UNRESOLVED="fixtures/../fixtures/include.adoc"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
