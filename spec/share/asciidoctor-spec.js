@@ -458,6 +458,15 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         expect(html).to.include('content is in fr');
         expect(html).to.include('include content');
       });
+
+      it('should instantiate an Inline element', function () {
+        const opts = {safe: 'safe', base_dir: testOptions.baseDir};
+        const doc = asciidoctor.load('= Empty document', opts);
+        const inlineElement = asciidoctor.Inline.create(doc, 'anchor', 'Tigers', {'type': 'ref', 'target': 'tigers'});
+        expect(inlineElement.getType()).to.equal('ref');
+        expect(inlineElement.getText()).to.equal('Tigers');
+        expect(inlineElement.getTarget()).to.equal('tigers');
+      });
     });
 
     describe('Modifying', function () {

@@ -1286,6 +1286,16 @@ Title.prototype.hasSubtitle = function () {
 var Inline = Opal.Asciidoctor.Inline;
 
 /**
+ * Create a new Inline element.
+ *
+ * @memberof Inline
+ * @returns {Inline} - returns a new Inline element
+ */
+Opal.Asciidoctor.Inline['$$class'].prototype.create = function (parent, context, text, opts) {
+  return this.$new(parent, context, text, toHash(opts));
+};
+
+/**
  * Get the converted content for this inline node.
  *
  * @memberof Inline
