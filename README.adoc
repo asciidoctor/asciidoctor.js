@@ -8,6 +8,7 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Guillaume Grossetie <h
 :uri-freesoftware: https://www.gnu.org/philosophy/free-sw.html
 ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
 :uri-contribute: {uri-rel-file-base}CONTRIBUTING.adoc
+:uri-contribute-code: {uri-rel-file-base}CONTRIBUTING-CODE.adoc
 :uri-user-manual: https://asciidoctor-docs.netlify.com/asciidoctor.js/
 :license: {uri-repo}/blob/master/LICENSE
 :experimental:
@@ -109,6 +110,8 @@ If you discover errors or omissions in the source code, documentation, or websit
 New contributors are always welcome!
 
 The {uri-contribute}[Contributing] guide provides information on how to contribute.
+
+If you want to write code, the {uri-contribute-code}[Contributing Code] guide will help you to get started quickly.
 
 == Copyright
 
