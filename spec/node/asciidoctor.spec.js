@@ -83,6 +83,32 @@ intro
           asciidoctor.LoggerManager.setLogger(defaultLogger);
         }
       });
+      it('should not log anything when NullLogger is used', () => {
+        const input = `= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
+`;
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        const nullLogger = asciidoctor.NullLogger.$new();
+        const stderrWriteFunction = process.stderr.write;
+        let stderrOutput = '';
+        process.stderr.write = function (chunk) {
+          stderrOutput += chunk;
+        };
+        try {
+          asciidoctor.LoggerManager.setLogger(nullLogger);
+          asciidoctor.convert(input);
+          expect(nullLogger.getMaxSeverity()).to.equal(3);
+          expect(stderrOutput).to.equal('');
+        } finally {
+          process.stderr.write = stderrWriteFunction;
+          asciidoctor.LoggerManager.setLogger(defaultLogger);
+        }
+      });
     });
   }
 
