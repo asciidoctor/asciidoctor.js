@@ -438,7 +438,7 @@ function initializeProcessorClass (superclassName, className, functions) {
       Opal.send(this, Opal.find_super_dispatcher(this, func.name, func));
     } else {
       // Bind the initialize function to super();
-      const argumentsList =  Array.from(arguments);
+      var argumentsList =  Array.from(arguments);
       for (var i = 0; i < argumentsList.length; i++) {
         // convert all (Opal) Hash arguments to JSON.
         if (typeof argumentsList[i] === 'object') {
