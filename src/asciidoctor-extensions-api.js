@@ -439,7 +439,7 @@ function initializeProcessorClass (superclassName, className, functions) {
     } else {
       // Bind the initialize function to super();
       const argumentsList =  Array.from(arguments);
-      for (let i = 0; i < argumentsList.length; i++) {
+      for (var i = 0; i < argumentsList.length; i++) {
         // convert all (Opal) Hash arguments to JSON.
         if (typeof argumentsList[i] === 'object') {
           argumentsList[i] = toHash(argumentsList[i]);
