@@ -772,6 +772,29 @@ intro
           const result = asciidoctor.convert('include::whatever.adoc[]', opts);
           expect(result).to.contain('included content');
         });
+
+        it('should be able to create the Fedora package inline macro', () => {
+          const PackageInlineMacro = asciidoctor.Extensions.createInlineMacroProcessor('PackageInlineMacro', {
+            initialize: function (name, config) {
+              this.DEFAULT_PACKAGE_URL_FORMAT = 'https://apps.fedoraproject.org/packages/%s';
+              this.super(name, config);
+            },
+            process: function (parent, target) {
+              const format = parent.getDocument().getAttribute('url-package-url-format', this.DEFAULT_PACKAGE_URL_FORMAT);
+              const url = format.replace('%s', target);
+              const content = target;
+              const attributes = { window: '_blank' };
+              return this.createInline(parent, 'anchor', content, { type: 'link', target: url, attributes });
+            }
+          });
+          const registry = asciidoctor.Extensions.create();
+          registry.inlineMacro(PackageInlineMacro.$new('package', {}));
+          const opts = {};
+          opts['extension_registry'] = registry;
+          opts['safe'] = 'safe';
+          const result = asciidoctor.convert('Install package:asciidoctor[]', opts);
+          expect(result).to.contain('Install <a href="https://apps.fedoraproject.org/packages/asciidoctor" target="_blank" rel="noopener">asciidoctor</a>');
+        });
       });
     });
 
