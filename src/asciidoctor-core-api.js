@@ -172,7 +172,7 @@ var AbstractBlock = Opal.Asciidoctor.AbstractBlock;
  *
  * @memberof AbstractBlock
  * @returns {AbstractBlock} - the parent block to which this block was appended.
- * 
+ *
  */
 AbstractBlock.prototype.append = function (block) {
   this.$append(block);
@@ -1495,5 +1495,20 @@ if (MemoryLogger) {
       result.push(messageObject);
     }
     return result;
+  };
+}
+
+/**
+ * @namespace
+ */
+var NullLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'NullLogger', true);
+
+// Alias
+Opal.Asciidoctor.NullLogger = NullLogger;
+
+
+if (NullLogger) {
+  NullLogger.prototype.getMaxSeverity = function () {
+    return this.max_severity;
   };
 }
