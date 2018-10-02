@@ -13,6 +13,7 @@ Depending on your JavaScript environment, `stderr` will be resolved to:
 
 * https://developer.mozilla.org/fr/docs/Web/API/Console/warn[`console.warn`] function in a browser environment
 * https://nodejs.org/api/process.html#process_process_stderr[`process.stderr`] property in a Node.js environment
+* `print` function in a Nashorn environment
 
 == In-memory Logger
 
