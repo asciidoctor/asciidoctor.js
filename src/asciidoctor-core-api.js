@@ -1502,6 +1502,15 @@ if (MemoryLogger) {
       var messageObject = fromHash(message);
       // also convert the message attribute
       messageObject.message = fromHash(messageObject.message);
+      messageObject.getText = function () {
+        return this.message['text'];
+      };
+      messageObject.getSeverity = function () {
+        return this.severity.toString();
+      };
+      messageObject.getSourceLocation = function () {
+        return this.message['source_location'];
+      };
       result.push(messageObject);
     }
     return result;
