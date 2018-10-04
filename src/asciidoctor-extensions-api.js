@@ -297,6 +297,9 @@ Processor.prototype.createImageBlock = function (parent, attrs, opts) {
  * @memberof Extensions/Processor
  */
 Processor.prototype.createInline = function (parent, context, text, opts) {
+  if (opts && opts.attributes) {
+    opts.attributes = toHash(opts.attributes);
+  }
   return this.$create_inline(parent, context, text, toHash(opts));
 };
 
@@ -435,7 +438,14 @@ function initializeProcessorClass (superclassName, className, functions) {
       Opal.send(this, Opal.find_super_dispatcher(this, func.name, func));
     } else {
       // Bind the initialize function to super();
-      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
+      var argumentsList =  Array.from(arguments);
+      for (var i = 0; i < argumentsList.length; i++) {
+        // convert all (Opal) Hash arguments to JSON.
+        if (typeof argumentsList[i] === 'object') {
+          argumentsList[i] = toHash(argumentsList[i]);
+        }
+      }
+      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), argumentsList);
     }
   });
   if (!isHandlesFunctionDefined) {
