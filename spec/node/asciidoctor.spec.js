@@ -178,6 +178,42 @@ intro
           asciidoctor.LoggerManager.setLogger(defaultLogger);
         }
       });
+      it('should create a custom Logger', (done) => {
+        const input = `= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
+`;
+        const fs = require('fs');
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        const logFile = path.join(__dirname, '..', '..', 'build', 'async.log');
+        const asyncLogger = asciidoctor.LoggerManager.newLogger('AsyncFileLogger', {
+          postConstruct: function () {
+            this.writer = fs.createWriteStream(logFile, {
+              flags: 'a'
+            });
+            fs.truncateSync(logFile, 0); // file must be empty
+          },
+          add: function (severity, _, message) {
+            const log = this.formatter['$call'](asciidoctor.LoggerSeverity.get(severity), new Date(), this.progname, message);
+            this.writer.write(log);
+          }
+        });
+
+        try {
+          asciidoctor.LoggerManager.setLogger(asyncLogger);
+          asciidoctor.convert(input);
+          asyncLogger.writer.end(() => {
+            expect(fs.readFileSync(logFile, 'UTF-8')).to.equal('asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n');
+            done();
+          });
+        } finally {
+          asciidoctor.LoggerManager.setLogger(defaultLogger);
+        }
+      });
     });
   }
 

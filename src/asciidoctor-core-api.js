@@ -1521,6 +1521,55 @@ function initializeLoggerFormatterClass (className, functions) {
   return scope;
 }
 
+function initializeLoggerClass (className, functions) {
+  var superclass = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger');
+  var scope = Opal.klass(Opal.Object, superclass, className, function () {});
+  var postConstructFunction;
+  var initializeFunction;
+  for (var key in functions) {
+    if (functions.hasOwnProperty(key)) {
+      (function (key) {
+        var userFunction = functions[key];
+        if (key === 'postConstruct') {
+          postConstructFunction = userFunction;
+        } else if (key === 'initialize') {
+          initializeFunction = userFunction;
+        } else {
+          Opal.def(scope, '$' + key, function () {
+            return userFunction.apply(this, arguments);
+          });
+        }
+      }(key));
+    }
+  }
+  var initialize;
+  if (typeof initializeFunction === 'function') {
+    initialize = function () {
+      initializeFunction.apply(this, arguments);
+      if (typeof postConstructFunction === 'function') {
+        postConstructFunction.bind(this)();
+      }
+    };
+  } else {
+    initialize = function () {
+      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
+      if (typeof postConstructFunction === 'function') {
+        postConstructFunction.bind(this)();
+      }
+    };
+  }
+  Opal.def(scope, '$initialize', initialize);
+  Opal.def(scope, 'super', function (func) {
+    if (typeof func === 'function') {
+      Opal.send(this, Opal.find_super_dispatcher(this, func.name, func));
+    } else {
+      // Bind the initialize function to super();
+      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
+    }
+  });
+  return scope;
+}
+
 /**
  * @namespace
  */
@@ -1536,6 +1585,10 @@ if (LoggerManager) {
 
   LoggerManager.setLogger = function (logger) {
     this.logger = logger;
+  };
+
+  LoggerManager.newLogger = function (name, functions) {
+    return initializeLoggerClass(name, functions).$new();
   };
 
   LoggerManager.newFormatter = function (name, functions) {
