@@ -195,7 +195,13 @@ intro
             this.writer = fs.createWriteStream(logFile, {
               flags: 'a'
             });
-            fs.truncateSync(logFile, 0); // file must be empty
+            try {
+              fs.truncateSync(logFile, 0); // file must be empty
+            }catch (err) {
+              if (err.code === 'ENOENT') {
+                // it's OK, if the file does not exists
+              }
+            }
           },
           add: function (severity, _, message) {
             const log = this.formatter['$call'](asciidoctor.LoggerSeverity.get(severity), new Date(), this.progname, message);
