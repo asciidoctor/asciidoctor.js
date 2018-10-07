@@ -1560,7 +1560,30 @@ function initializeLoggerFormatterClass (className, functions) {
 
 function initializeLoggerClass (className, functions) {
   var superClass = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger');
-  return initializeClass(superClass, className, functions);
+  return initializeClass(superClass, className, functions, {}, {
+    'add': function (args) {
+      if (args.length >= 2 && typeof args[2] === 'object' && '$$smap' in args[2]) {
+        var message = args[2];
+        var messageObject = fromHash(message);
+        messageObject.getText = function () {
+          return this['text'];
+        };
+        messageObject.getSourceLocation = function () {
+          return this['source_location'];
+        };
+        messageObject['$inspect'] = function () {
+          var sourceLocation = this.getSourceLocation();
+          if (sourceLocation) {
+            return sourceLocation.getPath() + ': line ' + sourceLocation.getLineNumber() + ': ' + this.getText();
+          } else {
+            return this.getText();
+          }
+        };
+        args[2] = messageObject;
+      }
+      return args;
+    }
+  });
 }
 
 /**
@@ -1593,8 +1616,10 @@ if (LoggerManager) {
  * @namespace
  */
 var LoggerSeverity = Opal.const_get_qualified(Opal.Logger, 'Severity', true);
+
 // Alias
 Opal.Asciidoctor.LoggerSeverity = LoggerSeverity;
+
 if (LoggerSeverity) {
   LoggerSeverity.get = function (severity) {
     return LoggerSeverity.$constants()[severity];
@@ -1611,8 +1636,8 @@ var LoggerFormatter = Opal.const_get_qualified(Opal.Logger, 'Formatter', true);
 Opal.Asciidoctor.LoggerFormatter = LoggerFormatter;
 
 if (LoggerFormatter) {
-  LoggerManager.add = function (severity, time, programName, message) {
-    return this.$add(LoggerSeverity.get(severity), time, programName, message);
+  LoggerFormatter.prototype.call = function (severity, time, programName, message) {
+    return this.$call(LoggerSeverity.get(severity), time, programName, message);
   };
 }
 

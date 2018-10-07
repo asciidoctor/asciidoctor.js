@@ -43,6 +43,16 @@ function removeFile (path) {
   }
 }
 
+function truncateFile (path) {
+  try {
+    fs.truncateSync(path, 0); // file must be empty
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      // it's OK, if the file does not exists
+    }
+  }
+}
+
 const resolveFixture = (name) => {
   return path.resolve(path.join(__dirname, '..', 'fixtures', name));
 };
@@ -108,6 +118,30 @@ intro
           expect(defaultLogger.getLevel()).to.equal(3);
         } finally {
           defaultLogger.setLevel(2); // reset
+        }
+      });
+      it('should use the default formatter', () => {
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        const defaultFormatter = defaultLogger.getFormatter();
+        const processStderrWriteFunction = process.stderr.write;
+        let stderrOutput = '';
+        process.stderr.write = function (chunk) {
+          stderrOutput += chunk;
+        };
+        try {
+          const input = `= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
+`;
+          asciidoctor.convert(input);
+          expect(stderrOutput).to.equal('asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n');
+        } finally {
+          defaultLogger.setFormatter(defaultFormatter);
+          process.stderr.write = processStderrWriteFunction;
         }
       });
       it('should be able to use a JSON formatter', () => {
@@ -195,16 +229,10 @@ intro
             this.writer = fs.createWriteStream(logFile, {
               flags: 'a'
             });
-            try {
-              fs.truncateSync(logFile, 0); // file must be empty
-            }catch (err) {
-              if (err.code === 'ENOENT') {
-                // it's OK, if the file does not exists
-              }
-            }
+            truncateFile(logFile);
           },
           add: function (severity, _, message) {
-            const log = this.formatter['$call'](asciidoctor.LoggerSeverity.get(severity), new Date(), this.progname, message);
+            const log = this.formatter.call(severity, new Date(), this.progname, message);
             this.writer.write(log);
           }
         });
