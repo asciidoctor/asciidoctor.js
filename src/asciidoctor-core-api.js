@@ -1465,7 +1465,61 @@ Cursor.prototype.getLineNumber = function () {
 };
 
 // Logger API (available in Asciidoctor 1.5.7+)
-// REMIND: we are using "skip_missing" because this API is only available starting with Asciidoctor 1.5.7
+
+function initializeLoggerFormatterClass (className, functions) {
+  var superclass = Opal.const_get_qualified(Opal.Logger, 'Formatter');
+  var scope = Opal.klass(Opal.Object, superclass, className, function () {});
+  var postConstructFunction;
+  var initializeFunction;
+  for (var key in functions) {
+    if (functions.hasOwnProperty(key)) {
+      (function (key) {
+        var userFunction = functions[key];
+        if (key === 'postConstruct') {
+          postConstructFunction = userFunction;
+        } else if (key === 'initialize') {
+          initializeFunction = userFunction;
+        } else {
+          Opal.def(scope, '$' + key, function () {
+            for (var i = 0; i < arguments.length; i++) {
+              // convert all (Opal) Hash arguments to JSON.
+              if (typeof arguments[i] === 'object' && '$$smap' in arguments[i]) {
+                arguments[i] = fromHash(arguments[i]);
+              }
+            }
+            return userFunction.apply(this, arguments);
+          });
+        }
+      }(key));
+    }
+  }
+  var initialize;
+  if (typeof initializeFunction === 'function') {
+    initialize = function () {
+      initializeFunction.apply(this, arguments);
+      if (typeof postConstructFunction === 'function') {
+        postConstructFunction.bind(this)();
+      }
+    };
+  } else {
+    initialize = function () {
+      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
+      if (typeof postConstructFunction === 'function') {
+        postConstructFunction.bind(this)();
+      }
+    };
+  }
+  Opal.def(scope, '$initialize', initialize);
+  Opal.def(scope, 'super', function (func) {
+    if (typeof func === 'function') {
+      Opal.send(this, Opal.find_super_dispatcher(this, func.name, func));
+    } else {
+      // Bind the initialize function to super();
+      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
+    }
+  });
+  return scope;
+}
 
 /**
  * @namespace
@@ -1482,6 +1536,37 @@ if (LoggerManager) {
 
   LoggerManager.setLogger = function (logger) {
     this.logger = logger;
+  };
+
+  LoggerManager.newFormatter = function (name, functions) {
+    return initializeLoggerFormatterClass(name, functions).$new();
+  };
+}
+
+/**
+ * @namespace
+ */
+var LoggerSeverity = Opal.const_get_qualified(Opal.Logger, 'Severity', true);
+// Alias
+Opal.Asciidoctor.LoggerSeverity = LoggerSeverity;
+if (LoggerSeverity) {
+  LoggerSeverity.get = function (severity) {
+    return LoggerSeverity.$constants()[severity];
+  };
+}
+
+/**
+ * @namespace
+ */
+var LoggerFormatter = Opal.const_get_qualified(Opal.Logger, 'Formatter', true);
+
+
+// Alias
+Opal.Asciidoctor.LoggerFormatter = LoggerFormatter;
+
+if (LoggerFormatter) {
+  LoggerManager.add = function (severity, time, programName, message) {
+    return this.$add(LoggerSeverity.get(severity), time, programName, message);
   };
 }
 
@@ -1514,6 +1599,38 @@ if (MemoryLogger) {
       result.push(messageObject);
     }
     return result;
+  };
+}
+
+/**
+ * @namespace
+ */
+var Logger = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger', true);
+
+// Alias
+Opal.Asciidoctor.Logger = Logger;
+
+if (Logger) {
+  Logger.prototype.getMaxSeverity = function () {
+    return this.max_severity;
+  };
+  Logger.prototype.getFormatter = function () {
+    return this.formatter;
+  };
+  Logger.prototype.setFormatter = function (formatter) {
+    return this.formatter = formatter;
+  };
+  Logger.prototype.getLevel = function () {
+    return this.level;
+  };
+  Logger.prototype.setLevel = function (level) {
+    return this.level = level;
+  };
+  Logger.prototype.getProgramName = function () {
+    return this.progname;
+  };
+  Logger.prototype.setProgramName = function (programName) {
+    return this.progname = programName;
   };
 }
 

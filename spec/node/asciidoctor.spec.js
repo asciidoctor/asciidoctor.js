@@ -83,6 +83,75 @@ intro
           asciidoctor.LoggerManager.setLogger(defaultLogger);
         }
       });
+      it('should be able to get logger\'s info', () => {
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        expect(defaultLogger.getLevel()).to.equal(2);
+        expect(defaultLogger.getFormatter()['$$class'].name).to.equal('$BasicFormatter');
+        expect(defaultLogger.getProgramName()).to.equal('asciidoctor');
+        expect(defaultLogger.getMaxSeverity()).to.equal(2);
+      });
+      it('should be able to set the logger\'s program name', () => {
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        try {
+          expect(defaultLogger.getProgramName()).to.equal('asciidoctor');
+          defaultLogger.setProgramName('asciidoctor.js');
+          expect(defaultLogger.getProgramName()).to.equal('asciidoctor.js');
+        } finally {
+          defaultLogger.setProgramName('asciidoctor'); // reset
+        }
+      });
+      it('should be able to set the logger\'s level', () => {
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        try {
+          expect(defaultLogger.getLevel()).to.equal(2);
+          defaultLogger.setLevel(3);
+          expect(defaultLogger.getLevel()).to.equal(3);
+        } finally {
+          defaultLogger.setLevel(2); // reset
+        }
+      });
+      it('should be able to use a JSON formatter', () => {
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        const defaultFormatter = defaultLogger.getFormatter();
+        const processStderrWriteFunction = process.stderr.write;
+        let stderrOutput = '';
+        process.stderr.write = function (chunk) {
+          stderrOutput += chunk;
+        };
+        try {
+          expect(defaultFormatter['$$class']['$$name']).to.equal('BasicFormatter');
+          defaultLogger.setFormatter(asciidoctor.LoggerManager.newFormatter('JsonFormatter', {
+            call: function (severity, time, programName, message) {
+              const text = message['text'];
+              const sourceLocation = message['source_location'];
+              return JSON.stringify({
+                programName: programName,
+                message: text,
+                sourceLocation: {
+                  lineNumber: sourceLocation.getLineNumber(),
+                  path: sourceLocation.getPath()
+                },
+                severity: severity
+              }) + '\n';
+            }
+          }));
+          const input = `= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
+`;
+          expect(defaultLogger.getFormatter()['$$class']['$$name']).to.equal('JsonFormatter');
+          asciidoctor.convert(input);
+          expect(stderrOutput).to.equal('{"programName":"asciidoctor","message":"invalid part, must have at least one section (e.g., chapter, appendix, etc.)","sourceLocation":{"lineNumber":8,"path":"<stdin>"},"severity":"ERROR"}\n');
+          expect(JSON.parse(stderrOutput).message).to.equal('invalid part, must have at least one section (e.g., chapter, appendix, etc.)');
+        } finally {
+          defaultLogger.setFormatter(defaultFormatter);
+          process.stderr.write = processStderrWriteFunction;
+        }
+      });
       it('should not log anything when NullLogger is used', () => {
         const input = `= Book
 :doctype: book
