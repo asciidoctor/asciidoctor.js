@@ -392,68 +392,12 @@ DocinfoProcessor.prototype.atLocation = function (value) {
 };
 
 function initializeProcessorClass (superclassName, className, functions) {
-  var superclass = Opal.const_get_qualified(Extensions, superclassName);
-  var scope = Opal.klass(Opal.Object, superclass, className, function () {});
-  var postConstructFunction;
-  var initializeFunction;
-  var isHandlesFunctionDefined = false;
-  for (var key in functions) {
-    if (functions.hasOwnProperty(key)) {
-      (function (key) {
-        var userFunction = functions[key];
-        if (key === 'postConstruct') {
-          postConstructFunction = userFunction;
-        } else if (key === 'initialize') {
-          initializeFunction = userFunction;
-        } else {
-          if (key === 'handles?') {
-            isHandlesFunctionDefined = true;
-          }
-          Opal.def(scope, '$' + key, function () {
-            return userFunction.apply(this, arguments);
-          });
-        }
-      }(key));
-    }
-  }
-  var initialize;
-  if (typeof initializeFunction === 'function') {
-    initialize = function () {
-      initializeFunction.apply(this, arguments);
-      if (typeof postConstructFunction === 'function') {
-        postConstructFunction.bind(this)();
-      }
-    };
-  } else {
-    initialize = function () {
-      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
-      if (typeof postConstructFunction === 'function') {
-        postConstructFunction.bind(this)();
-      }
-    };
-  }
-  Opal.def(scope, '$initialize', initialize);
-  Opal.def(scope, 'super', function (func) {
-    if (typeof func === 'function') {
-      Opal.send(this, Opal.find_super_dispatcher(this, func.name, func));
-    } else {
-      // Bind the initialize function to super();
-      var argumentsList =  Array.from(arguments);
-      for (var i = 0; i < argumentsList.length; i++) {
-        // convert all (Opal) Hash arguments to JSON.
-        if (typeof argumentsList[i] === 'object') {
-          argumentsList[i] = toHash(argumentsList[i]);
-        }
-      }
-      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), argumentsList);
+  var superClass = Opal.const_get_qualified(Extensions, superclassName);
+  return initializeClass(superClass, className, functions, {
+    'handles?': function () {
+      return true;
     }
   });
-  if (!isHandlesFunctionDefined) {
-    Opal.def(scope, '$handles?', function () {
-      return true;
-    });
-  }
-  return scope;
 }
 
 // Postprocessor
