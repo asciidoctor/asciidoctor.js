@@ -5,7 +5,8 @@ const path = require('path');
 const fs = require('fs');
 const log = require('bestikk-log');
 const bfs = require('bestikk-fs');
-const download = require('bestikk-download');
+const Download = require('bestikk-download');
+const download = new Download({});
 const OpalBuilder = require('opal-compiler').Builder;
 const BuilderModule = require('./module/builder');
 
@@ -24,7 +25,8 @@ const compileExamples = (callback) => {
 };
 
 const getContentFromAsciiDocRepo = (source, target, callback) => {
-  download.getContentFromURL(`${builder.asciidocRepoBaseURI}/doc/${source}`, target, callback);
+  download.getContentFromURL(`${builder.asciidocRepoBaseURI}/doc/${source}`, target)
+    .then(() => callback());
 };
 
 const copyExamplesResources = (callback) => {

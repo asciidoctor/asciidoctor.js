@@ -3,7 +3,8 @@ const async = require('async');
 const path = require('path');
 const log = require('bestikk-log');
 const bfs = require('bestikk-fs');
-const download = require('bestikk-download');
+const Download = require('bestikk-download');
+const download = new Download({});
 const execModule = require('./module/exec');
 const BuilderModule = require('./module/builder');
 
@@ -17,7 +18,8 @@ if (!runners.includes(runner)) {
 }
 
 const getContentFromAsciiDocRepo = (source, target, callback) => {
-  download.getContentFromURL(`${builder.asciidocRepoBaseURI}/doc/${source}`, target, callback);
+  download.getContentFromURL(`${builder.asciidocRepoBaseURI}/doc/${source}`, target)
+    .then(() => callback());
 };
 
 const builder = new BuilderModule();

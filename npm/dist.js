@@ -37,5 +37,5 @@ const start = process.hrtime();
 async.series([
   callback => builderModule.build(callback),
   callback => runTest(callback),
-  callback => copyToDist(['browser', 'nashorn', 'node', 'umd'], callback)
+  callback => copyToDist(['browser', 'nashorn', 'node', 'graalvm', 'umd'], callback)
 ], () => log.success(`Done in ${process.hrtime(start)[0]} s`));
