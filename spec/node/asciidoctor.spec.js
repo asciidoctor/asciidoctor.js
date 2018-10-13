@@ -43,6 +43,16 @@ function removeFile (path) {
   }
 }
 
+function truncateFile (path) {
+  try {
+    fs.truncateSync(path, 0); // file must be empty
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      // it's OK, if the file does not exists
+    }
+  }
+}
+
 const resolveFixture = (name) => {
   return path.resolve(path.join(__dirname, '..', 'fixtures', name));
 };
@@ -110,6 +120,30 @@ intro
           defaultLogger.setLevel(2); // reset
         }
       });
+      it('should use the default formatter', () => {
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        const defaultFormatter = defaultLogger.getFormatter();
+        const processStderrWriteFunction = process.stderr.write;
+        let stderrOutput = '';
+        process.stderr.write = function (chunk) {
+          stderrOutput += chunk;
+        };
+        try {
+          const input = `= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
+`;
+          asciidoctor.convert(input);
+          expect(stderrOutput).to.equal('asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n');
+        } finally {
+          defaultLogger.setFormatter(defaultFormatter);
+          process.stderr.write = processStderrWriteFunction;
+        }
+      });
       it('should be able to use a JSON formatter', () => {
         const defaultLogger = asciidoctor.LoggerManager.getLogger();
         const defaultFormatter = defaultLogger.getFormatter();
@@ -175,6 +209,42 @@ intro
           expect(stderrOutput).to.equal('');
         } finally {
           process.stderr.write = stderrWriteFunction;
+          asciidoctor.LoggerManager.setLogger(defaultLogger);
+        }
+      });
+      it('should create a custom Logger', (done) => {
+        const input = `= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
+`;
+        const fs = require('fs');
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        const logFile = path.join(__dirname, '..', '..', 'build', 'async.log');
+        const asyncLogger = asciidoctor.LoggerManager.newLogger('AsyncFileLogger', {
+          postConstruct: function () {
+            this.writer = fs.createWriteStream(logFile, {
+              flags: 'a'
+            });
+            truncateFile(logFile);
+          },
+          add: function (severity, _, message) {
+            const log = this.formatter.call(severity, new Date(), this.progname, message);
+            this.writer.write(log);
+          }
+        });
+
+        try {
+          asciidoctor.LoggerManager.setLogger(asyncLogger);
+          asciidoctor.convert(input);
+          asyncLogger.writer.end(() => {
+            expect(fs.readFileSync(logFile, 'UTF-8')).to.equal('asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n');
+            done();
+          });
+        } finally {
           asciidoctor.LoggerManager.setLogger(defaultLogger);
         }
       });

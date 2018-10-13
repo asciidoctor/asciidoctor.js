@@ -33,6 +33,83 @@ var prepareOptions = function (options) {
   return options;
 };
 
+function initializeClass (superClass, className, functions, defaultFunctions, argProxyFunctions) {
+  var scope = Opal.klass(Opal.Object, superClass, className, function () {});
+  var postConstructFunction;
+  var initializeFunction;
+  var defaultFunctionsOverridden = {};
+  for (var functionName in functions) {
+    if (functions.hasOwnProperty(functionName)) {
+      (function (functionName) {
+        var userFunction = functions[functionName];
+        if (functionName === 'postConstruct') {
+          postConstructFunction = userFunction;
+        } else if (functionName === 'initialize') {
+          initializeFunction = userFunction;
+        } else {
+          if (defaultFunctions && defaultFunctions.hasOwnProperty(functionName)) {
+            defaultFunctionsOverridden[functionName] = true;
+          }
+          Opal.def(scope, '$' + functionName, function () {
+            var args;
+            if (argProxyFunctions && argProxyFunctions.hasOwnProperty(functionName)) {
+              args = argProxyFunctions[functionName](arguments);
+            } else {
+              args = arguments;
+            }
+            return userFunction.apply(this, args);
+          });
+        }
+      }(functionName));
+    }
+  }
+  var initialize;
+  if (typeof initializeFunction === 'function') {
+    initialize = function () {
+      initializeFunction.apply(this, arguments);
+      if (typeof postConstructFunction === 'function') {
+        postConstructFunction.bind(this)();
+      }
+    };
+  } else {
+    initialize = function () {
+      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
+      if (typeof postConstructFunction === 'function') {
+        postConstructFunction.bind(this)();
+      }
+    };
+  }
+  Opal.def(scope, '$initialize', initialize);
+  Opal.def(scope, 'super', function (func) {
+    if (typeof func === 'function') {
+      Opal.send(this, Opal.find_super_dispatcher(this, func.name, func));
+    } else {
+      // Bind the initialize function to super();
+      var argumentsList =  Array.from(arguments);
+      for (var i = 0; i < argumentsList.length; i++) {
+        // convert all (Opal) Hash arguments to JSON.
+        if (typeof argumentsList[i] === 'object') {
+          argumentsList[i] = toHash(argumentsList[i]);
+        }
+      }
+      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), argumentsList);
+    }
+  });
+  if (defaultFunctions) {
+    for (var defaultFunctionName in defaultFunctions) {
+      if (defaultFunctions.hasOwnProperty(defaultFunctionName) && !defaultFunctionsOverridden.hasOwnProperty(defaultFunctionName)) {
+        (function (defaultFunctionName) {
+          var defaultFunction = defaultFunctions[defaultFunctionName];
+          Opal.def(scope, '$' + defaultFunctionName, function () {
+            return defaultFunction.apply(this, arguments);
+          });
+        }(defaultFunctionName));
+      }
+    }
+  }
+  return scope;
+}
+
 // Asciidoctor API
 
 /**
@@ -1468,57 +1545,45 @@ Cursor.prototype.getLineNumber = function () {
 
 function initializeLoggerFormatterClass (className, functions) {
   var superclass = Opal.const_get_qualified(Opal.Logger, 'Formatter');
-  var scope = Opal.klass(Opal.Object, superclass, className, function () {});
-  var postConstructFunction;
-  var initializeFunction;
-  for (var key in functions) {
-    if (functions.hasOwnProperty(key)) {
-      (function (key) {
-        var userFunction = functions[key];
-        if (key === 'postConstruct') {
-          postConstructFunction = userFunction;
-        } else if (key === 'initialize') {
-          initializeFunction = userFunction;
-        } else {
-          Opal.def(scope, '$' + key, function () {
-            for (var i = 0; i < arguments.length; i++) {
-              // convert all (Opal) Hash arguments to JSON.
-              if (typeof arguments[i] === 'object' && '$$smap' in arguments[i]) {
-                arguments[i] = fromHash(arguments[i]);
-              }
-            }
-            return userFunction.apply(this, arguments);
-          });
+  return initializeClass(superclass, className, functions, {}, {
+    'call': function (args) {
+      for (var i = 0; i < args.length; i++) {
+        // convert all (Opal) Hash arguments to JSON.
+        if (typeof args[i] === 'object' && '$$smap' in args[i]) {
+          args[i] = fromHash(args[i]);
         }
-      }(key));
-    }
-  }
-  var initialize;
-  if (typeof initializeFunction === 'function') {
-    initialize = function () {
-      initializeFunction.apply(this, arguments);
-      if (typeof postConstructFunction === 'function') {
-        postConstructFunction.bind(this)();
       }
-    };
-  } else {
-    initialize = function () {
-      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
-      if (typeof postConstructFunction === 'function') {
-        postConstructFunction.bind(this)();
-      }
-    };
-  }
-  Opal.def(scope, '$initialize', initialize);
-  Opal.def(scope, 'super', function (func) {
-    if (typeof func === 'function') {
-      Opal.send(this, Opal.find_super_dispatcher(this, func.name, func));
-    } else {
-      // Bind the initialize function to super();
-      Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize));
+      return args;
     }
   });
-  return scope;
+}
+
+function initializeLoggerClass (className, functions) {
+  var superClass = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger');
+  return initializeClass(superClass, className, functions, {}, {
+    'add': function (args) {
+      if (args.length >= 2 && typeof args[2] === 'object' && '$$smap' in args[2]) {
+        var message = args[2];
+        var messageObject = fromHash(message);
+        messageObject.getText = function () {
+          return this['text'];
+        };
+        messageObject.getSourceLocation = function () {
+          return this['source_location'];
+        };
+        messageObject['$inspect'] = function () {
+          var sourceLocation = this.getSourceLocation();
+          if (sourceLocation) {
+            return sourceLocation.getPath() + ': line ' + sourceLocation.getLineNumber() + ': ' + this.getText();
+          } else {
+            return this.getText();
+          }
+        };
+        args[2] = messageObject;
+      }
+      return args;
+    }
+  });
 }
 
 /**
@@ -1538,6 +1603,10 @@ if (LoggerManager) {
     this.logger = logger;
   };
 
+  LoggerManager.newLogger = function (name, functions) {
+    return initializeLoggerClass(name, functions).$new();
+  };
+
   LoggerManager.newFormatter = function (name, functions) {
     return initializeLoggerFormatterClass(name, functions).$new();
   };
@@ -1547,8 +1616,10 @@ if (LoggerManager) {
  * @namespace
  */
 var LoggerSeverity = Opal.const_get_qualified(Opal.Logger, 'Severity', true);
+
 // Alias
 Opal.Asciidoctor.LoggerSeverity = LoggerSeverity;
+
 if (LoggerSeverity) {
   LoggerSeverity.get = function (severity) {
     return LoggerSeverity.$constants()[severity];
@@ -1565,8 +1636,8 @@ var LoggerFormatter = Opal.const_get_qualified(Opal.Logger, 'Formatter', true);
 Opal.Asciidoctor.LoggerFormatter = LoggerFormatter;
 
 if (LoggerFormatter) {
-  LoggerManager.add = function (severity, time, programName, message) {
-    return this.$add(LoggerSeverity.get(severity), time, programName, message);
+  LoggerFormatter.prototype.call = function (severity, time, programName, message) {
+    return this.$call(LoggerSeverity.get(severity), time, programName, message);
   };
 }
 
