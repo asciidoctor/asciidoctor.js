@@ -36,8 +36,10 @@ const copyExamplesResources = () => {
   ]);
 
   log.task('Download sample data from AsciiDoc repository');
-  return getContentFromAsciiDocRepo('asciidoc.txt', path.join(builder.examplesBuildDir, 'userguide.adoc'))
-    .then(() => getContentFromAsciiDocRepo('customers.csv', path.join(builder.examplesBuildDir, 'customers.csv')));
+  return Promise.all([
+    getContentFromAsciiDocRepo('asciidoc.txt', path.join(builder.examplesBuildDir, 'userguide.adoc')),
+    getContentFromAsciiDocRepo('customers.csv', path.join(builder.examplesBuildDir, 'customers.csv'))
+  ]);
 };
 
 
@@ -59,5 +61,4 @@ For this purpose, you can run the following command to start a HTTP server local
  - build/examples/asciidoctor_example.html
  - build/examples/userguide_test.html
  - build/examples/basic.html`);
-    return Promise.resolve({});
   });

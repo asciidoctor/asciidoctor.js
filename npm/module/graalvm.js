@@ -66,7 +66,7 @@ const downloadGraalVM = (version) => {
     log.info(target + ' file already exists, skipping "download" task');
     return Promise.resolve({});
   }
-  download.getContentFromURL(`https://github.com/oracle/graal/releases/download/vm-${version}/graalvm-ce-${version}-linux-amd64.tar.gz`, target)
+  return download.getContentFromURL(`https://github.com/oracle/graal/releases/download/vm-${version}/graalvm-ce-${version}-linux-amd64.tar.gz`, target)
     .then(() => {
       if (fs.existsSync('build/graalvm')) {
         log.info('build/graalvm directory already exists, skipping "untar" task');

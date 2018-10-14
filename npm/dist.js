@@ -38,5 +38,4 @@ builderModule.build()
   .then(() => copyToDist(['browser', 'nashorn', 'node', 'graalvm', 'umd']))
   .then(() => {
     log.success(`Done in ${process.hrtime(start)[0]} s`);
-    return Promise.resolve({});
   });

@@ -43,5 +43,4 @@ builder.build()
     } else {
       log.error(`${runner} runner is unsupported!`);
     }
-    return Promise.resolve({});
   });
