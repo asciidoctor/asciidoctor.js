@@ -1,8 +1,8 @@
 'use strict';
-const async = require('async');
+
 const fs = require('fs');
 const path = require('path');
-const child_process = require('child_process');
+const childProcess = require('child_process');
 const Download = require('bestikk-download');
 const download = new Download({});
 const log = require('bestikk-log');
@@ -27,12 +27,12 @@ const graalvmCheckConvert = (result, testName) => {
 const graalvmJavaCompileAndRun = (specName, className, javacBin, javaBin) => {
   // Compile
   log.debug(`compiling ${specName} to build/`);
-  child_process.execSync(`${javacBin} ./${specName} -d ./build`);
+  childProcess.execSync(`${javacBin} ./${specName} -d ./build`);
 
   // Run
   log.debug(`running ${className}`);
   const start = process.hrtime();
-  const result = child_process.execSync(`${javaBin} -classpath ./build ${className}`).toString('utf8');
+  const result = childProcess.execSync(`${javaBin} -classpath ./build ${className}`).toString('utf8');
   log.debug(`running ${className} in ${process.hrtime(start)[0] }s`);
   return result;
 };
@@ -42,11 +42,9 @@ const graalvmRun = (name, jdkInstallDir) => {
 
   const start = process.hrtime();
 
-  let jjsBin;
   let javacBin;
   let javaBin;
   const jdkBinDir = path.join(jdkInstallDir, 'bin');
-  jjsBin = path.join(jdkBinDir, 'jjs');
   javacBin = path.join(jdkBinDir, 'javac');
   javaBin = path.join(jdkBinDir, 'java');
 
@@ -60,29 +58,22 @@ const graalvmRun = (name, jdkInstallDir) => {
   log.success(`Done ${name} in ${process.hrtime(start)[0]}s`);
 };
 
-const downloadGraalVM = (version, callback) => {
+const downloadGraalVM = (version) => {
   log.task('download graalvm');
 
   const target = 'build/graalvm.tar.gz';
-  async.series([
-    callback => {
-      if (fs.existsSync(target)) {
-        log.info(target + ' file already exists, skipping "download" task');
-        callback();
-      } else {
-        download.getContentFromURL(`https://github.com/oracle/graal/releases/download/vm-${version}/graalvm-ce-${version}-linux-amd64.tar.gz`, target)
-          .then(() => callback());
-      }
-    },
-    callback => {
+  if (fs.existsSync(target)) {
+    log.info(target + ' file already exists, skipping "download" task');
+    return Promise.resolve({});
+  }
+  download.getContentFromURL(`https://github.com/oracle/graal/releases/download/vm-${version}/graalvm-ce-${version}-linux-amd64.tar.gz`, target)
+    .then(() => {
       if (fs.existsSync('build/graalvm')) {
         log.info('build/graalvm directory already exists, skipping "untar" task');
-        callback();
-      } else {
-        bfs.untar(target, 'graalvm', 'build', callback);
+        return Promise.resolve({});
       }
-    }
-  ], () => typeof callback === 'function' && callback());
+      return bfs.untar(target, 'graalvm', 'build');
+    });
 };
 
 module.exports = class GraalVM {
@@ -90,12 +81,8 @@ module.exports = class GraalVM {
     this.graalvmVersion = '1.0.0-rc7';
   }
 
-  get (callback) {
-    async.series([
-      callback => downloadGraalVM(this.graalvmVersion, callback)
-    ], () => {
-      typeof callback === 'function' && callback();
-    });
+  get () {
+    return downloadGraalVM(this.graalvmVersion);
   }
 
   static run () {

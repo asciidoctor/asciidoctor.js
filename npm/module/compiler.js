@@ -30,7 +30,7 @@ const compileAsciidoctorCore = () => {
   fs.writeFileSync('build/asciidoctor-core.js', opalBuilder.build('asciidoctor').toString(), 'utf8');
 };
 
-module.exports.compile = (environments, callback) => {
+module.exports.compile = (environments) => {
   bfs.mkdirsSync('build');
 
   compileRuntimeEnvironments(environments);
@@ -41,5 +41,5 @@ module.exports.compile = (environments, callback) => {
   const asciidoctorPath = 'build/asciidoctor';
   const asciidoctorCSSFile = path.join(asciidoctorPath, 'data/stylesheets/asciidoctor-default.css');
   fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/css/asciidoctor.css'));
-  callback();
+  return Promise.resolve({});
 };

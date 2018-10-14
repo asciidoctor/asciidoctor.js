@@ -65,12 +65,10 @@
     "opal-runtime": "1.0.10"
   },
   "devDependencies": {
-    "async": "2.6.0",
     "bestikk-download": "1.0.0",
-    "bestikk-fs": "0.1.0",
-    "bestikk-jdk-ea": "0.1.1",
+    "bestikk-fs": "1.0.0",
     "bestikk-log": "0.1.0",
-    "bestikk-uglify": "0.2.2",
+    "bestikk-uglify": "1.0.0",
     "chai": "4.1.2",
     "cross-env": "5.1.4",
     "documentation": "6.3.2",

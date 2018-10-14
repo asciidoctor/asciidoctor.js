@@ -1,26 +1,19 @@
 'use strict';
-const async = require('async');
 const log = require('bestikk-log');
+const uglify = require('bestikk-uglify');
 
-module.exports.uglify = (callback) => {
+module.exports.uglify = () => {
   // Preconditions
   // - MINIFY environment variable is defined
   if (!process.env.MINIFY) {
     log.info('MINIFY environment variable is not defined, skipping "minify" task');
-    callback();
-    return;
+    return Promise.resolve({});
   }
-  const uglify = require('bestikk-uglify');
   log.task('uglify');
-
-  const tasks = [
-    {source: 'build/asciidoctor.js', destination: 'build/asciidoctor.min.js'}
-  ].map(file => {
-    const source = file.source;
-    const destination = file.destination;
-    log.transform('minify', source, destination);
-    return callback => uglify.minify(source, destination, callback);
-  });
-
-  async.parallelLimit(tasks, 4, callback);
+  const source = 'build/asciidoctor.js';
+  const destination = 'build/asciidoctor.min.js';
+  log.transform('minify', source, destination);
+  return uglify.minify(source, destination);
 };
+
+

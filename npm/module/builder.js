@@ -1,5 +1,4 @@
 'use strict';
-const async = require('async');
 const fs = require('fs');
 const path = require('path');
 const log = require('bestikk-log');
@@ -11,32 +10,26 @@ const cleanModule = require('./clean');
 const compilerModule = require('./compiler');
 const uglifyModule = require('./uglify');
 
-const downloadDependencies = (asciidoctorCoreDependency, callback) => {
+const downloadDependencies = (asciidoctorCoreDependency) => {
   log.task('download dependencies');
 
   const target = 'build/asciidoctor.tar.gz';
-  async.series([
-    callback => {
-      if (fs.existsSync(target)) {
-        log.info(target + ' file already exists, skipping "download" task');
-        callback();
-      } else {
-        download.getContentFromURL(`https://codeload.github.com/${asciidoctorCoreDependency.user}/${asciidoctorCoreDependency.repo}/tar.gz/${asciidoctorCoreDependency.version}`, target)
-          .then(() => callback());
-      }
-    },
-    callback => {
+
+  if (fs.existsSync(target)) {
+    log.info(target + ' file already exists, skipping "download" task');
+    return Promise.resolve({});
+  }
+  return download.getContentFromURL(`https://codeload.github.com/${asciidoctorCoreDependency.user}/${asciidoctorCoreDependency.repo}/tar.gz/${asciidoctorCoreDependency.version}`, target)
+    .then(() => {
       if (fs.existsSync('build/asciidoctor')) {
         log.info('build/asciidoctor directory already exists, skipping "untar" task');
-        callback();
-      } else {
-        bfs.untar(target, 'asciidoctor', 'build', callback);
+        return Promise.resolve({});
       }
-    }
-  ], () => typeof callback === 'function' && callback());
+      return bfs.untar(target, 'asciidoctor', 'build');
+    });
 };
 
-const replaceUnsupportedFeatures = (asciidoctorCoreDependency, callback) => {
+const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
   log.task('Replace unsupported features');
   const path = asciidoctorCoreDependency.target;
   let data = fs.readFileSync(path, 'utf8');
@@ -49,10 +42,10 @@ const replaceUnsupportedFeatures = (asciidoctorCoreDependency, callback) => {
   // bypass use of IO.binread when reading include files in reader
   data = data.replace(/inc_content *= *(.*?)if *\(target_type\['\$=='\]\("file"\)\)(.*)/, 'inc_content = $1if (false)$2');
   fs.writeFileSync(path, data, 'utf8');
-  callback();
+  return Promise.resolve({});
 };
 
-const replaceDefaultStylesheetPath = (asciidoctorCoreDependency, callback) => {
+const replaceDefaultStylesheetPath = (asciidoctorCoreDependency) => {
   log.task('Replace default stylesheet path');
   const path = asciidoctorCoreDependency.target;
   let data = fs.readFileSync(path, 'utf8');
@@ -79,26 +72,20 @@ return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != nu
   `;
   data = data.replace(/(function \$\$primary_stylesheet_data\(\) {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2');
   fs.writeFileSync(path, data, 'utf8');
-  callback();
+  return Promise.resolve({});
 };
 
-const rebuild = (asciidoctorCoreDependency, environments, callback) => {
+const rebuild = (asciidoctorCoreDependency, environments) => {
   const target = asciidoctorCoreDependency.target;
   if (fs.existsSync(target)) {
     log.info(`${target} file already exists, skipping "rebuild" task.\nTIP: Use "npm run clean" to rebuild from Asciidoctor core.`);
-    callback();
-    return;
+    return Promise.resolve({});
   }
-
-  async.series([
-    callback => cleanModule.clean(callback), // clean
-    callback => downloadDependencies(asciidoctorCoreDependency, callback), // download dependencies
-    callback => compilerModule.compile(environments, callback), // compile
-    callback => replaceUnsupportedFeatures(asciidoctorCoreDependency, callback), // replace unsupported features
-    callback => replaceDefaultStylesheetPath(asciidoctorCoreDependency, callback) // replace the default stylesheet path
-  ], () => {
-    typeof callback === 'function' && callback();
-  });
+  cleanModule.clean();
+  return downloadDependencies(asciidoctorCoreDependency)
+    .then(() => compilerModule.compile(environments))
+    .then(() => replaceUnsupportedFeatures(asciidoctorCoreDependency))
+    .then(() => replaceDefaultStylesheetPath(asciidoctorCoreDependency));
 };
 
 const concat = (message, files, destination) => {
@@ -123,7 +110,7 @@ const parseTemplateData = (data, templateModel) => {
     .join('\n');
 };
 
-const generateUMD = (asciidoctorCoreTarget, environments, callback) => {
+const generateUMD = (asciidoctorCoreTarget, environments) => {
   log.task('generate UMD');
 
   // Asciidoctor core + extensions
@@ -166,8 +153,7 @@ const generateUMD = (asciidoctorCoreTarget, environments, callback) => {
       fs.writeFileSync('build/asciidoctor.js', content, 'utf8');
     }
   });
-
-  callback();
+  return Promise.resolve({});
 };
 
 module.exports = class Builder {
@@ -192,16 +178,14 @@ module.exports = class Builder {
     this.asciidoctorCoreTarget = path.join('build', 'asciidoctor-core.js');
   }
 
-  build (callback) {
+  build () {
     if (process.env.SKIP_BUILD) {
       log.info('SKIP_BUILD environment variable is true, skipping "build" task');
-      callback();
-      return;
+      return Promise.resolve({});
     }
     if (process.env.DRY_RUN) {
       log.debug('build');
-      callback();
-      return;
+      return Promise.resolve({});
     }
 
     const start = process.hrtime();
@@ -212,13 +196,13 @@ module.exports = class Builder {
       version: this.asciidoctorCoreVersion,
       target: this.asciidoctorCoreTarget
     };
-    async.series([
-      callback => rebuild(asciidoctorCoreDependency, this.environments, callback), // rebuild from Asciidoctor core
-      callback => generateUMD(this.asciidoctorCoreTarget, this.environments, callback), // generate UMD
-      callback => uglifyModule.uglify(callback) // uglify (optional)
-    ], () => {
-      log.success(`Done in ${process.hrtime(start)[0]} s`);
-      typeof callback === 'function' && callback();
-    });
+
+    return rebuild(asciidoctorCoreDependency, this.environments)
+      .then(() => generateUMD(this.asciidoctorCoreTarget, this.environments))
+      .then(() => uglifyModule.uglify())
+      .then(() => {
+        log.success(`Done in ${process.hrtime(start)[0]} s`);
+        return Promise.resolve({});
+      });
   }
 };
