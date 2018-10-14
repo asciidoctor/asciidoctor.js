@@ -4,7 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const log = require('bestikk-log');
 const bfs = require('bestikk-fs');
-const download = require('bestikk-download');
+const Download = require('bestikk-download');
+const download = new Download({});
 
 const cleanModule = require('./clean');
 const compilerModule = require('./compiler');
@@ -20,7 +21,8 @@ const downloadDependencies = (asciidoctorCoreDependency, callback) => {
         log.info(target + ' file already exists, skipping "download" task');
         callback();
       } else {
-        download.getContentFromURL(`https://codeload.github.com/${asciidoctorCoreDependency.user}/${asciidoctorCoreDependency.repo}/tar.gz/${asciidoctorCoreDependency.version}`, target, callback);
+        download.getContentFromURL(`https://codeload.github.com/${asciidoctorCoreDependency.user}/${asciidoctorCoreDependency.repo}/tar.gz/${asciidoctorCoreDependency.version}`, target)
+          .then(() => callback());
       }
     },
     callback => {
@@ -186,7 +188,7 @@ module.exports = class Builder {
     this.benchmarkBuildDir = path.join('build', 'benchmark');
     this.examplesBuildDir = path.join('build', 'examples');
     this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625';
-    this.environments = ['umd', 'node', 'nashorn', 'browser'];
+    this.environments = ['umd', 'node', 'nashorn', 'graalvm', 'browser'];
     this.asciidoctorCoreTarget = path.join('build', 'asciidoctor-core.js');
   }
 
