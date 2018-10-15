@@ -1656,11 +1656,17 @@ if (MemoryLogger) {
     for (var i = 0; i < messages.length; i++) {
       var message = messages[i];
       var messageObject = fromHash(message);
-      // also convert the message attribute
-      messageObject.message = fromHash(messageObject.message);
-      messageObject.getText = function () {
-        return this.message['text'];
-      };
+      if (typeof messageObject.message === 'string') {
+        messageObject.getText = function () {
+          return this.message;
+        };
+      } else {
+        // also convert the message attribute
+        messageObject.message = fromHash(messageObject.message);
+        messageObject.getText = function () {
+          return this.message['text'];
+        };
+      }
       messageObject.getSeverity = function () {
         return this.severity.toString();
       };

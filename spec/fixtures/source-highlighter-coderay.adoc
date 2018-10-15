@@ -1,0 +1,6 @@
+:source-highlighter: coderay
+
+[source, bash]
+----
+ls -la
+----
