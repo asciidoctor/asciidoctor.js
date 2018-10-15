@@ -1,14 +1,13 @@
 'use strict';
 
-const async = require('async');
 const log = require('bestikk-log');
 const bfs = require('bestikk-fs');
 const execModule = require('./module/exec');
 const BuilderModule = require('./module/builder');
 
-const runTest = (callback) => {
+const runTest = () => {
   execModule.execSync('npm run test');
-  callback();
+  return Promise.resolve({});
 };
 
 const removeDistDirSync = (environments) => {
@@ -18,7 +17,7 @@ const removeDistDirSync = (environments) => {
   environments.forEach(environment => bfs.mkdirsSync(`dist/${environment}`));
 };
 
-const copyToDist = (environments, callback) => {
+const copyToDist = (environments) => {
   log.task('copy to dist/');
   removeDistDirSync(environments);
   bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css');
@@ -27,15 +26,16 @@ const copyToDist = (environments, callback) => {
   environments.forEach((environment) => {
     bfs.copySync(`build/asciidoctor-${environment}.js`, `dist/${environment}/asciidoctor.js`);
   });
-  typeof callback === 'function' && callback();
+  return Promise.resolve({});
 };
 
 log.task('dist');
 const builderModule = new BuilderModule();
 const start = process.hrtime();
 
-async.series([
-  callback => builderModule.build(callback),
-  callback => runTest(callback),
-  callback => copyToDist(['browser', 'nashorn', 'node', 'graalvm', 'umd'], callback)
-], () => log.success(`Done in ${process.hrtime(start)[0]} s`));
+builderModule.build()
+  .then(() => runTest())
+  .then(() => copyToDist(['browser', 'nashorn', 'node', 'graalvm', 'umd']))
+  .then(() => {
+    log.success(`Done in ${process.hrtime(start)[0]} s`);
+  });

@@ -1,10 +1,9 @@
 'use strict';
-const child_process = require('child_process');
+const childProcess = require('child_process');
 const log = require('bestikk-log');
 const execModule = require('./exec');
-const async = require('async');
 
-const prepareRelease = (releaseVersion, callback) => {
+const prepareRelease = (releaseVersion) => {
   log.task(`Release version: ${releaseVersion}`);
 
   if (process.env.DRY_RUN) {
@@ -12,11 +11,10 @@ const prepareRelease = (releaseVersion, callback) => {
   } else {
     execModule.execSync(`npm version ${releaseVersion}`);
   }
-  callback();
 };
 
 const pushRelease = () => {
-  const remoteName = child_process.execSync('git remote -v').toString('utf8')
+  const remoteName = childProcess.execSync('git remote -v').toString('utf8')
     .split(/\r?\n/)
     .filter(line => line.includes('(push)') && line.includes('asciidoctor/asciidoctor.js.git'))
     .map(line => line.split('\t')[0])
@@ -26,13 +24,12 @@ const pushRelease = () => {
     execModule.execSync(`git push ${remoteName} master`);
     execModule.execSync(`git push ${remoteName} --tags`);
     return true;
-  } else {
-    log.warn('Unable to find the remote name of the original repository asciidoctor/asciidoctor.js');
-    return false;
   }
+  log.warn('Unable to find the remote name of the original repository asciidoctor/asciidoctor.js');
+  return false;
 };
 
-const completeRelease = (releasePushed, releaseVersion, callback) => {
+const completeRelease = (releasePushed, releaseVersion) => {
   log.info('');
   log.info('To complete the release, you need to:');
   if (!releasePushed) {
@@ -40,21 +37,15 @@ const completeRelease = (releasePushed, releaseVersion, callback) => {
   }
   log.info(`[ ] edit the release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/tag/v${releaseVersion}`);
   log.info('[ ] create an issue here: https://github.com/webjars/asciidoctor.js to update Webjars');
-  callback();
 };
 
 const release = (releaseVersion) => {
   const start = process.hrtime();
 
-  let releasePushed;
-  async.series([
-    callback => prepareRelease(releaseVersion, callback),
-    callback => {
-      releasePushed = pushRelease();
-      callback();
-    },
-    callback => completeRelease(releasePushed, releaseVersion, callback)
-  ], () => log.success(`Done in ${process.hrtime(start)[0]} s`));
+  prepareRelease(releaseVersion);
+  const releasePushed = pushRelease();
+  completeRelease(releasePushed, releaseVersion);
+  log.success(`Done in ${process.hrtime(start)[0]} s`);
 };
 
 module.exports = {

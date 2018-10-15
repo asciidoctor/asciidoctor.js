@@ -1,9 +1,7 @@
 'use strict';
-const async = require('async');
 const path = require('path');
-const child_process = require('child_process');
+const childProcess = require('child_process');
 const log = require('bestikk-log');
-const jdk = require('bestikk-jdk-ea');
 
 const isWin = () => /^win/.test(process.platform);
 
@@ -25,7 +23,7 @@ const nashornCheckConvert = (result, testName) => {
 const nashornJJSRun = (specName, jjsBin) => {
   log.debug(`running ${specName}`);
   const start = process.hrtime();
-  const result = child_process.execSync(jjsBin + ' ' + specName).toString('utf8');
+  const result = childProcess.execSync(jjsBin + ' ' + specName).toString('utf8');
   log.debug(`running ${specName} in ${process.hrtime(start)[0]}s`);
   return result;
 };
@@ -33,12 +31,12 @@ const nashornJJSRun = (specName, jjsBin) => {
 const nashornJavaCompileAndRun = (specName, className, javacBin, javaBin) => {
   // Compile
   log.debug(`compiling ${specName} to build/`);
-  child_process.execSync(`${javacBin} ./${specName} -d ./build`);
+  childProcess.execSync(`${javacBin} ./${specName} -d ./build`);
 
   // Run
   log.debug(`running ${className}`);
   const start = process.hrtime();
-  const result = child_process.execSync(`${javaBin} -classpath ./build ${className}`).toString('utf8');
+  const result = childProcess.execSync(`${javaBin} -classpath ./build ${className}`).toString('utf8');
   log.debug(`running ${className} in ${process.hrtime(start)[0] }s`);
   return result;
 };
@@ -94,28 +92,7 @@ const nashornRun = (name, jdkInstallDir) => {
   log.success(`Done ${name} in ${process.hrtime(start)[0]}s`);
 };
 
-const jdk8EA = (callback) => {
-  async.series([
-    callback => jdk.installJDK8EA('build/jdk8', callback),
-    callback => {
-      nashornRun('jdk1.8.0-ea', 'build/jdk8');
-      callback();
-    }
-  ], () => typeof callback === 'function' && callback());
-};
-
-const jdk9EA = (callback) => {
-  async.series([
-    callback => jdk.installJDK9EA('build/jdk9', callback),
-    callback => {
-      nashornRun('jdk1.9.0-ea', 'build/jdk9');
-      callback();
-    }
-  ], () => typeof callback === 'function' && callback());
-};
 
 module.exports = {
-  jdk8EA: jdk8EA,
-  jdk9EA: jdk9EA,
   nashornRun: nashornRun
 };

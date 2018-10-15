@@ -8,13 +8,11 @@ const removeBuildDirSync = () => {
   bfs.mkdirsSync('build/css');
 };
 
-module.exports.clean = (callback) => {
+module.exports.clean = () => {
   if (process.env.SKIP_CLEAN) {
     log.info('SKIP_CLEAN environment variable is true, skipping "clean" task');
-    typeof callback === 'function' && callback();
     return;
   }
   log.task('clean');
   removeBuildDirSync(); // remove build directory
-  typeof callback === 'function' && callback();
 };

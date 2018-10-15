@@ -20,7 +20,7 @@ install:
   - npm ci
 
 build_script:
-- node npm/appveyor.js
+- node npm/build.js
 - node npm/test/unsupported-features.js
 - npm run test:node
 - npm run test:browser

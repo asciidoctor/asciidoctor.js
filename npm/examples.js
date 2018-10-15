@@ -1,6 +1,5 @@
 'use strict';
 
-const async = require('async');
 const path = require('path');
 const fs = require('fs');
 const log = require('bestikk-log');
@@ -10,7 +9,7 @@ const download = new Download({});
 const OpalBuilder = require('opal-compiler').Builder;
 const BuilderModule = require('./module/builder');
 
-const compileExamples = (callback) => {
+const compileExamples = () => {
   log.task('compile examples');
   bfs.mkdirsSync(builder.examplesBuildDir);
 
@@ -21,15 +20,14 @@ const compileExamples = (callback) => {
 
   fs.writeFileSync(path.join(builder.examplesBuildDir, 'asciidoctor_example.js'), opalBuilder.build('examples/asciidoctor_example.rb').toString(), 'utf8');
   fs.writeFileSync(path.join(builder.examplesBuildDir, 'userguide_test.js'), opalBuilder.build('examples/userguide_test.rb').toString(), 'utf8');
-  callback();
+  return Promise.resolve({});
 };
 
-const getContentFromAsciiDocRepo = (source, target, callback) => {
-  download.getContentFromURL(`${builder.asciidocRepoBaseURI}/doc/${source}`, target)
-    .then(() => callback());
+const getContentFromAsciiDocRepo = (source, target) => {
+  return download.getContentFromURL(`${builder.asciidocRepoBaseURI}/doc/${source}`, target);
 };
 
-const copyExamplesResources = (callback) => {
+const copyExamplesResources = () => {
   log.task(`copy resources to ${builder.examplesBuildDir}/`);
   copyToExamplesBuildDir([
     'examples/asciidoctor_example.html',
@@ -38,12 +36,11 @@ const copyExamplesResources = (callback) => {
   ]);
 
   log.task('Download sample data from AsciiDoc repository');
-  async.series([
-    callback => getContentFromAsciiDocRepo('asciidoc.txt', path.join(builder.examplesBuildDir, 'userguide.adoc'), callback),
-    callback => getContentFromAsciiDocRepo('customers.csv', path.join(builder.examplesBuildDir, 'customers.csv'), callback)
-  ], () => typeof callback === 'function' && callback());
+  return Promise.all([
+    getContentFromAsciiDocRepo('asciidoc.txt', path.join(builder.examplesBuildDir, 'userguide.adoc')),
+    getContentFromAsciiDocRepo('customers.csv', path.join(builder.examplesBuildDir, 'customers.csv'))
+  ]);
 };
-
 
 
 const copyToExamplesBuildDir = (files) => {
@@ -52,17 +49,16 @@ const copyToExamplesBuildDir = (files) => {
 
 log.task('examples');
 const builder = new BuilderModule();
-async.series([
-  callback => builder.build(callback), // Build
-  callback => compileExamples(callback), // Compile examples
-  callback => copyExamplesResources(callback) // Copy examples resources
-], () => {
-  log.info(`
+
+builder.build()
+  .then(() => compileExamples())
+  .then(() => copyExamplesResources())
+  .then(() => {
+    log.info(`
 In order to visualize the result, a local HTTP server must be started within the root of this project otherwise you will have cross-origin issues.
 For this purpose, you can run the following command to start a HTTP server locally: 'npm run server'.`);
-  log.success(`You can now open:
+    log.success(`You can now open:
  - build/examples/asciidoctor_example.html
  - build/examples/userguide_test.html
  - build/examples/basic.html`);
-});
-
+  });
