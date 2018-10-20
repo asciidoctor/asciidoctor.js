@@ -67,7 +67,7 @@ describe('Node.js', () => {
 
   if (asciidoctor.LoggerManager) {
     describe('Logger', () => {
-      it('should warn if part has no sections', () => {
+      it('should send an error message if part has no section', () => {
         const input = `= Book
 :doctype: book
 
@@ -89,6 +89,22 @@ intro
           expect(sourceLocation.getFile()).to.be.undefined;
           expect(sourceLocation.getDirectory()).to.equal(process.cwd());
           expect(sourceLocation.getPath()).to.equal('<stdin>');
+        } finally {
+          asciidoctor.LoggerManager.setLogger(defaultLogger);
+        }
+      });
+      it('should send a warning message if source highlighter is not installed', () => {
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        const memoryLogger = asciidoctor.MemoryLogger.$new();
+        try {
+          asciidoctor.LoggerManager.setLogger(memoryLogger);
+          const doc = asciidoctor.loadFile(resolveFixture('source-highlighter-coderay.adoc'), {safe: 'safe', to_file: false});
+          doc.convert();
+          const errorMessage = memoryLogger.getMessages()[0];
+          expect(errorMessage.getSeverity()).to.equal('WARN');
+          expect(errorMessage.getText()).to.equal('optional gem \'coderay\' is not installed. Functionality disabled.');
+          const sourceLocation = errorMessage.getSourceLocation();
+          expect(sourceLocation).to.be.undefined;
         } finally {
           asciidoctor.LoggerManager.setLogger(defaultLogger);
         }
