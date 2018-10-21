@@ -1,0 +1,12 @@
+= GraalVM integration
+:uri-graalvm: https://www.graalvm.org/
+
+{uri-graalvm}[GraalVM] is a universal virtual machine for running applications written in JavaScript, Python 3, Ruby, R, JVM-based languages like Java, Scala, Kotlin, and LLVM-based languages such as C and C++.
+{uri-graalvm}[GraalVM] removes the isolation between programming languages and enables interoperability in a shared runtime. It can run either standalone or in the context of OpenJDK, Node.js, Oracle Database, or MySQL.
+
+https://www.graalvm.org/docs/reference-manual/languages/js/[GraalVM] is adapted to run unmodified Node.js applications.
+
+
+
+https://www.graalvm.org/docs/reference-manual/languages/js/
+https://www.graalvm.org/docs/graalvm-as-a-platform/embed/
