@@ -24,7 +24,7 @@ See below for a link to the right one and instructions on how to use it.
 == Basic browser setup
 
 Just include Asciidoctor.js in a script tag.
-You can instantiate a processor using the `Asciidoctor` global.
+You can instantiate the processor using the `Asciidoctor` global variable.
 
 ```html
 <script src="node_modules/asciidoctor.js/dist/browser/asciidoctor.js"></script>
@@ -59,11 +59,125 @@ const asciidoctor = Asciidoctor();
 
 == Nashorn
 
+.app.js
 ```js
 load('./node_modules/asciidoctor.js/dist/nashorn/asciidoctor.js');
 
 var asciidoctor = Asciidoctor();
 ```
+
+.AsciidoctorNashorn.java
+```java
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import java.io.FileReader;
+import java.io.File;
+
+public class AsciidoctorNashorn {
+
+  public static void main(String... args) throws Throwable {
+    ScriptEngineManager engineManager = new ScriptEngineManager();
+    ScriptEngine engine = engineManager.getEngineByName("nashorn");
+    engine.eval(new FileReader("./app.js"));
+  }
+}
+```
+
+== GraalVM
+
+=== Node.js application
+
+https://www.graalvm.org/docs/reference-manual/languages/js/[GraalVM can run Node.js applications]. +
+To install `asciidoctor.js` module, use the `npm` executable in the [.path]_/bin_ folder of the GraalVM package.
+
+Create the following code snippet to a file named `app.js` and save it in the same directory where you installed the Node.js modules:
+
+.app.js
+```js
+const Asciidoctor = require('asciidoctor.js');
+
+const asciidoctor = Asciidoctor();
+```
+
+Then execute it on GraalVM using the `node` command (available in the [.path]_/bin_ folder of the GraalVM package):
+
+ $ node app.js
+
+=== Embed in a JVM-based application
+
+https://www.graalvm.org/docs/graalvm-as-a-platform/embed/[With the Graal Polyglot API, you can embed JavaScript code in a JVM-based application].
+
+IMPORTANT: The Graal Polyglot feature gives you a "pure" JavaScript (ECMAScript) engine, not a Node.js engine.
+In other words, Node.js features such as `require` or core module such as `fs` won't be available.
+
+To embed Asciidoctor.js in a Java application, create the following code snippet to a file named `app.js`:
+
+.app.js
+```js
+var asciidoctor = Asciidoctor();
+```
+
+Copy the file `node_modules/asciidoctor.js/dist/graalvm/asciidoctor.js` in the resources of your application.
+Then create a Java file named `AsciidoctorGraalVM.java` with the following content:
+
+.AsciidoctorGraalVM.java
+```java
+import org.graalvm.polyglot.Context;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+public class AsciidoctorGraalVM {
+
+  public static void main(String... args) {
+    Context context = Context.newBuilder("js").allowIO(true).build();
+    context.getPolyglotBindings().putMember("IncludeResolver", new IncludeResolver()); // <1>
+    context.eval("js", "var IncludeResolver = Polyglot.import('IncludeResolver');");
+    ClassLoader classLoader = AsciidoctorGraalVM.class.getClassLoader();
+    context.eval("js", "load('" + classLoader.getResource("asciidoctor.js") + "')"); // <2>
+    context.eval("js", "load('" + classLoader.getResource("app.js") +"')"); // <2>
+  }
+
+  public static class IncludeResolver {
+    public String read(String path) throws IOException, URISyntaxException {
+      Path filePath = Paths.get(path);
+      List<String> lines;
+      File file = filePath.toFile();
+      if (file.exists()) {
+        lines = Files.readAllLines(filePath, StandardCharsets.UTF_8);
+      } else {
+        Path fileName = filePath.getFileName();
+        URL url = this.getClass().getClassLoader().getResource(fileName.toString());
+        if (url != null) {
+          lines = Files.readAllLines(Paths.get(url.toURI()), StandardCharsets.UTF_8);
+        } else {
+          lines = new ArrayList<>();
+        }
+      }
+      return String.join("\n", lines);
+    }
+
+    public String pwd() {
+      return Paths.get("").toAbsolutePath().toString();
+    }
+  }
+}
+```
+<1> The `IncludeResolver` class will be used to read the content of a file when using the `include::` directive
+<2> Make sure that `asciidoctor.js` and `app.js` are available in the classpath of the application
+
+[TIP]
+====
+The source attribute of the https://github.com/graalvm/graaljs/blob/master/docs/user/JavaScriptCompatibility.md#loadsource[global `load` method] provided by GraalVM can be of type:
+
+- a `String`: the path of the source file or a URL to execute.
+- `java.lang.URL`: the URL is queried for the source code to execute.
+- `java.io.File`: the File is read for the source code to execute.
+====
 
 == What's next?
 
