@@ -144,12 +144,19 @@ public class AsciidoctorGraalVM {
 
   public static class IncludeResolver {
     public String read(String path) throws IOException, URISyntaxException {
-      URL url = this.getClass().getClassLoader().getResource(path);
+      Path filePath = Paths.get(path);
       List<String> lines;
-      if (url != null) {
-        lines = Files.readAllLines(Paths.get(url.toURI()), StandardCharsets.UTF_8);
+      File file = filePath.toFile();
+      if (file.exists()) {
+        lines = Files.readAllLines(filePath, StandardCharsets.UTF_8);
       } else {
-        lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
+        Path fileName = filePath.getFileName();
+        URL url = this.getClass().getClassLoader().getResource(fileName.toString());
+        if (url != null) {
+          lines = Files.readAllLines(Paths.get(url.toURI()), StandardCharsets.UTF_8);
+        } else {
+          lines = new ArrayList<>();
+        }
       }
       return String.join("\n", lines);
     }
