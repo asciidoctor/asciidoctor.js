@@ -597,6 +597,10 @@ Converter.BuiltIn.prototype.convert = Converter.prototype.convert;
  */
 var ConverterFactory = Opal.Asciidoctor.Converter.Factory;
 
+// Alias
+Opal.Asciidoctor.ConverterFactory = ConverterFactory;
+
+
 /**
  * Retrieves the singleton instance of the converter factory.
  *
