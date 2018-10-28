@@ -395,15 +395,15 @@ intro
       const quoteBlocks = doc.findBy((b) => b.getStyle() === 'quote');
       expect(quoteBlocks.length).to.equal(1);
 
-      const sectionBlocks = doc.findBy({'context': 'section'});
+      const sectionBlocks = doc.findBy({ 'context': 'section' });
       expect(sectionBlocks.length).to.equal(5);
 
-      const abstractSectionBlocks = doc.findBy({'context': 'section'}, (b) => b.getTitle() === 'Second Section');
+      const abstractSectionBlocks = doc.findBy({ 'context': 'section' }, (b) => b.getTitle() === 'Second Section');
       expect(abstractSectionBlocks.length).to.equal(1);
     });
 
     it('should be able to find blocks with line number', () => {
-      const doc = asciidoctor.loadFile(resolveFixture('documentblocks.adoc'), {sourcemap: true});
+      const doc = asciidoctor.loadFile(resolveFixture('documentblocks.adoc'), { sourcemap: true });
       const blocks = doc.findBy(() => true);
       expect(blocks.length).to.equal(26);
 
@@ -437,7 +437,7 @@ intro
       const expectFilePath = resolveFixture('test.html');
       removeFile(expectFilePath);
       try {
-        const options = {attributes: ['stylesheet=simple.css', 'stylesdir=fixtures/css']};
+        const options = { attributes: ['stylesheet=simple.css', 'stylesdir=fixtures/css'] };
         asciidoctor.convertFile(resolveFixture('test.adoc'), options);
         expect(fileExists(expectFilePath)).to.be.true;
         const content = fs.readFileSync(expectFilePath, 'utf8');
@@ -451,7 +451,7 @@ intro
       const expectFilePath = resolveFixture('test.html');
       removeFile(expectFilePath);
       try {
-        const options = {safe: 'server', attributes: ['stylesheet=simple.css', 'stylesdir=css']};
+        const options = { safe: 'server', attributes: ['stylesheet=simple.css', 'stylesdir=css'] };
         asciidoctor.convertFile(resolveFixture('test.adoc'), options);
         expect(fileExists(expectFilePath)).to.be.true;
         const content = fs.readFileSync(expectFilePath, 'utf8');
@@ -465,7 +465,7 @@ intro
       const expectFilePath = path.resolve(path.join(__dirname, '..', 'fixtures', 'target', 'test.html'));
       removeFile(expectFilePath);
       try {
-        const options = {to_dir: './spec/fixtures/target'};
+        const options = { to_dir: './spec/fixtures/target' };
         asciidoctor.convertFile(resolveFixture('test.adoc'), options);
         expect(fileExists(expectFilePath)).to.be.true;
         const content = fs.readFileSync(expectFilePath, 'utf8');
@@ -479,7 +479,7 @@ intro
       const expectFilePath = path.resolve(path.join(__dirname, '..', 'fixtures', 'target', 'output.html'));
       removeFile(expectFilePath);
       try {
-        const options = {to_dir: './spec/fixtures/target', to_file: 'output.html'};
+        const options = { to_dir: './spec/fixtures/target', to_file: 'output.html' };
         asciidoctor.convertFile(resolveFixture('test.adoc'), options);
         expect(fileExists(expectFilePath)).to.be.true;
         const content = fs.readFileSync(expectFilePath, 'utf8');
@@ -632,7 +632,7 @@ intro
           const groups = registry.getGroups();
           expect(groups).to.be.instanceof(Object);
           expect('test' in groups).to.be.true;
-          const opts = {extension_registry: registry};
+          const opts = { extension_registry: registry };
           let html = asciidoctor.convert('test::[]', opts);
           expect(html).to.contain('<p>this was only a test</p>');
           registry.unregister('test');
@@ -653,7 +653,7 @@ intro
           const groups = registry.getGroups();
           expect(groups).to.be.instanceof(Object);
           expect('test' in groups).to.be.true;
-          const opts = {extension_registry: registry};
+          const opts = { extension_registry: registry };
           let html = asciidoctor.convert('test::[]', opts);
           expect(html).to.contain('<p>this was only a test</p>');
           registry.unregisterAll();
@@ -666,7 +666,7 @@ intro
       describe('Post processor', () => {
         it('should be able to process foo bar postprocessor extension', () => {
           const registry = asciidoctor.Extensions.create();
-          const opts = {extension_registry: registry};
+          const opts = { extension_registry: registry };
           require('../share/extensions/foo-bar-postprocessor.js')(registry);
           const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-bar-postprocessor-ex.adoc')), opts);
           expect(resultWithExtension).to.contain('bar, qux, bar.');
@@ -681,7 +681,7 @@ intro
       describe('Tree processor', () => {
         it('should be able to process love tree processor extension', () => {
           const registry = asciidoctor.Extensions.create();
-          const opts = {extension_registry: registry};
+          const opts = { extension_registry: registry };
           require('../share/extensions/love-tree-processor.js')(registry);
           const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('love-tree-processor-ex.adoc')), opts);
           expect(resultWithExtension).to.contain('Made with icon:heart[]');
@@ -694,7 +694,7 @@ intro
       describe('Preprocessor', () => {
         it('should be able to process draft preprocessor extension', () => {
           const registry = asciidoctor.Extensions.create();
-          const opts = {extension_registry: registry};
+          const opts = { extension_registry: registry };
           require('../share/extensions/draft-preprocessor.js')(registry);
           const doc = asciidoctor.load(fs.readFileSync(resolveFixture('draft-preprocessor-ex.adoc')), opts);
           expect(doc.getAttribute('status')).to.equal('DRAFT');
@@ -707,7 +707,7 @@ intro
       describe('Docinfo processor', () => {
         it('should be able to process moar footer docinfo processor extension', () => {
           const registry = asciidoctor.Extensions.create();
-          const opts = {safe: 'server', header_footer: true, extension_registry: registry};
+          const opts = { safe: 'server', header_footer: true, extension_registry: registry };
           require('../share/extensions/moar-footer-docinfo-processor.js')(registry);
           const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('moar-footer-docinfo-processor-ex.adoc')), opts);
           expect(resultWithExtension).to.contain('moar footer');
@@ -727,7 +727,7 @@ intro
             }
           });
           registry.block('shout', ShoutBlockProcessor.$new());
-          const opts = {extension_registry: registry};
+          const opts = { extension_registry: registry };
           const result = asciidoctor.convert(fs.readFileSync(resolveFixture('shout-block-ex.adoc')), opts);
           expect(result).to.contain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>');
         });
@@ -773,7 +773,7 @@ intro
               });
             });
           });
-          const opts = {extension_registry: registry};
+          const opts = { extension_registry: registry };
           const result = asciidoctor.convert('[whisper]\nWE HAVE LIFTOFF!', opts);
           expect(result).to.contain('we have liftoff.');
         });
@@ -814,7 +814,7 @@ intro
 
         it('should be able to process emoji inline macro processor extension', () => {
           const registry = asciidoctor.Extensions.create();
-          const opts = {extension_registry: registry};
+          const opts = { extension_registry: registry };
           require('../share/extensions/emoji-inline-macro.js')(registry);
           const result = asciidoctor.convert(fs.readFileSync(resolveFixture('emoji-inline-macro-ex.adoc')), opts);
           expect(result).to.contain('1f422.svg');
@@ -839,11 +839,11 @@ intro
             this.blockMacro(function () {
               this.named('img');
               this.process((parent, target) => {
-                return this.createImageBlock(parent, {target: target + '.png'});
+                return this.createImageBlock(parent, { target: target + '.png' });
               });
             });
           });
-          const opts = {extension_registry: registry};
+          const opts = { extension_registry: registry };
           const result = asciidoctor.convert('img::image-name[]', opts);
           expect(result).to.contain('<img src="image-name.png" alt="image name">');
         });
@@ -876,7 +876,7 @@ intro
             asciidoctor.Extensions.register(function () {
               this.includeProcessor(LoremIncludeProcessor);
             });
-            const html = asciidoctor.convert('include::fake.adoc[]', {safe: 'safe'});
+            const html = asciidoctor.convert('include::fake.adoc[]', { safe: 'safe' });
             expect(html).to.contain('Lorem ipsum');
           } finally {
             asciidoctor.Extensions.unregisterAll();
@@ -980,27 +980,27 @@ intro
     });
 
     it('should be able to convert a file and include the default stylesheet', () => {
-      const options = {safe: 'safe', header_footer: true};
+      const options = { safe: 'safe', header_footer: true };
       const html = asciidoctor.convert('=== Test', options);
       expect(html).to.contain('Asciidoctor default stylesheet');
       expect(html).to.contain('Test');
     });
 
     it('should include a file with a relative path', () => {
-      const options = {safe: 'unsafe', header_footer: false, 'to_file': false};
+      const options = { safe: 'unsafe', header_footer: false, 'to_file': false };
       const html = asciidoctor.convertFile('spec/fixtures/chapter-01/index.adoc', options);
       expect(html).to.contain('We recommend to use version 1.2.3');
     });
 
     it('should include a file as a UTF-8 file', () => {
-      var options = {safe: 'unsafe', header_footer: false, 'to_file': false};
+      var options = { safe: 'unsafe', header_footer: false, 'to_file': false };
       var html = asciidoctor.convertFile('spec/fixtures/encoding.adoc', options);
       expect(html).to.contain('À propos des majuscules accentuées');
       expect(html).to.contain('Le français c&#8217;est pas compliqué :)');
     });
 
     it('should issue a warning if an include file is not found', () => {
-      const options = {safe: 'safe', header_footer: true};
+      const options = { safe: 'safe', header_footer: true };
       const html = asciidoctor.convert('= Test\n\ninclude::nonexistent.adoc[]', options);
       expect(html).to.contain('Test');
       expect(html).to.contain('Unresolved directive');
@@ -1008,19 +1008,19 @@ intro
     });
 
     it('Should include file with a relative path (base_dir is not defined)', function () {
-      const opts = {safe: 'safe'};
+      const opts = { safe: 'safe' };
       const html = asciidoctor.convert('include::spec/fixtures/include.adoc[]', opts);
       expect(html).to.contain('include content');
     });
 
     it('Should include file with an absolute path (base_dir is explicitly defined)', function () {
-      const opts = {safe: 'safe', base_dir: testOptions.baseDir};
+      const opts = { safe: 'safe', base_dir: testOptions.baseDir };
       const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts);
       expect(html).to.contain('include content');
     });
 
     it('should be able to convert a file and embed an image', () => {
-      const options = {safe: 'safe', header_footer: true};
+      const options = { safe: 'safe', header_footer: true };
       const content = fs.readFileSync(path.resolve(__dirname, '../fixtures/image.adoc'), 'utf8');
       const html = asciidoctor.convert(content, options);
       expect(html).to.contain('French frog');
@@ -1028,10 +1028,40 @@ intro
     });
 
     it('should be able to convert a buffer', () => {
-      const options = {safe: 'safe', header_footer: true};
+      const options = { safe: 'safe', header_footer: true };
       const content = fs.readFileSync(resolveFixture('test.adoc'));
       const html = asciidoctor.convert(content, options);
       expect(html).to.contain('Hello world');
+    });
+  });
+
+  describe('Registering converter', () => {
+
+    it('should register a custom converter', () => {
+      class DummyConverter {
+        constructor (backend, opts) {
+          this.basebackend = 'xml';
+          this.outfilesuffix = '.dummy';
+          this.filetype = 'xml';
+          this.htmlsyntax = 'xml';
+          this.transforms = {
+            document: ({node}) => {
+              return `<dummy>${node.getContent()}</dummy>`;
+            },
+            paragraph: ({node}) => {
+              return node.getContent();
+            }
+          };
+        }
+
+        $convert (node, transform = null, opts = {}) {
+          return this.transforms[node.node_name]({node});
+        }
+      }
+      asciidoctor.ConverterFactory.$register(new DummyConverter('dummy'), ['dummy']);
+      const options = { safe: 'safe', backend: 'dummy' };
+      const result = asciidoctor.convert('content', options);
+      expect(result).to.contain('<dummy>content</dummy>');
     });
   });
 });
