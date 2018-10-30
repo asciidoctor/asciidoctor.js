@@ -35,10 +35,6 @@ const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
   let data = fs.readFileSync(path, 'utf8');
   log.debug('Replace (g)sub! with (g)sub');
   data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'');
-  // replace dot wildcard with negated line feed in single-line match expressions
-  data = data.replace(/Opal\.const_set\([^']+'[^']+Rx', *\/.+\/\);$/gm, function (m) {
-    return m.replace(/([^\\])\.([*+])/g, '$1[^\\n]$2');
-  });
   // bypass use of IO.binread when reading include files in reader
   data = data.replace(/inc_content *= *(.*?)if *\(target_type\['\$=='\]\("file"\)\)(.*)/, 'inc_content = $1if (false)$2');
   fs.writeFileSync(path, data, 'utf8');
