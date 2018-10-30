@@ -797,6 +797,29 @@ intro
             asciidoctor.Extensions.unregisterAll();
           }
         });
+
+        it('should be able to create a list linked to the parent block', () => {
+          const extensions = asciidoctor.Extensions;
+          try {
+            extensions.register('test', function () {
+              this.block(function () {
+                this.named('test');
+                this.onContext('paragraph');
+                this.process((parent) => {
+                  parent.append(this.createList(parent, 'ulist'));
+                });
+              });
+            });
+            let html = asciidoctor.convert('[test]\nreplace me');
+            expect(html).to.contain(`<div class="ulist">
+<ul>
+</ul>
+</div>`);
+            extensions.unregister('test');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
       });
 
       describe('Inline macro processor', () => {
