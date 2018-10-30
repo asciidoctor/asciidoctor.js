@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>asciidoctor.js 1.5.7-beta.1 | Documentation</title>
+  <title>asciidoctor.js 1.5.7 | Documentation</title>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' type='text/css' rel='stylesheet' />
   <link href='assets/style.css' type='text/css' rel='stylesheet' />
@@ -14,7 +14,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>asciidoctor.js</h3>
-          <div class='mb1'><code>1.5.7-beta.1</code></div>
+          <div class='mb1'><code>1.5.7</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -40,6 +40,12 @@
                         href='#asciidoctorgetcoreversion'
                         class='regular pre-open'>
                         .getCoreVersion
+                      </a></li>
+                    
+                      <li><a
+                        href='#asciidoctorgetruntime'
+                        class='regular pre-open'>
+                        .getRuntime
                       </a></li>
                     
                       <li><a
@@ -107,6 +113,12 @@
                     <li class='h5'><span>Static members</span></li>
                     
                       <li><a
+                        href='#abstractblockappend'
+                        class='regular pre-open'>
+                        .append
+                      </a></li>
+                    
+                      <li><a
                         href='#abstractblockgettitle'
                         class='regular pre-open'>
                         .getTitle
@@ -161,6 +173,12 @@
                       </a></li>
                     
                       <li><a
+                        href='#abstractblockhasblocks'
+                        class='regular pre-open'>
+                        .hasBlocks
+                      </a></li>
+                    
+                      <li><a
                         href='#abstractblockgetblocks'
                         class='regular pre-open'>
                         .getBlocks
@@ -200,6 +218,18 @@
                         href='#abstractblockgetsections'
                         class='regular pre-open'>
                         .getSections
+                      </a></li>
+                    
+                      <li><a
+                        href='#abstractblockgetnumeral'
+                        class='regular pre-open'>
+                        .getNumeral
+                      </a></li>
+                    
+                      <li><a
+                        href='#abstractblocksetnumeral'
+                        class='regular pre-open'>
+                        .setNumeral
                       </a></li>
                     
                     </ul>
@@ -969,6 +999,12 @@
                     <li class='h5'><span>Static members</span></li>
                     
                       <li><a
+                        href='#inlinecreate'
+                        class='regular pre-open'>
+                        .create
+                      </a></li>
+                    
+                      <li><a
                         href='#inlineconvert'
                         class='regular pre-open'>
                         .convert
@@ -1046,6 +1082,12 @@
                         href='#listitemgettext'
                         class='regular pre-open'>
                         .getText
+                      </a></li>
+                    
+                      <li><a
+                        href='#listitemsettext'
+                        class='regular pre-open'>
+                        .setText
                       </a></li>
                     
                     </ul>
@@ -1161,9 +1203,49 @@
               
                 
                 <li><a
+                  href='#loggerseverity'
+                  class="">
+                  LoggerSeverity
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#loggerformatter'
+                  class="">
+                  LoggerFormatter
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#memorylogger'
                   class="">
                   MemoryLogger
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#logger'
+                  class="">
+                  Logger
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#nulllogger'
+                  class="">
+                  NullLogger
                   
                 </a>
                 
@@ -1210,6 +1292,102 @@
                         href='#extensionsunregister'
                         class='regular pre-open'>
                         .unregister
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionscreatepostprocessor'
+                        class='regular pre-open'>
+                        .createPostprocessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionsnewpostprocessor'
+                        class='regular pre-open'>
+                        .newPostprocessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionscreatepreprocessor'
+                        class='regular pre-open'>
+                        .createPreprocessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionsnewpreprocessor'
+                        class='regular pre-open'>
+                        .newPreprocessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionscreatetreeprocessor'
+                        class='regular pre-open'>
+                        .createTreeProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionsnewtreeprocessor'
+                        class='regular pre-open'>
+                        .newTreeProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionscreateincludeprocessor'
+                        class='regular pre-open'>
+                        .createIncludeProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionsnewincludeprocessor'
+                        class='regular pre-open'>
+                        .newIncludeProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionscreatedocinfoprocessor'
+                        class='regular pre-open'>
+                        .createDocinfoProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionsnewdocinfoprocessor'
+                        class='regular pre-open'>
+                        .newDocinfoProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionscreateblockprocessor'
+                        class='regular pre-open'>
+                        .createBlockProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionsnewblockprocessor'
+                        class='regular pre-open'>
+                        .newBlockProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionscreateinlinemacroprocessor'
+                        class='regular pre-open'>
+                        .createInlineMacroProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionsnewinlinemacroprocessor'
+                        class='regular pre-open'>
+                        .newInlineMacroProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionscreateblockmacroprocessor'
+                        class='regular pre-open'>
+                        .createBlockMacroProcessor
+                      </a></li>
+                    
+                      <li><a
+                        href='#extensionsnewblockmacroprocessor'
+                        class='regular pre-open'>
+                        .newBlockMacroProcessor
                       </a></li>
                     
                     </ul>
@@ -1591,7 +1769,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L63-L63'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L140-L140'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1662,7 +1840,7 @@ Sections are composed of blocks of content. For example:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L71-L73'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L148-L150'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1711,6 +1889,69 @@ Sections are composed of blocks of content. For example:</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='asciidoctorgetruntime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getRuntime()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L158-L165'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Get Asciidoctor.js runtime environment informations.</p>
+
+
+  <div class='pre p1 fill-light mt0'>getRuntime(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:
+        returns the runtime environement including the ioModule, the platform, the engine and the framework.
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='asciidoctorconvert'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -1725,7 +1966,7 @@ Sections are composed of blocks of content. For example:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L95-L101'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L187-L193'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1828,7 +2069,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L114-L116'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L206-L208'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -1923,7 +2164,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L128-L133'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L220-L225'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2012,7 +2253,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L143-L145'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L235-L237'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2100,7 +2341,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/template-asciidoctor-nashorn.js#L21-L23'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/template-asciidoctor-nashorn.js#L21-L23'>
       <span>src/template-asciidoctor-nashorn.js</span>
       </a>
     
@@ -2163,7 +2404,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/template-asciidoctor-node.js#L21-L23'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/template-asciidoctor-node.js#L24-L26'>
       <span>src/template-asciidoctor-node.js</span>
       </a>
     
@@ -2226,7 +2467,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/template-asciidoctor-umd.js#L39-L41'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/template-asciidoctor-umd.js#L44-L46'>
       <span>src/template-asciidoctor-umd.js</span>
       </a>
     
@@ -2297,7 +2538,7 @@ otherwise the converted String
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L153-L153'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L245-L245'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2338,6 +2579,82 @@ otherwise the converted String
     <div class='py1 quiet mt1 prose-big'>Static Members</div>
     <div class="clearfix">
   
+    <div class='border-bottom' id='abstractblockappend'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>append(block)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L254-L257'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Append a block to this block's list of child blocks.</p>
+
+
+  <div class='pre p1 fill-light mt0'>append(block: any): <a href="#abstractblock">AbstractBlock</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>block</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#abstractblock">AbstractBlock</a></code>:
+        the parent block to which this block was appended.
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='abstractblockgettitle'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -2352,7 +2669,7 @@ otherwise the converted String
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L168-L171'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L288-L291'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2424,7 +2741,7 @@ block.getTitle(); <span class="hljs-comment">// "Foo 3^ # :: Bar(1)"</span></pre
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L185-L187'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L305-L307'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2493,7 +2810,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L194-L196'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L314-L316'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2556,7 +2873,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L203-L205'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L323-L325'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2619,7 +2936,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L212-L214'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L332-L334'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2688,7 +3005,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L221-L223'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L341-L343'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2751,7 +3068,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L231-L233'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L351-L353'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2814,7 +3131,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L241-L243'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L361-L363'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2890,7 +3207,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L251-L253'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L371-L373'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -2952,6 +3269,71 @@ converted String title if no caption is set
       </div>
     </div>
   
+    <div class='border-bottom' id='abstractblockhasblocks'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>hasBlocks()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L380-L382'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Checks if the <a href="#abstractblock">AbstractBlock</a> contains any child blocks.</p>
+
+
+  <div class='pre p1 fill-light mt0'>hasBlocks(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
+        whether the 
+<a href="#abstractblock">AbstractBlock</a>
+ has child blocks.
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='abstractblockgetblocks'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -2966,7 +3348,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L260-L262'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L389-L391'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3031,7 +3413,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L269-L271'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L398-L400'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3094,7 +3476,7 @@ converted String title if no caption is set
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L280-L282'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L409-L411'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3159,7 +3541,7 @@ and returned as content that can be included in the parent block's template.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L305-L315'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L434-L444'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3260,7 +3642,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L322-L325'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L451-L454'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3323,7 +3705,7 @@ doc.findBy({<span class="hljs-string">'context'</span>: <span class="hljs-string
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L333-L335'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L462-L464'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3387,7 +3769,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L343-L345'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L472-L474'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3439,6 +3821,140 @@ Only applies to Document and Section instances.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='abstractblockgetnumeral'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getNumeral()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L484-L488'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Get the numeral of this block (if section, relative to parent, otherwise absolute).
+Only assigned to section if automatic section numbering is enabled.
+Only assigned to formal block (block with title) if corresponding caption attribute is present.
+If the section is an appendix, the numeral is a letter (starting with A).</p>
+
+
+  <div class='pre p1 fill-light mt0'>getNumeral(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+        returns the numeral
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='abstractblocksetnumeral'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>setNumeral(value)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L494-L498'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Set the numeral of this block.</p>
+
+
+  <div class='pre p1 fill-light mt0'>setNumeral(value: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
 </div>
 
   
@@ -3461,7 +3977,7 @@ Only applies to Document and Section instances.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L353-L353'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L506-L506'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3516,7 +4032,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L360-L362'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L513-L515'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3579,7 +4095,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L368-L370'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L521-L523'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3647,7 +4163,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L377-L379'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L530-L532'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3710,7 +4226,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L385-L387'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L538-L540'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3778,7 +4294,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L394-L396'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L547-L549'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3841,7 +4357,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L402-L404'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L555-L557'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3909,7 +4425,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L411-L413'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L564-L566'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -3972,7 +4488,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L420-L423'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L573-L576'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4035,7 +4551,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L431-L433'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L584-L586'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4106,7 +4622,7 @@ Only applies to Document and Section instances.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L438-L438'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L591-L591'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4154,7 +4670,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L445-L447'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L598-L600'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4217,7 +4733,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L454-L456'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L607-L609'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4288,7 +4804,7 @@ Only applies to Document and Section instances.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L463-L463'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L616-L616'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4336,7 +4852,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L468-L470'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L621-L623'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4390,7 +4906,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L475-L478'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L628-L631'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4473,7 +4989,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L486-L488'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L639-L641'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4549,7 +5065,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L493-L496'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L646-L649'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4632,7 +5148,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L501-L504'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L654-L657'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4715,7 +5231,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L512-L515'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L665-L668'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4792,7 +5308,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L523-L525'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L676-L678'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4857,7 +5373,7 @@ Only applies to Document and Section instances.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L534-L537'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L687-L690'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4923,7 +5439,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L542-L544'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L695-L697'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -4977,7 +5493,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L549-L551'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L702-L704'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5031,7 +5547,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L556-L558'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L709-L711'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5098,7 +5614,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L563-L565'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L716-L718'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5152,7 +5668,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L570-L572'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L723-L725'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5219,7 +5735,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L577-L579'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L730-L732'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5273,7 +5789,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L584-L586'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L737-L739'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5340,7 +5856,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L591-L593'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L744-L746'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5407,7 +5923,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L598-L600'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L751-L753'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5461,7 +5977,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L605-L607'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L758-L760'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5515,7 +6031,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L612-L616'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L765-L769'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5569,7 +6085,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L621-L623'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L774-L776'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5623,7 +6139,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L628-L630'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L781-L783'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5690,7 +6206,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L635-L637'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L788-L790'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5757,7 +6273,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L642-L644'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L795-L797'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5824,7 +6340,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L649-L651'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L802-L804'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5899,7 +6415,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L656-L658'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L809-L811'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -5974,7 +6490,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L663-L665'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L816-L818'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6028,7 +6544,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L670-L672'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L823-L825'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6103,7 +6619,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L677-L679'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L830-L832'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6178,7 +6694,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L684-L686'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L837-L839'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6261,7 +6777,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L691-L693'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L844-L846'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6352,7 +6868,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L698-L700'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L851-L853'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6443,14 +6959,36 @@ or undefined if this node has no parent.
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L708-L708'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L890-L890'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
   </div>
   
 
-  
+  <p>The <a href="#document">Document</a> class represents a parsed AsciiDoc document.</p>
+<p>Document is the root node of a parsed AsciiDoc document.<br/>
+It provides an abstract syntax tree (AST) that represents the structure of the AsciiDoc document
+from which the Document object was parsed.</p>
+<p>Although the constructor can be used to create an empty document object,
+more commonly, you'll load the document object from AsciiDoc source
+using the primary API methods on <a href="#asciidoctor">Asciidoctor</a>.
+When using one of these APIs, you almost always want to set the safe mode to 'safe' (or 'unsafe')
+to enable all of Asciidoctor's features.</p>
+<pre>
+  var doc = Asciidoctor.load('= Hello, AsciiDoc!', {'safe': 'safe'});
+  // => Asciidoctor::Document { doctype: "article", doctitle: "Hello, Asciidoc!", blocks: 0 }
+</pre>
+<p>Instances of this class can be used to extract information from the document or alter its structure.
+As such, the Document object is most often used in extensions and by integrations.</p>
+<p>The most basic usage of the Document object is to retrieve the document's title.</p>
+<pre>
+ var source = '= Document Title';
+ var doc = asciidoctor.load(source, {'safe': 'safe'});
+ console.log(doc.getTitle()); // 'Document Title'
+</pre>
+<p>You can also use the Document object to access document attributes defined in the header, such as the author and doctype.</p>
+
 
   <div class='pre p1 fill-light mt0'>Document</div>
   
@@ -6498,7 +7036,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L714-L716'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L896-L898'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6560,7 +7098,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L721-L723'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L903-L905'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6635,7 +7173,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L729-L732'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L911-L914'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6702,7 +7240,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L737-L740'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L919-L922'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6769,7 +7307,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L745-L747'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L927-L929'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6844,7 +7382,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L753-L755'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L935-L937'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6906,7 +7444,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L760-L762'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L942-L944'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -6960,7 +7498,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L767-L769'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L949-L951'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7014,7 +7552,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L774-L776'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L956-L958'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7068,7 +7606,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L781-L783'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L963-L965'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7122,7 +7660,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L788-L790'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L970-L972'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7176,7 +7714,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L795-L797'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L977-L979'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7230,7 +7768,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L802-L804'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L984-L986'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7284,7 +7822,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L809-L811'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L991-L993'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7338,7 +7876,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L816-L818'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L998-L1000'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7392,7 +7930,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L823-L825'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1005-L1007'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7459,7 +7997,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L833-L836'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1015-L1018'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7522,7 +8060,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L841-L843'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1023-L1025'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7589,7 +8127,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L849-L852'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1031-L1034'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7665,7 +8203,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L858-L858'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1040-L1040'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7719,7 +8257,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L864-L866'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1046-L1048'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7774,7 +8312,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L871-L871'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1053-L1053'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7828,7 +8366,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L877-L879'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1059-L1061'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7883,7 +8421,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L885-L887'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1067-L1069'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7937,7 +8475,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L893-L895'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1075-L1077'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -7992,7 +8530,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L901-L903'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1083-L1085'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8047,7 +8585,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L956-L958'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1138-L1140'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8110,7 +8648,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L964-L967'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1146-L1149'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8172,7 +8710,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L972-L974'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1154-L1156'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8226,7 +8764,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L979-L981'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1161-L1163'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8280,7 +8818,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L986-L988'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1168-L1170'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8334,7 +8872,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L993-L995'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1175-L1177'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8388,7 +8926,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1000-L1002'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1182-L1184'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8455,7 +8993,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1007-L1009'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1189-L1191'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8522,7 +9060,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1014-L1016'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1196-L1198'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8589,7 +9127,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1021-L1023'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1203-L1205'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8664,7 +9202,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1028-L1030'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1210-L1212'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8731,7 +9269,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1035-L1037'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1217-L1219'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8806,7 +9344,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1042-L1044'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1224-L1226'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8881,7 +9419,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1049-L1051'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1231-L1233'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8935,7 +9473,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1056-L1058'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1238-L1240'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -8989,7 +9527,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1063-L1065'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1245-L1247'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9043,7 +9581,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1070-L1072'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1252-L1254'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9097,7 +9635,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1077-L1079'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1259-L1261'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9151,7 +9689,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1084-L1086'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1266-L1268'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9205,7 +9743,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1091-L1093'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1273-L1275'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9259,7 +9797,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1098-L1100'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1280-L1282'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9313,7 +9851,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1105-L1107'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1287-L1289'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9367,7 +9905,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1112-L1114'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1294-L1296'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9421,7 +9959,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1119-L1121'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1301-L1303'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9475,7 +10013,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1126-L1128'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1308-L1310'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9537,7 +10075,7 @@ or undefined if this node has no parent.
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L917-L917'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1099-L1099'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9585,7 +10123,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L923-L925'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1105-L1107'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9640,7 +10178,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L931-L933'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1113-L1115'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9695,7 +10233,7 @@ or undefined if this node has no parent.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L940-L942'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1122-L1124'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9751,7 +10289,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L948-L950'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1130-L1132'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9821,7 +10359,7 @@ A short summary of changes in this document revision.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1136-L1136'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1318-L1318'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9869,7 +10407,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1141-L1143'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1323-L1325'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9923,7 +10461,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1148-L1150'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1330-L1332'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -9977,7 +10515,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1155-L1158'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1337-L1340'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10031,7 +10569,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1163-L1166'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1345-L1348'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10085,7 +10623,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1171-L1173'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1353-L1355'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10147,7 +10685,7 @@ A short summary of changes in this document revision.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1181-L1181'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1363-L1363'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10188,6 +10726,106 @@ A short summary of changes in this document revision.</p>
     <div class='py1 quiet mt1 prose-big'>Static Members</div>
     <div class="clearfix">
   
+    <div class='border-bottom' id='inlinecreate'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>create(parent, context, text, opts)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1371-L1373'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Create a new Inline element.</p>
+
+
+  <div class='pre p1 fill-light mt0'>create(parent: any, context: any, text: any, opts: any): <a href="#inline">Inline</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>parent</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>context</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>text</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>opts</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#inline">Inline</a></code>:
+        returns a new Inline element
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='inlineconvert'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -10202,7 +10840,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1189-L1191'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1381-L1383'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10265,7 +10903,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1199-L1202'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1391-L1394'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10328,7 +10966,7 @@ A short summary of changes in this document revision.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1213-L1215'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1405-L1407'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10393,7 +11031,7 @@ category, such as different types of anchors.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1223-L1226'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1415-L1418'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10464,7 +11102,7 @@ category, such as different types of anchors.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1231-L1231'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1423-L1423'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10512,7 +11150,7 @@ category, such as different types of anchors.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1239-L1241'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1431-L1433'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10585,7 +11223,7 @@ category, such as different types of anchors.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1246-L1246'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1438-L1438'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10633,7 +11271,7 @@ category, such as different types of anchors.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1254-L1256'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1446-L1448'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10682,6 +11320,74 @@ category, such as different types of anchors.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='listitemsettext'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>setText(text)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1455-L1457'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Set the String source text of this ListItem node.</p>
+
+
+  <div class='pre p1 fill-light mt0'>setText(text: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>text</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
 </div>
 
   
@@ -10704,7 +11410,7 @@ category, such as different types of anchors.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1261-L1261'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1462-L1462'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10752,7 +11458,7 @@ category, such as different types of anchors.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1266-L1268'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1467-L1469'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10851,7 +11557,7 @@ category, such as different types of anchors.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1276-L1278'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1477-L1479'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10907,7 +11613,7 @@ file, dir, path, and lineno of the file being read.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1286-L1288'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1487-L1489'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -10970,7 +11676,7 @@ file, dir, path, and lineno of the file being read.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1296-L1298'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1497-L1499'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -11041,7 +11747,7 @@ file, dir, path, and lineno of the file being read.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1303-L1303'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1504-L1504'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -11089,7 +11795,7 @@ file, dir, path, and lineno of the file being read.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1309-L1312'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1510-L1513'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -11144,7 +11850,7 @@ file, dir, path, and lineno of the file being read.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1319-L1322'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1520-L1523'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -11207,7 +11913,7 @@ file, dir, path, and lineno of the file being read.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1329-L1332'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1530-L1533'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -11272,7 +11978,7 @@ file, dir, path, and lineno of the file being read.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1339-L1341'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1540-L1542'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -11343,7 +12049,7 @@ file, dir, path, and lineno of the file being read.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1349-L1349'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1592-L1592'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -11388,12 +12094,112 @@ file, dir, path, and lineno of the file being read.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='loggerseverity'>
+      LoggerSeverity
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1618-L1618'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+
+  <div class='pre p1 fill-light mt0'>LoggerSeverity</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='loggerformatter'>
+      LoggerFormatter
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1632-L1632'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+
+  <div class='pre p1 fill-light mt0'>LoggerFormatter</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='memorylogger'>
       MemoryLogger
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-core-api.js#L1367-L1367'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1647-L1647'>
       <span>src/asciidoctor-core-api.js</span>
       </a>
     
@@ -11438,12 +12244,112 @@ file, dir, path, and lineno of the file being read.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='logger'>
+      Logger
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1685-L1685'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+
+  <div class='pre p1 fill-light mt0'>Logger</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='nulllogger'>
+      NullLogger
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-core-api.js#L1717-L1717'>
+      <span>src/asciidoctor-core-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+
+  <div class='pre p1 fill-light mt0'>NullLogger</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='extensions'>
       Extensions
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L57-L57'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L59-L59'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11526,7 +12432,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L69-L77'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L71-L79'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11611,7 +12517,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L82-L88'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L84-L90'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11686,7 +12592,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L94-L96'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L96-L98'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11741,7 +12647,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L102-L104'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L104-L106'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11796,7 +12702,7 @@ Asciidoctor processor.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L114-L126'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L116-L128'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11839,6 +12745,1222 @@ we have to resort to using low-level operations in this method.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='extensionscreatepostprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createPostprocessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L410-L412'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>createPostprocessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionsnewpostprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>newPostprocessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L419-L421'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>newPostprocessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionscreatepreprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createPreprocessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L430-L432'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>createPreprocessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionsnewpreprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>newPreprocessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L439-L441'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>newPreprocessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionscreatetreeprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createTreeProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L450-L452'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>createTreeProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionsnewtreeprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>newTreeProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L459-L461'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>newTreeProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionscreateincludeprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createIncludeProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L470-L472'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>createIncludeProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionsnewincludeprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>newIncludeProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L479-L481'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>newIncludeProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionscreatedocinfoprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createDocinfoProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L490-L492'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>createDocinfoProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionsnewdocinfoprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>newDocinfoProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L499-L501'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>newDocinfoProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionscreateblockprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createBlockProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L510-L512'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>createBlockProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionsnewblockprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>newBlockProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L519-L521'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>newBlockProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionscreateinlinemacroprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createInlineMacroProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L530-L532'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>createInlineMacroProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionsnewinlinemacroprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>newInlineMacroProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L539-L541'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>newInlineMacroProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionscreateblockmacroprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createBlockMacroProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L550-L552'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>createBlockMacroProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='extensionsnewblockmacroprocessor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>newBlockMacroProcessor(name, functions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L559-L561'>
+      <span>src/asciidoctor-extensions-api.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>this API is experimental and subject to change</p>
+
+
+  <div class='pre p1 fill-light mt0'>newBlockMacroProcessor(name: any, functions: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>functions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
 </div>
 
   
@@ -11861,7 +13983,7 @@ we have to resort to using low-level operations in this method.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L132-L132'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L134-L134'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11909,7 +14031,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L137-L137'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L139-L139'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -11963,7 +14085,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L142-L144'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L144-L146'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12017,7 +14139,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L149-L149'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L151-L151'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12071,7 +14193,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L154-L160'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L156-L162'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12146,7 +14268,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L165-L171'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L167-L173'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12211,7 +14333,7 @@ we have to resort to using low-level operations in this method.</p>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>includeProcessor(processor)</span>
+            <span class='code strong strong truncate'>includeProcessor(name, processor)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -12221,7 +14343,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L176-L178'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L178-L184'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12230,7 +14352,7 @@ we have to resort to using low-level operations in this method.</p>
 
   
 
-  <div class='pre p1 fill-light mt0'>includeProcessor(processor: any)</div>
+  <div class='pre p1 fill-light mt0'>includeProcessor(name: any, processor: any)</div>
   
   
 
@@ -12244,6 +14366,14 @@ we have to resort to using low-level operations in this method.</p>
   
     <div class='py1 quiet mt1 prose-big'>Parameters</div>
     <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
       
         <div class='space-bottom0'>
           <div>
@@ -12288,7 +14418,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L183-L189'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L189-L195'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12363,7 +14493,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L194-L200'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L200-L206'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12438,7 +14568,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L205-L211'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L211-L217'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12513,7 +14643,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L216-L222'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L222-L228'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12588,7 +14718,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L228-L234'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L234-L240'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12671,7 +14801,7 @@ we have to resort to using low-level operations in this method.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L240-L240'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L246-L246'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12719,7 +14849,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L246-L248'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L252-L254'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12774,7 +14904,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L253-L267'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L259-L273'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12841,7 +14971,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L272-L274'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L278-L280'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -12908,7 +15038,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L279-L281'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L285-L287'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13007,7 +15137,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L286-L288'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L292-L294'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13090,7 +15220,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L293-L295'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L299-L304'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13181,7 +15311,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L300-L302'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L309-L311'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13264,7 +15394,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L307-L309'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L316-L318'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13339,7 +15469,7 @@ we have to resort to using low-level operations in this method.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L315-L315'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L324-L324'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13387,7 +15517,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L320-L322'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L329-L331'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13454,7 +15584,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L327-L329'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L336-L338'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13516,7 +15646,7 @@ we have to resort to using low-level operations in this method.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L336-L336'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L345-L345'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13566,7 +15696,7 @@ we have to resort to using low-level operations in this method.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L342-L342'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L351-L351'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13614,7 +15744,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L347-L349'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L356-L358'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13689,7 +15819,7 @@ we have to resort to using low-level operations in this method.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L356-L356'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L365-L365'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13739,7 +15869,7 @@ we have to resort to using low-level operations in this method.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L363-L363'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L372-L372'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13789,7 +15919,7 @@ we have to resort to using low-level operations in this method.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L370-L370'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L379-L379'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13839,7 +15969,7 @@ we have to resort to using low-level operations in this method.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L376-L376'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L385-L385'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13887,7 +16017,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L381-L383'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L390-L392'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -13962,7 +16092,7 @@ we have to resort to using low-level operations in this method.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L391-L391'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L569-L569'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -14010,7 +16140,7 @@ we have to resort to using low-level operations in this method.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L407-L409'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L585-L587'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -14115,7 +16245,7 @@ how to convert the node (default: {})
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L420-L420'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L598-L598'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -14163,7 +16293,7 @@ how to convert the node (default: {})
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L431-L433'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L613-L615'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
@@ -14242,7 +16372,7 @@ instantiated, this method returns a fresh instance.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/3c01714cbc3adf2858c6bc2d1b04ea50b3d7b00f/src/asciidoctor-extensions-api.js#L443-L445'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/asciidoctor/asciidoctor.js/blob/0c35ace8108f1a66ef2d36058a508b05c968de0b/src/asciidoctor-extensions-api.js#L625-L627'>
       <span>src/asciidoctor-extensions-api.js</span>
       </a>
     
