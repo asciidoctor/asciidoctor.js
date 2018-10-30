@@ -1105,6 +1105,80 @@ Document.prototype.setHeaderAttribute = function (name, value, overwrite) {
   return this.$set_header_attribute(name, value, overwrite);
 };
 
+/**
+ * Convenience method to retrieve the authors of this document as an {Array} of {Document/Author} objects.
+ *
+ * This method is backed by the author-related attributes on the document.
+ *
+ * @memberof Document
+ * @returns {Array} - returns an {Array} of {Document/Author} objects.
+ */
+Document.prototype.getAuthors = function () {
+  return this.$authors();
+};
+
+// Document.Author API
+
+/**
+ * @namespace
+ * @module Document/Author
+ */
+var Author = Document.Author;
+
+/**
+ * @memberof Document/Author
+ * @returns {string} - returns the author's full name
+ */
+Author.prototype.getName = function () {
+  var name = this.$$data.name;
+  return name === Opal.nil ? undefined : name;
+};
+
+/**
+ * @memberof Document/Author
+ * @returns {string} - returns the author's first name
+ */
+Author.prototype.getFirstName = function () {
+  var firstName = this.$$data.firstname;
+  return firstName === Opal.nil ? undefined : firstName;
+};
+
+/**
+ * @memberof Document/Author
+ * @returns {string} - returns the author's middle name (or undefined if the author has no middle name)
+ */
+Author.prototype.getMiddleName = function () {
+  var middleName = this.$$data.middlename;
+  return middleName === Opal.nil ? undefined : middleName;
+};
+
+/**
+ * @memberof Document/Author
+ * @returns {string} - returns the author's last name
+ */
+Author.prototype.getLastName = function () {
+  var lastName = this.$$data.lastname;
+  return lastName === Opal.nil ? undefined : lastName;
+};
+
+/**
+ * @memberof Document/Author
+ * @returns {string} - returns the author's initials (by default based on the author's name)
+ */
+Author.prototype.getInitials = function () {
+  var initials = this.$$data.initials;
+  return initials === Opal.nil ? undefined : initials;
+};
+
+/**
+ * @memberof Document/Author
+ * @returns {string} - returns the author's email
+ */
+Author.prototype.getEmail = function () {
+  var email = this.$$data.email;
+  return email === Opal.nil ? undefined : email;
+};
+
 // private constructor
 Document.RevisionInfo = function (date, number, remark) {
   this.date = date;

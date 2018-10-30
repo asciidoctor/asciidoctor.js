@@ -467,6 +467,85 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         expect(inlineElement.getText()).to.equal('Tigers');
         expect(inlineElement.getTarget()).to.equal('tigers');
       });
+
+      describe('Get authors', function () {
+        it('should return an empty list when the document has no author', function () {
+          const input = `= Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application
+
+Getting Real details the business, design, programming, and marketing principles of 37signals.
+`;
+          const doc = asciidoctor.load(input);
+          expect(doc.getAuthors()).to.be.an('array').that.is.empty;
+        });
+
+        it('should return the document\'s author', function () {
+          const input = `= Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application
+David Heinemeier Hansson <david@37signals.com>
+
+Getting Real details the business, design, programming, and marketing principles of 37signals.
+`;
+          const doc = asciidoctor.load(input);
+          expect(doc.getAuthors()).to.have.lengthOf(1);
+          var author = doc.getAuthors()[0];
+          expect(author.getEmail()).to.equal('david@37signals.com');
+          expect(author.getName()).to.equal('David Heinemeier Hansson');
+          expect(author.getFirstName()).to.equal('David');
+          expect(author.getMiddleName()).to.equal('Heinemeier');
+          expect(author.getLastName()).to.equal('Hansson');
+          expect(author.getInitials()).to.equal('DHH');
+        });
+
+        it('should return the two authors defined as an author line below the document title', function () {
+          const input = `= Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application
+David Heinemeier Hansson <david@37signals.com>; Jason Fried <jason@37signals.com>
+
+Getting Real details the business, design, programming, and marketing principles of 37signals.
+`;
+          const doc = asciidoctor.load(input);
+          expect(doc.getAuthors()).to.have.lengthOf(2);
+          var firstAuthor = doc.getAuthors()[0];
+          expect(firstAuthor.getEmail()).to.equal('david@37signals.com');
+          expect(firstAuthor.getName()).to.equal('David Heinemeier Hansson');
+          expect(firstAuthor.getFirstName()).to.equal('David');
+          expect(firstAuthor.getMiddleName()).to.equal('Heinemeier');
+          expect(firstAuthor.getLastName()).to.equal('Hansson');
+          expect(firstAuthor.getInitials()).to.equal('DHH');
+          var secondAuthor = doc.getAuthors()[1];
+          expect(secondAuthor.getEmail()).to.equal('jason@37signals.com');
+          expect(secondAuthor.getName()).to.equal('Jason Fried');
+          expect(secondAuthor.getFirstName()).to.equal('Jason');
+          expect(secondAuthor.getMiddleName()).to.be.undefined;
+          expect(secondAuthor.getLastName()).to.equal('Fried');
+          expect(secondAuthor.getInitials()).to.equal('JF');
+        });
+
+        it('should return the two authors defined as document attributes', function () {
+          const input = `= Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application
+:author_1: David Heinemeier Hansson
+:email_1: david@37signals.com
+:author_2: Jason Fried
+:email_2: jason@37signals.com
+
+Getting Real details the business, design, programming, and marketing principles of 37signals.
+`;
+          const doc = asciidoctor.load(input);
+          expect(doc.getAuthors()).to.have.lengthOf(2);
+          var firstAuthor = doc.getAuthors()[0];
+          expect(firstAuthor.getEmail()).to.equal('david@37signals.com');
+          expect(firstAuthor.getName()).to.equal('David Heinemeier Hansson');
+          expect(firstAuthor.getFirstName()).to.equal('David');
+          expect(firstAuthor.getMiddleName()).to.equal('Heinemeier');
+          expect(firstAuthor.getLastName()).to.equal('Hansson');
+          expect(firstAuthor.getInitials()).to.equal('DHH');
+          var secondAuthor = doc.getAuthors()[1];
+          expect(secondAuthor.getEmail()).to.equal('jason@37signals.com');
+          expect(secondAuthor.getName()).to.equal('Jason Fried');
+          expect(secondAuthor.getFirstName()).to.equal('Jason');
+          expect(secondAuthor.getMiddleName()).to.be.undefined;
+          expect(secondAuthor.getLastName()).to.equal('Fried');
+          expect(secondAuthor.getInitials()).to.equal('JF');
+        });
+      });
     });
 
     describe('Modifying', function () {
