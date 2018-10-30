@@ -43,11 +43,15 @@ jobs:
           skip_cleanup: true
           email: ${NPM_USER_EMAIL}
           api_key: ${NPM_USER_API_KEY}
+          on:
+            tags: true
         - provider: releases
           api_key: ${GITHUB_TOKEN}
           file: bin/asciidoctor.js.dist.*
           skip_cleanup: true
           file_glob: true
+          on:
+            tags: true
     - stage: notify
       if: |
         repo = 'asciidoctor/asciidoctor.js' AND \
