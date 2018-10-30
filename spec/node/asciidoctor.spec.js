@@ -823,7 +823,7 @@ intro
         });
       });
 
-      describe('Block processor', () => {
+      describe('Block macro processor', () => {
         it('should be able to process lorem extension', () => {
           try {
             require('../share/extensions/lorem-block-macro.js');
@@ -846,6 +846,34 @@ intro
           const opts = { extension_registry: registry };
           const result = asciidoctor.convert('img::image-name[]', opts);
           expect(result).to.contain('<img src="image-name.png" alt="image name">');
+        });
+
+
+        it('should be able to set header attribute in block macro processor', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.blockMacro(function () {
+              this.named('attribute');
+              this.resolvesAttributes('1:value');
+              this.process((parent, target, attrs) => {
+                parent.getDocument().setAttribute(target, attrs['value']);
+              });
+            });
+            this.blockMacro(function () {
+              this.named('header_attribute');
+              this.resolvesAttributes('1:value');
+              this.process((parent, target, attrs) => {
+                parent.getDocument().setHeaderAttribute(target, attrs['value']);
+              });
+            });
+          });
+          const opts = { extension_registry: registry };
+          const input = `attribute::yin[yang]
+
+header_attribute::foo[bar]`;
+          const doc = asciidoctor.load(input, opts);
+
+          expect(doc.getAttribute('yin')).to.be.undefined;
+          expect(doc.getAttribute('foo')).to.equal('bar');
         });
       });
 

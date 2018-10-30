@@ -1084,6 +1084,27 @@ Document.prototype.getRevisionRemark = function () {
   return this.getAttribute('revremark');
 };
 
+
+/**
+ *  Assign a value to the specified attribute in the document header.
+ *
+ *  The assignment will be visible when the header attributes are restored,
+ *  typically between processor phases (e.g., between parse and convert).
+ *
+ * @param {string} name - The {string} attribute name to assign
+ * @param {Object} value - The {Object} value to assign to the attribute (default: '')
+ * @param {boolean} overwrite - A {boolean} indicating whether to assign the attribute
+ * if already present in the attributes Hash (default: true)
+ *
+ * @memberof Document
+ * @returns {boolean} - returns true if the assignment was performed otherwise false
+ */
+Document.prototype.setHeaderAttribute = function (name, value, overwrite) {
+  if (typeof overwrite === 'undefined') overwrite = true;
+  if (typeof value === 'undefined') value = '';
+  return this.$set_header_attribute(name, value, overwrite);
+};
+
 // private constructor
 Document.RevisionInfo = function (date, number, remark) {
   this.date = date;
