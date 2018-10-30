@@ -318,6 +318,13 @@ Processor.prototype.positionalAttributes = function (value) {
 };
 
 /**
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.resolvesAttributes = function (args) {
+  return this.$resolves_attributes(args);
+};
+
+/**
  * @namespace
  * @module Extensions/BlockProcessor
  */
