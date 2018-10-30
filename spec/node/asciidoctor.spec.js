@@ -839,12 +839,17 @@ intro
             this.blockMacro(function () {
               this.named('img');
               this.process((parent, target) => {
-                return this.createImageBlock(parent, { target: target + '.png' });
+                return this.createImageBlock(parent, { target: target + '.png', title: 'title', caption: 'caption' });
               });
             });
           });
           const opts = { extension_registry: registry };
-          const result = asciidoctor.convert('img::image-name[]', opts);
+          const doc = asciidoctor.load('img::image-name[]', opts);
+          const images = doc.findBy((b) => b.getContext() === 'image');
+          expect(images.length).to.equal(1);
+          expect(images[0].getTitle()).to.equal('title');
+          expect(images[0].getCaption()).to.equal('caption');
+          const result = doc.convert(opts);
           expect(result).to.contain('<img src="image-name.png" alt="image name">');
         });
       });
