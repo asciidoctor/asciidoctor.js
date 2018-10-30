@@ -3,7 +3,7 @@
 
 set -e
 
-yarn run dist
+npm run dist
 mkdir bin
 cd dist/
 zip -r ../bin/asciidoctor.js.dist.zip .
