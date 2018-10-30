@@ -287,6 +287,19 @@ Processor.prototype.createBlock = function (parent, context, source, attrs, opts
 };
 
 /**
+ * Creates a list block node and links it to the specified parent.
+ *
+ * @param parent - The parent Block (Block, Section, or Document) of this new list block.
+ * @param {string} context - The list context (e.g., ulist, olist, colist, dlist)
+ * @param {Object} attrs - An object of attributes to set on this list block
+ *
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.createList = function (parent, context, attrs) {
+  return this.$create_list(parent, context, toHash(attrs));
+};
+
+/**
  * @memberof Extensions/Processor
  */
 Processor.prototype.createImageBlock = function (parent, attrs, opts) {
