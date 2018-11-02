@@ -546,6 +546,66 @@ Getting Real details the business, design, programming, and marketing principles
           expect(secondAuthor.getInitials()).to.equal('JF');
         });
       });
+
+      describe('findBy', function () {
+
+        it('should stop looking for blocks when StopIteration is raised', function () {
+          const input = `paragraph 1
+
+====
+paragraph 2
+
+****
+paragraph 3
+****
+====
+
+paragraph 4
+
+* item
++
+paragraph 5`;
+          const doc = asciidoctor.load(input);
+          let stop = false;
+          const result = doc.findBy((candidate) =>  {
+            if (stop) {
+              throw new asciidoctor.StopIteration();
+            }
+            if (candidate.getContext() === 'paragraph') {
+              if (candidate.getParent().getContext() === 'sidebar') {
+                stop = true;
+              }
+              return true;
+            }
+          });
+          expect(result.length).to.equal(3);
+          expect(result[0].getContent()).to.equal('paragraph 1');
+          expect(result[1].getContent()).to.equal('paragraph 2');
+          expect(result[2].getContent()).to.equal('paragraph 3');
+        });
+
+        it('should only return one result when matching by id', function () {
+          const input = `== Section
+
+content
+
+[#subsection]
+=== Subsection
+
+[#last]
+content`;
+          const doc = asciidoctor.load(input);
+          let visitedLast = false;
+          const result = doc.findBy({'id': 'subsection'}, (candidate) => {
+            if (candidate.getId() === 'last') {
+              visitedLast = true;
+            }
+            return true;
+          });
+          expect(result.length).to.equal(1);
+          expect(visitedLast).to.be.false;
+        });
+      });
     });
 
     describe('Modifying', function () {

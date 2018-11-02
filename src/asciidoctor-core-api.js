@@ -1820,3 +1820,7 @@ if (NullLogger) {
     return this.max_severity;
   };
 }
+
+
+// Alias
+Opal.Asciidoctor.StopIteration = Opal.StopIteration;
