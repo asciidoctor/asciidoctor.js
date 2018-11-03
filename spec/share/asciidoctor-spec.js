@@ -903,6 +903,49 @@ paragraph 3
         const resultWithExtension = asciidoctor.convert('// smiley', opts);
         expect(resultWithExtension).to.include(':)'); // happy face because the second extension is appended
       });
+
+      it('should be able to register preferred tree processor', function () {
+        const SelfSigningTreeProcessor = asciidoctor.Extensions.createTreeProcessor('SelfSigningTreeProcessor', {
+          process: function (document) {
+            document.append(this.createBlock(document, 'paragraph', 'SelfSigningTreeProcessor', {}));
+          }
+        });
+        try {
+          asciidoctor.Extensions.register(function () {
+            this.treeProcessor(function () {
+              const self = this;
+              self.process(function (doc) {
+                doc.append(self.createBlock(doc, 'paragraph', 'd', {}));
+              });
+            });
+            this.treeProcessor(function () {
+              const self = this;
+              self.prefer();
+              self.process(function (doc) {
+                doc.append(self.createBlock(doc, 'paragraph', 'c', {}));
+              });
+            });
+            this.prefer('tree_processor', asciidoctor.Extensions.newTreeProcessor('AwesomeTreeProcessor', {
+              process: function (doc) {
+                doc.append(this.createBlock(doc, 'paragraph', 'b', {}));
+              }
+            }));
+            this.prefer('tree_processor', asciidoctor.Extensions.newTreeProcessor({
+              process: function (doc) {
+                doc.append(this.createBlock(doc, 'paragraph', 'a', {}));
+              }
+            }));
+            this.prefer('tree_processor', SelfSigningTreeProcessor);
+          });
+          const doc = asciidoctor.load('');
+          const lines = doc.getBlocks().map(function (block) {
+            return block.getSourceLines()[0];
+          });
+          expect(lines).to.have.members(['SelfSigningTreeProcessor', 'a', 'b', 'c', 'd']);
+        } finally {
+          asciidoctor.Extensions.unregisterAll();
+        }
+      });
     });
   });
 };

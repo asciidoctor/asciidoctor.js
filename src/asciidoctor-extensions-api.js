@@ -153,6 +153,23 @@ Registry.prototype.unregister = Extensions.unregister;
 /**
  * @memberof Extensions/Registry
  */
+Registry.prototype.prefer = function (name, processor) {
+  if (arguments.length === 1) {
+    processor = name;
+    name = null;
+  }
+  if (typeof processor === 'object' || processor.$$is_class) {
+    // processor is an instance or a class
+    return this['$prefer'](name, processor);
+  } else {
+    // processor is a function/lambda
+    return Opal.send(this, 'prefer', name && [name], toBlock(processor));
+  }
+};
+
+/**
+ * @memberof Extensions/Registry
+ */
 Registry.prototype.block = function (name, processor) {
   if (arguments.length === 1) {
     processor = name;
@@ -378,11 +395,25 @@ IncludeProcessor.prototype.handles = function (block) {
 };
 
 /**
+ * @memberof Extensions/IncludeProcessor
+ */
+IncludeProcessor.prototype.prefer = function () {
+  this.$prefer();
+};
+
+/**
  * @namespace
  * @module Extensions/TreeProcessor
  */
 // eslint-disable-next-line no-unused-vars
 var TreeProcessor = Extensions.TreeProcessor;
+
+/**
+ * @memberof Extensions/TreeProcessor
+ */
+TreeProcessor.prototype.prefer = function () {
+  this.$prefer();
+};
 
 /**
  * @namespace
@@ -392,6 +423,13 @@ var TreeProcessor = Extensions.TreeProcessor;
 var Postprocessor = Extensions.Postprocessor;
 
 /**
+ * @memberof Extensions/Postprocessor
+ */
+Postprocessor.prototype.prefer = function () {
+  this.$prefer();
+};
+
+/**
  * @namespace
  * @module Extensions/Preprocessor
  */
@@ -399,10 +437,24 @@ var Postprocessor = Extensions.Postprocessor;
 var Preprocessor = Extensions.Preprocessor;
 
 /**
+ * @memberof Extensions/Preprocessor
+ */
+Preprocessor.prototype.prefer = function () {
+  this.$prefer();
+};
+
+/**
  * @namespace
  * @module Extensions/DocinfoProcessor
  */
 var DocinfoProcessor = Extensions.DocinfoProcessor;
+
+/**
+ * @memberof Extensions/DocinfoProcessor
+ */
+DocinfoProcessor.prototype.prefer = function () {
+  this.$prefer();
+};
 
 /**
  * @memberof Extensions/DocinfoProcessor
