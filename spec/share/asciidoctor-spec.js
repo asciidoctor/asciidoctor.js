@@ -16,25 +16,25 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
 
     describe('Loading', function () {
       it('should load document with inline attributes @', function () {
-        const options = {attributes: 'icons=font@'};
+        const options = { attributes: 'icons=font@' };
         const doc = asciidoctor.load('== Test', options);
         expect(doc.getAttribute('icons')).to.equal('font');
       });
 
       it('should load document with inline attributes !', function () {
-        const options = {attributes: 'icons=font@ data-uri!'};
+        const options = { attributes: 'icons=font@ data-uri!' };
         const doc = asciidoctor.load('== Test', options);
         expect(doc.getAttribute('icons')).to.equal('font');
       });
 
       it('should load document attributes', function () {
-        const options = {attributes: 'icons=font@ data-uri!'};
+        const options = { attributes: 'icons=font@ data-uri!' };
         const doc = asciidoctor.load('= Document Title\n:attribute-key: attribute-value\n\ncontent', options);
         expect(doc.getAttribute('attribute-key')).to.equal('attribute-value');
       });
 
       it('should load document with array attributes !', function () {
-        const options = {attributes: 'icons=font@ data-uri!'};
+        const options = { attributes: 'icons=font@ data-uri!' };
         const doc = asciidoctor.load('== Test', options);
         expect(doc.getAttribute('icons')).to.equal('font');
         expect(doc.getAttribute('data-uri')).to.be.undefined;
@@ -42,15 +42,15 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
 
       it('should load document with hash attributes', function () {
         // NOTE we might want to look into the fact that sectids: false does not work
-        const options = {attributes: {icons: 'font', sectids: null}};
+        const options = { attributes: { icons: 'font', sectids: null } };
         const doc = asciidoctor.load('== Test', options);
         expect(doc.getAttribute('icons')).to.equal('font');
         expect(doc.getAttribute('sectids')).to.be.undefined;
-        expect(doc.findBy({context: 'section'})[0].getId()).to.equal(Opal.nil);
+        expect(doc.findBy({ context: 'section' })[0].getId()).to.equal(Opal.nil);
       });
 
       it('should load document with boolean attributes', function () {
-        const options = {attributes: 'sectnums'};
+        const options = { attributes: 'sectnums' };
         const doc = asciidoctor.load('== Test', options);
         expect(doc.getAttribute('sectnums')).to.equal('');
         expect(doc.isAttribute('sectnums')).to.equal(true);
@@ -74,7 +74,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should populate the catalog', function () {
-        const doc = asciidoctor.load('link:index.html[Docs]', {'safe': 'safe', 'catalog_assets': true});
+        const doc = asciidoctor.load('link:index.html[Docs]', { 'safe': 'safe', 'catalog_assets': true });
         doc.convert();
         const links = doc.getCatalog().links;
         expect(links).to.have.members(['index.html']);
@@ -87,7 +87,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should get icon uri string reference', function () {
-        const options = {attributes: 'data-uri!'};
+        const options = { attributes: 'data-uri!' };
         const doc = asciidoctor.load('== Test', options);
         // FIXME: On browser icon URI is './images/icons/note.png' but on Node.js icon URI is 'images/icons/note.png'
         expect(doc.getIconUri('note')).to.include('images/icons/note.png');
@@ -108,7 +108,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should get image uri', function () {
-        const options = {attributes: 'data-uri!'};
+        const options = { attributes: 'data-uri!' };
         const doc = asciidoctor.load('== Test', options);
         expect(doc.getImageUri('target.jpg')).to.equal('target.jpg');
         expect(doc.getImageUri('target.jpg', 'imagesdir')).to.equal('target.jpg');
@@ -136,12 +136,12 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should get reader lines', function () {
-        const doc = asciidoctor.load('line one\nline two\nline three', {parse: false});
+        const doc = asciidoctor.load('line one\nline two\nline three', { parse: false });
         expect(doc.getReader().getLines()).to.have.members(['line one', 'line two', 'line three']);
       });
 
       it('should get reader string', function () {
-        const doc = asciidoctor.load('line one\nline two\nline three', {parse: false});
+        const doc = asciidoctor.load('line one\nline two\nline three', { parse: false });
         expect(doc.getReader().getString()).to.equal('line one\nline two\nline three');
       });
 
@@ -161,7 +161,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should not be embedded', function () {
-        const options = {header_footer: true};
+        const options = { header_footer: true };
         const doc = asciidoctor.load('== Test', options);
         expect(doc.isEmbedded()).to.equal(false);
       });
@@ -225,7 +225,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should get doctype', function () {
-        const options = {doctype: 'inline'};
+        const options = { doctype: 'inline' };
         const doc = asciidoctor.load('== Test', options);
         expect(doc.getDoctype()).to.equal('inline');
       });
@@ -236,14 +236,14 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should get backend', function () {
-        const options = {backend: 'xhtml5'};
+        const options = { backend: 'xhtml5' };
         const doc = asciidoctor.load('== Test', options);
         expect(doc.getBackend()).to.equal('html5');
         expect(doc.getAttribute('htmlsyntax')).to.equal('xml');
       });
 
       it('should get safe mode', function () {
-        const options = {safe: 'server'};
+        const options = { safe: 'server' };
         const doc = asciidoctor.load('== Test', options);
         expect(doc.getSafe()).to.equal(asciidoctor.$$const.SafeMode.$$const.SERVER);
         expect(doc.getAttribute('safe-mode-name')).to.equal('server');
@@ -256,7 +256,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should get options', function () {
-        const options = {header_footer: true};
+        const options = { header_footer: true };
         const doc = asciidoctor.load('= Document Title', options);
         expect(doc.getOptions()).to.be.an.instanceof(Object);
         expect(doc.getOptions().header_footer).to.equal(true);
@@ -269,7 +269,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should get converter', function () {
-        const options = {backend: 'xhtml'};
+        const options = { backend: 'xhtml' };
         const doc = asciidoctor.load('= Document Title', options);
         const converter = doc.getConverter();
         expect(converter).to.be.an.instanceof(Object);
@@ -289,7 +289,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should get the line of number of a block when sourcemap is enabled', function () {
-        const options = {sourcemap: true};
+        const options = { sourcemap: true };
         const doc = asciidoctor.load('= Document Title\n\nPreamble\n\n== First section\n\nTrue story!', options);
         expect(doc.getSourcemap()).to.equal(true);
         const blocks = doc.getBlocks();
@@ -322,7 +322,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
 
       it('should get partitioned doctitle', function () {
         const doc = asciidoctor.load('= The Dangerous Documentation Chronicles: Based on True Events\n\n== The Ravages of Writing');
-        const doctitle = doc.getDoctitle({partition: true});
+        const doctitle = doc.getDoctitle({ partition: true });
         expect(doctitle.main).to.equal('The Dangerous Documentation Chronicles');
         expect(doctitle.subtitle).to.equal('Based on True Events');
         expect(doctitle.getMain()).to.equal('The Dangerous Documentation Chronicles');
@@ -334,7 +334,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
 
       it('should get partitioned doctitle without subtitle', function () {
         const doc = asciidoctor.load('= The Dangerous Documentation Chronicles\n\n== The Ravages of Writing');
-        const doctitle = doc.getDoctitle({partition: true});
+        const doctitle = doc.getDoctitle({ partition: true });
         expect(doctitle.getMain()).to.equal('The Dangerous Documentation Chronicles');
         expect(doctitle.getSubtitle()).to.be.undefined;
         expect(doctitle.getCombined()).to.equal('The Dangerous Documentation Chronicles');
@@ -389,13 +389,13 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
 
       it('should get list of substitutions for block', function () {
         const source = '----\nverbatim <1>\n----\n<1> verbatim text';
-        const listingBlock = asciidoctor.load(source).findBy({context: 'listing'})[0];
+        const listingBlock = asciidoctor.load(source).findBy({ context: 'listing' })[0];
         expect(listingBlock.getSubstitutions()).to.have.members(['specialcharacters', 'callouts']);
       });
 
       it('should return whether substitution exists', function () {
         const source = '----\nverbatim <1>\n----\n<1> verbatim text';
-        const listingBlock = asciidoctor.load(source).findBy({context: 'listing'})[0];
+        const listingBlock = asciidoctor.load(source).findBy({ context: 'listing' })[0];
         expect(listingBlock.hasSubstitution('callouts')).to.equal(true);
         expect(listingBlock.hasSubstitution('macros')).to.equal(false);
       });
@@ -451,7 +451,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should load a file with bom', function () {
-        const opts = {safe: 'safe', base_dir: testOptions.baseDir};
+        const opts = { safe: 'safe', base_dir: testOptions.baseDir };
         const doc = asciidoctor.load('\xef\xbb\xbf= Document Title\n:lang: fr\n:fixtures-dir: spec/fixtures\n\ncontent is in {lang}\n\ninclude::{fixtures-dir}/include.adoc[]', opts);
         expect(doc.getAttribute('lang')).to.equal('fr');
         const html = doc.convert();
@@ -460,9 +460,9 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       });
 
       it('should instantiate an Inline element', function () {
-        const opts = {safe: 'safe', base_dir: testOptions.baseDir};
+        const opts = { safe: 'safe', base_dir: testOptions.baseDir };
         const doc = asciidoctor.load('= Empty document', opts);
-        const inlineElement = asciidoctor.Inline.create(doc, 'anchor', 'Tigers', {'type': 'ref', 'target': 'tigers'});
+        const inlineElement = asciidoctor.Inline.create(doc, 'anchor', 'Tigers', { 'type': 'ref', 'target': 'tigers' });
         expect(inlineElement.getType()).to.equal('ref');
         expect(inlineElement.getText()).to.equal('Tigers');
         expect(inlineElement.getTarget()).to.equal('tigers');
@@ -606,6 +606,53 @@ content`;
           expect(visitedLast).to.be.false;
         });
       });
+
+      describe('findBy', function () {
+
+        it('should skip node and its children if block returns skip', function () {
+          const input = `paragraph 1
+
+====
+paragraph 2
+
+term::
++
+paragraph 3
+====
+
+paragraph 4`;
+          const doc = asciidoctor.load(input);
+          const result = doc.findBy((candidate) => {
+            const ctx = candidate.getContext();
+            if (ctx === 'example') {
+              return 'skip';
+            } else if (ctx === 'paragraph') {
+              return true;
+            }
+          });
+          expect(result.length).to.equal(2);
+          expect(result[0].getContext()).to.equal('paragraph');
+          expect(result[1].getContext()).to.equal('paragraph');
+        });
+
+        it('should accept node but skip its children if block returns skip_children', function () {
+          const input = `====
+paragraph 2
+
+term::
++
+paragraph 3
+====`;
+          const doc = asciidoctor.load(input);
+          const result = doc.findBy((candidate) => {
+            if (candidate.getContext() === 'example') {
+              return 'skip_children';
+            }
+          });
+          expect(result.length).to.equal(1);
+          expect(result[0].getContext()).to.equal('example');
+        });
+      });
     });
 
     describe('Modifying', function () {
@@ -620,7 +667,7 @@ content`;
 
       it('should be able to remove substitution from block', function () {
         const source = '....\n<foobar>\n....';
-        const literalBlock = asciidoctor.load(source).findBy({context: 'literal'})[0];
+        const literalBlock = asciidoctor.load(source).findBy({ context: 'literal' })[0];
         literalBlock.removeSubstitution('specialcharacters');
         expect(literalBlock.hasSubstitution('specialcharacters')).to.equal(false);
         expect(literalBlock.getContent()).to.equal('<foobar>');
@@ -636,7 +683,7 @@ content`;
       it('should return an empty string when there\'s no candidate for inline conversion', function () {
         // Converting a document with inline document type should produce an empty string
         // Read more: http://asciidoctor.org/docs/user-manual/#document-types
-        const options = {doctype: 'inline'};
+        const options = { doctype: 'inline' };
         const content = '= Document Title\n\n== Introduction\n\nA simple paragraph.';
         let html = asciidoctor.convert(content, options);
         expect(html).to.equal('');
@@ -674,7 +721,7 @@ content`;
       });
 
       it('should produce a html5 document with font icons', function () {
-        const options = {attributes: 'icons=font@'};
+        const options = { attributes: 'icons=font@' };
         const html = asciidoctor.convert('= Document\n\nThis is a simple document.\n\n== Section\n\nCAUTION: This is important!', options);
         expect(html).to.include('<i class="fa icon-caution" title="Caution"></i>');
       });
@@ -732,31 +779,31 @@ content`;
 
     describe('Include', function () {
       it('should include file with a relative path (base_dir is explicitly defined)', function () {
-        const opts = {safe: 'safe', base_dir: testOptions.baseDir};
+        const opts = { safe: 'safe', base_dir: testOptions.baseDir };
         const html = asciidoctor.convert('include::spec/fixtures/include.adoc[]', opts);
         expect(html).to.include('include content');
       });
 
       it('should include file with a relative expandable path (base_dir is explicitly defined)', function () {
-        const opts = {safe: 'safe', base_dir: testOptions.baseDir};
+        const opts = { safe: 'safe', base_dir: testOptions.baseDir };
         const html = asciidoctor.convert('include::spec/../spec/fixtures/include.adoc[]', opts);
         expect(html).to.include('include content');
       });
 
       it('should include file with an absolute path (base_dir is not defined)', function () {
-        const opts = {safe: 'safe', attributes: {'allow-uri-read': true}};
+        const opts = { safe: 'safe', attributes: { 'allow-uri-read': true } };
         const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts);
         expect(html).to.include('include content');
       });
 
       it('should include file with an absolute expandable path (base_dir is not defined)', function () {
-        const opts = {safe: 'safe', attributes: {'allow-uri-read': true}};
+        const opts = { safe: 'safe', attributes: { 'allow-uri-read': true } };
         const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/../spec/fixtures/include.adoc[]', opts);
         expect(html).to.include('include content');
       });
 
       it('should include csv file in table', function () {
-        const opts = {safe: 'safe', base_dir: testOptions.baseDir};
+        const opts = { safe: 'safe', base_dir: testOptions.baseDir };
         const html = asciidoctor.convert(',===\ninclude::spec/fixtures/sales.csv[]\n,===', opts);
         expect(html).to.include('March');
       });
@@ -786,7 +833,7 @@ content`;
     describe('Extensions', function () {
       it('should preprend the extension in the list', function () {
         const registry = asciidoctor.Extensions.create();
-        const opts = {extension_registry: registry};
+        const opts = { extension_registry: registry };
         registry.preprocessor(function () {
           const self = this;
           self.process(function (doc, reader) {
@@ -823,7 +870,7 @@ content`;
 
       it('should append the extension in the list (default)', function () {
         const registry = asciidoctor.Extensions.create();
-        const opts = {extension_registry: registry};
+        const opts = { extension_registry: registry };
         registry.preprocessor(function () {
           const self = this;
           self.process(function (doc, reader) {
