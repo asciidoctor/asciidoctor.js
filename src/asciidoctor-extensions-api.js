@@ -300,6 +300,18 @@ Processor.prototype.createList = function (parent, context, attrs) {
 };
 
 /**
+ * Creates a list item node and links it to the specified parent.
+ *
+ * @param parent - The parent List of this new list item block.
+ * @param {string} text - The text of the list item.
+ *
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.createListItem = function (parent, text) {
+  return this.$create_list_item(parent, text);
+};
+
+/**
  * @memberof Extensions/Processor
  */
 Processor.prototype.createImageBlock = function (parent, attrs, opts) {
