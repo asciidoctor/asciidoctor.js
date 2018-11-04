@@ -497,6 +497,16 @@ AbstractBlock.prototype.setNumeral = function (value) {
   return this['$number='](value);
 };
 
+/**
+ * A convenience method that checks whether the title of this block is defined.
+ *
+ * @returns a {boolean} indicating whether this block has a title.
+ * @memberof AbstractBlock
+ */
+AbstractBlock.prototype.hasTitle = function () {
+  return this['$title?']();
+};
+
 // Section API
 
 /**
