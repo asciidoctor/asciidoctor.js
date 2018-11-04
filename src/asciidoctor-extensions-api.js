@@ -265,6 +265,12 @@ var Processor = Extensions.Processor;
 /**
  * The extension will be added to the beginning of the list for that extension type. (default is append).
  * @memberof Extensions/Processor
+ * @deprecated Please use the <code>prefer</pre> function on the {@link Extensions/Registry},
+ * the {@link Extensions/IncludeProcessor},
+ * the {@link Extensions/TreeProcessor},
+ * the {@link Extensions/Postprocessor},
+ * the {@link Extensions/Preprocessor}
+ * or the {@link Extensions/DocinfoProcessor}
  */
 Processor.prototype.prepend = function () {
   this.$option('position', '>>');
