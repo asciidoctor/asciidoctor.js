@@ -46,7 +46,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         const doc = asciidoctor.load('== Test', options);
         expect(doc.getAttribute('icons')).to.equal('font');
         expect(doc.getAttribute('sectids')).to.be.undefined;
-        expect(doc.findBy({ context: 'section' })[0].getId()).to.equal(Opal.nil);
+        expect(doc.findBy({ context: 'section' })[0].getId()).to.be.undefined;
       });
 
       it('should load document with boolean attributes', function () {

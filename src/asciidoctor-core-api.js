@@ -772,7 +772,8 @@ AbstractNode.prototype.getContext = function () {
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getId = function () {
-  return this.id;
+  var id = this.id;
+  return id === Opal.nil ? undefined : id;
 };
 
 /**
