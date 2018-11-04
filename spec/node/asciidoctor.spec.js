@@ -820,6 +820,42 @@ intro
             asciidoctor.Extensions.unregisterAll();
           }
         });
+
+        it('should be able to create a list item linked to a list', () => {
+          const extensions = asciidoctor.Extensions;
+          try {
+            extensions.register('test', function () {
+              this.block(function () {
+                this.named('test');
+                this.onContext('paragraph');
+                this.process((parent) => {
+                  const list = this.createList(parent, 'ulist');
+                  list.append(this.createListItem(list, 'foo'));
+                  list.append(this.createListItem(list, 'bar'));
+                  list.append(this.createListItem(list));
+                  parent.append(list);
+                });
+              });
+            });
+            let html = asciidoctor.convert('[test]\nreplace me');
+            expect(html).to.contain(`<div class="ulist">
+<ul>
+<li>
+<p>foo</p>
+</li>
+<li>
+<p>bar</p>
+</li>
+<li>
+<p></p>
+</li>
+</ul>
+</div>`);
+            extensions.unregister('test');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
       });
 
       describe('Inline macro processor', () => {
