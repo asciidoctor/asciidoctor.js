@@ -428,6 +428,10 @@ function initializeProcessorClass (superclassName, className, functions) {
  * @memberof Extensions
  */
 Extensions.createPostprocessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return initializeProcessorClass('Postprocessor', name, functions);
 };
 
@@ -437,6 +441,10 @@ Extensions.createPostprocessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.newPostprocessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return this.createPostprocessor(name, functions).$new();
 };
 
@@ -448,6 +456,10 @@ Extensions.newPostprocessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.createPreprocessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return initializeProcessorClass('Preprocessor', name, functions);
 };
 
@@ -457,6 +469,10 @@ Extensions.createPreprocessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.newPreprocessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return this.createPreprocessor(name, functions).$new();
 };
 
@@ -468,6 +484,10 @@ Extensions.newPreprocessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.createTreeProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return initializeProcessorClass('TreeProcessor', name, functions);
 };
 
@@ -477,6 +497,10 @@ Extensions.createTreeProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.newTreeProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return this.createTreeProcessor(name, functions).$new();
 };
 
@@ -488,6 +512,10 @@ Extensions.newTreeProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.createIncludeProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return initializeProcessorClass('IncludeProcessor', name, functions);
 };
 
@@ -497,6 +525,10 @@ Extensions.createIncludeProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.newIncludeProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return this.createIncludeProcessor(name, functions).$new();
 };
 
@@ -508,6 +540,10 @@ Extensions.newIncludeProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.createDocinfoProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return initializeProcessorClass('DocinfoProcessor', name, functions);
 };
 
@@ -517,6 +553,10 @@ Extensions.createDocinfoProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.newDocinfoProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return this.createDocinfoProcessor(name, functions).$new();
 };
 
@@ -528,6 +568,10 @@ Extensions.newDocinfoProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.createBlockProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return initializeProcessorClass('BlockProcessor', name, functions);
 };
 
@@ -537,6 +581,10 @@ Extensions.createBlockProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.newBlockProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return this.createBlockProcessor(name, functions).$new();
 };
 
@@ -548,6 +596,10 @@ Extensions.newBlockProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.createInlineMacroProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return initializeProcessorClass('InlineMacroProcessor', name, functions);
 };
 
@@ -557,6 +609,10 @@ Extensions.createInlineMacroProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.newInlineMacroProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return this.createInlineMacroProcessor(name, functions).$new();
 };
 
@@ -568,6 +624,10 @@ Extensions.newInlineMacroProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.createBlockMacroProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return initializeProcessorClass('BlockMacroProcessor', name, functions);
 };
 
@@ -577,6 +637,10 @@ Extensions.createBlockMacroProcessor = function (name, functions) {
  * @memberof Extensions
  */
 Extensions.newBlockMacroProcessor = function (name, functions) {
+  if (arguments.length === 1) {
+    functions = name;
+    name = null;
+  }
   return this.createBlockMacroProcessor(name, functions).$new();
 };
 
