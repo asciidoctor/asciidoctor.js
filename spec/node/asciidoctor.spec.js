@@ -15,6 +15,9 @@ const config = {
     framework: 'lollipop'
   }
 };
+
+const isWin = process.platform === 'win32';
+
 const asciidoctor = require('../../build/asciidoctor-node.js')(config);
 
 const Opal = require('opal-runtime').Opal; // for testing purpose only
@@ -87,7 +90,7 @@ intro
           const sourceLocation = errorMessage.getSourceLocation();
           expect(sourceLocation.getLineNumber()).to.equal(8);
           expect(sourceLocation.getFile()).to.be.undefined;
-          expect(sourceLocation.getDirectory()).to.equal(process.cwd());
+          expect(sourceLocation.getDirectory()).to.equal(process.cwd().replace(/\\/g, '/'));
           expect(sourceLocation.getPath()).to.equal('<stdin>');
         } finally {
           asciidoctor.LoggerManager.setLogger(defaultLogger);
@@ -285,7 +288,7 @@ intro
   describe('Loading document', () => {
     it('should get the base directory', () => {
       const doc = asciidoctor.load('== Test');
-      expect(doc.getBaseDir()).to.equal(process.cwd());
+      expect(doc.getBaseDir()).to.equal(process.cwd().replace(/\\/g, '/'));
     });
   });
 
@@ -1159,4 +1162,19 @@ header_attribute::foo[bar]`;
       expect(result).to.contain('<dummy>content</dummy>');
     });
   });
+
+  if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {
+    describe('Windows', () => {
+      it('should register a custom converter', () => {
+        const buildFolder = process.env.APPVEYOR_BUILD_FOLDER;
+        const driveLetter = buildFolder.substring(0, 2);
+        const options = { base_dir: driveLetter, safe: 'safe' };
+        const content = `= Include test
+
+include::${buildFolder}/spec/fixtures/include.adoc[]`;
+        const result = asciidoctor.convert(content, options);
+        expect(result).to.contain('include content');
+      });
+    });
+  }
 });

@@ -12,6 +12,24 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       it('asciidoctor should not be null', function () {
         expect(asciidoctor).to.be.an.instanceof(Object);
       });
+      it('should preserve Function methods', function () {
+        const fundamentalObjects = [
+          Function,
+          Boolean,
+          Error,
+          Number,
+          Date,
+          String,
+          RegExp,
+          Array
+        ];
+        for (let index in fundamentalObjects) {
+          const fundamentalObject = fundamentalObjects[index];
+          expect(fundamentalObject.call, `${fundamentalObject.name}.call should be a Function`).to.be.an.instanceof(Function);
+          expect(fundamentalObject.apply, `${fundamentalObject.name}.apply should be a Function`).to.be.an.instanceof(Function);
+          expect(fundamentalObject.bind, `${fundamentalObject.name}.bind should be a Function`).to.be.an.instanceof(Function);
+        }
+      });
     });
 
     describe('Loading', function () {
