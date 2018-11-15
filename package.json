@@ -62,7 +62,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "opal-runtime": "1.0.10"
+    "opal-runtime": "1.0.11"
   },
   "devDependencies": {
     "bestikk-download": "1.0.0",
@@ -75,7 +75,7 @@
     "eslint": "4.19.1",
     "http-server": "0.11.1",
     "mocha": "5.1.1",
-    "opal-compiler": "1.0.10",
+    "opal-compiler": "1.0.11",
     "puppeteer": "1.3.0",
     "sinon": "5.0.6",
     "xmlhttprequest": "1.8.0"
