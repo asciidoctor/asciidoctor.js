@@ -1,4 +1,4 @@
-var Extensions = Opal.Asciidoctor.Extensions;
+const Extensions = Opal.Asciidoctor.Extensions;
 
 // NOTE: Below we are using a minimalist implementation to generate lorem ipsum text.
 // If you need a complete implementation, you can use the following Node package:
@@ -6,18 +6,17 @@ var Extensions = Opal.Asciidoctor.Extensions;
 
 Extensions.register(function () {
   this.blockMacro(function () {
-    var self = this;
+    const self = this;
     self.named('lorem');
     self.process(function (parent, target, attrs) {
-      // FIXME: convert attrs to a JSON
-      var size = parseInt(attrs.size);
-      var result = lorem({ count: size, units: target });
+      const size = parseInt(attrs.size);
+      const result = lorem({ count: size, units: target });
       return self.createBlock(parent, 'paragraph', result);
     });
   });
 });
 
-var dictionary = {
+const dictionary = {
   words: [
     'lorem',
     'ipsum',
@@ -32,19 +31,19 @@ function getRandomArbitrary (min, max) {
 }
 
 function lorem (opts) {
-  var count = opts.count;
-  var units = opts.units;
-  var words = dictionary.words;
+  const count = opts.count;
+  const units = opts.units;
+  const words = dictionary.words;
   if (units === 'sentences') {
-    var sentences = [];
-    var sentence = [];
+    const sentences = [];
+    const sentence = [];
     for (i = 0; i < count; i++) {
-      var sentenceLength = getRandomArbitrary(5, 15);
+      const sentenceLength = getRandomArbitrary(5, 15);
       for (j = 0; j < sentenceLength; j++) {
         // use predictive position for testing purpose
-        var position = j % words.length;
+        const position = j % words.length;
         // var position = Math.floor(Math.random() * words.length);
-        var word = dictionary.words[position];
+        let word = dictionary.words[position];
         if (j === 0) {
           // capitalize the first letter
           word = word.charAt(0).toUpperCase() + word.slice(1);

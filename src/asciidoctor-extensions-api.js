@@ -393,11 +393,40 @@ BlockProcessor.prototype.onContexts = function () {
 };
 
 /**
+ * @memberof Extensions/BlockProcessor
+ */
+BlockProcessor.prototype.getName = function () {
+  var name = this.name;
+  return name === Opal.nil ? undefined : name;
+};
+
+/**
  * @namespace
  * @module Extensions/BlockMacroProcessor
  */
-// eslint-disable-next-line no-unused-vars
 var BlockMacroProcessor = Extensions.BlockMacroProcessor;
+
+/**
+ * @memberof Extensions/BlockMacroProcessor
+ */
+BlockMacroProcessor.prototype.getName = function () {
+  var name = this.name;
+  return name === Opal.nil ? undefined : name;
+};
+
+/**
+ * @namespace
+ * @module Extensions/InlineMacroProcessor
+ */
+var InlineMacroProcessor = Extensions.InlineMacroProcessor;
+
+/**
+ * @memberof Extensions/InlineMacroProcessor
+ */
+InlineMacroProcessor.prototype.getName = function () {
+  var name = this.name;
+  return name === Opal.nil ? undefined : name;
+};
 
 /**
  * @namespace
