@@ -369,6 +369,7 @@ intro
       expect(blocks[1].getContext()).to.equal('section');
       expect(blocks[1].getBlocks().length).to.equal(5);
 
+      expect(blocks[1].getBlocks()[1].getNodeName()).to.equal('quote');
       expect(blocks[1].getBlocks()[1].hasTitle()).to.be.true;
       expect(blocks[1].getBlocks()[1].getId()).to.equal('blockid');
       expect(blocks[1].getBlocks()[1].getStyle()).to.equal('quote');
@@ -376,6 +377,7 @@ intro
       expect(blocks[1].getBlocks()[1].getSourceLines()).to.have.members(['This is a quote.', 'It has a title, id, and attribution.']);
       expect(blocks[1].getBlocks()[1].getSource()).to.equal('This is a quote.\nIt has a title, id, and attribution.');
 
+      expect(blocks[1].getBlocks()[2].getNodeName()).to.equal('ulist');
       expect(blocks[1].getBlocks()[2].hasTitle()).to.be.false;
       expect(blocks[1].getBlocks()[2].getContext()).to.equal('ulist');
       expect(blocks[1].getBlocks()[2].getRole()).to.equal('feature-list');
@@ -387,6 +389,7 @@ intro
       expect(blocks[2].getTitle()).to.equal('Second Section');
       expect(blocks[2].getBlocks().length).to.equal(3);
 
+      expect(blocks[2].getBlocks()[0].getNodeName()).to.equal('image');
       expect(blocks[2].getBlocks()[0].hasTitle()).to.be.false;
       expect(blocks[2].getBlocks()[0].getContext()).to.equal('image');
       expect(blocks[2].getBlocks()[0].getTitle()).to.be.undefined;

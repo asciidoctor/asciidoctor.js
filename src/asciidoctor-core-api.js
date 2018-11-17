@@ -628,6 +628,13 @@ var AbstractNode = Opal.Asciidoctor.AbstractNode;
 /**
  * @memberof AbstractNode
  */
+AbstractNode.prototype.getNodeName = function () {
+  return this.node_name;
+};
+
+/**
+ * @memberof AbstractNode
+ */
 AbstractNode.prototype.getAttributes = function () {
   return fromHash(this.attributes);
 };
