@@ -754,6 +754,21 @@ var ConverterFactory = Opal.Asciidoctor.Converter.Factory;
 // Alias
 Opal.Asciidoctor.ConverterFactory = ConverterFactory;
 
+/**
+ * Register a custom converter in the global converter factory to handle conversion to the specified backends.
+ * If the backend value is an asterisk, the converter is used to handle any backend that does not have an explicit converter.
+ *
+ * @param converter - The Converter instance to register
+ * @param backends {Array} - A {string} {Array} of backend names that this converter should be registered to handle (optional, default: ['*'])
+ * @return {*} - Returns nothing
+ * @memberof Converter/Factory
+ */
+ConverterFactory.register = function (converter, backends) {
+  if (typeof converter === 'object' && typeof converter.$convert === 'undefined' && typeof converter.convert === 'function') {
+    Opal.def(converter, '$convert', converter.convert);
+  }
+  return this.$register(converter, backends);
+};
 
 /**
  * Retrieves the singleton instance of the converter factory.

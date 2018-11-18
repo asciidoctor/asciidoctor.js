@@ -1137,11 +1137,7 @@ header_attribute::foo[bar]`;
 
     it('should register a custom converter', () => {
       class DummyConverter {
-        constructor (backend, opts) {
-          this.basebackend = 'xml';
-          this.outfilesuffix = '.dummy';
-          this.filetype = 'xml';
-          this.htmlsyntax = 'xml';
+        constructor () {
           this.transforms = {
             document: ({node}) => {
               return `<dummy>${node.getContent()}</dummy>`;
@@ -1152,11 +1148,11 @@ header_attribute::foo[bar]`;
           };
         }
 
-        $convert (node, transform = null, opts = {}) {
+        convert (node, transform = null, opts = {}) {
           return this.transforms[node.node_name]({node});
         }
       }
-      asciidoctor.ConverterFactory.$register(new DummyConverter('dummy'), ['dummy']);
+      asciidoctor.ConverterFactory.register(new DummyConverter(), ['dummy']);
       const options = { safe: 'safe', backend: 'dummy' };
       const result = asciidoctor.convert('content', options);
       expect(result).to.contain('<dummy>content</dummy>');
