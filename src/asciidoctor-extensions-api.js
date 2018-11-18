@@ -794,3 +794,19 @@ ConverterFactory.getDefault = function (initialize) {
 ConverterFactory.prototype.create = function (backend, opts) {
   return this.$create(backend, toHash(opts));
 };
+
+// Built-in converter
+
+/**
+ * @namespace
+ * @module Converter/Html5Converter
+ */
+var Html5Converter = Opal.Asciidoctor.Converter.Html5Converter;
+
+// Alias
+Opal.Asciidoctor.Html5Converter = Html5Converter;
+
+
+Html5Converter.prototype.convert = function (node, transform, opts) {
+  return this.$convert(node, transform, opts);
+};
