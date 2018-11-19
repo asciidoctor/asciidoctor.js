@@ -727,9 +727,22 @@ intro
       });
 
       describe('Block processor', () => {
+        it('should get processor name', () => {
+          const registry = asciidoctor.Extensions.create();
+          const shoutBlockProcessor = asciidoctor.Extensions.newBlockProcessor('ShoutBlockProcessor', {
+            process: function (parent, reader) {
+              const lines = reader.getLines().map((l) => l.toUpperCase());
+              return this.createBlock(parent, 'paragraph', lines);
+            }
+          });
+          expect(shoutBlockProcessor.getName()).to.be.undefined;
+          registry.block('shout', shoutBlockProcessor);
+          expect(shoutBlockProcessor.getName()).to.equal('shout');
+        });
+
         it('should be able to create, instantiate and register a block processor class', () => {
           const registry = asciidoctor.Extensions.create();
-          var ShoutBlockProcessor = asciidoctor.Extensions.createBlockProcessor('ShoutBlockProcessor', {
+          const ShoutBlockProcessor = asciidoctor.Extensions.createBlockProcessor('ShoutBlockProcessor', {
             process: function (parent, reader) {
               const lines = reader.getLines().map((l) => l.toUpperCase());
               return this.createBlock(parent, 'paragraph', lines);
@@ -868,6 +881,19 @@ intro
       });
 
       describe('Inline macro processor', () => {
+        it('should get processor name', () => {
+          const registry = asciidoctor.Extensions.create();
+          const simleyInlineMacroProcessor = asciidoctor.Extensions.newInlineMacroProcessor('SimleyInlineMacroProcessor', {
+            process: function (parent, target) {
+              const text = target === 'wink' ? ';)' : ':)';
+              return self.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert();
+            }
+          });
+          expect(simleyInlineMacroProcessor.getName()).to.be.undefined;
+          registry.inlineMacro('smiley', simleyInlineMacroProcessor);
+          expect(simleyInlineMacroProcessor.getName()).to.equal('smiley');
+        });
+
         it('should be able to process smiley extension', () => {
           try {
             require('../share/extensions/smiley-inline-macro.js');
@@ -892,6 +918,18 @@ intro
       });
 
       describe('Block macro processor', () => {
+        it('should get processor name', () => {
+          const registry = asciidoctor.Extensions.create();
+          const loremBlockMacroProcessor = asciidoctor.Extensions.newBlockMacroProcessor('LoremBlockMacroProcessor', {
+            process: function (parent) {
+              return self.createBlock(parent, 'paragraph', 'lorem ipsum');
+            }
+          });
+          expect(loremBlockMacroProcessor.getName()).to.be.undefined;
+          registry.blockMacro('lorem', loremBlockMacroProcessor);
+          expect(loremBlockMacroProcessor.getName()).to.equal('lorem');
+        });
+
         it('should be able to process lorem extension', () => {
           try {
             require('../share/extensions/lorem-block-macro.js');
