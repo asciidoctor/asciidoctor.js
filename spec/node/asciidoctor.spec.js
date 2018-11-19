@@ -1175,28 +1175,81 @@ header_attribute::foo[bar]`;
   });
 
   describe('Registering converter', () => {
-
     it('should register a custom converter', () => {
       class DummyConverter {
         constructor () {
           this.transforms = {
-            document: ({node}) => {
+            embedded: (node) => {
               return `<dummy>${node.getContent()}</dummy>`;
             },
-            paragraph: ({node}) => {
+            paragraph: (node) => {
               return node.getContent();
             }
           };
         }
 
-        convert (node, transform = null, opts = {}) {
-          return this.transforms[node.node_name]({node});
+        convert (node, transform) {
+          return this.transforms[transform || node.node_name](node);
         }
       }
       asciidoctor.ConverterFactory.register(new DummyConverter(), ['dummy']);
       const options = { safe: 'safe', backend: 'dummy' };
       const result = asciidoctor.convert('content', options);
       expect(result).to.contain('<dummy>content</dummy>');
+    });
+    it('should register a custom converter (fallback to the built-in HTML5 converter)', () => {
+      class BlogConverter {
+        constructor () {
+          this.baseConverter = asciidoctor.Html5Converter.$new();
+          this.transforms = {
+            document: (node) => {
+              return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog</title>
+  <link rel="stylesheet" href="./stylesheets/blog.css" />
+</head>
+<body>
+  <section>
+    <div class="meta">
+      <div class="avatar">by</div>
+      <div class="byline">
+        <span class="blog-author">${node.getDocument().getAuthor()}</span>
+        <time>${node.getDocument().getAttribute('revdate')}</time>
+      </div>
+    </div>
+    <h1 class="blog-title">${node.getDocumentTitle()}</h1>
+  </section>
+  <section>
+    ${node.getContent()}
+  </section>
+</body>`;
+            }
+          };
+        }
+
+        convert (node, transform, opts) {
+          const template = this.transforms[transform || node.node_name];
+          if (template) {
+            return template(node);
+          }
+          return this.baseConverter.convert(node, transform, opts);
+        }
+      }
+      asciidoctor.ConverterFactory.register(new BlogConverter(), ['html5']);
+      const options = { safe: 'safe', header_footer: true };
+      const input = `= One Thing to Write the Perfect Blog Post
+Guillaume Grossetie <ggrossetie@yuzutech.fr>
+
+== Write in AsciiDoc!
+
+AsciiDoc is about being able to focus on expressing your ideas, writing with ease and passing on knowledge without the distraction of complex applications or angle brackets. 
+In other words, it’s about discovering writing zen.`;
+      const result = asciidoctor.convert(input, options);
+      expect(result).to.contain('<span class="blog-author">Guillaume Grossetie</span>'); // custom blog converter
+      expect(result).to.contain('<div class="sect1">'); // built-in HTML5 converter
     });
   });
 
