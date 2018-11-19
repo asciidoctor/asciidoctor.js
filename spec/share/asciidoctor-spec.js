@@ -386,6 +386,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       it('should assign sectname, caption, and numeral to appendix section by default', function () {
         const doc = asciidoctor.load('[appendix]\n== Attribute Options\n\nDetails');
         const appendix = doc.getBlocks()[0];
+        expect(appendix.getNodeName()).to.equal('section');
         expect(appendix.getSectionName()).to.equal('appendix');
         expect(appendix.getCaption()).to.equal('Appendix A: ');
         expect(appendix.getCaptionedTitle()).to.equal('Appendix A: Attribute Options');
@@ -431,6 +432,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         expect(doc.hasSections()).to.equal(true);
         expect(doc.getSections().length).to.equal(4);
         const firstSection = doc.getSections()[0];
+        expect(firstSection.getNodeName()).to.equal('section');
         expect(firstSection.getIndex()).to.equal(0);
         expect(firstSection.getName()).to.equal('First section');
         expect(firstSection.getTitle()).to.equal('First section');
