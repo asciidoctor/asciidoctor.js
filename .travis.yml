@@ -1,4 +1,3 @@
-sudo: false
 dist: trusty
 conditions: v1
 
