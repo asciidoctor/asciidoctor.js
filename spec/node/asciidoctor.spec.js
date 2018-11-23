@@ -399,6 +399,127 @@ intro
       expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o]</span>?');
     });
 
+    it('should get links catalog', () => {
+      const input = `https://asciidoctor.org[Asciidoctor]
+
+link:index.html[Docs]
+
+devel@discuss.arquillian.org
+
+mailto:hello@opendevise.com[OpenDevise]
+
+irc://irc.freenode.org/#fedora
+
+http://discuss.asciidoctor.org[Discuss Asciidoctor^]`;
+      const doc = asciidoctor.load(input, {'catalog_assets': true});
+      doc.convert();  // available only once the document has been converted
+      const linksCatalog = doc.getLinks();
+      expect(linksCatalog).to.have.members([
+        'https://asciidoctor.org',
+        'index.html',
+        'mailto:devel@discuss.arquillian.org',
+        'mailto:hello@opendevise.com',
+        'irc://irc.freenode.org/#fedora',
+        'http://discuss.asciidoctor.org'
+      ]);
+    });
+
+    it('should get images catalog when catalog_assets is enabled', () => {
+      const input = `= Title
+
+[#img-sunset]
+[caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
+image::sunset.jpg[Sunset,300,200]
+
+image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`;
+      const doc = asciidoctor.load(input, {catalog_assets: true});
+      const imagesCatalog = doc.getImages();
+      expect(imagesCatalog.length).to.equal(2);
+      expect(imagesCatalog[0].getTarget()).to.equal('sunset.jpg');
+      expect(imagesCatalog[1].getTarget()).to.equal('https://asciidoctor.org/images/octocat.jpg');
+      expect(imagesCatalog[1].getImagesDirectory()).to.be.undefined;
+    });
+
+    it('should not get images catalog when catalog_assets is enabled', () => {
+      const input = `= Title
+
+[#img-sunset]
+[caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
+image::sunset.jpg[Sunset,300,200]
+
+image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`;
+      const doc = asciidoctor.load(input);
+      const imagesCatalog = doc.getImages();
+      expect(imagesCatalog.length).to.equal(0);
+    });
+
+    it('should get refs catalog', () => {
+      const input = `= Title
+
+[#img-sunset]
+[caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
+image::sunset.jpg[Sunset,300,200]
+
+image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`;
+      const doc = asciidoctor.load(input);
+      const refsCatalog = doc.getRefs();
+      expect(refsCatalog['img-sunset'].getContext()).to.equal('image');
+      expect(refsCatalog['img-sunset'].getId()).to.equal('img-sunset');
+    });
+
+    it('should get ids catalog', () => {
+      const input = `= Title
+
+[#img-sunset]
+[caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
+image::sunset.jpg[Sunset,300,200]
+
+image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`;
+      const doc = asciidoctor.load(input);
+      const idsCatalog = doc.getIds();
+      expect(idsCatalog['img-sunset']).to.equal('[img-sunset]');
+    });
+
+    it('should get index terms', () => {
+      const input = `The Lady of the Lake, her arm clad in the purest shimmering samite,
+held aloft Excalibur from the bosom of the water,
+signifying by divine providence that I, ((Arthur)), 
+was to carry Excalibur (((Sword, Broadsword, Excalibur))). 
+That is why I am your king. Shut up! Will you shut up?!
+Burn her anyway! I'm not a witch.
+Look, my liege! We found them.
+
+indexterm2:[Lancelot] was one of the Knights of the Round Table. 
+indexterm:[knight, Knight of the Round Table, Lancelot]`;
+      const doc = asciidoctor.load(input);
+      doc.convert(); // available only once the document has been converted
+      const catalog = doc.getCatalog();
+      const indexTermsCatalog = doc.getIndexTerms();
+      expect(indexTermsCatalog.length).to.equal(4);
+      expect(indexTermsCatalog[0]).to.have.members(['Arthur']);
+      expect(indexTermsCatalog[1]).to.have.members(['Sword', 'Broadsword', 'Excalibur']);
+      expect(indexTermsCatalog[2]).to.have.members(['Lancelot']);
+      expect(indexTermsCatalog[3]).to.have.members(['knight', 'Knight of the Round Table', 'Lancelot']);
+    });
+
+    it('should get footnotes', () => {
+      const input = `The hail-and-rainbow protocol can be initiated at five levels: double, tertiary, supernumerary, supermassive, and apocalyptic party.footnote:[The double hail-and-rainbow level makes my toes tingle.]
+      A bold statement!footnoteref:[disclaimer,Opinions are my own.]
+
+      Another outrageous statement.footnoteref:[disclaimer]`;
+      const doc = asciidoctor.load(input);
+      doc.convert(); // available only once the document has been converted
+      expect(doc.hasFootnotes()).to.be.true;
+      const footnotes = doc.getFootnotes();
+      expect(footnotes.length).to.equal(2);
+      expect(footnotes[0].getText()).to.equal('The double hail-and-rainbow level makes my toes tingle.');
+      expect(footnotes[0].getIndex()).to.equal(1);
+      expect(footnotes[0].getId()).to.be.undefined;
+      expect(footnotes[1].getText()).to.equal('Opinions are my own.');
+      expect(footnotes[1].getIndex()).to.equal(2);
+      expect(footnotes[1].getId()).to.equal('disclaimer');
+    });
+
     it('should be able to find blocks', () => {
       const doc = asciidoctor.loadFile(resolveFixture('documentblocks.adoc'));
       const quoteBlocks = doc.findBy((b) => b.getStyle() === 'quote');

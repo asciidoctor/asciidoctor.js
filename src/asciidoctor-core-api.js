@@ -85,7 +85,7 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
       Opal.send(this, Opal.find_super_dispatcher(this, func.name, func));
     } else {
       // Bind the initialize function to super();
-      var argumentsList =  Array.from(arguments);
+      var argumentsList = Array.from(arguments);
       for (var i = 0; i < argumentsList.length; i++) {
         // convert all (Opal) Hash arguments to JSON.
         if (typeof argumentsList[i] === 'object') {
@@ -905,7 +905,82 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
  * @namespace
  * @extends AbstractBlock
  */
+
 var Document = Opal.Asciidoctor.Document;
+
+/**
+ * Returns a JSON {Object} of ids captured by the processor.
+ *
+ * @returns {Object} - returns a JSON {Object} of ids in the document.
+ * @memberof Document
+ */
+Document.prototype.getIds = function () {
+  return fromHash(this.catalog.$$smap.ids);
+};
+
+/**
+ * Returns a JSON {Object} of references captured by the processor.
+ *
+ * @returns {Object} - returns a JSON {Object} of {AbstractNode} in the document.
+ * @memberof Document
+ */
+Document.prototype.getRefs = function () {
+  return fromHash(this.catalog.$$smap.refs);
+};
+
+/**
+ * Returns an {Array} of Document/ImageReference} captured by the processor.
+ *
+ * @returns {Array} - returns an {Array} of {Document/ImageReference} in the document.
+ * Will return an empty array if the option "catalog_assets: true" was not defined on the processor.
+ * @memberof Document
+ */
+Document.prototype.getImages = function () {
+  return this.catalog.$$smap.images;
+};
+
+/**
+ * Returns an {Array} of index terms captured by the processor.
+ *
+ * @returns {Array} - returns an {Array} of index terms in the document.
+ * Will return an empty array if the function was called before the document was converted.
+ * @memberof Document
+ */
+Document.prototype.getIndexTerms = function () {
+  return this.catalog.$$smap.indexterms;
+};
+
+/**
+ * Returns an {Array} of links captured by the processor.
+ *
+ * @returns {Array} - returns an {Array} of links in the document.
+ * Will return an empty array if:
+ * - the function was called before the document was converted
+ * - the option "catalog_assets: true" was not defined on the processor
+ * @memberof Document
+ */
+Document.prototype.getLinks = function () {
+  return this.catalog.$$smap.links;
+};
+
+/**
+ * @returns {boolean} - returns true if the document has footnotes otherwise false
+ * @memberof Document
+ */
+Document.prototype.hasFootnotes = function () {
+  return this['$footnotes?']();
+};
+
+/**
+ * Returns an {Array} of {Document/Footnote} captured by the processor.
+ *
+ * @returns {Array} - returns an {Array} of {Document/Footnote} in the document.
+ * Will return an empty array if the function was called before the document was converted.
+ * @memberof Document
+ */
+Document.prototype.getFootnotes = function () {
+  return this.$footnotes();
+};
 
 /**
  * @returns {string} - returns the level-0 section
@@ -973,20 +1048,6 @@ Document.prototype.getSourceLines = function () {
  */
 Document.prototype.isNested = function () {
   return this['$nested?']();
-};
-
-/**
- * @memberof Document
- */
-Document.prototype.hasFootnotes = function () {
-  return this['$footnotes?']();
-};
-
-/**
- * @memberof Document
- */
-Document.prototype.getFootnotes = function () {
-  return this.$footnotes();
 };
 
 /**
@@ -1133,6 +1194,66 @@ Document.prototype.setHeaderAttribute = function (name, value, overwrite) {
  */
 Document.prototype.getAuthors = function () {
   return this.$authors();
+};
+
+// Document.Footnote API
+
+/**
+ * @namespace
+ * @module Document/Footnote
+ */
+var Footnote = Document.Footnote;
+
+/**
+ * @memberof Document/Footnote
+ * @returns {number} - returns the footnote's index
+ */
+Footnote.prototype.getIndex = function () {
+  var index = this.$$data.index;
+  return index === Opal.nil ? undefined : index;
+};
+
+/**
+ * @memberof Document/Footnote
+ * @returns {string} - returns the footnote's id
+ */
+Footnote.prototype.getId = function () {
+  var id = this.$$data.id;
+  return id === Opal.nil ? undefined : id;
+};
+
+/**
+ * @memberof Document/Footnote
+ * @returns {string} - returns the footnote's text
+ */
+Footnote.prototype.getText = function () {
+  var text = this.$$data.text;
+  return text === Opal.nil ? undefined : text;
+};
+
+// Document.ImageReference API
+
+/**
+ * @namespace
+ * @module Document/ImageReference
+ */
+var ImageReference = Document.ImageReference;
+
+/**
+ * @memberof Document/ImageReference
+ * @returns {string} - returns the image's target
+ */
+ImageReference.prototype.getTarget = function () {
+  return this.$$data.target;
+};
+
+/**
+ * @memberof Document/ImageReference
+ * @returns {string} - returns the image's directory (imagesdir attribute)
+ */
+ImageReference.prototype.getImagesDirectory = function () {
+  var value = this.$$data.imagesdir;
+  return value === Opal.nil ? undefined : value;
 };
 
 // Document.Author API
