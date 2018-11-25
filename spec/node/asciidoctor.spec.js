@@ -70,6 +70,13 @@ describe('Node.js', () => {
 
   if (asciidoctor.LoggerManager) {
     describe('Logger', () => {
+      it('should be able to get logger\'s info', () => {
+        const defaultLogger = asciidoctor.LoggerManager.getLogger();
+        expect(defaultLogger.getLevel()).to.equal(2);
+        expect(defaultLogger.getFormatter()['$$class'].name).to.equal('$BasicFormatter');
+        expect(defaultLogger.getProgramName()).to.equal('asciidoctor');
+        expect(defaultLogger.getMaxSeverity()).to.equal(3);
+      });
       it('should send an error message if part has no section', () => {
         const input = `= Book
 :doctype: book
@@ -111,13 +118,6 @@ intro
         } finally {
           asciidoctor.LoggerManager.setLogger(defaultLogger);
         }
-      });
-      it('should be able to get logger\'s info', () => {
-        const defaultLogger = asciidoctor.LoggerManager.getLogger();
-        expect(defaultLogger.getLevel()).to.equal(2);
-        expect(defaultLogger.getFormatter()['$$class'].name).to.equal('$BasicFormatter');
-        expect(defaultLogger.getProgramName()).to.equal('asciidoctor');
-        expect(defaultLogger.getMaxSeverity()).to.equal(2);
       });
       it('should be able to set the logger\'s program name', () => {
         const defaultLogger = asciidoctor.LoggerManager.getLogger();

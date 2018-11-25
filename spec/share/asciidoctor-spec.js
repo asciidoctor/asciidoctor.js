@@ -694,7 +694,7 @@ paragraph 3
       });
     });
 
-    describe('Parsing', function () {
+    describe('Converting', function () {
       it('should convert a simple document with a title 2', function () {
         const html = asciidoctor.convert('== Test');
         expect(html).to.include('<h2 id="_test">Test</h2>');
@@ -744,6 +744,17 @@ paragraph 3
         const options = { attributes: 'icons=font@' };
         const html = asciidoctor.convert('= Document\n\nThis is a simple document.\n\n== Section\n\nCAUTION: This is important!', options);
         expect(html).to.include('<i class="fa icon-caution" title="Caution"></i>');
+      });
+
+      it('should convert a document with out of sequence section title', function () {
+        const input = `= Document
+:sectnums:
+
+= Introduction to Asciidoctor
+
+=== Asciidoctor's most notable benefits`;
+        const html = asciidoctor.convert(input);
+        expect(html).to.include('<h3 id="_asciidoctors_most_notable_benefits">.1. Asciidoctor&#8217;s most notable benefits</h3>');
       });
     });
 
