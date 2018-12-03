@@ -10,6 +10,7 @@
 :uri-nvm: https://github.com/creationix/nvm
 :uri-asciidoctor: http://asciidoctor.org
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
+:uri-mdn-string: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type
 
 This guide will give you all the necessary information you need to become a successful Asciidoctor.js developer and code contributor!
 
@@ -53,7 +54,7 @@ To build Asciidoctor.js, simply run the npm `build` script from the root of the 
  $ npm run build
 
 NOTE: The build task will make some minor code changes on Asciidoctor Ruby code.
-As you may know, [strings are immutable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) in JavaScript, so we need to replace the `gsub!` and `sub!` methods.
+As you may know, {uri-mdn-string}[strings are immutable] in JavaScript, so we need to replace the `gsub!` and `sub!` methods.
 These changes are made at build time to keep the Ruby code as fast as possible.
 
 This command produces a file named `asciidoctor.js` in the [path]_build_ directory.
