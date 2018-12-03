@@ -41,7 +41,7 @@ You can use Asciidoctor.js either for back-end development using {uri-nodejs}[No
 
     $ npm install asciidoctor.js --save
 
-Once the package installed, you can add the following `script` tag to your HTML page:
+Once the package is installed, you can add the following `script` tag to your HTML page:
 
 ```html
 <script src="node_modules/asciidoctor.js/dist/browser/asciidoctor.js"></script>
