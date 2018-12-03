@@ -15,7 +15,7 @@ This guide will give you all the necessary information you need to become a succ
 
 == Introduction
 
-{uri-repo}[Asciidoctor.js] is direct port of {uri-asciidoctor}[Asciidoctor] from Ruby to JavaScript using {uri-opal}[Opal], a Ruby-to-JavaScript transpiler.
+{uri-repo}[Asciidoctor.js] is a direct port of {uri-asciidoctor}[Asciidoctor] from Ruby to JavaScript using {uri-opal}[Opal], a Ruby-to-JavaScript transpiler.
 The project includes a npm build script that executes the Opal compiler on the Asciidoctor source code to produce the Asciidoctor.js scripts.
 
 Opal parses the Ruby code and any required libraries, then rewrites the code into JavaScript under the Opal namespace.
@@ -53,7 +53,7 @@ To build Asciidoctor.js, simply run the npm `build` script from the root of the 
  $ npm run build
 
 NOTE: The build task will make some minor code changes on Asciidoctor Ruby code.
-As you may know String are immutable in JavaScript, so we need to replace `gsub!` and `sub!` methods.
+As you may know, Strings are immutable in JavaScript, so we need to replace the `gsub!` and `sub!` methods.
 These changes are made at build time to keep the Ruby code as fast as possible.
 
 This command produces a file named `asciidoctor.js` in the [path]_build_ directory.
