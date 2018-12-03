@@ -53,7 +53,7 @@ To build Asciidoctor.js, simply run the npm `build` script from the root of the 
  $ npm run build
 
 NOTE: The build task will make some minor code changes on Asciidoctor Ruby code.
-As you may know, Strings are immutable in JavaScript, so we need to replace the `gsub!` and `sub!` methods.
+As you may know, [strings are immutable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) in JavaScript, so we need to replace the `gsub!` and `sub!` methods.
 These changes are made at build time to keep the Ruby code as fast as possible.
 
 This command produces a file named `asciidoctor.js` in the [path]_build_ directory.
