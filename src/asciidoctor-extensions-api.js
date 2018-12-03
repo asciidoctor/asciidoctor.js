@@ -401,6 +401,14 @@ BlockProcessor.prototype.getName = function () {
 };
 
 /**
+ * @memberof Extensions/BlockProcessor
+ */
+BlockProcessor.prototype.parseContentAs = function (value) {
+  this.$parse_content_as(value);
+};
+
+
+/**
  * @namespace
  * @module Extensions/BlockMacroProcessor
  */
@@ -415,6 +423,13 @@ BlockMacroProcessor.prototype.getName = function () {
 };
 
 /**
+ * @memberof Extensions/BlockMacroProcessor
+ */
+BlockMacroProcessor.prototype.parseContentAs = function (value) {
+  this.$parse_content_as(value);
+};
+
+/**
  * @namespace
  * @module Extensions/InlineMacroProcessor
  */
@@ -426,6 +441,13 @@ var InlineMacroProcessor = Extensions.InlineMacroProcessor;
 InlineMacroProcessor.prototype.getName = function () {
   var name = this.name;
   return name === Opal.nil ? undefined : name;
+};
+
+/**
+ * @memberof Extensions/InlineMacroProcessor
+ */
+InlineMacroProcessor.prototype.parseContentAs = function (value) {
+  this.$parse_content_as(value);
 };
 
 /**
