@@ -1,6 +1,5 @@
 .xref:index.adoc[Extend & Customize]
 * xref:stylesheets/index.adoc[Stylesheets]
-//* xref:templates.adoc[Templates]
 * xref:extensions/index.adoc[Extensions]
 ** xref:extensions/register.adoc[Register Extensions]
 ** xref:extensions/preprocessor.adoc[Preprocessor]
@@ -12,3 +11,4 @@
 ** xref:extensions/inline-macro-processor.adoc[Inline Macro Processor]
 ** xref:extensions/include-processor.adoc[Include Processor]
 ** xref:extensions/compile-ruby-extension.adoc[Compile Ruby Extension]
+* xref:converter/custom-converter.adoc[Custom Converter]
