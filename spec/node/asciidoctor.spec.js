@@ -885,6 +885,16 @@ indexterm:[knight, Knight of the Round Table, Lancelot]`;
           }
         });
 
+        it('should be able to process a custom literal block', () => {
+          try {
+            require('../share/extensions/chart-block.js');
+            const result = asciidoctor.convert(fs.readFileSync(resolveFixture('chart-block-ex.adoc')));
+            expect(result).to.contain('<div class="chart" data-chart-labels="{foo},{bar},{qux}" data-chart-series-0="28,48,40" data-chart-series-1="65,59,80"></div>');
+          } finally {
+            asciidoctor.Extensions.unregisterAll();
+          }
+        });
+
         it('should be able to process custom block on multiple contexts', () => {
           try {
             asciidoctor.Extensions.register(function () {
