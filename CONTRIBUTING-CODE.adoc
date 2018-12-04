@@ -11,6 +11,7 @@
 :uri-asciidoctor: http://asciidoctor.org
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
 :uri-mdn-string: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type
+:uri-jdk8: https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 
 This guide will give you all the necessary information you need to become a successful Asciidoctor.js developer and code contributor!
 
@@ -29,6 +30,7 @@ To interact with the generated code, you either invoke the JavaScript APIs direc
 To build Asciidoctor.js, you'll need some tools:
 
 * {uri-nodejs}[Node.js] >= 8 and npm (we recommend {uri-nvm}[nvm] to manage multiple active Node.js versions)
+* {uri-jdk8}[Java SE Development Kit 8] to run the tests suite against Nashorn
 
 Start by cloning the source from GitHub:
 
@@ -61,6 +63,23 @@ This command produces a file named `asciidoctor.js` in the [path]_build_ directo
 This file contains everything you need to use Asciidoctor in a JavaScript environment.
 
 You'll see this script in action when you run the examples, described next.
+
+==== Building against a release
+
+By default Asciidoctor.js will build against the master branch of Asciidoctor (Ruby).
+If you want to build against a release of Asciidoctor, you will need to define the `ASCIIDOCTOR_CORE_VERSION` environment variable.
+
+For instance to build against Asciidoctor (Ruby) v1.5.8 use:
+
+ $ ASCIIDOCTOR_CORE_VERSION=v1.5.8 npm run build
+
+==== Using "quick" mode
+
+By default the build will run the whole tests suite but if you want to quickly iterate on your code, we recommend to use the task `build:quick`:
+
+ $ npm run build:quick
+
+This task will run only the tests against a Node.js environment.
 
 === Building and running the examples
 
