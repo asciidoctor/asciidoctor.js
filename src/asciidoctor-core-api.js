@@ -843,10 +843,19 @@ AbstractNode.prototype.readContents = function (target, options) {
 };
 
 /**
+ * Read the contents of the file at the specified path.
+ * This method assumes that the path is safe to read.
+ * It checks that the file is readable before attempting to read it
+ * @param path - the {String} path from which to read the contents
+ * @param options - a JSON {Object} of options to control processing (default: {})
+ * - warn_on_failure a {boolean} that controls whether a warning is issued if the file cannot be read (default: false)
+ * - normalize a {boolean} that controls whether the lines are normalized and coerced to UTF-8 (default: false)
+ * @returns the {String} content of the file at the specified path, or undefined if the file does not exist.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.readAsset = function (path, options) {
-  return this.$read_asset(path, toHash(options));
+  var result = this.$read_asset(path, toHash(options));
+  return result === Opal.nil ? undefined : result;
 };
 
 /**

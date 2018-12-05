@@ -108,7 +108,7 @@ intro
         const memoryLogger = asciidoctor.MemoryLogger.$new();
         try {
           asciidoctor.LoggerManager.setLogger(memoryLogger);
-          const doc = asciidoctor.loadFile(resolveFixture('source-highlighter-coderay.adoc'), {safe: 'safe', to_file: false});
+          const doc = asciidoctor.loadFile(resolveFixture('source-highlighter-coderay.adoc'), { safe: 'safe', to_file: false });
           doc.convert();
           const errorMessage = memoryLogger.getMessages()[0];
           expect(errorMessage.getSeverity()).to.equal('WARN');
@@ -411,7 +411,7 @@ mailto:hello@opendevise.com[OpenDevise]
 irc://irc.freenode.org/#fedora
 
 http://discuss.asciidoctor.org[Discuss Asciidoctor^]`;
-      const doc = asciidoctor.load(input, {'catalog_assets': true});
+      const doc = asciidoctor.load(input, { 'catalog_assets': true });
       doc.convert();  // available only once the document has been converted
       const linksCatalog = doc.getLinks();
       expect(linksCatalog).to.have.members([
@@ -432,7 +432,7 @@ http://discuss.asciidoctor.org[Discuss Asciidoctor^]`;
 image::sunset.jpg[Sunset,300,200]
 
 image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`;
-      const doc = asciidoctor.load(input, {catalog_assets: true});
+      const doc = asciidoctor.load(input, { catalog_assets: true });
       const imagesCatalog = doc.getImages();
       expect(imagesCatalog.length).to.equal(2);
       expect(imagesCatalog[0].getTarget()).to.equal('sunset.jpg');
@@ -1305,6 +1305,19 @@ header_attribute::foo[bar]`;
     });
   });
 
+  describe('Reading an asset', () => {
+    it('should return undefined if the file does not exist', () => {
+      const doc = asciidoctor.load('');
+      const notFound = doc.readAsset('404.adoc');
+      expect(notFound).to.be.undefined;
+    });
+    it('should return the string content of the file', () => {
+      const doc = asciidoctor.load('');
+      const content = doc.readAsset('spec/fixtures/include.adoc');
+      expect(content).to.equal('include content\n');
+    });
+  });
+
   describe('Registering converter', () => {
     it('should register a custom converter', () => {
       class DummyConverter {
@@ -1323,6 +1336,7 @@ header_attribute::foo[bar]`;
           return this.transforms[transform || node.node_name](node);
         }
       }
+
       asciidoctor.ConverterFactory.register(new DummyConverter(), ['dummy']);
       const options = { safe: 'safe', backend: 'dummy' };
       const result = asciidoctor.convert('content', options);
@@ -1369,6 +1383,7 @@ header_attribute::foo[bar]`;
           return this.baseConverter.convert(node, transform, opts);
         }
       }
+
       asciidoctor.ConverterFactory.register(new BlogConverter(), ['html5']);
       const options = { safe: 'safe', header_footer: true };
       const input = `= One Thing to Write the Perfect Blog Post
