@@ -55,12 +55,6 @@ if (Opal.const_get_relative([], "JAVASCRIPT_PLATFORM")["$=="]("node")) {
   } else {
     stylesheetsPath = File.$join(__dirname, "css");
   }
-} else if (Opal.const_get_relative([], "JAVASCRIPT_ENGINE")["$=="]("nashorn")) {
-  if (File.$basename(__DIR__) === "nashorn" && File.$basename(File.$dirname(__DIR__)) === "dist") {
-    stylesheetsPath = File.$join(File.$dirname(__DIR__), "css");
-  } else {
-    stylesheetsPath = File.$join(__DIR__, "css");
-  }
 } else {
   stylesheetsPath = "css";
 }
@@ -136,8 +130,6 @@ const generateUMD = (asciidoctorCoreTarget, environments) => {
     let target = `build/asciidoctor-${environment}.js`
     if (['node', 'electron'].includes(environment)) {
       templateFile = 'src/template-asciidoctor-node.js'
-    } else if (environment === 'nashorn') {
-      templateFile = 'src/template-asciidoctor-nashorn.js'
     } else {
       templateFile = 'src/template-asciidoctor-umd.js'
     }
@@ -170,7 +162,7 @@ module.exports = class Builder {
     this.benchmarkBuildDir = path.join('build', 'benchmark')
     this.examplesBuildDir = path.join('build', 'examples')
     this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625'
-    this.environments = ['umd', 'node', 'nashorn', 'graalvm', 'browser']
+    this.environments = ['umd', 'node', 'graalvm', 'browser']
     this.asciidoctorCoreTarget = path.join('build', 'asciidoctor-core.js')
   }
 

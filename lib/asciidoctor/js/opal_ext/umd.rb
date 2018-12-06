@@ -2,8 +2,7 @@
   var isNode = typeof process === 'object' && typeof process.versions === 'object' && process.browser != true,
       isElectron = typeof navigator === 'object' && typeof navigator.userAgent === 'string' && typeof navigator.userAgent.indexOf('Electron') !== -1,
       isBrowser = typeof window === 'object',
-      isNashorn = typeof Java === 'object' && Java.type,
-      isRhino = typeof java === 'object',
+      isGraalVM = typeof Polyglot === 'object' && Polyglot.import,
       isPhantomJS = typeof window === 'object' && typeof window.phantom === 'object',
       isWebWorker = typeof importScripts === 'function',
       isSpiderMonkey = typeof JSRuntime === 'object',
@@ -29,13 +28,9 @@
         framework = framework || 'electron';
       }
     }
-    else if (isNashorn) {
+    else if (isGraalVM) {
       platform = platform || 'java';
-      engine = engine || 'nashorn';
-    }
-    else if (isRhino) {
-      platform = platform || 'java';
-      engine = engine || 'rhino';
+      engine = engine || 'graalvm';
     }
     else if (isSpiderMonkey) {
       platform = platform || 'standalone';
@@ -70,9 +65,9 @@
     if (ioModule !== 'spidermonkey'
          && ioModule !== 'phantomjs'
          && ioModule !== 'node'
-         && ioModule !== 'java_nio'
+         && ioModule !== 'graalvm'
          && ioModule !== 'xmlhttprequest') {
-      throw new Error('Invalid IO module, `config.ioModule` must be one of: spidermonkey, phantomjs, node, java_nio or xmlhttprequest');
+      throw new Error('Invalid IO module, `config.ioModule` must be one of: spidermonkey, phantomjs, node, graalvm or xmlhttprequest');
     }
   } else {
     if (framework === 'spidermonkey') {
@@ -81,8 +76,8 @@
       ioModule = 'phantomjs';
     } else if (platform === 'node') {
       ioModule = 'node';
-    } else if (engine === 'nashorn') {
-      ioModule = 'java_nio'
+    } else if (engine === 'graalvm') {
+      ioModule = 'graalvm'
     } else if (platform === 'browser' || typeof XmlHTTPRequest !== 'undefined') {
       ioModule = 'xmlhttprequest'
     } else {
@@ -96,10 +91,9 @@ JAVASCRIPT_PLATFORM = %x(platform)
 JAVASCRIPT_ENGINE = %x(engine)
 JAVASCRIPT_FRAMEWORK = %x(framework)
 
-if JAVASCRIPT_ENGINE == 'nashorn' || JAVASCRIPT_IO_MODULE == 'java_nio'
-  require 'asciidoctor/js/opal_ext/nashorn/dir'
-  require 'asciidoctor/js/opal_ext/nashorn/file'
-  require 'asciidoctor/js/opal_ext/nashorn/io'
+if JAVASCRIPT_ENGINE == 'graalvm' || JAVASCRIPT_IO_MODULE == 'graalvm'
+  require 'asciidoctor/js/opal_ext/graalvm/dir'
+  require 'asciidoctor/js/opal_ext/graalvm/file'
 end
 if JAVASCRIPT_FRAMEWORK == 'electron'
   require 'asciidoctor/js/opal_ext/electron/io'

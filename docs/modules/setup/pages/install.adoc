@@ -57,32 +57,6 @@ import Asciidoctor from 'asciidoctor.js';
 const asciidoctor = Asciidoctor();
 ```
 
-== Nashorn
-
-.app.js
-```js
-load('./node_modules/asciidoctor.js/dist/nashorn/asciidoctor.js');
-
-var asciidoctor = Asciidoctor();
-```
-
-.AsciidoctorNashorn.java
-```java
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import java.io.FileReader;
-import java.io.File;
-
-public class AsciidoctorNashorn {
-
-  public static void main(String... args) throws Throwable {
-    ScriptEngineManager engineManager = new ScriptEngineManager();
-    ScriptEngine engine = engineManager.getEngineByName("nashorn");
-    engine.eval(new FileReader("./app.js"));
-  }
-}
-```
-
 == GraalVM
 
 === Node.js application

@@ -35,7 +35,7 @@ const start = process.hrtime()
 
 builderModule.build()
   .then(() => runTest())
-  .then(() => copyToDist(['browser', 'nashorn', 'node', 'graalvm', 'umd']))
+  .then(() => copyToDist(['browser', 'node', 'graalvm', 'umd']))
   .then(() => {
     log.success(`Done in ${process.hrtime(start)[0]} s`)
   })
