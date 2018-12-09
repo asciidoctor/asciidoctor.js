@@ -587,7 +587,7 @@ paragraph 4
 paragraph 5`;
           const doc = asciidoctor.load(input);
           let stop = false;
-          const result = doc.findBy((candidate) =>  {
+          const result = doc.findBy((candidate) => {
             if (stop) {
               throw new asciidoctor.StopIteration();
             }
@@ -616,7 +616,7 @@ content
 content`;
           const doc = asciidoctor.load(input);
           let visitedLast = false;
-          const result = doc.findBy({'id': 'subsection'}, (candidate) => {
+          const result = doc.findBy({ 'id': 'subsection' }, (candidate) => {
             if (candidate.getId() === 'last') {
               visitedLast = true;
             }
@@ -625,9 +625,6 @@ content`;
           expect(result.length).to.equal(1);
           expect(visitedLast).to.be.false;
         });
-      });
-
-      describe('findBy', function () {
 
         it('should skip node and its children if block returns skip', function () {
           const input = `paragraph 1
@@ -671,6 +668,65 @@ paragraph 3
           });
           expect(result.length).to.equal(1);
           expect(result[0].getContext()).to.equal('example');
+        });
+      });
+
+      describe('Get list', function () {
+        it('should get the items of a list', function () {
+          const input = `
+* fist
+* second
+* third`;
+          const doc = asciidoctor.load(input);
+          const result = doc.findBy({context: 'ulist'});
+          expect(result.length).to.equal(1);
+          const list = result[0];
+          expect(list.hasItems()).to.be.true;
+          expect(list.getItems().length).to.equal(3);
+        });
+
+        it('should get and set the list item marker', function () {
+          const input = `
+* fist
+* second
+* third`;
+          const doc = asciidoctor.load(input);
+          const listItems = doc.findBy({context: 'list_item'});
+          expect(listItems.length).to.equal(3);
+          expect(listItems[0].getMarker()).to.equal('*');
+          expect(listItems[0].setMarker('.'));
+          expect(listItems[0].getMarker()).to.equal('.');
+        });
+
+        it('should get and set the list item text', function () {
+          const input = `
+* a
+* b
+* c`;
+          const doc = asciidoctor.load(input);
+          const listItems = doc.findBy({context: 'list_item'});
+          expect(listItems.length).to.equal(3);
+          expect(listItems[0].hasText()).to.be.true;
+          expect(listItems[0].getText()).to.equal('a');
+          expect(listItems[1].getText()).to.equal('b');
+          expect(listItems[2].getText()).to.equal('c');
+          expect(listItems[0].setText('x'));
+          expect(listItems[0].getText()).to.equal('x');
+        });
+
+
+        it('should get the list item parent', function () {
+          const input = `
+* Guillaume
+* Anthonny
+* Dan`;
+          const doc = asciidoctor.load(input);
+          const listItems = doc.findBy({context: 'list_item'});
+          expect(listItems.length).to.equal(3);
+          expect(listItems[0].getList().getItems().length).to.equal(3);
+          expect(listItems[0].getParent().getItems().length).to.equal(3);
+          expect(listItems[0].getList().getItems()[0].getText()).to.equal('Guillaume');
+          expect(listItems[0].getParent().getItems()[0].getText()).to.equal('Guillaume');
         });
       });
     });
