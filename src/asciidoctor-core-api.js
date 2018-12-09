@@ -3,7 +3,7 @@
  * @private
  */
 var toHash = function (object) {
-  return object && !('$$smap' in object) ? Opal.hash(object) : object;
+  return object && !object.$$is_hash ? Opal.hash2(Object.keys(object), object) : object;
 };
 
 /**
@@ -843,10 +843,19 @@ AbstractNode.prototype.readContents = function (target, options) {
 };
 
 /**
+ * Read the contents of the file at the specified path.
+ * This method assumes that the path is safe to read.
+ * It checks that the file is readable before attempting to read it
+ * @param path - the {String} path from which to read the contents
+ * @param options - a JSON {Object} of options to control processing (default: {})
+ * - warn_on_failure a {boolean} that controls whether a warning is issued if the file cannot be read (default: false)
+ * - normalize a {boolean} that controls whether the lines are normalized and coerced to UTF-8 (default: false)
+ * @returns the {String} content of the file at the specified path, or undefined if the file does not exist.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.readAsset = function (path, options) {
-  return this.$read_asset(path, toHash(options));
+  var result = this.$read_asset(path, toHash(options));
+  return result === Opal.nil ? undefined : result;
 };
 
 /**
@@ -1657,6 +1666,16 @@ Inline.prototype.getTarget = function () {
 var List = Opal.Asciidoctor.List;
 
 /**
+ * Checks if the {@link List} contains any child {@link ListItem}.
+ *
+ * @memberof List
+ * @returns {boolean} - whether the {@link List} has child {@link ListItem}.
+ */
+List.prototype.hasItems = function () {
+  return this['$items?']();
+};
+
+/**
  * Get the Array of {@link ListItem} nodes for this {@link List}.
  *
  * @memberof List
@@ -1672,23 +1691,69 @@ List.prototype.getItems = function () {
 var ListItem = Opal.Asciidoctor.ListItem;
 
 /**
- * Get the converted String text of this ListItem node.
+ * Get the converted String text of this {@link ListItem} node.
  *
  * @memberof ListItem
- * @returns {string} - returns the converted String text for this ListItem node.
+ * @returns {string} - returns the converted String text for this {@link ListItem} node.
  */
 ListItem.prototype.getText = function () {
   return this.$text();
 };
 
 /**
- * Set the String source text of this ListItem node.
+ * Set the String source text of this {@link ListItem} node.
  *
  * @memberof ListItem
  */
 ListItem.prototype.setText = function (text) {
-  return this.text = text;
+  return this['$text='](text);
 };
+
+/**
+ * A convenience method that checks whether the text of this {@link ListItem} is not blank (i.e. not undefined or empty string).
+ *
+ * @memberof ListItem
+ * @returns {boolean} - whether the text is not blank
+ */
+ListItem.prototype.hasText = function () {
+  return this['$text?']();
+};
+
+/**
+ * Get the {string} used to mark this {@link ListItem}.
+ *
+ * @memberof ListItem
+ */
+ListItem.prototype.getMarker = function () {
+  return this.marker;
+};
+
+/**
+ * Set the {string} used to mark this {@link ListItem}.
+ *
+ * @param {string} marker - the {string} used to mark this {@link ListItem}
+ * @memberof ListItem
+ */
+ListItem.prototype.setMarker = function (marker) {
+  return this.marker = marker;
+};
+
+/**
+ * Get the {@link List} to which this {@link ListItem} is attached.
+ *
+ * @memberof ListItem
+ * @returns {List} - returns the {@link List} object to which this {@link ListItem} is attached,
+ * or undefined if this node has no parent.
+ */
+ListItem.prototype.getList = function () {
+  return this.$list();
+};
+
+/**
+ * @memberof ListItem
+ * @see {@link ListItem#getList}
+ */
+ListItem.prototype.getParent = ListItem.prototype.getList;
 
 // Reader API
 
