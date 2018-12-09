@@ -3,7 +3,7 @@
  * @private
  */
 var toHash = function (object) {
-  return object && !('$$smap' in object) ? Opal.hash(object) : object;
+  return object && !object.$$is_hash ? Opal.hash2(Object.keys(object), object) : object;
 };
 
 /**
