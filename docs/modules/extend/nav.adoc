@@ -12,3 +12,4 @@
 ** xref:extensions/inline-macro-processor.adoc[Inline Macro Processor]
 ** xref:extensions/include-processor.adoc[Include Processor]
 ** xref:extensions/compile-ruby-extension.adoc[Compile Ruby Extension]
+** xref:extensions/ecosystem.adoc[Extensions ecosystem]

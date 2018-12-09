@@ -1,0 +1,22 @@
+= Extensions ecosystem
+:uri-twemoji: https://blog.twitter.com/developer/en_us/a/2014/open-sourcing-twitter-emoji-for-everyone.html
+:uri-plantuml-server: https://github.com/plantuml/plantuml-server
+
+:uri-ext-interactive-runner-gh: https://github.com/oncletom/asciidoctor-extension-interactive-runner
+:uri-ext-plantuml-gh: https://github.com/eshepelyuk/asciidoctor-plantuml.js
+:uri-ext-emoji-gh: https://github.com/mogztter/asciidoctor-emoji
+
+Here's a list of extensions provided by the awesome community:
+
+Interative runner::
+Transform Asciidoc code listings into interactive playgrounds which run in the browser.
+Simply add the `%interactive` option to your `[source]` block. +
+{uri-ext-interactive-runner-gh}
+
+PlantUML::
+Render PlantUML, Ditaa and Graphiz (DOT) diagrams as PNG or SVG using a {uri-plantuml-server}[PlantUML server]. +
+{uri-ext-plantuml-gh}
+
+Emoji::
+Inline macro to render `emoji:heart[]` as an `<img>` that points to a remote SVG using {uri-twemoji}[Twemoji from Twitter]. +
+{uri-ext-emoji-gh}
