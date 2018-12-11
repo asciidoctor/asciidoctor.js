@@ -1,18 +1,19 @@
-var Extensions = Opal.Asciidoctor.Extensions;
+/* global Opal */
+const Extensions = Opal.Asciidoctor.Extensions
 
 Extensions.register(function () {
   this.inlineMacro('smiley', function () {
-    var self = this;
+    var self = this
     self.process(function (parent, target) {
-      var text;
+      let text
       if (target === 'happy') {
-        text = ':D';
+        text = ':D'
       } else if (target === 'wink') {
-        text = ';)';
+        text = ';)'
       } else {
-        text = ':)';
+        text = ':)'
       }
-      return self.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert();
-    });
-  });
-});
+      return self.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert()
+    })
+  })
+})

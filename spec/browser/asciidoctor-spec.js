@@ -1,29 +1,30 @@
+/* global it, describe, mocha, chai, Asciidoctor, mochaOpts, shareSpec, includeHttpsSpec, includeFileSpec */
 // bootstrap
 (async () => {
-  let reporter;
+  let reporter
   if (typeof mochaOpts === 'function') {
-    reporter = await mochaOpts().reporter;
+    reporter = await mochaOpts().reporter
   } else {
-    reporter = 'html';
+    reporter = 'html'
   }
   mocha.setup({
     ui: 'bdd',
     ignoreLeaks: true,
     reporter: reporter
-  });
+  })
 
-  const expect = chai.expect;
-  const asciidoctor = Asciidoctor({runtime: {platform: 'browser'}});
-  const parts = window.location.href.split('/'); // break the string into an array
-  parts.pop(); parts.pop(); parts.pop();
-  const baseDir = parts.join('/');
+  const expect = chai.expect
+  const asciidoctor = Asciidoctor({ runtime: { platform: 'browser' } })
+  const parts = window.location.href.split('/') // break the string into an array
+  parts.pop(); parts.pop(); parts.pop()
+  const baseDir = parts.join('/')
   const testOptions = {
     platform: 'Browser',
     baseDir: baseDir
-  };
-  shareSpec(testOptions, asciidoctor, expect);
-  includeHttpsSpec(testOptions, asciidoctor, expect);
-  includeFileSpec(testOptions, asciidoctor, expect);
+  }
+  shareSpec(testOptions, asciidoctor, expect)
+  includeHttpsSpec(testOptions, asciidoctor, expect)
+  includeFileSpec(testOptions, asciidoctor, expect)
 
   describe('Browser', function () {
     describe('Include', function () {
@@ -36,22 +37,18 @@
       });
       */
       it('Should include file with an absolute path (base_dir is explicitly defined)', function () {
-        const opts = {safe: 'safe', base_dir: testOptions.baseDir};
-        const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts);
-        expect(html).to.include('include content');
-      });
-    });
-  });
+        const opts = { safe: 'safe', base_dir: testOptions.baseDir }
+        const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts)
+        expect(html).to.include('include content')
+      })
+    })
+  })
 
   mocha.run(function (failures) {
     if (failures > 0) {
-      // eslint-disable-next-line no-console
-      console.error('%d failures', failures);
+      console.error('%d failures', failures)
     }
-  });
-
+  })
 })().catch(err => {
-  // eslint-disable-next-line no-console
-  console.error('Unable to start the browser tests suite: ' + err);
-});
-
+  console.error('Unable to start the browser tests suite: ' + err)
+})

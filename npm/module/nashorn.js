@@ -1,98 +1,97 @@
-'use strict';
-const path = require('path');
-const childProcess = require('child_process');
-const log = require('bestikk-log');
+'use strict'
+const path = require('path')
+const childProcess = require('child_process')
+const log = require('bestikk-log')
 
-const isWin = () => /^win/.test(process.platform);
+const isWin = () => /^win/.test(process.platform)
 
 const nashornCheckConvert = (result, testName) => {
   if (result.indexOf('<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>') === -1) {
-    log.error(`${testName} failed, AsciiDoc source is not converted`);
-    process.stdout.write(result);
+    log.error(`${testName} failed, AsciiDoc source is not converted`)
+    process.stdout.write(result)
   }
   if (result.indexOf('Asciidoctor default stylesheet') === -1) {
-    log.error(`${testName} failed, default stylesheet not embedded in converted document`);
-    process.stdout.write(result);
+    log.error(`${testName} failed, default stylesheet not embedded in converted document`)
+    process.stdout.write(result)
   }
   if (result.indexOf('include content') === -1) {
-    log.error(`${testName} failed, include directive is not processed`);
-    process.stdout.write(result);
+    log.error(`${testName} failed, include directive is not processed`)
+    process.stdout.write(result)
   }
-};
+}
 
 const nashornJJSRun = (specName, jjsBin) => {
-  log.debug(`running ${specName}`);
-  const start = process.hrtime();
-  const result = childProcess.execSync(jjsBin + ' ' + specName).toString('utf8');
-  log.debug(`running ${specName} in ${process.hrtime(start)[0]}s`);
-  return result;
-};
+  log.debug(`running ${specName}`)
+  const start = process.hrtime()
+  const result = childProcess.execSync(jjsBin + ' ' + specName).toString('utf8')
+  log.debug(`running ${specName} in ${process.hrtime(start)[0]}s`)
+  return result
+}
 
 const nashornJavaCompileAndRun = (specName, className, javacBin, javaBin) => {
   // Compile
-  log.debug(`compiling ${specName} to build/`);
-  childProcess.execSync(`${javacBin} ./${specName} -d ./build`);
+  log.debug(`compiling ${specName} to build/`)
+  childProcess.execSync(`${javacBin} ./${specName} -d ./build`)
 
   // Run
-  log.debug(`running ${className}`);
-  const start = process.hrtime();
-  const result = childProcess.execSync(`${javaBin} -classpath ./build ${className}`).toString('utf8');
-  log.debug(`running ${className} in ${process.hrtime(start)[0] }s`);
-  return result;
-};
+  log.debug(`running ${className}`)
+  const start = process.hrtime()
+  const result = childProcess.execSync(`${javaBin} -classpath ./build ${className}`).toString('utf8')
+  log.debug(`running ${className} in ${process.hrtime(start)[0]}s`)
+  return result
+}
 
 const nashornRun = (name, jdkInstallDir) => {
-  log.task(`run against ${name}`);
+  log.task(`run against ${name}`)
 
-  const start = process.hrtime();
+  const start = process.hrtime()
 
-  let jjsBin;
-  let javacBin;
-  let javaBin;
+  let jjsBin
+  let javacBin
+  let javaBin
   if (jdkInstallDir) {
     if (isWin()) {
-      jdkInstallDir = jdkInstallDir.replace(/\\\//, '\\\\').replace(/\//, '\\\\');
+      jdkInstallDir = jdkInstallDir.replace(/\\\//, '\\\\').replace(/\//, '\\\\')
     }
-    const jdkBinDir = path.join(jdkInstallDir, 'bin');
-    jjsBin = path.join(jdkBinDir, 'jjs');
-    javacBin = path.join(jdkBinDir, 'javac');
-    javaBin = path.join(jdkBinDir, 'java');
+    const jdkBinDir = path.join(jdkInstallDir, 'bin')
+    jjsBin = path.join(jdkBinDir, 'jjs')
+    javacBin = path.join(jdkBinDir, 'javac')
+    javaBin = path.join(jdkBinDir, 'java')
   } else {
     // Should be available in PATH
-    jjsBin = 'jjs';
-    javacBin = 'javac';
-    javaBin = 'java';
+    jjsBin = 'jjs'
+    javacBin = 'javac'
+    javaBin = 'java'
   }
 
   if (isWin()) {
-    jjsBin = jjsBin + '.exe';
-    javacBin = javacBin + '.exe';
-    javaBin = javaBin + '.exe';
+    jjsBin = jjsBin + '.exe'
+    javacBin = javacBin + '.exe'
+    javaBin = javaBin + '.exe'
   }
 
   // jjs scripts
-  const basicSpec = 'spec/nashorn/basic.js';
-  const asciidoctorSpec = 'spec/nashorn/asciidoctor-convert.js';
+  const basicSpec = 'spec/nashorn/basic.js'
+  const asciidoctorSpec = 'spec/nashorn/asciidoctor-convert.js'
 
   // Nashorn classes
-  const basicNashornClassName = 'BasicJavascriptWithNashorn';
-  const basicNashornSpec = `spec/nashorn/${basicNashornClassName}.java`;
-  const asciidoctorNashornClassName = 'AsciidoctorConvertWithNashorn';
-  const asciidoctorNashornSpec = `spec/nashorn/${asciidoctorNashornClassName}.java`;
+  const basicNashornClassName = 'BasicJavascriptWithNashorn'
+  const basicNashornSpec = `spec/nashorn/${basicNashornClassName}.java`
+  const asciidoctorNashornClassName = 'AsciidoctorConvertWithNashorn'
+  const asciidoctorNashornSpec = `spec/nashorn/${asciidoctorNashornClassName}.java`
 
-  log.info('run Nashorn jjs');
-  nashornJJSRun(basicSpec, jjsBin);
-  const jjsResult = nashornJJSRun(asciidoctorSpec, jjsBin);
-  nashornCheckConvert(jjsResult, `run with ${name} jjs`);
+  log.info('run Nashorn jjs')
+  nashornJJSRun(basicSpec, jjsBin)
+  const jjsResult = nashornJJSRun(asciidoctorSpec, jjsBin)
+  nashornCheckConvert(jjsResult, `run with ${name} jjs`)
 
-  log.info('run Nashorn java');
-  nashornJavaCompileAndRun(basicNashornSpec, basicNashornClassName, javacBin, javaBin);
-  const javaResult = nashornJavaCompileAndRun(asciidoctorNashornSpec, asciidoctorNashornClassName, javacBin, javaBin);
-  nashornCheckConvert(javaResult, `run with ${name} java`);
-  log.success(`Done ${name} in ${process.hrtime(start)[0]}s`);
-};
-
+  log.info('run Nashorn java')
+  nashornJavaCompileAndRun(basicNashornSpec, basicNashornClassName, javacBin, javaBin)
+  const javaResult = nashornJavaCompileAndRun(asciidoctorNashornSpec, asciidoctorNashornClassName, javacBin, javaBin)
+  nashornCheckConvert(javaResult, `run with ${name} java`)
+  log.success(`Done ${name} in ${process.hrtime(start)[0]}s`)
+}
 
 module.exports = {
   nashornRun: nashornRun
-};
+}

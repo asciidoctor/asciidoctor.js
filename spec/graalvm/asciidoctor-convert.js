@@ -1,4 +1,5 @@
-var asciidoctor = Asciidoctor();
+/* global Asciidoctor */
+var asciidoctor = Asciidoctor()
 
 var data = '= asciidoctor.js, AsciiDoc in JavaScript\n' +
 'Doc Writer <docwriter@example.com>\n\n' +
@@ -9,9 +10,8 @@ var data = '= asciidoctor.js, AsciiDoc in JavaScript\n' +
 '* Asciidoctor\n' +
 '* Opal\n\n' +
 'NOTE: That\'s all she wrote!!!\n\n' +
-'include::spec/fixtures/include.adoc[]';
+'include::spec/fixtures/include.adoc[]'
 
-var options = {safe: 'server', header_footer: true, attributes: {showtitle: true}};
-var html = asciidoctor.convert(data, options);
-// eslint-disable-next-line no-console
-console.log(html);
+var options = { safe: 'server', header_footer: true, attributes: { showtitle: true } }
+var html = asciidoctor.convert(data, options)
+console.log(html)
