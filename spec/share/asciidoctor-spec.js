@@ -883,8 +883,8 @@ The 'reftext' attribute can an also be set by the 'BlockId' element.
       describe('Embed an image when data-uri is defined', function () {
         it('should embed a jpeg image', function () {
           const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
-          const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/litoria-chloris.jpg[]`, options)
-          expect(html).to.include('img src="data:image/jpg;base64,')
+          const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/litoria-chloris.jpeg[]`, options)
+          expect(html).to.include('img src="data:image/jpeg;base64,')
         })
         it('should embed an svg image', function () {
           const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }

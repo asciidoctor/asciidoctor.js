@@ -1,9 +1,7 @@
-dist: trusty
+dist: xenial
 conditions: v1
 
 language: node_js
-addons:
-  chrome: stable
 
 env:
 - ASCIIDOCTOR_CORE_VERSION=v2.0.0.rc.1

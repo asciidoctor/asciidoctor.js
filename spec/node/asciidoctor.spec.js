@@ -1565,7 +1565,7 @@ header_attribute::foo[bar]`
       const content = fs.readFileSync(path.resolve(__dirname, '../fixtures/image.adoc'), 'utf8')
       const html = asciidoctor.convert(content, options)
       expect(html).to.contain('French frog')
-      expect(html).to.contain('data:image/jpg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/7SMwU')
+      expect(html).to.contain('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/7SMwU')
     })
 
     it('should be able to convert a buffer', () => {
