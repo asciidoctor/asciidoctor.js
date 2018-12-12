@@ -1,3 +1,4 @@
+/* global Opal, fromHash, toHash, initializeClass */
 // Extensions API
 
 /**
@@ -5,19 +6,19 @@
  */
 var toBlock = function (block) {
   // arity is a mandatory field
-  block.$$arity = block.length;
-  return block;
-};
+  block.$$arity = block.length
+  return block
+}
 
 var registerExtension = function (registry, type, processor, name) {
   if (typeof processor === 'object' || processor.$$is_class) {
     // processor is an instance or a class
-    return registry['$' + type](processor, name);
+    return registry['$' + type](processor, name)
   } else {
     // processor is a function/lambda
-    return Opal.send(registry, type, name && [name], toBlock(processor));
+    return Opal.send(registry, type, name && [name], toBlock(processor))
   }
-};
+}
 
 /**
  * @namespace
@@ -56,10 +57,10 @@ var registerExtension = function (registry, type, processor, name) {
  *   });
  * });
  */
-var Extensions = Opal.const_get_qualified(Opal.Asciidoctor, 'Extensions');
+var Extensions = Opal.const_get_qualified(Opal.Asciidoctor, 'Extensions')
 
 // Alias
-Opal.Asciidoctor.Extensions = Extensions;
+Opal.Asciidoctor.Extensions = Extensions
 
 /**
  * Create a new {@link Extensions/Registry}.
@@ -70,40 +71,40 @@ Opal.Asciidoctor.Extensions = Extensions;
  */
 Extensions.create = function (name, block) {
   if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'build_registry', null, toBlock(name));
+    return Opal.send(this, 'build_registry', null, toBlock(name))
   } else if (typeof block === 'function') {
-    return Opal.send(this, 'build_registry', [name], toBlock(block));
+    return Opal.send(this, 'build_registry', [name], toBlock(block))
   } else {
-    return this.$build_registry();
+    return this.$build_registry()
   }
-};
+}
 
 /**
  * @memberof Extensions
  */
 Extensions.register = function (name, block) {
   if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'register', null, toBlock(name));
+    return Opal.send(this, 'register', null, toBlock(name))
   } else {
-    return Opal.send(this, 'register', [name], toBlock(block));
+    return Opal.send(this, 'register', [name], toBlock(block))
   }
-};
+}
 
 /**
  * Get statically-registerd extension groups.
  * @memberof Extensions
  */
 Extensions.getGroups = function () {
-  return fromHash(this.$groups());
-};
+  return fromHash(this.$groups())
+}
 
 /**
  * Unregister all statically-registered extension groups.
  * @memberof Extensions
  */
 Extensions.unregisterAll = function () {
-  this.$unregister_all();
-};
+  this.$unregister_all()
+}
 
 /**
  * Unregister the specified statically-registered extension groups.
@@ -114,135 +115,135 @@ Extensions.unregisterAll = function () {
  * @memberof Extensions
  */
 Extensions.unregister = function () {
-  var names = Array.prototype.concat.apply([], arguments);
-  var groups = this.$groups();
-  var groupNameIdx = {};
+  var names = Array.prototype.concat.apply([], arguments)
+  var groups = this.$groups()
+  var groupNameIdx = {}
   for (var i = 0, groupSymbolNames = groups.$$keys; i < groupSymbolNames.length; i++) {
-    var groupSymbolName = groupSymbolNames[i];
-    groupNameIdx[groupSymbolName.toString()] = groupSymbolName;
+    var groupSymbolName = groupSymbolNames[i]
+    groupNameIdx[groupSymbolName.toString()] = groupSymbolName
   }
   for (var j = 0; j < names.length; j++) {
-    var groupStringName = names[j];
-    if (groupStringName in groupNameIdx) Opal.hash_delete(groups, groupNameIdx[groupStringName]);
+    var groupStringName = names[j]
+    if (groupStringName in groupNameIdx) Opal.hash_delete(groups, groupNameIdx[groupStringName])
   }
-};
+}
 
 /**
  * @namespace
  * @module Extensions/Registry
  */
-var Registry = Extensions.Registry;
+var Registry = Extensions.Registry
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.prototype.getGroups = Extensions.getGroups;
+Registry.prototype.getGroups = Extensions.getGroups
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.prototype.unregisterAll = function () {
-  this.groups = Opal.hash();
-};
+  this.groups = Opal.hash()
+}
 
 /**
  * @memberof Extensions/Registry
  */
-Registry.prototype.unregister = Extensions.unregister;
+Registry.prototype.unregister = Extensions.unregister
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.prototype.prefer = function (name, processor) {
   if (arguments.length === 1) {
-    processor = name;
-    name = null;
+    processor = name
+    name = null
   }
   if (typeof processor === 'object' || processor.$$is_class) {
     // processor is an instance or a class
-    return this['$prefer'](name, processor);
+    return this['$prefer'](name, processor)
   } else {
     // processor is a function/lambda
-    return Opal.send(this, 'prefer', name && [name], toBlock(processor));
+    return Opal.send(this, 'prefer', name && [name], toBlock(processor))
   }
-};
+}
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.prototype.block = function (name, processor) {
   if (arguments.length === 1) {
-    processor = name;
-    name = null;
+    processor = name
+    name = null
   }
-  return registerExtension(this, 'block', processor, name);
-};
+  return registerExtension(this, 'block', processor, name)
+}
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.prototype.inlineMacro = function (name, processor) {
   if (arguments.length === 1) {
-    processor = name;
-    name = null;
+    processor = name
+    name = null
   }
-  return registerExtension(this, 'inline_macro', processor, name);
-};
+  return registerExtension(this, 'inline_macro', processor, name)
+}
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.prototype.includeProcessor = function (name, processor) {
   if (arguments.length === 1) {
-    processor = name;
-    name = null;
+    processor = name
+    name = null
   }
-  return registerExtension(this, 'include_processor', processor, name);
-};
+  return registerExtension(this, 'include_processor', processor, name)
+}
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.prototype.blockMacro = function (name, processor) {
   if (arguments.length === 1) {
-    processor = name;
-    name = null;
+    processor = name
+    name = null
   }
-  return registerExtension(this, 'block_macro', processor, name);
-};
+  return registerExtension(this, 'block_macro', processor, name)
+}
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.prototype.treeProcessor = function (name, processor) {
   if (arguments.length === 1) {
-    processor = name;
-    name = null;
+    processor = name
+    name = null
   }
-  return registerExtension(this, 'tree_processor', processor, name);
-};
+  return registerExtension(this, 'tree_processor', processor, name)
+}
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.prototype.postprocessor = function (name, processor) {
   if (arguments.length === 1) {
-    processor = name;
-    name = null;
+    processor = name
+    name = null
   }
-  return registerExtension(this, 'postprocessor', processor, name);
-};
+  return registerExtension(this, 'postprocessor', processor, name)
+}
 
 /**
  * @memberof Extensions/Registry
  */
 Registry.prototype.preprocessor = function (name, processor) {
   if (arguments.length === 1) {
-    processor = name;
-    name = null;
+    processor = name
+    name = null
   }
-  return registerExtension(this, 'preprocessor', processor, name);
-};
+  return registerExtension(this, 'preprocessor', processor, name)
+}
 
 /**
  * @memberof Extensions/Registry
@@ -250,17 +251,17 @@ Registry.prototype.preprocessor = function (name, processor) {
 
 Registry.prototype.docinfoProcessor = function (name, processor) {
   if (arguments.length === 1) {
-    processor = name;
-    name = null;
+    processor = name
+    name = null
   }
-  return registerExtension(this, 'docinfo_processor', processor, name);
-};
+  return registerExtension(this, 'docinfo_processor', processor, name)
+}
 
 /**
  * @namespace
  * @module Extensions/Processor
  */
-var Processor = Extensions.Processor;
+var Processor = Extensions.Processor
 
 /**
  * The extension will be added to the beginning of the list for that extension type. (default is append).
@@ -273,8 +274,8 @@ var Processor = Extensions.Processor;
  * or the {@link Extensions/DocinfoProcessor}
  */
 Processor.prototype.prepend = function () {
-  this.$option('position', '>>');
-};
+  this.$option('position', '>>')
+}
 
 /**
  * @memberof Extensions/Processor
@@ -285,29 +286,29 @@ Processor.prototype.process = function (block) {
       for (var i = 0; i < argumentsList.length; i++) {
         // convert all (Opal) Hash arguments to JSON.
         if (typeof argumentsList[i] === 'object' && '$$smap' in argumentsList[i]) {
-          argumentsList[i] = fromHash(argumentsList[i]);
+          argumentsList[i] = fromHash(argumentsList[i])
         }
       }
-      return target.apply(thisArg, argumentsList);
+      return target.apply(thisArg, argumentsList)
     }
-  };
-  var blockProxy = new Proxy(block, handler);
-  return Opal.send(this, 'process', null, toBlock(blockProxy));
-};
+  }
+  var blockProxy = new Proxy(block, handler)
+  return Opal.send(this, 'process', null, toBlock(blockProxy))
+}
 
 /**
  * @memberof Extensions/Processor
  */
 Processor.prototype.named = function (name) {
-  return this.$named(name);
-};
+  return this.$named(name)
+}
 
 /**
  * @memberof Extensions/Processor
  */
 Processor.prototype.createBlock = function (parent, context, source, attrs, opts) {
-  return this.$create_block(parent, context, source, toHash(attrs), toHash(opts));
-};
+  return this.$create_block(parent, context, source, toHash(attrs), toHash(opts))
+}
 
 /**
  * Creates a list block node and links it to the specified parent.
@@ -319,8 +320,8 @@ Processor.prototype.createBlock = function (parent, context, source, attrs, opts
  * @memberof Extensions/Processor
  */
 Processor.prototype.createList = function (parent, context, attrs) {
-  return this.$create_list(parent, context, toHash(attrs));
-};
+  return this.$create_list(parent, context, toHash(attrs))
+}
 
 /**
  * Creates a list item node and links it to the specified parent.
@@ -331,214 +332,210 @@ Processor.prototype.createList = function (parent, context, attrs) {
  * @memberof Extensions/Processor
  */
 Processor.prototype.createListItem = function (parent, text) {
-  return this.$create_list_item(parent, text);
-};
+  return this.$create_list_item(parent, text)
+}
 
 /**
  * @memberof Extensions/Processor
  */
 Processor.prototype.createImageBlock = function (parent, attrs, opts) {
-  return this.$create_image_block(parent, toHash(attrs), toHash(opts));
-};
+  return this.$create_image_block(parent, toHash(attrs), toHash(opts))
+}
 
 /**
  * @memberof Extensions/Processor
  */
 Processor.prototype.createInline = function (parent, context, text, opts) {
   if (opts && opts.attributes) {
-    opts.attributes = toHash(opts.attributes);
+    opts.attributes = toHash(opts.attributes)
   }
-  return this.$create_inline(parent, context, text, toHash(opts));
-};
+  return this.$create_inline(parent, context, text, toHash(opts))
+}
 
 /**
  * @memberof Extensions/Processor
  */
 Processor.prototype.parseContent = function (parent, content, attrs) {
-  return this.$parse_content(parent, content, attrs);
-};
+  return this.$parse_content(parent, content, attrs)
+}
 
 /**
  * @memberof Extensions/Processor
  */
 Processor.prototype.positionalAttributes = function (value) {
-  return this.$positional_attrs(value);
-};
+  return this.$positional_attrs(value)
+}
 
 /**
  * @memberof Extensions/Processor
  */
 Processor.prototype.resolvesAttributes = function (args) {
-  return this.$resolves_attributes(args);
-};
+  return this.$resolves_attributes(args)
+}
 
 /**
  * @namespace
  * @module Extensions/BlockProcessor
  */
-var BlockProcessor = Extensions.BlockProcessor;
+var BlockProcessor = Extensions.BlockProcessor
 
 /**
  * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.prototype.onContext = function (context) {
-  return this.$on_context(context);
-};
+  return this.$on_context(context)
+}
 
 /**
  * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.prototype.onContexts = function () {
-  return this.$on_contexts(Array.prototype.slice.call(arguments));
-};
+  return this.$on_contexts(Array.prototype.slice.call(arguments))
+}
 
 /**
  * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.prototype.getName = function () {
-  var name = this.name;
-  return name === Opal.nil ? undefined : name;
-};
+  var name = this.name
+  return name === Opal.nil ? undefined : name
+}
 
 /**
  * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.prototype.parseContentAs = function (value) {
-  this.$parse_content_as(value);
-};
-
+  this.$parse_content_as(value)
+}
 
 /**
  * @namespace
  * @module Extensions/BlockMacroProcessor
  */
-var BlockMacroProcessor = Extensions.BlockMacroProcessor;
+var BlockMacroProcessor = Extensions.BlockMacroProcessor
 
 /**
  * @memberof Extensions/BlockMacroProcessor
  */
 BlockMacroProcessor.prototype.getName = function () {
-  var name = this.name;
-  return name === Opal.nil ? undefined : name;
-};
+  var name = this.name
+  return name === Opal.nil ? undefined : name
+}
 
 /**
  * @memberof Extensions/BlockMacroProcessor
  */
 BlockMacroProcessor.prototype.parseContentAs = function (value) {
-  this.$parse_content_as(value);
-};
+  this.$parse_content_as(value)
+}
 
 /**
  * @namespace
  * @module Extensions/InlineMacroProcessor
  */
-var InlineMacroProcessor = Extensions.InlineMacroProcessor;
+var InlineMacroProcessor = Extensions.InlineMacroProcessor
 
 /**
  * @memberof Extensions/InlineMacroProcessor
  */
 InlineMacroProcessor.prototype.getName = function () {
-  var name = this.name;
-  return name === Opal.nil ? undefined : name;
-};
+  var name = this.name
+  return name === Opal.nil ? undefined : name
+}
 
 /**
  * @memberof Extensions/InlineMacroProcessor
  */
 InlineMacroProcessor.prototype.parseContentAs = function (value) {
-  this.$parse_content_as(value);
-};
+  this.$parse_content_as(value)
+}
 
 /**
  * @namespace
  * @module Extensions/IncludeProcessor
  */
-var IncludeProcessor = Extensions.IncludeProcessor;
+var IncludeProcessor = Extensions.IncludeProcessor
 
 /**
  * @memberof Extensions/IncludeProcessor
  */
 IncludeProcessor.prototype.handles = function (block) {
-  return Opal.send(this, 'handles?', null, toBlock(block));
-};
+  return Opal.send(this, 'handles?', null, toBlock(block))
+}
 
 /**
  * @memberof Extensions/IncludeProcessor
  */
 IncludeProcessor.prototype.prefer = function () {
-  this.$prefer();
-};
+  this.$prefer()
+}
 
 /**
  * @namespace
  * @module Extensions/TreeProcessor
  */
-// eslint-disable-next-line no-unused-vars
-var TreeProcessor = Extensions.TreeProcessor;
+var TreeProcessor = Extensions.TreeProcessor
 
 /**
  * @memberof Extensions/TreeProcessor
  */
 TreeProcessor.prototype.prefer = function () {
-  this.$prefer();
-};
+  this.$prefer()
+}
 
 /**
  * @namespace
  * @module Extensions/Postprocessor
  */
-// eslint-disable-next-line no-unused-vars
-var Postprocessor = Extensions.Postprocessor;
+var Postprocessor = Extensions.Postprocessor
 
 /**
  * @memberof Extensions/Postprocessor
  */
 Postprocessor.prototype.prefer = function () {
-  this.$prefer();
-};
+  this.$prefer()
+}
 
 /**
  * @namespace
  * @module Extensions/Preprocessor
  */
-// eslint-disable-next-line no-unused-vars
-var Preprocessor = Extensions.Preprocessor;
+var Preprocessor = Extensions.Preprocessor
 
 /**
  * @memberof Extensions/Preprocessor
  */
 Preprocessor.prototype.prefer = function () {
-  this.$prefer();
-};
+  this.$prefer()
+}
 
 /**
  * @namespace
  * @module Extensions/DocinfoProcessor
  */
-var DocinfoProcessor = Extensions.DocinfoProcessor;
+var DocinfoProcessor = Extensions.DocinfoProcessor
 
 /**
  * @memberof Extensions/DocinfoProcessor
  */
 DocinfoProcessor.prototype.prefer = function () {
-  this.$prefer();
-};
+  this.$prefer()
+}
 
 /**
  * @memberof Extensions/DocinfoProcessor
  */
 DocinfoProcessor.prototype.atLocation = function (value) {
-  this.$at_location(value);
-};
+  this.$at_location(value)
+}
 
 function initializeProcessorClass (superclassName, className, functions) {
-  var superClass = Opal.const_get_qualified(Extensions, superclassName);
+  var superClass = Opal.const_get_qualified(Extensions, superclassName)
   return initializeClass(superClass, className, functions, {
     'handles?': function () {
-      return true;
+      return true
     }
-  });
+  })
 }
 
 // Postprocessor
@@ -550,11 +547,11 @@ function initializeProcessorClass (superclassName, className, functions) {
  */
 Extensions.createPostprocessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return initializeProcessorClass('Postprocessor', name, functions);
-};
+  return initializeProcessorClass('Postprocessor', name, functions)
+}
 
 /**
  * Create and instantiate a postprocessor
@@ -563,11 +560,11 @@ Extensions.createPostprocessor = function (name, functions) {
  */
 Extensions.newPostprocessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return this.createPostprocessor(name, functions).$new();
-};
+  return this.createPostprocessor(name, functions).$new()
+}
 
 // Preprocessor
 
@@ -578,11 +575,11 @@ Extensions.newPostprocessor = function (name, functions) {
  */
 Extensions.createPreprocessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return initializeProcessorClass('Preprocessor', name, functions);
-};
+  return initializeProcessorClass('Preprocessor', name, functions)
+}
 
 /**
  * Create and instantiate a preprocessor
@@ -591,11 +588,11 @@ Extensions.createPreprocessor = function (name, functions) {
  */
 Extensions.newPreprocessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return this.createPreprocessor(name, functions).$new();
-};
+  return this.createPreprocessor(name, functions).$new()
+}
 
 // Tree Processor
 
@@ -606,11 +603,11 @@ Extensions.newPreprocessor = function (name, functions) {
  */
 Extensions.createTreeProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return initializeProcessorClass('TreeProcessor', name, functions);
-};
+  return initializeProcessorClass('TreeProcessor', name, functions)
+}
 
 /**
  * Create and instantiate a tree processor
@@ -619,11 +616,11 @@ Extensions.createTreeProcessor = function (name, functions) {
  */
 Extensions.newTreeProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return this.createTreeProcessor(name, functions).$new();
-};
+  return this.createTreeProcessor(name, functions).$new()
+}
 
 // Include Processor
 
@@ -634,11 +631,11 @@ Extensions.newTreeProcessor = function (name, functions) {
  */
 Extensions.createIncludeProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return initializeProcessorClass('IncludeProcessor', name, functions);
-};
+  return initializeProcessorClass('IncludeProcessor', name, functions)
+}
 
 /**
  * Create and instantiate an include processor
@@ -647,11 +644,11 @@ Extensions.createIncludeProcessor = function (name, functions) {
  */
 Extensions.newIncludeProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return this.createIncludeProcessor(name, functions).$new();
-};
+  return this.createIncludeProcessor(name, functions).$new()
+}
 
 // Docinfo Processor
 
@@ -662,11 +659,11 @@ Extensions.newIncludeProcessor = function (name, functions) {
  */
 Extensions.createDocinfoProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return initializeProcessorClass('DocinfoProcessor', name, functions);
-};
+  return initializeProcessorClass('DocinfoProcessor', name, functions)
+}
 
 /**
  * Create and instantiate a Docinfo processor
@@ -675,11 +672,11 @@ Extensions.createDocinfoProcessor = function (name, functions) {
  */
 Extensions.newDocinfoProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return this.createDocinfoProcessor(name, functions).$new();
-};
+  return this.createDocinfoProcessor(name, functions).$new()
+}
 
 // Block Processor
 
@@ -690,11 +687,11 @@ Extensions.newDocinfoProcessor = function (name, functions) {
  */
 Extensions.createBlockProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return initializeProcessorClass('BlockProcessor', name, functions);
-};
+  return initializeProcessorClass('BlockProcessor', name, functions)
+}
 
 /**
  * Create and instantiate a block processor
@@ -703,11 +700,11 @@ Extensions.createBlockProcessor = function (name, functions) {
  */
 Extensions.newBlockProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return this.createBlockProcessor(name, functions).$new();
-};
+  return this.createBlockProcessor(name, functions).$new()
+}
 
 // Inline Macro Processor
 
@@ -718,11 +715,11 @@ Extensions.newBlockProcessor = function (name, functions) {
  */
 Extensions.createInlineMacroProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return initializeProcessorClass('InlineMacroProcessor', name, functions);
-};
+  return initializeProcessorClass('InlineMacroProcessor', name, functions)
+}
 
 /**
  * Create and instantiate an inline macro processor
@@ -731,11 +728,11 @@ Extensions.createInlineMacroProcessor = function (name, functions) {
  */
 Extensions.newInlineMacroProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return this.createInlineMacroProcessor(name, functions).$new();
-};
+  return this.createInlineMacroProcessor(name, functions).$new()
+}
 
 // Block Macro Processor
 
@@ -746,11 +743,11 @@ Extensions.newInlineMacroProcessor = function (name, functions) {
  */
 Extensions.createBlockMacroProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return initializeProcessorClass('BlockMacroProcessor', name, functions);
-};
+  return initializeProcessorClass('BlockMacroProcessor', name, functions)
+}
 
 /**
  * Create and instantiate a block macro processor
@@ -759,11 +756,11 @@ Extensions.createBlockMacroProcessor = function (name, functions) {
  */
 Extensions.newBlockMacroProcessor = function (name, functions) {
   if (arguments.length === 1) {
-    functions = name;
-    name = null;
+    functions = name
+    name = null
   }
-  return this.createBlockMacroProcessor(name, functions).$new();
-};
+  return this.createBlockMacroProcessor(name, functions).$new()
+}
 
 // Converter API
 
@@ -771,10 +768,10 @@ Extensions.newBlockMacroProcessor = function (name, functions) {
  * @namespace
  * @module Converter
  */
-var Converter = Opal.const_get_qualified(Opal.Asciidoctor, 'Converter');
+var Converter = Opal.const_get_qualified(Opal.Asciidoctor, 'Converter')
 
 // Alias
-Opal.Asciidoctor.Converter = Converter;
+Opal.Asciidoctor.Converter = Converter
 
 /**
  * Convert the specified node.
@@ -788,11 +785,11 @@ Opal.Asciidoctor.Converter = Converter;
  * @memberof Converter
  */
 Converter.prototype.convert = function (node, transform, opts) {
-  return this.$convert(node, transform, toHash(opts));
-};
+  return this.$convert(node, transform, toHash(opts))
+}
 
 // The built-in converter doesn't include Converter, so we have to force it
-Converter.BuiltIn.prototype.convert = Converter.prototype.convert;
+Converter.BuiltIn.prototype.convert = Converter.prototype.convert
 
 // Converter Factory API
 
@@ -800,10 +797,10 @@ Converter.BuiltIn.prototype.convert = Converter.prototype.convert;
  * @namespace
  * @module Converter/Factory
  */
-var ConverterFactory = Opal.Asciidoctor.Converter.Factory;
+var ConverterFactory = Opal.Asciidoctor.Converter.Factory
 
 // Alias
-Opal.Asciidoctor.ConverterFactory = ConverterFactory;
+Opal.Asciidoctor.ConverterFactory = ConverterFactory
 
 /**
  * Register a custom converter in the global converter factory to handle conversion to the specified backends.
@@ -816,10 +813,10 @@ Opal.Asciidoctor.ConverterFactory = ConverterFactory;
  */
 ConverterFactory.register = function (converter, backends) {
   if (typeof converter === 'object' && typeof converter.$convert === 'undefined' && typeof converter.convert === 'function') {
-    Opal.def(converter, '$convert', converter.convert);
+    Opal.def(converter, '$convert', converter.convert)
   }
-  return this.$register(converter, backends);
-};
+  return this.$register(converter, backends)
+}
 
 /**
  * Retrieves the singleton instance of the converter factory.
@@ -831,8 +828,8 @@ ConverterFactory.register = function (converter, backends) {
  * @memberof Converter/Factory
  */
 ConverterFactory.getDefault = function (initialize) {
-  return this.$default(initialize);
-};
+  return this.$default(initialize)
+}
 
 /**
  * Create an instance of the converter bound to the specified backend.
@@ -843,8 +840,8 @@ ConverterFactory.getDefault = function (initialize) {
  * @memberof Converter/Factory
  */
 ConverterFactory.prototype.create = function (backend, opts) {
-  return this.$create(backend, toHash(opts));
-};
+  return this.$create(backend, toHash(opts))
+}
 
 // Built-in converter
 
@@ -852,12 +849,11 @@ ConverterFactory.prototype.create = function (backend, opts) {
  * @namespace
  * @module Converter/Html5Converter
  */
-var Html5Converter = Opal.Asciidoctor.Converter.Html5Converter;
+var Html5Converter = Opal.Asciidoctor.Converter.Html5Converter
 
 // Alias
-Opal.Asciidoctor.Html5Converter = Html5Converter;
-
+Opal.Asciidoctor.Html5Converter = Html5Converter
 
 Html5Converter.prototype.convert = function (node, transform, opts) {
-  return this.$convert(node, transform, opts);
-};
+  return this.$convert(node, transform, opts)
+}

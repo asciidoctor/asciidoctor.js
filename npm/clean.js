@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
-const cleanModule = require('./module/clean');
-cleanModule.clean();
+const cleanModule = require('./module/clean')
+cleanModule.clean()

@@ -1,5 +1,6 @@
-load('./build/asciidoctor-nashorn.js');
-var asciidoctor = Asciidoctor();
+/* global Asciidoctor, load, print */
+load('./build/asciidoctor-nashorn.js')
+var asciidoctor = Asciidoctor()
 
 var data = '= asciidoctor.js, AsciiDoc in JavaScript\n' +
 'Doc Writer <docwriter@example.com>\n\n' +
@@ -10,8 +11,8 @@ var data = '= asciidoctor.js, AsciiDoc in JavaScript\n' +
 '* Asciidoctor\n' +
 '* Opal\n\n' +
 'NOTE: That\'s all she wrote!!!\n\n' +
-'include::spec/fixtures/include.adoc[]';
+'include::spec/fixtures/include.adoc[]'
 
-var options = {safe: 'server', header_footer: true, attributes: {showtitle: true}};
-var html = asciidoctor.convert(data, options);
-print(html);
+var options = { safe: 'server', header_footer: true, attributes: { showtitle: true } }
+var html = asciidoctor.convert(data, options)
+print(html)

@@ -3,8 +3,7 @@
 // Nashorn Module
 (function (root, factory) {
   // globals (root is window)
-  root.Asciidoctor = factory;
-// eslint-disable-next-line no-unused-vars
+  root.Asciidoctor = factory
 }(this, function (moduleConfig) {
 //{{asciidoctorCode}}
 
@@ -19,7 +18,7 @@
    * @returns {string} - returns the version number of Asciidoctor.js.
    */
   Asciidoctor.prototype.getVersion = function () {
-    return ASCIIDOCTOR_JS_VERSION;
-  };
-  return Opal.Asciidoctor;
-}));
+    return ASCIIDOCTOR_JS_VERSION
+  }
+  return Opal.Asciidoctor
+}))
