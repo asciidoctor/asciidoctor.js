@@ -1,0 +1,38 @@
+= Asciidoctor.js Governance
+:keywords: governance
+:uri-npmjs-asciidoctorjs: https://www.npmjs.com/package/asciidoctor.js
+:uri-gh-asciidoctorjs: https://github.com/asciidoctor/asciidoctor.js
+
+== Core team
+
+The Asciidoctor.js core team consists of 8 members.
+Each member has been part of the https://github.com/asciidoctor[Asciidoctor community] for several years,
+and had to earn the trust of the other members before joining the core team.
+
+If a new member wanted to join the core team, we would discuss it with the community to evaluate if the new member is trustworthy.
+
+=== GitHub
+
+Maintainers (write access)::
+* Dan Allen -- https://github.com/mojavelinux[@mojavelinux]
+* Guillaume Grossetie -- https://github.com/mogztter[@mogztter]
+
+Members::
+* Thomas Parisot -- https://github.com/oncletom[@oncletom]
+* Sylvain Leroux -- https://github.com/s-leroux[@s-leroux]
+* Anthonny Quérouil -- https://github.com/anthonny[@anthonny]
+
+Only the maintainers have the right to push on the {uri-gh-asciidoctorjs}[GitHub repository].
+
+
+=== npmjs
+
+Maintainers (write access)::
+* Dan Allen -- https://github.com/mojavelinux[@mojavelinux]
+* Olivier Bilodeau -- https://github.com/obilodeau[@obilodeau]
+* Ludovic Fernandez -- https://github.com/ldez[@ldez]
+* Guillaume Grossetie -- https://github.com/mogztter[@mogztter]
+* Anthonny Quérouil -- https://github.com/anthonny[@anthonny]
+* Hubert Sablonnière -- https://github.com/hsablonniere[@hsablonniere]
+
+Only the maintainers have the right to publish a new version of Asciidoctor.js on {uri-npmjs-asciidoctorjs}[npmjs].
