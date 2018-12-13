@@ -1,0 +1,73 @@
+= Asciidoctor.js Version and Lifecycle Policies
+:keywords: release policy
+:uri-semver: https://semver.org/
+:uri-node-release-schedule: https://github.com/nodejs/Release#release-schedule
+:uri-browser-usage: https://caniuse.com/usage-table
+:uri-graalvm: http://www.graalvm.org/
+:uri-nashorn-jep-deprecated: https://openjdk.java.net/jeps/335
+
+== 2.0.0 and Greater Version Policy
+
+Asciidoctor will follow the {uri-semver}[semantic versioning] rules with the release of Asciidoctor.js 2.0.0.
+Each Asciidoctor.js release will be versioned *major.minor.patch*.
+
+Major::
+Major releases occur when there are substantial changes in functionality or when new functionality breaks backwards compatibility.
+Releases within the same major version number will maintain API compatibility.
+
+Minor::
+Minor releases add new features, improvements to existing features, and fixes that maintain backwards compatibility.
+Only the latest major release will receive new features.
+
+Patch::
+Patch releases fix bugs and maintain backwards compatibility.
+Only the latest minor release of the two latest major releases will receive patches.
+Patch releases happen as needed depending on the urgency of the fix.
+
+Pre-release::
+Major and minor releases may include pre-release versions (major.minor.patch-alpha.n | -beta.n | -rc.n).
+Once a release candidate (rc) has been thoroughly tested, the stable release will be published.
+
+== 2.0.0 and Greater Lifecycle Policy
+
+Only the two most recent major versions of Asciidoctor.js will be supported.
+When a new major version of Asciidoctor.js enters General Availability (GA), the previous major version will enter Maintenance.
+
+[#lifecycle-phases]
+=== Lifecycle phases
+
+General Availability (GA)::
+Software enters General Availability on the date an initial major version is released and is available for download.
+
+Active Support (AS)::
+Active Support begins on the date a major release enters General Availability.
+A major release with Active Support will be actively maintained with new features and bug fixes.
+Only one major release can be in Active Support at a time.
+In other words, Active Support ends when a new major release enters General Availability.
+
+Maintenance Support (MS)::
+Maintenance Support begins on the date a new major release enters Active Support.
+A major release with Maintenance Support will only receive bug fixes.
+Only one major release can be in Maintenance Support at a time.
+In other words, Maintenance support ends when the major release in Active Support enters Maintenance Support.
+
+End of Life (EOL)::
+The date after which the software no longer receives maintenance releases.
+
+[#js-platform-support]
+== JavaScript platform Support
+
+Node.js::
+Support will be provided on the latest active LTS.
+Please read the {uri-node-release-schedule}[Node.js Release Schedule] to find the latest active LTS.
+
+Browsers::
+Support will be provided on the latest version of all modern browsers with at least 1% usage according to the {uri-browser-usage}[usage table] provided by https://caniuse.com.
+Please note that Asciidoctor.js may work on older versions (using Polyfill or not) but it's not guaranteed.
+
+Nashorn::
+Not actively maintained, efforts should be put on {uri-graalvm}[GraalVM].
+For reference, please read the JDK Enhancement Proposal (JEP) to {uri-nashorn-jep-deprecated}[Deprecate the Nashorn JavaScript Engine].
+
+GraalVM support::
+Support will be provided on the the latest stable version.
