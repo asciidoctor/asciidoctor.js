@@ -1031,6 +1031,52 @@ paragraph 3
         }
       })
     })
+
+    describe('Reader', function () {
+      it('should read the content', function () {
+        let read = ''
+        let lines = ''
+        let string = ''
+        let hasMoreLines = ''
+        let isEmpty = ''
+        let peekLine = ''
+        let readLine = ''
+        let readLines = ''
+        const registry = asciidoctor.Extensions.create()
+        registry.block(function () {
+          const self = this
+          self.named('plantuml')
+          self.onContext(['listing'])
+          self.parseContentAs('raw')
+          self.process(function (parent, reader) {
+            read = reader.read()
+            lines = reader.getLines()
+            string = reader.getString()
+            hasMoreLines = reader.hasMoreLines()
+            isEmpty = reader.isEmpty()
+            peekLine = reader.peekLine()
+            readLine = reader.readLine()
+            readLines = reader.readLines()
+          })
+        })
+        const input = `
+[plantuml]
+----
+alice -> bob
+bob -> alice
+----`
+        asciidoctor.convert(input, { extension_registry: registry })
+        expect(read).to.equal(`alice -> bob
+bob -> alice`)
+        expect(lines).to.be.an('array').that.is.empty()
+        expect(string).to.equal('')
+        expect(hasMoreLines).to.be.false()
+        expect(isEmpty).to.be.true()
+        expect(peekLine).to.be.undefined()
+        expect(readLine).to.be.undefined()
+        expect(readLines).to.be.an('array').that.is.empty()
+      })
+    })
   })
 }
 

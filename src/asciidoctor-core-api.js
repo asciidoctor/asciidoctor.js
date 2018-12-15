@@ -1788,13 +1788,92 @@ Reader.prototype.getLines = function () {
 }
 
 /**
- * Get the remaining lines managed by this Reader as a String.
+ * Get the remaining lines managed by this Reader as a {string}.
  *
  * @memberof Reader
- * @returns {string} - returns The remaining lines managed by this Reader as a String (joined by linefeed characters).
+ * @returns {string} - returns The remaining lines managed by this Reader as a {string} (joined by linefeed characters).
  */
 Reader.prototype.getString = function () {
   return this.$string()
+}
+
+/**
+ * Check whether there are any lines left to read.
+ * If a previous call to this method resulted in a value of false, immediately returned the cached value.
+ * Otherwise, delegate to peekLine to determine if there is a next line available.
+ *
+ * @memberof Reader
+ * @returns {boolean} - returns true if there are more lines, false if there are not.
+ */
+Reader.prototype.hasMoreLines = function () {
+  return this['$has_more_lines?']()
+}
+
+/**
+ * Check whether this reader is empty (contains no lines).
+ *
+ * @memberof Reader
+ * @returns {boolean} - returns true if there are no more lines to peek, otherwise false.
+ */
+Reader.prototype.isEmpty = function () {
+  return this['$empty?']()
+}
+
+/**
+ * Peek at the next line of source data.
+ * Processes the line if not already marked as processed, but does not consume it.
+ *
+ * This method will probe the reader for more lines.
+ * If there is a next line that has not previously been visited, the line is passed to the Reader#processLine method to be initialized.
+ * This call gives sub-classes the opportunity to do preprocessing.
+ * If the return value of the Reader#processLine is undefined, the data is assumed to be changed and Reader#peekLine is invoked again to perform further processing.
+ *
+ * If hasMoreLines is called immediately before peekLine, the direct flag is implicitly true (since the line is flagged as visited).
+ *
+ * @param {boolean} direct - A {boolean} flag to bypasses the check for more lines and immediately returns the first element of the internal lines {Array}. (default: false)
+ * @memberof Reader
+ * @returns {string} - returns the next line of the source data as a String if there are lines remaining.
+ */
+Reader.prototype.peekLine = function (direct) {
+  direct = direct || false
+  var line = this['$peek_line'](direct)
+  return line === Opal.nil ? undefined : line
+}
+
+/**
+ * Get the next line of source data. Consumes the line returned.
+ *
+ * @memberof Reader
+ * @returns {string} - returns the {string}  of the next line of the source data if data is present.
+ */
+Reader.prototype.readLine = function () {
+  var line = this['$read_line']()
+  return line === Opal.nil ? undefined : line
+}
+
+/**
+ * Get the remaining lines of source data.
+ *
+ * This method calls Reader#readLine repeatedly until all lines are consumed and returns the lines as a {string} {Array}.
+ * This method differs from Reader#getLines in that it processes each line in turn, hence triggering any preprocessors implemented in sub-classes.
+ *
+ * @memberof Reader
+ * @returns {Array} -  Returns the lines read as a {string} {Array}
+ */
+Reader.prototype.readLines = function () {
+  return this['$read_lines']()
+}
+
+/**
+ * Get the remaining lines of source data joined as a {string}.
+ *
+ * Delegates to Reader#readLines, then joins the result.
+ *
+ * @memberof Reader
+ * @returns {string} -  Returns tthe lines read joined as a {string}
+ */
+Reader.prototype.read = function () {
+  return this['$read']()
 }
 
 // Cursor API
