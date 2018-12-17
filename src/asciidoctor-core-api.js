@@ -1614,7 +1614,7 @@ var Inline = Opal.Asciidoctor.Inline
  * @memberof Inline
  * @returns {Inline} - returns a new Inline element
  */
-Opal.Asciidoctor.Inline['$$class'].prototype.create = function (parent, context, text, opts) {
+Inline.create = function (parent, context, text, opts) {
   return this.$new(parent, context, text, toHash(opts))
 }
 
@@ -2030,6 +2030,9 @@ var MemoryLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'MemoryLogger', tr
 Opal.Asciidoctor.MemoryLogger = MemoryLogger
 
 if (MemoryLogger) {
+  MemoryLogger.create = function () {
+    return this.$new()
+  }
   MemoryLogger.prototype.getMessages = function () {
     var messages = this.messages
     var result = []
@@ -2110,3 +2113,44 @@ if (NullLogger) {
 
 // Alias
 Opal.Asciidoctor.StopIteration = Opal.StopIteration
+
+/**
+ * @namespace
+ */
+var Timings = Opal.const_get_qualified(Opal.Asciidoctor, 'Timings', true)
+
+// Alias
+Opal.Asciidoctor.Timings = Timings
+
+Timings.create = function () {
+  return this.$new()
+}
+
+Timings.prototype.printReport = function (to, subject) {
+  var outputFunction
+  if (to) {
+    if (typeof to['$add'] === 'function') {
+      outputFunction = function (message) {
+        to['$add'](1, message)
+      }
+    } else if (typeof to.log === 'function') {
+      outputFunction = to.log
+    } else if (typeof to.write === 'function') {
+      outputFunction = function (message) {
+        to.write(message, 'utf-8')
+      }
+    } else {
+      throw new Error('The output should be a Stream (with a write function), an object with a log function or a Ruby Logger (with a add function)')
+    }
+  } else {
+    outputFunction = function (message) {
+      Opal.gvars.stdout['$write'](message)
+    }
+  }
+  if (subject) {
+    outputFunction('Input file: ' + subject)
+  }
+  outputFunction(' Time to read and parse source: ' + this.$read_parse().toFixed(2))
+  outputFunction(' Time to convert document: ' + this.$convert().toFixed(2))
+  outputFunction(' Total time (read, parse and convert): ' + this.$read_parse_convert().toFixed(2))
+}

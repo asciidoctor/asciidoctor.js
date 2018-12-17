@@ -268,9 +268,87 @@ intro
           asciidoctor.LoggerManager.setLogger(defaultLogger)
         }
       })
+      it('should print timings to the MemoryLogger', () => {
+        const memoryLogger = asciidoctor.MemoryLogger.create()
+        const timings = asciidoctor.Timings.create()
+        const options = { timings: timings }
+        asciidoctor.convert('Hello *world*', options)
+        timings.printReport(memoryLogger, 'stdin')
+        const messages = memoryLogger.getMessages()
+        expect(messages.length).to.equal(4)
+        expect(messages[0].getSeverity()).to.equal('INFO')
+        expect(messages[0].getText()).to.equal('Input file: stdin')
+      })
     })
   }
 
+  describe('Timings', () => {
+    it('should print timings to a Stream', () => {
+      const { Writable } = require('stream')
+      const data = []
+      const outStream = new Writable({
+        write (chunk, encoding, callback) {
+          data.push(chunk.toString())
+          callback()
+        }
+      })
+      const timings = asciidoctor.Timings.create()
+      const options = { timings: timings }
+      asciidoctor.convert('Hello *world*', options)
+      timings.printReport(outStream, 'stdin')
+      outStream.end()
+      expect(data.length).to.equal(4)
+      expect(data[0]).to.equal('Input file: stdin')
+    })
+    it('should print timings to console', () => {
+      const defaultLog = console.log
+      try {
+        const data = []
+        console.log = function () {
+          data.push({ method: 'log', arguments: arguments })
+          return defaultLog.apply(console, arguments)
+        }
+        const timings = asciidoctor.Timings.create()
+        const options = { timings: timings }
+        asciidoctor.convert('Hello *world*', options)
+        timings.printReport(console, 'stdin')
+        expect(data.length).to.equal(4)
+        expect(data[0].arguments[0]).to.equal('Input file: stdin')
+      } finally {
+        console.log = defaultLog
+      }
+    })
+    it('should print timings to an object with a log function', () => {
+      const timings = asciidoctor.Timings.create()
+      const options = { timings: timings }
+      asciidoctor.convert('Hello *world*', options)
+      const logger = {}
+      const data = []
+      logger.log = function (message) {
+        data.push(message)
+      }
+      timings.printReport(logger, 'stdin')
+      expect(data.length).to.equal(4)
+      expect(data[0]).to.equal('Input file: stdin')
+    })
+    it('should print timings to the default stdout', () => {
+      const defaultWrite = process.stdout.write
+      const data = []
+      try {
+        process.stdout.write = function () {
+          data.push({ method: 'log', arguments: arguments })
+        }
+        const timings = asciidoctor.Timings.create()
+        const options = { timings: timings }
+        asciidoctor.convert('Hello *world*', options)
+        timings.printReport(undefined, 'stdin')
+        expect(data.length).to.equal(4)
+        expect(data[0].arguments[0]).to.equal('Input file: stdin')
+      } finally {
+        process.stdout.write = defaultWrite
+      }
+    })
+  })
   describe('Configuring Asciidoctor module', () => {
     it('should be able to configure Asciidoctor module', () => {
       /** @namespace Opal.JAVASCRIPT_PLATFORM.JAVASCRIPT_IO_MODULE.JAVASCRIPT_ENGINE.JAVASCRIPT_FRAMEWORK */
