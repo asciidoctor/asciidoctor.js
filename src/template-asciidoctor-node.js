@@ -12,6 +12,8 @@ Function.call = functionCall;
 
 //{{asciidoctorAPI}}
 
+//{{asciidoctorNodeAPI}}
+
 //{{asciidoctorVersion}}
 
   /**

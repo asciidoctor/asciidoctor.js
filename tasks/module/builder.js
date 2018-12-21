@@ -114,6 +114,7 @@ const generateUMD = (asciidoctorCoreTarget, environments) => {
   const templateModel = {
     '//{{opalCode}}': fs.readFileSync('node_modules/opal-runtime/src/opal.js', 'utf8'),
     '//{{asciidoctorAPI}}': fs.readFileSync(apiBundle, 'utf8'),
+    '//{{asciidoctorNodeAPI}}': fs.readFileSync('src/asciidoctor-core-node-api.js', 'utf8'),
     '//{{asciidoctorVersion}}': `var ASCIIDOCTOR_JS_VERSION = '${packageJson.version}';`
   }
 
