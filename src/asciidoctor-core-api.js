@@ -2100,6 +2100,9 @@ var NullLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'NullLogger', true)
 Opal.Asciidoctor.NullLogger = NullLogger
 
 if (NullLogger) {
+  NullLogger.create = function () {
+    return this.$new()
+  }
   NullLogger.prototype.getMaxSeverity = function () {
     return this.max_severity
   }
