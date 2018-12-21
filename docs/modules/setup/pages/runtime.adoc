@@ -1,13 +1,11 @@
 = Runtime environment
 :uri-xmlhttprequest: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
-:uri-java-nio: https://docs.oracle.com/javase/8/docs/api/java/nio/package-summary.html
 :uri-spidermonkey-read: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Introduction_to_the_JavaScript_shell#Built-in_functions
 :uri-phantomjs-read: http://phantomjs.org/api/fs/method/read.html
 :uri-node-fs: https://nodejs.org/api/fs.html
 
 :uri-v8: https://developers.google.com/v8
-:uri-nashorn: https://docs.oracle.com/javase/10/nashorn/introduction.htm#JSNUG136
-:uri-rhino: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino
+:uri-graalvm: https://www.graalvm.org
 :uri-electron: https://electronjs.org
 :uri-phantomjs: http://phantomjs.org
 :uri-webworker: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
@@ -38,15 +36,14 @@ The following values are recognized:
 `runtime.platform`::
 
 * `node`: Node.js
-* `java`: Java (Rhino, Nashorn)
+* `java`: Java (GraalVM)
 * `standalone`: Standalone (spidermonkey)
 * `browser`: Browser (Chrome, Firefox, Opera, Edge...)
 
 `runtime.engine`::
 
 * {uri-v8}[`v8`]
-* {uri-nashorn}[`nashorn`]
-* {uri-rhino}[`rhino`]
+* {uri-graalvm}[`graalvm`]
 
 `runtime.framework`::
 
@@ -79,8 +76,12 @@ The implementation will use the {uri-node-fs}[`fs` module].
 `xmlhttprequest`::
 The implementation will use the {uri-xmlhttprequest}[`XMLHttpRequest` object].
 
-`java_nio`::
-The implementation will use the {uri-java-nio}[`java.nio` package].
+`graalvm`::
+The implementation will use a bounded class named `IncludeResolver`:
++
+```java
+context.getPolyglotBindings().putMember("IncludeResolver", new IncludeResolver());
+```
 
 `spidermonkey`::
 The implementation will use the {uri-spidermonkey-read}[`read` function].

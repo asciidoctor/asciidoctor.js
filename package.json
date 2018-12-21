@@ -17,8 +17,7 @@
   "scripts": {
     "test:node": "mocha spec/*/*.spec.js",
     "test:browser": "node spec/browser/run.js",
-    "test:nashorn": "node npm/test/nashorn.js",
-    "test": "node npm/test/unsupported-features.js && npm run test:node && npm run test:browser && npm run test:nashorn",
+    "test": "node npm/test/unsupported-features.js && npm run test:node && npm run test:browser",
     "build": "node npm/build.js && npm run test && npm run lint",
     "build:quick": "node npm/build.js && npm run test:node && npm run code:lint",
     "clean": "node npm/clean.js",
