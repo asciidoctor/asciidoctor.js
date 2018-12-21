@@ -1557,6 +1557,48 @@ In other words, it’s about discovering writing zen.`
     })
   })
 
+  describe('Async convert', () => {
+    it('should resolve the inline conditional include if the condition is true', async () => {
+      const input = `:include1:
+ifdef::include1[include::spec/fixtures/includes/1.adoc[]]
+include::spec/fixtures/includes/2.adoc[]
+`
+      console.log('inline condition true', await asciidoctor.convertAsync(input, { safe: 'safe' }))
+    })
+
+    it('should not throw an exception if the target is not readable', async () => {
+      console.log('inline condition true', await asciidoctor.convertAsync('include::404.adoc[]', { safe: 'safe' }))
+    })
+
+    it('should resolve the conditional include if the condition is true', async () => {
+      const input = `:include1:
+ifdef::include1[]
+include::spec/fixtures/includes/1.adoc[]
+endif::[]
+include::spec/fixtures/includes/2.adoc[]
+`
+      console.log('condition true', await asciidoctor.convertAsync(input, { safe: 'safe' }))
+    })
+
+    it('should not resolve the inline conditional include if the condition is false', async () => {
+      const input = `
+ifdef::include1[include::spec/fixtures/includes/1.adoc[]]
+include::spec/fixtures/includes/2.adoc[]
+`
+      console.log('inline condition false', await asciidoctor.convertAsync(input, { safe: 'safe' }))
+    })
+
+    it('should not resolve the conditional include if the condition is false', async () => {
+      const input = `
+ifdef::include1[]
+include::spec/fixtures/includes/1.adoc[]
+endif::[]
+include::spec/fixtures/includes/2.adoc[]
+`
+      console.log('condition false', await asciidoctor.convertAsync(input, { safe: 'safe' }))
+    })
+  })
+
   if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {
     describe('Windows', () => {
       it('should register a custom converter', () => {
