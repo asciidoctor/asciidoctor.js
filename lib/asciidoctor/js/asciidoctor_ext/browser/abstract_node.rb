@@ -1,5 +1,29 @@
 module Asciidoctor
 class AbstractNode
+  def read_contents target, opts = {}
+    doc = @document
+    if (Helpers.uriish? target) || ((start = opts[:start]) && (Helpers.uriish? start) && (target = doc.path_resolver.web_path target, start))
+      if (doc.path_resolver.descends_from? target, doc.base_dir) || (doc.attr? 'allow-uri-read')
+        begin
+          if opts[:normalize]
+            (Helpers.prepare_source_string ::File.read(target).join LF)
+          else
+            ::File.read(target)
+          end
+        rescue
+          logger.warn %(could not retrieve contents of #{opts[:label] || 'asset'} at URI: #{target}) if opts.fetch :warn_on_failure, true
+          return
+        end
+      else
+        logger.warn %(cannot retrieve contents of #{opts[:label] || 'asset'} at URI: #{target} (allow-uri-read attribute not enabled)) if opts.fetch :warn_on_failure, true
+        return
+      end
+    else
+      target = normalize_system_path target, opts[:start], nil, target_name: (opts[:label] || 'asset')
+      read_asset target, normalize: opts[:normalize], warn_on_failure: (opts.fetch :warn_on_failure, true), label: opts[:label]
+    end
+  end
+
   def generate_data_uri_from_uri image_uri, cache_uri = false
     %x{
       var xhr = new XMLHttpRequest();

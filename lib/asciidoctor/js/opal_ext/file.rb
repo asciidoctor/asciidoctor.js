@@ -83,7 +83,6 @@ class File
       ''
     end
 
-    alias absolute_path expand_path
   end
 end
 
