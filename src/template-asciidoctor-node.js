@@ -17,6 +17,12 @@ Function.call = functionCall;
   const ConditionalDirectiveRx = /^(\\)?(ifdef|ifndef|ifeval|endif)::(\S*?(?:([,+])\S*?)?)\[(.+)?\]$/
   const IncludeDirectiveRx = /^(\\)?include::([^\[][^\[]*)\[(.+)?\]$/
   const LF = '\n'
+  const ASCIIDOC_EXTENSIONS = {
+    '.adoc': true,
+    '.asciidoc': true,
+    '.asc': true,
+    '.ad': true
+  }
   const ATTR_REF_HEAD = '{'
 
   const fs = require('fs')
@@ -98,7 +104,7 @@ Function.call = functionCall;
     return process.cwd().split(path.sep).join(path.posix.sep)
   }
 
-  const resolveIncludePath = (target, options) => {
+  const resolveIncludePath = (target, baseDir) => {
     if (target.startsWith('http://')) {
       return { path: target, type: 'http' }
     }
@@ -110,14 +116,17 @@ Function.call = functionCall;
       result = result.substring('file://'.length)
     }
     if (!path.isAbsolute(result)) {
-      const baseDir = getBaseDir(options)
       return { path: path.join(baseDir, result), type: 'file' }
     } else {
       return { path: result, type: 'file' }
     }
   }
 
-  const processLine = async function (index, lines, options, includeProcessors, cache = {}) {
+  const updateRelativeIncludeDirectiveTarget = () => {
+
+  }
+
+  const processLine = async function (index, lines, baseDir, includeProcessors, cache = {}) {
     const line = lines[index]
     if (line.endsWith(']') && !line.startsWith('[') && line.includes('::')) {
       const conditionDirectiveMatch = ConditionalDirectiveRx.exec(line)
@@ -143,27 +152,46 @@ Function.call = functionCall;
         if (hasIncludeProcessorExtensions(includeProcessors, target)) {
           return // we can't evaluate include processor at this stage
         }
-        const resolvedIncludePath = resolveIncludePath(target, options)
+        const resolvedIncludePath = resolveIncludePath(target, baseDir)
         if (resolvedIncludePath) {
           if (resolvedIncludePath.type === 'file') {
             try {
               let content
-              if (cache[resolvedIncludePath.path]) {
-                content = cache[resolvedIncludePath.path]
+              // NOTE: might be a bad idea since the OS has a (better) filesystem cache
+              const targetPath = resolvedIncludePath.path
+              if (cache[targetPath]) {
+                content = cache[targetPath]
               } else {
-                content = await readFile(resolvedIncludePath.path)
+                content = await readFile(targetPath)
                 content = content.replace(/\n$/, '') // remove newline at end of file
-                const includeLines = content.split(LF)
-                const includeLinesLength = includeLines.length
-                for (let i = 0; i < includeLinesLength; i++) {
-                  const includeLine = includeLines[i]
-                  const includeDirectiveMatch = IncludeDirectiveRx.exec(includeLine)
-                  if (includeLine.startsWith('inc') && includeDirectiveMatch[0] !== null) {
-                    cache[resolvedIncludePath.path] = line
-                    return // included file contains include directive, we need to update the target
+                // If the file is an AsciiDoc document, check if the file contains an include directive
+                if (ASCIIDOC_EXTENSIONS[path.extname(path.basename(targetPath))]) {
+                  const includeLines = content.split(LF)
+                  const includeLinesLength = includeLines.length
+                  const result = []
+                  for (let i = 0; i < includeLinesLength; i++) {
+                    let includeLine = includeLines[i]
+                    const includeDirectiveMatch = IncludeDirectiveRx.exec(includeLine)
+                    if (includeLine.startsWith('inc') && includeDirectiveMatch[0] !== null) {
+                      if (includeDirectiveMatch[1] === '\\') {
+                        result.push(includeLine)
+                        continue // the include directive is escaped, we do not need to update the relative target
+                      }
+                      const target = includeDirectiveMatch[2]
+                      if (hasIncludeProcessorExtensions(includeProcessors, target)) {
+                        cache[targetPath] = line
+                        return // we can't evaluate include processor at this stage
+                      }
+                      // update the relative target
+                      const resolvedIncludePath = resolveIncludePath(target, path.dirname(targetPath))
+                      result.push(`include::${resolvedIncludePath.path}[${includeDirectiveMatch[3] || ''}]`)
+                    } else {
+                      result.push(includeLine)
+                    }
                   }
+                  content = result.join(LF)
                 }
-                cache[resolvedIncludePath.path] = content
+                cache[targetPath] = content
               }
               lines[index] = content
             } catch (error) {
@@ -190,10 +218,11 @@ Function.call = functionCall;
     const safeMode = resolveSafeMode(options)
     if (safeMode < 20 && !hasPreprocessorExtensions(options)) {
       const includeProcessors = getIncludeProcessorExtensions(options)
+      const baseDir = getBaseDir(options)
       const lines = input.split(LF)
       const linesLength = lines.length
       for (let i = 0; i < linesLength; i++) {
-        await processLine(i, lines, options, includeProcessors)
+        await processLine(i, lines, baseDir, includeProcessors)
       }
       input = lines.join(LF)
     }
