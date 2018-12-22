@@ -1563,11 +1563,12 @@ In other words, it’s about discovering writing zen.`
 ifdef::include1[include::spec/fixtures/includes/1.adoc[]]
 include::spec/fixtures/includes/2.adoc[]
 `
-      console.log('inline condition true', await asciidoctor.convertAsync(input, { safe: 'safe' }))
+      expect(await asciidoctor.convertAsync(input, { safe: 'safe' })).to.contain(`<p>1
+2</p>`)
     })
 
     it('should not throw an exception if the target is not readable', async () => {
-      console.log('inline condition true', await asciidoctor.convertAsync('include::404.adoc[]', { safe: 'safe' }))
+      expect(async () => asciidoctor.convertAsync('include::404.adoc[]', { safe: 'safe' })).to.not.throw()
     })
 
     it('should resolve the conditional include if the condition is true', async () => {
@@ -1577,7 +1578,8 @@ include::spec/fixtures/includes/1.adoc[]
 endif::[]
 include::spec/fixtures/includes/2.adoc[]
 `
-      console.log('condition true', await asciidoctor.convertAsync(input, { safe: 'safe' }))
+      expect(await asciidoctor.convertAsync(input, { safe: 'safe' })).to.contain(`<p>1
+2</p>`)
     })
 
     it('should not resolve the inline conditional include if the condition is false', async () => {
@@ -1585,7 +1587,7 @@ include::spec/fixtures/includes/2.adoc[]
 ifdef::include1[include::spec/fixtures/includes/1.adoc[]]
 include::spec/fixtures/includes/2.adoc[]
 `
-      console.log('inline condition false', await asciidoctor.convertAsync(input, { safe: 'safe' }))
+      expect(await asciidoctor.convertAsync(input, { safe: 'safe' })).to.contain('<p>2</p>')
     })
 
     it('should not resolve the conditional include if the condition is false', async () => {
@@ -1595,7 +1597,15 @@ include::spec/fixtures/includes/1.adoc[]
 endif::[]
 include::spec/fixtures/includes/2.adoc[]
 `
-      console.log('condition false', await asciidoctor.convertAsync(input, { safe: 'safe' }))
+      expect(await asciidoctor.convertAsync(input, { safe: 'safe' })).to.contain('<p>2</p>')
+    })
+
+    it('should ignore escaped include directive', async () => {
+      const input = `
+\\include::spec/fixtures/includes/1.adoc[]
+`
+      const result = await asciidoctor.convertAsync(input, { safe: 'safe' })
+      expect(result).to.contain('include::spec/fixtures/includes/1.adoc[]')
     })
   })
 
