@@ -149,12 +149,11 @@ Function.call = functionCall;
                 content = await readFile(targetPath)
                 content = content.replace(/\n$/, '') // remove newline at end of file
                 if (includeLinesAttr && includeLinesAttr !== Opal.nil) {
-                  console.log(includeLinesAttr)
                   const selectedLines = doc.reader['$select_include_lines'](content, includeLinesAttr)
-                  content = selectedLines.join('\n')
+                  content = selectedLines.join('')
                 } else if (includeTagsAttr && includeTagsAttr !== Opal.nil) {
                   const [selectedLines, _] = doc.reader['$select_include_tags'](content, includeTagsAttr)
-                  content = selectedLines.join('\n')
+                  content = selectedLines.join('')
                 }
                 // If the file is an AsciiDoc document, check if the file contains an include directive
                 if (ASCIIDOC_EXTENSIONS[path.extname(path.basename(targetPath))]) {
@@ -181,10 +180,27 @@ Function.call = functionCall;
                       if (resolvedIncludePath.type === 'file') {
                         if (resolvedAbsoluteIncludePath.includes(ATTR_REF_HEAD)) {
                           // we can't evaluate attribute at this stage
-                          result.push(`include::${resolvedAbsoluteIncludePath}[${includeDirectiveMatch[3] || ''}]`)
+                          result.push(`include::${resolvedAbsoluteIncludePath}[${attrs || ''}]`)
                         } else if (attrs) {
-                          // NOTE: for now we don't support include directive with attributes
-                          result.push(`include::${resolvedAbsoluteIncludePath}[${includeDirectiveMatch[3] || ''}]`)
+                          if (attrs.includes(ATTR_REF_HEAD) || attrs.includes('leveloffset=')) {
+                            // NOTE: for now we don't support include directive with attributes
+                            result.push(`include::${resolvedAbsoluteIncludePath}[${attrs || ''}]`)
+                          } else {
+                            const parsedAttrs = doc['$parse_attributes'](attrs, [], toHash({'sub_input': true}))
+                            includeLinesAttr = doc.reader['$include_line_numbers'](parsedAttrs)
+                            includeTagsAttr = doc.reader['$include_tags'](parsedAttrs)
+                            let includeContent = (await readFile(resolvedAbsoluteIncludePath)).replace(/\n$/, '')
+                            if (includeLinesAttr && includeLinesAttr !== Opal.nil) {
+                              const selectedLines = doc.reader['$select_include_lines'](includeContent, includeLinesAttr)
+                              includeContent = selectedLines.join('')
+                            } else if (includeTagsAttr && includeTagsAttr !== Opal.nil) {
+                              const [selectedLines, _] = doc.reader['$select_include_tags'](includeContent, includeTagsAttr)
+                              includeContent = selectedLines.join('')
+                            } else {
+                              console.log('wtf?', attrs)
+                            }
+                            result.push(includeContent)
+                          }
                         } else {
                           result.push((await readFile(resolvedAbsoluteIncludePath)).replace(/\n$/, ''))
                         }
@@ -201,7 +217,6 @@ Function.call = functionCall;
               }
               lines[index] = content
             } catch (error) {
-              console.log(error)
               console.warn(`asciidoctor: ERROR: <stdin>: include file not readable: ${target}`) // FIXME: Use Logger
               lines[index] = `Unresolved directive in <stdin> - include::${target}[${attrs || ''}]`
             }
@@ -247,9 +262,6 @@ Function.call = functionCall;
         await processLine(doc, i, lines, baseDir, includeProcessors)
       }
       input = lines.join(LF)
-
-      console.log('input', input)
-
       const reader = Opal.Asciidoctor.PreprocessorReader.$new(doc, input, Opal.Asciidoctor.Reader.Cursor.$new(doc.attributes['$[]']('docfile'), doc.base_dir), toHash({ normalize: true }))
       doc.reader = reader
       if (doc.getSourcemap()) {
