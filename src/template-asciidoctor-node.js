@@ -122,10 +122,6 @@ Function.call = functionCall;
     }
   }
 
-  const updateRelativeIncludeDirectiveTarget = () => {
-
-  }
-
   const processLine = async function (index, lines, baseDir, includeProcessors, cache = {}) {
     const line = lines[index]
     if (line.endsWith(']') && !line.startsWith('[') && line.includes('::')) {
@@ -184,7 +180,21 @@ Function.call = functionCall;
                       }
                       // update the relative target
                       const resolvedIncludePath = resolveIncludePath(target, path.dirname(targetPath))
-                      result.push(`include::${resolvedIncludePath.path}[${includeDirectiveMatch[3] || ''}]`)
+                      const attrs = includeDirectiveMatch[3]
+                      const resolvedAbsoluteIncludePath = resolvedIncludePath.path
+                      if (resolvedIncludePath.type === 'file') {
+                        if (resolvedAbsoluteIncludePath.includes(ATTR_REF_HEAD)) {
+                          // we can't evaluate attribute at this stage
+                          result.push(`include::${resolvedAbsoluteIncludePath}[${includeDirectiveMatch[3] || ''}]`)
+                        } else if (attrs) {
+                          // NOTE: for now we don't support include directive with attributes
+                          result.push(`include::${resolvedAbsoluteIncludePath}[${includeDirectiveMatch[3] || ''}]`)
+                        } else {
+                          result.push((await readFile(resolvedAbsoluteIncludePath)).replace(/\n$/, ''))
+                        }
+                      } else {
+                        result.push(`include::${resolvedAbsoluteIncludePath}[${includeDirectiveMatch[3] || ''}]`)
+                      }
                     } else {
                       result.push(includeLine)
                     }
