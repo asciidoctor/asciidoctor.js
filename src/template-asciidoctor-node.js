@@ -64,19 +64,6 @@ Function.call = functionCall;
     return 20 // secure
   }
 
-  const hasPreprocessorExtensions = (options) => {
-    if (options) {
-      const extensionRegistry = options.extension_registry
-      if (extensionRegistry) {
-        return extensionRegistry.hasPreprocessors()
-      }
-    }
-    const extensionGroups = Opal.Asciidoctor.Extensions.getGroups
-    // NOTE: we don't want to activate extensions
-    // if there's at least one global extension registered we return true
-    return extensionGroups && Object.keys(extensionGroups).length !== 0
-  }
-
   const hasIncludeProcessorExtensions = (includeProcessors, target) => {
     if (includeProcessors && includeProcessors.length > 0) {
       for (let i = 0; i < includeProcessors.length; i++) {
@@ -88,12 +75,9 @@ Function.call = functionCall;
     return false
   }
 
-  const getIncludeProcessorExtensions = (options) => {
-    if (options) {
-      const extensionRegistry = options.extension_registry
-      if (extensionRegistry) {
-        return extensionRegistry.getIncludeProcessors()
-      }
+  const getIncludeProcessorExtensions = (exts) => {
+    if (exts) {
+      return exts.getIncludeProcessors()
     }
   }
 
@@ -225,9 +209,24 @@ Function.call = functionCall;
     if (typeof input === 'object' && input.constructor.name === 'Buffer') {
       input = input.toString('utf8')
     }
+
+    options = options || {}
+    options['parse'] = false
+    let doc = this.$load(input, prepareOptions(options))
+
+    // call the preprocessor extensions
+    const exts = doc.getParentDocument() ? undefined : doc.getExtensions()
+    if (exts && exts.hasPreprocessors()) {
+      const preprocessors = exts.getPreprocessors()
+      for (let j = 0; j < preprocessors.length; j++) {
+        doc.reader = preprocessors[j]['$process_method']()['$[]'](doc, self.reader) || doc.reader
+      }
+    }
+
+    // resolve include directives
     const safeMode = resolveSafeMode(options)
-    if (safeMode < 20 && !hasPreprocessorExtensions(options)) {
-      const includeProcessors = getIncludeProcessorExtensions(options)
+    if (safeMode < 20) {
+      const includeProcessors = exts ? exts.getIncludeProcessors() : undefined
       const baseDir = getBaseDir(options)
       const lines = input.split(LF)
       const linesLength = lines.length
@@ -235,8 +234,28 @@ Function.call = functionCall;
         await processLine(i, lines, baseDir, includeProcessors)
       }
       input = lines.join(LF)
+
+      const reader = Opal.Asciidoctor.PreprocessorReader.$new(doc, input, Opal.Asciidoctor.Reader.Cursor.$new(doc.attributes['$[]']('docfile'), doc.base_dir), toHash({ normalize: true }))
+      doc.reader = reader
+      if (doc.getSourcemap()) {
+        doc.source_location = reader.$cursor()
+      }
     }
-    const result = this.$convert(input, prepareOptions(options))
+
+    Opal.Asciidoctor.Parser['$parse'](doc.reader, doc, toHash({header_only: false}))
+    doc['$restore_attributes']()
+
+    if (exts && exts.hasTreeProcessors()) {
+      const treeProcessors = exts.getTreeProcessors()
+      let treeProcessorResult
+      for (let j = 0; j < treeProcessors.length; j++) {
+        treeProcessorResult = treeProcessors[j]['$process_method']()['$[]'](doc)
+        if (treeProcessorResult && Opal.Asciidoctor.Document['$==='](treeProcessorResult) && treeProcessorResult['$!='](doc)) {
+          doc = treeProcessorResult
+        }
+      }
+    }
+    const result = doc.convert(options)
     return result === Opal.nil ? '' : result
   }
 
