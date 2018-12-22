@@ -106,7 +106,7 @@ Function.call = functionCall;
     }
   }
 
-  const processLine = async function (index, lines, baseDir, includeProcessors, cache = {}) {
+  const processLine = async function (doc, index, lines, baseDir, includeProcessors, cache = {}) {
     const line = lines[index]
     if (line.endsWith(']') && !line.startsWith('[') && line.includes('::')) {
       const conditionDirectiveMatch = ConditionalDirectiveRx.exec(line)
@@ -123,11 +123,15 @@ Function.call = functionCall;
           return // we can't evaluate attribute at this stage
         }
         const attrs = includeDirectiveMatch[3]
+        let includeLinesAttr = undefined
+        let includeTagsAttr = undefined
         if (attrs) {
           if (attrs.includes(ATTR_REF_HEAD) || attrs.includes('leveloffset=')) {
             return // we can't evaluate attribute at this stage or handle leveloffset
           }
-          return // NOTE: for now we don't support include directive with attributes
+          const parsedAttrs = doc['$parse_attributes'](attrs, [], toHash({'sub_input': true}))
+          includeLinesAttr = doc.reader['$include_line_numbers'](parsedAttrs)
+          includeTagsAttr = doc.reader['$include_tags'](parsedAttrs)
         }
         if (hasIncludeProcessorExtensions(includeProcessors, target)) {
           return // we can't evaluate include processor at this stage
@@ -144,6 +148,14 @@ Function.call = functionCall;
               } else {
                 content = await readFile(targetPath)
                 content = content.replace(/\n$/, '') // remove newline at end of file
+                if (includeLinesAttr && includeLinesAttr !== Opal.nil) {
+                  console.log(includeLinesAttr)
+                  const selectedLines = doc.reader['$select_include_lines'](content, includeLinesAttr)
+                  content = selectedLines.join('\n')
+                } else if (includeTagsAttr && includeTagsAttr !== Opal.nil) {
+                  const [selectedLines, _] = doc.reader['$select_include_tags'](content, includeTagsAttr)
+                  content = selectedLines.join('\n')
+                }
                 // If the file is an AsciiDoc document, check if the file contains an include directive
                 if (ASCIIDOC_EXTENSIONS[path.extname(path.basename(targetPath))]) {
                   const includeLines = content.split(LF)
@@ -189,6 +201,7 @@ Function.call = functionCall;
               }
               lines[index] = content
             } catch (error) {
+              console.log(error)
               console.warn(`asciidoctor: ERROR: <stdin>: include file not readable: ${target}`) // FIXME: Use Logger
               lines[index] = `Unresolved directive in <stdin> - include::${target}[${attrs || ''}]`
             }
@@ -231,9 +244,11 @@ Function.call = functionCall;
       const lines = input.split(LF)
       const linesLength = lines.length
       for (let i = 0; i < linesLength; i++) {
-        await processLine(i, lines, baseDir, includeProcessors)
+        await processLine(doc, i, lines, baseDir, includeProcessors)
       }
       input = lines.join(LF)
+
+      console.log('input', input)
 
       const reader = Opal.Asciidoctor.PreprocessorReader.$new(doc, input, Opal.Asciidoctor.Reader.Cursor.$new(doc.attributes['$[]']('docfile'), doc.base_dir), toHash({ normalize: true }))
       doc.reader = reader

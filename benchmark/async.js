@@ -25,6 +25,8 @@ include::${includeBaseDirectory}/19.adoc[]
 include::${includeBaseDirectory}/20.adoc[]
 `
 
+const fs = require('fs')
+
 ;(async () => {
   console.time('convertAsync')
   const resultAsync = []
@@ -37,9 +39,20 @@ include::${includeBaseDirectory}/20.adoc[]
   console.time('convert')
   const result = []
   for (let j = 0; j < runs; j++) {
-    result.push(asciidoctor.convert(input, { safe: 'safe' }))
+    const doc = asciidoctor.load(input, { safe: 'safe' })
+    result.push(doc.convert({ safe: 'safe' }))
   }
   console.log(result.length)
   console.timeEnd('convert')
+
+  var userManual = fs.readFileSync(`${__dirname}/fixtures/docs/user-manual.adoc`)
+
+  console.time('convertAsync - user manual')
+  resultAsync.push(await asciidoctor.convertAsync(userManual, { safe: 'safe', 'base_dir': `${__dirname}/fixtures/docs` }))
+  console.timeEnd('convertAsync - user manual')
+
+  console.time('convert - user manual')
+  result.push(asciidoctor.convert(userManual, { safe: 'safe', 'base_dir': `${__dirname}/fixtures/docs` }))
+  console.timeEnd('convert - user manual')
 
 })()
