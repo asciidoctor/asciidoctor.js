@@ -272,6 +272,21 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         expect(doc.getCompatMode()).to.equal(true)
       })
 
+      it('should get extensions', function () {
+        const doc = asciidoctor.load('get _extensions_')
+        expect(doc.getExtensions()).to.be.undefined()
+      })
+
+      it('should get parent document', function () {
+        const doc = asciidoctor.load('get _parent document_')
+        expect(doc.getParentDocument()).to.be.undefined()
+      })
+
+      it('should get sourcemap', function () {
+        const doc = asciidoctor.load('get _sourcemap_')
+        expect(doc.getSourcemap()).to.equal(false)
+      })
+
       it('should get options', function () {
         const options = { header_footer: true }
         const doc = asciidoctor.load('= Document Title', options)
@@ -915,6 +930,39 @@ paragraph 3
     })
 
     describe('Extensions', function () {
+      it('should get global extension', function () {
+        try {
+          asciidoctor.Extensions.register(function () {
+            this.treeProcessor(function () {
+              const self = this
+              self.process(function (doc) {
+                doc.append(self.createBlock(doc, 'paragraph', 'd', {}))
+              })
+            })
+          })
+
+          const doc = asciidoctor.load('test')
+          expect(doc.getExtensions()).to.be.an('object')
+          expect(doc.getExtensions().tree_processor_extensions).to.have.lengthOf(1)
+        } finally {
+          asciidoctor.Extensions.unregisterAll()
+        }
+      })
+
+      it('should get document extension', function () {
+        const registry = asciidoctor.Extensions.create()
+        const opts = { extension_registry: registry }
+        registry.treeProcessor(function () {
+          const self = this
+          self.process(function (doc) {
+            doc.append(self.createBlock(doc, 'paragraph', 'd', {}))
+          })
+        })
+        const doc = asciidoctor.load('test', opts)
+        expect(doc.getExtensions()).to.be.an('object')
+        expect(doc.getExtensions().tree_processor_extensions).to.have.lengthOf(1)
+      })
+
       it('should preprend the extension in the list', function () {
         const registry = asciidoctor.Extensions.create()
         const opts = { extension_registry: registry }
