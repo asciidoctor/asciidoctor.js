@@ -29,10 +29,11 @@ const fs = require('fs')
 
 ;(async () => {
   console.time('convertAsync')
-  const resultAsync = []
+  const resultAsyncPromises = []
   for (let i = 0; i < runs; i++) {
-    resultAsync.push(await asciidoctor.convertAsync(input, { safe: 'safe' }))
+    resultAsyncPromises.push(asciidoctor.convertAsync(input, { safe: 'safe' }))
   }
+  const resultAsync = await Promise.all(resultAsyncPromises)
   console.log(resultAsync.length)
   console.timeEnd('convertAsync')
 
@@ -44,6 +45,15 @@ const fs = require('fs')
   }
   console.log(result.length)
   console.timeEnd('convert')
+
+  console.time('createVFS')
+  const resultVFSPromises = []
+  for (let j = 0; j < runs; j++) {
+    resultVFSPromises.push(asciidoctor.createVFS(input, { safe: 'safe' }))
+  }
+  const results = await Promise.all(resultVFSPromises)
+  console.log(results.length)
+  console.timeEnd('createVFS')
 
   var userManual = fs.readFileSync(`${__dirname}/fixtures/docs/user-manual.adoc`)
 
