@@ -233,6 +233,98 @@ Function.call = functionCall;
     }
   }
 
+  const unconditionalInclude = async (doc, input) => {
+    const vfs = {}
+    const lines = input.split(LF)
+    const baseDir = getBaseDir(doc.getOptions())
+    const exts = doc.getParentDocument() ? undefined : doc.getExtensions()
+    const includeProcessors = exts ? exts.getIncludeProcessors() : undefined
+    const linesLength = lines.length
+    let commentBlockTerminator
+    for (let i = 0; i < linesLength; i++) {
+      const line = lines[i]
+      if (commentBlockTerminator && line === commentBlockTerminator) {
+        // comment block ends
+        commentBlockTerminator = undefined
+        continue
+      } else {
+        if (line.startsWith('///')) {
+          if (line.length > 3 && line === '/'.repeat(line.length)) {
+            // comment block starts
+            commentBlockTerminator = line
+            continue
+          }
+        }
+      }
+      if (line.endsWith(']') && !line.startsWith('[') && line.includes('::')) {
+        const conditionDirectiveMatch = ConditionalDirectiveRx.exec(line)
+        if (line.includes('if') && conditionDirectiveMatch[0] !== null) {
+          return // we can't evaluate conditional include directive at this stage
+        }
+        const includeDirectiveMatch = IncludeDirectiveRx.exec(line)
+        if ((line.startsWith('inc') || line.startsWith('\\inc')) && includeDirectiveMatch[0] !== null) {
+          if (includeDirectiveMatch[1] === '\\') {
+            return // we can't evaluate escaped include directive at this stage
+          }
+          const target = includeDirectiveMatch[2]
+          if (hasIncludeProcessorExtensions(includeProcessors, target)) {
+            return // we can't evaluate include processor at this stage
+          }
+          const resolvedIncludeTarget = resolveIncludePath(target, baseDir)
+          if (resolvedIncludeTarget) {
+            if (resolvedIncludeTarget.type === 'file') {
+              vfs[resolvedIncludeTarget.path] = await readFile(resolvedIncludeTarget.path)
+            }
+          }
+        }
+      }
+    }
+    return vfs
+  }
+
+  Asciidoctor.prototype.createVFS = async function (input, options) {
+    if (typeof input === 'object' && input.constructor.name === 'Buffer') {
+      input = input.toString('utf8')
+    }
+
+    options = options || {}
+    options['parse'] = false
+    let doc = this.$load(input, prepareOptions(options))
+
+    // call the preprocessor extensions
+    const exts = doc.getParentDocument() ? undefined : doc.getExtensions()
+    if (exts && exts.hasPreprocessors()) {
+      const preprocessors = exts.getPreprocessors()
+      for (let j = 0; j < preprocessors.length; j++) {
+        doc.reader = preprocessors[j]['$process_method']()['$[]'](doc, self.reader) || doc.reader
+      }
+    }
+    // resolve include directives
+    const safeMode = resolveSafeMode(options)
+    if (safeMode < 20) {
+      const vfs = await unconditionalInclude(doc, input, {})
+      const docOptions = doc.getOptions()
+      docOptions.vfs = toHash(vfs)
+      doc.options = prepareOptions(docOptions)
+    }
+
+    Opal.Asciidoctor.Parser['$parse'](doc.reader, doc, toHash({header_only: false}))
+    doc['$restore_attributes']()
+
+    if (exts && exts.hasTreeProcessors()) {
+      const treeProcessors = exts.getTreeProcessors()
+      let treeProcessorResult
+      for (let j = 0; j < treeProcessors.length; j++) {
+        treeProcessorResult = treeProcessors[j]['$process_method']()['$[]'](doc)
+        if (treeProcessorResult && Opal.Asciidoctor.Document['$==='](treeProcessorResult) && treeProcessorResult['$!='](doc)) {
+          doc = treeProcessorResult
+        }
+      }
+    }
+    const result = doc.convert(options)
+    return result === Opal.nil ? '' : result
+  }
+
   Asciidoctor.prototype.convertAsync = async function (input, options) {
     if (typeof input === 'object' && input.constructor.name === 'Buffer') {
       input = input.toString('utf8')

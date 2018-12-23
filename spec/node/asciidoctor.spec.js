@@ -1607,6 +1607,15 @@ include::spec/fixtures/includes/2.adoc[]
       const result = await asciidoctor.convertAsync(input, { safe: 'safe' })
       expect(result).to.contain('include::spec/fixtures/includes/1.adoc[]')
     })
+
+    it('should create a VFS', async () => {
+      const input = `
+include::spec/fixtures/includes/1.adoc[]
+include::spec/fixtures/includes/2.adoc[]
+`
+      expect(await asciidoctor.createVFS(input, { safe: 'safe' })).to.contain(`<p>1
+2</p>`)
+    })
   })
 
   if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {
