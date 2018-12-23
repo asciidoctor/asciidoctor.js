@@ -248,13 +248,214 @@ Registry.prototype.preprocessor = function (name, processor) {
 /**
  * @memberof Extensions/Registry
  */
-
 Registry.prototype.docinfoProcessor = function (name, processor) {
   if (arguments.length === 1) {
     processor = name
     name = null
   }
   return registerExtension(this, 'docinfo_processor', processor, name)
+}
+
+/**
+ * Checks whether any {{@link Extensions/Preprocessor}} extensions have been registered.
+ *
+ * @memberof Extensions/Registry
+ * @returns a {boolean} indicating whether any {{@link Extensions/Preprocessor}} extensions are registered.
+ */
+Registry.prototype.hasPreprocessors = function () {
+  return this['$preprocessors?']()
+}
+
+/**
+ * Checks whether any {{@link Extensions/TreeProcessor}} extensions have been registered.
+ *
+ * @memberof Extensions/Registry
+ * @returns a {boolean} indicating whether any {{@link Extensions/TreeProcessor}} extensions are registered.
+ */
+Registry.prototype.hasTreeProcessors = function () {
+  return this['$tree_processors?']()
+}
+
+/**
+ * Checks whether any {{@link Extensions/IncludeProcessor}} extensions have been registered.
+ *
+ * @memberof Extensions/Registry
+ * @returns a {boolean} indicating whether any {{@link Extensions/IncludeProcessor}} extensions are registered.
+ */
+Registry.prototype.hasIncludeProcessors = function () {
+  return this['$include_processors?']()
+}
+
+/**
+ * Checks whether any {{@link Extensions/Postprocessor}} extensions have been registered.
+ *
+ * @memberof Extensions/Registry
+ * @returns a {boolean} indicating whether any {{@link Extensions/Postprocessor}} extensions are registered.
+ */
+Registry.prototype.hasPostprocessors = function () {
+  return this['$postprocessors?']()
+}
+
+/**
+ * Checks whether any {{@link Extensions/DocinfoProcessor}} extensions have been registered.
+ *
+ * @memberof Extensions/Registry
+ * @param location - A {string} for selecting docinfo extensions at a given location (head or footer) (default: undefined)
+ * @returns a {boolean} indicating whether any {{@link Extensions/DocinfoProcessor}} extensions are registered.
+ */
+Registry.prototype.hasDocinfoProcessors = function (location) {
+  return this['$docinfo_processors?'](location)
+}
+
+/**
+ * Checks whether any {{@link Extensions/BlockProcessor}} extensions have been registered.
+ *
+ * @memberof Extensions/Registry
+ * @returns a {boolean} indicating whether any {{@link Extensions/BlockProcessor}} extensions are registered.
+ */
+Registry.prototype.hasBlocks = function () {
+  return this['$blocks?']()
+}
+
+/**
+ * Checks whether any {{@link Extensions/BlockMacroProcessor}} extensions have been registered.
+ *
+ * @memberof Extensions/Registry
+ * @returns a {boolean} indicating whether any {{@link Extensions/BlockMacroProcessor}} extensions are registered.
+ */
+Registry.prototype.hasBlockMacros = function () {
+  return this['$block_macros?']()
+}
+
+/**
+ * Checks whether any {{@link Extensions/InlineMacroProcessor}} extensions have been registered.
+ *
+ * @memberof Extensions/Registry
+ * @returns a {boolean} indicating whether any {{@link Extensions/InlineMacroProcessor}} extensions are registered.
+ */
+Registry.prototype.hasInlineMacros = function () {
+  return this['$inline_macros?']()
+}
+
+/**
+ * Retrieves the Extension proxy objects for all the {{@link Extensions/Preprocessor}} instances stored in this registry.
+ *
+ * @memberof Extensions/Registry
+ * @returns an {array} of Extension proxy objects.
+ */
+Registry.prototype.getPreprocessors = function () {
+  return this['$preprocessors']()
+}
+
+/**
+ * Retrieves the Extension proxy objects for all the {{@link Extensions/TreeProcessor}} instances stored in this registry.
+ *
+ * @memberof Extensions/Registry
+ * @returns an {array} of Extension proxy objects.
+ */
+Registry.prototype.getTreeProcessors = function () {
+  return this['$tree_processors']()
+}
+
+/**
+ * Retrieves the Extension proxy objects for all the {{@link Extensions/IncludeProcessor}} instances stored in this registry.
+ *
+ * @memberof Extensions/Registry
+ * @returns an {array} of Extension proxy objects.
+ */
+Registry.prototype.getIncludeProcessors = function () {
+  return this['$include_processors']()
+}
+
+/**
+ * Retrieves the Extension proxy objects for all the {{@link Extensions/Postprocessor}} instances stored in this registry.
+ *
+ * @memberof Extensions/Registry
+ * @returns an {array} of Extension proxy objects.
+ */
+Registry.prototype.getPostprocessors = function () {
+  return this['$postprocessors']()
+}
+
+/**
+ * Retrieves the Extension proxy objects for all the {{@link Extensions/DocinfoProcessor}} instances stored in this registry.
+ *
+ * @memberof Extensions/Registry
+ * @param location - A {string} for selecting docinfo extensions at a given location (head or footer) (default: undefined)
+ * @returns an {array} of Extension proxy objects.
+ */
+Registry.prototype.getDocinfoProcessors = function (location) {
+  return this['$docinfo_processors'](location)
+}
+
+/**
+ * Retrieves the Extension proxy objects for all the {{@link Extensions/BlockProcessor}} instances stored in this registry.
+ *
+ * @memberof Extensions/Registry
+ * @returns an {array} of Extension proxy objects.
+ */
+Registry.prototype.getBlocks = function () {
+  return this.block_extensions['$values']()
+}
+
+/**
+ * Retrieves the Extension proxy objects for all the {{@link Extensions/BlockMacroProcessor}} instances stored in this registry.
+ *
+ * @memberof Extensions/Registry
+ * @returns an {array} of Extension proxy objects.
+ */
+Registry.prototype.getBlockMacros = function () {
+  return this.block_macro_extensions['$values']()
+}
+
+/**
+ * Retrieves the Extension proxy objects for all the {{@link Extensions/InlineMacroProcessor}} instances stored in this registry.
+ *
+ * @memberof Extensions/Registry
+ * @returns an {array} of Extension proxy objects.
+ */
+Registry.prototype.getInlineMacros = function () {
+  return this['$inline_macros']()
+}
+
+/**
+ * Get any {{@link Extensions/InlineMacroProcessor}} extensions are registered to handle the specified inline macro name.
+ *
+ * @param name - the {string} inline macro name
+ * @memberof Extensions/Registry
+ * @returns the Extension proxy object for the {{@link Extensions/InlineMacroProcessor}} that matches the inline macro name or undefined if no match is found.
+ */
+Registry.prototype.getInlineMacroFor = function (name) {
+  var result = this['$registered_for_inline_macro?'](name)
+  return result === false ? undefined : result
+}
+
+/**
+ * Get any {{@link Extensions/BlockProcessor}} extensions are registered to handle the specified block name appearing on the specified context.
+ * @param name - the {string} block name
+ * @param context - the context of the block: paragraph, open... (optional)
+ * @memberof Extensions/Registry
+ * @returns the Extension proxy object for the {{@link Extensions/BlockProcessor}} that matches the block name and context or undefined if no match is found.
+ */
+Registry.prototype.getBlockFor = function (name, context) {
+  if (typeof context === 'undefined') {
+    var ext = this['$find_block_extension'](name)
+    return ext === Opal.nil ? undefined : ext
+  }
+  var result = this['$registered_for_block?'](name, context)
+  return result === false ? undefined : result
+}
+
+/**
+ * Get any {{@link Extensions/BlockMacroProcessor}} extensions are registered to handle the specified macro name.
+ *
+ * @param name - the {string} macro name
+ * @memberof Extensions/Registry
+ * @returns the Extension proxy object for the {{@link Extensions/BlockMacroProcessor}} that matches the macro name or undefined if no match is found.
+ */
+Registry.prototype.getBlockMacroFor = function (name) {
+  var result = this['$registered_for_block_macro?'](name)
+  return result === false ? undefined : result
 }
 
 /**

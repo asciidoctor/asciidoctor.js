@@ -805,6 +805,22 @@ indexterm:[knight, Knight of the Round Table, Lancelot]`
           expect(resultWithoutExtension).to.contain('foo, qux, foo.')
           expect(resultWithoutExtension).not.to.contain('bar')
         })
+
+        it('should be able to get the postprocessor registered', () => {
+          const registry = asciidoctor.Extensions.create()
+          const opts = { extension_registry: registry }
+          require('../share/extensions/foo-bar-postprocessor.js')(registry)
+          const doc = asciidoctor.load('test', opts)
+          expect(doc.getExtensions().hasBlockMacros()).to.be.false()
+          expect(doc.getExtensions().hasInlineMacros()).to.be.false()
+          expect(doc.getExtensions().hasBlocks()).to.be.false()
+          expect(doc.getExtensions().hasPreprocessors()).to.be.false()
+          expect(doc.getExtensions().hasIncludeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasPostprocessors()).to.be.true()
+          expect(doc.getExtensions().getPostprocessors()).to.have.lengthOf(1)
+          expect(doc.getExtensions().getPostprocessors()[0].kind).to.equal('postprocessor')
+        })
       })
 
       describe('Tree processor', () => {
@@ -817,6 +833,22 @@ indexterm:[knight, Knight of the Round Table, Lancelot]`
 
           const resultWithoutExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('love-tree-processor-ex.adoc')))
           expect(resultWithoutExtension).to.contain('How this document was made ?')
+        })
+
+        it('should be able to get the tree processor registered', () => {
+          const registry = asciidoctor.Extensions.create()
+          const opts = { extension_registry: registry }
+          require('../share/extensions/love-tree-processor.js')(registry)
+          const doc = asciidoctor.load('test', opts)
+          expect(doc.getExtensions().hasBlockMacros()).to.be.false()
+          expect(doc.getExtensions().hasPostprocessors()).to.be.false()
+          expect(doc.getExtensions().hasInlineMacros()).to.be.false()
+          expect(doc.getExtensions().hasBlocks()).to.be.false()
+          expect(doc.getExtensions().hasPreprocessors()).to.be.false()
+          expect(doc.getExtensions().hasIncludeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasTreeProcessors()).to.be.true()
+          expect(doc.getExtensions().getTreeProcessors()).to.have.lengthOf(1)
+          expect(doc.getExtensions().getTreeProcessors()[0].kind).to.equal('tree_processor')
         })
       })
 
@@ -831,6 +863,22 @@ indexterm:[knight, Knight of the Round Table, Lancelot]`
           expect(result).to.contain('Important')
           expect(result).to.contain('This section is a draft: we need to talk about Y.')
         })
+
+        it('should be able to get the preprocessor registered', () => {
+          const registry = asciidoctor.Extensions.create()
+          const opts = { extension_registry: registry }
+          require('../share/extensions/draft-preprocessor.js')(registry)
+          const doc = asciidoctor.load('test', opts)
+          expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasBlockMacros()).to.be.false()
+          expect(doc.getExtensions().hasPostprocessors()).to.be.false()
+          expect(doc.getExtensions().hasInlineMacros()).to.be.false()
+          expect(doc.getExtensions().hasBlocks()).to.be.false()
+          expect(doc.getExtensions().hasIncludeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasPreprocessors()).to.be.true()
+          expect(doc.getExtensions().getPreprocessors()).to.have.lengthOf(1)
+          expect(doc.getExtensions().getPreprocessors()[0].kind).to.equal('preprocessor')
+        })
       })
 
       describe('Docinfo processor', () => {
@@ -843,6 +891,25 @@ indexterm:[knight, Knight of the Round Table, Lancelot]`
 
           const resultWithoutExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('moar-footer-docinfo-processor-ex.adoc')))
           expect(resultWithoutExtension).not.to.contain('moar footer')
+        })
+
+        it('should be able to get the docinfo processor registered', () => {
+          const registry = asciidoctor.Extensions.create()
+          const opts = { extension_registry: registry }
+          require('../share/extensions/moar-footer-docinfo-processor.js')(registry)
+          const doc = asciidoctor.load('test', opts)
+          expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasBlockMacros()).to.be.false()
+          expect(doc.getExtensions().hasPreprocessors()).to.be.false()
+          expect(doc.getExtensions().hasPostprocessors()).to.be.false()
+          expect(doc.getExtensions().hasInlineMacros()).to.be.false()
+          expect(doc.getExtensions().hasBlocks()).to.be.false()
+          expect(doc.getExtensions().hasIncludeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasDocinfoProcessors()).to.be.true()
+          expect(doc.getExtensions().getDocinfoProcessors('footer')).to.have.lengthOf(1)
+          expect(doc.getExtensions().getDocinfoProcessors('head')).to.have.lengthOf(0)
+          expect(doc.getExtensions().getDocinfoProcessors()).to.have.lengthOf(1)
+          expect(doc.getExtensions().getDocinfoProcessors()[0].kind).to.equal('docinfo_processor')
         })
       })
 
@@ -858,6 +925,32 @@ indexterm:[knight, Knight of the Round Table, Lancelot]`
           expect(shoutBlockProcessor.getName()).to.be.undefined()
           registry.block('shout', shoutBlockProcessor)
           expect(shoutBlockProcessor.getName()).to.equal('shout')
+        })
+
+        it('should be able to get the block processor registered', () => {
+          const registry = asciidoctor.Extensions.create()
+          const shoutBlockProcessor = asciidoctor.Extensions.newBlockProcessor('ShoutBlockProcessor', {
+            process: function (parent, reader) {
+              const lines = reader.getLines().map((l) => l.toUpperCase())
+              return this.createBlock(parent, 'paragraph', lines)
+            }
+          })
+          registry.block('shout', shoutBlockProcessor)
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('test', opts)
+          expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasBlockMacros()).to.be.false()
+          expect(doc.getExtensions().hasPreprocessors()).to.be.false()
+          expect(doc.getExtensions().hasPostprocessors()).to.be.false()
+          expect(doc.getExtensions().hasInlineMacros()).to.be.false()
+          expect(doc.getExtensions().hasIncludeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasDocinfoProcessors()).to.be.false()
+          expect(doc.getExtensions().hasBlocks()).to.be.true()
+          expect(doc.getExtensions().getBlocks()).to.have.lengthOf(1)
+          expect(doc.getExtensions().getBlocks()[0].kind).to.equal('block')
+          expect(doc.getExtensions().getBlockFor('shout').kind).to.equal('block')
+          expect(doc.getExtensions().getBlockFor('shout', 'paragraph').kind).to.equal('block')
+          expect(doc.getExtensions().getBlockFor('shout', 'listing')).to.be.undefined()
         })
 
         it('should be able to create, instantiate and register a block processor class', () => {
@@ -1024,6 +1117,31 @@ indexterm:[knight, Knight of the Round Table, Lancelot]`
           expect(simleyInlineMacroProcessor.getName()).to.equal('smiley')
         })
 
+        it('should be able to get the inline macro processor registered', () => {
+          const registry = asciidoctor.Extensions.create()
+          const simleyInlineMacroProcessor = asciidoctor.Extensions.newInlineMacroProcessor('SimleyInlineMacroProcessor', {
+            process: function (parent, target) {
+              const text = target === 'wink' ? ';)' : ':)'
+              return this.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert()
+            }
+          })
+          registry.inlineMacro('smiley', simleyInlineMacroProcessor)
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('test', opts)
+          expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasPreprocessors()).to.be.false()
+          expect(doc.getExtensions().hasPostprocessors()).to.be.false()
+          expect(doc.getExtensions().hasIncludeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasDocinfoProcessors()).to.be.false()
+          expect(doc.getExtensions().hasBlocks()).to.be.false()
+          expect(doc.getExtensions().hasBlockMacros()).to.be.false()
+          expect(doc.getExtensions().hasInlineMacros()).to.be.true()
+          expect(doc.getExtensions().getInlineMacros()).to.have.lengthOf(1)
+          expect(doc.getExtensions().getInlineMacros()[0].kind).to.equal('inline_macro')
+          expect(doc.getExtensions().getInlineMacroFor('smiley').kind).to.equal('inline_macro')
+          expect(doc.getExtensions().getInlineMacroFor('foo')).to.be.undefined()
+        })
+
         it('should be able to process smiley extension', () => {
           try {
             require('../share/extensions/smiley-inline-macro.js')
@@ -1058,6 +1176,30 @@ indexterm:[knight, Knight of the Round Table, Lancelot]`
           expect(loremBlockMacroProcessor.getName()).to.be.undefined()
           registry.blockMacro('lorem', loremBlockMacroProcessor)
           expect(loremBlockMacroProcessor.getName()).to.equal('lorem')
+        })
+
+        it('should be able to get the block macro registered', () => {
+          const registry = asciidoctor.Extensions.create()
+          const loremBlockMacroProcessor = asciidoctor.Extensions.newBlockMacroProcessor('LoremBlockMacroProcessor', {
+            process: function (parent) {
+              return this.createBlock(parent, 'paragraph', 'lorem ipsum')
+            }
+          })
+          registry.blockMacro('lorem', loremBlockMacroProcessor)
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('test', opts)
+          expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasPreprocessors()).to.be.false()
+          expect(doc.getExtensions().hasPostprocessors()).to.be.false()
+          expect(doc.getExtensions().hasInlineMacros()).to.be.false()
+          expect(doc.getExtensions().hasIncludeProcessors()).to.be.false()
+          expect(doc.getExtensions().hasDocinfoProcessors()).to.be.false()
+          expect(doc.getExtensions().hasBlocks()).to.be.false()
+          expect(doc.getExtensions().hasBlockMacros()).to.be.true()
+          expect(doc.getExtensions().getBlockMacros()).to.have.lengthOf(1)
+          expect(doc.getExtensions().getBlockMacros()[0].kind).to.equal('block_macro')
+          expect(doc.getExtensions().getBlockMacroFor('lorem').kind).to.equal('block_macro')
+          expect(doc.getExtensions().getBlockMacroFor('foo')).to.be.undefined()
         })
 
         it('should be able to process lorem extension', () => {
@@ -1120,7 +1262,7 @@ header_attribute::foo[bar]`
       describe('Include processor', () => {
         it('should process a custom include processor when target does match', () => {
           try {
-            require('../share/extensions/foo-include.js')
+            require('../share/extensions/foo-include.js')()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-include-ex.adoc')))
             expect(result).to.contain('foo\nfoo')
           } finally {
@@ -1128,9 +1270,27 @@ header_attribute::foo[bar]`
           }
         })
 
+        it('should be able to get the include processor registered', () => {
+          try {
+            require('../share/extensions/foo-include.js')()
+            const doc = asciidoctor.load('test')
+            expect(doc.getExtensions().hasBlockMacros()).to.be.false()
+            expect(doc.getExtensions().hasPostprocessors()).to.be.false()
+            expect(doc.getExtensions().hasInlineMacros()).to.be.false()
+            expect(doc.getExtensions().hasBlocks()).to.be.false()
+            expect(doc.getExtensions().hasPreprocessors()).to.be.false()
+            expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
+            expect(doc.getExtensions().hasIncludeProcessors()).to.be.true()
+            expect(doc.getExtensions().getIncludeProcessors()).to.have.lengthOf(1)
+            expect(doc.getExtensions().getIncludeProcessors()[0].kind).to.equal('include_processor')
+          } finally {
+            asciidoctor.Extensions.unregisterAll()
+          }
+        })
+
         it('should not process custom include processor when target does not match', () => {
           try {
-            require('../share/extensions/foo-include.js')
+            require('../share/extensions/foo-include.js')()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('bar-include-ex.adoc')))
             expect(result).to.contain('bar')
           } finally {
