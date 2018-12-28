@@ -20,8 +20,8 @@ install:
   - npm ci
 
 build_script:
-- node npm/build.js
-- node npm/test/unsupported-features.js
+- node tasks/build.js
+- node tasks/test/unsupported-features.js
 - npm run test:node
 - npm run test:browser
 - npm run examples
