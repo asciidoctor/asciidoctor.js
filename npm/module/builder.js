@@ -35,8 +35,6 @@ const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
   let data = fs.readFileSync(path, 'utf8')
   log.debug('Replace (g)sub! with (g)sub')
   data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'')
-  // bypass use of IO.binread when reading include files in reader
-  data = data.replace(/inc_content *= *(.*?)if *\(target_type\['\$=='\]\("file"\)\)(.*)/, 'inc_content = $1if (false)$2')
   fs.writeFileSync(path, data, 'utf8')
   return Promise.resolve({})
 }
