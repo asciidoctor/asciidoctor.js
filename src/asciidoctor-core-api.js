@@ -1486,7 +1486,8 @@ Document.prototype.getCompatMode = function () {
  * @memberof Document
  */
 Document.prototype.getSourcemap = function () {
-  return this.sourcemap
+  var sourcemap = this.sourcemap
+  return sourcemap === Opal.nil ? false : sourcemap
 }
 
 /**
@@ -1528,7 +1529,8 @@ Document.prototype.getOutfilesuffix = function () {
  * @memberof Document
  */
 Document.prototype.getParentDocument = function () {
-  return this.parent_document
+  var parentDocument = this.parent_document
+  return parentDocument === Opal.nil ? undefined : parentDocument
 }
 
 /**
@@ -1549,7 +1551,8 @@ Document.prototype.getConverter = function () {
  * @memberof Document
  */
 Document.prototype.getExtensions = function () {
-  return this.extensions
+  var extensions = this.extensions
+  return extensions === Opal.nil ? undefined : extensions
 }
 
 // Document.Title API
