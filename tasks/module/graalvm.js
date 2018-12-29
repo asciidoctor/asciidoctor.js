@@ -57,22 +57,20 @@ const graalvmRun = (name, jdkInstallDir) => {
   log.success(`Done ${name} in ${process.hrtime(start)[0]}s`)
 }
 
-const downloadGraalVM = (version) => {
+const downloadGraalVM = async (version) => {
   log.task('download graalvm')
 
   const target = 'build/graalvm.tar.gz'
   if (fs.existsSync(target)) {
     log.info(target + ' file already exists, skipping "download" task')
+    return
+  }
+  await download.getContentFromURL(`https://github.com/oracle/graal/releases/download/vm-${version}/graalvm-ce-${version}-linux-amd64.tar.gz`, target)
+  if (fs.existsSync('build/graalvm')) {
+    log.info('build/graalvm directory already exists, skipping "untar" task')
     return Promise.resolve({})
   }
-  return download.getContentFromURL(`https://github.com/oracle/graal/releases/download/vm-${version}/graalvm-ce-${version}-linux-amd64.tar.gz`, target)
-    .then(() => {
-      if (fs.existsSync('build/graalvm')) {
-        log.info('build/graalvm directory already exists, skipping "untar" task')
-        return Promise.resolve({})
-      }
-      return bfs.untar(target, 'graalvm', 'build')
-    })
+  return bfs.untar(target, 'graalvm', 'build')
 }
 
 module.exports = class GraalVM {

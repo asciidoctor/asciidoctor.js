@@ -7,7 +7,6 @@ const BuilderModule = require('./module/builder')
 
 const runTest = () => {
   execModule.execSync('npm run test')
-  return Promise.resolve({})
 }
 
 const removeDistDirSync = (environments) => {
@@ -26,16 +25,15 @@ const copyToDist = (environments) => {
   environments.forEach((environment) => {
     bfs.copySync(`build/asciidoctor-${environment}.js`, `dist/${environment}/asciidoctor.js`)
   })
-  return Promise.resolve({})
 }
 
 log.task('dist')
 const builderModule = new BuilderModule()
 const start = process.hrtime()
 
-builderModule.build()
-  .then(() => runTest())
-  .then(() => copyToDist(['browser', 'node', 'graalvm', 'umd']))
-  .then(() => {
-    log.success(`Done in ${process.hrtime(start)[0]} s`)
-  })
+;(async () => {
+  await builderModule.build()
+  runTest()
+  copyToDist(['browser', 'node', 'graalvm', 'umd'])
+  log.success(`Done in ${process.hrtime(start)[0]} s`)
+})()
