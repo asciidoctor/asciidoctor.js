@@ -2,7 +2,7 @@
 const chai = require('chai')
 const expect = chai.expect
 const childProcess = require('child_process')
-const execModule = require('../../npm/module/exec')
+const execModule = require('../../tasks/module/exec')
 const sinon = require('sinon')
 const dirtyChai = require('dirty-chai')
 chai.use(dirtyChai)
@@ -25,7 +25,7 @@ describe('Build', function () {
           'origin\tgit@github.com:Mogztter/asciidoctor.js.git\t(push)\n' +
           'upstream\tgit@github.com:asciidoctor/asciidoctor.js.git\t(fetch)\n' +
           'upstream\tgit@github.com:asciidoctor/asciidoctor.js.git\t(push)')
-      const releaseModule = require('../../npm/module/release.js')
+      const releaseModule = require('../../tasks/module/release.js')
       const execSyncStub = sinon.stub(execModule, 'execSync')
       execSyncStub.returns('void')
 
@@ -40,7 +40,7 @@ describe('Build', function () {
       childProcessExecSyncStub.withArgs('git remote -v')
         .returns('origin\tgit@github.com:ldez/asciidoctor.js.git (fetch)\n' +
           'origin\tgit@github.com:ldez/asciidoctor.js.git (push)')
-      const releaseModule = require('../../npm/module/release.js')
+      const releaseModule = require('../../tasks/module/release.js')
       const execSyncStub = sinon.stub(execModule, 'execSync')
       execSyncStub.returns('void')
 
