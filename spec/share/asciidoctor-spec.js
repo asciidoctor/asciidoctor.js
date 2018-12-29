@@ -824,6 +824,36 @@ paragraph 3
         const html = asciidoctor.convert(input)
         expect(html).to.include('<h3 id="_asciidoctors_most_notable_benefits">.1. Asciidoctor&#8217;s most notable benefits</h3>')
       })
+
+      describe('Embed an image when data-uri is defined', function () {
+        it('should embed a jpeg image', function () {
+          const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
+          const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/litoria-chloris.jpg[]`, options)
+          expect(html).to.include('img src="data:image/jpg;base64,')
+        })
+        it('should embed an svg image', function () {
+          const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
+          const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/cc-zero.svg[]`, options)
+          expect(html).to.include('img src="data:image/svg+xml;base64,')
+        })
+        it('should embed a png image', function () {
+          const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
+          const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/cat.png[]`, options)
+          expect(html).to.include('img src="data:image/png;base64,')
+        })
+        it('should not throw an exception if the image does not exists', function () {
+          const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
+          const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/not_found.png[]`, options)
+          if (testOptions.platform === 'Browser') {
+            // The target is an URI (file://).
+            // In this case, Asciidoctor will return the image URI when the image is not found...
+            expect(html).to.include(`<img src="${testOptions.baseDir}/spec/fixtures/images/not_found.png" alt="not found">`)
+          } else {
+            // ... otherwise Asciidoctor will return an empty image
+            expect(html).to.include('<img src="data:image/png;base64," alt="not found">')
+          }
+        })
+      })
     })
 
     describe('Wildcard character match', function () {
