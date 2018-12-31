@@ -10,23 +10,19 @@ const cleanModule = require('./clean')
 const compilerModule = require('./compiler')
 const uglifyModule = require('./uglify')
 
-const downloadDependencies = (asciidoctorCoreDependency) => {
+const downloadDependencies = async (asciidoctorCoreDependency) => {
   log.task('download dependencies')
-
   const target = 'build/asciidoctor.tar.gz'
-
   if (fs.existsSync(target)) {
     log.info(target + ' file already exists, skipping "download" task')
-    return Promise.resolve({})
+    return
   }
-  return download.getContentFromURL(`https://codeload.github.com/${asciidoctorCoreDependency.user}/${asciidoctorCoreDependency.repo}/tar.gz/${asciidoctorCoreDependency.version}`, target)
-    .then(() => {
-      if (fs.existsSync('build/asciidoctor')) {
-        log.info('build/asciidoctor directory already exists, skipping "untar" task')
-        return Promise.resolve({})
-      }
-      return bfs.untar(target, 'asciidoctor', 'build')
-    })
+  await download.getContentFromURL(`https://codeload.github.com/${asciidoctorCoreDependency.user}/${asciidoctorCoreDependency.repo}/tar.gz/${asciidoctorCoreDependency.version}`, target)
+  if (fs.existsSync('build/asciidoctor')) {
+    log.info('build/asciidoctor directory already exists, skipping "untar" task')
+    return
+  }
+  return bfs.untar(target, 'asciidoctor', 'build')
 }
 
 const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
@@ -36,7 +32,6 @@ const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
   log.debug('Replace (g)sub! with (g)sub')
   data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'')
   fs.writeFileSync(path, data, 'utf8')
-  return Promise.resolve({})
 }
 
 const replaceDefaultStylesheetPath = (asciidoctorCoreDependency) => {
@@ -60,20 +55,19 @@ return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != nu
   `
   data = data.replace(/(function \$\$primary_stylesheet_data\(\) {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2')
   fs.writeFileSync(path, data, 'utf8')
-  return Promise.resolve({})
 }
 
-const rebuild = (asciidoctorCoreDependency, environments) => {
+const rebuild = async (asciidoctorCoreDependency, environments) => {
   const target = asciidoctorCoreDependency.target
   if (fs.existsSync(target)) {
     log.info(`${target} file already exists, skipping "rebuild" task.\nTIP: Use "npm run clean" to rebuild from Asciidoctor core.`)
-    return Promise.resolve({})
+    return
   }
   cleanModule.clean()
-  return downloadDependencies(asciidoctorCoreDependency)
-    .then(() => compilerModule.compile(environments))
-    .then(() => replaceUnsupportedFeatures(asciidoctorCoreDependency))
-    .then(() => replaceDefaultStylesheetPath(asciidoctorCoreDependency))
+  await downloadDependencies(asciidoctorCoreDependency)
+  compilerModule.compile(environments)
+  replaceUnsupportedFeatures(asciidoctorCoreDependency)
+  replaceDefaultStylesheetPath(asciidoctorCoreDependency)
 }
 
 const concat = (message, files, destination) => {
@@ -139,7 +133,6 @@ const generateUMD = (asciidoctorCoreTarget, environments) => {
       fs.writeFileSync('build/asciidoctor.js', content, 'utf8')
     }
   })
-  return Promise.resolve({})
 }
 
 module.exports = class Builder {
@@ -164,14 +157,14 @@ module.exports = class Builder {
     this.asciidoctorCoreTarget = path.join('build', 'asciidoctor-core.js')
   }
 
-  build () {
+  async build () {
     if (process.env.SKIP_BUILD) {
       log.info('SKIP_BUILD environment variable is true, skipping "build" task')
-      return Promise.resolve({})
+      return
     }
     if (process.env.DRY_RUN) {
       log.debug('build')
-      return Promise.resolve({})
+      return
     }
 
     const start = process.hrtime()
@@ -183,12 +176,9 @@ module.exports = class Builder {
       target: this.asciidoctorCoreTarget
     }
 
-    return rebuild(asciidoctorCoreDependency, this.environments)
-      .then(() => generateUMD(this.asciidoctorCoreTarget, this.environments))
-      .then(() => uglifyModule.uglify())
-      .then(() => {
-        log.success(`Done in ${process.hrtime(start)[0]} s`)
-        return Promise.resolve({})
-      })
+    await rebuild(asciidoctorCoreDependency, this.environments)
+    generateUMD(this.asciidoctorCoreTarget, this.environments)
+    await uglifyModule.uglify()
+    log.success(`Done in ${process.hrtime(start)[0]} s`)
   }
 }

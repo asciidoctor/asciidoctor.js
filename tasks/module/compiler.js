@@ -41,5 +41,4 @@ module.exports.compile = (environments) => {
   const asciidoctorPath = 'build/asciidoctor'
   const asciidoctorCSSFile = path.join(asciidoctorPath, 'data/stylesheets/asciidoctor-default.css')
   fs.createReadStream(asciidoctorCSSFile).pipe(fs.createWriteStream('build/css/asciidoctor.css'))
-  return Promise.resolve({})
 }

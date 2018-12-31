@@ -22,23 +22,23 @@ const getContentFromAsciiDocRepo = (source, target) => {
 }
 
 const builder = new BuilderModule()
-builder.build()
-  .then(() => {
-    bfs.mkdirsSync(builder.benchmarkBuildDir)
-    ['node', 'chrome'].forEach(runner => bfs.copyToDirSync(`benchmark/${runner}.js`, builder.benchmarkBuildDir))
-    log.task('download sample data from AsciiDoc repository')
-    return Promise.all([
-      getContentFromAsciiDocRepo('asciidoc.txt', 'build/benchmark/userguide.adoc'),
-      getContentFromAsciiDocRepo('customers.csv', 'build/benchmark/customers.csv')
-    ])
-  })
-  .then(() => {
-    log.task('run benchmark')
-    if (runner === 'chrome') {
-      execModule.execSync('node ' + path.join(builder.benchmarkBuildDir, 'chrome.js'))
-    } else if (runner === 'node') {
-      execModule.execSync('node ' + path.join(builder.benchmarkBuildDir, 'node.js'))
-    } else {
-      log.error(`${runner} runner is unsupported!`)
-    }
-  })
+
+;(async () => {
+  await builder.build()
+  bfs.mkdirsSync(builder.benchmarkBuildDir)
+  const runners = ['node', 'chrome']
+  runners.forEach(runner => bfs.copyToDirSync(`benchmark/${runner}.js`, builder.benchmarkBuildDir))
+  log.task('download sample data from AsciiDoc repository')
+  await Promise.all([
+    getContentFromAsciiDocRepo('asciidoc.txt', 'build/benchmark/userguide.adoc'),
+    getContentFromAsciiDocRepo('customers.csv', 'build/benchmark/customers.csv')
+  ])
+  log.task('run benchmark')
+  if (runner === 'chrome') {
+    execModule.execSync('node ' + path.join(builder.benchmarkBuildDir, 'chrome.js'))
+  } else if (runner === 'node') {
+    execModule.execSync('node ' + path.join(builder.benchmarkBuildDir, 'node.js'))
+  } else {
+    log.error(`${runner} runner is unsupported!`)
+  }
+})()
