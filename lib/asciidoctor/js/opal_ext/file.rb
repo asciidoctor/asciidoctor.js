@@ -1,6 +1,5 @@
 module Kernel
-  # basic implementation of open, enough to work
-  # with reading files over XmlHttpRequest
+  # basic implementation of open, enough to work with reading files over XMLHttpRequest
   def open(path, *rest)
     file = File.new(path, *rest)
     if block_given?
