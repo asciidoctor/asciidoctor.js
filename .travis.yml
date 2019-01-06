@@ -6,7 +6,7 @@ addons:
   chrome: stable
 
 env:
-- ASCIIDOCTOR_CORE_VERSION=v1.5.8
+- ASCIIDOCTOR_CORE_VERSION=mojavelinux/asciidoctor#issue-2764-no-unmaintained-rubies
 - ASCIIDOCTOR_CORE_VERSION=master
 
 node_js:
