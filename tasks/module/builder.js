@@ -34,29 +34,6 @@ const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
   fs.writeFileSync(path, data, 'utf8')
 }
 
-const replaceDefaultStylesheetPath = (asciidoctorCoreDependency) => {
-  log.task('Replace default stylesheet path')
-  const path = asciidoctorCoreDependency.target
-  let data = fs.readFileSync(path, 'utf8')
-  log.debug('Replace primary_stylesheet_data method')
-  const primaryStylesheetDataImpl = `
-var File = Opal.const_get_relative([], "File");
-var stylesheetsPath;
-if (Opal.const_get_relative([], "JAVASCRIPT_PLATFORM")["$=="]("node")) {
-  if (File.$basename(__dirname) === "node" && File.$basename(File.$dirname(__dirname)) === "dist") {
-    stylesheetsPath = File.$join(File.$dirname(__dirname), "css");
-  } else {
-    stylesheetsPath = File.$join(__dirname, "css");
-  }
-} else {
-  stylesheetsPath = "css";
-}
-return ((($a = self.primary_stylesheet_data) !== false && $a !== nil && $a != null) ? $a : self.primary_stylesheet_data = Opal.const_get_relative([], "IO").$read(File.$join(stylesheetsPath, "asciidoctor.css")).$chomp());
-  `
-  data = data.replace(/(function \$\$primary_stylesheet_data\(\) {\n)(?:[^}]*)(\n\s+}.*)/g, '$1' + primaryStylesheetDataImpl + '$2')
-  fs.writeFileSync(path, data, 'utf8')
-}
-
 const rebuild = async (asciidoctorCoreDependency, environments) => {
   const target = asciidoctorCoreDependency.target
   if (fs.existsSync(target)) {
@@ -67,7 +44,6 @@ const rebuild = async (asciidoctorCoreDependency, environments) => {
   await downloadDependencies(asciidoctorCoreDependency)
   compilerModule.compile(environments)
   replaceUnsupportedFeatures(asciidoctorCoreDependency)
-  replaceDefaultStylesheetPath(asciidoctorCoreDependency)
 }
 
 const concat = (message, files, destination) => {
