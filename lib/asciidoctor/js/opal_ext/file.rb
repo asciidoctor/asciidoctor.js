@@ -1,15 +1,3 @@
-module Kernel
-  # basic implementation of open, enough to work with reading files over XMLHttpRequest
-  def open(path, *rest)
-    file = File.new(path, *rest)
-    if block_given?
-      yield file
-    else
-      file
-    end
-  end
-end
-
 class File
 
   attr_reader :eof
@@ -94,6 +82,8 @@ class File
       # REMIND will be overriden by a specific implementation
       ''
     end
+
+    alias absolute_path expand_path
   end
 end
 
