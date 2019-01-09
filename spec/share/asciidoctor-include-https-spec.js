@@ -55,7 +55,7 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
       }).timeout(5000)
     }
 
-    if (testOptions.platform !== 'CommonJS' && testOptions.platform !== 'RequireJS') {
+    if (testOptions.platform !== 'Browser') {
       // CommonJS and RequireJS tests suites are executed on a Browser (Chrome Headless).
       // Other tests suites are executed on Node.js (using the xmlhttprequest Node module to emulate the browser XMLHttpRequest)
       // Unlike the browser XMLHttpRequest, the xmlhttprequest node module does not expand path and therefore returns a 404!
