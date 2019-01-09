@@ -1435,13 +1435,13 @@ header_attribute::foo[bar]`
       expect(html).to.contain('include::nonexistent.adoc[]')
     })
 
-    it('Should include file with a relative path (base_dir is not defined)', function () {
+    it('should include file with a relative path (base_dir is not defined)', function () {
       const opts = { safe: 'safe' }
       const html = asciidoctor.convert('include::spec/fixtures/include.adoc[]', opts)
       expect(html).to.contain('include content')
     })
 
-    it('Should include file with an absolute path (base_dir is explicitly defined)', function () {
+    it('should include file with an absolute path (base_dir is explicitly defined)', function () {
       const opts = { safe: 'safe', base_dir: testOptions.baseDir }
       const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts)
       expect(html).to.contain('include content')

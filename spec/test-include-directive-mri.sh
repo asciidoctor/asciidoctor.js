@@ -29,32 +29,32 @@ function test_include_directive {
   echo ""
 }
 
-title "Should include file with a relative path when base_dir is defined (with file:// protocol)"
+title "should include file with a relative path when base_dir is defined (with file:// protocol)"
 test_include_directive "include::$RELATIVE_PATH[]" "--base-dir \"file://$BASE_DIR\""
 
-title "Should include file with a relative path (containing ..) when base_dir is defined (with file:// protocol)"
+title "should include file with a relative path (containing ..) when base_dir is defined (with file:// protocol)"
 test_include_directive "include::$RELATIVE_PATH_UNRESOLVED[]" "--base-dir \"file://$BASE_DIR\""
 
-title "Should include file with an absolute path (with file:// protocol)"
+title "should include file with an absolute path (with file:// protocol)"
 test_include_directive "include::file://$BASE_DIR/$RELATIVE_PATH[]" "-a allow-uri-read"
 
-title "Should include file with an absolute path (containing .. and with file:// protocol)"
+title "should include file with an absolute path (containing .. and with file:// protocol)"
 test_include_directive "include::file://$BASE_DIR/$RELATIVE_PATH_UNRESOLVED[]" "-a allow-uri-read"
 
-title "Should include file with a relative path"
+title "should include file with a relative path"
 test_include_directive "include::$RELATIVE_PATH[]" ""
 
-title "Should include file with an absolute path (with file:// protocol) when base_dir is defined (with file:// protocol)"
+title "should include file with an absolute path (with file:// protocol) when base_dir is defined (with file:// protocol)"
 test_include_directive  "include::file://$BASE_DIR/$RELATIVE_PATH[]" "--base-dir \"file://$BASE_DIR\" -a allow-uri-read"
 
-title "Should include file with an absolute path (with https:// protocol) when base_dir is defined (with https:// protocol)"
+title "should include file with an absolute path (with https:// protocol) when base_dir is defined (with https:// protocol)"
 test_include_directive  "include::$REMOTE_BASE_DIR/$RELATIVE_PATH[]" "--base-dir \"$REMOTE_BASE_DIR\" -a allow-uri-read"
 
-title "Should include file with a relative path when base_dir is defined (with https:// protocol)"
+title "should include file with a relative path when base_dir is defined (with https:// protocol)"
 test_include_directive  "include::$RELATIVE_PATH[]" "--base-dir \"$REMOTE_BASE_DIR\" -a allow-uri-read"
 
-title "Should include file with a relative path (containing ..) when base_dir is defined (with https:// protocol)"
+title "should include file with a relative path (containing ..) when base_dir is defined (with https:// protocol)"
 test_include_directive  "include::$RELATIVE_PATH_UNRESOLVED[]" "--base-dir \"$REMOTE_BASE_DIR\" -a allow-uri-read"
 
-title "Should include file with an absolute path (containing ..)"
+title "should include file with an absolute path (containing ..)"
 test_include_directive  "include::$REMOTE_BASE_DIR/$RELATIVE_PATH_UNRESOLVED[]" "-a allow-uri-read"

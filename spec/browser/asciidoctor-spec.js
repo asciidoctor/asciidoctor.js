@@ -30,13 +30,13 @@
     describe('Include', function () {
       // REMIND: Does not work because we are unable to get the current directory in a reliable way when running inside a browser
       /*
-      it('Should include file with a relative path (base_dir is not defined)', function () {
+      it('should include file with a relative path (base_dir is not defined)', function () {
         var opts = {safe: 'safe'};
         var html = asciidoctor.convert('include::spec/fixtures/include.adoc[]', opts);
         expect(html).to.include('include content');
       });
       */
-      it('Should include file with an absolute path (base_dir is explicitly defined)', function () {
+      it('should include file with an absolute path (base_dir is explicitly defined)', function () {
         const opts = { safe: 'safe', base_dir: testOptions.baseDir }
         const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts)
         expect(html).to.include('include content')

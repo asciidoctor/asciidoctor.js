@@ -60,7 +60,7 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
       // Other tests suites are executed on Node.js (using the xmlhttprequest Node module to emulate the browser XMLHttpRequest)
       // Unlike the browser XMLHttpRequest, the xmlhttprequest node module does not expand path and therefore returns a 404!
     } else {
-      it('Should include file with a relative expandable path (base_dir is an absolute https URI)', function () {
+      it('should include file with a relative expandable path (base_dir is an absolute https URI)', function () {
         const opts = {
           safe: 'safe',
           base_dir: 'https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master',
@@ -70,7 +70,7 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
         expect(html).to.include('Bower')
       }).timeout(5000)
 
-      it('Should include file with an absolute expandable https URI (base_dir is not defined)', function () {
+      it('should include file with an absolute expandable https URI (base_dir is not defined)', function () {
         const opts = { safe: 'safe', attributes: { 'allow-uri-read': true } }
         const html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/../v1.5.0/README.adoc[]', opts)
         expect(html).to.include('Bower')

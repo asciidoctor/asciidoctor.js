@@ -1,6 +1,6 @@
 = Smiley!
 
-Should process smiley inline macro!
+You should use smiley faces!
 
 smiley:wink[]
 smiley:happy[]
