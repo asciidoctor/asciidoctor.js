@@ -6,7 +6,6 @@ const bfs = require('bestikk-fs')
 const Download = require('bestikk-download')
 const download = new Download({})
 
-const cleanModule = require('./clean')
 const compilerModule = require('./compiler')
 const uglifyModule = require('./uglify')
 
@@ -14,7 +13,7 @@ const downloadDependencies = async (asciidoctorCoreDependency) => {
   log.task('download dependencies')
   const target = 'build/asciidoctor.tar.gz'
   if (fs.existsSync(target)) {
-    log.info(target + ' file already exists, skipping "download" task')
+    log.info(target + ' file already exists, skipping "download" task.\nTIP: Use "npm run clean" to download again the dependencies.')
     return
   }
   await download.getContentFromURL(`https://codeload.github.com/${asciidoctorCoreDependency.user}/${asciidoctorCoreDependency.repo}/tar.gz/${asciidoctorCoreDependency.version}`, target)
@@ -25,25 +24,9 @@ const downloadDependencies = async (asciidoctorCoreDependency) => {
   return bfs.untar(target, 'asciidoctor', 'build')
 }
 
-const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
-  log.task('Replace unsupported features')
-  const path = asciidoctorCoreDependency.target
-  let data = fs.readFileSync(path, 'utf8')
-  log.debug('Replace (g)sub! with (g)sub')
-  data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'')
-  fs.writeFileSync(path, data, 'utf8')
-}
-
 const rebuild = async (asciidoctorCoreDependency, environments) => {
-  const target = asciidoctorCoreDependency.target
-  if (fs.existsSync(target)) {
-    log.info(`${target} file already exists, skipping "rebuild" task.\nTIP: Use "npm run clean" to rebuild from Asciidoctor core.`)
-    return
-  }
-  cleanModule.clean()
   await downloadDependencies(asciidoctorCoreDependency)
-  compilerModule.compile(environments)
-  replaceUnsupportedFeatures(asciidoctorCoreDependency)
+  compilerModule.compile(asciidoctorCoreDependency, environments)
 }
 
 const concat = (message, files, destination) => {
@@ -152,6 +135,7 @@ module.exports = class Builder {
       target: this.asciidoctorCoreTarget
     }
 
+    bfs.mkdirsSync('build/css')
     await rebuild(asciidoctorCoreDependency, this.environments)
     generateUMD(this.asciidoctorCoreTarget, this.environments)
     await uglifyModule.uglify()

@@ -8,33 +8,59 @@ const OpalBuilder = require('opal-compiler').Builder
 const compileRuntimeEnvironments = (environments) => {
   log.task('compile runtime environments')
 
+  const skipped = []
   environments.forEach((environment) => {
+    const module = `asciidoctor/js/opal_ext/${environment}`
+    log.debug(module)
     // Build a new instance each time, otherwise the context is shared.
+    const target = `build/opal-ext-${environment}.js`
+    if (fs.existsSync(target)) {
+      skipped.push(target)
+      return
+    }
     const opalBuilder = OpalBuilder.create()
     opalBuilder.appendPaths('lib')
     opalBuilder.setCompilerOptions({ dynamic_require_severity: 'ignore', requirable: true })
-    let module = `asciidoctor/js/opal_ext/${environment}`
-    log.debug(module)
     let data = opalBuilder.build(module).toString()
-    fs.writeFileSync(`build/opal-ext-${environment}.js`, data, 'utf8')
+    fs.writeFileSync(target, data, 'utf8')
   })
+  if (skipped.length > 0) {
+    log.info(`${skipped.join(', ')} files already exist, skipping "compile" task.\nTIP: Use "npm run clean:ext" to compile again from Ruby sources.`)
+  }
 }
 
-const compileAsciidoctorCore = () => {
+const compileAsciidoctorCore = (asciidoctorCoreDependency) => {
   log.task('compile core lib')
+  const module = `asciidoctor/lib`
+  log.debug(module)
+  const target = asciidoctorCoreDependency.target
+  if (fs.existsSync(target)) {
+    log.info(`${target} file already exists, skipping "compile" task.\nTIP: Use "npm run clean:core" to compile again from Asciidoctor Ruby.`)
+    return
+  }
   const opalBuilder = OpalBuilder.create()
   opalBuilder.appendPaths('build/asciidoctor/lib')
   opalBuilder.appendPaths('node_modules/opal-compiler/src/stdlib')
   opalBuilder.appendPaths('lib')
   opalBuilder.setCompilerOptions({ dynamic_require_severity: 'ignore' })
-  fs.writeFileSync('build/asciidoctor-core.js', opalBuilder.build('asciidoctor').toString(), 'utf8')
+  fs.writeFileSync(target, opalBuilder.build('asciidoctor').toString(), 'utf8')
+
+  replaceUnsupportedFeatures(asciidoctorCoreDependency)
 }
 
-module.exports.compile = (environments) => {
-  bfs.mkdirsSync('build')
+const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
+  log.task('Replace unsupported features')
+  const path = asciidoctorCoreDependency.target
+  let data = fs.readFileSync(path, 'utf8')
+  log.debug('Replace (g)sub! with (g)sub')
+  data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'')
+  fs.writeFileSync(path, data, 'utf8')
+}
 
+module.exports.compile = (asciidoctorCoreDependency, environments) => {
+  bfs.mkdirsSync('build')
   compileRuntimeEnvironments(environments)
-  compileAsciidoctorCore()
+  compileAsciidoctorCore(asciidoctorCoreDependency)
 
   log.task('copy resources')
   log.debug('copy asciidoctor.css')
