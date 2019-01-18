@@ -26,23 +26,22 @@ class AbstractNode
 
   def generate_data_uri_from_uri image_uri, cache_uri = false
     %x{
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', #{image_uri}, false)
-      // the response type cannot be changed for synchronous requests made from a document
-      // xhr.responseType = 'arraybuffer'
-      xhr.overrideMimeType('text/plain; charset=x-user-defined')
-
       var contentType = ''
       var b64encoded = ''
       var status = -1
 
       try {
+        var xhr = new XMLHttpRequest()
+        xhr.open('GET', #{image_uri}, false)
+        // the response type cannot be changed for synchronous requests made from a document
+        // xhr.responseType = 'arraybuffer'
+        xhr.overrideMimeType('text/plain; charset=x-user-defined')
         xhr.addEventListener('load', function() {
           status = this.status
           // status is 0 for local file mode (i.e., file://)
           if (status === 0 || status === 200) {
             var binary = ''
-            var rawText = this.responseText;
+            var rawText = this.responseText
             for (var i = 0, len = rawText.length; i < len; ++i) {
               var c = rawText.charCodeAt(i)
               var byteCode = c & 0xff // byte at offset i

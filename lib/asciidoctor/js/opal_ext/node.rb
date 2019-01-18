@@ -36,6 +36,5 @@ end
 // Load Opal modules
 Opal.load("pathname");
 Opal.load("base64");
-Opal.load("open-uri");
 Opal.load("nodejs");
 )
