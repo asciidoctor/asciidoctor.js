@@ -15,6 +15,7 @@
     "README.adoc"
   ],
   "scripts": {
+    "test:graalvm": "node tasks/graalvm.js && ./build/graalvm/bin/node spec/graalvm/run.js",
     "test:node": "mocha spec/*/*.spec.js",
     "test:browser": "node spec/browser/run.js",
     "test": "node tasks/test/unsupported-features.js && npm run test:node && npm run test:browser",

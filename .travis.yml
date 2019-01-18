@@ -28,7 +28,7 @@ script:
 - npm run package
 - npm run docs
 - SKIP_BUILD=1 npm run examples
-- node tasks/graalvm.js # test against GraalVM
+- npm run test:graalvm # test against GraalVM
 
 jobs:
   include:
