@@ -88,7 +88,7 @@ describe('Node.js', () => {
 intro
 `
         const defaultLogger = asciidoctor.LoggerManager.getLogger()
-        const memoryLogger = asciidoctor.MemoryLogger.$new()
+        const memoryLogger = asciidoctor.MemoryLogger.create()
         try {
           asciidoctor.LoggerManager.setLogger(memoryLogger)
           asciidoctor.convert(input)
@@ -106,7 +106,7 @@ intro
       })
       it('should send a warning message if source highlighter is not installed', () => {
         const defaultLogger = asciidoctor.LoggerManager.getLogger()
-        const memoryLogger = asciidoctor.MemoryLogger.$new()
+        const memoryLogger = asciidoctor.MemoryLogger.create()
         try {
           asciidoctor.LoggerManager.setLogger(memoryLogger)
           const doc = asciidoctor.loadFile(resolveFixture('source-highlighter-coderay.adoc'), { safe: 'safe', to_file: false })
@@ -216,7 +216,7 @@ intro
 intro
 `
         const defaultLogger = asciidoctor.LoggerManager.getLogger()
-        const nullLogger = asciidoctor.NullLogger.$new()
+        const nullLogger = asciidoctor.NullLogger.create()
         const stderrWriteFunction = process.stderr.write
         let stderrOutput = ''
         process.stderr.write = function (chunk) {
@@ -1503,7 +1503,7 @@ header_attribute::foo[bar]`
     it('should register a custom converter (fallback to the built-in HTML5 converter)', () => {
       class BlogConverter {
         constructor () {
-          this.baseConverter = asciidoctor.Html5Converter.$new()
+          this.baseConverter = asciidoctor.Html5Converter.create()
           this.transforms = {
             document: (node) => {
               return `<!DOCTYPE html>

@@ -1055,6 +1055,10 @@ var Html5Converter = Opal.Asciidoctor.Converter.Html5Converter
 // Alias
 Opal.Asciidoctor.Html5Converter = Html5Converter
 
+Html5Converter.create = function () {
+  return this.$new()
+}
+
 Html5Converter.prototype.convert = function (node, transform, opts) {
   return this.$convert(node, transform, opts)
 }
