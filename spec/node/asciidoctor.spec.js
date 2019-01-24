@@ -74,7 +74,7 @@ describe('Node.js', () => {
       it('should be able to get logger\'s info', () => {
         const defaultLogger = asciidoctor.LoggerManager.getLogger()
         expect(defaultLogger.getLevel()).to.equal(2)
-        expect(defaultLogger.getFormatter()['$$class'].name).to.equal('$BasicFormatter')
+        expect(defaultLogger.getFormatter()['$$class'].displayName).to.equal('::BasicFormatter')
         expect(defaultLogger.getProgramName()).to.equal('asciidoctor')
         expect(defaultLogger.getMaxSeverity()).to.equal(3)
       })
@@ -1421,8 +1421,8 @@ header_attribute::foo[bar]`
     })
 
     it('should include a file as a UTF-8 file', () => {
-      var options = { safe: 'unsafe', header_footer: false, 'to_file': false }
-      var html = asciidoctor.convertFile('spec/fixtures/encoding.adoc', options)
+      const options = { safe: 'unsafe', header_footer: false, 'to_file': false }
+      const html = asciidoctor.convertFile('spec/fixtures/encoding.adoc', options)
       expect(html).to.contain('À propos des majuscules accentuées')
       expect(html).to.contain('Le français c&#8217;est pas compliqué :)')
     })

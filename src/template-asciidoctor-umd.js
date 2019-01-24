@@ -3,43 +3,7 @@ if (typeof Opal === 'undefined' && typeof module === 'object' && module.exports)
 }
 
 if (typeof Opal === 'undefined') {
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects#Fundamental_objects
-  var fundamentalObjects = [
-    Function,
-    Boolean,
-    Error,
-    Number,
-    Date,
-    String,
-    RegExp,
-    Array
-  ]
-  var backup = {}
-  for (var index in fundamentalObjects) {
-    var fundamentalObject = fundamentalObjects[index]
-    backup[fundamentalObject.name] = {
-      call: fundamentalObject.call,
-      apply: fundamentalObject.apply,
-      bind: fundamentalObject.bind
-    }
-  }
-
 //{{opalCode}}
-
-  // restore Function methods (see https://github.com/opal/opal/issues/1846)
-  for (var index in fundamentalObjects) {
-    var fundamentalObject = fundamentalObjects[index]
-    var name = fundamentalObject.name
-    if (typeof fundamentalObject.call !== 'function') {
-      fundamentalObject.call = backup[name].call
-    }
-    if (typeof fundamentalObject.apply !== 'function') {
-      fundamentalObject.apply = backup[name].apply
-    }
-    if (typeof fundamentalObject.bind !== 'function') {
-      fundamentalObject.bind = backup[name].bind
-    }
-  }
 }
 
 // UMD Module
