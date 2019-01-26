@@ -74,17 +74,27 @@ const generateUMD = (asciidoctorCoreTarget, environments) => {
   environments.forEach((environment) => {
     const opalExtData = fs.readFileSync(`build/opal-ext-${environment}.js`, 'utf8')
     const asciidoctorCoreData = fs.readFileSync(asciidoctorCoreTarget, 'utf8')
-    let moduleData = parseTemplateData(opalExtData.concat('\n').concat(asciidoctorCoreData), {
-      '//{{asciidoctorRuntimeEnvironment}}': `self.$require("asciidoctor/js/opal_ext/${environment}");`
+    let data
+    if (['node', 'browser'].includes(environment)) {
+      const asciidoctorExtData = fs.readFileSync(`build/asciidoctor-ext-${environment}.js`, 'utf8')
+      data = opalExtData.concat('\n').concat(asciidoctorExtData).concat('\n').concat(asciidoctorCoreData)
+    } else {
+      data = opalExtData.concat('\n').concat(asciidoctorCoreData)
+    }
+    let asciidoctorData = parseTemplateData(data, {
+      '//{{requireOpalRuntimeExt}}': `self.$require("asciidoctor/js/opal_ext/${environment}");`,
+      '//{{requireAsciidoctorRuntimeExt}}': `self.$require("asciidoctor/js/asciidoctor_ext/${environment}");`
     })
     let templateFile
     let target = `build/asciidoctor-${environment}.js`
-    if (['node', 'electron'].includes(environment)) {
+    if (environment === 'browser') {
+      templateFile = 'src/template-asciidoctor-browser.js'
+    } else if (environment === 'node' || environment === 'electron') {
       templateFile = 'src/template-asciidoctor-node.js'
     } else {
       templateFile = 'src/template-asciidoctor-umd.js'
     }
-    templateModel['//{{asciidoctorCode}}'] = moduleData
+    templateModel['//{{asciidoctorCode}}'] = asciidoctorData
     const content = parseTemplateFile(templateFile, templateModel)
     fs.writeFileSync(target, content, 'utf8')
     // To be backward compatible

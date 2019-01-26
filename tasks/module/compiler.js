@@ -5,15 +5,12 @@ const bfs = require('bestikk-fs')
 const log = require('bestikk-log')
 const OpalBuilder = require('opal-compiler').Builder
 
-const compileRuntimeEnvironments = (environments) => {
-  log.task('compile runtime environments')
-
-  const skipped = []
-  environments.forEach((environment) => {
-    const module = `asciidoctor/js/opal_ext/${environment}`
+const compileExt = (name, environment, skipped) => {
+  if (fs.existsSync(`lib/asciidoctor/js/${name}_ext/${environment}.rb`)) {
+    const module = `asciidoctor/js/${name}_ext/${environment}`
     log.debug(module)
     // Build a new instance each time, otherwise the context is shared.
-    const target = `build/opal-ext-${environment}.js`
+    const target = `build/${name}-ext-${environment}.js`
     if (fs.existsSync(target)) {
       skipped.push(target)
       return
@@ -21,8 +18,21 @@ const compileRuntimeEnvironments = (environments) => {
     const opalBuilder = OpalBuilder.create()
     opalBuilder.appendPaths('lib')
     opalBuilder.setCompilerOptions({ dynamic_require_severity: 'ignore', requirable: true })
+    // For performance reason we build "asciidoctor_ext" without "asciidoctor" core.
+    // As a result Ruby modules required in "asciidoctor_ext" won't be found at compile time but will be resolved at runtime.
+    opalBuilder.missing_require_severity = 'ignore'
     let data = opalBuilder.build(module).toString()
     fs.writeFileSync(target, data, 'utf8')
+  }
+}
+
+const compileRuntimeEnvironments = (environments) => {
+  log.task('compile runtime environments')
+
+  const skipped = []
+  environments.forEach((environment) => {
+    compileExt('opal', environment, skipped)
+    compileExt('asciidoctor', environment, skipped)
   })
   if (skipped.length > 0) {
     log.info(`${skipped.join(', ')} files already exist, skipping "compile" task.\nTIP: Use "npm run clean:ext" to compile again from Ruby sources.`)

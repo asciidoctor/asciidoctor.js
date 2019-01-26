@@ -1,17 +1,7 @@
 module Asciidoctor
 class Stylesheets
   def primary_stylesheet_data
-    if JAVASCRIPT_PLATFORM == 'node'
-      __path__ = `require('path')`
-      if `__path__.basename(__dirname) === 'node' && __path__.basename(__path__.dirname(__dirname)) === 'dist'`
-        stylesheets_dir = `__path__.join(__path__.dirname(__dirname), 'css')`
-      else
-        stylesheets_dir = `__path__.join(__dirname, 'css')`
-      end
-    else
-      stylesheets_dir = 'css'
-    end
-    @primary_stylesheet_data ||= ::IO.read(::File.join(stylesheets_dir, 'asciidoctor.css')).rstrip
+    @primary_stylesheet_data ||= ::IO.read(::File.join('css', 'asciidoctor.css')).rstrip
   end
 end
 end
