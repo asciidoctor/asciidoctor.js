@@ -104,22 +104,6 @@ intro
           asciidoctor.LoggerManager.setLogger(defaultLogger)
         }
       })
-      it('should send a warning message if source highlighter is not installed', () => {
-        const defaultLogger = asciidoctor.LoggerManager.getLogger()
-        const memoryLogger = asciidoctor.MemoryLogger.create()
-        try {
-          asciidoctor.LoggerManager.setLogger(memoryLogger)
-          const doc = asciidoctor.loadFile(resolveFixture('source-highlighter-coderay.adoc'), { safe: 'safe', to_file: false })
-          doc.convert()
-          const errorMessage = memoryLogger.getMessages()[0]
-          expect(errorMessage.getSeverity()).to.equal('WARN')
-          expect(errorMessage.getText()).to.equal('optional gem \'coderay\' is not installed. Functionality disabled.')
-          const sourceLocation = errorMessage.getSourceLocation()
-          expect(sourceLocation).to.be.undefined()
-        } finally {
-          asciidoctor.LoggerManager.setLogger(defaultLogger)
-        }
-      })
       it('should be able to set the logger\'s program name', () => {
         const defaultLogger = asciidoctor.LoggerManager.getLogger()
         try {
