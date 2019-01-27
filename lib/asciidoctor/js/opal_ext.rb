@@ -8,6 +8,6 @@ require 'asciidoctor/js/opal_ext/uri'
 // suppress "not supported" warning messages from Opal
 Opal.config.unsupported_features_severity = 'ignore'
 
-// Load specific implementation
-//{{asciidoctorRuntimeEnvironment}}
+// Load specific runtime
+//{{requireOpalRuntimeExt}}
 )

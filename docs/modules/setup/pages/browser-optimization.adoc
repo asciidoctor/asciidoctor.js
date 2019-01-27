@@ -1,0 +1,25 @@
+= Asciidoctor.js for the browser
+
+Asciidoctor.js produces bundles that target different environments.
+The browser bundle is _not_ minified and includes the Opal runtime code.
+
+On this page, you'll learn how to optimize Asciidoctor.js for the browser.
+
+== Google Clojure Compiler
+
+We recommend to use the Clojure Compiler to reduce the size and improve the performance of Asciidoctor.js.
+
+https://dl.google.com/closure-compiler/compiler-latest.zip[Download the latest version] of the Clojure Compiler.
+
+NOTE: The Closure Compiler requires Java 8 or higher.
+
+. Unzip the zip archive and copy the jar file at the root of the project
+. Build the project using `npm`
+. Once the project is built, run the following command:
+
+ $ java -jar closure-compiler-v20190121.jar \
+   --jscomp_off=undefinedVars \
+   --js_output_file=build/asciidoctor-browser.min.js \
+   --compilation_level=ADVANCED build/asciidoctor-browser.js
++
+NOTE: We need to add the `--jscomp_off=undefinedVars` flag because the Closure Compiler wrongly assumes that the `Opal` global variable is undefined.
