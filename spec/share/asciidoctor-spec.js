@@ -824,7 +824,6 @@ paragraph 3
         const html = asciidoctor.convert(input)
         expect(html).to.include('<h3 id="_asciidoctors_most_notable_benefits">.1. Asciidoctor&#8217;s most notable benefits</h3>')
       })
-
       describe('Embed an image when data-uri is defined', function () {
         it('should embed a jpeg image', function () {
           const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
@@ -841,6 +840,11 @@ paragraph 3
           const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/cat.png[]`, options)
           expect(html).to.include('img src="data:image/png;base64,')
         })
+        it('should embed a remote png image', function () {
+          const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
+          const html = asciidoctor.convert(`image::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/fixtures/images/cat.png[]`, options)
+          expect(html).to.include('img src="data:image/png;base64,')
+        }).timeout(5000)
         it('should not throw an exception if the image does not exists', function () {
           const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
           const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/not_found.png[]`, options)

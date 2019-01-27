@@ -5,16 +5,14 @@ class AbstractNode
 
   def generate_data_uri_from_uri image_uri, cache_uri = false
     %x{
-      var xhr = new __XMLHttpRequest__();
-      xhr.open('GET', uri, false);
-      xhr.responseType = 'arraybuffer';
-      xhr.send();
-
       var contentType = ''
       var b64encoded = ''
       var status = -1
 
       try {
+        var xhr = new __XMLHttpRequest__();
+        xhr.open('GET', image_uri, false);
+        xhr.responseType = 'arraybuffer';
         xhr.addEventListener('load', function() {
           status = this.status
           if (status === 200) {
