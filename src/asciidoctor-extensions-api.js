@@ -989,6 +989,11 @@ Converter.prototype.convert = function (node, transform, opts) {
   return this.$convert(node, transform, toHash(opts))
 }
 
+if (Converter.BuiltIn) { // Converter.BuiltIn was removed in Asciidoctor 2.0.0
+  // The built-in converter doesn't include Converter, so we have to force it
+  Converter.BuiltIn.prototype.convert = Converter.prototype.convert
+}
+
 /**
  * Create an instance of the converter bound to the specified backend.
  *
@@ -1024,6 +1029,9 @@ Opal.Asciidoctor.ConverterFactory = ConverterFactory
 ConverterFactory.register = function (converter, backends) {
   if (typeof converter === 'object' && typeof converter.$convert === 'undefined' && typeof converter.convert === 'function') {
     Opal.def(converter, '$convert', converter.convert)
+  }
+  if (typeof this.$register === 'function' && this.$register.$$stub !== true) {
+    return this.$register(converter, backends) // Converter.Factory.register was removed in Asciidoctor 2.0.0
   }
   var args = [converter].concat(backends)
   return Converter.$register.apply(Converter, args)

@@ -1604,7 +1604,7 @@ header_attribute::foo[bar]`
         }
       }
 
-      asciidoctor.ConverterFactory.register(new BlogConverter(), 'html5')
+      asciidoctor.ConverterFactory.register(new BlogConverter(), ['html5'])
       const options = { safe: 'safe', header_footer: true }
       const input = `= One Thing to Write the Perfect Blog Post
 Guillaume Grossetie <ggrossetie@yuzutech.fr>
