@@ -71,11 +71,11 @@ Opal.Asciidoctor.Extensions = Extensions
  */
 Extensions.create = function (name, block) {
   if (typeof name === 'function' && typeof block === 'undefined') {
-    return Opal.send(this, 'build_registry', null, toBlock(name))
+    return Opal.send(this, 'create', null, toBlock(name))
   } else if (typeof block === 'function') {
-    return Opal.send(this, 'build_registry', [name], toBlock(block))
+    return Opal.send(this, 'create', [name], toBlock(block))
   } else {
-    return this.$build_registry()
+    return this.$create()
   }
 }
 
