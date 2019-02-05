@@ -989,11 +989,6 @@ Converter.prototype.convert = function (node, transform, opts) {
   return this.$convert(node, transform, toHash(opts))
 }
 
-if (Converter.BuiltIn) { // Converter.BuiltIn was removed in Asciidoctor 2.0.0
-  // The built-in converter doesn't include Converter, so we have to force it
-  Converter.BuiltIn.prototype.convert = Converter.prototype.convert
-}
-
 /**
  * Create an instance of the converter bound to the specified backend.
  *
