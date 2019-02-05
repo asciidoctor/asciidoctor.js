@@ -989,8 +989,17 @@ Converter.prototype.convert = function (node, transform, opts) {
   return this.$convert(node, transform, toHash(opts))
 }
 
-// The built-in converter doesn't include Converter, so we have to force it
-Converter.BuiltIn.prototype.convert = Converter.prototype.convert
+/**
+ * Create an instance of the converter bound to the specified backend.
+ *
+ * @param {string} backend - look for a converter bound to this keyword.
+ * @param {Object} opts - a JSON of options to pass to the converter (default: {})
+ * @returns {Converter} - a converter instance for converting nodes in an Asciidoctor AST.
+ * @memberof Converter/Factory
+ */
+Converter.create = function (backend, opts) {
+  return this.$create(backend, toHash(opts))
+}
 
 // Converter Factory API
 
@@ -1016,7 +1025,11 @@ ConverterFactory.register = function (converter, backends) {
   if (typeof converter === 'object' && typeof converter.$convert === 'undefined' && typeof converter.convert === 'function') {
     Opal.def(converter, '$convert', converter.convert)
   }
-  return this.$register(converter, backends)
+  if (typeof this.$register === 'function' && this.$register.$$stub !== true) {
+    return this.$register(converter, backends) // Converter.Factory.register was removed in Asciidoctor 2.0.0
+  }
+  var args = [converter].concat(backends)
+  return Converter.$register.apply(Converter, args)
 }
 
 /**

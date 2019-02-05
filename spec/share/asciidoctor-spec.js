@@ -946,7 +946,11 @@ paragraph 3
       it('should get converter factory', function () {
         const factory = asciidoctor.Converter.Factory.getDefault(false)
         expect(factory).to.be.an.instanceof(Object)
-        expect(factory.$$class.$name()).to.equal('Asciidoctor::Converter::Factory')
+        if (getCoreVersionNumber(asciidoctor) >= 200) {
+          expect(factory.$$name).to.equal('Converter')
+        } else {
+          expect(factory.$$class.$name()).to.equal('Asciidoctor::Converter::Factory')
+        }
       })
 
       it('should create instance of html5 converter', function () {
