@@ -333,6 +333,7 @@ intro
       }
     })
   })
+
   describe('Configuring Asciidoctor module', () => {
     it('should be able to configure Asciidoctor module', () => {
       /** @namespace Opal.JAVASCRIPT_PLATFORM.JAVASCRIPT_IO_MODULE.JAVASCRIPT_ENGINE.JAVASCRIPT_FRAMEWORK */
@@ -603,6 +604,17 @@ indexterm:[knight, Knight of the Round Table, Lancelot]`
       // since https://github.com/asciidoctor/asciidoctor/commit/46700a9c12d1cfe551db2790dd232baa0bec8195
       // When the sourcemap option is specified, the source location (and as a consequence the line number) is defined on the Document object.
       expect(blocksWithLineNumber.length >= 18).to.be.true()
+    })
+
+    it('should get document date (and honor SOURCE_DATE_EPOCH)', () => {
+      process.env['SOURCE_DATE_EPOCH'] = '1549743934'
+      const doc = asciidoctor.load('= Empty document')
+      expect(doc.getAttribute('docyear')).to.equal('2019')
+      expect(doc.getAttribute('docdate')).to.equal('2019-02-09')
+      expect(doc.getAttribute('doctime')).to.equal('20:25:34 +0100')
+      expect(doc.getAttribute('localyear')).to.equal('2019')
+      expect(doc.getAttribute('localdate')).to.equal('2019-02-09')
+      expect(doc.getAttribute('localtime')).to.equal('20:25:34 +0100')
     })
   })
 
