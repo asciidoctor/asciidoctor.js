@@ -1,4 +1,4 @@
-/* global it, describe */
+/* global it, xit, describe */
 const path = require('path')
 const fs = require('fs')
 const process = require('process')
