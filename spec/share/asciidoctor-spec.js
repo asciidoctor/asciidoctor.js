@@ -502,6 +502,38 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         expect(inlineElement.getTarget()).to.equal('tigers')
       })
 
+      it('should get document date', function () {
+        const now = new Date()
+        const doc = asciidoctor.load('= Empty document')
+        const year = now.getFullYear().toString()
+        const month = ('0' + (now.getMonth() + 1)).slice(-2)
+        const day = ('0' + (now.getDate())).slice(-2)
+        const hours = now.getHours()
+        const minutes = now.getMinutes()
+        const seconds = now.getSeconds()
+        expect(doc.getAttribute('docyear')).to.equal(now.getFullYear().toString())
+        expect(doc.getAttribute('docdate')).to.equal(`${year}-${month}-${day}`)
+        const documentTime = doc.getAttribute('doctime')
+        const documentTimeParts = documentTime.split(':')
+        const documentHours = parseInt(documentTimeParts[0])
+        const documentMinutes = parseInt(documentTimeParts[1])
+        const documentSeconds = parseInt(documentTimeParts[2])
+        expect(documentHours).to.be.within(hours - 1, hours + 1)
+        expect(documentMinutes).to.be.within(minutes - 1, minutes + 1)
+        expect(documentSeconds).to.be.within(seconds - 10, seconds + 10)
+
+        expect(doc.getAttribute('localyear')).to.equal(now.getFullYear().toString())
+        expect(doc.getAttribute('localdate')).to.equal(`${year}-${month}-${day}`)
+        const localTime = doc.getAttribute('localtime')
+        const localTimeParts = localTime.split(':')
+        const localHours = parseInt(localTimeParts[0])
+        const localMinutes = parseInt(localTimeParts[1])
+        const localSeconds = parseInt(localTimeParts[2])
+        expect(localHours).to.be.within(hours - 1, hours + 1)
+        expect(localMinutes).to.be.within(minutes - 1, minutes + 1)
+        expect(localSeconds).to.be.within(seconds - 10, seconds + 10)
+      })
+
       describe('Get authors', function () {
         it('should return an empty list when the document has no author', function () {
           const input = `= Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application
