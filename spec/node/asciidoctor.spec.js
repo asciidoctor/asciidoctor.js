@@ -396,9 +396,9 @@ intro
       const header = doc.getHeader()
       expect(header.level).to.equal(0)
       expect(header.title).to.equal('Sample Document')
-      expect(header.getAttribute('revdate')).to.equal('2013-05-20')
-      expect(header.getAttribute('revnumber')).to.equal('1.0')
-      expect(header.getAttribute('revremark')).to.equal('First draft')
+      expect(doc.getAttribute('revdate')).to.equal('2013-05-20')
+      expect(doc.getAttribute('revnumber')).to.equal('1.0')
+      expect(doc.getAttribute('revremark')).to.equal('First draft')
 
       expect(doc.getRevisionDate()).to.equal('2013-05-20')
       expect(doc.getRevisionNumber()).to.equal('1.0')
@@ -414,9 +414,9 @@ intro
       expect(revisionInfo.number).to.equal('1.0')
       expect(revisionInfo.remark).to.equal('First draft')
 
-      expect(header.getAttribute('tags')).to.equal('[document, example]')
-      expect(header.getAttribute('author')).to.equal('Doc Writer')
-      expect(header.getAttribute('email')).to.equal('doc.writer@asciidoc.org')
+      expect(doc.getAttribute('tags')).to.equal('[document, example]')
+      expect(doc.getAttribute('author')).to.equal('Doc Writer')
+      expect(doc.getAttribute('email')).to.equal('doc.writer@asciidoc.org')
 
       expect(doc.hasBlocks()).to.be.true()
       const blocks = doc.getBlocks()
