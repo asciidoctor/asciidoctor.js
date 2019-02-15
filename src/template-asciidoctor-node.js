@@ -9,6 +9,8 @@ const Opal = require('opal-runtime').Opal
 
 //{{asciidoctorAPI}}
 
+//{{asciidoctorNodeAPI}}
+
 //{{asciidoctorVersion}}
 
   /**
