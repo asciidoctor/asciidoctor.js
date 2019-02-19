@@ -531,19 +531,6 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       expect(refsCatalog['img-sunset'].getId()).to.equal('img-sunset')
     })
 
-    it('should get ids catalog', () => {
-      const input = `= Title
-
-[#img-sunset]
-[caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
-image::sunset.jpg[Sunset,300,200]
-
-image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
-      const doc = asciidoctor.load(input)
-      const idsCatalog = doc.getIds()
-      expect(idsCatalog['img-sunset']).to.equal('[img-sunset]')
-    })
-
     it('should get index terms', () => {
       const input = `The Lady of the Lake, her arm clad in the purest shimmering samite,
 held aloft Excalibur from the bosom of the water,
