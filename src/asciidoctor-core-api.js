@@ -919,16 +919,6 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
 var Document = Opal.Asciidoctor.Document
 
 /**
- * Returns a JSON {Object} of ids captured by the processor.
- *
- * @returns {Object} - returns a JSON {Object} of ids in the document.
- * @memberof Document
- */
-Document.prototype.getIds = function () {
-  return fromHash(this.catalog.$$smap.ids)
-}
-
-/**
  * Returns a JSON {Object} of references captured by the processor.
  *
  * @returns {Object} - returns a JSON {Object} of {AbstractNode} in the document.
