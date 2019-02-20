@@ -983,7 +983,10 @@ Document.prototype.getFootnotes = function () {
 }
 
 /**
- * @returns {string} - returns the level-0 section
+ * Returns the level-0 {Section} (i.e. the document title).
+ * Only stores the title, not the header attributes.
+ *
+ * @returns {string} - returns the level-0 {Section}.
  * @memberof Document
  */
 Document.prototype.getHeader = function () {
