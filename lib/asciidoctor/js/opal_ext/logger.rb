@@ -1,7 +1,7 @@
 class Logger
   class Formatter
     def call(severity, time, progname, msg)
-      time_format = `d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2) + 'T' + ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2) + ':' + ('0'+d.getSeconds()).slice(-2) + '.' + (d.getMilliseconds()/10).toFixed(2)`
+      time_format = `time.getFullYear() + '-' + ('0'+(time.getMonth()+1)).slice(-2) + '-' + ('0'+time.getDate()).slice(-2) + 'T' + ('0'+time.getHours()).slice(-2) + ':' + ('0'+time.getMinutes()).slice(-2) + ':' + ('0'+time.getSeconds()).slice(-2) + '.' + ('00' + new Date().getMilliseconds() * 1000).slice(-6)`
       format(MESSAGE_FORMAT, severity.chr, time_format, severity, progname, message_as_string(msg))
     end
   end
