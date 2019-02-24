@@ -9,6 +9,8 @@ clone_depth: 10
 # Test against the latest version of this Node.js version
 environment:
   nodejs_version: "8"
+  # temporary fix to workaround https://github.com/asciidoctor/asciidoctor/commit/60d27edec4bb033a5cf529801cbd9ebc0dab8c6f#r32447609
+  ASCIIDOCTOR_CORE_VERSION: "asciidoctor/asciidoctor#af5a81ca767105cedf83c5d727e9b0d0817acbdd"
 
 cache:
  - "%LOCALAPPDATA%\\Yarn"
