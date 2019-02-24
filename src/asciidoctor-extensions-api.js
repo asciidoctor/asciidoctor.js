@@ -1025,9 +1025,6 @@ ConverterFactory.register = function (converter, backends) {
   if (typeof converter === 'object' && typeof converter.$convert === 'undefined' && typeof converter.convert === 'function') {
     Opal.def(converter, '$convert', converter.convert)
   }
-  if (typeof this.$register === 'function' && this.$register.$$stub !== true) {
-    return this.$register(converter, backends) // Converter.Factory.register was removed in Asciidoctor 2.0.0
-  }
   var args = [converter].concat(backends)
   return Converter.$register.apply(Converter, args)
 }
