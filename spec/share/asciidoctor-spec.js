@@ -1,11 +1,5 @@
 /* global it, describe, define */
 const shareSpec = function (testOptions, asciidoctor, expect) {
-  const getCoreVersionNumber = function (asciidoctor) {
-    const asciidoctorVersion = asciidoctor.getCoreVersion()
-    // ignore the fourth number, keep only major, minor and patch numbers
-    return parseInt(asciidoctorVersion.replace(/(\.|dev)/g, '').substring(0, 3))
-  }
-
   describe(testOptions.platform, function () {
     describe('When loaded', function () {
       it('asciidoctor should not be null', function () {
@@ -189,12 +183,9 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       })
 
       it('should not have extensions enabled by default', function () {
-        const asciidoctorVersionNumber = getCoreVersionNumber(asciidoctor)
-        if (asciidoctorVersionNumber >= 157) {
-          const doc = asciidoctor.load('== Test')
-          // extensions should not be enabled by default
-          expect(doc.hasExtensions()).to.equal(false)
-        }
+        const doc = asciidoctor.load('== Test')
+        // extensions should not be enabled by default
+        expect(doc.hasExtensions()).to.equal(false)
       })
 
       it('should get document', function () {
@@ -978,11 +969,7 @@ paragraph 3
       it('should get converter factory', function () {
         const factory = asciidoctor.Converter.Factory.getDefault(false)
         expect(factory).to.be.an.instanceof(Object)
-        if (getCoreVersionNumber(asciidoctor) >= 200) {
-          expect(factory.$$name).to.equal('Converter')
-        } else {
-          expect(factory.$$class.$name()).to.equal('Asciidoctor::Converter::Factory')
-        }
+        expect(factory.$$name).to.equal('Converter')
       })
 
       it('should create instance of html5 converter', function () {

@@ -483,9 +483,7 @@ AbstractBlock.prototype.getSections = function () {
  * @returns {string} - returns the numeral
  */
 AbstractBlock.prototype.getNumeral = function () {
-  // number was renamed to numeral
-  // https://github.com/asciidoctor/asciidoctor/commit/33ac4821e0375bcd5aa189c394ad7630717bcd55
-  return this.$number()
+  return this.$numeral()
 }
 
 /**
@@ -493,9 +491,7 @@ AbstractBlock.prototype.getNumeral = function () {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.setNumeral = function (value) {
-  // number was renamed to numeral
-  // https://github.com/asciidoctor/asciidoctor/commit/33ac4821e0375bcd5aa189c394ad7630717bcd55
-  return this['$number='](value)
+  return this['$numeral='](value)
 }
 
 /**
@@ -1968,22 +1964,20 @@ var LoggerManager = Opal.const_get_qualified(Opal.Asciidoctor, 'LoggerManager', 
 // Alias
 Opal.Asciidoctor.LoggerManager = LoggerManager
 
-if (LoggerManager) {
-  LoggerManager.getLogger = function () {
-    return this.$logger()
-  }
+LoggerManager.getLogger = function () {
+  return this.$logger()
+}
 
-  LoggerManager.setLogger = function (logger) {
-    this.logger = logger
-  }
+LoggerManager.setLogger = function (logger) {
+  this.logger = logger
+}
 
-  LoggerManager.newLogger = function (name, functions) {
-    return initializeLoggerClass(name, functions).$new()
-  }
+LoggerManager.newLogger = function (name, functions) {
+  return initializeLoggerClass(name, functions).$new()
+}
 
-  LoggerManager.newFormatter = function (name, functions) {
-    return initializeLoggerFormatterClass(name, functions).$new()
-  }
+LoggerManager.newFormatter = function (name, functions) {
+  return initializeLoggerFormatterClass(name, functions).$new()
 }
 
 /**
@@ -1994,10 +1988,8 @@ var LoggerSeverity = Opal.const_get_qualified(Opal.Logger, 'Severity', true)
 // Alias
 Opal.Asciidoctor.LoggerSeverity = LoggerSeverity
 
-if (LoggerSeverity) {
-  LoggerSeverity.get = function (severity) {
-    return LoggerSeverity.$constants()[severity]
-  }
+LoggerSeverity.get = function (severity) {
+  return LoggerSeverity.$constants()[severity]
 }
 
 /**
@@ -2008,10 +2000,8 @@ var LoggerFormatter = Opal.const_get_qualified(Opal.Logger, 'Formatter', true)
 // Alias
 Opal.Asciidoctor.LoggerFormatter = LoggerFormatter
 
-if (LoggerFormatter) {
-  LoggerFormatter.prototype.call = function (severity, time, programName, message) {
-    return this.$call(LoggerSeverity.get(severity), time, programName, message)
-  }
+LoggerFormatter.prototype.call = function (severity, time, programName, message) {
+  return this.$call(LoggerSeverity.get(severity), time, programName, message)
 }
 
 /**
@@ -2022,37 +2012,35 @@ var MemoryLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'MemoryLogger', tr
 // Alias
 Opal.Asciidoctor.MemoryLogger = MemoryLogger
 
-if (MemoryLogger) {
-  MemoryLogger.create = function () {
-    return this.$new()
-  }
-  MemoryLogger.prototype.getMessages = function () {
-    var messages = this.messages
-    var result = []
-    for (var i = 0; i < messages.length; i++) {
-      var message = messages[i]
-      var messageObject = fromHash(message)
-      if (typeof messageObject.message === 'string') {
-        messageObject.getText = function () {
-          return this.message
-        }
-      } else {
-        // also convert the message attribute
-        messageObject.message = fromHash(messageObject.message)
-        messageObject.getText = function () {
-          return this.message['text']
-        }
+MemoryLogger.create = function () {
+  return this.$new()
+}
+MemoryLogger.prototype.getMessages = function () {
+  var messages = this.messages
+  var result = []
+  for (var i = 0; i < messages.length; i++) {
+    var message = messages[i]
+    var messageObject = fromHash(message)
+    if (typeof messageObject.message === 'string') {
+      messageObject.getText = function () {
+        return this.message
       }
-      messageObject.getSeverity = function () {
-        return this.severity.toString()
+    } else {
+      // also convert the message attribute
+      messageObject.message = fromHash(messageObject.message)
+      messageObject.getText = function () {
+        return this.message['text']
       }
-      messageObject.getSourceLocation = function () {
-        return this.message['source_location']
-      }
-      result.push(messageObject)
     }
-    return result
+    messageObject.getSeverity = function () {
+      return this.severity.toString()
+    }
+    messageObject.getSourceLocation = function () {
+      return this.message['source_location']
+    }
+    result.push(messageObject)
   }
+  return result
 }
 
 /**
@@ -2063,28 +2051,26 @@ var Logger = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger', true)
 // Alias
 Opal.Asciidoctor.Logger = Logger
 
-if (Logger) {
-  Logger.prototype.getMaxSeverity = function () {
-    return this.max_severity
-  }
-  Logger.prototype.getFormatter = function () {
-    return this.formatter
-  }
-  Logger.prototype.setFormatter = function (formatter) {
-    this.formatter = formatter
-  }
-  Logger.prototype.getLevel = function () {
-    return this.level
-  }
-  Logger.prototype.setLevel = function (level) {
-    this.level = level
-  }
-  Logger.prototype.getProgramName = function () {
-    return this.progname
-  }
-  Logger.prototype.setProgramName = function (programName) {
-    this.progname = programName
-  }
+Logger.prototype.getMaxSeverity = function () {
+  return this.max_severity
+}
+Logger.prototype.getFormatter = function () {
+  return this.formatter
+}
+Logger.prototype.setFormatter = function (formatter) {
+  this.formatter = formatter
+}
+Logger.prototype.getLevel = function () {
+  return this.level
+}
+Logger.prototype.setLevel = function (level) {
+  this.level = level
+}
+Logger.prototype.getProgramName = function () {
+  return this.progname
+}
+Logger.prototype.setProgramName = function (programName) {
+  this.progname = programName
 }
 
 /**
@@ -2095,13 +2081,11 @@ var NullLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'NullLogger', true)
 // Alias
 Opal.Asciidoctor.NullLogger = NullLogger
 
-if (NullLogger) {
-  NullLogger.create = function () {
-    return this.$new()
-  }
-  NullLogger.prototype.getMaxSeverity = function () {
-    return this.max_severity
-  }
+NullLogger.create = function () {
+  return this.$new()
+}
+NullLogger.prototype.getMaxSeverity = function () {
+  return this.max_severity
 }
 
 // Alias
