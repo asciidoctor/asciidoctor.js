@@ -1,5 +1,5 @@
 if (typeof Opal === 'undefined' && typeof module === 'object' && module.exports) {
-  Opal = require('opal-runtime').Opal
+  Opal = require('asciidoctor-opal-runtime').Opal
 }
 
 if (typeof Opal === 'undefined') {

@@ -35,6 +35,5 @@ end
 %x(
 // Load Opal modules
 Opal.load("pathname");
-Opal.load("base64");
 Opal.load("nodejs");
 )

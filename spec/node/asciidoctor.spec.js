@@ -22,7 +22,7 @@ const isWin = process.platform === 'win32'
 
 const asciidoctor = require('../../build/asciidoctor-node.js')(config)
 
-const Opal = require('opal-runtime').Opal // for testing purpose only
+const Opal = require('asciidoctor-opal-runtime').Opal // for testing purpose only
 const packageJson = require('../../package.json')
 
 const testOptions = {
