@@ -28,6 +28,7 @@ const builder = new BuilderModule()
   bfs.mkdirsSync(builder.benchmarkBuildDir)
   const runners = ['node', 'chrome']
   runners.forEach(runner => bfs.copyToDirSync(`benchmark/${runner}.js`, builder.benchmarkBuildDir))
+  bfs.copyToDirSync(`benchmark/stats.js`, builder.benchmarkBuildDir)
   log.task('download sample data from AsciiDoc repository')
   await Promise.all([
     getContentFromAsciiDocRepo('asciidoc.txt', 'build/benchmark/userguide.adoc'),
