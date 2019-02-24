@@ -83,7 +83,8 @@ const generateUMD = (asciidoctorCoreTarget, environments) => {
     }
     let asciidoctorData = parseTemplateData(data, {
       '//{{requireOpalRuntimeExt}}': `self.$require("asciidoctor/js/opal_ext/${environment}");`,
-      '//{{requireAsciidoctorRuntimeExt}}': `self.$require("asciidoctor/js/asciidoctor_ext/${environment}");`
+      // no specific runtime for GraalVM
+      '//{{requireAsciidoctorRuntimeExt}}': environment === 'graalvm' ? '' : `self.$require("asciidoctor/js/asciidoctor_ext/${environment}");`
     })
     let templateFile
     let target = `build/asciidoctor-${environment}.js`

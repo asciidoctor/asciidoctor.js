@@ -12,28 +12,34 @@ const graalvmCheckConvert = (result, testName) => {
   if (result.indexOf('<h1>asciidoctor.js, AsciiDoc in JavaScript</h1>') === -1) {
     log.error(`${testName} failed, AsciiDoc source is not converted`)
     process.stdout.write(result)
+    process.exit(1)
   }
   if (result.indexOf('Asciidoctor default stylesheet') === -1) {
     log.error(`${testName} failed, default stylesheet not embedded in converted document`)
     process.stdout.write(result)
+    process.exit(1)
   }
   if (result.indexOf('include content') === -1) {
     log.error(`${testName} failed, include directive is not processed`)
     process.stdout.write(result)
+    process.exit(1)
   }
 }
 
 const graalvmJavaCompileAndRun = (specName, className, javacBin, javaBin) => {
   // Compile
   log.debug(`compiling ${specName} to build/`)
-  childProcess.execSync(`${javacBin} ./${specName} -d ./build`)
-
-  // Run
-  log.debug(`running ${className}`)
-  const start = process.hrtime()
-  const result = childProcess.execSync(`${javaBin} -classpath ./build ${className}`).toString('utf8')
-  log.debug(`running ${className} in ${process.hrtime(start)[0]}s`)
-  return result
+  try {
+    childProcess.execSync(`${javacBin} ./${specName} -d ./build`)
+    // Run
+    log.debug(`running ${className}`)
+    const start = process.hrtime()
+    const result = childProcess.execSync(`${javaBin} -classpath ./build ${className}`).toString('utf8')
+    log.debug(`running ${className} in ${process.hrtime(start)[0]}s`)
+    return result
+  } catch (e) {
+    process.exit(1)
+  }
 }
 
 const graalvmRun = (name, jdkInstallDir) => {
