@@ -28,7 +28,7 @@
     "clean:js": "node tasks/clean.js js",
     "dist": "cross-env MINIFY=1 node tasks/dist.js",
     "lint": "npm run code:lint && npm run docs:lint",
-    "code:lint": "standard src/**/*.js spec/**/*.js tasks/**/*.js",
+    "code:lint": "standard src/**/*.js spec/**/*.js tasks/**/*.js benchmark/**/*.js",
     "package": "cross-env MINIFY=1 node tasks/build.js && cross-env MINIFY=1 npm run test",
     "examples": "node tasks/examples.js",
     "server": "node tasks/server.js",
