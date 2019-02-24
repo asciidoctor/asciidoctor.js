@@ -848,7 +848,7 @@ paragraph 3
         expect(html).to.include('<h3 id="_asciidoctors_most_notable_benefits">.1. Asciidoctor&#8217;s most notable benefits</h3>')
       })
 
-      it('should convert a table and compute columns sizes', function() {
+      it('should convert a table and compute columns sizes', function () {
         const content = `
 [cols="1e,1,5a",frame="topbot",options="header"]
 |====
