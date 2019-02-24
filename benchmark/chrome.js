@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs')
+const stats = require('./stats.js')
 
 const verbose = process.env.VERBOSE
 const include = process.env.INCLUDE
@@ -46,5 +47,6 @@ puppeteer.launch({ args: ['--disable-gpu', '--no-sandbox', '--single-process', '
     console.log(result[0].html)
   }
   result.forEach(run => console.log(`Run #${run.id}: ${(run.duration / 1000.0)}s`))
+  stats.log(result.map(v => v.duration))
   await browser.close()
 })

@@ -1,4 +1,5 @@
 const fs = require('fs')
+const stats = require('./stats.js')
 
 const verbose = process.env.VERBOSE
 const include = process.env.INCLUDE
@@ -33,6 +34,8 @@ for (let i = 1; i <= runs; i++) {
   durations.push(duration)
   console.log(`Run #${i}: ${(duration / 1000.0)}s`)
 }
+
+stats.log(durations)
 
 if (verbose) {
   console.log(html)
