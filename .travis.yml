@@ -6,8 +6,7 @@ addons:
   chrome: stable
 
 env:
-# temporary fix to workaround https://github.com/asciidoctor/asciidoctor/commit/60d27edec4bb033a5cf529801cbd9ebc0dab8c6f#r32447609
-- ASCIIDOCTOR_CORE_VERSION=asciidoctor/asciidoctor#af5a81ca767105cedf83c5d727e9b0d0817acbdd
+- ASCIIDOCTOR_CORE_VERSION=master
 
 node_js:
 - 'lts/*'
