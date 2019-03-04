@@ -1,4 +1,4 @@
-/* global it, xit, describe */
+/* global it, describe */
 const path = require('path')
 const fs = require('fs')
 const process = require('process')
@@ -22,7 +22,7 @@ const isWin = process.platform === 'win32'
 
 const asciidoctor = require('../../build/asciidoctor-node.js')(config)
 
-const Opal = require('opal-runtime').Opal // for testing purpose only
+const Opal = require('asciidoctor-opal-runtime').Opal // for testing purpose only
 const packageJson = require('../../package.json')
 
 const testOptions = {
@@ -62,6 +62,12 @@ const resolveFixture = (name) => {
   return path.resolve(path.join(__dirname, '..', 'fixtures', name))
 }
 
+const getCoreVersionNumber = function (asciidoctor) {
+  const asciidoctorVersion = asciidoctor.getCoreVersion()
+  // ignore the fourth number, keep only major, minor and patch numbers
+  return parseInt(asciidoctorVersion.replace(/(\.|dev)/g, '').substring(0, 3))
+}
+
 describe('Node.js', () => {
   describe('Asciidoctor.js API', () => {
     it('should return Asciidoctor.js version', () => {
@@ -71,6 +77,36 @@ describe('Node.js', () => {
 
   if (asciidoctor.LoggerManager) {
     describe('Logger', () => {
+      it('should use the built-in Logger', () => {
+        const pipe = Opal.StringIO.$new()
+        const logger = Opal.Logger.$new(pipe)
+        const now = new Date()
+        logger.$add(2, 'hello', 'asciidoctor')
+        const message = pipe.$string()
+        expect(message).to.contain('WARN -- asciidoctor: hello')
+        expect(message).to.contain('W, [')
+        const datetime = /W, \[([^\]]+)].*/g.exec(message)[1]
+        const datetimeRegexp = new RegExp(/([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{6})/)
+        const result = datetimeRegexp.exec(datetime)
+        const year = parseInt(result[1])
+        const month = parseInt(result[2])
+        const day = parseInt(result[3])
+        const hours = parseInt(result[4])
+        const minutes = parseInt(result[5])
+        const seconds = parseInt(result[6])
+        const nowYear = now.getFullYear()
+        const nowMonth = now.getMonth()
+        const nowDay = now.getDate()
+        const nowHours = now.getHours()
+        const nowMinutes = now.getMinutes()
+        const nowSeconds = now.getSeconds()
+        expect(year).to.be.within(nowYear - 1, nowYear + 1)
+        expect(month).to.be.within(nowMonth - 1, nowMonth + 1)
+        expect(day).to.be.within(nowDay - 1, nowDay + 1)
+        expect(hours).to.be.within(nowHours - 1, nowHours + 1)
+        expect(minutes).to.be.within(nowMinutes - 1, nowMinutes + 1)
+        expect(seconds).to.be.within(nowSeconds - 10, nowSeconds + 10)
+      })
       it('should be able to get logger\'s info', () => {
         const defaultLogger = asciidoctor.LoggerManager.getLogger()
         expect(defaultLogger.getLevel()).to.equal(2)
@@ -593,17 +629,32 @@ indexterm:[knight, Knight of the Round Table, Lancelot]`
       expect(blocksWithLineNumber.length >= 18).to.be.true()
     })
 
-    // TODO: Enable this test when Time#utc will be fixed: https://github.com/opal/opal/issues/1940
-    xit('should get document date (and honor SOURCE_DATE_EPOCH)', () => {
-      process.env['SOURCE_DATE_EPOCH'] = '1549743934'
-      const doc = asciidoctor.load('= Empty document')
-      expect(doc.getAttribute('docyear')).to.equal('2019')
-      expect(doc.getAttribute('docdate')).to.equal('2019-02-09')
-      expect(doc.getAttribute('doctime')).to.equal('20:25:34 UTC')
-      expect(doc.getAttribute('localyear')).to.equal('2019')
-      expect(doc.getAttribute('localdate')).to.equal('2019-02-09')
-      expect(doc.getAttribute('localtime')).to.equal('20:25:34 UTC')
-    })
+    if (getCoreVersionNumber(asciidoctor) >= '200') {
+      // REMIND: Before Asciidoctor 2.0.0 date was not UTC
+      it('should get document date (and honor SOURCE_DATE_EPOCH)', () => {
+        process.env.SOURCE_DATE_EPOCH = '1549743934'
+        try {
+          const doc = asciidoctor.load('= Empty document')
+          expect(doc.getAttribute('docyear')).to.equal('2019')
+          expect(doc.getAttribute('docdate')).to.equal('2019-02-09')
+          expect(doc.getAttribute('doctime')).to.equal('20:25:34 UTC')
+          expect(doc.getAttribute('localyear')).to.equal('2019')
+          expect(doc.getAttribute('localdate')).to.equal('2019-02-09')
+          expect(doc.getAttribute('localtime')).to.equal('20:25:34 UTC')
+        } finally {
+          delete process.env.SOURCE_DATE_EPOCH
+        }
+      })
+
+      // REMIND: Before Asciidoctor 2.0.0 docyear was not infer from docdate
+      it('should allow docdate and doctime to be overridden', () => {
+        const doc = asciidoctor.load('= Empty document', { attributes: { docdate: '2015-01-01', doctime: '10:00:00-0700' } })
+        expect(doc.getAttribute('docdate')).to.equal('2015-01-01')
+        expect(doc.getAttribute('doctime')).to.equal('10:00:00-0700')
+        expect(doc.getAttribute('docyear')).to.equal('2015')
+        expect(doc.getAttribute('docdatetime')).to.equal('2015-01-01 10:00:00-0700')
+      })
+    }
   })
 
   describe('Converting file', () => {

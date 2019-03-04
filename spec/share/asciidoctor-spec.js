@@ -847,6 +847,39 @@ paragraph 3
         const html = asciidoctor.convert(input)
         expect(html).to.include('<h3 id="_asciidoctors_most_notable_benefits">.1. Asciidoctor&#8217;s most notable benefits</h3>')
       })
+
+      it('should convert a table and compute columns sizes', function () {
+        const content = `
+[cols="1e,1,5a",frame="topbot",options="header"]
+|====
+|Name |Backends |Description
+
+|id |html4, html5, xhtml11, docbook |
+Unique identifier typically serve as link targets.
+Can also be set by the 'BlockId' element.
+
+|role |html4, html5, xhtml11, docbook |
+Role contains a string used to classify or subclassify an element and
+can be applied to AsciiDoc block elements.  The AsciiDoc 'role'
+attribute is translated to the 'role' attribute in DocBook outputs and
+is included in the 'class' attribute in HTML outputs, in this respect
+it behaves like the <<X96,quoted text role attribute>>.
+
+DocBook XSL Stylesheets translate DocBook 'role' attributes to HTML
+'class' attributes; CSS can then be used
+http://www.sagehill.net/docbookxsl/UsingCSS.html[to style the
+generated HTML].
+
+|reftext |docbook |
+'reftext' is used to set the DocBook 'xreflabel' attribute.
+The 'reftext' attribute can an also be set by the 'BlockId' element.
+
+|====`
+        const html = asciidoctor.convert(content)
+        expect(html).to.include('<table ')
+        expect(html).to.include('width: 14.2857%')
+      })
+
       describe('Embed an image when data-uri is defined', function () {
         it('should embed a jpeg image', function () {
           const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
