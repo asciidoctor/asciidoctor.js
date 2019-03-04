@@ -73,7 +73,7 @@
     "bestikk-download": "1.0.0",
     "bestikk-fs": "1.0.0",
     "bestikk-log": "0.1.0",
-    "bestikk-uglify": "1.0.0",
+    "bestikk-uglify": "3.0.0",
     "chai": "4.1.2",
     "cross-env": "5.1.4",
     "dirty-chai": "2.0.1",

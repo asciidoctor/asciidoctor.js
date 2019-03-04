@@ -98,10 +98,6 @@ const generateUMD = (asciidoctorCoreTarget, environments) => {
     templateModel['//{{asciidoctorCode}}'] = asciidoctorData
     const content = parseTemplateFile(templateFile, templateModel)
     fs.writeFileSync(target, content, 'utf8')
-    // To be backward compatible
-    if (environment === 'umd') {
-      fs.writeFileSync('build/asciidoctor.js', content, 'utf8')
-    }
   })
 }
 
