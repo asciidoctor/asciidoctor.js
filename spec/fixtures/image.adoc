@@ -6,4 +6,4 @@
 
 [[french-frog]]
 .This is a frog
-image::litoria-chloris.jpg[width="40%"]
+image::litoria-chloris.jpeg[width="40%"]

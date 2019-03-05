@@ -1,9 +1,11 @@
-/* global it, describe, mocha, chai, Asciidoctor, mochaOpts, shareSpec, includeHttpsSpec, includeFileSpec */
+/* global it, describe, mocha, chai, Asciidoctor, shareSpec, includeHttpsSpec, includeFileSpec */
 // bootstrap
 (async () => {
   let reporter
-  if (typeof mochaOpts === 'function') {
-    reporter = await mochaOpts().reporter
+  const url = new URL(window.location)
+  const reporterParam = url.searchParams.get('reporter')
+  if (typeof reporterParam === 'string') {
+    reporter = reporterParam
   } else {
     reporter = 'html'
   }
@@ -16,7 +18,9 @@
   const expect = chai.expect
   const asciidoctor = Asciidoctor({ runtime: { platform: 'browser' } })
   const parts = window.location.href.split('/') // break the string into an array
-  parts.pop(); parts.pop(); parts.pop()
+  parts.pop()
+  parts.pop()
+  parts.pop()
   const baseDir = parts.join('/')
   const testOptions = {
     platform: 'Browser',
