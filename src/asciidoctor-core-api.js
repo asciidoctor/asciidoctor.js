@@ -1782,6 +1782,8 @@ Reader.prototype.getLines = function () {
 /**
  * Get the remaining lines managed by this Reader as a {string}.
  *
+ * Lines will not be consumed from the Reader (ie. you will be able to read the lines again).
+ *
  * @memberof Reader
  * @returns {string} - returns The remaining lines managed by this Reader as a {string} (joined by linefeed characters).
  */
@@ -1835,6 +1837,8 @@ Reader.prototype.peekLine = function (direct) {
 /**
  * Get the next line of source data. Consumes the line returned.
  *
+ * Line will be consumed from the Reader (ie. you won't be able to read the line again).
+ *
  * @memberof Reader
  * @returns {string} - returns the {string}  of the next line of the source data if data is present.
  */
@@ -1849,6 +1853,8 @@ Reader.prototype.readLine = function () {
  * This method calls Reader#readLine repeatedly until all lines are consumed and returns the lines as a {string} {Array}.
  * This method differs from Reader#getLines in that it processes each line in turn, hence triggering any preprocessors implemented in sub-classes.
  *
+ * Lines will be consumed from the Reader (ie. you won't be able to read the lines again).
+ *
  * @memberof Reader
  * @returns {Array} -  Returns the lines read as a {string} {Array}
  */
@@ -1860,6 +1866,8 @@ Reader.prototype.readLines = function () {
  * Get the remaining lines of source data joined as a {string}.
  *
  * Delegates to Reader#readLines, then joins the result.
+ *
+ * Lines will be consumed from the Reader (ie. you won't be able to read the lines again).
  *
  * @memberof Reader
  * @returns {string} -  Returns tthe lines read joined as a {string}
