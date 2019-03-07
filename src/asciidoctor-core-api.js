@@ -1770,22 +1770,24 @@ Reader.prototype.getCursor = function () {
 }
 
 /**
- * Get a copy of the remaining {Array} of String lines managed by this Reader.
+ * Get the remaining unprocessed lines, without consuming them, as an {Array} of {string}.
+ *
+ * Lines will not be consumed from the Reader (ie. you will be able to read these lines again).
  *
  * @memberof Reader
- * @returns {Array} - returns A copy of the String {Array} of lines remaining in this Reader.
+ * @returns {Array} - returns the remaining unprocessed lines as an {Array} of {string}.
  */
 Reader.prototype.getLines = function () {
   return this.$lines()
 }
 
 /**
- * Get the remaining lines managed by this Reader as a {string}.
+ * Get the remaining unprocessed lines, without consuming them, as a {string}.
  *
- * Lines will not be consumed from the Reader (ie. you will be able to read the lines again).
+ * Lines will not be consumed from the Reader (ie. you will be able to read these lines again).
  *
  * @memberof Reader
- * @returns {string} - returns The remaining lines managed by this Reader as a {string} (joined by linefeed characters).
+ * @returns {string} - returns the remaining unprocessed lines as a {string} (joined by linefeed characters).
  */
 Reader.prototype.getString = function () {
   return this.$string()
@@ -1814,8 +1816,8 @@ Reader.prototype.isEmpty = function () {
 }
 
 /**
- * Peek at the next line of source data.
- * Processes the line if not already marked as processed, but does not consume it.
+ * Peek at the next line.
+ * Processes the line if not already marked as processed, but does not consume it (ie. you will be able to read this line again).
  *
  * This method will probe the reader for more lines.
  * If there is a next line that has not previously been visited, the line is passed to the Reader#processLine method to be initialized.
@@ -1826,7 +1828,7 @@ Reader.prototype.isEmpty = function () {
  *
  * @param {boolean} direct - A {boolean} flag to bypasses the check for more lines and immediately returns the first element of the internal lines {Array}. (default: false)
  * @memberof Reader
- * @returns {string} - returns the next line of the source data as a String if there are lines remaining.
+ * @returns {string} - returns the next line as a {string} if there are lines remaining.
  */
 Reader.prototype.peekLine = function (direct) {
   direct = direct || false
@@ -1835,12 +1837,12 @@ Reader.prototype.peekLine = function (direct) {
 }
 
 /**
- * Get the next line of source data. Consumes the line returned.
+ * Consume, preprocess, and return the next line.
  *
- * Line will be consumed from the Reader (ie. you won't be able to read the line again).
+ * Line will be consumed from the Reader (ie. you won't be able to read this line again).
  *
  * @memberof Reader
- * @returns {string} - returns the {string}  of the next line of the source data if data is present.
+ * @returns {string} - returns the next line as a {string} if data is present.
  */
 Reader.prototype.readLine = function () {
   var line = this['$read_line']()
@@ -1848,29 +1850,29 @@ Reader.prototype.readLine = function () {
 }
 
 /**
- * Get the remaining lines of source data.
+ * Consume, preprocess, and return the remaining lines.
  *
- * This method calls Reader#readLine repeatedly until all lines are consumed and returns the lines as a {string} {Array}.
+ * This method calls Reader#readLine repeatedly until all lines are consumed and returns the lines as an {Array} of {string}.
  * This method differs from Reader#getLines in that it processes each line in turn, hence triggering any preprocessors implemented in sub-classes.
  *
- * Lines will be consumed from the Reader (ie. you won't be able to read the lines again).
+ * Lines will be consumed from the Reader (ie. you won't be able to read these lines again).
  *
  * @memberof Reader
- * @returns {Array} -  Returns the lines read as a {string} {Array}
+ * @returns {Array} - returns the lines read as an {Array} of {string}.
  */
 Reader.prototype.readLines = function () {
   return this['$read_lines']()
 }
 
 /**
- * Get the remaining lines of source data joined as a {string}.
+ * Consume, preprocess, and return the remaining lines joined as a {string}.
  *
  * Delegates to Reader#readLines, then joins the result.
  *
- * Lines will be consumed from the Reader (ie. you won't be able to read the lines again).
+ * Lines will be consumed from the Reader (ie. you won't be able to read these lines again).
  *
  * @memberof Reader
- * @returns {string} -  Returns tthe lines read joined as a {string}
+ * @returns {string} - returns the lines read joined as a {string}
  */
 Reader.prototype.read = function () {
   return this['$read']()
