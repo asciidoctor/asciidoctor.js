@@ -1,0 +1,7 @@
+= Asciidoctor core
+
+This package provides Asciidoctor core functionality:
+
+- parser
+- built-in converters
+- extensions

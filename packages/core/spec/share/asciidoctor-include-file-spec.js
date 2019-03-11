@@ -6,8 +6,8 @@ const includeFileSpec = function (testOptions, asciidoctor, expect) {
         safe: 'safe',
         base_dir: testOptions.baseDir
       }
-      const html = asciidoctor.convert('include::' + testOptions.baseDir + '/README.adoc[]', opts)
-      expect(html).to.contain('Asciidoctor.js')
+      const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/test.adoc[]', opts)
+      expect(html).to.contain('Hello world')
     })
 
     it('should partially include file with an absolute file URI (using tag)', function () {
