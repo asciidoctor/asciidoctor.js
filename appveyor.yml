@@ -11,10 +11,6 @@ environment:
   nodejs_version: "10"
   ASCIIDOCTOR_CORE_VERSION: "master"
 
-cache:
- - "%LOCALAPPDATA%\\Yarn"
-
-# Install scripts. (runs after repo cloning)
 install:
   # Get the latest stable version of Node.js
   - ps: Install-Product node $env:nodejs_version
