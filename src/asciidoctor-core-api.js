@@ -118,27 +118,26 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
 /**
  * @namespace
  * @description
- * Methods for parsing AsciiDoc input files and converting documents.
+ * The main application interface (API) for Asciidoctor.
+ * This API provides methods to parse AsciiDoc content and convert it to various output formats using built-in or third-party converters.
  *
- * AsciiDoc documents comprise a header followed by zero or more sections.
- * Sections are composed of blocks of content. For example:
- * <pre>
- *   = Doc Title
+ * An AsciiDoc document can be as simple as a single line of content,
+ * though it more commonly starts with a document header that declares the document title and document attribute definitions.
+ * The document header is then followed by zero or more section titles, optionally nested, to organize the paragraphs, blocks, lists, etc. of the document.
  *
- *   == Section 1
- *
- *   This is a paragraph block in the first section.
- *
- *   == Section 2
- *
- *   This section has a paragraph block and an olist block.
- *
- *   . Item 1
- *   . Item 2
- * </pre>
+ * By default, the processor converts the AsciiDoc document to HTML 5 using a built-in converter.
+ * However, this behavior can be changed by specifying a different backend (e.g., +docbook+).
+ * A backend is a keyword for an output format (e.g., DocBook).
+ * That keyword, in turn, is used to select a converter, which carries out the request to convert the document to that format.
  *
  * @example
- * asciidoctor.convertFile('sample.adoc');
+ * asciidoctor.convertFile('document.adoc', { 'safe': 'safe' }) // Convert an AsciiDoc file
+ *
+ * asciidoctor.convert("I'm using *Asciidoctor* version {asciidoctor-version}.", { 'safe': 'safe' }) // Convert an AsciiDoc string
+ *
+ * const doc = asciidoctor.loadFile('document.adoc', { 'safe': 'safe' }) // Parse an AsciiDoc file into a document object
+ *
+ * const doc = asciidoctor.load("= Document Title\n\nfirst paragraph\n\nsecond paragraph", { 'safe': 'safe' }) // Parse an AsciiDoc string into a document object
  */
 var Asciidoctor = Opal.Asciidoctor['$$class']
 
@@ -892,8 +891,8 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
  * to enable all of Asciidoctor's features.
  *
  * <pre>
- *   var doc = Asciidoctor.load('= Hello, AsciiDoc!', {'safe': 'safe'});
- *   // => Asciidoctor::Document { doctype: "article", doctitle: "Hello, Asciidoc!", blocks: 0 }
+ *   var doc = Asciidoctor.load('= Hello, AsciiDoc!', { 'safe': 'safe' })
+ *   // => Asciidoctor::Document { doctype: "article", doctitle: "Hello, AsciiDoc!", blocks: 0 }
  * </pre>
  *
  * Instances of this class can be used to extract information from the document or alter its structure.
@@ -902,9 +901,9 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
  * The most basic usage of the Document object is to retrieve the document's title.
  *
  * <pre>
- *  var source = '= Document Title';
- *  var doc = asciidoctor.load(source, {'safe': 'safe'});
- *  console.log(doc.getTitle()); // 'Document Title'
+ *  var source = '= Document Title'
+ *  var doc = asciidoctor.load(source, { 'safe': 'safe' })
+ *  console.log(doc.getTitle()) // 'Document Title'
  * </pre>
  *
  * You can also use the Document object to access document attributes defined in the header, such as the author and doctype.
