@@ -17,8 +17,8 @@ jdk:
 - oraclejdk8
 
 install:
-- cd packages/core
 - npm ci
+- npm ci --prefix packages/core
 
 # keep the npm cache around to speed up installs
 cache:
@@ -27,10 +27,8 @@ cache:
 
 script:
 - npm run lint
-- npm run package
-- npm run docs
-- SKIP_BUILD=1 npm run examples
-- npm run test:graalvm # test against GraalVM
+- npm run test
+- npm run travis --prefix packages/core
 
 jobs:
   include:
@@ -38,17 +36,13 @@ jobs:
       if: |
         repo = 'asciidoctor/asciidoctor.js' AND \
         tag IS present
-      script: ./scripts/package.sh
+      script:
+      - ./scripts/package.sh
+      - ./scripts/publish.sh
       deploy:
-        - provider: npm
-          skip_cleanup: true
-          email: ${NPM_USER_EMAIL}
-          api_key: ${NPM_USER_API_KEY}
-          on:
-            tags: true
         - provider: releases
           api_key: ${GITHUB_TOKEN}
-          file: bin/asciidoctor.js.dist.*
+          file: packages/core/bin/asciidoctor.js.dist.*
           skip_cleanup: true
           file_glob: true
           on:

@@ -1,5 +1,4 @@
 /build/
 /node_modules/
-/.idea/
+/dist/
 npm-debug.log
-yarn-error.log

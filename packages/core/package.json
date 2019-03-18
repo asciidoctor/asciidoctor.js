@@ -33,11 +33,11 @@
     "examples": "node tasks/examples.js",
     "server": "node tasks/server.js",
     "benchmark": "node tasks/benchmark.js",
-    "release": "cross-env MINIFY=1 node tasks/release.js",
     "docs:lint": "documentation lint src/**",
     "docs:build": "documentation build src/** -f html -o build/docs -g",
     "docs:serve": "documentation serve src/** -g -w",
     "docs": "npm run docs:lint && npm run docs:build",
+    "travis": "npm run lint && npm run package && npm run docs && npm run examples && npm run test:graalvm",
     "prepublishOnly": "node tasks/prepublish.js",
     "postpublish": "node tasks/postpublish.js"
   },
