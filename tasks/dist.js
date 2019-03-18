@@ -20,7 +20,6 @@ const copyToDist = (environments) => {
   log.task('copy to dist/')
   removeDistDirSync(environments)
   bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css')
-  bfs.copySync('build/asciidoctor-umd.min.js', 'dist/umd/asciidoctor.min.js')
   bfs.copySync('build/asciidoctor-browser.min.js', 'dist/browser/asciidoctor.min.js')
   environments.forEach((environment) => {
     bfs.copySync(`build/asciidoctor-${environment}.js`, `dist/${environment}/asciidoctor.js`)
@@ -34,6 +33,6 @@ const start = process.hrtime()
 ;(async () => {
   await builderModule.build()
   runTest()
-  copyToDist(['browser', 'node', 'graalvm', 'umd'])
+  copyToDist(['browser', 'node', 'graalvm'])
   log.success(`Done in ${process.hrtime(start)[0]} s`)
 })()

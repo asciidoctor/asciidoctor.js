@@ -29,8 +29,8 @@ const rebuild = async (asciidoctorCoreDependency, environments) => {
   compilerModule.compile(asciidoctorCoreDependency, environments)
 }
 
-const concat = (message, files, destination) => {
-  log.debug(message)
+const concat = (files, destination) => {
+  log.transform('concat', files.join(' + '), destination)
   bfs.concatSync(files, destination)
 }
 
@@ -51,8 +51,8 @@ const parseTemplateData = (data, templateModel) => {
     .join('\n')
 }
 
-const generateUMD = (asciidoctorCoreTarget, environments) => {
-  log.task('generate UMD')
+const generateFlavors = (asciidoctorCoreTarget, environments) => {
+  log.task('generate flavors')
 
   // Asciidoctor core + extensions
   const apiFiles = [
@@ -61,7 +61,7 @@ const generateUMD = (asciidoctorCoreTarget, environments) => {
   ]
 
   const apiBundle = 'build/asciidoctor-api.js'
-  concat('Asciidoctor API core + extensions', apiFiles, apiBundle)
+  concat(apiFiles, apiBundle)
 
   const packageJson = require('../../package.json')
   const templateModel = {
@@ -72,6 +72,7 @@ const generateUMD = (asciidoctorCoreTarget, environments) => {
 
   // Build a dedicated JavaScript file for each environment
   environments.forEach((environment) => {
+    log.debug(environment)
     const opalExtData = fs.readFileSync(`build/opal-ext-${environment}.js`, 'utf8')
     const asciidoctorCoreData = fs.readFileSync(asciidoctorCoreTarget, 'utf8')
     let data
@@ -88,12 +89,10 @@ const generateUMD = (asciidoctorCoreTarget, environments) => {
     })
     let templateFile
     let target = `build/asciidoctor-${environment}.js`
-    if (environment === 'browser') {
-      templateFile = 'src/template-asciidoctor-browser.js'
-    } else if (environment === 'node' || environment === 'electron') {
+    if (environment === 'node' || environment === 'electron') {
       templateFile = 'src/template-asciidoctor-node.js'
     } else {
-      templateFile = 'src/template-asciidoctor-umd.js'
+      templateFile = 'src/template-asciidoctor-browser.js'
     }
     templateModel['//{{asciidoctorCode}}'] = asciidoctorData
     const content = parseTemplateFile(templateFile, templateModel)
@@ -119,7 +118,7 @@ module.exports = class Builder {
     this.benchmarkBuildDir = path.join('build', 'benchmark')
     this.examplesBuildDir = path.join('build', 'examples')
     this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625'
-    this.environments = ['umd', 'node', 'graalvm', 'browser']
+    this.environments = ['node', 'graalvm', 'browser']
     this.asciidoctorCoreTarget = path.join('build', 'asciidoctor-core.js')
   }
 
@@ -144,7 +143,7 @@ module.exports = class Builder {
 
     bfs.mkdirsSync('build/css')
     await rebuild(asciidoctorCoreDependency, this.environments)
-    generateUMD(this.asciidoctorCoreTarget, this.environments)
+    generateFlavors(this.asciidoctorCoreTarget, this.environments)
     await uglifyModule.uglify()
     log.success(`Done in ${process.hrtime(start)[0]} s`)
   }

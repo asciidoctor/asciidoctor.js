@@ -10,10 +10,6 @@ module.exports.uglify = async () => {
     return
   }
   log.task('uglify')
-  const umdSource = 'build/asciidoctor-umd.js'
-  const umdDestination = 'build/asciidoctor-umd.min.js'
-  log.transform('minify', umdSource, umdDestination)
-  await new Uglify().minify(umdSource, umdDestination)
 
   const browserSource = 'build/asciidoctor-browser.js'
   const browserDestination = 'build/asciidoctor-browser.min.js'
