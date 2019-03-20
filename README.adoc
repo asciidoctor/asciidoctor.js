@@ -29,79 +29,48 @@ Asciidoctor.js brings AsciiDoc to the JavaScript world!
 This project uses {uri-opal}[Opal] to transpile http://asciidoctor.org[Asciidoctor], a modern implementation of AsciiDoc, from Ruby to JavaScript to produce _asciidoctor.js_.
 The _asciidoctor.js_ script can be run on any JavaScript platform, including Node.js, GraalVM and, of course, a web browser.
 
-IMPORTANT: Asciidoctor.js does _not_ use Semantic Versioning as the release versions are aligned on _Asciidoctor (Ruby)_. It's *highly recommended* to define the exact version in your `package.json` file (ie. without `^`). Please read the release notes when upgrading to the latest version as breaking changes can be introduced in non major release.
+== Quickstart
 
-== Introduction
-
-You can use Asciidoctor.js either for back-end development using {uri-nodejs}[Node.js] or front-end development using a browser.
-
-== Front-end development
-
-.Installing Asciidoctor.js with npm
-
-    $ npm install asciidoctor.js --save
-
-Once the package is installed, you can add the following `script` tag to your HTML page:
-
-```html
-<script src="node_modules/asciidoctor.js/dist/browser/asciidoctor.js"></script>
-```
+ $ npm i asciidoctor --save
 
 Here is a simple example that converts AsciiDoc to HTML5:
 
 .sample.js
-
-```javascript
-var asciidoctor = Asciidoctor(); // <1>
-var content = "http://asciidoctor.org[*Asciidoctor*] " +
-    "running on https://opalrb.com[_Opal_] " +
-    "brings AsciiDoc to the browser!";
-var html = asciidoctor.convert(content); // <2>
+[source,javascript]
+----
+const asciidoctor = require('asciidoctor')() // <1>
+const content = 'http://asciidoctor.org[*Asciidoctor*] ' +
+  'running on https://opalrb.com[_Opal_] ' +
+  'brings AsciiDoc to Node.js!'
+const html = asciidoctor.convert(content) // <2>
 console.log(html); // <3>
-```
-
+----
 <1> Instantiate the Asciidoctor.js library
 <2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
 <3> Print the HTML5 output to the console
 
-== Back-end development
-
-.Installing Asciidoctor.js with npm
-
-    $ npm install asciidoctor.js --save
-
-Once the package is installed, the first thing to do is to load the `asciidoctor.js` module using `require`, then you're ready to start using the API:
-
-.sample.js
-
-```javascript
-var asciidoctor = require('asciidoctor.js')(); // <1>
-var content = "http://asciidoctor.org[*Asciidoctor*] " +
-    "running on https://opalrb.com[_Opal_] " +
-    "brings AsciiDoc to Node.js!";
-var html = asciidoctor.convert(content); // <2>
-console.log(html); // <3>
-```
-
-<1> Instantiate the Asciidoctor.js library
-<2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
-<3> Print the HTML5 output to the console
-
-Save the file as `sample.js` and run it using the `node` command:
+Save the file as _sample.js_ and run it using the `node` command:
 
  $ node sample.js
 
 You should see the following output in your terminal:
 
-[.output]
+[source.output,html]
+----
+<div class="paragraph">
+<p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.com"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
+</div>
+----
 
-    <div class="paragraph">
-    <p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.com"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
-    </div>
+It's also possible to use the following `script` tag directly into your HTML page:
 
-== Advanced topics
+```html
+<script src="node_modules/@asciidoctor/core/dist/browser/asciidoctor.js"></script>
+```
 
-If you want to know more about _Asciidoctor.js_, please read the {uri-user-manual}[User Manual].
+== Learning
+
+If you want to learn more about _Asciidoctor.js_, please read the {uri-user-manual}[User Manual].
 
 == Contributing
 
