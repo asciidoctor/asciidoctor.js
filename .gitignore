@@ -1,12 +1,3 @@
-/.ruby-gemset
-/.ruby-version
-/Gemfile.lock
-/README.html
 /build/
 /node_modules/
-/bower_components/
-/.idea/
-/public/
-/.cache/
 npm-debug.log
-yarn-error.log
