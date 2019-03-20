@@ -567,27 +567,6 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       expect(refsCatalog['img-sunset'].getId()).to.equal('img-sunset')
     })
 
-    it('should get index terms', () => {
-      const input = `The Lady of the Lake, her arm clad in the purest shimmering samite,
-held aloft Excalibur from the bosom of the water,
-signifying by divine providence that I, ((Arthur)), 
-was to carry Excalibur (((Sword, Broadsword, Excalibur))). 
-That is why I am your king. Shut up! Will you shut up?!
-Burn her anyway! I'm not a witch.
-Look, my liege! We found them.
-
-indexterm2:[Lancelot] was one of the Knights of the Round Table. 
-indexterm:[knight, Knight of the Round Table, Lancelot]`
-      const doc = asciidoctor.load(input)
-      doc.convert() // available only once the document has been converted
-      const indexTermsCatalog = doc.getIndexTerms()
-      expect(indexTermsCatalog.length).to.equal(4)
-      expect(indexTermsCatalog[0]).to.have.members(['Arthur'])
-      expect(indexTermsCatalog[1]).to.have.members(['Sword', 'Broadsword', 'Excalibur'])
-      expect(indexTermsCatalog[2]).to.have.members(['Lancelot'])
-      expect(indexTermsCatalog[3]).to.have.members(['knight', 'Knight of the Round Table', 'Lancelot'])
-    })
-
     it('should get footnotes', () => {
       const input = `The hail-and-rainbow protocol can be initiated at five levels: double, tertiary, supernumerary, supermassive, and apocalyptic party.footnote:[The double hail-and-rainbow level makes my toes tingle.]
       A bold statement!footnoteref:[disclaimer,Opinions are my own.]
