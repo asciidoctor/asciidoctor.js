@@ -1,5 +1,5 @@
 #!/bin/bash
-# Send a notification when a successful build occured on the master branch
+# Send a notification when a successful build occurred on the master branch
 
 set -e
 
