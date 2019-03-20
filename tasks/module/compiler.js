@@ -59,10 +59,10 @@ const compileAsciidoctorCore = (asciidoctorCoreDependency) => {
 }
 
 const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
-  log.task('Replace unsupported features')
+  log.task('replace unsupported features')
   const path = asciidoctorCoreDependency.target
   let data = fs.readFileSync(path, 'utf8')
-  log.debug('Replace (g)sub! with (g)sub')
+  log.debug('replace (g)sub! with (g)sub')
   data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'')
   fs.writeFileSync(path, data, 'utf8')
 }
