@@ -662,7 +662,9 @@ content`
           expect(visitedLast).to.be.false()
         })
 
-        it('should skip node and its children if block returns skip', function () {
+        // FIXME: enable when Asciidoctor 2.0.0 will be released
+        /*
+        it('should skip node and its children if block returns reject', function () {
           const input = `paragraph 1
 
 ====
@@ -678,7 +680,7 @@ paragraph 4`
           const result = doc.findBy((candidate) => {
             const ctx = candidate.getContext()
             if (ctx === 'example') {
-              return 'skip'
+              return 'reject'
             } else if (ctx === 'paragraph') {
               return true
             }
@@ -699,12 +701,13 @@ paragraph 3
           const doc = asciidoctor.load(input)
           const result = doc.findBy((candidate) => {
             if (candidate.getContext() === 'example') {
-              return 'skip_children'
+              return 'prune'
             }
           })
           expect(result.length).to.equal(1)
           expect(result[0].getContext()).to.equal('example')
         })
+        */
       })
 
       describe('Get list', function () {
