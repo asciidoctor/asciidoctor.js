@@ -14,9 +14,9 @@ On this page, you'll learn:
 Open a terminal and type:
 
 [source]
-$ npm i asciidoctor.js
+$ npm i asciidoctor
 
-NOTE: If you prefer Yarn over npm, you can install Asciidoctor.js using `yarn add asciidoctor.js`
+NOTE: If you prefer Yarn over npm, you can install Asciidoctor.js using `yarn add asciidoctor`
 
 Asciidoctor.js provides different builds for different JavaScript environments.
 See below for a link to the right one and instructions on how to use it.
@@ -27,7 +27,7 @@ Just include Asciidoctor.js in a script tag.
 You can instantiate the processor using the `Asciidoctor` global variable.
 
 ```html
-<script src="node_modules/asciidoctor.js/dist/browser/asciidoctor.js"></script>
+<script src="node_modules/@asciidoctor/core/dist/browser/asciidoctor.js"></script>
 ```
 ```js
 var asciidoctor = Asciidoctor()
@@ -36,7 +36,7 @@ var asciidoctor = Asciidoctor()
 == Node
 
 ```js
-const Asciidoctor = require('asciidoctor.js')
+const Asciidoctor = require('asciidoctor')
 
 const asciidoctor = Asciidoctor()
 ```
@@ -52,7 +52,7 @@ requirejs(['asciidoctor'], function (asciidoctor) {
 == Webpack
 
 ```js
-import Asciidoctor from 'asciidoctor.js'
+import Asciidoctor from 'asciidoctor'
 
 const asciidoctor = Asciidoctor()
 ```
@@ -68,7 +68,7 @@ Create the following code snippet to a file named `app.js` and save it in the sa
 
 .app.js
 ```js
-const Asciidoctor = require('asciidoctor.js')
+const Asciidoctor = require('asciidoctor')
 
 const asciidoctor = Asciidoctor()
 ```

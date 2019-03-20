@@ -35,10 +35,10 @@ Start by cloning the source from GitHub:
 
  $ git clone https://github.com/asciidoctor/asciidoctor.js.git
 
-Next, switch to the _asciidoctor.js_ directory and run npm's `install` command:
+Next, switch to the _asciidoctor.js/packages/core_ directory and run npm's `install` command:
 
- $ cd asciidoctor.js
-   npm install
+ $ cd asciidoctor.js/packages/core
+   npm i
 
 You're now ready to build Asciidoctor.js.
 

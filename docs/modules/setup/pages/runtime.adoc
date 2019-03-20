@@ -22,7 +22,7 @@ you can use the `runtime` configuration object when instantiating Asciidoctor.js
 to explicitly define the runtime environment:
 
 ```js
-const asciidoctor = require('asciidoctor.js')({
+const asciidoctor = require('asciidoctor')({
   runtime: {
     platform: 'browser',
     engine: 'v8',
@@ -61,7 +61,7 @@ To explicitly define the I/O module,
 you can specify the attribute `runtime.ioModule` when instantiating Asciidoctor.js:
 
 ```js
-const asciidoctor = require('asciidoctor.js')({
+const asciidoctor = require('asciidoctor')({
   runtime: {
     ioModule: 'xmlhttprequest'
   }
@@ -94,7 +94,7 @@ The implementation will use the {uri-phantomjs-read}[`fs.read` function].
 Once Asciidoctor.js is instantiated, you can retrieve the runtime environment with the `getRuntime` function:
 
 ```js
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 console.log(asciidoctor.getRuntime())
 // { ioModule: 'node', platform: 'node', engine: 'v8', framework: '' }
 ```

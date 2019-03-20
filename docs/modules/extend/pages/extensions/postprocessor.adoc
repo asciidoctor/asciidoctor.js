@@ -21,7 +21,7 @@ include::example$extensions/digital-postprocessor.js[]
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 const registry = asciidoctor.Extensions.create()
 require('./digital-postprocessor.js')(registry)
 

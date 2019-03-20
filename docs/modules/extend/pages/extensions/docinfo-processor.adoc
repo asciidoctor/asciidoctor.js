@@ -23,7 +23,7 @@ include::example$extensions/love-footer-docinfo-processor.js[]
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 const registry = asciidoctor.Extensions.create()
 require('./love-footer-docinfo-processor.js')(registry)
 

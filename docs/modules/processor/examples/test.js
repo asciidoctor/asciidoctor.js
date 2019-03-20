@@ -1,4 +1,4 @@
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 
 // tag::load-file[]
 var doc = asciidoctor.loadFile('sample.adoc')

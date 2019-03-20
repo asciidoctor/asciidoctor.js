@@ -42,7 +42,7 @@ You can register an extension globally as follows:
 
 [source,javascript]
 ----
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 asciidoctor.Extensions.register(function () {
   this.block(function () {
     const self = this
@@ -79,7 +79,7 @@ It can be useful when you want to convert the same text with different extension
 
 [source,javascript]
 ----
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 
 const registryA = asciidoctor.Extensions.create()
 const registryB = asciidoctor.Extensions.create()
