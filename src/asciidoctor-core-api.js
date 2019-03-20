@@ -935,17 +935,6 @@ Document.prototype.getImages = function () {
 }
 
 /**
- * Returns an {Array} of index terms captured by the processor.
- *
- * @returns {Array} - returns an {Array} of index terms in the document.
- * Will return an empty array if the function was called before the document was converted.
- * @memberof Document
- */
-Document.prototype.getIndexTerms = function () {
-  return this.catalog.$$smap.indexterms
-}
-
-/**
  * Returns an {Array} of links captured by the processor.
  *
  * @returns {Array} - returns an {Array} of links in the document.
