@@ -42,25 +42,25 @@ You can register an extension globally as follows:
 
 [source,javascript]
 ----
-const asciidoctor = require('asciidoctor.js')();
+const asciidoctor = require('asciidoctor.js')()
 asciidoctor.Extensions.register(function () {
   this.block(function () {
-    const self = this;
-    self.named('shout');
-    self.onContext('paragraph');
+    const self = this
+    self.named('shout')
+    self.onContext('paragraph')
     self.process(function (parent, reader) {
-      const lines = reader.getLines().map(l => l.toUpperCase());
-      return self.createBlock(parent, 'paragraph', lines);
-    });
-  });
-});
+      const lines = reader.getLines().map(l => l.toUpperCase())
+      return self.createBlock(parent, 'paragraph', lines)
+    })
+  })
+})
 
 const text = `[shout]\
 \nSay it loud.\
-\nSay it proud.`;
+\nSay it proud.`
 
-const html = asciidoctor.convert(text);
-console.log(html);
+const html = asciidoctor.convert(text)
+console.log(html)
 
 // <div class="paragraph">
 // <p>SAY IT LOUD.
@@ -79,40 +79,40 @@ It can be useful when you want to convert the same text with different extension
 
 [source,javascript]
 ----
-const asciidoctor = require('asciidoctor.js')();
+const asciidoctor = require('asciidoctor.js')()
 
-const registryA = asciidoctor.Extensions.create();
-const registryB = asciidoctor.Extensions.create();
+const registryA = asciidoctor.Extensions.create()
+const registryB = asciidoctor.Extensions.create()
 
 registryA.block(function () {
-  const self = this;
-  self.named('shout');
-  self.onContext('paragraph');
+  const self = this
+  self.named('shout')
+  self.onContext('paragraph')
   self.process(function (parent, reader) {
     // Transform text to uppercase
-    const lines = reader.getLines().map(l => l.toUpperCase());
-    return self.createBlock(parent, 'paragraph', lines);
-  });
-});
+    const lines = reader.getLines().map(l => l.toUpperCase())
+    return self.createBlock(parent, 'paragraph', lines)
+  })
+})
 
 registryB.block(function () {
-  const self = this;
-  self.named('shout');
-  self.onContext('paragraph');
+  const self = this
+  self.named('shout')
+  self.onContext('paragraph')
   self.process(function (parent, reader) {
     // Replace period at end of line with three three exclamation marks
-    const lines = reader.getLines().map(l => l.replace(/\.$/g, ' !!!'));
-    return self.createBlock(parent, 'paragraph', lines);
-  });
-});
+    const lines = reader.getLines().map(l => l.replace(/\.$/g, ' !!!'))
+    return self.createBlock(parent, 'paragraph', lines)
+  })
+})
 
 const text = `[shout]\
 \nSay it loud.\
-\nSay it proud.`;
+\nSay it proud.`
 
-console.log(asciidoctor.convert(text, {'extension_registry': registryA}));
-console.log('');
-console.log(asciidoctor.convert(text, {'extension_registry': registryB}));
+console.log(asciidoctor.convert(text, { 'extension_registry': registryA }))
+console.log('')
+console.log(asciidoctor.convert(text, { 'extension_registry': registryB }))
 
 // <div class="paragraph">
 // <p>SAY IT LOUD.

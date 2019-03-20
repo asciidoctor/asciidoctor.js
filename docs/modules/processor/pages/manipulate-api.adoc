@@ -6,13 +6,13 @@ To update a document attribute, you will need to use the `setAttribute` function
 
 [source,javascript]
 ----
-var content = '== Title';
-var doc = asciidoctor.load(content);
-console.log(doc.getAttribute('data-uri')); // prints undefined
-console.log(doc.getAttribute('data-uri', 'false')); // prints 'false'
+var content = '== Title'
+var doc = asciidoctor.load(content)
+console.log(doc.getAttribute('data-uri')) // prints undefined
+console.log(doc.getAttribute('data-uri', 'false')) // prints 'false'
 
-doc.setAttribute('data-uri', 'true');
-console.log(doc.getAttribute('data-uri')); // prints 'true'
+doc.setAttribute('data-uri', 'true')
+console.log(doc.getAttribute('data-uri')) // prints 'true'
 ----
 
 == Unset a document attribute
@@ -21,13 +21,13 @@ To unset a document attribute, you will need to use the `removeAttribute` functi
 
 [source,javascript]
 ----
-var content = '== Title';
-var doc = asciidoctor.load(content);
-doc.setAttribute('data-uri', 'true');
-console.log(doc.getAttribute('data-uri')); // prints 'true'
+var content = '== Title'
+var doc = asciidoctor.load(content)
+doc.setAttribute('data-uri', 'true')
+console.log(doc.getAttribute('data-uri')) // prints 'true'
 
-doc.removeAttribute('data-uri');
-console.log(doc.getAttribute('data-uri')); // prints undefined
+doc.removeAttribute('data-uri')
+console.log(doc.getAttribute('data-uri')) // prints undefined
 ----
 
 == What's next?

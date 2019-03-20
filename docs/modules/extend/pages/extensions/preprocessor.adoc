@@ -19,30 +19,17 @@ In this section, we are going to talk about X.
 
 .draft-preprocessor.js
 ```js
-module.exports = function (registry) {
-  registry.preprocessor(function () {
-    var self = this;
-    self.process(function (doc, reader) {
-      var lines = reader.lines;
-      for (var i = 0; i < lines.length; i++) {
-        if (lines[i].match(/^\/\/\s?draft.*/)) {
-          doc.setAttribute('status', 'DRAFT');
-        }
-      }
-      return reader;
-    });
-  });
-};
+include::example$extensions/draft-preprocessor.js[]
 ```
 
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')();
-const registry = asciidoctor.Extensions.create();
-require('./draft-preprocessor.js')(registry);
+const asciidoctor = require('asciidoctor.js')()
+const registry = asciidoctor.Extensions.create()
+require('./draft-preprocessor.js')(registry)
 
-const doc = asciidoctor.loadFile('sample-draft-doc.adoc', {extension_registry: registry});
-console.log(doc.getAttribute('status')); // 'DRAFT'
-const result = doc.convert();
+const doc = asciidoctor.loadFile('sample-draft-doc.adoc', { 'extension_registry': registry })
+console.log(doc.getAttribute('status')) // 'DRAFT'
+const result = doc.convert()
 ```

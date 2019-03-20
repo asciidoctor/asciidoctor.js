@@ -41,14 +41,14 @@ Once this package is installed, you can write the following Node script to compi
 
 .compile.js
 ```js
-const fs = require('fs');
-const Builder = require('opal-compiler').Builder;
+const fs = require('fs')
+const Builder = require('opal-compiler').Builder
 // Opal object will be available on the global scope
 
-const builder = Builder.create();
-builder.appendPaths('lib'); // <1>
-const result = builder.build('tel-inline-macro.rb'); // <2>
-fs.writeFileSync('tel-inline-macro.js', result.toString(), 'utf8'); // <3>
+const builder = Builder.create()
+builder.appendPaths('lib') // <1>
+const result = builder.build('tel-inline-macro.rb') // <2>
+fs.writeFileSync('tel-inline-macro.js', result.toString(), 'utf8') // <3>
 ```
 <1> The extension file is in the `lib` directory
 <2> The extension file is named `tel-inline-macro.rb`
@@ -81,11 +81,11 @@ Next we create a Node script to convert this document:
 .convert.js
 [source,javascript]
 ----
-const asciidoctor = require('asciidoctor.js')();
-require('./tel-inline-macro.js'); // <1>
+const asciidoctor = require('asciidoctor.js')()
+require('./tel-inline-macro.js') // <1>
 
-const html = asciidoctor.convertFile('document.adoc', { to_file: false }); // <2>
-console.log(html);
+const html = asciidoctor.convertFile('document.adoc', { 'to_file': false }) // <2>
+console.log(html)
 ----
 <1> Load the local extension named [.path]_tel-inline-macro.js_
 <2> Convert the document with the `tel` inline macro extension enabled
@@ -105,6 +105,5 @@ Then we run it:
 </div>
 </div>
 </div>
-
 ```
 <1> The `tel` macro was converted to a link

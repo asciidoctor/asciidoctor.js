@@ -17,24 +17,16 @@ This is a paragraph.
 
 .love-footer-docinfo-processor.js
 ```js
-module.exports = function (registry) {
-  registry.docinfoProcessor(function () {
-    var self = this;
-    self.atLocation('footer');
-    self.process(function () {
-      return 'Made with <3';
-    });
-  });
-};
+include::example$extensions/love-footer-docinfo-processor.js[]
 ```
 
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')();
-const registry = asciidoctor.Extensions.create();
-require('./love-footer-docinfo-processor.js')(registry);
+const asciidoctor = require('asciidoctor.js')()
+const registry = asciidoctor.Extensions.create()
+require('./love-footer-docinfo-processor.js')(registry)
 
-const html = asciidoctor.convertFile('sample-love-doc.adoc', {to_file: false, extension_registry: registry});
-console.log(html);
+const html = asciidoctor.convertFile('sample-love-doc.adoc', { 'to_file': false, 'extension_registry': registry })
+console.log(html)
 ```

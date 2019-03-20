@@ -15,23 +15,16 @@ Comment la révolution digitale va transformer votre entreprise.
 
 .digital-postprocessor.js
 ```js
-module.exports = function (registry) {
-  registry.postprocessor(function () {
-    var self = this;
-    self.process(function (doc, output) {
-      return output.replace(/digitale?/g, 'numérique');
-    });
-  });
-};
+include::example$extensions/digital-postprocessor.js[]
 ```
 
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')();
-const registry = asciidoctor.Extensions.create();
-require('./digital-postprocessor.js')(registry);
+const asciidoctor = require('asciidoctor.js')()
+const registry = asciidoctor.Extensions.create()
+require('./digital-postprocessor.js')(registry)
 
-const html = asciidoctor.convertFile('sample-digital-doc.adoc', {to_file: false, extension_registry: registry});
-console.log(html); // digital is gone... Long live numérique!
+const html = asciidoctor.convertFile('sample-digital-doc.adoc', { 'to_file': false, 'extension_registry': registry })
+console.log(html) // digital is gone... Long live numérique!
 ```

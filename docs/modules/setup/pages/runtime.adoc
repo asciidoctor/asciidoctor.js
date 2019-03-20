@@ -28,7 +28,7 @@ const asciidoctor = require('asciidoctor.js')({
     engine: 'v8',
     framework: 'webextensions'
   }
-});
+})
 ```
 
 The following values are recognized:
@@ -65,7 +65,7 @@ const asciidoctor = require('asciidoctor.js')({
   runtime: {
     ioModule: 'xmlhttprequest'
   }
-});
+})
 ```
 
 `ioModule` can be one of:
@@ -94,8 +94,8 @@ The implementation will use the {uri-phantomjs-read}[`fs.read` function].
 Once Asciidoctor.js is instantiated, you can retrieve the runtime environment with the `getRuntime` function:
 
 ```js
-const asciidoctor = require('asciidoctor.js')();
-console.log(asciidoctor.getRuntime());
+const asciidoctor = require('asciidoctor.js')()
+console.log(asciidoctor.getRuntime())
 // { ioModule: 'node', platform: 'node', engine: 'v8', framework: '' }
 ```
 

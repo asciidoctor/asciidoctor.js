@@ -94,9 +94,9 @@ In the following example, we define the `safe` option to `unsafe` and we also de
 
 [source,javascript]
 ----
-var content = '= Document title';
-var html = asciidoctor.convert(content, {safe: 'server', attributes: {showtitle: true, icons: 'font'}});
-console.log(html);
+var content = '= Document title'
+var html = asciidoctor.convert(content, { 'safe': 'server', 'attributes': { 'showtitle': true, 'icons': 'font' } })
+console.log(html)
 // <h1>Document title</h1>
 ----
 

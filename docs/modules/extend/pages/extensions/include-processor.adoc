@@ -13,29 +13,18 @@ Return the content "foo" if the file extension of the include directive target i
 
 .foo-include-processor.js
 ```js
-module.exports = function (registry) {
-  registry.includeProcessor(function () {
-    var self = this;
-    self.handles(function (target) {
-      return target.endsWith('.foo');
-    });
-    self.process(function (doc, reader, target, attrs) {
-      var content = ['foo'];
-      return reader.pushInclude(content, target, target, 1, attrs);
-    });
-  });
-};
+include::example$extensions/foo-include-processor.js[]
 ```
 
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')();
-const registry = asciidoctor.Extensions.create();
-require('./foo-include-processor.js')(registry);
+const asciidoctor = require('asciidoctor.js')()
+const registry = asciidoctor.Extensions.create()
+require('./foo-include-processor.js')(registry)
 
-const html = asciidoctor.convert('include::./test.foo[]', {extension_registry: registry});
-console.log(html);
+const html = asciidoctor.convert('include::./test.foo[]', { extension_registry: registry })
+console.log(html)
 // <div class="paragraph">
 // <p>foo</p>
 // </div

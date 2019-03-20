@@ -15,24 +15,16 @@ We track you for your own safety!
 
 .gdpr-tree-processor.js
 ```js
-module.exports = function (registry) {
-  registry.treeProcessor(function () {
-    var self = this;
-    self.process(function (doc) {
-      doc.getBlocks()[0] = self.createBlock(doc, 'paragraph', 'GDPR compliant :)');
-      return doc;
-    });
-  });
-};
+include::example$extensions/gdpr-tree-processor.js[]
 ```
 
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')();
-const registry = asciidoctor.Extensions.create();
-require('./gdpr-tree-processor.js')(registry);
+const asciidoctor = require('asciidoctor.js')()
+const registry = asciidoctor.Extensions.create()
+require('./gdpr-tree-processor.js')(registry)
 
-const doc = asciidoctor.convertFile('sample-gdpr-doc.adoc', {extension_registry: registry});
-console.log(doc.getBlocks()[0].getSource()); // 'GDPR compliant :)'
+const doc = asciidoctor.convertFile('sample-gdpr-doc.adoc', { 'extension_registry': registry })
+console.log(doc.getBlocks()[0].getSource()) // 'GDPR compliant :)'
 ```

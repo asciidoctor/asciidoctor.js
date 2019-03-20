@@ -15,31 +15,16 @@ emoticon:x[]
 
 .emoticon-inline-macro-processor.js
 ```js
-module.exports = function (registry) {
-  registry.inlineMacro('emoticon', function () {
-    var self = this;
-    self.process(function (parent, target) {
-      var text;
-      if (target === 'grin') {
-        text = ':D';
-      } else if (target === 'wink') {
-        text = ';)';
-      } else {
-        text = ':)';
-      }
-      return self.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert();
-    });
-  });
-};
+include::example$extensions/emoticon-inline-macro-processor.js[]
 ```
 
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')();
-const registry = asciidoctor.Extensions.create();
-require('./emoticon-inline-macro-processor.js')(registry);
+const asciidoctor = require('asciidoctor.js')()
+const registry = asciidoctor.Extensions.create()
+require('./emoticon-inline-macro-processor.js')(registry)
 
-const html = asciidoctor.convertFile('ssample-emoticon-doc.adoc', {to_file: false, extension_registry: registry});
-console.log(html);
+const html = asciidoctor.convertFile('ssample-emoticon-doc.adoc', { 'to_file': false, 'extension_registry': registry })
+console.log(html)
 ```

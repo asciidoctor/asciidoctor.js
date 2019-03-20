@@ -14,7 +14,7 @@ Like the default stylesheet, you can have the output document link to your custo
 If the stylesheet is in the same directory as your document, you can apply it when converting your document to HTML from the API.
 
 ```js
-asciidoctor.convertFile('file.adoc', {attributes: {stylesheet: 'styles.css'}});
+asciidoctor.convertFile('file.adoc', { 'attributes': { 'stylesheet': 'styles.css' } })
 ```
 
 . Save your custom stylesheet in the same directory as `file.adoc`
@@ -43,7 +43,7 @@ After processing `file.adoc`, its HTML output (`file.html`), which includes the 
 You can also set `stylesdir` in the API.
 
 ```js
-asciidoctor.convertFile('file.adoc', {attributes: {stylesdir: 'stylesheets/', stylesheet: 'styles.css'}});
+asciidoctor.convertFile('file.adoc', { 'attributes': { 'stylesdir': 'stylesheets/', 'stylesheet': 'styles.css' } })
 ```
 
 If you don't want to embed the `styles.css` stylesheet into your HTML output, make sure to set `linkcss`.

@@ -9,13 +9,17 @@ This is quick tour will give you an overview of how to convert AsciiDoc content 
 The first thing you need to do is instantiate Asciidoctor.js to get a http://asciidoctor.github.io/asciidoctor.js/master/#asciidoctor[processor]:
 
 ```js
-var asciidoctor = Asciidoctor();
+var asciidoctor = Asciidoctor()
 ```
 
 To convert an AsciiDoc-formatted string:
 
 ```js
-var html = asciidoctor.convert('Hello, _Asciidoctor_');
+var html = asciidoctor.convert('Hello, _Asciidoctor_')
+console.log(html)
+// <div class="paragraph">
+// <p>Hello, <em>Asciidoctor</em></p>
+// </div>
 ```
 
 [NOTE]
@@ -24,14 +28,14 @@ When converting a string, the header and footer are excluded by default to make 
 If you want the header and footer, just enable it using the `header_footer` option:
 
 ```js
-var html = asciidoctor.convert('*This* is Asciidoctor.', {'header_footer': true});
+var html = asciidoctor.convert('*This* is Asciidoctor.', { 'header_footer': true })
 ```
 ====
 
 Alternatively, you can use the function `convertFile` to convert a file containing AsciiDoc markup to HTML 5:
 
 ```js
-var doc = asciidoctor.convertFile('/path/to/file.adoc'); // <1>
+var doc = asciidoctor.convertFile('/path/to/file.adoc') // <1>
 ```
 <1> The command will output to the file `file.html` in the same directory. +
 The variable `doc` will contain an {uri-js-api-doc}/#document[Asciidoctor.Document] object.
@@ -39,7 +43,7 @@ The variable `doc` will contain an {uri-js-api-doc}/#document[Asciidoctor.Docume
 Alternatively, you can capture the HTML 5 output in a variable instead of writing it to a file:
 
 ```js
-var html = asciidoctor.convertFile('/path/to/file.adoc', {'to_file': false, 'header_footer': true});
+var html = asciidoctor.convertFile('/path/to/file.adoc', { 'to_file': false, 'header_footer': true })
 ```
 
 [NOTE]
@@ -51,7 +55,7 @@ Use of this argument is described in the xref:processor:convert-options.adoc[Con
 If you are using Node.js, you can also use a `Buffer`:
 
 ```js
-var html = asciidoctor.convert(fs.readFileSync('/path/to/file.adoc')); // <1>
+var html = asciidoctor.convert(fs.readFileSync('/path/to/file.adoc')) // <1>
 ```
 <1> `readFileSync` will return a `Buffer`: https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
 
@@ -60,31 +64,31 @@ var html = asciidoctor.convert(fs.readFileSync('/path/to/file.adoc')); // <1>
 To parse an AsciiDoc file into an {uri-js-api-doc}/#document[Asciidoctor.Document] object:
 
 ```js
-var doc = asciidoctor.loadFile('file.adoc');
+var doc = asciidoctor.loadFile('file.adoc')
 ```
 
 You can get information about the document:
 
 ```js
-console.log(doc.getDocumentTitle());
-console.log(doc.getAttributes());
+console.log(doc.getDocumentTitle())
+console.log(doc.getAttributes())
 ```
 
 More than likely, you will want to convert the document.
 To convert an {uri-js-api-doc}/#document[Asciidoctor.Document] to HTML5, use the `convert` function on a `Document`:
 
 ```js
-var doc = asciidoctor.loadFile('file.adoc');
-doc.convert();
+var doc = asciidoctor.loadFile('file.adoc')
+doc.convert()
 ```
 
 As with the convert functions, it's also possible to load an AsciiDoc-formatted string and a `Buffer`:
 
 ```js
-var doc = asciidoctor.load('Hello, _Asciidoctor_');
+var doc = asciidoctor.load('Hello, _Asciidoctor_')
 ```
 ```js
-var doc = asciidoctor.load(fs.readFileSync('/path/to/file.adoc'));
+var doc = asciidoctor.load(fs.readFileSync('/path/to/file.adoc'))
 ```
 
 == Styling the HTML with CSS
@@ -97,11 +101,11 @@ TIP: The default stylesheet is located at [.path]_node_modules/asciidoctor.js/di
 When you generate a document using Node.js, the `asciidoctor.css` stylesheet is embedded into the HTML output by default (when the safe mode is less than `secure`).
 
 ```js
-asciidoctor.convertFile('/path/to/file.adoc', {'safe': 'safe'});
+asciidoctor.convertFile('/path/to/file.adoc', { 'safe': 'safe' })
 ```
 
 To have your document link to the stylesheet, set the `linkcss` attribute:
 
 ```js
-asciidoctor.convertFile('/path/to/file.adoc', {'safe': 'safe', 'attributes': {'linkcss': true}});
+asciidoctor.convertFile('/path/to/file.adoc', { 'safe': 'safe', 'attributes': { 'linkcss': true } })
 ```

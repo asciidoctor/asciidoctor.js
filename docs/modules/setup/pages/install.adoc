@@ -30,15 +30,15 @@ You can instantiate the processor using the `Asciidoctor` global variable.
 <script src="node_modules/asciidoctor.js/dist/browser/asciidoctor.js"></script>
 ```
 ```js
-var asciidoctor = Asciidoctor();
+var asciidoctor = Asciidoctor()
 ```
 
 == Node
 
 ```js
-const Asciidoctor = require('asciidoctor.js');
+const Asciidoctor = require('asciidoctor.js')
 
-const asciidoctor = Asciidoctor();
+const asciidoctor = Asciidoctor()
 ```
 
 == AMD (System.js, RequireJS, etc)
@@ -46,15 +46,15 @@ const asciidoctor = Asciidoctor();
 ```js
 requirejs(['asciidoctor'], function (asciidoctor) {
   //...
-});
+})
 ```
 
 == Webpack
 
 ```js
-import Asciidoctor from 'asciidoctor.js';
+import Asciidoctor from 'asciidoctor.js'
 
-const asciidoctor = Asciidoctor();
+const asciidoctor = Asciidoctor()
 ```
 
 == GraalVM
@@ -68,9 +68,9 @@ Create the following code snippet to a file named `app.js` and save it in the sa
 
 .app.js
 ```js
-const Asciidoctor = require('asciidoctor.js');
+const Asciidoctor = require('asciidoctor.js')
 
-const asciidoctor = Asciidoctor();
+const asciidoctor = Asciidoctor()
 ```
 
 Then execute it on GraalVM using the `node` command (available in the [.path]_/bin_ folder of the GraalVM package):
@@ -88,7 +88,7 @@ To embed Asciidoctor.js in a Java application, create the following code snippet
 
 .app.js
 ```js
-var asciidoctor = Asciidoctor();
+var asciidoctor = Asciidoctor()
 ```
 
 Copy the file `node_modules/asciidoctor.js/dist/graalvm/asciidoctor.js` in the resources of your application.
