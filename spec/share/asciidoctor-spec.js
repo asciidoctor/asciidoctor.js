@@ -72,7 +72,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       })
 
       it('should load document authors', function () {
-        const doc = asciidoctor.load('= Authors\nGuillaume Grossetie;Anders Nawroth\n')
+        const doc = asciidoctor.load('= Authors\nGuillaume Grossetie; Anders Nawroth\n')
         expect(doc.getAttribute('author')).to.equal('Guillaume Grossetie')
         expect(doc.getAttribute('author_1')).to.equal('Guillaume Grossetie')
         expect(doc.getAttribute('author_2')).to.equal('Anders Nawroth')
@@ -92,7 +92,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       })
 
       it('should return attributes as JSON object', function () {
-        const doc = asciidoctor.load('= Authors\nGuillaume Grossetie;Anders Nawroth\n')
+        const doc = asciidoctor.load('= Authors\nGuillaume Grossetie; Anders Nawroth\n')
         expect(doc.getAttributes()['author']).to.equal('Guillaume Grossetie')
         expect(doc.getAttributes()['authors']).to.equal('Guillaume Grossetie, Anders Nawroth')
       })
