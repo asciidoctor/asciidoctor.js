@@ -19,7 +19,7 @@ include::example$extensions/foo-include-processor.js[]
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 const registry = asciidoctor.Extensions.create()
 require('./foo-include-processor.js')(registry)
 

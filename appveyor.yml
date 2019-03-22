@@ -12,9 +12,10 @@ environment:
   ASCIIDOCTOR_CORE_VERSION: "master"
 
 install:
-  # Get the latest stable version of Node.js
-  - ps: Install-Product node $env:nodejs_version
-  - npm ci
+# Get the latest stable version of Node.js
+- ps: Install-Product node $env:nodejs_version
+- cd packages/core
+- npm ci
 
 build_script:
 - node tasks/build.js

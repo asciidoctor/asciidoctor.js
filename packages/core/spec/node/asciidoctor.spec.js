@@ -1651,13 +1651,13 @@ In other words, it’s about discovering writing zen.`
 
   if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {
     describe('Windows', () => {
-      it('should register a custom converter', () => {
+      it('should include file with an absolute path (base_dir is the drive letter)', () => {
         const buildFolder = process.env.APPVEYOR_BUILD_FOLDER
         const driveLetter = buildFolder.substring(0, 2)
         const options = { base_dir: driveLetter, safe: 'safe' }
         const content = `= Include test
 
-include::${buildFolder}/spec/fixtures/include.adoc[]`
+include::${buildFolder}/packages/core/spec/fixtures/include.adoc[]`
         const result = asciidoctor.convert(content, options)
         expect(result).to.contain('include content')
       })

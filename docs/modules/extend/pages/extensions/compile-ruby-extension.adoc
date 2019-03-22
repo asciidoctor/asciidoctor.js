@@ -81,7 +81,7 @@ Next we create a Node script to convert this document:
 .convert.js
 [source,javascript]
 ----
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 require('./tel-inline-macro.js') // <1>
 
 const html = asciidoctor.convertFile('document.adoc', { 'to_file': false }) // <2>

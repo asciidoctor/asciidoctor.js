@@ -25,7 +25,7 @@ include::example$extensions/draft-preprocessor.js[]
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 const registry = asciidoctor.Extensions.create()
 require('./draft-preprocessor.js')(registry)
 

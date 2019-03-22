@@ -30,7 +30,7 @@ const copyExamplesResources = () => {
   copyToExamplesBuildDir([
     'examples/asciidoctor_example.html',
     'examples/userguide_test.html',
-    'README.adoc'
+    '../../README.adoc'
   ])
 
   log.task('Download sample data from AsciiDoc repository')

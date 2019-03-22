@@ -21,7 +21,7 @@ include::example$extensions/gdpr-tree-processor.js[]
 == Usage
 
 ```js
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 const registry = asciidoctor.Extensions.create()
 require('./gdpr-tree-processor.js')(registry)
 

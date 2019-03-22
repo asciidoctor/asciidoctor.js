@@ -157,7 +157,7 @@ In the example below we will use a custom converter to convert `paragraph` but t
 
 [source,js]
 ----
-const asciidoctor = require('asciidoctor.js')()
+const asciidoctor = require('asciidoctor')()
 
 class SemanticParagraphConverter {
   constructor () {
