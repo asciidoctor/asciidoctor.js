@@ -16,9 +16,9 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
         safe: 'safe',
         attributes: { 'allow-uri-read': true }
       }
-      let html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/fixtures/include-tag.adoc[tag=a]', opts)
+      let html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/packages/core/spec/fixtures/include-tag.adoc[tag=a]', opts)
       expect(html).to.include('tag-a')
-      html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/fixtures/include-tag.adoc[tag=b]', opts)
+      html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/packages/core/spec/fixtures/include-tag.adoc[tag=b]', opts)
       expect(html).to.include('tag-b')
     }).timeout(5000)
 
@@ -27,10 +27,10 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
         safe: 'safe',
         attributes: { 'allow-uri-read': true }
       }
-      let html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/fixtures/include-lines.adoc[lines=1..2]', opts)
+      let html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/packages/core/spec/fixtures/include-lines.adoc[lines=1..2]', opts)
       expect(html).to.include('First line')
       expect(html).to.include('Second line')
-      html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/fixtures/include-lines.adoc[lines=3..4]', opts)
+      html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/packages/core/spec/fixtures/include-lines.adoc[lines=3..4]', opts)
       expect(html).to.include('Third line')
       expect(html).to.include('Fourth line')
     }).timeout(5000)

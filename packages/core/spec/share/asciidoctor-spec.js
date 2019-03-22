@@ -901,7 +901,7 @@ The 'reftext' attribute can an also be set by the 'BlockId' element.
         })
         it('should embed a remote png image', function () {
           const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
-          const html = asciidoctor.convert(`image::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec/fixtures/images/cat.png[]`, options)
+          const html = asciidoctor.convert(`image::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/packages/core/spec/fixtures/images/cat.png[]`, options)
           expect(html).to.include('img src="data:image/png;base64,')
         }).timeout(5000)
         it('should not throw an exception if the image does not exists', function () {
