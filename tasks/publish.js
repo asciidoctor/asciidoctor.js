@@ -2,7 +2,7 @@
 const path = require('path')
 const fs = require('fs')
 const childProcess = require('child_process')
-const { npmPublish } = require('libnpmpublish')
+const { publish: npmPublish } = require('libnpmpublish')
 const log = require('bestikk-log')
 
 const publish = async (directory) => {
