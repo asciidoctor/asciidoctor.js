@@ -1,3 +1,3 @@
 matrix:
   exclude:
-  - env: ASCIIDOCTOR_CORE_VERSION=v2.0.0.rc.2
+  - env: ASCIIDOCTOR_CORE_VERSION=v2.0.0
