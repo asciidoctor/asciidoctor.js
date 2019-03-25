@@ -150,7 +150,7 @@ intro
             doc.convert()
             const debugMessage = memoryLogger.getMessages()[0]
             expect(debugMessage.getSeverity()).to.equal('DEBUG')
-            expect(debugMessage.getText()).to.equal('syntax highlighter named \'coderay\' is not available, must be one of: \'highlightjs\', \'highlight.js\'.')
+            expect(debugMessage.getText()).to.contain('syntax highlighter named \'coderay\' is not available, must be one of:')
             const sourceLocation = debugMessage.getSourceLocation()
             expect(sourceLocation).to.be.undefined()
           } finally {

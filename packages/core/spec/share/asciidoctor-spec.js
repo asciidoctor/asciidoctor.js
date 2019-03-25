@@ -1261,6 +1261,50 @@ April,32
 `)
       })
     })
+
+    describe('Syntax Highligther', function () {
+      it('should return the syntax highlighter class registered for the specified name', () => {
+        const highlightjsSyntaxHighlighter = asciidoctor.SyntaxHighlighter.for('highlight.js')
+        expect(highlightjsSyntaxHighlighter.$$name).to.equal('HighlightJsAdapter')
+        const rougeSyntaxHighlighter = asciidoctor.SyntaxHighlighter.for('rouge')
+        expect(rougeSyntaxHighlighter).to.be.undefined()
+      })
+
+      it('should register a new syntax highlighter', () => {
+        asciidoctor.SyntaxHighlighter.register('unavailable', {
+          format: (node, language) => {
+            return `<pre class="highlight"><code class="language-${language}" data-lang="${language}">${node.getContent()}</code></pre>`
+          },
+          handlesHighlighting: () => false
+        })
+        const source = `[source,ruby]
+----
+puts 'Hello, World!'
+----`
+        const doc = asciidoctor.load(source, { attributes: { 'source-highlighter': 'unavailable' } })
+        const html = doc.convert()
+        expect(html).to.include('<pre class="highlight"><code class="language-ruby" data-lang="ruby">puts \'Hello, World!\'</code></pre>')
+      })
+
+      it('should register a class as a new syntax highlighter', () => {
+        class HtmlPipelineAdapter {
+          constructor () {
+            this.defaultClass = 'prettyprint'
+          }
+          format (node, lang, opts) {
+            return `<pre${lang ? ` lang="${lang}"` : ''} class="${this.defaultClass}"><code>${node.getContent()}</code></pre>`
+          }
+        }
+        asciidoctor.SyntaxHighlighter.register('html-pipeline', HtmlPipelineAdapter)
+        const source = `[source,ruby]
+----
+puts 'Hello, World!'
+----`
+        const doc = asciidoctor.load(source, { attributes: { 'source-highlighter': 'html-pipeline' } })
+        const html = doc.convert()
+        expect(html).to.include('<pre lang="ruby" class="prettyprint"><code>puts \'Hello, World!\'</code></pre>')
+      })
+    })
   })
 }
 
