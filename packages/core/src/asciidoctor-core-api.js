@@ -1949,6 +1949,9 @@ function initializeLoggerClass (className, functions) {
         }
         args[2] = messageObject
       }
+      if (args.length >= 1) {
+        args[1] = args[1] === Opal.nil ? undefined : args[1]
+      }
       return args
     }
   })
@@ -2041,6 +2044,25 @@ MemoryLogger.prototype.getMessages = function () {
   return result
 }
 
+var Logging = Opal.const_get_qualified(Opal.Asciidoctor, 'Logging', true)
+
+Opal.Asciidoctor.Logging = Logging
+
+Logging.getLogger = function () {
+  return LoggerManager.$logger()
+}
+
+Logging.createLogMessage = function (text, context) {
+  return Logging.prototype.$message_with_context(text, toHash(context))
+}
+
+// alias
+Reader.prototype.getLogger = Logging.getLogger
+Reader.prototype.createLogMessage = Logging.createLogMessage
+
+AbstractNode.prototype.getLogger = Logging.getLogger
+AbstractNode.prototype.createLogMessage = Logging.createLogMessage
+
 /**
  * @namespace
  */
@@ -2069,6 +2091,47 @@ Logger.prototype.getProgramName = function () {
 }
 Logger.prototype.setProgramName = function (programName) {
   this.progname = programName
+}
+
+var RubyLogger = Opal.const_get_qualified('::', 'Logger')
+
+var log = function (logger, level, message) {
+  logger['$' + level](message)
+}
+RubyLogger.prototype.add = function (severity, message, programName) {
+  var severityValue = typeof severity === 'string' ? LoggerSeverity[severity.toUpperCase()] : severity
+  this['$add'](severityValue, message, programName)
+}
+RubyLogger.prototype.log = RubyLogger.prototype.add
+RubyLogger.prototype.debug = function (message) {
+  log(this, 'debug', message)
+}
+RubyLogger.prototype.info = function (message) {
+  log(this, 'info', message)
+}
+RubyLogger.prototype.warn = function (message) {
+  log(this, 'warn', message)
+}
+RubyLogger.prototype.error = function (message) {
+  log(this, 'error', message)
+}
+RubyLogger.prototype.fatal = function (message) {
+  log(this, 'fatal', message)
+}
+RubyLogger.prototype.isDebugEnabled = function () {
+  return this['$debug?']()
+}
+RubyLogger.prototype.isInfoEnabled = function () {
+  return this['$info?']()
+}
+RubyLogger.prototype.isWarnEnabled = function () {
+  return this['$warn?']()
+}
+RubyLogger.prototype.isErrorEnabled = function () {
+  return this['$error?']()
+}
+RubyLogger.prototype.isFatalEnabled = function () {
+  return this['$fatal?']()
 }
 
 /**
