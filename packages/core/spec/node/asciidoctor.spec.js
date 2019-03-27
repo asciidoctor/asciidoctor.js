@@ -299,6 +299,78 @@ intro
         expect(messages[0].getSeverity()).to.equal('INFO')
         expect(messages[0].getText()).to.equal('Input file: stdin')
       })
+      it('should print a message with context', () => {
+        const registry = asciidoctor.Extensions.create()
+        registry.block(function () {
+          const self = this
+          self.named('plantuml')
+          self.onContext(['listing'])
+          self.parseContentAs('raw')
+          self.process(function (parent, reader) {
+            const lines = reader.getLines()
+            if (lines.length === 0) {
+              reader.getLogger().log('warn', reader.createLogMessage('plantuml block is empty', { source_location: reader.getCursor() }))
+              reader.getLogger().fatal('game over')
+            }
+          })
+        })
+        const input = `
+[plantuml]
+----
+----`
+        const defaultLogger = asciidoctor.LoggerManager.getLogger()
+        const memoryLogger = asciidoctor.MemoryLogger.create()
+        try {
+          asciidoctor.LoggerManager.setLogger(memoryLogger)
+          asciidoctor.convert(input, { extension_registry: registry })
+          const warnMessage = memoryLogger.getMessages()[0]
+          expect(warnMessage.getSeverity()).to.equal('WARN')
+          expect(warnMessage.getText()).to.equal('plantuml block is empty')
+          const sourceLocation = warnMessage.getSourceLocation()
+          expect(sourceLocation.getLineNumber()).to.equal(1)
+          expect(sourceLocation.getFile()).to.be.undefined()
+          expect(sourceLocation.getDirectory()).to.equal('.')
+          expect(sourceLocation.getPath()).to.equal('<stdin>')
+          const fatalMessage = memoryLogger.getMessages()[1]
+          expect(fatalMessage.getSeverity()).to.equal('FATAL')
+          expect(fatalMessage.getText()).to.equal('game over')
+        } finally {
+          asciidoctor.LoggerManager.setLogger(defaultLogger)
+        }
+      })
+      it('should return true if the logger instance is enabled for the specified level', () => {
+        const defaultLogger = asciidoctor.LoggerManager.getLogger()
+        expect(defaultLogger.isDebugEnabled()).to.be.false()
+        expect(defaultLogger.isInfoEnabled()).to.be.false()
+        expect(defaultLogger.isWarnEnabled()).to.be.true()
+        expect(defaultLogger.isErrorEnabled()).to.be.true()
+        expect(defaultLogger.isFatalEnabled()).to.be.true()
+      })
+      it('should log using a message', () => {
+        const logs = []
+        const customLogger = asciidoctor.LoggerManager.newLogger('CustomLogger', {
+          add: function (severity, message, progname) {
+            logs.push({ severity: severity, message: message || progname })
+          }
+        })
+        customLogger.error('hello')
+        const errorMessage = logs[0]
+        expect(errorMessage.severity).to.equal(3)
+        expect(errorMessage.message).to.equal('hello')
+      })
+      it('should log using a message and a program name', () => {
+        const logs = []
+        const customLogger = asciidoctor.LoggerManager.newLogger('CustomLogger', {
+          add: function (severity, message, progname) {
+            logs.push({ severity: severity, message: message, progname: progname })
+          }
+        })
+        customLogger.add('error', 'hi', 'asciidoctor.js')
+        const errorMessage = logs[0]
+        expect(errorMessage.severity).to.equal(3)
+        expect(errorMessage.message).to.equal('hi')
+        expect(errorMessage.progname).to.equal('asciidoctor.js')
+      })
     })
   }
 
