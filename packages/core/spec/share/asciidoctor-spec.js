@@ -883,6 +883,35 @@ The 'reftext' attribute can an also be set by the 'BlockId' element.
         expect(html).to.include('width: 14.2857%')
       })
 
+      it('should convert a conditional expression', function () {
+        const content = `ifeval::["{backend}" == "html5"]
+Hello HTML5
+endif::[]`
+        const html = asciidoctor.convert(content)
+        expect(html).to.include('Hello HTML5')
+      })
+
+      it('should convert a pass inline macro with a normal sub group minus the attributes sub', function () {
+        const content = `:adjective: strong
+pass:normal,-attributes[*really* {adjective} \\]]`
+        const html = asciidoctor.convert(content)
+        expect(html).to.include('<p><strong>really</strong> {adjective} ]</p>')
+      })
+
+      it('should convert a pass inline macro with a normal sub grou', function () {
+        const content = `:adjective: strong
+pass:normal[*really* {adjective} \\]]`
+        const html = asciidoctor.convert(content)
+        expect(html).to.include('<p><strong>really</strong> strong ]</p>')
+      })
+
+      it('should convert a stem inline macro with an attribute', function () {
+        const content = `:value: 4
+stem:normal[\\\\sqrt{{value}} = 2 \\]]`
+        const html = asciidoctor.convert(content)
+        expect(html).to.include('<p>\\$\\\\sqrt{4} = 2 ]\\$</p>')
+      })
+
       describe('Embed an image when data-uri is defined', function () {
         it('should embed a jpeg image', function () {
           const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
