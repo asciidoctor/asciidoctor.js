@@ -2072,7 +2072,8 @@ var Logger = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger', true)
 Opal.Asciidoctor.Logger = Logger
 
 Logger.prototype.getMaxSeverity = function () {
-  return this.max_severity
+  const result = this.max_severity
+  return result === Opal.nil ? undefined : result
 }
 Logger.prototype.getFormatter = function () {
   return this.formatter
