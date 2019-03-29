@@ -140,6 +140,24 @@ intro
           asciidoctor.LoggerManager.setLogger(defaultLogger)
         }
       })
+      if (getCoreVersionNumber(asciidoctor) >= 200) {
+        it('should send a debug message if source highlighter is not installed', () => {
+          const defaultLogger = asciidoctor.LoggerManager.getLogger()
+          const memoryLogger = asciidoctor.MemoryLogger.create()
+          try {
+            asciidoctor.LoggerManager.setLogger(memoryLogger)
+            const doc = asciidoctor.loadFile(resolveFixture('source-highlighter-coderay.adoc'), { safe: 'safe', to_file: false })
+            doc.convert()
+            const debugMessage = memoryLogger.getMessages()[0]
+            expect(debugMessage.getSeverity()).to.equal('DEBUG')
+            expect(debugMessage.getText()).to.equal('syntax highlighter named \'coderay\' is not available, must be one of: \'highlightjs\', \'highlight.js\'.')
+            const sourceLocation = debugMessage.getSourceLocation()
+            expect(sourceLocation).to.be.undefined()
+          } finally {
+            asciidoctor.LoggerManager.setLogger(defaultLogger)
+          }
+        })
+      }
       it('should be able to set the logger\'s program name', () => {
         const defaultLogger = asciidoctor.LoggerManager.getLogger()
         try {
