@@ -35,14 +35,14 @@ Start by cloning the source from GitHub:
 
  $ git clone https://github.com/asciidoctor/asciidoctor.js.git
 
-Next, switch to the _asciidoctor.js/packages/core_ directory and run npm's `install` command:
+Next, run npm's `install` command:
 
- $ cd asciidoctor.js/packages/core
-   npm i
+ $ npm i
+ $ npm i --prefix packages/core
 
 You're now ready to build Asciidoctor.js.
 
-TIP: Opal.js, the Ruby runtime in JavaScript is available in `node_modules/opal-runtime/src/opal.js`
+TIP: Opal.js, the Ruby runtime in JavaScript is available in `packages/core/node_modules/asciidoctor-opal-runtime/src/opal.js`
 
 == Building
 
@@ -52,14 +52,19 @@ This section describes how to build Asciidoctor.js from source, execute the test
 
 To build Asciidoctor.js, simply run the npm `build` script from the root of the project:
 
- $ npm run build
+ $ npm run build --prefix packages/core
 
 NOTE: The build task will make some minor code changes on Asciidoctor Ruby code.
 As you may know, {uri-mdn-string}[strings are immutable] in JavaScript, so we need to replace the `gsub!` and `sub!` methods.
 These changes are made at build time to keep the Ruby code as fast as possible.
 
-This command produces a file named `asciidoctor.js` in the [path]_build_ directory.
-This file contains everything you need to use Asciidoctor in a JavaScript environment.
+This command produces one JavaScript file per environment in the [path]_packages/core/build_ directory:
+
+- `asciidoctor-browser.js`
+- `asciidoctor-node.js`
+- `asciidoctor-graalvm.js`
+
+These files contain everything you need to use Asciidoctor in a JavaScript environment.
 
 You'll see this script in action when you run the examples, described next.
 
@@ -70,13 +75,13 @@ If you want to build against a release of Asciidoctor, you will need to define t
 
 For instance to build against Asciidoctor (Ruby) v1.5.8 use:
 
- $ ASCIIDOCTOR_CORE_VERSION=v1.5.8 npm run build
+ $ ASCIIDOCTOR_CORE_VERSION=v1.5.8 npm run build --prefix packages/core
 
 ==== Using "quick" mode
 
 By default the build will run the whole tests suite but if you want to quickly iterate on your code, we recommend to use the task `build:quick`:
 
- $ npm run build:quick
+ $ npm run build:quick --prefix packages/core
 
 This task will run only the tests against a Node.js environment.
 
@@ -84,19 +89,20 @@ This task will run only the tests against a Node.js environment.
 
 To build the examples, simply run the npm `examples` task from the root of the project:
 
- $ npm run examples
+ $ npm run examples --prefix packages/core
 
-This command produces 3 examples in the [path]_build/examples_ directory:
+This command produces 3 examples in the [path]_packages/core/build/examples_ directory:
 
-* `asciidoctor_example.html` and `userguide_test.html` demonstrate how a Ruby script can be compiled to JavaScript using the Opal Compiler and displayed within the browser as a normal HTML file.
-Both Ruby scripts `asciidoctor_example.rb` and `userguide_test.rb` include:
+* `userguide_test.html` demonstrate how a Ruby script can be compiled to JavaScript using the Opal Compiler and displayed within the browser as a normal HTML file.
+The Ruby script `userguide_test.rb` includes:
 ** a string that contains an AsciiDoc source document
 ** a call to the Asciidoctor API to render the content of that string to HTML
 ** an event listener that inserts the generated HTML into the page
-* `slide.html` demonstrates how to convert an AsciiDoc content to a Reveal.js presentation using the Asciidoctor Reveal.js backend templates
+* `basic.html` demonstrates how to convert an inline AsciiDoc content and insert the result in the HTML page
+* `asciidoctor_example.html` demonstrates how to convert a file using the include directive and insert the result in the HTML page
 
 In order to visualize the result, a local http server must be started within the root of this project otherwise you will have a cross origin issue which prevents to load some resources and render the HTML.
-For this purpose, you can run the following command to start a HTTP server locally: `npm run server`
+For this purpose, you can run the following command to start a HTTP server locally: `npm run server --prefix packages/core`
 
 Once the server is listening, you can point your browser at:
 
@@ -116,11 +122,11 @@ Currently, you can run benchmark against 3 JavaScript environment:
 
 The following command will run benchmark against Node.js:
 
- $ npm run benchmark node
+ $ npm run benchmark node --prefix packages/core
 
-Once `build/benchmark` is initialized, you can run benchmark again (without building the project):
+Once `packages/core/build/benchmark` is initialized, you can run benchmark again (without building the project):
 
- $ node build/benchmark/node.js
+ $ node packages/core/build/benchmark/node.js
 
 == Debugging
 
