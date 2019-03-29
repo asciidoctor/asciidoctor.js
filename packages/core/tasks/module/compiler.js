@@ -56,6 +56,7 @@ const compileAsciidoctorCore = (asciidoctorCoreDependency) => {
   fs.writeFileSync(target, opalBuilder.build('asciidoctor').toString(), 'utf8')
 
   replaceUnsupportedFeatures(asciidoctorCoreDependency)
+  applyPatches(asciidoctorCoreDependency)
 }
 
 const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
@@ -64,6 +65,15 @@ const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
   let data = fs.readFileSync(path, 'utf8')
   log.debug('replace (g)sub! with (g)sub')
   data = data.replace(/\$send\(([^,]+), '(g?sub)!'/g, '$1 = $send($1, \'$2\'')
+  fs.writeFileSync(path, data, 'utf8')
+}
+
+const applyPatches = (asciidoctorCoreDependency) => {
+  log.task('apply patches')
+  const path = asciidoctorCoreDependency.target
+  let data = fs.readFileSync(path, 'utf8')
+  log.debug('preserve stack on Error (workaround: https://github.com/opal/opal/issues/1962)')
+  data = data.replace(/([\s]+)(wrapped_ex\.\$set_backtrace\(ex\.\$backtrace\(\)\);)/g, '$1$2$1wrapped_ex.stack = ex.stack;')
   fs.writeFileSync(path, data, 'utf8')
 }
 
