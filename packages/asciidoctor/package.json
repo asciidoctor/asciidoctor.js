@@ -1,6 +1,6 @@
 {
   "name": "asciidoctor",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.2",
   "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
   "main": "index.js",
   "engines": {
@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "@asciidoctor/core": "2.0.0-rc.1",
+    "@asciidoctor/core": "2.0.0-rc.2",
     "@asciidoctor/cli": "2.0.0-rc.2"
   }
 }
