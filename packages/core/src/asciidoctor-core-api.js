@@ -40,6 +40,7 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
   var scope = Opal.klass(Opal.Object, superClass, className, function () {})
   var postConstructFunction
   var initializeFunction
+  var constructorFunction
   var defaultFunctionsOverridden = {}
   for (var functionName in functions) {
     if (functions.hasOwnProperty(functionName)) {
@@ -49,6 +50,8 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
           postConstructFunction = userFunction
         } else if (functionName === 'initialize') {
           initializeFunction = userFunction
+        } else if (functionName === 'constructor') {
+          constructorFunction = userFunction
         } else {
           if (defaultFunctions && defaultFunctions.hasOwnProperty(functionName)) {
             defaultFunctionsOverridden[functionName] = true
@@ -67,7 +70,15 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
     }
   }
   var initialize
-  if (typeof initializeFunction === 'function') {
+  if (typeof constructorFunction === 'function') {
+    initialize = function () {
+      var result = new constructorFunction(arguments) // eslint-disable-line
+      Object.assign(this, result)
+      if (typeof postConstructFunction === 'function') {
+        postConstructFunction.bind(this)()
+      }
+    }
+  } else if (typeof initializeFunction === 'function') {
     initialize = function () {
       initializeFunction.apply(this, arguments)
       if (typeof postConstructFunction === 'function') {
@@ -672,7 +683,7 @@ AbstractNode.prototype.setAttribute = function (name, value, overwrite) {
 /**
  * Remove the attribute from the current node.
  * @param {string} name - The String attribute name to remove
- * @returns {string} - returns the previous {String} value, or undefined if the attribute was not present.
+ * @returns {string} - returns the previous {string} value, or undefined if the attribute was not present.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.removeAttribute = function (name) {
@@ -842,11 +853,11 @@ AbstractNode.prototype.readContents = function (target, options) {
  * Read the contents of the file at the specified path.
  * This method assumes that the path is safe to read.
  * It checks that the file is readable before attempting to read it
- * @param path - the {String} path from which to read the contents
+ * @param path - the {string} path from which to read the contents
  * @param options - a JSON {Object} of options to control processing (default: {})
  * - warn_on_failure a {boolean} that controls whether a warning is issued if the file cannot be read (default: false)
  * - normalize a {boolean} that controls whether the lines are normalized and coerced to UTF-8 (default: false)
- * @returns the {String} content of the file at the specified path, or undefined if the file does not exist.
+ * @returns the {string} content of the file at the specified path, or undefined if the file does not exist.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.readAsset = function (path, options) {
@@ -2192,4 +2203,109 @@ Timings.prototype.printReport = function (to, subject) {
   outputFunction(' Time to read and parse source: ' + this.$read_parse().toFixed(2))
   outputFunction(' Time to convert document: ' + this.$convert().toFixed(2))
   outputFunction(' Total time (read, parse and convert): ' + this.$read_parse_convert().toFixed(2))
+}
+
+/**
+ * @namespace
+ * @description
+ * This API is experimental and subject to change.
+ *
+ * A pluggable adapter for integrating a syntax (aka code) highlighter into AsciiDoc processing.
+ *
+ * There are two types of syntax highlighter adapters. The first performs syntax highlighting during the convert phase.
+ * This adapter type must define a "handlesHighlighting" method that returns true.
+ * The companion "highlight" method will then be called to handle the "specialcharacters" substitution for source blocks.
+ *
+ * The second assumes syntax highlighting is performed on the client (e.g., when the HTML document is loaded).
+ * This adapter type must define a "hasDocinfo" method that returns true.
+ * The companion "docinfo" method will then be called to insert markup into the output document.
+ * The docinfo functionality is available to both adapter types.
+ *
+ * Asciidoctor.js provides several a built-in adapter for highlight.js.
+ * Additional adapters can be registered using SyntaxHighlighter.register.
+ */
+var SyntaxHighlighter = Opal.const_get_qualified(Opal.Asciidoctor, 'SyntaxHighlighter', true)
+
+// Alias
+Opal.Asciidoctor.SyntaxHighlighter = SyntaxHighlighter
+
+/**
+ * Associates the syntax highlighter class or object with the specified names.
+ *
+ * @description This API is experimental and subject to change.
+ *
+ * @memberof SyntaxHighlighter
+ * @param {string|Array} names - A {string} name or an {Array} of {string} names
+ * @param functions - A {SyntaxHighlighter} Class or Object instance
+ */
+SyntaxHighlighter.register = function (names, functions) {
+  var name = typeof names === 'string' ? names : names[0]
+  if (typeof functions === 'function') {
+    var classObject = functions
+    var prototype = classObject.prototype
+    var properties = Object.getOwnPropertyNames(prototype)
+    functions = {}
+    for (var propertyName of properties) {
+      functions[propertyName] = prototype[propertyName]
+    }
+  }
+  delete functions.handlesHighlighting
+  delete functions.hasDocinfo
+  const scope = initializeClass(SyntaxHighlighterBase, name, functions)
+  for (var functionName in functions) {
+    if (functions.hasOwnProperty(functionName)) {
+      (function (functionName) {
+        var userFunction = functions[functionName]
+        if (functionName === 'handlesHighlighting') {
+          Opal.def(scope, '$highlight?', function () {
+            return userFunction.apply(this, arguments)
+          })
+        } else if (functionName === 'hasDocinfo') {
+          Opal.def(scope, '$docinfo?', function () {
+            return userFunction.apply(this, arguments)
+          })
+        }
+      }(functionName))
+    }
+  }
+  Opal.def(scope, '$name', function () {
+    return name
+  })
+  var instance = scope.$new(name)
+  instance.registerFor(names)
+  return instance
+}
+
+/**
+ * Retrieves the syntax highlighter class or object registered for the specified name.
+ *
+ * @description This API is experimental and subject to change.
+ *
+ * @memberof SyntaxHighlighter
+ * @param {string} name - The {string} name of the syntax highlighter to retrieve.
+ * @returns the {SyntaxHighlighter} Class or Object instance registered for this name.
+ */
+SyntaxHighlighter.for = function (name) {
+  var result = SyntaxHighlighter.$for(name)
+  return result === Opal.nil ? undefined : result
+}
+
+/**
+ * @namespace
+ */
+var SyntaxHighlighterBase = Opal.const_get_qualified(SyntaxHighlighter, 'Base', true)
+
+// Alias
+Opal.Asciidoctor.SyntaxHighlighterBase = SyntaxHighlighterBase
+
+/**
+ * Statically register the current class in the registry for the specified names.
+ *
+ * @description This API is experimental and subject to change.
+ *
+ * @memberof SyntaxHighlighterBase
+ * @param {string|Array} names - A {string} name or an {Array} of {string} names
+ */
+SyntaxHighlighterBase.prototype.registerFor = function (names) {
+  SyntaxHighlighter['$register'](this, names)
 }
