@@ -1272,18 +1272,32 @@ April,32
 
       it('should register a new syntax highlighter', () => {
         asciidoctor.SyntaxHighlighter.register('unavailable', {
+          initialize: function (name, backend, opts) {
+            this.backend = backend
+            this.super()
+          },
           format: (node, language) => {
             return `<pre class="highlight"><code class="language-${language}" data-lang="${language}">${node.getContent()}</code></pre>`
           },
-          handlesHighlighting: () => false
+          handlesHighlighting: () => false,
+          hasDocinfo: (location) => location === 'head',
+          docinfo: function (location) {
+            if (this.backend !== 'html5') {
+              return ''
+            }
+            if (location === 'head') {
+              return '<style>pre.highlight{background-color: lightgrey}</style>'
+            }
+          }
         })
         const source = `[source,ruby]
 ----
 puts 'Hello, World!'
 ----`
         const doc = asciidoctor.load(source, { attributes: { 'source-highlighter': 'unavailable' } })
-        const html = doc.convert()
+        const html = doc.convert({ standalone: true })
         expect(html).to.include('<pre class="highlight"><code class="language-ruby" data-lang="ruby">puts \'Hello, World!\'</code></pre>')
+        expect(html).to.include('<style>pre.highlight{background-color: lightgrey}</style>')
       })
 
       it('should register a class as a new syntax highlighter', () => {
@@ -1291,10 +1305,12 @@ puts 'Hello, World!'
           constructor () {
             this.defaultClass = 'prettyprint'
           }
+
           format (node, lang, opts) {
             return `<pre${lang ? ` lang="${lang}"` : ''} class="${this.defaultClass}"><code>${node.getContent()}</code></pre>`
           }
         }
+
         asciidoctor.SyntaxHighlighter.register('html-pipeline', HtmlPipelineAdapter)
         const source = `[source,ruby]
 ----
@@ -1303,6 +1319,41 @@ puts 'Hello, World!'
         const doc = asciidoctor.load(source, { attributes: { 'source-highlighter': 'html-pipeline' } })
         const html = doc.convert()
         expect(html).to.include('<pre lang="ruby" class="prettyprint"><code>puts \'Hello, World!\'</code></pre>')
+      })
+
+      it('should register a class as a new syntax highlighter and call docinfo', () => {
+        class PrismHighlighter {
+          constructor (name, backend, opts) {
+            this.backend = backend
+          }
+
+          format (node, lang, opts) {
+            return `<pre${lang ? ` lang="${lang}"` : ''} class="prism"><code>${node.getContent()}</code></pre>`
+          }
+
+          hasDocinfo (location) {
+            return location === 'head'
+          }
+
+          docinfo (location) {
+            if (this.backend !== 'html5') {
+              return ''
+            }
+            if (location === 'head') {
+              return '<style>pre.prism{background-color: lightgrey}</style>'
+            }
+          }
+        }
+
+        asciidoctor.SyntaxHighlighter.register('prism', PrismHighlighter)
+        const source = `[source,ruby]
+----
+puts 'Hello, World!'
+----`
+        const doc = asciidoctor.load(source, { attributes: { 'source-highlighter': 'prism' } })
+        const html = doc.convert({ standalone: true })
+        expect(html).to.include('<pre lang="ruby" class="prism"><code>puts \'Hello, World!\'</code></pre>')
+        expect(html).to.include('<style>pre.prism{background-color: lightgrey}</style>')
       })
     })
   })

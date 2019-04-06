@@ -72,7 +72,9 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
   var initialize
   if (typeof constructorFunction === 'function') {
     initialize = function () {
-      var result = new constructorFunction(arguments) // eslint-disable-line
+      var args = Array.from(arguments)
+      args.unshift(null)
+      var result = new (Function.prototype.bind.apply(constructorFunction, args)) // eslint-disable-line
       Object.assign(this, result)
       if (typeof postConstructFunction === 'function') {
         postConstructFunction.bind(this)()
@@ -2249,8 +2251,6 @@ SyntaxHighlighter.register = function (names, functions) {
       functions[propertyName] = prototype[propertyName]
     }
   }
-  delete functions.handlesHighlighting
-  delete functions.hasDocinfo
   const scope = initializeClass(SyntaxHighlighterBase, name, functions)
   for (var functionName in functions) {
     if (functions.hasOwnProperty(functionName)) {
@@ -2258,11 +2258,11 @@ SyntaxHighlighter.register = function (names, functions) {
         var userFunction = functions[functionName]
         if (functionName === 'handlesHighlighting') {
           Opal.def(scope, '$highlight?', function () {
-            return userFunction.apply(this, arguments)
+            return userFunction.call()
           })
         } else if (functionName === 'hasDocinfo') {
-          Opal.def(scope, '$docinfo?', function () {
-            return userFunction.apply(this, arguments)
+          Opal.def(scope, '$docinfo?', function (location) {
+            return userFunction.apply(this, [location])
           })
         }
       }(functionName))
@@ -2271,9 +2271,8 @@ SyntaxHighlighter.register = function (names, functions) {
   Opal.def(scope, '$name', function () {
     return name
   })
-  var instance = scope.$new(name)
-  instance.registerFor(names)
-  return instance
+  SyntaxHighlighter['$register'](scope, names)
+  return scope
 }
 
 /**
