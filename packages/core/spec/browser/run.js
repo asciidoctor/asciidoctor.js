@@ -32,10 +32,12 @@ const log = async (msg) => {
     page.exposeFunction('mochaOpts', () => ({ reporter: 'spec' }))
     page.on('console', async (msg) => {
       const args = await log(msg)
-      if (args[0] === '%d failures') {
-        process.exit(parseInt(args[1]))
-      } else if (args[0].startsWith('Unable to start the browser tests suite:')) {
-        process.exit(1)
+      if (args[0] && typeof args[0] === 'string') {
+        if (args[0] === '%d failures') {
+          process.exit(parseInt(args[1]))
+        } else if (args[0].startsWith('Unable to start the browser tests suite:')) {
+          process.exit(1)
+        }
       }
     })
     await page.goto('file://' + path.join(__dirname, 'index.html'), { waitUntil: 'networkidle2' })
