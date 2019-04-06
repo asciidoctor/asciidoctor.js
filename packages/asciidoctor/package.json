@@ -35,6 +35,6 @@
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
     "@asciidoctor/core": "2.0.0-rc.2",
-    "@asciidoctor/cli": "2.0.0-rc.2"
+    "@asciidoctor/cli": "2.0.0-rc.3"
   }
 }
