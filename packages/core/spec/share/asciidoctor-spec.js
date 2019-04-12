@@ -1273,7 +1273,7 @@ April,32
       it('should register a new syntax highlighter', () => {
         asciidoctor.SyntaxHighlighter.register('unavailable', {
           initialize: function (name, backend, opts) {
-            this.backend = backend
+            this.backend = opts.document.getAttribute('backend')
             this.super()
           },
           format: (node, language) => {
@@ -1321,14 +1321,78 @@ puts 'Hello, World!'
         expect(html).to.include('<pre lang="ruby" class="prettyprint"><code>puts \'Hello, World!\'</code></pre>')
       })
 
-      it('should register a class as a new syntax highlighter and call docinfo', () => {
-        class PrismHighlighter {
-          constructor (name, backend, opts) {
-            this.backend = backend
+      it('should register a class as a new syntax highlighter which handles highlighting', () => {
+        class HtmlPipelineAdapter {
+          constructor () {
+            this.defaultClass = 'prettyprint'
           }
 
           format (node, lang, opts) {
-            return `<pre${lang ? ` lang="${lang}"` : ''} class="prism"><code>${node.getContent()}</code></pre>`
+            if (lang) {
+              return `<pre${lang ? ` lang="${lang}"` : ''} class="${this.defaultClass}"><code>${node.getContent()}</code></pre>`
+            }
+            return `<pre>${node.getContent()}</pre>`
+          }
+
+          highlight (node, source, lang, opts) {
+            if (opts.callouts) {
+              const lines = source.split('\n')
+              for (let idx in opts.callouts) {
+                const lineIndex = parseInt(idx)
+                let line = lines[lineIndex]
+                lines[lineIndex] = `<span class="has-callout${opts.callouts[idx][0][0] ? ' has-comment' : ''}">${line}</span>`
+              }
+              source = lines.join('\n')
+            }
+            if (lang) {
+              return `<span class="has-lang lang-${lang}">${source}</span>`
+            }
+            return source
+          }
+
+          handlesHighlighting () {
+            return true
+          }
+
+          hasDocinfo () {
+            return false
+          }
+        }
+
+        asciidoctor.SyntaxHighlighter.register('html-pipeline', HtmlPipelineAdapter)
+        const source = `[source,ruby]
+----
+puts 'Hello, World!' # <1>
+<2>
+----
+<1> Prints 'Hello, World!'
+<2> ...
+
+[source]
+.options/zones.txt
+----
+Europe/London
+America/New_York
+----`
+        const doc = asciidoctor.load(source, { attributes: { 'source-highlighter': 'html-pipeline' } })
+        const html = doc.convert()
+        expect(html).to.include(`<pre lang="ruby" class="prettyprint"><code><span class="has-lang lang-ruby"><span class="has-callout has-comment">puts 'Hello, World!' </span># <b class="conum">(1)</b>
+<span class="has-callout"></span><b class="conum">(2)</b>
+</span></code></pre>`)
+        expect(html).to.include('<pre>Europe/London\nAmerica/New_York</pre>')
+      })
+
+      it('should register a class as a new syntax highlighter with a docinfo', () => {
+        class PrismClientHighlighter {
+          constructor (name, backend, opts) {
+            this.backend = opts.document.getAttribute('backend')
+          }
+
+          format (node, lang, opts) {
+            if (lang) {
+              return `<pre${lang ? ` lang="${lang}"` : ''} class="prism${opts.nowrap === false ? ' wrap' : ' nowrap'}"><code>${node.getContent()}</code></pre>`
+            }
+            return `<pre>${node.getContent()}</pre>`
           }
 
           hasDocinfo (location) {
@@ -1345,14 +1409,22 @@ puts 'Hello, World!'
           }
         }
 
-        asciidoctor.SyntaxHighlighter.register('prism', PrismHighlighter)
+        asciidoctor.SyntaxHighlighter.register('prism', PrismClientHighlighter)
         const source = `[source,ruby]
 ----
 puts 'Hello, World!'
+----
+
+[source]
+.options/zones.txt
+----
+Europe/London
+America/New_York
 ----`
         const doc = asciidoctor.load(source, { attributes: { 'source-highlighter': 'prism' } })
         const html = doc.convert({ standalone: true })
-        expect(html).to.include('<pre lang="ruby" class="prism"><code>puts \'Hello, World!\'</code></pre>')
+        expect(html).to.include('<pre lang="ruby" class="prism wrap"><code>puts \'Hello, World!\'</code></pre>')
+        expect(html).to.include('<pre>Europe/London\nAmerica/New_York</pre>')
         expect(html).to.include('<style>pre.prism{background-color: lightgrey}</style>')
       })
     })

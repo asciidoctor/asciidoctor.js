@@ -21,6 +21,15 @@ var fromHash = function (hash) {
   return object
 }
 
+var fromHashKeys = function (hash) {
+  var object = {}
+  var data = hash.$$keys
+  for (var key in data) {
+    object[key.toString()] = data[key].value
+  }
+  return object
+}
+
 /**
  * @private
  */
@@ -73,6 +82,12 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
   if (typeof constructorFunction === 'function') {
     initialize = function () {
       var args = Array.from(arguments)
+      for (var i = 0; i < args.length; i++) {
+        // convert all (Opal) Hash arguments to JSON.
+        if (typeof args[i] === 'object' && '$$smap' in args[i]) {
+          args[i] = fromHash(args[i])
+        }
+      }
       args.unshift(null)
       var result = new (Function.prototype.bind.apply(constructorFunction, args)) // eslint-disable-line
       Object.assign(this, result)
@@ -82,7 +97,14 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
     }
   } else if (typeof initializeFunction === 'function') {
     initialize = function () {
-      initializeFunction.apply(this, arguments)
+      var args = Array.from(arguments)
+      for (var i = 0; i < args.length; i++) {
+        // convert all (Opal) Hash arguments to JSON.
+        if (typeof args[i] === 'object' && '$$smap' in args[i]) {
+          args[i] = fromHash(args[i])
+        }
+      }
+      initializeFunction.apply(this, args)
       if (typeof postConstructFunction === 'function') {
         postConstructFunction.bind(this)()
       }
@@ -2251,7 +2273,46 @@ SyntaxHighlighter.register = function (names, functions) {
       functions[propertyName] = prototype[propertyName]
     }
   }
-  const scope = initializeClass(SyntaxHighlighterBase, name, functions)
+  const scope = initializeClass(SyntaxHighlighterBase, name, functions, {}, {
+    'format': function (args) {
+      if (args.length >= 2 && typeof args[2] === 'object' && '$$smap' in args[2]) {
+        args[2] = fromHash(args[2])
+      }
+      if (args.length >= 1) {
+        args[1] = args[1] === Opal.nil ? undefined : args[1]
+      }
+      return args
+    },
+    'highlight': function (args) {
+      if (args.length >= 3 && typeof args[3] === 'object' && '$$smap' in args[3]) {
+        var opts = args[3]
+        opts = fromHash(opts)
+        for (var key in opts) {
+          var value = opts[key]
+          if (key === 'callouts') {
+            const callouts = fromHashKeys(value)
+            for (var idx in callouts) {
+              var callout = callouts[idx]
+              for (var i = 0; i < callout.length; i++) {
+                var items = callout[i]
+                for (var j = 0; j < items.length; j++) {
+                  items[j] = items[j] === Opal.nil ? undefined : items[j]
+                }
+              }
+            }
+            opts[key] = callouts
+          } else {
+            opts[key] = value === Opal.nil ? undefined : value
+          }
+        }
+        args[3] = opts
+      }
+      if (args.length >= 2) {
+        args[2] = args[2] === Opal.nil ? undefined : args[2]
+      }
+      return args
+    }
+  })
   for (var functionName in functions) {
     if (functions.hasOwnProperty(functionName)) {
       (function (functionName) {
