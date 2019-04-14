@@ -2107,7 +2107,7 @@ var Logger = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger', true)
 Opal.Asciidoctor.Logger = Logger
 
 Logger.prototype.getMaxSeverity = function () {
-  const result = this.max_severity
+  var result = this.max_severity
   return result === Opal.nil ? undefined : result
 }
 Logger.prototype.getFormatter = function () {
@@ -2269,11 +2269,12 @@ SyntaxHighlighter.register = function (names, functions) {
     var prototype = classObject.prototype
     var properties = Object.getOwnPropertyNames(prototype)
     functions = {}
-    for (var propertyName of properties) {
+    for (var propertyIdx in properties) {
+      var propertyName = properties[propertyIdx]
       functions[propertyName] = prototype[propertyName]
     }
   }
-  const scope = initializeClass(SyntaxHighlighterBase, name, functions, {}, {
+  var scope = initializeClass(SyntaxHighlighterBase, name, functions, {}, {
     'format': function (args) {
       if (args.length >= 2 && typeof args[2] === 'object' && '$$smap' in args[2]) {
         args[2] = fromHash(args[2])
@@ -2290,7 +2291,7 @@ SyntaxHighlighter.register = function (names, functions) {
         for (var key in opts) {
           var value = opts[key]
           if (key === 'callouts') {
-            const callouts = fromHashKeys(value)
+            var callouts = fromHashKeys(value)
             for (var idx in callouts) {
               var callout = callouts[idx]
               for (var i = 0; i < callout.length; i++) {
