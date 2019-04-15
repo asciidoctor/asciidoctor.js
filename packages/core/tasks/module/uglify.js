@@ -14,5 +14,5 @@ module.exports.uglify = async () => {
   const browserSource = 'build/asciidoctor-browser.js'
   const browserDestination = 'build/asciidoctor-browser.min.js'
   log.transform('minify', browserSource, browserDestination)
-  await new Uglify(['--jscomp_off=undefinedVars', '--compilation_level=ADVANCED', '--warning_level=QUIET']).minify(browserSource, browserDestination)
+  await new Uglify(['--jscomp_off=undefinedVars', '--warning_level=QUIET']).minify(browserSource, browserDestination)
 }
