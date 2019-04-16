@@ -96,7 +96,18 @@ const generateFlavors = (asciidoctorCoreTarget, environments) => {
     }
     templateModel['//{{asciidoctorCode}}'] = asciidoctorData
     const content = parseTemplateFile(templateFile, templateModel)
-    fs.writeFileSync(target, content, 'utf8')
+    if (environment === 'browser') {
+      const header = `/**
+ * @license Asciidoctor.js ${packageJson.version} | MIT | https://github.com/asciidoctor/asciidoctor.js
+ */
+`
+      const buffers = []
+      buffers.push(Buffer.from(header, 'utf8'))
+      buffers.push(Buffer.from(content, 'utf8'))
+      fs.writeFileSync(target, Buffer.concat(buffers), 'utf8')
+    } else {
+      fs.writeFileSync(target, content, 'utf8')
+    }
   })
 }
 
