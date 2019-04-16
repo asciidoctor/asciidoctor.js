@@ -6,7 +6,7 @@ class AbstractNode
       if (doc.path_resolver.descends_from? target, doc.base_dir) || (doc.attr? 'allow-uri-read')
         begin
           if opts[:normalize]
-            (Helpers.prepare_source_string ::File.read(target).join LF)
+            (Helpers.prepare_source_string ::File.read(target)).join LF
           else
             ::File.read(target)
           end
