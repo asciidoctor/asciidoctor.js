@@ -1224,6 +1224,25 @@ stem:normal[\\\\sqrt{{value}} = 2 \\]]`
           asciidoctor.Extensions.unregisterAll()
         }
       })
+
+      it('should register an inline macro with short format', function () {
+        try {
+          asciidoctor.Extensions.register(function () {
+            this.inlineMacro('label', function () {
+              const self = this
+              self.matchFormat('short')
+              self.parseContentAs('text')
+              self.process(function (parent, _, attrs) {
+                return self.createInline(parent, 'quoted', `<label>${attrs.text}</label>`)
+              })
+            })
+          })
+          const html = asciidoctor.convert('label:[Checkbox]', { doctype: 'inline' })
+          expect(html).to.equal('<label>Checkbox</label>')
+        } finally {
+          asciidoctor.Extensions.unregisterAll()
+        }
+      })
     })
 
     describe('Reader', function () {

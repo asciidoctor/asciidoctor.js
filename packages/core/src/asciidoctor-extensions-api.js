@@ -650,6 +650,12 @@ InlineMacroProcessor.prototype.getName = function () {
 InlineMacroProcessor.prototype.parseContentAs = function (value) {
   this.$parse_content_as(value)
 }
+/**
+ * @memberof Extensions/InlineMacroProcessor
+ */
+InlineMacroProcessor.prototype.matchFormat = function (value) {
+  this.$match_format(value)
+}
 
 /**
  * @namespace
