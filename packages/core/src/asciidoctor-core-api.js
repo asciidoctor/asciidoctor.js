@@ -328,6 +328,16 @@ AbstractBlock.prototype.getTitle = function () {
 }
 
 /**
+ * Set the String block title.
+ * @memberof AbstractBlock
+ * @returns {string} - returns the new String title assigned to this Block.
+ * @memberof Document
+ */
+AbstractBlock.prototype.setTitle = function (title) {
+  return this['$title='](title)
+}
+
+/**
  * Convenience method that returns the interpreted title of the Block
  * with the caption prepended.
  * Concatenates the value of this Block's caption instance variable and the

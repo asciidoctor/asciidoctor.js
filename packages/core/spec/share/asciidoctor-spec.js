@@ -462,6 +462,21 @@ intro
         expect(block.getLevel()).to.equal(2)
       })
 
+      it('should assign the title on a block', function () {
+        const doc = asciidoctor.load(`= Title
+
+== Section A
+
+== Section B
+`)
+        const firstBlock = doc.getBlocks()[0]
+        const secondBlock = doc.getBlocks()[1]
+        expect(firstBlock.getTitle()).to.equal('Section A')
+        expect(secondBlock.getTitle()).to.equal('Section B')
+        secondBlock.setTitle('Section BB')
+        expect(secondBlock.getTitle()).to.equal('Section BB')
+      })
+
       it('remove_attr should remove attribute and return previous value', function () {
         const doc = asciidoctor.load('= Document\n\n== First section\n\n[foo="bar"]\nThis is a paragraph.')
         const paragraphBlock = doc.getBlocks()[0].getBlocks()[0]
