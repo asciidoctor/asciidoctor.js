@@ -1645,6 +1645,50 @@ header_attribute::foo[bar]`
     })
   })
 
+  describe('Docinfo files', () => {
+    const defs = {
+      'docinfo': { head_script: true, meta: false, top_link: false, footer_script: true, navbar: true },
+      'docinfo=private': { head_script: true, meta: false, top_link: false, footer_script: true, navbar: true },
+      'docinfo1': { head_script: false, meta: true, top_link: true, footer_script: false, navbar: false },
+      'docinfo=shared': { head_script: false, meta: true, top_link: true, footer_script: false, navbar: false },
+      'docinfo2': { head_script: true, meta: true, top_link: true, footer_script: true, navbar: true },
+      'docinfo docinfo2': { head_script: true, meta: true, top_link: true, footer_script: true, navbar: true },
+      'docinfo=private,shared': { head_script: true, meta: true, top_link: true, footer_script: true, navbar: true },
+      'docinfo=private-head': { head_script: true, meta: false, top_link: false, footer_script: false, navbar: false },
+      'docinfo=private-header': { head_script: false, meta: false, top_link: false, footer_script: false, navbar: true },
+      'docinfo=shared-head': { head_script: false, meta: true, top_link: false, footer_script: false, navbar: false },
+      'docinfo=private-footer': { head_script: false, meta: false, top_link: false, footer_script: true, navbar: false },
+      'docinfo=shared-footer': { head_script: false, meta: false, top_link: true, footer_script: false, navbar: false },
+      'docinfo=private-head,shared-footer': { head_script: true, meta: false, top_link: true, footer_script: false, navbar: false }
+    }
+    for (let key in defs) {
+      if (defs.hasOwnProperty(key)) {
+        let markup = defs[key]
+        it(`should include docinfo files for html backend with attribute ${key}`, () => {
+          const attributes = ['linkcss', 'copycss!'].concat(key.split(' '))
+          const options = { safe: 'safe', standalone: true, to_file: false, attributes: attributes }
+          const html = asciidoctor.convertFile('spec/fixtures/basic.adoc', options)
+          if (markup['head_script']) {
+            expect(html).to.contain('<script src="modernizr.js"></script>')
+          }
+          if (markup['meta']) {
+            expect(html).to.contain('<meta http-equiv="imagetoolbar" content="false">')
+          }
+          if (markup['top_link']) {
+            expect(html).to.contain('<a id="top" href="#">Back to top</a>')
+          }
+          if (markup['footer_script']) {
+            expect(html).to.contain('var p1 = document.createElement(\'script\'); p1.async = true; p1.src = \'https://apis.google.com/js/plusone.js\';')
+          }
+          if (markup['navbar']) {
+            expect(html).to.contain('<nav class="navbar">')
+            expect(html).to.contain('</nav>\n<div id="header">')
+          }
+        })
+      }
+    }
+  })
+
   describe('Reading an asset', () => {
     it('should return undefined if the file does not exist', () => {
       const doc = asciidoctor.load('')
