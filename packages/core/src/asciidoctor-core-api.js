@@ -402,21 +402,6 @@ AbstractBlock.prototype.getSourceLocation = function () {
 }
 
 /**
- * Set the location in the AsciiDoc source where this block begins.
- * @param {string} sourceLocation - Location in the AsciiDoc source
- * @memberof AbstractBlock
- */
-AbstractBlock.prototype.setSourceLocation = function (sourceLocation) {
-  if (sourceLocation && sourceLocation.lineNumber) {
-    sourceLocation.lineno = sourceLocation.lineNumber
-  }
-  if (sourceLocation && sourceLocation.directory) {
-    sourceLocation.dir = sourceLocation.directory
-  }
-  this.source_location = sourceLocation
-}
-
-/**
  * Get the caption for this block.
  * @memberof AbstractBlock
  * @returns {string} - returns the caption for this block
@@ -442,15 +427,6 @@ AbstractBlock.prototype.setCaption = function (caption) {
 AbstractBlock.prototype.getLevel = function () {
   var level = this.level
   return level === Opal.nil ? undefined : level
-}
-
-/**
- * Set the level of this section or the section level in which this block resides.
- * @param {number} level - Level (Integer)
- * @memberof AbstractBlock
- */
-AbstractBlock.prototype.setLevel = function (level) {
-  this.level = level
 }
 
 /**
@@ -619,6 +595,15 @@ AbstractBlock.prototype.hasTitle = function () {
  * @extends AbstractBlock
  */
 var Section = Opal.Asciidoctor.Section
+
+/**
+ * Set the level of this section or the section level in which this block resides.
+ * @param {number} level - Level (Integer)
+ * @memberof AbstractBlock
+ */
+Section.prototype.setLevel = function (level) {
+  this.level = level
+}
 
 /**
  * Get the 0-based index order of this section within the parent block.
