@@ -349,7 +349,61 @@ AbstractBlock.prototype.getCaptionedTitle = function () {
  * @returns {string} - returns the style for this block
  */
 AbstractBlock.prototype.getStyle = function () {
-  return this.style
+  var style = this.style
+  return style === Opal.nil ? undefined : style
+}
+
+/**
+ * Set the style for this block.
+ * @param {string} style - Style
+ * @memberof AbstractBlock
+ */
+AbstractBlock.prototype.setStyle = function (style) {
+  this.style = style
+}
+
+/**
+ * Get the location in the AsciiDoc source where this block begins.
+ * @memberof AbstractBlock
+ * @returns {string} - returns the style for this block
+ */
+AbstractBlock.prototype.getSourceLocation = function () {
+  var sourceLocation = this.source_location
+  if (sourceLocation === Opal.nil) {
+    return undefined
+  }
+  sourceLocation['getFile'] = function () {
+    var file = this.file
+    return file === Opal.nil ? undefined : file
+  }
+  sourceLocation['getDirectory'] = function () {
+    var dir = this.dir
+    return dir === Opal.nil ? undefined : dir
+  }
+  sourceLocation['getPath'] = function () {
+    var path = this.path
+    return path === Opal.nil ? undefined : path
+  }
+  sourceLocation['getLineNumber'] = function () {
+    var lineno = this.lineno
+    return lineno === Opal.nil ? undefined : lineno
+  }
+  return sourceLocation
+}
+
+/**
+ * Set the location in the AsciiDoc source where this block begins.
+ * @param {string} sourceLocation - Location in the AsciiDoc source
+ * @memberof AbstractBlock
+ */
+AbstractBlock.prototype.setSourceLocation = function (sourceLocation) {
+  if (sourceLocation && sourceLocation.lineNumber) {
+    sourceLocation.lineno = sourceLocation.lineNumber
+  }
+  if (sourceLocation && sourceLocation.directory) {
+    sourceLocation.dir = sourceLocation.directory
+  }
+  this.source_location = sourceLocation
 }
 
 /**
@@ -373,10 +427,20 @@ AbstractBlock.prototype.setCaption = function (caption) {
 /**
  * Get the level of this section or the section level in which this block resides.
  * @memberof AbstractBlock
- * @returns {number} - returns the level of this section
+ * @returns {number} - returns the level (Integer) of this section
  */
 AbstractBlock.prototype.getLevel = function () {
-  return this.level
+  var level = this.level
+  return level === Opal.nil ? undefined : level
+}
+
+/**
+ * Set the level of this section or the section level in which this block resides.
+ * @param {number} level - Level (Integer)
+ * @memberof AbstractBlock
+ */
+AbstractBlock.prototype.setLevel = function (level) {
+  this.level = level
 }
 
 /**
