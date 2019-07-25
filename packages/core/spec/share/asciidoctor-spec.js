@@ -1243,6 +1243,36 @@ stem:normal[\\\\sqrt{{value}} = 2 \\]]`
           asciidoctor.Extensions.unregisterAll()
         }
       })
+
+      it('should register an block macro that creates link', function () {
+        try {
+          asciidoctor.Extensions.register(function () {
+            this.blockMacro('extlink', function () {
+              const self = this
+              self.process(function (parent, target, attrs) {
+                let text
+                if (attrs.text === '') {
+                  text = target
+                }
+                const openBlock = self.createBlock(parent, 'open', [], { role: 'external-url' })
+                openBlock.title = attrs.title
+                const link = self.createInline(parent, 'anchor', text, { type: 'link', target: target })
+                openBlock.append(link)
+                return openBlock
+              })
+            })
+          })
+          const html = asciidoctor.convert('extlink::http://github.com[title="GitHub"]')
+          expect(html).to.equal(`<div class="openblock external-url">
+<div class="title">GitHub</div>
+<div class="content">
+<a href="http://github.com"></a>
+</div>
+</div>`)
+        } finally {
+          asciidoctor.Extensions.unregisterAll()
+        }
+      })
     })
 
     describe('Reader', function () {
