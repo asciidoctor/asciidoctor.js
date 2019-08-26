@@ -409,6 +409,64 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         expect(appendix.isNumbered()).to.equal(true)
       })
 
+      it('should assign style on a block', function () {
+        const doc = asciidoctor.load(`[partintro]
+--
+This is the introduction to the first part of our mud-encrusted journey.
+--`)
+        const block = doc.getBlocks()[0]
+        expect(block.getStyle()).to.equal('partintro')
+        block.setStyle('preface')
+        expect(block.getStyle()).to.equal('preface')
+      })
+
+      it('should get the source location on a block', function () {
+        const doc = asciidoctor.load(`= Book
+:doctype: book
+
+== Part 1
+
+[partintro]
+intro
+`, { sourcemap: true })
+        const block = doc.getBlocks()[0]
+        expect(block.getSourceLocation().getLineNumber()).to.equal(4)
+        expect(block.getSourceLocation().getFile()).to.be.undefined()
+        expect(block.getSourceLocation().getPath()).to.equal('<stdin>')
+      })
+
+      it('should assign the level on a section', function () {
+        const doc = asciidoctor.load(`= Title
+
+== Level 1
+
+=== Level 2
+
+==== Level 3
+`)
+        const block = doc.getBlocks()[0]
+        expect(block.getLevel()).to.equal(1)
+        expect(block.getBlocks()[0].getLevel()).to.equal(2)
+        expect(block.getBlocks()[0].getBlocks()[0].getLevel()).to.equal(3)
+        block.setLevel(2)
+        expect(block.getLevel()).to.equal(2)
+      })
+
+      it('should assign the title on a block', function () {
+        const doc = asciidoctor.load(`= Title
+
+== Section A
+
+== Section B
+`)
+        const firstBlock = doc.getBlocks()[0]
+        const secondBlock = doc.getBlocks()[1]
+        expect(firstBlock.getTitle()).to.equal('Section A')
+        expect(secondBlock.getTitle()).to.equal('Section B')
+        secondBlock.setTitle('Section BB')
+        expect(secondBlock.getTitle()).to.equal('Section BB')
+      })
+
       it('remove_attr should remove attribute and return previous value', function () {
         const doc = asciidoctor.load('= Document\n\n== First section\n\n[foo="bar"]\nThis is a paragraph.')
         const paragraphBlock = doc.getBlocks()[0].getBlocks()[0]
