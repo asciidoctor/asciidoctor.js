@@ -918,6 +918,11 @@ stem:normal[\\\\sqrt{{value}} = 2 \\]]`
         expect(html).to.include('<p>\\$\\\\sqrt{4} = 2 ]\\$</p>')
       })
 
+      it('should process multiple single-item menu macros in single line', function () {
+        const html = asciidoctor.convert('Click menu:File[] and menu:Edit[]', { doctype: 'inline', attributes: { experimental: '' } })
+        expect(html).to.include('Click <b class="menuref">File</b> and <b class="menuref">Edit</b>')
+      })
+
       if (getCoreVersionNumber(asciidoctor) >= '208') {
         it('should embed an SVG with a width (but no height)', function () {
           const options = { safe: 'safe', attributes: { 'allow-uri-read': true } }
