@@ -4,7 +4,7 @@
   "description": "Asciidoctor - the core library",
   "main": "dist/node/asciidoctor.js",
   "browser": "dist/browser/asciidoctor.js",
-  "types": "index.d.ts",
+  "types": "types",
   "engines": {
     "node": ">=8.11",
     "npm": ">=5.0.0",
@@ -19,7 +19,8 @@
     "test:graalvm": "node tasks/graalvm.js && ./build/graalvm/bin/node spec/graalvm/run.js",
     "test:node": "mocha spec/*/*.spec.js",
     "test:browser": "node spec/browser/run.js",
-    "test": "node tasks/test/unsupported-features.js && npm run test:node && npm run test:browser",
+    "test:types": "dtslint types",
+    "test": "node tasks/test/unsupported-features.js && npm run test:node && npm run test:browser && npm run test:types",
     "build": "node tasks/build.js && npm run test && npm run lint",
     "build:quick": "node tasks/build.js && npm run test:node && npm run code:lint",
     "clean": "npm run clean:all",
@@ -69,6 +70,7 @@
     "unxhr": "1.0.1"
   },
   "devDependencies": {
+    "@types/node": "^12.7.8",
     "bestikk-download": "1.0.0",
     "bestikk-fs": "1.0.0",
     "bestikk-log": "0.1.0",
@@ -77,6 +79,7 @@
     "cross-env": "5.1.4",
     "dirty-chai": "2.0.1",
     "documentation": "12.0.3",
+    "dtslint": "latest",
     "eslint": "5.12.1",
     "http-server": "0.11.1",
     "mocha": "6.1.4",
