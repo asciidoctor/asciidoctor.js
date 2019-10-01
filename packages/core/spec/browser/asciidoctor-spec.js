@@ -1,4 +1,4 @@
-/* global it, describe, mocha, chai, Asciidoctor, mochaOpts, shareSpec, includeHttpsSpec, includeFileSpec */
+/* global it, describe, mocha, chai, Asciidoctor, mochaOpts, shareSpec, includeHttpsSpec, includeFileSpec, semVer */
 // bootstrap
 (async () => {
   let reporter
@@ -18,9 +18,11 @@
   const parts = window.location.href.split('/') // break the string into an array
   parts.pop(); parts.pop(); parts.pop()
   const baseDir = parts.join('/')
+  const asciidoctorCoreSemVer = semVer(asciidoctor.getCoreVersion())
   const testOptions = {
     platform: 'Browser',
-    baseDir: baseDir
+    baseDir: baseDir,
+    coreVersion: asciidoctorCoreSemVer
   }
   shareSpec(testOptions, asciidoctor, expect)
   includeHttpsSpec(testOptions, asciidoctor, expect)

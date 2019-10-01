@@ -9,6 +9,7 @@ chai.use(dirtyChai)
 
 const shareSpec = require('../share/asciidoctor-spec.js')
 const includeHttpsSpec = require('../share/asciidoctor-include-https-spec')
+const semVer = require('../share/semver')
 
 const config = {
   runtime: {
@@ -25,9 +26,11 @@ const asciidoctor = require('../../build/asciidoctor-node.js')(config)
 const Opal = require('asciidoctor-opal-runtime').Opal // for testing purpose only
 const packageJson = require('../../package.json')
 
+const asciidoctorCoreSemVer = semVer(asciidoctor.getCoreVersion())
 const testOptions = {
   platform: 'Node.js',
-  baseDir: path.join(__dirname, '..', '..')
+  baseDir: path.join(__dirname, '..', '..'),
+  coreVersion: asciidoctorCoreSemVer
 }
 
 shareSpec(testOptions, asciidoctor, expect)
@@ -60,12 +63,6 @@ function truncateFile (path) {
 
 const resolveFixture = (name) => {
   return path.resolve(path.join(__dirname, '..', 'fixtures', name))
-}
-
-const getCoreVersionNumber = function (asciidoctor) {
-  const asciidoctorVersion = asciidoctor.getCoreVersion()
-  // ignore the fourth number, keep only major, minor and patch numbers
-  return parseInt(asciidoctorVersion.replace(/(\.|dev)/g, '').substring(0, 3))
 }
 
 describe('Node.js', () => {
@@ -140,7 +137,7 @@ intro
           asciidoctor.LoggerManager.setLogger(defaultLogger)
         }
       })
-      if (getCoreVersionNumber(asciidoctor) >= 200) {
+      if (asciidoctorCoreSemVer.gte('2.0.0')) {
         it('should send a debug message if source highlighter is not installed', () => {
           const defaultLogger = asciidoctor.LoggerManager.getLogger()
           const memoryLogger = asciidoctor.MemoryLogger.create()
@@ -698,7 +695,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       expect(blocksWithLineNumber.length >= 18).to.be.true()
     })
 
-    if (getCoreVersionNumber(asciidoctor) >= '200') {
+    if (asciidoctorCoreSemVer.gte('200')) {
       // REMIND: Before Asciidoctor 2.0.0 date was not UTC
       it('should get document date (and honor SOURCE_DATE_EPOCH)', () => {
         process.env.SOURCE_DATE_EPOCH = '1549743934'
