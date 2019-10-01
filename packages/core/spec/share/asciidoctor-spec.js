@@ -1,10 +1,4 @@
 /* global it, describe, define */
-const getCoreVersionNumber = function (asciidoctor) {
-  const asciidoctorVersion = asciidoctor.getCoreVersion()
-  // ignore the fourth number, keep only major, minor and patch numbers
-  return parseInt(asciidoctorVersion.replace(/(\.|dev)/g, '').substring(0, 3))
-}
-
 const shareSpec = function (testOptions, asciidoctor, expect) {
   describe(testOptions.platform, function () {
     describe('When loaded', function () {
@@ -918,12 +912,14 @@ stem:normal[\\\\sqrt{{value}} = 2 \\]]`
         expect(html).to.include('<p>\\$\\\\sqrt{4} = 2 ]\\$</p>')
       })
 
-      it('should process multiple single-item menu macros in single line', function () {
-        const html = asciidoctor.convert('Click menu:File[] and menu:Edit[]', { doctype: 'inline', attributes: { experimental: '' } })
-        expect(html).to.include('Click <b class="menuref">File</b> and <b class="menuref">Edit</b>')
-      })
+      if (testOptions.coreVersion.gte('2.0.11')) {
+        it('should process multiple single-item menu macros in single line', function () {
+          const html = asciidoctor.convert('Click menu:File[] and menu:Edit[]', { doctype: 'inline', attributes: { experimental: '' } })
+          expect(html).to.include('Click <b class="menuref">File</b> and <b class="menuref">Edit</b>')
+        })
+      }
 
-      if (getCoreVersionNumber(asciidoctor) >= '208') {
+      if (testOptions.coreVersion.gte('2.0.8')) {
         it('should embed an SVG with a width (but no height)', function () {
           const options = { safe: 'safe', attributes: { 'allow-uri-read': true } }
           const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/cc-zero.svg[Embedded,300,opts=inline]`, options)
