@@ -1004,7 +1004,6 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
  * @namespace
  * @extends AbstractBlock
  */
-
 var Document = Opal.Asciidoctor.Document
 
 /**
@@ -1736,7 +1735,10 @@ Inline.prototype.getTarget = function () {
 
 // List API
 
-/** @namespace */
+/**
+ * @namespace
+ * @extends AbstractBlock
+ */
 var List = Opal.Asciidoctor.List
 
 /**
