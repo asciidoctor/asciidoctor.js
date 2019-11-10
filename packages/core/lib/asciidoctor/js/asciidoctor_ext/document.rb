@@ -8,6 +8,12 @@ class Document < AbstractBlock
       var nil = Opal.nil
       var utc_offset
       var source_date_epoch
+      var localdate
+      var localyear
+      var localtime
+      var localdatetime
+      var docdate
+      var doctime
 
       var getYear = function (time, utc_offset) {
         return utc_offset === 0 ? time.getUTCFullYear() : time.getFullYear()
@@ -95,6 +101,7 @@ class Document < AbstractBlock
         var mtime_hours = ('0' + (getHours(input_mtime, utc_offset))).slice(-2)
         var mtime_minutes = ('0' + (input_mtime.getMinutes())).slice(-2)
         var mtime_seconds = ('0' + (input_mtime.getSeconds())).slice(-2)
+        var utc_offset_format
         if (utc_offset === 0) {
           utc_offset_format = 'UTC'
         } else if (utc_offset > 0) {
