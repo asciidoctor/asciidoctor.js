@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Asciidoctor.js tests</title>
+  <meta charset="utf-8">
+</head>
+<body>
+<script type="module">
+  import Asciidoctor from '../../build/asciidoctor-esm.js'
+
+  console.log(Asciidoctor.convert('Hello *world*'))
+  // prints:
+  //<div class="paragraph">
+  //<p>Hello <strong>world</strong></p>
+  //</div>
+</script>
+</body>
+</html>
