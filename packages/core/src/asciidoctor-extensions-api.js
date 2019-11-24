@@ -1028,10 +1028,16 @@ Opal.Asciidoctor.ConverterFactory = ConverterFactory
  * @memberof Converter/Factory
  */
 ConverterFactory.register = function (converter, backends) {
+  var delegateConverter = converter
   if (typeof converter === 'object' && typeof converter.$convert === 'undefined' && typeof converter.convert === 'function') {
-    Opal.def(converter, '$convert', converter.convert)
+    delegateConverter = {}
+    var convertFunction = converter.convert
+    Opal.def(delegateConverter, '$convert', function () {
+      var args = Array.prototype.slice.call(arguments)
+      return convertFunction.apply(converter, args)
+    })
   }
-  var args = [converter].concat(backends)
+  var args = [delegateConverter].concat(backends)
   return Converter.$register.apply(Converter, args)
 }
 
