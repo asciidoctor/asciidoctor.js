@@ -1723,6 +1723,82 @@ header_attribute::foo[bar]`
       const result = asciidoctor.convert('content', options)
       expect(result).to.contain('<dummy>content</dummy>')
     })
+    it('should retrieve backend traits from a converter class', () => {
+      class TEIConverter {
+        constructor (backend, _) {
+          this.backend = backend
+          this.backendTraits = {
+            basebackend: 'xml',
+            outfilesuffix: '.xml',
+            filetype: 'xml',
+            htmlsyntax: 'xml'
+          }
+          this.transforms = {
+            embedded: (node) => {
+              return `<tei>${node.getContent()}</tei>`
+            }
+          }
+        }
+
+        convert (node, transform) {
+          const name = transform || node.node_name
+          if (name === 'paragraph') {
+            return this.convertParagraph(node)
+          }
+          return this.transforms[name](node)
+        }
+
+        convertParagraph (node) {
+          return node.getContent()
+        }
+      }
+
+      asciidoctor.ConverterFactory.register(TEIConverter, ['tei'])
+      const doc = asciidoctor.load('content', { safe: 'safe', backend: 'tei' })
+      expect(doc.getAttribute('basebackend')).to.equal('xml')
+      expect(doc.getAttribute('outfilesuffix')).to.equal('.xml')
+      expect(doc.getAttribute('filetype')).to.equal('xml')
+      expect(doc.getAttribute('htmlsyntax')).to.equal('xml')
+      const result = doc.convert()
+      expect(result).to.contain('<tei>content</tei>')
+    })
+    it('should retrieve backend traits from a converter instance', () => {
+      class TEIConverter {
+        constructor () {
+          this.backend = 'tei'
+          this.basebackend = 'xml'
+          this.outfilesuffix = '.xml'
+          this.filetype = 'xml'
+          this.htmlsyntax = 'xml'
+          this.transforms = {
+            embedded: (node) => {
+              return `<tei>${node.getContent()}</tei>`
+            }
+          }
+        }
+
+        convert (node, transform) {
+          const name = transform || node.node_name
+          if (name === 'paragraph') {
+            return this.convertParagraph(node)
+          }
+          return this.transforms[name](node)
+        }
+
+        convertParagraph (node) {
+          return node.getContent()
+        }
+      }
+
+      asciidoctor.ConverterFactory.register(new TEIConverter(), ['tei'])
+      const doc = asciidoctor.load('content', { safe: 'safe', backend: 'tei' })
+      expect(doc.getAttribute('basebackend')).to.equal('xml')
+      expect(doc.getAttribute('outfilesuffix')).to.equal('.xml')
+      expect(doc.getAttribute('filetype')).to.equal('xml')
+      expect(doc.getAttribute('htmlsyntax')).to.equal('xml')
+      const result = doc.convert()
+      expect(result).to.contain('<tei>content</tei>')
+    })
     it('should register a custom converter (fallback to the built-in HTML5 converter)', () => {
       class BlogConverter {
         constructor () {
