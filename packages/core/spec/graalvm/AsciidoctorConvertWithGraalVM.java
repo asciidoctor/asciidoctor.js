@@ -11,6 +11,7 @@ public class AsciidoctorConvertWithGraalVM {
   public static void main(String[] args) {
     Context context = Context.newBuilder("js")
       .allowIO(true)
+      .allowAllAccess(true)
       .allowPolyglotAccess(PolyglotAccess.ALL)
       .build();
     context.getPolyglotBindings().putMember("IncludeResolver", new IncludeResolver());
