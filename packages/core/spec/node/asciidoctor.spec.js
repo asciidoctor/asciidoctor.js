@@ -2427,8 +2427,8 @@ header_attribute::foo[bar]`
         }
       }
 
-      asciidoctor.ConverterFactory.register(new BlogConverter(), ['html5'])
-      const options = { safe: 'safe', header_footer: true }
+      asciidoctor.ConverterFactory.register(new BlogConverter(), ['blog'])
+      const options = { safe: 'safe', header_footer: true, backend: 'blog' }
       const input = `= One Thing to Write the Perfect Blog Post
 Guillaume Grossetie <ggrossetie@yuzutech.fr>
 
@@ -2453,6 +2453,24 @@ In other words, it’s about discovering writing zen.`
       expect(yamlConverter['$respond_to?']('convert')).to.be.true()
       expect(yamlConverter['$respond_to?']('composed')).to.be.false()
     })
+  })
+
+  describe('Using a template converter', () => {
+    it('should use a Pug template', () => {
+      const options = { safe: 'safe', backend: ':html5', template_dir: 'spec/fixtures/templates/pug' }
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<p class="paragraph-pug">content</p>')
+    })
+    it('should use a JavaScript template', () => {
+      const options = { safe: 'safe', backend: ':html5', template_dir: 'spec/fixtures/templates/js' }
+      const result = asciidoctor.convert('*bold* statement', options)
+      expect(result).to.contain('<p class="paragraph-js"><strong>bold</strong> statement</p>')
+    })
+    it('should require an helpers file', () => {
+      const options = { safe: 'safe', backend: ':html5', template_dir: 'spec/fixtures/templates/js-with-helpers' }
+      const result = asciidoctor.convert('video::TLV4_xaYynY[]', options)
+      expect(result).to.contain('<iframe src="https://www.youtube.com/embed/TLV4_xaYynY?enablejsapi=1&amp;rel=0&amp;showinfo=0&amp;controls=0&amp;disablekb=1" width="undefined" height="undefined" frameborder="0" allowfullscreen="true" data-rewind="" data-volume=""/>')
+    }).timeout(5000) // can take a few seconds in GraalVM
   })
 
   if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {

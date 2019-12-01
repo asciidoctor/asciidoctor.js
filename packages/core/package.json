@@ -86,6 +86,7 @@
     "mocha": "7.1.1",
     "module-alias": "2.2.2",
     "opal-compiler": "1.0.13",
+    "pug": "^2.0.4",
     "puppeteer": "2.1.1",
     "sinon": "8.1.1",
     "standard": "14.3.3"
