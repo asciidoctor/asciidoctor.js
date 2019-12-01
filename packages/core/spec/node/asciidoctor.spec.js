@@ -2460,7 +2460,7 @@ In other words, it’s about discovering writing zen.`
       const options = { safe: 'safe', backend: ':html5', template_dir: 'spec/fixtures/templates/pug' }
       const result = asciidoctor.convert('content', options)
       expect(result).to.contain('<p class="paragraph-pug">content</p>')
-    })
+    }).timeout(5000) // can take a few seconds in GraalVM
     it('should use a JavaScript template', () => {
       const options = { safe: 'safe', backend: ':html5', template_dir: 'spec/fixtures/templates/js' }
       const result = asciidoctor.convert('*bold* statement', options)
