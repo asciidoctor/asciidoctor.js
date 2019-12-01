@@ -1723,6 +1723,25 @@ header_attribute::foo[bar]`
       const result = asciidoctor.convert('content', options)
       expect(result).to.contain('<dummy>content</dummy>')
     })
+    it('should register a custom converter with delegate', () => {
+      class DelegateConverter {
+        convert (node, transform) {
+          return this[`convert_${transform || node.node_name}`](node)
+        }
+
+        convert_embedded (node) { // eslint-disable-line camelcase
+          return `<delegate>${node.getContent()}</delegate>`
+        }
+
+        convert_paragraph (node) { // eslint-disable-line camelcase
+          return node.getContent()
+        }
+      }
+      asciidoctor.ConverterFactory.register(new DelegateConverter(), ['delegate'])
+      const options = { safe: 'safe', backend: 'delegate' }
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<delegate>content</delegate>')
+    })
     it('should retrieve backend traits from a converter class', () => {
       class TEIConverter {
         constructor (backend, _) {
