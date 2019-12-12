@@ -1,6 +1,4 @@
-import org.graalvm.polyglot.Context;
-
-import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,7 +9,11 @@ import java.util.List;
 
 public class AsciidoctorConvertWithGraalVM {
   public static void main(String[] args) {
-    Context context = Context.newBuilder("js").allowIO(true).build();
+    Context context = Context.newBuilder("js")
+      .allowIO(true)
+      .allowAllAccess(true)
+      .allowPolyglotAccess(PolyglotAccess.ALL)
+      .build();
     context.getPolyglotBindings().putMember("IncludeResolver", new IncludeResolver());
     context.eval("js", "var IncludeResolver = Polyglot.import('IncludeResolver');");
     context.eval("js", "load('./build/asciidoctor-graalvm.js')");
