@@ -1,0 +1,21 @@
+= TypeScript Declaration File
+
+== How to Update the TypeScript Declaration File
+
+We are using https://github.com/englercj/tsd-jsdoc[tsd-jsdoc] to generate a TypeScript Declaration File (.d.ts) from JSDoc annotated source JavaScript files.
+
+1. Install https://www.npmjs.com/package/tsd-jsdoc[tsd-jsdoc] and https://www.npmjs.com/package/jsdoc[jsdoc]
+2. Run `node_modules/.bin/jsdoc -t node_modules/tsd-jsdoc/dist -r src/asciidoctor-*.js -d build`
+
+The above command will generate a TypeScript Declaration File at `build/types.d.ts`.
+Please note that this file must manually curated because the JSDoc is incomplete and, as a result, the generated file will be invalid.
+
+== TODO
+
+- Refine types
+** Some functions takes a string as argument but we could replace it by the list of values.
+For instance when we create a `List`, the context is one of: `ulist`, `olist`, `colist` or `dlist`.
+- Add more tests
+** We should call at least each function once in the _tests.ts_ file to make sure that the definition is valid.
+- Automate updates
+** Currently the type definition is carefully crafted by hand but we need to automate this process a bit (for instance when we add, remove or edit an existing API).
