@@ -1410,6 +1410,168 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
           expect(result).to.contain('<img src="image-name.png" alt="image name">')
         })
 
+        it('should be able to create a paragraph from a processor extension', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.blockMacro(function () {
+              this.named('p')
+              this.process((parent, target) => {
+                return this.createParagraph(parent, target)
+              })
+            })
+          })
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('p::hello[]', opts)
+          const paragraphs = doc.findBy((b) => b.getContext() === 'paragraph')
+          expect(paragraphs.length).to.equal(1)
+          expect(paragraphs[0].getSource()).to.equal('hello')
+          const result = doc.convert(opts)
+          expect(result).to.contain(`<div class="paragraph">
+<p>hello</p>
+</div>`)
+        })
+
+        it('should be able to create an open block from a processor extension', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.blockMacro(function () {
+              this.named('open')
+              this.process((parent, target) => {
+                const block = this.createOpenBlock(parent)
+                block.append(this.createParagraph(parent, target))
+                return block
+              })
+            })
+          })
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('open::hello[]', opts)
+          const openBlocks = doc.findBy((b) => b.getContext() === 'open')
+          expect(openBlocks.length).to.equal(1)
+          const result = doc.convert(opts)
+          expect(result).to.contain(`<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>hello</p>
+</div>
+</div>`)
+        })
+
+        it('should be able to create an example block from a processor extension', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.blockMacro(function () {
+              this.named('example')
+              this.process((parent, target) => {
+                return this.createExampleBlock(parent, target)
+              })
+            })
+          })
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('example::hello[]', opts)
+          const exampleBlocks = doc.findBy((b) => b.getContext() === 'example')
+          expect(exampleBlocks.length).to.equal(1)
+          const result = doc.convert(opts)
+          expect(result).to.contain(`<div class="exampleblock">
+<div class="content">
+hello
+</div>
+</div>`)
+        })
+
+        it('should be able to create a pass block from a processor extension', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.blockMacro(function () {
+              this.named('span')
+              this.process((parent, target) => {
+                return this.createPassBlock(parent, `<span>${target}</span>`)
+              })
+            })
+          })
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('span::hello[]', opts)
+          const passBlocks = doc.findBy((b) => b.getContext() === 'pass')
+          expect(passBlocks.length).to.equal(1)
+          const result = doc.convert(opts)
+          expect(result).to.contain('<span>hello</span>')
+        })
+
+        it('should be able to create a listing block from a processor extension', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.blockMacro(function () {
+              this.named('listing')
+              this.process((parent, target) => {
+                return this.createListingBlock(parent, `console.log('${target}')`)
+              })
+            })
+          })
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('listing::hello[]', opts)
+          const listingBlocks = doc.findBy((b) => b.getContext() === 'listing')
+          expect(listingBlocks.length).to.equal(1)
+          const result = doc.convert(opts)
+          expect(result).to.contain(`<div class="listingblock">
+<div class="content">
+<pre>console.log('hello')</pre>
+</div>
+</div>`)
+        })
+
+        it('should be able to create a literal block from a processor extension', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.blockMacro(function () {
+              this.named('literal')
+              this.process((parent, target) => {
+                return this.createLiteralBlock(parent, target)
+              })
+            })
+          })
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('literal::hello[]', opts)
+          const literalBlocks = doc.findBy((b) => b.getContext() === 'literal')
+          expect(literalBlocks.length).to.equal(1)
+          const result = doc.convert(opts)
+          expect(result).to.contain(`<div class="literalblock">
+<div class="content">
+<pre>hello</pre>
+</div>
+</div>`)
+        })
+
+        it('should be able to create an anchor from a processor extension', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.inlineMacro(function () {
+              this.named('mention')
+              this.resolvesAttributes(false)
+              this.process((parent, target, attrs) => {
+                let text
+                console.log(attrs)
+                if (attrs.text) {
+                  text = attrs.text
+                } else {
+                  text = target
+                }
+                return this.createAnchor(parent, text, { type: 'link', target: `https://github.com/${target}` })
+              })
+            })
+          })
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('mention:mojavelinux[Dan]', opts)
+          const result = doc.convert(opts)
+          expect(result).to.contain(`<a href="https://github.com/mojavelinux">Dan</a>`)
+        })
+
+        it('should be able to create an inline pass from a processor extension', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.inlineMacro(function () {
+              this.named('say')
+              this.process((parent, target) => {
+                return this.createInlinePass(parent, `*${target}*`, { attributes: { 'subs': 'normal' } })
+              })
+            })
+          })
+          const opts = { extension_registry: registry }
+          const doc = asciidoctor.load('say:yo[]', opts)
+          const result = doc.convert(opts)
+          expect(result).to.contain(`<strong>yo</strong>`)
+        })
+
         it('should be able to set header attribute in block macro processor', () => {
           const registry = asciidoctor.Extensions.create(function () {
             this.blockMacro(function () {
@@ -1737,6 +1899,7 @@ header_attribute::foo[bar]`
           return node.getContent()
         }
       }
+
       asciidoctor.ConverterFactory.register(new DelegateConverter(), ['delegate'])
       const options = { safe: 'safe', backend: 'delegate' }
       const result = asciidoctor.convert('content', options)

@@ -546,6 +546,67 @@ Processor.prototype.createImageBlock = function (parent, attrs, opts) {
 /**
  * @memberof Extensions/Processor
  */
+Processor.prototype.createParagraph = function (parent, source, attrs, opts) {
+  return this.$create_paragraph(parent, source, toHash(attrs), toHash(opts))
+}
+
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.createOpenBlock = function (parent, source, attrs, opts) {
+  return this.$create_open_block(parent, source, toHash(attrs), toHash(opts))
+}
+
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.createExampleBlock = function (parent, source, attrs, opts) {
+  return this.$create_example_block(parent, source, toHash(attrs), toHash(opts))
+}
+
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.createPassBlock = function (parent, source, attrs, opts) {
+  return this.$create_pass_block(parent, source, toHash(attrs), toHash(opts))
+}
+
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.createListingBlock = function (parent, source, attrs, opts) {
+  return this.$create_listing_block(parent, source, toHash(attrs), toHash(opts))
+}
+
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.createLiteralBlock = function (parent, source, attrs, opts) {
+  return this.$create_literal_block(parent, source, toHash(attrs), toHash(opts))
+}
+
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.createAnchor = function (parent, text, opts) {
+  if (opts && opts.attributes) {
+    opts.attributes = toHash(opts.attributes)
+  }
+  return this.$create_anchor(parent, text, toHash(opts))
+}
+
+/**
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.createInlinePass = function (parent, text, opts) {
+  if (opts && opts.attributes) {
+    opts.attributes = toHash(opts.attributes)
+  }
+  return this.$create_inline_pass(parent, text, toHash(opts))
+}
+/**
+ * @memberof Extensions/Processor
+ */
 Processor.prototype.createInline = function (parent, context, text, opts) {
   if (opts && opts.attributes) {
     opts.attributes = toHash(opts.attributes)
