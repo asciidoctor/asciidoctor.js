@@ -1036,13 +1036,15 @@ Opal.Asciidoctor.ConverterBackendTraits = ConverterBackendTraits
  */
 ConverterFactory.register = function (converter, backends) {
   var object
-  const buildBackendTraitsFromInstance = instance => ({
-    ...instance.basebackend && { basebackend: instance.basebackend },
-    ...instance.outfilesuffix && { outfilesuffix: instance.outfilesuffix },
-    ...instance.filetype && { filetype: instance.filetype },
-    ...instance.htmlsyntax && { htmlsyntax: instance.htmlsyntax },
-    ...instance.supports_templates && { supports_templates: instance.supports_templates }
-  })
+  var buildBackendTraitsFromInstance = instance => {
+    return Object.assign({},
+      instance.basebackend ? { basebackend: instance.basebackend } : {},
+      instance.outfilesuffix ? { outfilesuffix: instance.outfilesuffix } : {},
+      instance.filetype ? { filetype: instance.filetype } : {},
+      instance.htmlsyntax ? { htmlsyntax: instance.htmlsyntax } : {},
+      instance.supports_templates ? { supports_templates: instance.supports_templates } : {}
+    )
+  }
   if (typeof converter === 'function') {
     // Class
     object = initializeClass(ConverterBase, converter.constructor.name, {
