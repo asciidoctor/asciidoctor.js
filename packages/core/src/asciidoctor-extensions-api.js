@@ -568,14 +568,26 @@ Processor.prototype.positionalAttributes = function (value) {
 }
 
 /**
+ * Specify how to resolve attributes.
+ *
+ * @param {string|Array<string>|Object|boolean} [value] - A specification to resolve attributes.
  * @memberof Extensions/Processor
  */
-Processor.prototype.resolveAttributes = function (args) {
-  return this.$resolves_attributes(Array.prototype.slice.call(arguments))
+Processor.prototype.resolveAttributes = function (value) {
+  if (typeof value === 'object' && !Array.isArray(value)) {
+    return this.$resolves_attributes(toHash(value))
+  }
+  if (arguments.length > 1) {
+    return this.$resolves_attributes(Array.prototype.slice.call(arguments))
+  }
+  if (typeof value === 'undefined') {
+    return this.$resolves_attributes(Opal.nil)
+  }
+  return this.$resolves_attributes(value)
 }
 
 /**
- * @deprecated Please use {Processor#resolveAttributes}.
+ * @deprecated Please use the <code>resolveAttributes</pre> function on the {@link Extensions/Processor}.
  * @memberof Extensions/Processor
  * @see {Processor#resolveAttributes}
  */
