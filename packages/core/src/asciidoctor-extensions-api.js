@@ -91,7 +91,7 @@ Extensions.register = function (name, block) {
 }
 
 /**
- * Get statically-registerd extension groups.
+ * Get statically-registered extension groups.
  * @memberof Extensions
  */
 Extensions.getGroups = function () {
@@ -498,6 +498,7 @@ Processor.prototype.process = function (block) {
 }
 
 /**
+ * @param {string} name
  * @memberof Extensions/Processor
  */
 Processor.prototype.named = function (name) {
@@ -505,6 +506,12 @@ Processor.prototype.named = function (name) {
 }
 
 /**
+ * @param {Block|Section|Document} parent - The parent Block (Block, Section, or Document) of this new block.
+ * @param {string} context
+ * @param {string} source
+ * @param {Object|undefined} attrs - A JSON of attributes
+ * @param {Object|undefined} opts - A JSON of options
+ * @return {Block}
  * @memberof Extensions/Processor
  */
 Processor.prototype.createBlock = function (parent, context, source, attrs, opts) {
@@ -517,7 +524,7 @@ Processor.prototype.createBlock = function (parent, context, source, attrs, opts
  * @param parent - The parent Block (Block, Section, or Document) of this new list block.
  * @param {string} context - The list context (e.g., ulist, olist, colist, dlist)
  * @param {Object} attrs - An object of attributes to set on this list block
- *
+ * @returns {List}
  * @memberof Extensions/Processor
  */
 Processor.prototype.createList = function (parent, context, attrs) {
@@ -527,9 +534,9 @@ Processor.prototype.createList = function (parent, context, attrs) {
 /**
  * Creates a list item node and links it to the specified parent.
  *
- * @param parent - The parent List of this new list item block.
+ * @param {List} parent - The parent {List} of this new list item block.
  * @param {string} text - The text of the list item.
- *
+ * @returns {ListItem}
  * @memberof Extensions/Processor
  */
 Processor.prototype.createListItem = function (parent, text) {
@@ -537,6 +544,10 @@ Processor.prototype.createListItem = function (parent, text) {
 }
 
 /**
+ * @param {Block|Section|Document} parent - The parent Block of this new image block.
+ * @param {Object} attrs - A JSON of attributes
+ * @param {Object} opts - A JSON of options
+ * @returns {Block}
  * @memberof Extensions/Processor
  */
 Processor.prototype.createImageBlock = function (parent, attrs, opts) {
@@ -605,6 +616,12 @@ Processor.prototype.createInlinePass = function (parent, text, opts) {
   return this.$create_inline_pass(parent, text, toHash(opts))
 }
 /**
+ * @param {Block|Section|Document} parent - The parent Block of this new inline node.
+ * @param {string} context
+ * @param {string} text
+ * @param {Object|undefined} opts - A JSON of options
+ * @returns {Inline}
+ *
  * @memberof Extensions/Processor
  */
 Processor.prototype.createInline = function (parent, context, text, opts) {
@@ -622,6 +639,7 @@ Processor.prototype.parseContent = function (parent, content, attrs) {
 }
 
 /**
+ * @param {string|Array<string>} value - Name of a positional attribute or an Array of positional attribute names
  * @memberof Extensions/Processor
  */
 Processor.prototype.positionalAttributes = function (value) {
@@ -675,6 +693,7 @@ BlockProcessor.prototype.defaultAttributes = function (value) {
 }
 
 /**
+ * @param {string} context - A context name
  * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.prototype.onContext = function (context) {
@@ -682,13 +701,15 @@ BlockProcessor.prototype.onContext = function (context) {
 }
 
 /**
+ * @param {...string} contexts - A list of context names
  * @memberof Extensions/BlockProcessor
  */
-BlockProcessor.prototype.onContexts = function () {
+BlockProcessor.prototype.onContexts = function (contexts) {
   return this.$on_contexts(Array.prototype.slice.call(arguments))
 }
 
 /**
+ * @returns {string}
  * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.prototype.getName = function () {
@@ -697,6 +718,7 @@ BlockProcessor.prototype.getName = function () {
 }
 
 /**
+ * @param {string} value
  * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.prototype.parseContentAs = function (value) {
@@ -718,6 +740,7 @@ BlockMacroProcessor.prototype.defaultAttributes = function (value) {
 }
 
 /**
+ * @returns {string} - the block macro name
  * @memberof Extensions/BlockMacroProcessor
  */
 BlockMacroProcessor.prototype.getName = function () {
@@ -726,6 +749,7 @@ BlockMacroProcessor.prototype.getName = function () {
 }
 
 /**
+ * @param {string} value
  * @memberof Extensions/BlockMacroProcessor
  */
 BlockMacroProcessor.prototype.parseContentAs = function (value) {
@@ -747,6 +771,7 @@ InlineMacroProcessor.prototype.defaultAttributes = function (value) {
 }
 
 /**
+ * @returns {string} - the inline macro name
  * @memberof Extensions/InlineMacroProcessor
  */
 InlineMacroProcessor.prototype.getName = function () {
@@ -755,12 +780,15 @@ InlineMacroProcessor.prototype.getName = function () {
 }
 
 /**
+ * @param {string} value
  * @memberof Extensions/InlineMacroProcessor
  */
 InlineMacroProcessor.prototype.parseContentAs = function (value) {
   this.$parse_content_as(value)
 }
+
 /**
+ * @param {string} value
  * @memberof Extensions/InlineMacroProcessor
  */
 InlineMacroProcessor.prototype.matchFormat = function (value) {
@@ -840,6 +868,7 @@ DocinfoProcessor.prototype.prefer = function () {
 }
 
 /**
+ * @param {string} value - The docinfo location ("head", "header" or "footer")
  * @memberof Extensions/DocinfoProcessor
  */
 DocinfoProcessor.prototype.atLocation = function (value) {
@@ -1096,8 +1125,7 @@ Opal.Asciidoctor.Converter = Converter
  * @param {AbstractNode} node - the AbstractNode to convert
  * @param {string} transform - an optional String transform that hints at
  * which transformation should be applied to this node.
- * @param {Object} opts - a JSON of options that provide additional hints about
- * how to convert the node (default: {})
+ * @param {Object} opts - a JSON of options that provide additional hints about how to convert the node (default: {})
  * @returns the {Object} result of the conversion, typically a {string}.
  * @memberof Converter
  */
