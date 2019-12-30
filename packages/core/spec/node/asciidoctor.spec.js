@@ -1440,7 +1440,7 @@ header_attribute::foo[bar]`
         it('should resolve multiple attributes', () => {
           const registry = asciidoctor.Extensions.create(function () {
             this.inlineMacro('deg', function () {
-              this.resolvesAttributes('1:units', 'precision=1')
+              this.resolveAttributes('1:units', 'precision=1')
               this.process(function (parent, target, attributes) {
                 const units = attributes['units'] || (parent.getDocument().getAttribute('temperature-unit', 'C'))
                 const precision = parseInt(attributes['precision'])

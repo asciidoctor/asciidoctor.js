@@ -570,9 +570,16 @@ Processor.prototype.positionalAttributes = function (value) {
 /**
  * @memberof Extensions/Processor
  */
-Processor.prototype.resolvesAttributes = function (args) {
+Processor.prototype.resolveAttributes = function (args) {
   return this.$resolves_attributes(Array.prototype.slice.call(arguments))
 }
+
+/**
+ * @deprecated Please use {Processor#resolveAttributes}.
+ * @memberof Extensions/Processor
+ * @see {Processor#resolveAttributes}
+ */
+Processor.prototype.resolvesAttributes = Processor.prototype.resolveAttributes
 
 /**
  * @namespace
