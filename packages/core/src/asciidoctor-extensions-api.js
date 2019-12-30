@@ -581,6 +581,12 @@ Processor.prototype.resolveAttributes = function (value) {
     return this.$resolves_attributes(Array.prototype.slice.call(arguments))
   }
   if (typeof value === 'undefined') {
+    // Convert to nil otherwise an exception is thrown at:
+    // https://github.com/asciidoctor/asciidoctor/blob/0bcb4addc17b307f62975aad203fb556a1bcd8a5/lib/asciidoctor/extensions.rb#L583
+    //
+    // if args.size == 1 && !args[0]
+    //
+    // In the above Ruby code, args[0] is undefined and Opal will try to call the function "!" on an undefined object.
     return this.$resolves_attributes(Opal.nil)
   }
   return this.$resolves_attributes(value)
