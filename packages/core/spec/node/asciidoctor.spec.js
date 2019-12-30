@@ -1436,6 +1436,32 @@ header_attribute::foo[bar]`
           expect(doc.getAttribute('yin')).to.be.undefined()
           expect(doc.getAttribute('foo')).to.equal('bar')
         })
+
+        it('should resolve multiple attributes', () => {
+          const registry = asciidoctor.Extensions.create(function () {
+            this.inlineMacro('deg', function () {
+              this.resolvesAttributes('1:units', 'precision=1')
+              this.process(function (parent, target, attributes) {
+                const units = attributes['units'] || (parent.getDocument().getAttribute('temperature-unit', 'C'))
+                const precision = parseInt(attributes['precision'])
+                const c = parseFloat(target)
+                if (units === 'C') {
+                  return this.createInline(parent, 'quoted', `${c.toFixed(precision).toString()} &#176;C`, { type: 'unquoted' })
+                } else if (units === 'F') {
+                  return this.createInline(parent, 'quoted', `${(c * 1.8 + 32).toFixed(precision).toString()} &#176;F`, { type: 'unquoted' })
+                } else {
+                  throw new Error(`Unknown temperature units: ${units}`)
+                }
+              })
+            })
+          })
+          const opts = { extension_registry: registry, attributes: { 'temperature-unit': 'F' } }
+          let html = asciidoctor.convert('Room temperature is deg:25[C,precision=0].', opts)
+          expect(html).to.contain('Room temperature is 25 &#176;C.')
+
+          html = asciidoctor.convert('Normal body temperature is deg:37[].', opts)
+          expect(html).to.contain('Normal body temperature is 98.6 &#176;F.')
+        })
       })
 
       describe('Include processor', () => {
