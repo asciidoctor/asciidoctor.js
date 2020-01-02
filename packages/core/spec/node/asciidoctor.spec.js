@@ -1342,6 +1342,21 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
           expect(result).to.contain('2764.svg')
           expect(result).to.contain('twemoji.maxcdn.com')
         })
+
+        it('should prefer attributes parsed from inline macro over default attributes', () => {
+          const registry = asciidoctor.Extensions.create()
+          registry.inlineMacro('attrs', function () {
+            const self = this
+            self.matchFormat('short')
+            self.defaultAttributes({ 1: 'a', 2: 'b', 'foo': 'baz' })
+            self.positionalAttributes('a', 'b')
+            self.process((parent, _, attrs) => {
+              return this.createInline(parent, 'quoted', `a=${attrs['a']},2=${attrs[2]},b=${attrs['b'] || 'nil'},foo=${attrs['foo']}`)
+            })
+          })
+          const output = asciidoctor.convert('attrs:[A,foo=bar]', { extension_registry: registry, doctype: 'inline' })
+          expect(output).to.contain('a=A,2=b,b=nil,foo=bar')
+        })
       })
 
       describe('Block macro processor', () => {
@@ -1867,7 +1882,7 @@ Guillaume Grossetie <ggrossetie@yuzutech.fr>
 
 == Write in AsciiDoc!
 
-AsciiDoc is about being able to focus on expressing your ideas, writing with ease and passing on knowledge without the distraction of complex applications or angle brackets. 
+AsciiDoc is about being able to focus on expressing your ideas, writing with ease and passing on knowledge without the distraction of complex applications or angle brackets.
 In other words, it’s about discovering writing zen.`
       const result = asciidoctor.convert(input, options)
       expect(result).to.contain('<span class="blog-author">Guillaume Grossetie</span>') // custom blog converter

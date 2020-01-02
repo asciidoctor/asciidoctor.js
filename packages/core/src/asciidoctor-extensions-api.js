@@ -581,6 +581,14 @@ Processor.prototype.resolvesAttributes = function (args) {
 var BlockProcessor = Extensions.BlockProcessor
 
 /**
+ * @param {Object} value - a JSON of default values for attributes
+ * @memberof Extensions/BlockProcessor
+ */
+BlockProcessor.prototype.defaultAttributes = function (value) {
+  this.$default_attributes(toHash(value))
+}
+
+/**
  * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.prototype.onContext = function (context) {
@@ -616,6 +624,14 @@ BlockProcessor.prototype.parseContentAs = function (value) {
 var BlockMacroProcessor = Extensions.BlockMacroProcessor
 
 /**
+ * @param {Object} value - a JSON of default values for attributes
+ * @memberof Extensions/BlockMacroProcessor
+ */
+BlockMacroProcessor.prototype.defaultAttributes = function (value) {
+  this.$default_attributes(toHash(value))
+}
+
+/**
  * @memberof Extensions/BlockMacroProcessor
  */
 BlockMacroProcessor.prototype.getName = function () {
@@ -635,6 +651,14 @@ BlockMacroProcessor.prototype.parseContentAs = function (value) {
  * @module Extensions/InlineMacroProcessor
  */
 var InlineMacroProcessor = Extensions.InlineMacroProcessor
+
+/**
+ * @param {Object} value - a JSON of default values for attributes
+ * @memberof Extensions/InlineMacroProcessor
+ */
+InlineMacroProcessor.prototype.defaultAttributes = function (value) {
+  this.$default_attributes(toHash(value))
+}
 
 /**
  * @memberof Extensions/InlineMacroProcessor
