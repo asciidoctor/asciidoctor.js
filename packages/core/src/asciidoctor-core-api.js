@@ -1673,6 +1673,7 @@ Title.prototype.hasSubtitle = function () {
 // Inline API
 
 /**
+ * Methods for managing inline elements in AsciiDoc block.
  * @namespace
  * @extends AbstractNode
  */
@@ -1680,9 +1681,12 @@ var Inline = Opal.Asciidoctor.Inline
 
 /**
  * Create a new Inline element.
- *
+ * @param {AbstractBlock} parent
+ * @param {string} context
+ * @param {string|undefined} text
+ * @param {Object|undefined} opts
+ * @returns {Inline} - a new Inline element
  * @memberof Inline
- * @returns {Inline} - returns a new Inline element
  */
 Inline.create = function (parent, context, text, opts) {
   return this.$new(parent, context, text, toHash(opts))
@@ -1691,8 +1695,8 @@ Inline.create = function (parent, context, text, opts) {
 /**
  * Get the converted content for this inline node.
  *
+ * @returns {string} - the converted String content for this inline node
  * @memberof Inline
- * @returns {string} - returns the converted String content for this inline node
  */
 Inline.prototype.convert = function () {
   return this.$convert()
@@ -1701,8 +1705,8 @@ Inline.prototype.convert = function () {
 /**
  * Get the converted String text of this Inline node, if applicable.
  *
+ * @returns {string|undefined} - the converted String text for this Inline node, or undefined if not applicable for this node.
  * @memberof Inline
- * @returns {string} - returns the converted String text for this Inline node, or undefined if not applicable for this node.
  */
 Inline.prototype.getText = function () {
   var text = this.$text()
@@ -1715,8 +1719,8 @@ Inline.prototype.getText = function () {
  * This value is used to distinguish different variations of the same node
  * category, such as different types of anchors.
  *
+ * @returns {string} - the string sub-type of this Inline node.
  * @memberof Inline
- * @returns {string} - returns the string sub-type of this Inline node.
  */
 Inline.prototype.getType = function () {
   return this.$type()
@@ -1725,8 +1729,8 @@ Inline.prototype.getType = function () {
 /**
  * Get the primary String target of this Inline node.
  *
+ * @returns {string|undefined} - the string target of this Inline node.
  * @memberof Inline
- * @returns {string} - returns the string target of this Inline node.
  */
 Inline.prototype.getTarget = function () {
   var target = this.$target()
