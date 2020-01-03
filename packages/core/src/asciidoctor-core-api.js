@@ -1444,6 +1444,37 @@ RevisionInfo.prototype.isEmpty = function () {
   return this.date === undefined && this.number === undefined && this.remark === undefined
 }
 
+// SafeMode API
+
+/**
+ * @namespace
+ */
+var SafeMode = Opal.Asciidoctor.SafeMode
+
+/**
+ * @param {string} name - the name of the security level
+ * @returns {number} - the integer value of the corresponding security level
+ */
+SafeMode.getValueForName = function (name) {
+  return this.$value_for_name(name)
+}
+
+/**
+ * @param {number} value - the integer value of the security level
+ * @returns {string} - the name of the corresponding security level
+ */
+SafeMode.getNameForValue = function (value) {
+  var name = this.$name_for_value(value)
+  return name === Opal.nil ? undefined : name
+}
+
+/**
+ * @returns {Array<string>} - the String {Array} of security levels
+ */
+SafeMode.getNames = function () {
+  return this.$names()
+}
+
 /**
  * @memberof Document
  * @returns {Document/RevisionInfo} - returns a {@link Document/RevisionInfo}
@@ -1539,6 +1570,31 @@ Document.prototype.counter = function (name, seed) {
 }
 
 /**
+ * A read-only integer value indicating the level of security that should be enforced while processing this document.
+ * The value must be set in the Document constructor using the "safe" option.
+ *
+ * A value of 0 (UNSAFE) disables any of the security features enforced by Asciidoctor.
+ *
+ * A value of 1 (SAFE) closely parallels safe mode in AsciiDoc.
+ * In particular, it prevents access to files which reside outside of the parent directory of the source file and disables any macro other than the include directive.
+ *
+ * A value of 10 (SERVER) disallows the document from setting attributes that would affect the conversion of the document,
+ * in addition to all the security features of SafeMode.SAFE.
+ * For instance, this level forbids changing the backend or source-highlighter using an attribute defined in the source document header.
+ * This is the most fundamental level of security for server deployments (hence the name).
+ *
+ * A value of 20 (SECURE) disallows the document from attempting to read files from the file system and including the contents of them into the document,
+ * in addition to all the security features of SafeMode.SECURE.
+ * In particular, it disallows use of the include::[] directive and the embedding of binary content (data uri), stylesheets and JavaScripts referenced by the document.
+ * (Asciidoctor and trusted extensions may still be allowed to embed trusted content into the document).
+ *
+ * Since Asciidoctor is aiming for wide adoption, 20 (SECURE) is the default value and is recommended for server deployments.
+ *
+ * A value of 100 (PARANOID) is planned to disallow the use of passthrough macros and prevents the document from setting any known attributes,
+ * in addition to all the security features of SafeMode.SECURE.
+ * Please note that this level is not currently implemented (and therefore not enforced)!
+ *
+ * @returns {number} - An integer value indicating the level of security
  * @memberof Document
  */
 Document.prototype.getSafe = function () {

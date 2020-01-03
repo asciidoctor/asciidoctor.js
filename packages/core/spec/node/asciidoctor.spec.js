@@ -389,6 +389,24 @@ intro
     })
   }
 
+  describe('Safe mode', () => {
+    it('should get constants', () => {
+      expect(asciidoctor.SafeMode.UNSAFE).to.equal(0)
+      expect(asciidoctor.SafeMode.SAFE).to.equal(1)
+      expect(asciidoctor.SafeMode.SERVER).to.equal(10)
+      expect(asciidoctor.SafeMode.SECURE).to.equal(20)
+    })
+    it('should get value for name', () => {
+      expect(asciidoctor.SafeMode.getValueForName('secure')).to.equal(20)
+    })
+    it('should get name for value', () => {
+      expect(asciidoctor.SafeMode.getNameForValue(0)).to.equal('unsafe')
+    })
+    it('should get names', () => {
+      expect(asciidoctor.SafeMode.getNames()).to.have.members(['unsafe', 'safe', 'server', 'secure'])
+    })
+  })
+
   describe('Timings', () => {
     it('should print timings to a Stream', () => {
       const { Writable } = require('stream')
