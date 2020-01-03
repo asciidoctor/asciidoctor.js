@@ -1817,7 +1817,6 @@ header_attribute::foo[bar]`
           return node.getContent()
         }
       }
-
       asciidoctor.ConverterFactory.register(new DelegateConverter(), ['delegate'])
       const options = { safe: 'safe', backend: 'delegate' }
       const result = asciidoctor.convert('content', options)
