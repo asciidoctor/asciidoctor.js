@@ -691,6 +691,31 @@ Section.prototype.getName = function () {
 var Block = Opal.Asciidoctor.Block
 
 /**
+ * Create a {Block} object.
+ * @param {AbstractBlock} parent - The parent {AbstractBlock} with a compound content model to which this {Block} will be appended.
+ * @param {string} context - The context name for the type of content (e.g., "paragraph").
+ * @param {Object} [opts] - a JSON of options to customize block initialization: (default: {})
+ * @param {string} opts.content_model - indicates whether blocks can be nested in this {Block} ("compound"),
+ * otherwise how the lines should be processed ("simple", "verbatim", "raw", "empty"). (default: "simple")
+ * @param {Object} opts.attributes - a JSON of attributes (key/value pairs) to assign to this {Block}. (default: {})
+ * @param {string|Array} opts.source - a String or {Array} of raw source for this {Block}. (default: undefined)
+ *
+ * IMPORTANT: If you don't specify the `subs` option, you must explicitly call the `commit_subs` method to resolve and assign the substitutions
+ * to this block (which are resolved from the `subs` attribute, if specified, or the default substitutions based on this block's context).
+ * If you want to use the default subs for a block, pass the option `subs: "default"`.
+ * You can override the default subs using the `default_subs` option.
+ *
+ * @memberof Block
+ * @returns {Block} - returns a new {Block} object
+ */
+Block.create = function (parent, context, opts) {
+  if (opts && opts.attributes) {
+    opts.attributes = toHash(opts.attributes)
+  }
+  return this.$new(parent, context, toHash(opts))
+}
+
+/**
  * Get the source of this block.
  * @memberof Block
  * @returns {string} - returns the String source of this block.
