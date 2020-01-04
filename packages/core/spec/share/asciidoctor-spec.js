@@ -844,6 +844,25 @@ paragraph 3
         expect(literalBlock.hasSubstitution('specialcharacters')).to.equal(false)
         expect(literalBlock.getContent()).to.equal('<foobar>')
       })
+
+      it('should add a new Section to the document', function () {
+        const doc = asciidoctor.load(`= Title
+
+== Section A`)
+        const sectionB = asciidoctor.Section.create(doc, 2, false, { attributes: { foo: 'bar' } })
+        sectionB.setTitle('Section B')
+        doc.append(sectionB)
+        const sections = doc.findBy({ context: 'section' })
+        const secondSection = sections[2]
+        expect(secondSection.getLevel()).to.equal(2)
+        expect(secondSection.getName()).to.equal('Section B')
+        expect(secondSection.getTitle()).to.equal('Section B')
+        expect(secondSection.getSectionName()).to.be.undefined()
+        expect(secondSection.isNumbered()).to.equal(false)
+        expect(secondSection.isSpecial()).to.equal(false)
+        expect(secondSection.getCaption()).to.be.undefined()
+        expect(secondSection.getAttribute('foo')).to.equal('bar')
+      })
     })
 
     describe('Creating', function () {

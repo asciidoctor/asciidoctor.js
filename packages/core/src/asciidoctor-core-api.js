@@ -597,6 +597,23 @@ AbstractBlock.prototype.hasTitle = function () {
 var Section = Opal.Asciidoctor.Section
 
 /**
+ * Create a {Section} object.
+ * @param {AbstractBlock} [parent] - The parent AbstractBlock. If set, must be a Document or Section object (default: undefined)
+ * @param {number} [level] - The Integer level of this section (default: 1 more than parent level or 1 if parent not defined)
+ * @param {boolean} [numbered] - A Boolean indicating whether numbering is enabled for this Section (default: false)
+ * @param {Object} [opts] - An optional JSON of options (default: {})
+ *
+ * @memberof Section
+ * @returns {Section} - returns a new {Section} object
+ */
+Section.create = function (parent, level, numbered, opts) {
+  if (opts && opts.attributes) {
+    opts.attributes = toHash(opts.attributes)
+  }
+  return this.$new(parent, level, numbered, toHash(opts))
+}
+
+/**
  * Set the level of this section or the section level in which this block resides.
  * @param {number} level - Level (Integer)
  * @memberof AbstractBlock
@@ -625,10 +642,11 @@ Section.prototype.setIndex = function (value) {
 /**
  * Get the section name of this section.
  * @memberof Section
- * @returns {string}
+ * @returns {string|undefined}
  */
 Section.prototype.getSectionName = function () {
-  return this.sectname
+  var sectname = this.sectname
+  return sectname === Opal.nil ? undefined : sectname
 }
 
 /**
