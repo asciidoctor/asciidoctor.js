@@ -884,6 +884,14 @@ AbstractNode.prototype.getId = function () {
 }
 
 /**
+ * @param {string} id - the String id of this node
+ * @memberof AbstractNode
+ */
+AbstractNode.prototype.setId = function (id) {
+  this.id = id
+}
+
+/**
  * @memberof AbstractNode
  */
 AbstractNode.prototype.isOption = function (name) {
