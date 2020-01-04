@@ -674,6 +674,18 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       expect(refsCatalog['img-sunset'].getId()).to.equal('img-sunset')
     })
 
+    it('should get reftext', () => {
+      const doc = asciidoctor.load(`== First section [[refid,<>]]
+
+== Second section`)
+      const firstSection = doc.getBlocks()[0]
+      expect(firstSection.getAttribute('reftext')).to.equal('<>')
+      expect(firstSection.getReftext()).to.equal('&lt;&gt;')
+      const secondSection = doc.getBlocks()[1]
+      expect(secondSection.getAttribute('reftext')).to.be.undefined()
+      expect(secondSection.getReftext()).to.be.undefined()
+    })
+
     it('should get footnotes', () => {
       const input = `The hail-and-rainbow protocol can be initiated at five levels: double, tertiary, supernumerary, supermassive, and apocalyptic party.footnote:[The double hail-and-rainbow level makes my toes tingle.]
       A bold statement!footnoteref:[disclaimer,Opinions are my own.]

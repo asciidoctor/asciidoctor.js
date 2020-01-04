@@ -860,10 +860,13 @@ AbstractNode.prototype.isReftext = function () {
 }
 
 /**
+ * A convenience method that returns the value of the reftext attribute with substitutions applied.
+ * @returns {string|undefined} - the value of the reftext attribute with substitutions applied.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getReftext = function () {
-  return this.$reftext()
+  var reftext = this.$reftext()
+  return reftext === Opal.nil ? undefined : reftext
 }
 
 /**
