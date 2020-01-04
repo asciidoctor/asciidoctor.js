@@ -571,6 +571,8 @@ intro
 
       expect(blocks[1].getTitle()).to.equal('First Section')
       expect(blocks[1].getId()).to.equal('_first_section')
+      expect(blocks[1].setId('_foo_bar'))
+      expect(blocks[1].getId()).to.equal('_foo_bar')
       expect(blocks[1].getContext()).to.equal('section')
       expect(blocks[1].getBlocks().length).to.equal(5)
 
