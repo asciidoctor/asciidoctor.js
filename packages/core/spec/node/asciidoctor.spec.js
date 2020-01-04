@@ -1574,7 +1574,6 @@ hello
               this.resolvesAttributes(false)
               this.process((parent, target, attrs) => {
                 let text
-                console.log(attrs)
                 if (attrs.text) {
                   text = attrs.text
                 } else {
@@ -1677,7 +1676,6 @@ header_attribute::foo[bar]`
                   this.matchFormat('short')
                   this.resolveAttributes(arg)
                   this.process(function (parent, target, attributes) {
-                    console.log(attributes)
                     return this.createInline(parent, 'quoted', `${attributes.text}`, { type: 'unquoted' })
                   })
                 })
@@ -1698,7 +1696,6 @@ header_attribute::foo[bar]`
                   this.matchFormat('short')
                   this.resolveAttributes(arg)
                   this.process(function (parent, target, attributes) {
-                    console.log(attributes)
                     return this.createInline(parent, 'quoted', `precision is ${attributes.precision}`, { type: 'unquoted' })
                   })
                 })
