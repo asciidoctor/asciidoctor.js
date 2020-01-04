@@ -575,7 +575,7 @@ AbstractBlock.prototype.getNumeral = function () {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.setNumeral = function (value) {
-  return this['$numeral='](value)
+  this['$numeral='](value)
 }
 
 /**
