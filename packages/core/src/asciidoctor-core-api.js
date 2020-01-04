@@ -179,18 +179,18 @@ var Asciidoctor = Opal.Asciidoctor['$$class']
 /**
  * Get Asciidoctor core version number.
  *
+ * @returns {string} - the version number of Asciidoctor core.
  * @memberof Asciidoctor
- * @returns {string} - returns the version number of Asciidoctor core.
  */
 Asciidoctor.prototype.getCoreVersion = function () {
   return this.$$const.VERSION
 }
 
 /**
- * Get Asciidoctor.js runtime environment informations.
+ * Get Asciidoctor.js runtime environment information.
  *
+ * @returns {Object} - the runtime environment including the ioModule, the platform, the engine and the framework.
  * @memberof Asciidoctor
- * @returns {Object} - returns the runtime environement including the ioModule, the platform, the engine and the framework.
  */
 Asciidoctor.prototype.getRuntime = function () {
   return {
@@ -208,9 +208,8 @@ Asciidoctor.prototype.getRuntime = function () {
  *
  * @param {string|Buffer} input - AsciiDoc input as String or Buffer
  * @param {Object} options - a JSON of options to control processing (default: {})
- * @returns {string|Document} - returns the {@link Document} object if the converted String is written to a file,
+ * @returns {string|Document} - the {@link Document} object if the converted String is written to a file,
  * otherwise the converted String
- * @memberof Asciidoctor
  * @example
  * var input = '= Hello, AsciiDoc!\n' +
  *   'Guillaume Grossetie <ggrossetie@example.com>\n\n' +
@@ -220,6 +219,7 @@ Asciidoctor.prototype.getRuntime = function () {
  *   '* item 2\n';
  *
  * var html = asciidoctor.convert(input);
+ * @memberof Asciidoctor
  */
 Asciidoctor.prototype.convert = function (input, options) {
   if (typeof input === 'object' && input.constructor.name === 'Buffer') {
@@ -234,11 +234,11 @@ Asciidoctor.prototype.convert = function (input, options) {
  *
  * @param {string} filename - source filename
  * @param {Object} options - a JSON of options to control processing (default: {})
- * @returns {string|Document} - returns the {@link Document} object if the converted String is written to a file,
+ * @returns {string|Document} - the {@link Document} object if the converted String is written to a file,
  * otherwise the converted String
- * @memberof Asciidoctor
  * @example
  * var html = asciidoctor.convertFile('./document.adoc');
+ * @memberof Asciidoctor
  */
 Asciidoctor.prototype.convertFile = function (filename, options) {
   return this.$convert_file(filename, prepareOptions(options))
@@ -251,7 +251,7 @@ Asciidoctor.prototype.convertFile = function (filename, options) {
  *
  * @param {string|Buffer} input - AsciiDoc input as String or Buffer
  * @param {Object} options - a JSON of options to control processing (default: {})
- * @returns {Document} - returns the {@link Document} object
+ * @returns {Document} - the {@link Document} object
  * @memberof Asciidoctor
  */
 Asciidoctor.prototype.load = function (input, options) {
@@ -266,7 +266,7 @@ Asciidoctor.prototype.load = function (input, options) {
  *
  * @param {string} filename - source filename
  * @param {Object} options - a JSON of options to control processing (default: {})
- * @returns {Document} - returns the {@link Document} object
+ * @returns {Document} - the {@link Document} object
  * @memberof Asciidoctor
  */
 Asciidoctor.prototype.loadFile = function (filename, options) {
@@ -284,9 +284,8 @@ var AbstractBlock = Opal.Asciidoctor.AbstractBlock
 /**
  * Append a block to this block's list of child blocks.
  *
- * @memberof AbstractBlock
  * @returns {AbstractBlock} - the parent block to which this block was appended.
- *
+ * @memberof AbstractBlock
  */
 AbstractBlock.prototype.append = function (block) {
   this.$append(block)
@@ -300,11 +299,11 @@ AbstractBlock.prototype.append = function (block) {
  *
  * <code>specialcharacters</code>, <code>quotes</code>, <code>replacements</code>, <code>macros</code>, <code>attributes</code> and <code>post_replacements</code>
  *
- * @memberof AbstractBlock
- * @returns {string} - returns the converted String title for this Block, or undefined if the title is not set.
+ * @returns {string} - the converted String title for this Block, or undefined if the title is not set.
  * @example
  * block.title // "Foo 3^ # {two-colons} Bar(1)"
  * block.getTitle(); // "Foo 3^ # :: Bar(1)"
+ * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getTitle = function () {
   var title = this.$title()
@@ -313,9 +312,10 @@ AbstractBlock.prototype.getTitle = function () {
 
 /**
  * Set the String block title.
+ *
+ * @param {string} title - The block title
+ * @returns {string} - the new String title assigned to this Block.
  * @memberof AbstractBlock
- * @returns {string} - returns the new String title assigned to this Block.
- * @memberof Document
  */
 AbstractBlock.prototype.setTitle = function (title) {
   return this['$title='](title)
@@ -329,9 +329,8 @@ AbstractBlock.prototype.setTitle = function (title) {
  * two values. If the Block does not have a caption, the interpreted title is
  * returned.
  *
+ * @returns {string} - the converted String title prefixed with the caption, or just the converted String title if no caption is set
  * @memberof AbstractBlock
- * @returns {string} - the converted String title prefixed with the caption, or just the
- * converted String title if no caption is set
  */
 AbstractBlock.prototype.getCaptionedTitle = function () {
   return this.$captioned_title()
@@ -339,8 +338,9 @@ AbstractBlock.prototype.getCaptionedTitle = function () {
 
 /**
  * Get the style (block type qualifier) for this block.
+ *
+ * @returns {string} - the style for this block
  * @memberof AbstractBlock
- * @returns {string} - returns the style for this block
  */
 AbstractBlock.prototype.getStyle = function () {
   var style = this.style
@@ -349,6 +349,7 @@ AbstractBlock.prototype.getStyle = function () {
 
 /**
  * Set the style for this block.
+ *
  * @param {string} style - Style
  * @memberof AbstractBlock
  */
@@ -358,8 +359,9 @@ AbstractBlock.prototype.setStyle = function (style) {
 
 /**
  * Get the location in the AsciiDoc source where this block begins.
+ *
+ * @returns {string} - the style for this block
  * @memberof AbstractBlock
- * @returns {string} - returns the style for this block
  */
 AbstractBlock.prototype.getSourceLocation = function () {
   var sourceLocation = this.source_location
@@ -387,8 +389,9 @@ AbstractBlock.prototype.getSourceLocation = function () {
 
 /**
  * Get the caption for this block.
+ *
+ * @returns {string} - the caption for this block
  * @memberof AbstractBlock
- * @returns {string} - returns the caption for this block
  */
 AbstractBlock.prototype.getCaption = function () {
   return this.$caption()
@@ -396,6 +399,7 @@ AbstractBlock.prototype.getCaption = function () {
 
 /**
  * Set the caption for this block.
+ *
  * @param {string} caption - Caption
  * @memberof AbstractBlock
  */
@@ -405,8 +409,9 @@ AbstractBlock.prototype.setCaption = function (caption) {
 
 /**
  * Get the level of this section or the section level in which this block resides.
+ *
+ * @returns {number} - the level (Integer) of this section
  * @memberof AbstractBlock
- * @returns {number} - returns the level (Integer) of this section
  */
 AbstractBlock.prototype.getLevel = function () {
   var level = this.level
@@ -416,8 +421,8 @@ AbstractBlock.prototype.getLevel = function () {
 /**
  * Get the substitution keywords to be applied to the contents of this block.
  *
+ * @returns {Array<string>} - the list of {string} substitution keywords associated with this block.
  * @memberof AbstractBlock
- * @returns {Array} - the list of {string} substitution keywords associated with this block.
  */
 AbstractBlock.prototype.getSubstitutions = function () {
   return this.subs
@@ -426,8 +431,8 @@ AbstractBlock.prototype.getSubstitutions = function () {
 /**
  * Check whether a given substitution keyword is present in the substitutions for this block.
  *
- * @memberof AbstractBlock
  * @returns {boolean} - whether the substitution is present on this block.
+ * @memberof AbstractBlock
  */
 AbstractBlock.prototype.hasSubstitution = function (substitution) {
   return this['$sub?'](substitution)
@@ -437,7 +442,6 @@ AbstractBlock.prototype.hasSubstitution = function (substitution) {
  * Remove the specified substitution keyword from the list of substitutions for this block.
  *
  * @memberof AbstractBlock
- * @returns undefined
  */
 AbstractBlock.prototype.removeSubstitution = function (substitution) {
   this.$remove_sub(substitution)
@@ -445,8 +449,9 @@ AbstractBlock.prototype.removeSubstitution = function (substitution) {
 
 /**
  * Checks if the {@link AbstractBlock} contains any child blocks.
- * @memberof AbstractBlock
+ *
  * @returns {boolean} - whether the {@link AbstractBlock} has child blocks.
+ * @memberof AbstractBlock
  */
 AbstractBlock.prototype.hasBlocks = function () {
   return this.blocks.length > 0
@@ -454,8 +459,9 @@ AbstractBlock.prototype.hasBlocks = function () {
 
 /**
  * Get the list of {@link AbstractBlock} sub-blocks for this block.
+ *
+ * @returns {Array<AbstractBlock>} - a list of {@link AbstractBlock} sub-blocks
  * @memberof AbstractBlock
- * @returns {Array} - returns a list of {@link AbstractBlock} sub-blocks
  */
 AbstractBlock.prototype.getBlocks = function () {
   return this.blocks
@@ -463,8 +469,9 @@ AbstractBlock.prototype.getBlocks = function () {
 
 /**
  * Get the converted result of the child blocks by converting the children appropriate to content model that this block supports.
+ *
+ * @returns {string} - the converted result of the child blocks
  * @memberof AbstractBlock
- * @returns {string} - returns the converted result of the child blocks
  */
 AbstractBlock.prototype.getContent = function () {
   return this.$content()
@@ -474,8 +481,9 @@ AbstractBlock.prototype.getContent = function () {
  * Get the converted content for this block.
  * If the block has child blocks, the content method should cause them to be converted
  * and returned as content that can be included in the parent block's template.
+ *
+ * @returns {string} - the converted String content for this block
  * @memberof AbstractBlock
- * @returns {string} - returns the converted String content for this block
  */
 AbstractBlock.prototype.convert = function () {
   return this.$convert()
@@ -499,8 +507,8 @@ AbstractBlock.prototype.convert = function () {
  * doc.findBy({'context': 'listing', 'style': 'source'});
  * // => { context: :listing, content_model: :verbatim, style: "source", lines: 1 }
  *
+ * @returns {Array<AbstractBlock>} - a list of block-level nodes that match the filter or an empty list if no matches are found
  * @memberof AbstractBlock
- * @returns {Array} - returns a list of block-level nodes that match the filter or an empty list if no matches are found
  */
 AbstractBlock.prototype.findBy = function (selector, block) {
   if (typeof block === 'undefined' && typeof selector === 'function') {
@@ -514,8 +522,8 @@ AbstractBlock.prototype.findBy = function (selector, block) {
 
 /**
  * Get the source line number where this block started.
+ * @returns {number} - the source line number where this block started
  * @memberof AbstractBlock
- * @returns {number} - returns the source line number where this block started
  */
 AbstractBlock.prototype.getLineNumber = function () {
   var lineno = this.$lineno()
@@ -525,8 +533,8 @@ AbstractBlock.prototype.getLineNumber = function () {
 /**
  * Check whether this block has any child Section objects.
  * Only applies to Document and Section instances.
- * @memberof AbstractBlock
  * @returns {boolean} - true if this block has child Section objects, otherwise false
+ * @memberof AbstractBlock
  */
 AbstractBlock.prototype.hasSections = function () {
   return this['$sections?']()
@@ -536,7 +544,7 @@ AbstractBlock.prototype.hasSections = function () {
  * Get the Array of child Section objects.
  * Only applies to Document and Section instances.
  * @memberof AbstractBlock
- * @returns {Array} - returns an {Array} of {@link Section} objects
+ * @returns {Array<Section>} - an {Array} of {@link Section} objects
  */
 AbstractBlock.prototype.getSections = function () {
   return this.$sections()
@@ -547,8 +555,8 @@ AbstractBlock.prototype.getSections = function () {
  * Only assigned to section if automatic section numbering is enabled.
  * Only assigned to formal block (block with title) if corresponding caption attribute is present.
  * If the section is an appendix, the numeral is a letter (starting with A).
+ * @returns {string} - the numeral
  * @memberof AbstractBlock
- * @returns {string} - returns the numeral
  */
 AbstractBlock.prototype.getNumeral = function () {
   return this.$numeral()
@@ -556,6 +564,7 @@ AbstractBlock.prototype.getNumeral = function () {
 
 /**
  * Set the numeral of this block.
+ * @param {string} value - The numeral value
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.setNumeral = function (value) {
@@ -565,7 +574,7 @@ AbstractBlock.prototype.setNumeral = function (value) {
 /**
  * A convenience method that checks whether the title of this block is defined.
  *
- * @returns a {boolean} indicating whether this block has a title.
+ * @returns {boolean} - a {boolean} indicating whether this block has a title.
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.hasTitle = function () {
@@ -575,6 +584,19 @@ AbstractBlock.prototype.hasTitle = function () {
 // Section API
 
 /**
+ * @description
+ * Methods for managing sections of AsciiDoc content in a document.
+ *
+ * @example
+ * <pre>
+ *   section = asciidoctor.Section.create()
+ *   section.setTitle('Section 1')
+ *   section.setId('sect1')
+ *   section.getBlocks().length // 0
+ *   section.getId() // "sect1"
+ *   section.append(newBlock)
+ *   section.getBlocks().length // 1
+ * </pre>
  * @namespace
  * @extends AbstractBlock
  */
@@ -586,9 +608,8 @@ var Section = Opal.Asciidoctor.Section
  * @param {number} [level] - The Integer level of this section (default: 1 more than parent level or 1 if parent not defined)
  * @param {boolean} [numbered] - A Boolean indicating whether numbering is enabled for this Section (default: false)
  * @param {Object} [opts] - An optional JSON of options (default: {})
- *
+ * @returns {Section} - a new {Section} object
  * @memberof Section
- * @returns {Section} - returns a new {Section} object
  */
 Section.create = function (parent, level, numbered, opts) {
   if (opts && opts.attributes) {
@@ -608,8 +629,8 @@ Section.prototype.setLevel = function (level) {
 
 /**
  * Get the 0-based index order of this section within the parent block.
- * @memberof Section
  * @returns {number}
+ * @memberof Section
  */
 Section.prototype.getIndex = function () {
   return this.index
@@ -617,16 +638,17 @@ Section.prototype.getIndex = function () {
 
 /**
  * Set the 0-based index order of this section within the parent block.
+ * @param {string} index - The index order of this section
  * @memberof Section
  */
-Section.prototype.setIndex = function (value) {
-  this.index = value
+Section.prototype.setIndex = function (index) {
+  this.index = index
 }
 
 /**
  * Get the section name of this section.
- * @memberof Section
  * @returns {string|undefined}
+ * @memberof Section
  */
 Section.prototype.getSectionName = function () {
   var sectname = this.sectname
@@ -635,6 +657,7 @@ Section.prototype.getSectionName = function () {
 
 /**
  * Set the section name of this section.
+ * @param {string} value - The section name
  * @memberof Section
  */
 Section.prototype.setSectionName = function (value) {
@@ -643,8 +666,8 @@ Section.prototype.setSectionName = function (value) {
 
 /**
  * Get the flag to indicate whether this is a special section or a child of one.
- * @memberof Section
  * @returns {boolean}
+ * @memberof Section
  */
 Section.prototype.isSpecial = function () {
   return this.special
@@ -652,6 +675,7 @@ Section.prototype.isSpecial = function () {
 
 /**
  * Set the flag to indicate whether this is a special section or a child of one.
+ * @param {boolean} value - A flag to indicated if this is a special section
  * @memberof Section
  */
 Section.prototype.setSpecial = function (value) {
@@ -660,8 +684,8 @@ Section.prototype.setSpecial = function (value) {
 
 /**
  * Get the state of the numbered attribute at this section (need to preserve for creating TOC).
- * @memberof Section
  * @returns {boolean}
+ * @memberof Section
  */
 Section.prototype.isNumbered = function () {
   return this.numbered
@@ -669,8 +693,8 @@ Section.prototype.isNumbered = function () {
 
 /**
  * Get the caption for this section (only relevant for appendices).
- * @memberof Section
  * @returns {string}
+ * @memberof Section
  */
 Section.prototype.getCaption = function () {
   var value = this.caption
@@ -679,16 +703,25 @@ Section.prototype.getCaption = function () {
 
 /**
  * Get the name of the Section (title)
- * @memberof Section
  * @returns {string}
  * @see {@link AbstractBlock#getTitle}
+ * @memberof Section
  */
 Section.prototype.getName = function () {
   return this.getTitle()
 }
 
 /**
+ * @description
+ * Methods for managing AsciiDoc content blocks.
+ *
+ * @example
+ * block = Asciidoctor::Block.new(parent, :paragraph, source: '_This_ is a <test>')
+ * block.content
+ * => "<em>This</em> is a &lt;test&gt;"
+ *
  * @namespace
+ * @extends AbstractBlock
  */
 var Block = Opal.Asciidoctor.Block
 
@@ -700,15 +733,15 @@ var Block = Opal.Asciidoctor.Block
  * @param {string} opts.content_model - indicates whether blocks can be nested in this {Block} ("compound"),
  * otherwise how the lines should be processed ("simple", "verbatim", "raw", "empty"). (default: "simple")
  * @param {Object} opts.attributes - a JSON of attributes (key/value pairs) to assign to this {Block}. (default: {})
- * @param {string|Array} opts.source - a String or {Array} of raw source for this {Block}. (default: undefined)
+ * @param {string|Array<string>} opts.source - a String or {Array} of raw source for this {Block}. (default: undefined)
  *
  * IMPORTANT: If you don't specify the `subs` option, you must explicitly call the `commit_subs` method to resolve and assign the substitutions
  * to this block (which are resolved from the `subs` attribute, if specified, or the default substitutions based on this block's context).
  * If you want to use the default subs for a block, pass the option `subs: "default"`.
  * You can override the default subs using the `default_subs` option.
  *
+ * @returns {Block} - a new {Block} object
  * @memberof Block
- * @returns {Block} - returns a new {Block} object
  */
 Block.create = function (parent, context, opts) {
   if (opts && opts.attributes) {
@@ -719,8 +752,8 @@ Block.create = function (parent, context, opts) {
 
 /**
  * Get the source of this block.
+ * @returns {string} - the String source of this block.
  * @memberof Block
- * @returns {string} - returns the String source of this block.
  */
 Block.prototype.getSource = function () {
   return this.$source()
@@ -728,8 +761,8 @@ Block.prototype.getSource = function () {
 
 /**
  * Get the source lines of this block.
+ * @returns {Array<string>} - the String {Array} of source lines for this block.
  * @memberof Block
- * @returns {Array} - returns the String {Array} of source lines for this block.
  */
 Block.prototype.getSourceLines = function () {
   return this.lines
@@ -739,6 +772,9 @@ Block.prototype.getSourceLines = function () {
 
 /**
  * @namespace
+ * @description
+ * An abstract base class that provides state and methods for managing a node of AsciiDoc content.
+ * The state and methods on this class are common to all content segments in an AsciiDoc document.
  */
 var AbstractNode = Opal.Asciidoctor.AbstractNode
 
@@ -756,6 +792,7 @@ AbstractNode.prototype.applySubstitutions = function (text, subs) {
 }
 
 /**
+ * @returns {string} - the String name of this node
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getNodeName = function () {
@@ -763,6 +800,7 @@ AbstractNode.prototype.getNodeName = function () {
 }
 
 /**
+ * @returns {Object} - the JSON of attributes for this node
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getAttributes = function () {
@@ -770,32 +808,64 @@ AbstractNode.prototype.getAttributes = function () {
 }
 
 /**
+ * Get the value of the specified attribute.
+ * If the attribute is not found on this node, fallback_name is set, and this node is not the Document node, get the value of the specified attribute from the Document node.
+ *
+ * Look for the specified attribute in the attributes on this node and return the value of the attribute, if found.
+ * Otherwise, if fallback_name is set (default: same as name) and this node is not the Document node, look for that attribute on the Document node and return its value, if found.
+ * Otherwise, return the default value (default: undefined).
+ *
+ * @param {string} name - The String of the attribute to resolve.
+ * @param {*} [defaultValue] - The {Object} value to return if the attribute is not found (default: undefined).
+ * @param {string} [fallbackName] - The String of the attribute to resolve on the Document if the attribute is not found on this node (default: same as name).
+ *
+ * @returns {*} - the {Object} value (typically a String) of the attribute or defaultValue if the attribute is not found.
  * @memberof AbstractNode
  */
-AbstractNode.prototype.getAttribute = function (name, defaultValue, inherit) {
-  var value = this.$attr(name, defaultValue, inherit)
+AbstractNode.prototype.getAttribute = function (name, defaultValue, fallbackName) {
+  var value = this.$attr(name, defaultValue, fallbackName)
   return value === Opal.nil ? undefined : value
 }
 
 /**
  * Check whether the specified attribute is present on this node.
  *
- * @memberof AbstractNode
+ * @param {string} name - The String of the attribute to resolve.
  * @returns {boolean} - true if the attribute is present, otherwise false
+ * @memberof AbstractNode
  */
 AbstractNode.prototype.hasAttribute = function (name) {
   return name in this.attributes.$$smap
 }
 
 /**
+ * Check if the specified attribute is defined using the same logic as {AbstractNode#getAttribute}, optionally performing acomparison with the expected value if specified.
+ *
+ * Look for the specified attribute in the attributes on this node.
+ * If not found, fallback_name is specified (default: same as name), and this node is not the Document node, look for that attribute on the Document node.
+ * In either case, if the attribute is found, and the comparison value is truthy, return whether the two values match.
+ * Otherwise, return whether the attribute was found.
+ *
+ * @param {string} name - The String name of the attribute to resolve.
+ * @param {*} [expectedValue] - The expected Object value of the attribute (default: undefined).
+ * @param {string} fallbackName - The String of the attribute to resolve on the Document if the attribute is not found on this node (default: same as name).
+ *
+ * @returns {boolean} - a Boolean indicating whether the attribute exists and, if a truthy comparison value is specified, whether the value of the attribute matches the comparison value.
  * @memberof AbstractNode
  */
-AbstractNode.prototype.isAttribute = function (name, expectedValue, inherit) {
-  var result = this['$attr?'](name, expectedValue, inherit)
+AbstractNode.prototype.isAttribute = function (name, expectedValue, fallbackName) {
+  var result = this['$attr?'](name, expectedValue, fallbackName)
   return result === Opal.nil ? false : result
 }
 
 /**
+ * Assign the value to the attribute name for the current node.
+ *
+ * @param {string} name - The String attribute name to assign
+ * @param {*} value - The Object value to assign to the attribute (default: '')
+ * @param {boolean} overwrite - A Boolean indicating whether to assign the attribute if currently present in the attributes JSON (default: true)
+ *
+ * @returns {boolean} - a Boolean indicating whether the assignment was performed
  * @memberof AbstractNode
  */
 AbstractNode.prototype.setAttribute = function (name, value, overwrite) {
@@ -806,7 +876,7 @@ AbstractNode.prototype.setAttribute = function (name, value, overwrite) {
 /**
  * Remove the attribute from the current node.
  * @param {string} name - The String attribute name to remove
- * @returns {string} - returns the previous {string} value, or undefined if the attribute was not present.
+ * @returns {string} - the previous {string} value, or undefined if the attribute was not present.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.removeAttribute = function (name) {
@@ -817,8 +887,8 @@ AbstractNode.prototype.removeAttribute = function (name) {
 /**
  * Get the {@link Document} to which this node belongs.
  *
+ * @returns {Document} - the {@link Document} object to which this node belongs.
  * @memberof AbstractNode
- * @returns {Document} - returns the {@link Document} object to which this node belongs.
  */
 AbstractNode.prototype.getDocument = function () {
   return this.document
@@ -828,7 +898,7 @@ AbstractNode.prototype.getDocument = function () {
  * Get the {@link AbstractNode} to which this node is attached.
  *
  * @memberof AbstractNode
- * @returns {AbstractNode} - returns the {@link AbstractNode} object to which this node is attached,
+ * @returns {AbstractNode} - the {@link AbstractNode} object to which this node is attached,
  * or undefined if this node has no parent.
  */
 AbstractNode.prototype.getParent = function () {
@@ -837,6 +907,7 @@ AbstractNode.prototype.getParent = function () {
 }
 
 /**
+ * @returns {boolean} - true if this {AbstractNode} is an instance of {Inline}
  * @memberof AbstractNode
  */
 AbstractNode.prototype.isInline = function () {
@@ -844,6 +915,7 @@ AbstractNode.prototype.isInline = function () {
 }
 
 /**
+ * @returns {boolean} - true if this {AbstractNode} is an instance of {Block}
  * @memberof AbstractNode
  */
 AbstractNode.prototype.isBlock = function () {
@@ -851,13 +923,21 @@ AbstractNode.prototype.isBlock = function () {
 }
 
 /**
+ * Checks if the role attribute is set on this node and, if an expected value is given, whether the space-separated role matches that value.
+ *
+ * @param {string} expectedValue - The expected String value of the role (optional, default: undefined)
+ *
+ * @returns {boolean} - a Boolean indicating whether the role attribute is set on this node and, if an expected value is given, whether the space-separated role matches that value.
  * @memberof AbstractNode
  */
-AbstractNode.prototype.isRole = function (expected) {
-  return this['$role?'](expected)
+AbstractNode.prototype.isRole = function (expectedValue) {
+  return this['$role?'](expectedValue)
 }
 
 /**
+ * Retrieves the space-separated String role for this node.
+ *
+ * @returns {string} - the role as a space-separated String.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getRole = function () {
@@ -865,6 +945,11 @@ AbstractNode.prototype.getRole = function () {
 }
 
 /**
+ * Checks if the specified role is present in the list of roles for this node.
+ *
+ * @param {string} name - The String name of the role to find.
+ *
+ * @returns {boolean} - a Boolean indicating whether this node has the specified role.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.hasRole = function (name) {
@@ -872,6 +957,9 @@ AbstractNode.prototype.hasRole = function (name) {
 }
 
 /**
+ * Retrieves the String role names for this node as an Array.
+ *
+ * @returns {Array<string>} - the role names as a String {Array}, which is empty if the role attribute is absent on this node.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getRoles = function () {
@@ -879,6 +967,11 @@ AbstractNode.prototype.getRoles = function () {
 }
 
 /**
+ * Adds the given role directly to this node.
+ *
+ * @param {string} name - The name of the role to add
+ *
+ * @returns {boolean} - a Boolean indicating whether the role was added.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.addRole = function (name) {
@@ -886,6 +979,11 @@ AbstractNode.prototype.addRole = function (name) {
 }
 
 /**
+ * Public: Removes the given role directly from this node.
+ *
+ * @param {string} name - The name of the role to remove
+ *
+ * @returns {boolean} - a Boolean indicating whether the role was removed.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.removeRole = function (name) {
@@ -893,6 +991,8 @@ AbstractNode.prototype.removeRole = function (name) {
 }
 
 /**
+ * A convenience method that checks if the reftext attribute is defined.
+ * @returns {boolean} - A Boolean indicating whether the reftext attribute is defined
  * @memberof AbstractNode
  */
 AbstractNode.prototype.isReftext = function () {
@@ -910,6 +1010,7 @@ AbstractNode.prototype.getReftext = function () {
 }
 
 /**
+ * @returns {string} - Get the context name for this node
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getContext = function () {
@@ -919,6 +1020,7 @@ AbstractNode.prototype.getContext = function () {
 }
 
 /**
+ * @returns {string} - the String id of this node
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getId = function () {
@@ -935,6 +1037,12 @@ AbstractNode.prototype.setId = function (id) {
 }
 
 /**
+ * A convenience method to check if the specified option attribute is enabled on the current node.
+ * Check if the option is enabled. This method simply checks to see if the <name>-option attribute is defined on the current node.
+ *
+ * @param {string} name - the String name of the option
+ *
+ * @return {boolean} - a Boolean indicating whether the option has been specified
  * @memberof AbstractNode
  */
 AbstractNode.prototype.isOption = function (name) {
@@ -942,6 +1050,11 @@ AbstractNode.prototype.isOption = function (name) {
 }
 
 /**
+ * Set the specified option on this node.
+ * This method sets the specified option on this node by setting the <name>-option attribute.
+ *
+ * @param {string} name - the String name of the option
+ *
  * @memberof AbstractNode
  */
 AbstractNode.prototype.setOption = function (name) {
@@ -970,6 +1083,8 @@ AbstractNode.prototype.getImageUri = function (targetImage, assetDirKey) {
 }
 
 /**
+ * Get the {Converter} instance being used to convert the current {Document}.
+ * @returns {Object}
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getConverter = function () {
@@ -986,12 +1101,14 @@ AbstractNode.prototype.readContents = function (target, options) {
 /**
  * Read the contents of the file at the specified path.
  * This method assumes that the path is safe to read.
- * It checks that the file is readable before attempting to read it
+ * It checks that the file is readable before attempting to read it.
+ *
  * @param path - the {string} path from which to read the contents
- * @param options - a JSON {Object} of options to control processing (default: {})
- * - warn_on_failure a {boolean} that controls whether a warning is issued if the file cannot be read (default: false)
- * - normalize a {boolean} that controls whether the lines are normalized and coerced to UTF-8 (default: false)
- * @returns the {string} content of the file at the specified path, or undefined if the file does not exist.
+ * @param {Object} options - a JSON {Object} of options to control processing (default: {})
+ * @param {boolean} options.warn_on_failure - a {boolean} that controls whether a warning is issued if the file cannot be read (default: false)
+ * @param {boolean} options.normalize - a {boolean} that controls whether the lines are normalized and coerced to UTF-8 (default: false)
+ *
+ * @returns {string} - the String content of the file at the specified path, or undefined if the file does not exist.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.readAsset = function (path, options) {
@@ -1060,7 +1177,7 @@ var Document = Opal.Asciidoctor.Document
 /**
  * Returns a JSON {Object} of references captured by the processor.
  *
- * @returns {Object} - returns a JSON {Object} of {AbstractNode} in the document.
+ * @returns {Object} - a JSON {Object} of {AbstractNode} in the document.
  * @memberof Document
  */
 Document.prototype.getRefs = function () {
@@ -1068,9 +1185,9 @@ Document.prototype.getRefs = function () {
 }
 
 /**
- * Returns an {Array} of Document/ImageReference} captured by the processor.
+ * Returns an {Array} of {Document/ImageReference} captured by the processor.
  *
- * @returns {Array} - returns an {Array} of {Document/ImageReference} in the document.
+ * @returns {Array<ImageReference>} - an {Array} of {Document/ImageReference} in the document.
  * Will return an empty array if the option "catalog_assets: true" was not defined on the processor.
  * @memberof Document
  */
@@ -1081,7 +1198,7 @@ Document.prototype.getImages = function () {
 /**
  * Returns an {Array} of links captured by the processor.
  *
- * @returns {Array} - returns an {Array} of links in the document.
+ * @returns {Array<string>} - an {Array} of links in the document.
  * Will return an empty array if:
  * - the function was called before the document was converted
  * - the option "catalog_assets: true" was not defined on the processor
@@ -1092,7 +1209,7 @@ Document.prototype.getLinks = function () {
 }
 
 /**
- * @returns {boolean} - returns true if the document has footnotes otherwise false
+ * @returns {boolean} - true if the document has footnotes otherwise false
  * @memberof Document
  */
 Document.prototype.hasFootnotes = function () {
@@ -1102,7 +1219,7 @@ Document.prototype.hasFootnotes = function () {
 /**
  * Returns an {Array} of {Document/Footnote} captured by the processor.
  *
- * @returns {Array} - returns an {Array} of {Document/Footnote} in the document.
+ * @returns {Array<Footnote>} - an {Array} of {Document/Footnote} in the document.
  * Will return an empty array if the function was called before the document was converted.
  * @memberof Document
  */
@@ -1114,7 +1231,7 @@ Document.prototype.getFootnotes = function () {
  * Returns the level-0 {Section} (i.e. the document title).
  * Only stores the title, not the header attributes.
  *
- * @returns {string} - returns the level-0 {Section}.
+ * @returns {string} - the level-0 {Section}.
  * @memberof Document
  */
 Document.prototype.getHeader = function () {
@@ -1138,6 +1255,12 @@ Document.prototype.removeAttribute = function (name) {
 }
 
 /**
+ * Convert the AsciiDoc document using the templates loaded by the Converter.
+ * If a "template_dir" is not specified, or a template is missing, the converter will fall back to using the appropriate built-in template.
+ *
+ * @param {Object} [options] - a JSON of options to control processing (default: {})
+ *
+ * @returns {string}
  * @memberof Document
  */
 Document.prototype.convert = function (options) {
@@ -1146,6 +1269,14 @@ Document.prototype.convert = function (options) {
 }
 
 /**
+ * Write the output to the specified file.
+ *
+ * If the converter responds to "write", delegate the work of writing the file to that method.
+ * Otherwise, write the output the specified file.
+ *
+ * @param {string} output
+ * @param {string} target
+ *
  * @memberof Document
  */
 Document.prototype.write = function (output, target) {
@@ -1153,7 +1284,7 @@ Document.prototype.write = function (output, target) {
 }
 
 /**
- * @returns {string} - returns the full name of the author as a String
+ * @returns {string} - the full name of the author as a String
  * @memberof Document
  */
 Document.prototype.getAuthor = function () {
@@ -1161,6 +1292,7 @@ Document.prototype.getAuthor = function () {
 }
 
 /**
+ * @returns {string}
  * @memberof Document
  */
 Document.prototype.getSource = function () {
@@ -1168,6 +1300,7 @@ Document.prototype.getSource = function () {
 }
 
 /**
+ * @returns {Array<string>}
  * @memberof Document
  */
 Document.prototype.getSourceLines = function () {
@@ -1175,6 +1308,7 @@ Document.prototype.getSourceLines = function () {
 }
 
 /**
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.isNested = function () {
@@ -1182,6 +1316,7 @@ Document.prototype.isNested = function () {
 }
 
 /**
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.isEmbedded = function () {
@@ -1189,6 +1324,7 @@ Document.prototype.isEmbedded = function () {
 }
 
 /**
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.hasExtensions = function () {
@@ -1196,6 +1332,8 @@ Document.prototype.hasExtensions = function () {
 }
 
 /**
+ * Get the value of the doctype attribute for this document.
+ * @returns {string}
  * @memberof Document
  */
 Document.prototype.getDoctype = function () {
@@ -1203,6 +1341,8 @@ Document.prototype.getDoctype = function () {
 }
 
 /**
+ * Get the value of the backend attribute for this document.
+ * @returns {string}
  * @memberof Document
  */
 Document.prototype.getBackend = function () {
@@ -1210,6 +1350,7 @@ Document.prototype.getBackend = function () {
 }
 
 /**
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.isBasebackend = function (base) {
@@ -1228,6 +1369,14 @@ Document.prototype.getTitle = function () {
 }
 
 /**
+ * Set the title on the document header
+ *
+ * Set the title of the document header to the specified value.
+ * If the header does not exist, it is first created.
+ *
+ * @param {string} title - the String title to assign as the title of the document header
+ *
+ * @returns {string} - the new String title assigned to the document header
  * @memberof Document
  */
 Document.prototype.setTitle = function (title) {
@@ -1235,8 +1384,8 @@ Document.prototype.setTitle = function (title) {
 }
 
 /**
+ * @returns {Document/Title} - a {@link Document/Title}
  * @memberof Document
- * @returns {Document/Title} - returns a {@link Document/Title}
  */
 Document.prototype.getDocumentTitle = function (options) {
   var doctitle = this.$doctitle(toHash(options))
@@ -1244,13 +1393,14 @@ Document.prototype.getDocumentTitle = function (options) {
 }
 
 /**
- * @memberof Document
  * @see {@link Document#getDocumentTitle}
+ * @memberof Document
  */
 Document.prototype.getDoctitle = Document.prototype.getDocumentTitle
 
 /**
- * Get the document catalog Hash.
+ * Get the document catalog JSON object.
+ * @returns {Object}
  * @memberof Document
  */
 Document.prototype.getCatalog = function () {
@@ -1258,12 +1408,16 @@ Document.prototype.getCatalog = function () {
 }
 
 /**
+ *
+ * @returns {Object}
+ * @see Document#getCatalog
  * @memberof Document
  */
 Document.prototype.getReferences = Document.prototype.getCatalog
 
 /**
  * Get the document revision date from document header (document attribute <code>revdate</code>).
+ * @returns {string}
  * @memberof Document
  */
 Document.prototype.getRevisionDate = function () {
@@ -1271,8 +1425,9 @@ Document.prototype.getRevisionDate = function () {
 }
 
 /**
- * @memberof Document
  * @see Document#getRevisionDate
+ * @returns {string}
+ * @memberof Document
  */
 Document.prototype.getRevdate = function () {
   return this.getRevisionDate()
@@ -1280,6 +1435,7 @@ Document.prototype.getRevdate = function () {
 
 /**
  * Get the document revision number from document header (document attribute <code>revnumber</code>).
+ * @returns {string}
  * @memberof Document
  */
 Document.prototype.getRevisionNumber = function () {
@@ -1288,6 +1444,7 @@ Document.prototype.getRevisionNumber = function () {
 
 /**
  * Get the document revision remark from document header (document attribute <code>revremark</code>).
+ * @returns {string}
  * @memberof Document
  */
 Document.prototype.getRevisionRemark = function () {
@@ -1305,8 +1462,8 @@ Document.prototype.getRevisionRemark = function () {
  * @param {boolean} overwrite - A {boolean} indicating whether to assign the attribute
  * if already present in the attributes Hash (default: true)
  *
+ * @returns {boolean} - true if the assignment was performed otherwise false
  * @memberof Document
- * @returns {boolean} - returns true if the assignment was performed otherwise false
  */
 Document.prototype.setHeaderAttribute = function (name, value, overwrite) {
   if (typeof overwrite === 'undefined') overwrite = true
@@ -1319,8 +1476,8 @@ Document.prototype.setHeaderAttribute = function (name, value, overwrite) {
  *
  * This method is backed by the author-related attributes on the document.
  *
+ * @returns {Array<Author>} - an {Array} of {Document/Author} objects.
  * @memberof Document
- * @returns {Array} - returns an {Array} of {Document/Author} objects.
  */
 Document.prototype.getAuthors = function () {
   return this.$authors()
@@ -1335,8 +1492,8 @@ Document.prototype.getAuthors = function () {
 var Footnote = Document.Footnote
 
 /**
+ * @returns {number} - the footnote's index
  * @memberof Document/Footnote
- * @returns {number} - returns the footnote's index
  */
 Footnote.prototype.getIndex = function () {
   var index = this.$$data.index
@@ -1344,8 +1501,8 @@ Footnote.prototype.getIndex = function () {
 }
 
 /**
+ * @returns {number} - the footnote's id
  * @memberof Document/Footnote
- * @returns {string} - returns the footnote's id
  */
 Footnote.prototype.getId = function () {
   var id = this.$$data.id
@@ -1353,8 +1510,8 @@ Footnote.prototype.getId = function () {
 }
 
 /**
+ * @returns {string} - the footnote's text
  * @memberof Document/Footnote
- * @returns {string} - returns the footnote's text
  */
 Footnote.prototype.getText = function () {
   var text = this.$$data.text
@@ -1364,22 +1521,22 @@ Footnote.prototype.getText = function () {
 // Document.ImageReference API
 
 /**
- * @namespace
+ * @class
  * @module Document/ImageReference
  */
 var ImageReference = Document.ImageReference
 
 /**
+ * @returns {string} - the image's target
  * @memberof Document/ImageReference
- * @returns {string} - returns the image's target
  */
 ImageReference.prototype.getTarget = function () {
   return this.$$data.target
 }
 
 /**
+ * @returns {string} - the image's directory (imagesdir attribute)
  * @memberof Document/ImageReference
- * @returns {string} - returns the image's directory (imagesdir attribute)
  */
 ImageReference.prototype.getImagesDirectory = function () {
   var value = this.$$data.imagesdir
@@ -1389,14 +1546,15 @@ ImageReference.prototype.getImagesDirectory = function () {
 // Document.Author API
 
 /**
+ * The Author class represents information about an author extracted from document attributes.
  * @namespace
  * @module Document/Author
  */
 var Author = Document.Author
 
 /**
+ * @returns {string} - the author's full name
  * @memberof Document/Author
- * @returns {string} - returns the author's full name
  */
 Author.prototype.getName = function () {
   var name = this.$$data.name
@@ -1404,8 +1562,8 @@ Author.prototype.getName = function () {
 }
 
 /**
+ * @returns {string} - the author's first name
  * @memberof Document/Author
- * @returns {string} - returns the author's first name
  */
 Author.prototype.getFirstName = function () {
   var firstName = this.$$data.firstname
@@ -1413,8 +1571,8 @@ Author.prototype.getFirstName = function () {
 }
 
 /**
+ * @returns {string} - the author's middle name (or undefined if the author has no middle name)
  * @memberof Document/Author
- * @returns {string} - returns the author's middle name (or undefined if the author has no middle name)
  */
 Author.prototype.getMiddleName = function () {
   var middleName = this.$$data.middlename
@@ -1422,8 +1580,8 @@ Author.prototype.getMiddleName = function () {
 }
 
 /**
+ * @returns {string} - the author's last name
  * @memberof Document/Author
- * @returns {string} - returns the author's last name
  */
 Author.prototype.getLastName = function () {
   var lastName = this.$$data.lastname
@@ -1431,8 +1589,8 @@ Author.prototype.getLastName = function () {
 }
 
 /**
+ * @returns {string} - the author's initials (by default based on the author's name)
  * @memberof Document/Author
- * @returns {string} - returns the author's initials (by default based on the author's name)
  */
 Author.prototype.getInitials = function () {
   var initials = this.$$data.initials
@@ -1440,8 +1598,8 @@ Author.prototype.getInitials = function () {
 }
 
 /**
+ * @returns {string} - the author's email
  * @memberof Document/Author
- * @returns {string} - returns the author's email
  */
 Author.prototype.getEmail = function () {
   var email = this.$$data.email
@@ -1464,6 +1622,7 @@ var RevisionInfo = Document.RevisionInfo
 
 /**
  * Get the document revision date from document header (document attribute <code>revdate</code>).
+ * @returns {string}
  * @memberof Document/RevisionInfo
  */
 RevisionInfo.prototype.getDate = function () {
@@ -1472,6 +1631,7 @@ RevisionInfo.prototype.getDate = function () {
 
 /**
  * Get the document revision number from document header (document attribute <code>revnumber</code>).
+ * @returns {string}
  * @memberof Document/RevisionInfo
  */
 RevisionInfo.prototype.getNumber = function () {
@@ -1481,6 +1641,7 @@ RevisionInfo.prototype.getNumber = function () {
 /**
  * Get the document revision remark from document header (document attribute <code>revremark</code>).
  * A short summary of changes in this document revision.
+ * @returns {string}
  * @memberof Document/RevisionInfo
  */
 RevisionInfo.prototype.getRemark = function () {
@@ -1488,8 +1649,8 @@ RevisionInfo.prototype.getRemark = function () {
 }
 
 /**
+ * @returns {boolean} - true if the revision info is empty (ie. not defined), otherwise false
  * @memberof Document/RevisionInfo
- * @returns {boolean} - returns true if the revision info is empty (ie. not defined), otherwise false
  */
 RevisionInfo.prototype.isEmpty = function () {
   return this.date === undefined && this.number === undefined && this.remark === undefined
@@ -1527,16 +1688,16 @@ SafeMode.getNames = function () {
 }
 
 /**
+ * @returns {Document/RevisionInfo} - a {@link Document/RevisionInfo}
  * @memberof Document
- * @returns {Document/RevisionInfo} - returns a {@link Document/RevisionInfo}
  */
 Document.prototype.getRevisionInfo = function () {
   return new Document.RevisionInfo(this.getRevisionDate(), this.getRevisionNumber(), this.getRevisionRemark())
 }
 
 /**
+ * @returns {boolean} - true if the document contains revision info, otherwise false
  * @memberof Document
- * @returns {boolean} - returns true if the document contains revision info, otherwise false
  */
 Document.prototype.hasRevisionInfo = function () {
   var revisionInfo = this.getRevisionInfo()
@@ -1544,6 +1705,7 @@ Document.prototype.hasRevisionInfo = function () {
 }
 
 /**
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.getNotitle = function () {
@@ -1551,6 +1713,7 @@ Document.prototype.getNotitle = function () {
 }
 
 /**
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.getNoheader = function () {
@@ -1558,6 +1721,7 @@ Document.prototype.getNoheader = function () {
 }
 
 /**
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.getNofooter = function () {
@@ -1565,6 +1729,7 @@ Document.prototype.getNofooter = function () {
 }
 
 /**
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.hasHeader = function () {
@@ -1572,6 +1737,13 @@ Document.prototype.hasHeader = function () {
 }
 
 /**
+ * Delete the specified attribute from the document if the name is not locked.
+ * If the attribute is locked, false is returned.
+ * Otherwise, the attribute is deleted.
+ *
+ * @param {string} name - the String attribute name
+ *
+ * @returns {boolean} - true if the attribute was deleted, false if it was not because it's locked
  * @memberof Document
  */
 Document.prototype.deleteAttribute = function (name) {
@@ -1579,13 +1751,29 @@ Document.prototype.deleteAttribute = function (name) {
 }
 
 /**
+ * Determine if the attribute has been locked by being assigned in document options.
+ *
+ * @param {string} key - The attribute key to check
+ *
+ * @returns {boolean} - true if the attribute is locked, false otherwise
  * @memberof Document
  */
-Document.prototype.isAttributeLocked = function (name) {
-  return this['$attribute_locked?'](name)
+Document.prototype.isAttributeLocked = function (key) {
+  return this['$attribute_locked?'](key)
 }
 
 /**
+ * Parse the AsciiDoc source stored in the {Reader} into an abstract syntax tree.
+ *
+ * If the data parameter is not nil, create a new {PreprocessorReader} and assigned it to the reader property of this object.
+ * Otherwise, continue with the reader that was created when the {Document} was instantiated.
+ * Pass the reader to {Parser.parse} to parse the source data into an abstract syntax tree.
+ *
+ * If parsing has already been performed, this method returns without performing any processing.
+ *
+ * @param {string|Array<string>} [data] - The optional replacement AsciiDoc source data as a String or String Array. (default: undefined)
+ *
+ * @returns {Document} - this {Document}
  * @memberof Document
  */
 Document.prototype.parse = function (data) {
@@ -1600,6 +1788,8 @@ Document.prototype.getDocinfo = function (docinfoLocation, suffix) {
 }
 
 /**
+ * @param {string} [docinfoLocation] - A {string} for checking docinfo extensions at a given location (head or footer) (default: head)
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.hasDocinfoProcessors = function (docinfoLocation) {
@@ -1626,6 +1816,12 @@ Document.prototype.incrementAndStoreCounter = function (counterName, block) {
 Document.prototype.counterIncrement = Document.prototype.incrementAndStoreCounter
 
 /**
+ * Get the named counter and take the next number in the sequence.
+ *
+ * @param {string} name - the String name of the counter
+ * @param {string|number} seed - the initial value as a String or Integer
+ *
+ * @returns {number} the next number in the sequence for the specified counter
  * @memberof Document
  */
 Document.prototype.counter = function (name, seed) {
@@ -1665,6 +1861,15 @@ Document.prototype.getSafe = function () {
 }
 
 /**
+ * Get the Boolean AsciiDoc compatibility mode.
+ * Enabling this attribute activates the following syntax changes:
+ *
+ *   * single quotes as constrained emphasis formatting marks
+ *   * single backticks parsed as inline literal, formatted as monospace
+ *   * single plus parsed as constrained, monospaced inline formatting
+ *   * double plus parsed as constrained, monospaced inline formatting
+ *
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.getCompatMode = function () {
@@ -1672,6 +1877,8 @@ Document.prototype.getCompatMode = function () {
 }
 
 /**
+ * Get the Boolean flag that indicates whether source map information should be tracked by the parser.
+ * @returns {boolean}
  * @memberof Document
  */
 Document.prototype.getSourcemap = function () {
@@ -1680,6 +1887,8 @@ Document.prototype.getSourcemap = function () {
 }
 
 /**
+ * Get the JSON of document counters.
+ * @returns {Object}
  * @memberof Document
  */
 Document.prototype.getCounters = function () {
@@ -1687,6 +1896,7 @@ Document.prototype.getCounters = function () {
 }
 
 /**
+ * @returns {Object}
  * @memberof Document
  */
 Document.prototype.getCallouts = function () {
@@ -1694,6 +1904,11 @@ Document.prototype.getCallouts = function () {
 }
 
 /**
+ * Get the String base directory for converting this document.
+ *
+ * Defaults to directory of the source file.
+ * If the source is a string, defaults to the current directory.
+ * @returns {string}
  * @memberof Document
  */
 Document.prototype.getBaseDir = function () {
@@ -1701,6 +1916,8 @@ Document.prototype.getBaseDir = function () {
 }
 
 /**
+ * Get the JSON of resolved options used to initialize this {Document}.
+ * @returns {Object}
  * @memberof Document
  */
 Document.prototype.getOptions = function () {
@@ -1708,6 +1925,8 @@ Document.prototype.getOptions = function () {
 }
 
 /**
+ * Get the outfilesuffix defined at the end of the header.
+ * @returns {string}
  * @memberof Document
  */
 Document.prototype.getOutfilesuffix = function () {
@@ -1715,6 +1934,8 @@ Document.prototype.getOutfilesuffix = function () {
 }
 
 /**
+ * Get a reference to the parent Document of this nested document.
+ * @returns {Document|undefined}
  * @memberof Document
  */
 Document.prototype.getParentDocument = function () {
@@ -1723,6 +1944,8 @@ Document.prototype.getParentDocument = function () {
 }
 
 /**
+ * Get the {Reader} associated with this document.
+ * @returns {Object}
  * @memberof Document
  */
 Document.prototype.getReader = function () {
@@ -1730,6 +1953,8 @@ Document.prototype.getReader = function () {
 }
 
 /**
+ * Get the {Converter} instance being used to convert the current {Document}.
+ * @returns {Object}
  * @memberof Document
  */
 Document.prototype.getConverter = function () {
@@ -1737,6 +1962,8 @@ Document.prototype.getConverter = function () {
 }
 
 /**
+ * Get the activated {Extensions.Registry} associated with this document.
+ * @returns {Extensions/Registry}
  * @memberof Document
  */
 Document.prototype.getExtensions = function () {
@@ -1747,12 +1974,14 @@ Document.prototype.getExtensions = function () {
 // Document.Title API
 
 /**
+ * A partitioned title (i.e., title & subtitle).
  * @namespace
  * @module Document/Title
  */
 var Title = Document.Title
 
 /**
+ * @returns {string}
  * @memberof Document/Title
  */
 Title.prototype.getMain = function () {
@@ -1760,6 +1989,7 @@ Title.prototype.getMain = function () {
 }
 
 /**
+ * @returns {string}
  * @memberof Document/Title
  */
 Title.prototype.getCombined = function () {
@@ -1767,6 +1997,7 @@ Title.prototype.getCombined = function () {
 }
 
 /**
+ * @returns {string}
  * @memberof Document/Title
  */
 Title.prototype.getSubtitle = function () {
@@ -1775,6 +2006,7 @@ Title.prototype.getSubtitle = function () {
 }
 
 /**
+ * @returns {boolean}
  * @memberof Document/Title
  */
 Title.prototype.isSanitized = function () {
@@ -1783,6 +2015,7 @@ Title.prototype.isSanitized = function () {
 }
 
 /**
+ * @returns {boolean}
  * @memberof Document/Title
  */
 Title.prototype.hasSubtitle = function () {
@@ -1877,8 +2110,8 @@ List.prototype.hasItems = function () {
 /**
  * Get the Array of {@link ListItem} nodes for this {@link List}.
  *
+ * @returns {Array<ListItem>} - an Array of {@link ListItem} nodes.
  * @memberof List
- * @returns {Array} - returns an Array of {@link ListItem} nodes.
  */
 List.prototype.getItems = function () {
   return this.blocks
@@ -1892,8 +2125,8 @@ var ListItem = Opal.Asciidoctor.ListItem
 /**
  * Get the converted String text of this {@link ListItem} node.
  *
+ * @returns {string} - the converted String text for this {@link ListItem} node.
  * @memberof ListItem
- * @returns {string} - returns the converted String text for this {@link ListItem} node.
  */
 ListItem.prototype.getText = function () {
   return this.$text()
@@ -1902,6 +2135,7 @@ ListItem.prototype.getText = function () {
 /**
  * Set the String source text of this {@link ListItem} node.
  *
+ * @returns {string} - the new String text assigned to this {@link ListItem}
  * @memberof ListItem
  */
 ListItem.prototype.setText = function (text) {
@@ -1911,8 +2145,8 @@ ListItem.prototype.setText = function (text) {
 /**
  * A convenience method that checks whether the text of this {@link ListItem} is not blank (i.e. not undefined or empty string).
  *
- * @memberof ListItem
  * @returns {boolean} - whether the text is not blank
+ * @memberof ListItem
  */
 ListItem.prototype.hasText = function () {
   return this['$text?']()
@@ -1921,6 +2155,7 @@ ListItem.prototype.hasText = function () {
 /**
  * Get the {string} used to mark this {@link ListItem}.
  *
+ * @returns {string}
  * @memberof ListItem
  */
 ListItem.prototype.getMarker = function () {
@@ -1940,17 +2175,17 @@ ListItem.prototype.setMarker = function (marker) {
 /**
  * Get the {@link List} to which this {@link ListItem} is attached.
  *
- * @memberof ListItem
- * @returns {List} - returns the {@link List} object to which this {@link ListItem} is attached,
+ * @returns {List} - the {@link List} object to which this {@link ListItem} is attached,
  * or undefined if this node has no parent.
+ * @memberof ListItem
  */
 ListItem.prototype.getList = function () {
   return this.$list()
 }
 
 /**
- * @memberof ListItem
  * @see {@link ListItem#getList}
+ * @memberof ListItem
  */
 ListItem.prototype.getParent = ListItem.prototype.getList
 
@@ -1960,6 +2195,16 @@ ListItem.prototype.getParent = ListItem.prototype.getList
 var Reader = Opal.Asciidoctor.Reader
 
 /**
+ * Push source onto the front of the reader and switch the context based on the file, document-relative path and line information given.
+ *
+ * This method is typically used in an IncludeProcessor to add source read from the target specified.
+ *
+ * @param {string} data
+ * @param {string|undefined} file
+ * @param {string|undefined} path
+ * @param {number} lineno - The line number
+ * @param {Object} attributes - a JSON of attributes
+ * @returns {Reader} - this {Reader} object.
  * @memberof Reader
  */
 Reader.prototype.pushInclude = function (data, file, path, lineno, attributes) {
@@ -1967,9 +2212,9 @@ Reader.prototype.pushInclude = function (data, file, path, lineno, attributes) {
 }
 
 /**
- * Get the current location of the reader's cursor, which encapsulates the
- * file, dir, path, and lineno of the file being read.
+ * Get the current location of the reader's cursor, which encapsulates the file, dir, path, and lineno of the file being read.
  *
+ * @returns {Cursor}
  * @memberof Reader
  */
 Reader.prototype.getCursor = function () {
@@ -1981,8 +2226,8 @@ Reader.prototype.getCursor = function () {
  *
  * Lines will not be consumed from the Reader (ie. you will be able to read these lines again).
  *
+ * @returns {Array<string>} - the remaining unprocessed lines as an {Array} of {string}.
  * @memberof Reader
- * @returns {Array} - returns the remaining unprocessed lines as an {Array} of {string}.
  */
 Reader.prototype.getLines = function () {
   return this.$lines()
@@ -1993,8 +2238,8 @@ Reader.prototype.getLines = function () {
  *
  * Lines will not be consumed from the Reader (ie. you will be able to read these lines again).
  *
+ * @returns {string} - the remaining unprocessed lines as a {string} (joined by linefeed characters).
  * @memberof Reader
- * @returns {string} - returns the remaining unprocessed lines as a {string} (joined by linefeed characters).
  */
 Reader.prototype.getString = function () {
   return this.$string()
@@ -2005,8 +2250,8 @@ Reader.prototype.getString = function () {
  * If a previous call to this method resulted in a value of false, immediately returned the cached value.
  * Otherwise, delegate to peekLine to determine if there is a next line available.
  *
+ * @returns {boolean} - true if there are more lines, false if there are not.
  * @memberof Reader
- * @returns {boolean} - returns true if there are more lines, false if there are not.
  */
 Reader.prototype.hasMoreLines = function () {
   return this['$has_more_lines?']()
@@ -2015,8 +2260,8 @@ Reader.prototype.hasMoreLines = function () {
 /**
  * Check whether this reader is empty (contains no lines).
  *
+ * @returns {boolean} - true if there are no more lines to peek, otherwise false.
  * @memberof Reader
- * @returns {boolean} - returns true if there are no more lines to peek, otherwise false.
  */
 Reader.prototype.isEmpty = function () {
   return this['$empty?']()
@@ -2034,8 +2279,8 @@ Reader.prototype.isEmpty = function () {
  * If hasMoreLines is called immediately before peekLine, the direct flag is implicitly true (since the line is flagged as visited).
  *
  * @param {boolean} direct - A {boolean} flag to bypasses the check for more lines and immediately returns the first element of the internal lines {Array}. (default: false)
+ * @returns {string} - the next line as a {string} if there are lines remaining.
  * @memberof Reader
- * @returns {string} - returns the next line as a {string} if there are lines remaining.
  */
 Reader.prototype.peekLine = function (direct) {
   direct = direct || false
@@ -2048,8 +2293,8 @@ Reader.prototype.peekLine = function (direct) {
  *
  * Line will be consumed from the Reader (ie. you won't be able to read this line again).
  *
+ * @returns {string} - the next line as a {string} if data is present.
  * @memberof Reader
- * @returns {string} - returns the next line as a {string} if data is present.
  */
 Reader.prototype.readLine = function () {
   var line = this['$read_line']()
@@ -2064,8 +2309,8 @@ Reader.prototype.readLine = function () {
  *
  * Lines will be consumed from the Reader (ie. you won't be able to read these lines again).
  *
+ * @returns {Array<string>} - the lines read as an {Array} of {string}.
  * @memberof Reader
- * @returns {Array} - returns the lines read as an {Array} of {string}.
  */
 Reader.prototype.readLines = function () {
   return this['$read_lines']()
@@ -2078,8 +2323,8 @@ Reader.prototype.readLines = function () {
  *
  * Lines will be consumed from the Reader (ie. you won't be able to read these lines again).
  *
+ * @returns {string} - the lines read joined as a {string}
  * @memberof Reader
- * @returns {string} - returns the lines read joined as a {string}
  */
 Reader.prototype.read = function () {
   return this['$read']()
@@ -2092,6 +2337,7 @@ var Cursor = Opal.Asciidoctor.Reader.Cursor
 
 /**
  * Get the file associated to the cursor.
+ * @returns {string|undefined}
  * @memberof Cursor
  */
 Cursor.prototype.getFile = function () {
@@ -2101,8 +2347,8 @@ Cursor.prototype.getFile = function () {
 
 /**
  * Get the directory associated to the cursor.
+ * @returns {string|undefined} - the directory associated to the cursor
  * @memberof Cursor
- * @returns {string} - returns the directory associated to the cursor
  */
 Cursor.prototype.getDirectory = function () {
   var dir = this.dir
@@ -2111,8 +2357,8 @@ Cursor.prototype.getDirectory = function () {
 
 /**
  * Get the path associated to the cursor.
+ * @returns {string|undefined} - the path associated to the cursor (or '<stdin>')
  * @memberof Cursor
- * @returns {string} - returns the path associated to the cursor (or '<stdin>')
  */
 Cursor.prototype.getPath = function () {
   var path = this.path
@@ -2121,8 +2367,8 @@ Cursor.prototype.getPath = function () {
 
 /**
  * Get the line number of the cursor.
+ * @returns {number|undefined} - the line number of the cursor
  * @memberof Cursor
- * @returns {number} - returns the line number of the cursor
  */
 Cursor.prototype.getLineNumber = function () {
   return this.lineno
@@ -2442,9 +2688,9 @@ Opal.Asciidoctor.SyntaxHighlighter = SyntaxHighlighter
  *
  * @description This API is experimental and subject to change.
  *
- * @memberof SyntaxHighlighter
  * @param {string|Array} names - A {string} name or an {Array} of {string} names
  * @param functions - A {SyntaxHighlighter} Class or Object instance
+ * @memberof SyntaxHighlighter
  */
 SyntaxHighlighter.register = function (names, functions) {
   var name = typeof names === 'string' ? names : names[0]
@@ -2526,9 +2772,9 @@ SyntaxHighlighter.register = function (names, functions) {
  *
  * @description This API is experimental and subject to change.
  *
- * @memberof SyntaxHighlighter
  * @param {string} name - The {string} name of the syntax highlighter to retrieve.
- * @returns the {SyntaxHighlighter} Class or Object instance registered for this name.
+ * @returns {SyntaxHighlighter} - the {SyntaxHighlighter} Class or Object instance registered for this name.
+ * @memberof SyntaxHighlighter
  */
 SyntaxHighlighter.for = function (name) {
   var result = SyntaxHighlighter.$for(name)
@@ -2548,8 +2794,8 @@ Opal.Asciidoctor.SyntaxHighlighterBase = SyntaxHighlighterBase
  *
  * @description This API is experimental and subject to change.
  *
+ * @param {string|Array<string>} names - A {string} name or an {Array} of {string} names
  * @memberof SyntaxHighlighterBase
- * @param {string|Array} names - A {string} name or an {Array} of {string} names
  */
 SyntaxHighlighterBase.prototype.registerFor = function (names) {
   SyntaxHighlighter['$register'](this, names)
