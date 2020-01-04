@@ -846,6 +846,15 @@ paragraph 3
       })
     })
 
+    describe('Creating', function () {
+      it('should create a new Block', function () {
+        const doc = asciidoctor.load('= Title')
+        const paragraph = asciidoctor.Block.create(doc, 'paragraph', { subs: 'normal', source: '_This_ is a <test>', attributes: { foo: 'bar' } })
+        expect(paragraph.getContent()).to.equal('<em>This</em> is a &lt;test&gt;')
+        expect(paragraph.getAttribute('foo')).to.equal('bar')
+      })
+    })
+
     describe('Converting', function () {
       it('should convert a simple document with a title 2', function () {
         const html = asciidoctor.convert('== Test')
