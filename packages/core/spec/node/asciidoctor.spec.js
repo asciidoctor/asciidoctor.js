@@ -600,6 +600,14 @@ intro
       expect(blocks[2].getBlocks()[0].getTitle()).to.be.undefined()
       expect(blocks[2].getBlocks()[1].getContext()).to.equal('image')
 
+      // counter
+      const block = blocks[2].getBlocks()[1]
+      let nextValue = doc.incrementAndStoreCounter('mycounter', block)
+      expect(nextValue).to.equal(1)
+      nextValue = doc.counterIncrement('mycounter', block) // deprecated alias
+      expect(nextValue).to.equal(2)
+      expect(doc.getCounters()['mycounter']).to.equal(2)
+
       expect(blocks[3].hasBlocks()).to.be.false()
       expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o]</span>?')
     })

@@ -1556,11 +1556,23 @@ Document.prototype.hasDocinfoProcessors = function (docinfoLocation) {
 }
 
 /**
+ * Increment the specified counter and store it in the block's attributes.
+ *
+ * @param {string} counterName - the String name of the counter attribute
+ * @param {Block} block - the {Block} on which to save the counter
+ *
+ * @returns {number} - the next number in the sequence for the specified counter
  * @memberof Document
  */
-Document.prototype.counterIncrement = function (counterName, block) {
-  return this.$counter_increment(counterName, block)
+Document.prototype.incrementAndStoreCounter = function (counterName, block) {
+  return this.$increment_and_store_counter(counterName, block)
 }
+
+/**
+ * @deprecated Please use {Document#incrementAndStoreCounter} method.
+ * @memberof Document
+ */
+Document.prototype.counterIncrement = Document.prototype.incrementAndStoreCounter
 
 /**
  * @memberof Document
