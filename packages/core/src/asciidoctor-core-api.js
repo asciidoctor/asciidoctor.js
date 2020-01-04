@@ -293,22 +293,6 @@ AbstractBlock.prototype.append = function (block) {
   return this
 }
 
-/*
- * Apply the named inline substitutions to the specified text.
- *
- * If no substitutions are specified, the following substitutions are
- * applied:
- *
- * <code>specialcharacters</code>, <code>quotes</code>, <code>attributes</code>, <code>replacements</code>, <code>macros</code>, and <code>post_replacements</code>
- * @param {string} text - The text to substitute.
- * @param {Array} subs - A list named substitutions to apply to the text.
- * @memberof AbstractBlock
- * @returns {string} - returns the substituted text.
- */
-AbstractBlock.prototype.applySubstitutions = function (text, subs) {
-  return this.$apply_subs(text, subs)
-}
-
 /**
  * Get the String title of this Block with title substitions applied
  *
@@ -757,6 +741,19 @@ Block.prototype.getSourceLines = function () {
  * @namespace
  */
 var AbstractNode = Opal.Asciidoctor.AbstractNode
+
+/**
+ * Apply the specified substitutions to the text.
+ * If no substitutions are specified, the following substitutions are applied:
+ * <code>specialcharacters</code>, <code>quotes</code>, <code>attributes</code>, <code>replacements</code>, <code>macros</code>, and <code>post_replacements</code>.
+ *
+ * @param {string|Array<string>} text - The String or String Array of text to process; must not be undefined.
+ * @param {Array<string>} [subs] - The substitutions to perform; must be an Array or undefined.
+ * @memberof AbstractNode
+ */
+AbstractNode.prototype.applySubstitutions = function (text, subs) {
+  return this.$apply_subs(text, subs)
+}
 
 /**
  * @memberof AbstractNode
