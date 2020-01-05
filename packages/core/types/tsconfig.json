@@ -2,8 +2,10 @@
   "compilerOptions": {
     "module": "commonjs",
     "lib": [
+      "es2016",
       "es6"
     ],
+    "esModuleInterop": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": false,
@@ -18,8 +20,9 @@
       "../"
     ],
     "types": [],
-    "noEmit": true,
-    "forceConsistentCasingInFileNames": true
+    "noEmit": false,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
   "files": [
     "index.d.ts",

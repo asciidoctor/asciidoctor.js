@@ -1,5 +1,5 @@
 /// <reference types="node" />
-// TypeScript Version: 2.2
+// TypeScript Version: 2.9
 export interface AsciidoctorRuntime {
   ioModule: string | 'node';
   platform: string | 'node';
