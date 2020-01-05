@@ -111,6 +111,13 @@ const generateFlavors = (asciidoctorCoreTarget, environments) => {
   })
 }
 
+const removeDistDirSync = (environments) => {
+  log.debug('remove dist directory')
+  bfs.removeSync('dist')
+  bfs.mkdirsSync('dist/css')
+  environments.forEach(environment => bfs.mkdirsSync(`dist/${environment}`))
+}
+
 module.exports = class Builder {
   constructor () {
     const asciidoctorRef = process.env.ASCIIDOCTOR_CORE_VERSION
@@ -156,6 +163,19 @@ module.exports = class Builder {
     await rebuild(asciidoctorCoreDependency, this.environments)
     generateFlavors(this.asciidoctorCoreTarget, this.environments)
     await uglifyModule.uglify()
+    if (process.env.COPY_DIST) {
+      this.copyToDist()
+    }
     log.success(`Done in ${process.hrtime(start)[0]} s`)
+  }
+
+  copyToDist () {
+    log.task('copy to dist/')
+    removeDistDirSync(this.environments)
+    bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css')
+    bfs.copySync('build/asciidoctor-browser.min.js', 'dist/browser/asciidoctor.min.js')
+    this.environments.forEach((environment) => {
+      bfs.copySync(`build/asciidoctor-${environment}.js`, `dist/${environment}/asciidoctor.js`)
+    })
   }
 }

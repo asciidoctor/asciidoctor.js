@@ -19,7 +19,7 @@
     "test:graalvm": "node tasks/graalvm.js && ./build/graalvm/bin/node spec/graalvm/run.js",
     "test:node": "mocha spec/*/*.spec.js",
     "test:browser": "node spec/browser/run.js",
-    "test:types": "dtslint types",
+    "test:types": "rm -f types/tests.js && dtslint types && tsc --build types/tsconfig.json && node types/tests.js",
     "test": "node tasks/test/unsupported-features.js && npm run test:node && npm run test:browser && npm run test:types",
     "build": "node tasks/build.js && npm run test && npm run lint",
     "build:quick": "node tasks/build.js && npm run test:node && npm run code:lint",
@@ -31,7 +31,7 @@
     "dist": "cross-env MINIFY=1 node tasks/dist.js",
     "lint": "npm run code:lint && npm run docs:lint",
     "code:lint": "standard src/**/*.js spec/**/*.js tasks/**/*.js benchmark/**/*.js",
-    "package": "cross-env MINIFY=1 node tasks/build.js && cross-env MINIFY=1 npm run test",
+    "package": "cross-env MINIFY=1 COPY_DIST=1 node tasks/build.js && cross-env MINIFY=1 npm run test",
     "examples": "node tasks/examples.js",
     "server": "node tasks/server.js",
     "benchmark": "node tasks/benchmark.js",
@@ -83,6 +83,7 @@
     "eslint": "5.12.1",
     "http-server": "0.11.1",
     "mocha": "6.1.4",
+    "module-alias": "2.2.2",
     "opal-compiler": "1.0.13",
     "puppeteer": "1.18.0",
     "sinon": "7.3.2",
@@ -92,5 +93,8 @@
     "ignore": [
       "src/template-*.js"
     ]
+  },
+  "_moduleAliases": {
+    "@asciidoctor/core": "dist/node/asciidoctor.js"
   }
 }
