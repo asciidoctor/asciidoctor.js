@@ -2330,6 +2330,16 @@ Reader.prototype.read = function () {
   return this['$read']()
 }
 
+/**
+ * Advance to the next line by discarding the line at the front of the stack.
+ *
+ * @returns {boolean} - a Boolean indicating whether there was a line to discard.
+ * @memberof Reader
+ */
+Reader.prototype.advance = function () {
+  return this['$advance']()
+}
+
 // Cursor API
 
 /** @namespace */
