@@ -2092,6 +2092,7 @@ Inline.prototype.getTarget = function () {
 // List API
 
 /**
+ * Methods for managing AsciiDoc lists (ordered, unordered and description lists).
  * @namespace
  * @extends AbstractBlock
  */
@@ -2119,7 +2120,14 @@ List.prototype.getItems = function () {
 
 // ListItem API
 
-/** @namespace */
+/**
+ * Methods for managing items for AsciiDoc olists, ulist, and dlists.
+ *
+ * In a description list (dlist), each item is a tuple that consists of a 2-item Array of ListItem terms and a ListItem description (i.e., [[term, term, ...], desc].
+ * If a description is not set, then the second entry in the tuple is nil.
+ * @namespace
+ * @extends AbstractBlock
+ */
 var ListItem = Opal.Asciidoctor.ListItem
 
 /**

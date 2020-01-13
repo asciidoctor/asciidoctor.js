@@ -506,9 +506,11 @@ Processor.prototype.named = function (name) {
 }
 
 /**
+ * Creates a block and links it to the specified parent.
+ *
  * @param {Block|Section|Document} parent - The parent Block (Block, Section, or Document) of this new block.
  * @param {string} context
- * @param {string} source
+ * @param {string|Array<string>} source
  * @param {Object|undefined} attrs - A JSON of attributes
  * @param {Object|undefined} opts - A JSON of options
  * @return {Block}
@@ -544,8 +546,11 @@ Processor.prototype.createListItem = function (parent, text) {
 }
 
 /**
+ * Creates an image block node and links it to the specified parent.
  * @param {Block|Section|Document} parent - The parent Block of this new image block.
  * @param {Object} attrs - A JSON of attributes
+ * @param {string} attrs.target - the target attribute to set the source of the image.
+ * @param {string} attrs.alt - the alt attribute to specify an alternative text for the image.
  * @param {Object} opts - A JSON of options
  * @returns {Block}
  * @memberof Extensions/Processor
@@ -555,6 +560,13 @@ Processor.prototype.createImageBlock = function (parent, attrs, opts) {
 }
 
 /**
+ * Creates a paragraph block and links it to the specified parent.
+ *
+ * @param {Block|Section|Document} parent - The parent Block (Block, Section, or Document) of this new block.
+ * @param {string|Array<string>} source - The source
+ * @param {Object|undefined} attrs - An object of attributes to set on this block
+ * @param {Object|undefined} opts - An object of options to set on this block
+ * @returns {Block} - a paragraph {Block}
  * @memberof Extensions/Processor
  */
 Processor.prototype.createParagraph = function (parent, source, attrs, opts) {
@@ -562,6 +574,13 @@ Processor.prototype.createParagraph = function (parent, source, attrs, opts) {
 }
 
 /**
+ * Creates an open block and links it to the specified parent.
+ *
+ * @param {Block|Section|Document} parent - The parent Block (Block, Section, or Document) of this new block.
+ * @param {string|Array<string>} source - The source
+ * @param {Object|undefined} attrs - An object of attributes to set on this block
+ * @param {Object|undefined} opts - An object of options to set on this block
+ * @returns {Block} - an open {Block}
  * @memberof Extensions/Processor
  */
 Processor.prototype.createOpenBlock = function (parent, source, attrs, opts) {
@@ -569,6 +588,13 @@ Processor.prototype.createOpenBlock = function (parent, source, attrs, opts) {
 }
 
 /**
+ * Creates an example block and links it to the specified parent.
+ *
+ * @param {Block|Section|Document} parent - The parent Block (Block, Section, or Document) of this new block.
+ * @param {string|Array<string>} source - The source
+ * @param {Object|undefined} attrs - An object of attributes to set on this block
+ * @param {Object|undefined} opts - An object of options to set on this block
+ * @returns {Block} - an example {Block}
  * @memberof Extensions/Processor
  */
 Processor.prototype.createExampleBlock = function (parent, source, attrs, opts) {
@@ -576,6 +602,13 @@ Processor.prototype.createExampleBlock = function (parent, source, attrs, opts) 
 }
 
 /**
+ * Creates a literal block and links it to the specified parent.
+ *
+ * @param {Block|Section|Document} parent - The parent Block (Block, Section, or Document) of this new block.
+ * @param {string|Array<string>} source - The source
+ * @param {Object|undefined} attrs - An object of attributes to set on this block
+ * @param {Object|undefined} opts - An object of options to set on this block
+ * @returns {Block} - a literal {Block}
  * @memberof Extensions/Processor
  */
 Processor.prototype.createPassBlock = function (parent, source, attrs, opts) {
@@ -583,6 +616,13 @@ Processor.prototype.createPassBlock = function (parent, source, attrs, opts) {
 }
 
 /**
+ * Creates a listing block and links it to the specified parent.
+ *
+ * @param {Block|Section|Document} parent - The parent Block (Block, Section, or Document) of this new block.
+ * @param {string|Array<string>} source - The source
+ * @param {Object|undefined} attrs - An object of attributes to set on this block
+ * @param {Object|undefined} opts - An object of options to set on this block
+ * @returns {Block} - a listing {Block}
  * @memberof Extensions/Processor
  */
 Processor.prototype.createListingBlock = function (parent, source, attrs, opts) {
@@ -590,6 +630,13 @@ Processor.prototype.createListingBlock = function (parent, source, attrs, opts) 
 }
 
 /**
+ * Creates a literal block and links it to the specified parent.
+ *
+ * @param {Block|Section|Document} parent - The parent Block (Block, Section, or Document) of this new block.
+ * @param {string|Array<string>} source - The source
+ * @param {Object|undefined} attrs - An object of attributes to set on this block
+ * @param {Object|undefined} opts - An object of options to set on this block
+ * @returns {Block} - a literal {Block}
  * @memberof Extensions/Processor
  */
 Processor.prototype.createLiteralBlock = function (parent, source, attrs, opts) {
@@ -597,6 +644,12 @@ Processor.prototype.createLiteralBlock = function (parent, source, attrs, opts) 
 }
 
 /**
+ * Creates an inline anchor and links it to the specified parent.
+ *
+ * @param {Block|Section|Document} parent - The parent Block (Block, Section, or Document) of this new block.
+ * @param {string} text - The text
+ * @param {Object|undefined} opts - An object of options to set on this block
+ * @returns {Inline} - an {Inline} anchor
  * @memberof Extensions/Processor
  */
 Processor.prototype.createAnchor = function (parent, text, opts) {
@@ -607,6 +660,12 @@ Processor.prototype.createAnchor = function (parent, text, opts) {
 }
 
 /**
+ * Creates an inline pass and links it to the specified parent.
+ *
+ * @param {Block|Section|Document} parent - The parent Block (Block, Section, or Document) of this new block.
+ * @param {string} text - The text
+ * @param {Object|undefined} opts - An object of options to set on this block
+ * @returns {Inline} - an {Inline} pass
  * @memberof Extensions/Processor
  */
 Processor.prototype.createInlinePass = function (parent, text, opts) {
@@ -615,13 +674,15 @@ Processor.prototype.createInlinePass = function (parent, text, opts) {
   }
   return this.$create_inline_pass(parent, text, toHash(opts))
 }
+
 /**
- * @param {Block|Section|Document} parent - The parent Block of this new inline node.
- * @param {string} context
- * @param {string} text
- * @param {Object|undefined} opts - A JSON of options
- * @returns {Inline}
+ * Creates an inline node and links it to the specified parent.
  *
+ * @param {Block|Section|Document} parent - The parent Block of this new inline node.
+ * @param {string} context - The context name
+ * @param {string} text - The text
+ * @param {Object|undefined} opts - A JSON of options
+ * @returns {Inline} - an {Inline} node
  * @memberof Extensions/Processor
  */
 Processor.prototype.createInline = function (parent, context, text, opts) {
