@@ -1098,6 +1098,34 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
           expect(doc.getExtensions().getPreprocessors()).to.have.lengthOf(1)
           expect(doc.getExtensions().getPreprocessors()[0].kind).to.equal('preprocessor')
         })
+
+        it('should advance the reader', () => {
+          const registry = asciidoctor.Extensions.create()
+          const opts = { extension_registry: registry }
+          registry.preprocessor(function () {
+            const self = this
+            self.process((document, reader) => {
+              const lines = reader.getLines()
+              const skipped = []
+              console.log(reader)
+              while (lines.length > 0 && !lines[0].startsWith('=')) {
+                skipped.push(lines.shift())
+                reader.advance()
+              }
+              document.setAttribute('skipped', (skipped.join('\n')))
+              return reader
+            })
+          })
+          const doc = asciidoctor.load(`junk line
+
+= Document Title
+
+sample content`, opts)
+
+          expect(doc.getAttribute('skipped')).to.equal('junk line\n')
+          expect(doc.hasHeader()).to.equal(true)
+          expect(doc.getDoctitle()).to.equal('Document Title')
+        })
       })
 
       describe('Docinfo processor', () => {
@@ -1686,6 +1714,7 @@ header_attribute::foo[bar]`
               expect(html).to.contain('Normal body temperature is 98.6 &#176;F.')
             })
           }
+
           itShouldResolveAttributes('using a list of arguments as a specification', '1:units', 'precision=1')
           itShouldResolveAttributes('using an array as a specification', ['1:units', 'precision=1'])
           itShouldResolveAttributes('using a JSON as a specification', { '1:units': undefined, 'precision': 1 })
@@ -1707,6 +1736,7 @@ header_attribute::foo[bar]`
               expect(html).to.contain('C,precision=0.')
             })
           }
+
           itShouldResolveAttributesAsText('using false as a specification', false)
           itShouldResolveAttributesAsText('using undefined as a specification', undefined)
 
@@ -1727,6 +1757,7 @@ header_attribute::foo[bar]`
               expect(html).to.contain('precision is 0.')
             })
           }
+
           itShouldResolveNamedAttributes('using empty as a specification', '')
           itShouldResolveNamedAttributes('using true as a specification', true)
         })
