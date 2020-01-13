@@ -1107,7 +1107,6 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
             self.process((document, reader) => {
               const lines = reader.getLines()
               const skipped = []
-              console.log(reader)
               while (lines.length > 0 && !lines[0].startsWith('=')) {
                 skipped.push(lines.shift())
                 reader.advance()
