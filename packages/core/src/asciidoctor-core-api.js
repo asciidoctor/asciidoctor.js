@@ -283,7 +283,7 @@ var AbstractBlock = Opal.Asciidoctor.AbstractBlock
 
 /**
  * Append a block to this block's list of child blocks.
- *
+ * @param {AbstractBlock} block - the block to append
  * @returns {AbstractBlock} - the parent block to which this block was appended.
  * @memberof AbstractBlock
  */
@@ -785,6 +785,7 @@ var AbstractNode = Opal.Asciidoctor.AbstractNode
  *
  * @param {string|Array<string>} text - The String or String Array of text to process; must not be undefined.
  * @param {Array<string>} [subs] - The substitutions to perform; must be an Array or undefined.
+ * @returns {string|Array<string>} - a String or String Array to match the type of the text argument with substitutions applied.
  * @memberof AbstractNode
  */
 AbstractNode.prototype.applySubstitutions = function (text, subs) {

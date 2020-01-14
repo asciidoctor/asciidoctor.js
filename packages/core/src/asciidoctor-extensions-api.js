@@ -45,7 +45,7 @@ var registerExtension = function (registry, type, processor, name) {
  * Asciidoctor processor.
  *
  * @example
- * Opal.Asciidoctor.Extensions.register(function () {
+ * asciidoctor.Extensions.register(function () {
  *   this.block(function () {
  *     var self = this;
  *     self.named('shout');
