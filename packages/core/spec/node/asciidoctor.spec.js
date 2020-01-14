@@ -1620,7 +1620,7 @@ hello
           const registry = asciidoctor.Extensions.create(function () {
             this.inlineMacro(function () {
               this.named('mention')
-              this.resolvesAttributes(false)
+              this.resolvesAttributes(false) // use the deprecated function on purpose
               this.process((parent, target, attrs) => {
                 let text
                 if (attrs.text) {
