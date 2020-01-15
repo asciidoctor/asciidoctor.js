@@ -4,5 +4,5 @@
 set -e
 
 # Trigger a deployment on asciidoctor/docs.asciidoctor.org (using Netlify webhook).
-# The variable "NETLIFY_WEBHOOK_URL" is defined on Travis.
+# The variable "NETLIFY_WEBHOOK_URL" is defined on Travis/GitHub.
 curl -X POST -d '' "$NETLIFY_WEBHOOK_URL"

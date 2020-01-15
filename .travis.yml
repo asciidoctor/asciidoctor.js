@@ -47,9 +47,3 @@ jobs:
           file_glob: true
           on:
             tags: true
-    - stage: notify
-      if: |
-        repo = 'asciidoctor/asciidoctor.js' AND \
-        branch = master AND \
-        type = 'push'
-      script: ./scripts/notify.sh
