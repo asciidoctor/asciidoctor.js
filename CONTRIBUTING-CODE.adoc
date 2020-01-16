@@ -73,9 +73,9 @@ You'll see this script in action when you run the examples, described next.
 By default Asciidoctor.js will build against the master branch of Asciidoctor (Ruby).
 If you want to build against a release of Asciidoctor, you will need to define the `ASCIIDOCTOR_CORE_VERSION` environment variable.
 
-For instance to build against Asciidoctor (Ruby) v1.5.8 use:
+For instance to build against Asciidoctor (Ruby) v2.0.10 use:
 
- $ ASCIIDOCTOR_CORE_VERSION=v1.5.8 npm run build --prefix packages/core
+ $ ASCIIDOCTOR_CORE_VERSION=v2.0.10 npm run build --prefix packages/core
 
 ==== Using "quick" mode
 
