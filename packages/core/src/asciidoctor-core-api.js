@@ -1688,6 +1688,125 @@ SafeMode.getNames = function () {
   return this.$names()
 }
 
+// Callouts API
+
+/**
+ * Maintains a catalog of callouts and their associations.
+ * @namespace
+ */
+var Callouts = Opal.Asciidoctor.Callouts
+
+/**
+ * Create a new Callouts.
+ * @returns {Callouts} - a new Callouts
+ * @memberof Callouts
+ */
+Callouts.create = function () {
+  return this.$new()
+}
+
+/**
+ * Register a new callout for the given list item ordinal.
+ * Generates a unique id for this callout based on the index of the next callout list in the document and the index of this callout since the end of the last callout list.
+ *
+ * @param {number} ordinal - the Integer ordinal (1-based) of the list item to which this callout is to be associated
+ * @returns {string} - The unique String id of this callout
+ * @example
+ *  callouts = asciidoctor.Callouts.create()
+ *  callouts.register(1)
+ *  // => "CO1-1"
+ *  callouts.nextList()
+ *  callouts.register(2)
+ *  // => "CO2-1"
+ * @memberof Callouts
+ */
+
+Callouts.prototype.register = function (ordinal) {
+  return this.$register(ordinal)
+}
+/**
+ * Get the next callout index in the document.
+ *
+ * Reads the next callout index in the document and advances the pointer.
+ * This method is used during conversion to retrieve the unique id of the callout that was generated during parsing.
+ *
+ * @returns {string} - The unique String id of the next callout in the document
+ * @memberof Callouts
+ */
+Callouts.prototype.readNextId = function () {
+  return this.$read_next_id()
+}
+
+/**
+ * et a space-separated list of callout ids for the specified list item.
+ * @param {number} ordinal - the Integer ordinal (1-based) of the list item for which to retrieve the callouts
+ * @returns {string} - a space-separated String of callout ids associated with the specified list item
+ * @memberof Callouts
+ */
+Callouts.prototype.getCalloutIds = function (ordinal) {
+  return this.$callout_ids(ordinal)
+}
+
+/**
+ * @memberof Callouts
+ */
+Callouts.prototype.getLists = function () {
+  var lists = this.lists
+  if (lists && lists.length > 0) {
+    for (var i = 0; i < lists.length; i++) {
+      var list = lists[i]
+      if (list && list.length > 0) {
+        for (var j = 0; j < list.length; j++) {
+          if (typeof list[j] === 'object' && '$$smap' in list[j]) {
+            list[j] = fromHash(list[j])
+          }
+        }
+      }
+    }
+  }
+  return lists
+}
+
+/**
+ * @memberof Callouts
+ */
+Callouts.prototype.getListIndex = function () {
+  return this.list_index
+}
+
+/**
+ * The current list for which callouts are being collected.
+ * @returns {Array} - The Array of callouts at the position of the list index pointer
+ * @memberof Callouts
+ */
+Callouts.prototype.getCurrentList = function () {
+  const currentList = this.$current_list()
+  if (currentList && currentList.length > 0) {
+    for (var i = 0; i < currentList.length; i++) {
+      if (typeof currentList[i] === 'object' && '$$smap' in currentList[i]) {
+        currentList[i] = fromHash(currentList[i])
+      }
+    }
+  }
+  return currentList
+}
+
+/**
+ * Advance to the next callout list in the document.
+ * @memberof Callouts
+ */
+Callouts.prototype.nextList = function () {
+  return this.$nextList()
+}
+
+/**
+ * Rewind the list index pointer, intended to be used when switching from the parsing to conversion phase.
+ * @memberof Callouts
+ */
+Callouts.prototype.rewind = function () {
+  return this.$rewind()
+}
+
 /**
  * @returns {Document/RevisionInfo} - a {@link Document/RevisionInfo}
  * @memberof Document

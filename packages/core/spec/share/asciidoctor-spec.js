@@ -91,6 +91,29 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         expect(links).to.have.members(['index.html'])
       })
 
+      it('should populate the callouts', function () {
+        const doc = asciidoctor.load(`
+[source,javascript]
+----
+const asciidoctor = require('@asciidoctor/core')() // <1>
+const doc = asciidoctor.load('hello') // <2>
+
+doc.convert() // <3>
+----
+<1> require @asciidoctor/core
+<2> load the document
+<3> convert the document`, { 'safe': 'safe', 'catalog_assets': true })
+        doc.convert()
+        const callouts = doc.getCallouts()
+        expect(callouts.getLists()[0].length).to.equal(3)
+        expect(callouts.getLists()[0][0].ordinal).to.equal(1)
+        expect(callouts.getLists()[0][0].id).to.equal('CO1-1')
+        expect(callouts.getLists()[1]).to.be.an('array').that.is.empty()
+        expect(callouts.getListIndex()).to.equal(2)
+        expect(callouts.getCalloutIds(1)).to.equal('')
+        expect(callouts.getCurrentList()).to.be.an('array').that.is.empty()
+      })
+
       it('should return attributes as JSON object', function () {
         const doc = asciidoctor.load('= Authors\nGuillaume Grossetie; Anders Nawroth\n')
         expect(doc.getAttributes()['author']).to.equal('Guillaume Grossetie')

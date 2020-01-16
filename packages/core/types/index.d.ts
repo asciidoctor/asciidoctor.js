@@ -201,6 +201,83 @@ export namespace Asciidoctor {
     function getNames(): string[];
   }
 
+  interface Callout {
+    [key: string]: any;
+
+    id?: string;
+    ordinal?: number;
+  }
+
+  /**
+   * Maintains a catalog of callouts and their associations.
+   */
+  class Callouts {
+    /**
+     * Create a new Callouts.
+     * @returns a new Callouts
+     */
+    static create(): Callouts;
+
+    /**
+     * Register a new callout for the given list item ordinal.
+     * Generates a unique id for this callout based on the index of the next callout list in the document and the index of this callout since the end of the last callout list.
+     *
+     * @param ordinal - the Integer ordinal (1-based) of the list item to which this callout is to be associated
+     * @returns The unique String id of this callout
+     * @example
+     *  callouts = asciidoctor.Callouts.create()
+     *  callouts.register(1)
+     *  // => "CO1-1"
+     *  callouts.nextList()
+     *  callouts.register(2)
+     *  // => "CO2-1"
+     */
+    register(ordinal: number): string;
+
+    /**
+     * Get the next callout index in the document.
+     *
+     * Reads the next callout index in the document and advances the pointer.
+     * This method is used during conversion to retrieve the unique id of the callout that was generated during parsing.
+     *
+     * @returns The unique String id of the next callout in the document
+     */
+    readNextId(): string;
+
+    /**
+     *
+     */
+    getLists(): Callout[][];
+
+    /**
+     *
+     */
+    getListIndex(): number;
+
+    /**
+     * et a space-separated list of callout ids for the specified list item.
+     * @param ordinal - the Integer ordinal (1-based) of the list item for which to retrieve the callouts
+     * @returns a space-separated String of callout ids associated with the specified list item
+     */
+    getCalloutIds(ordinal: number): string;
+
+    /**
+     * The current list for which callouts are being collected.
+     * @returns The Array of callouts at the position of the list index pointer
+     */
+    getCurrentList(): any[];
+
+    /**
+     * Advance to the next callout list in the document.
+     */
+    nextList(): void;
+
+    /**
+     * Rewind the list index pointer, intended to be used when switching from the parsing to conversion phase.
+     */
+    rewind(): void;
+  }
+
   namespace Document {
     /**
      * The Author class represents information about an author extracted from document attributes.
@@ -1531,7 +1608,7 @@ export namespace Asciidoctor {
 
     /**
      */
-    getCallouts(): object;
+    getCallouts(): Callouts;
 
     /**
      * Get the String base directory for converting this document.
