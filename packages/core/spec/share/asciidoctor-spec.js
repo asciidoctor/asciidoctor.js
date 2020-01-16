@@ -278,6 +278,13 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
         expect(doc.getSourcemap()).to.equal(false)
       })
 
+      it('should set sourcemap', function () {
+        const doc = asciidoctor.load('get _sourcemap_')
+        expect(doc.getSourcemap()).to.equal(false)
+        doc.setSourcemap(true)
+        expect(doc.getSourcemap()).to.equal(true)
+      })
+
       it('should get options', function () {
         const options = { header_footer: true }
         const doc = asciidoctor.load('= Document Title', options)
