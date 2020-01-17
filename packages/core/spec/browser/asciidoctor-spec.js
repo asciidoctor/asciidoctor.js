@@ -16,7 +16,9 @@
   const expect = chai.expect
   const asciidoctor = Asciidoctor({ runtime: { platform: 'browser' } })
   const parts = window.location.href.split('/') // break the string into an array
-  parts.pop(); parts.pop(); parts.pop()
+  parts.pop()
+  parts.pop()
+  parts.pop()
   const baseDir = parts.join('/')
   const asciidoctorCoreSemVer = semVer(asciidoctor.getCoreVersion())
   const testOptions = {
@@ -42,6 +44,28 @@
         const opts = { safe: 'safe', base_dir: testOptions.baseDir }
         const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts)
         expect(html).to.include('include content')
+      })
+
+      it('should resolve a stylesheet using chrome:// protocol (root)', function () {
+        const attributes = {
+          'stylesheet': 'asciidoctor-plus.css',
+          'stylesdir': 'chrome://asciidoctor/extension/css',
+          'copycss': false
+        }
+        const options = {
+          doctype: 'article',
+          safe: 'unsafe',
+          standalone: true,
+          attributes
+        }
+        try {
+          asciidoctor.convert('Hello world', options)
+          expect.fail('the resource does not exist and the converter should throw an exception!')
+        } catch (e) {
+          // the resource does not exist but chrome:// is a root path and should not be prepended by "./"
+          // we expect the processor to try to load the resource 'chrome://asciidoctor/extension/css/asciidoctor-plus.css' and fail!
+          expect(e.message).to.include(`Failed to load 'chrome://asciidoctor/extension/css/asciidoctor-plus.css'`)
+        }
       })
     })
   })
