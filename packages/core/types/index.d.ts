@@ -1114,6 +1114,8 @@ export namespace Asciidoctor {
 
       defaultAttributes(value: any): void;
 
+      positionalAttributes(value: string[]): void;
+
       positionalAttributes(...value: string[]): void;
 
       /**
