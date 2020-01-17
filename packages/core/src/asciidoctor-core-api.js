@@ -1888,6 +1888,15 @@ Document.prototype.getSourcemap = function () {
 }
 
 /**
+ * Set the Boolean flag that indicates whether source map information should be tracked by the parser.
+ * @param {boolean} value
+ * @memberof Document
+ */
+Document.prototype.setSourcemap = function (value) {
+  this.sourcemap = value
+}
+
+/**
  * Get the JSON of document counters.
  * @returns {Object}
  * @memberof Document

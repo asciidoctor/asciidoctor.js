@@ -1508,6 +1508,11 @@ export namespace Asciidoctor {
     getSourcemap(): boolean;
 
     /**
+     * Set the Boolean flag that indicates whether source map information should be tracked by the parser.
+     */
+    setSourcemap(value: boolean): void;
+
+    /**
      * Get the JSON of document counters.
      */
     getCounters(): object;

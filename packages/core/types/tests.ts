@@ -76,6 +76,9 @@ assert(firstAuthor.getInitials() === 'DW');
 const output = processor.convert(input, {to_file: `${__dirname}/output.html`, catalog_assets: true});
 const doc = output as Asciidoctor.Document;
 assert(doc.hasSections());
+assert(!doc.getSourcemap());
+doc.setSourcemap(true);
+assert(doc.getSourcemap());
 
 // Block
 const block = processor.Block.create(doc, 'paragraph');
