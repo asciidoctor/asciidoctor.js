@@ -740,6 +740,14 @@ Processor.prototype.resolveAttributes = function (value) {
 Processor.prototype.resolvesAttributes = Processor.prototype.resolveAttributes
 
 /**
+ * Get the configuration JSON for this processor instance.
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.getConfig = function () {
+  return fromHash(this.config)
+}
+
+/**
  * @namespace
  * @module Extensions/BlockProcessor
  */
