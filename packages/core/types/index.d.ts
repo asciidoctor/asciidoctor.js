@@ -358,6 +358,10 @@ export namespace Asciidoctor {
     [key: string]: any;
   }
 
+  interface Options {
+    [key: string]: any;
+  }
+
   /**
    * @description
    * Extensions provide a way to participate in the parsing and converting
@@ -1028,6 +1032,11 @@ export namespace Asciidoctor {
        * @returns an {Inline} node
        */
       createInline(parent: AbstractBlock, context: string, text: string, opts?: Inline.Options): Inline;
+
+      /**
+       * Get the configuration JSON for this processor instance.
+       */
+      getConfig(): Options;
     }
 
     class ProcessorDsl {

@@ -296,7 +296,7 @@ const testRegistry = processor.Extensions.create('test', function() {
 
 const PackageInlineMacro = processor.Extensions.createInlineMacroProcessor('PackageInlineMacro', {
   initialize(name, config) {
-    this.DEFAULT_PACKAGE_URL_FORMAT = 'https://apps.fedoraproject.org/packages/%s';
+    this.DEFAULT_PACKAGE_URL_FORMAT = config.defaultPackageUrlFormat || 'https://packages.ubuntu.com/bionic/%s';
     this.super(name, config);
   },
   process(parent, target) {
@@ -307,7 +307,8 @@ const PackageInlineMacro = processor.Extensions.createInlineMacroProcessor('Pack
     return this.createInline(parent, 'anchor', content, {type: 'link', target: url, attributes});
   }
 });
-const inlineMacroProcessorInstance = PackageInlineMacro.$new('package', {});
+const inlineMacroProcessorInstance = PackageInlineMacro.$new('package', {defaultPackageUrlFormat: 'https://apps.fedoraproject.org/packages/%s'});
+assert(inlineMacroProcessorInstance.getConfig().defaultPackageUrlFormat === 'https://apps.fedoraproject.org/packages/%s');
 assert(inlineMacroProcessorInstance.getName() === 'package');
 testRegistry.inlineMacro(inlineMacroProcessorInstance);
 testRegistry.includeProcessor(processor.Extensions.newIncludeProcessor('StaticIncludeProcessor', {

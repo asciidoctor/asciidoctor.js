@@ -1888,7 +1888,7 @@ header_attribute::foo[bar]`
         it('should be able to create the Fedora package inline macro', () => {
           const PackageInlineMacro = asciidoctor.Extensions.createInlineMacroProcessor('PackageInlineMacro', {
             initialize: function (name, config) {
-              this.DEFAULT_PACKAGE_URL_FORMAT = 'https://apps.fedoraproject.org/packages/%s'
+              this.DEFAULT_PACKAGE_URL_FORMAT = config.defaultPackageUrlFormat || 'https://packages.ubuntu.com/bionic/%s'
               this.super(name, config)
             },
             process: function (parent, target) {
@@ -1900,7 +1900,9 @@ header_attribute::foo[bar]`
             }
           })
           const registry = asciidoctor.Extensions.create()
-          registry.inlineMacro(PackageInlineMacro.$new('package', {}))
+          const packageInlineMacro = PackageInlineMacro.$new('package', { defaultPackageUrlFormat: 'https://apps.fedoraproject.org/packages/%s' })
+          expect(packageInlineMacro.getConfig().defaultPackageUrlFormat).to.equal('https://apps.fedoraproject.org/packages/%s')
+          registry.inlineMacro(packageInlineMacro)
           const opts = {}
           opts['extension_registry'] = registry
           opts['safe'] = 'safe'
