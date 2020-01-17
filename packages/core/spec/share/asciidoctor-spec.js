@@ -1387,6 +1387,61 @@ stem:normal[\\\\sqrt{{value}} = 2 \\]]`
           asciidoctor.Extensions.unregisterAll()
         }
       })
+
+      it('should parse attributes', function () {
+        let parsedAttrs = {}
+        const registry = asciidoctor.Extensions.create()
+        registry.block(function () {
+          this.named('attrs')
+          this.onContext('open')
+          this.process(function (parent, reader) {
+            parsedAttrs = this.parseAttributes(parent, reader.readLine(), { positional_attributes: ['a', 'b'] })
+            Object.assign(parsedAttrs, this.parseAttributes(parent, 'foo={foo}', { sub_attributes: true }))
+          })
+        })
+        asciidoctor.convert(`:foo: bar
+[attrs]
+--
+a,b,c,key=val
+--
+`, { extension_registry: registry })
+        expect(parsedAttrs['a']).to.equal('a')
+        expect(parsedAttrs['b']).to.equal('b')
+        expect(parsedAttrs['key']).to.equal('val')
+        expect(parsedAttrs['foo']).to.equal('bar')
+      })
+
+      it('should not share attributes between parsed blocks', function () {
+        const registry = asciidoctor.Extensions.create()
+        registry.block(function () {
+          this.named('wrap')
+          this.onContext('open')
+          this.process(function (parent, reader, attrs) {
+            const wrap = this.createOpenBlock(parent, undefined, attrs)
+            return this.parseContent(wrap, reader.readLines())
+          })
+        })
+        const input = `
+[wrap]
+--
+[foo=bar]
+====
+content
+====
+[baz=qux]
+====
+content
+====
+--
+`
+        const doc = asciidoctor.load(input, { extension_registry: registry })
+        expect(doc.getBlocks().length).to.equal(1)
+        const wrap = doc.getBlocks()[0]
+        expect(wrap.getBlocks().length).to.equal(2)
+        expect(Object.keys(wrap.getBlocks()[0].getAttributes()).length).to.equal(2)
+        expect(Object.keys(wrap.getBlocks()[1].getAttributes()).length).to.equal(2)
+        expect(wrap.getBlocks()[1].getAttributes()['foo']).to.be.undefined()
+      })
     })
 
     describe('Reader', function () {
