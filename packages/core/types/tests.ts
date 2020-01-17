@@ -314,6 +314,16 @@ const inlineMacroProcessorInstance = PackageInlineMacro.$new('package', {default
 assert(inlineMacroProcessorInstance.getConfig().defaultPackageUrlFormat === 'https://apps.fedoraproject.org/packages/%s');
 assert(inlineMacroProcessorInstance.getName() === 'package');
 testRegistry.inlineMacro(inlineMacroProcessorInstance);
+testRegistry.inlineMacro('pkg', function() {
+  this.option('defaultPackageUrlFormat', 'https://apps.fedoraproject.org/packages/%s');
+  this.process(function(parent, target) {
+    const format = parent.getDocument().getAttribute('url-package-url-format', this.getConfig().defaultPackageUrlFormat);
+    const url = format.replace('%s', target);
+    const content = target;
+    const attributes = {window: '_blank'};
+    return this.createInline(parent, 'anchor', content, {type: 'link', target: url, attributes});
+  });
+});
 testRegistry.includeProcessor(processor.Extensions.newIncludeProcessor('StaticIncludeProcessor', {
   process(doc, reader, target, attrs) {
     reader.pushInclude(['included content'], target, target, 1, attrs);

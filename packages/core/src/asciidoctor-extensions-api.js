@@ -748,6 +748,13 @@ Processor.prototype.getConfig = function () {
 }
 
 /**
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.option = function (key, value) {
+  this.$option(key, value)
+}
+
+/**
  * @namespace
  * @module Extensions/BlockProcessor
  */
