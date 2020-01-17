@@ -1888,7 +1888,7 @@ header_attribute::foo[bar]`
         it('should be able to create the Fedora package inline macro', () => {
           const PackageInlineMacro = asciidoctor.Extensions.createInlineMacroProcessor('PackageInlineMacro', {
             initialize: function (name, config) {
-              this.DEFAULT_PACKAGE_URL_FORMAT = config.defaultPackageUrlFormat || 'https://packages.ubuntu.com/bionic/%s'
+              this.DEFAULT_PACKAGE_URL_FORMAT = config.defaultPackageUrlFormat
               this.super(name, config)
             },
             process: function (parent, target) {
@@ -1908,6 +1908,25 @@ header_attribute::foo[bar]`
           opts['safe'] = 'safe'
           const result = asciidoctor.convert('Install package:asciidoctor[]', opts)
           expect(result).to.contain('Install <a href="https://apps.fedoraproject.org/packages/asciidoctor" target="_blank" rel="noopener">asciidoctor</a>')
+        })
+
+        it('should be able to create the Ubuntu package inline macro', () => {
+          const registry = asciidoctor.Extensions.create()
+          registry.inlineMacro('package', function () {
+            this.option('defaultPackageUrlFormat', 'https://packages.ubuntu.com/bionic/%s')
+            this.process(function (parent, target) {
+              const format = parent.getDocument().getAttribute('url-package-url-format', this.getConfig().defaultPackageUrlFormat)
+              const url = format.replace('%s', target)
+              const content = target
+              const attributes = { window: '_blank' }
+              return this.createInline(parent, 'anchor', content, { type: 'link', target: url, attributes })
+            })
+          })
+          const opts = {}
+          opts['extension_registry'] = registry
+          opts['safe'] = 'safe'
+          const result = asciidoctor.convert('Install package:asciidoctor[]', opts)
+          expect(result).to.contain('Install <a href="https://packages.ubuntu.com/bionic/asciidoctor" target="_blank" rel="noopener">asciidoctor</a>')
         })
       })
     })

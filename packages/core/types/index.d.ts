@@ -1040,6 +1040,7 @@ export namespace Asciidoctor {
     }
 
     class ProcessorDsl {
+      option(key: string, value: any): void;
     }
 
     class MacroProcessor extends Processor {
