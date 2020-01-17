@@ -486,9 +486,11 @@ assert(html === `<div class="paragraph">
 interface Transforms {
   [key: string]: (node: Asciidoctor.AbstractNode) => string;
 }
+
 class BlogConverter {
   private readonly baseConverter: Asciidoctor.Html5Converter;
   private readonly transforms: Transforms;
+
   constructor() {
     this.baseConverter = processor.Html5Converter.create();
     this.transforms = {
@@ -520,7 +522,7 @@ class BlogConverter {
     };
   }
 
-  convert(node: Asciidoctor.AbstractNode, transform: string|null, opts: any) {
+  convert(node: Asciidoctor.AbstractNode, transform: string | null, opts: any) {
     const template = this.transforms[transform || node.getNodeName()];
     if (template) {
       return template(node);
@@ -536,6 +538,27 @@ Guillaume Grossetie <ggrossetie@yuzutech.fr>
 == Write in AsciiDoc!
 
 AsciiDoc is about being able to focus on expressing your ideas, writing with ease and passing on knowledge without the distraction of complex applications or angle brackets.
-In other words, it’s about discovering writing zen.`, { safe: 'safe', header_footer: true }) as string;
+In other words, it’s about discovering writing zen.`, {safe: 'safe', header_footer: true}) as string;
 assert(blogResult.includes('<span class="blog-author">Guillaume Grossetie</span>')); // custom blog converter
 assert(blogResult.includes('<div class="sect1">')); // built-in HTML5 converter
+
+const docWithCallouts = processor.load(`
+[source,javascript]
+----
+const asciidoctor = require('@asciidoctor/core')() // <1>
+const doc = asciidoctor.load('hello') // <2>
+
+doc.convert() // <3>
+----
+<1> require @asciidoctor/core
+<2> load the document
+<3> convert the document`, {safe: 'safe', catalog_assets: true});
+docWithCallouts.convert();
+const callouts = docWithCallouts.getCallouts();
+assert(callouts.getLists()[0].length === 3);
+assert(callouts.getLists()[0][0].ordinal === 1);
+assert(callouts.getLists()[0][0].id === 'CO1-1');
+assert(callouts.getLists()[1].length === 0);
+assert(callouts.getListIndex() === 2);
+assert(callouts.getCalloutIds(1) === '');
+assert(callouts.getCurrentList().length === 0);
