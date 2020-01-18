@@ -562,3 +562,53 @@ assert(callouts.getLists()[1].length === 0);
 assert(callouts.getListIndex() === 2);
 assert(callouts.getCalloutIds(1) === '');
 assert(callouts.getCurrentList().length === 0);
+
+let parsedAttrs: Asciidoctor.Attributes;
+const registryAttrs = processor.Extensions.create();
+registryAttrs.block(function() {
+  this.named('attrs');
+  this.onContext('open');
+  this.process(function(parent, reader) {
+    parsedAttrs = this.parseAttributes(parent, reader.readLine(), {positional_attributes: ['a', 'b']});
+    Object.assign(parsedAttrs, this.parseAttributes(parent, 'foo={foo}', {sub_attributes: true}));
+  });
+});
+processor.convert(`:foo: bar
+[attrs]
+--
+a,b,c,key=val
+--
+`, {extension_registry: registryAttrs});
+assert(parsedAttrs && parsedAttrs['a'] === 'a');
+assert(parsedAttrs && parsedAttrs['b'] === 'b');
+assert(parsedAttrs && parsedAttrs['key'] === 'val');
+assert(parsedAttrs && parsedAttrs['foo'] === 'bar');
+
+const registryWrap = processor.Extensions.create();
+registryWrap.block(function() {
+  this.named('wrap');
+  this.onContext('open');
+  this.process(function(parent, reader, attrs) {
+    const wrap = this.createOpenBlock(parent, undefined, attrs);
+    return this.parseContent(wrap, reader.readLines());
+  });
+});
+const docWithWrap = processor.load(`
+[wrap]
+--
+[foo=bar]
+====
+content
+====
+[baz=qux]
+====
+content
+====
+--
+`, {extension_registry: registryWrap});
+assert(docWithWrap.getBlocks().length === 1);
+const wrap = docWithWrap.getBlocks()[0];
+assert(wrap.getBlocks().length === 2);
+assert(Object.keys(wrap.getBlocks()[0].getAttributes()).length === 2);
+assert(Object.keys(wrap.getBlocks()[1].getAttributes()).length === 2);
+assert(wrap.getBlocks()[1].getAttributes()['foo'] === undefined);

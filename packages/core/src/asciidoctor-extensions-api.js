@@ -693,10 +693,33 @@ Processor.prototype.createInline = function (parent, context, text, opts) {
 }
 
 /**
+ * Parses blocks in the content and attaches the block to the parent.
+ * @param {AbstractBlock} parent - the parent block
+ * @param {string|Array<string>} content - the content
+ * @param {Object|undefined} attrs - an object of attributes
+ * @returns {AbstractNode} - The parent node into which the blocks are parsed.
  * @memberof Extensions/Processor
  */
 Processor.prototype.parseContent = function (parent, content, attrs) {
   return this.$parse_content(parent, content, attrs)
+}
+
+/**
+ *  Parses the attrlist String into a JSON of attributes
+ * @param {AbstractBlock} block - the current AbstractBlock or the parent AbstractBlock if there is no current block (used for applying subs)
+ * @param {string} attrlist - the list of attributes as a String
+ * @param {Object|undefined} opts - an optional JSON of options to control processing:
+ * - positional_attributes: an Array of attribute names to map positional arguments to (optional, default: [])
+ * - sub_attributes: enables attribute substitution on the attrlist argument (optional, default: false)
+ *
+ * @returns - a JSON of parsed attributes
+ * @memberof Extensions/Processor
+ */
+Processor.prototype.parseAttributes = function (block, attrlist, opts) {
+  if (opts && opts.attributes) {
+    opts.attributes = toHash(opts.attributes)
+  }
+  return fromHash(this.$parse_attributes(block, attrlist, toHash(opts)))
 }
 
 /**

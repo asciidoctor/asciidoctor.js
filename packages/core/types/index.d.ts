@@ -435,6 +435,13 @@ export namespace Asciidoctor {
     [key: string]: any;
   }
 
+  interface ParseAttributesOptions {
+    [key: string]: any;
+
+    positional_attributes?: string|string[];
+    sub_attributes?: boolean;
+  }
+
   interface Options {
     [key: string]: any;
   }
@@ -1109,6 +1116,26 @@ export namespace Asciidoctor {
        * @returns an {Inline} node
        */
       createInline(parent: AbstractBlock, context: string, text: string, opts?: Inline.Options): Inline;
+
+      /**
+       * Parses blocks in the content and attaches the block to the parent.
+       * @param parent - the parent block
+       * @param content - the content
+       * @param attrs - an object of attributes
+       * @returns The parent node into which the blocks are parsed.
+       */
+      parseContent(parent: AbstractBlock, content: string | string[], attrs?: any): AbstractNode;
+
+      /**
+       * Parses the attrlist String into a JSON of attributes
+       * @param block - the current AbstractBlock or the parent AbstractBlock if there is no current block (used for applying subs)
+       * @param attrlist - the list of attributes as a String
+       * @param opts - an optional JSON of options to control processing:
+       * - positional_attributes: an Array of attribute names to map positional arguments to (optional, default: [])
+       * - sub_attributes: enables attribute substitution on the attrlist argument (optional, default: false)
+       * @returns a JSON of parsed attributes
+       */
+      parseAttributes(block: AbstractBlock, attrlist: string, opts?: ParseAttributesOptions): Attributes;
 
       /**
        * Get the configuration JSON for this processor instance.
