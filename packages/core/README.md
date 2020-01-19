@@ -41,3 +41,7 @@ You should see the following output in your terminal:
 ```
 
 If you want to know more about Asciidoctor.js, please read the [User Manual](https://asciidoctor-docs.netlify.com/asciidoctor.js/).
+
+## Changelog
+
+Refer to the [CHANGELOG](https://github.com/asciidoctor/asciidoctor.js/blob/master/CHANGELOG.adoc) for a complete list of changes.
