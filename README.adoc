@@ -83,7 +83,7 @@ If you want to write code, the {uri-contribute-code}[Contributing Code] guide wi
 
 == Copyright
 
-Copyright (C) 2019 Dan Allen, Guillaume Grossetie, Anthonny Quérouil and the Asciidoctor Project.
+Copyright (C) 2020 Dan Allen, Guillaume Grossetie, Anthonny Quérouil and the Asciidoctor Project.
 Free use of this software is granted under the terms of the MIT License.
 
 See the {license}[LICENSE] file for details.
