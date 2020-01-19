@@ -1,8 +1,5 @@
 = Install guide
-
-Assumptions:
-
-* [x] You've installed Node 8.11+ on your machine.
+:url-node-releases: https://nodejs.org/en/about/releases/
 
 On this page, you'll learn:
 
@@ -11,7 +8,10 @@ On this page, you'll learn:
 
 == Install Asciidoctor.js
 
-Open a terminal and type:
+We recommend using the latest long term support (LTS) release of Node.
+While you can use other versions of Node, Asciidoctor.js is only tested against {url-node-releases}[active LTS releases].
+
+Once you've installed an active Node LTS release on your machine, open a terminal and type:
 
 [source]
 $ npm i asciidoctor
