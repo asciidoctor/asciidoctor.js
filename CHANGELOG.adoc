@@ -1,0 +1,183 @@
+= Asciidoctor.js Changelog
+:uri-repo: https://github.com/asciidoctor/asciidoctor.js
+:icons: font
+:source-highlighter: highlight.js
+
+This document provides a high-level view of the changes introduced in Asciidoctor.js by release.
+For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
+
+== Unreleased
+
+Bug Fixes::
+
+* Return `undefined` if the style is `Opal.nil` on `AbstractBlock.getStyle`
+* Return `undefined` if the level is `Opal.nil` on `AbstractBlock.getLevel`
+* `Processor.resolveAttributes` can take a JSON, a boolean, a string, an array of strings or a list of strings as argument (#780)
++
+[source,js]
+----
+const registry = asciidoctor.Extensions.create(function () {
+  this.inlineMacro('deg', function () {
+    this.resolveAttributes('1:units', 'precision=1')
+    //this.resolveAttributes(['1:units', 'precision=1'])
+    //this.resolveAttributes({ '1:units': undefined, 'precision': 1 })
+    this.process(function (parent, target, attributes) {
+      // ...
+    })
+  })
+})
+----
+* Return `undefined` if the reftext is `Opal.nil` on an `AbstractNode.getReftext`
+* Attach `applySubstitutions` to `AbstractNode` instead of `AbstractBlock` (#793)
+* Deprecate `counterIncrement`, use `Document.incrementAndStoreCounter` instead (#792)
+* Add `chrome://` as a root path in a browser environment (#816)
+
+Improvements::
+
+* `Processor.resolvesAttributes` is deprecated (in favor of `resolveAttributes`)
+* Add a TypeScript Declaration file (#752, #775)
+* Map `AbstractBlock.setStyle` (#737)
+* Map `AbstractBlock.setTitle` (#737)
+* Map `AbstractBlock.getSourceLocation` (#737)
+* Map `Section.setLevel` (#737)
+* Map `SyntaxProcessorDsl.defaultAttributes` (#785)
++
+[source,js]
+----
+registry.inlineMacro('attrs', function () {
+  const self = this
+  self.matchFormat('short')
+  self.defaultAttributes({ 1: 'a', 2: 'b', 'foo': 'baz' })
+  self.positionalAttributes('a', 'b')
+  self.process((parent, target, attrs) => {
+    // ...
+  })
+})
+----
+* Initialize backend traits when registering a converter as an ES6 class or instance (#769)
++
+[source,js]
+----
+// register a converter as an ES6 class
+class TEIConverter {
+  constructor (backend, _) {
+    this.backend = backend
+    this.backendTraits = {
+      basebackend: 'xml',
+      outfilesuffix: '.xml',
+      filetype: 'xml',
+      htmlsyntax: 'xml'
+    }
+  }
+}
+asciidoctor.ConverterFactory.register(TEIConverter, ['tei'])
+----
++
+[source,js]
+----
+// register a converter as an ES6 class instance
+class TEIConverter {
+  constructor () {
+    this.backend = 'tei'
+    this.basebackend = 'xml'
+    this.outfilesuffix = '.xml'
+    this.filetype = 'xml'
+    this.htmlsyntax = 'xml'
+  }
+}
+asciidoctor.ConverterFactory.register(new TEIConverter(), ['tei'])
+----
+* Bridge ES6 class methods when registering a converter (#766)
++
+[source,js]
+----
+class DelegateConverter {
+  convert (node, transform) {
+    // delegate to the class methods
+    return this[`convert_${transform || node.node_name}`](node)
+  }
+
+  convert_embedded (node) {
+    return `<delegate>${node.getContent()}</delegate>`
+  }
+
+  convert_paragraph (node) {
+    return node.getContent()
+  }
+}
+asciidoctor.ConverterFactory.register(new DelegateConverter(), ['delegate'])
+----
+* Map `Asciidoctor.SafeMode` (#777)
++
+[source,js]
+----
+console.log(asciidoctor.SafeMode.UNSAFE) // 0
+console.log(asciidoctor.SafeMode.SAFE) // 1
+console.log(asciidoctor.SafeMode.SERVER) // 10
+console.log(asciidoctor.SafeMode.SECURE) // 20
+console.log(asciidoctor.SafeMode.getValueForName('secure')) // 20
+console.log(asciidoctor.SafeMode.getNameForValue(0)) // 'unsafe'
+console.log(asciidoctor.SafeMode.getNames()) // ['unsafe', 'safe', 'server', 'secure']
+----
+* Map `Processor.createParagraph` (#774)
+* Map `Processor.createOpenBlock` (#774)
+* Map `Processor.createExampleBlock` (#774)
+* Map `Processor.createPassBlock` (#774)
+* Map `Processor.createListingBlock` (#774)
+* Map `Processor.createLiteralBlock` (#774)
+* Map `Processor.createAnchor` (#774)
+* Map `Processor.createInlinePass` (#774)
+* Map `AbstractNode.setId` (#791)
+* Add `Block.create` to instantiate a new `Block` object (#796)
+* Add `Section#create` to instantiate a new `Section` object (#795)
+* Map `Document.incrementAndStoreCounter` (#792)
+* Map `Reader.advance` (#804)
+* Map `Document.setSourcemap` (#810)
++
+[source,js]
+----
+doc.setSourcemap(true)
+----
+* Map `Processor.getConfig` (#812)
+* Map `Processor.option` (#813)
++
+[source,js]
+----
+registry.inlineMacro('package', function () {
+  this.option('defaultPackageUrlFormat', 'https://packages.ubuntu.com/bionic/%s')
+  this.process(function (parent, target) {
+    const format = parent.getDocument().getAttribute('url-package-url-format', this.getConfig().defaultPackageUrlFormat)
+    return this.createInline(parent, 'anchor', target, { type: 'link', target: format.replace('%s', target), attributes: { window: '_blank' } })
+  })
+})
+----
+* Map `Asciidoctor.Callouts` (#814)
+* Map `Processor.parseAttributes` (#815)
+* Upgrade `@asciidoctor/cli` in the `asciidoctor` package to 3.1.1 (#820)
+
+Infrastructure::
+
+* Run `npm audit fix`
+* Add tests on the docinfo feature (#734)
+* Add tests on a macro that creates a link (#745)
+* Upgrade development dependency `documentation` to 12.1.3 (#762)
+* Upgrade development dependency `mocha` to 6.1.4 (#739)
+* Upgrade development dependency `puppeteer` to 1.18.0 (#740)
+* Upgrade development dependency `sinon` to 7.3.2 (#741)
+* Upgrade development dependency `eslint-utils` from 1.3.1 to 1.4.2 (#749)
+* Add a sponsor button to GitHub that links to https://opencollective.com/asciidoctor[Open collective]
+* Use a semantic versioning comparison in tests (#754)
+* Add tests on multiple single-item menu macros in single line (#754)
+* Upgrade GraalVM to 19.3.0 (#772)
+* Enable tests on `findBy` API (with reject) (#806)
+* Build against the latest release of Asciidoctor 2.0.10 (#808)
+* Add tests on the TypeScript definition file (#800)
+
+Documentation::
+
+* Update the API JSDoc (#784, #782, #805)
+* Add the https://github.com/mogztter/asciidoctor-tweet[Tweet] and https://github.com/mogztter/asciidoctor-kroki[Kroki] extensions to extensions ecosystem page
+
+== Older releases
+
+For information about older releases, refer to the {uri-repo}/releases[releases page] on GitHub.
