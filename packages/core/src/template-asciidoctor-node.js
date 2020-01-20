@@ -4,6 +4,8 @@ const Opal = require('asciidoctor-opal-runtime').Opal
 // Node module
 ;(function (root, factory) {
   module.exports = factory
+  // default export for ES6 module interop
+  module.exports.default = factory
 }(this, function (moduleConfig) {
 //{{asciidoctorCode}}
 
