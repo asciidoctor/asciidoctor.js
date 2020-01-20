@@ -49,6 +49,16 @@ requirejs(['asciidoctor'], function (asciidoctor) {
 })
 ```
 
+== TypeScript
+
+```js
+import Processor from 'asciidoctor'
+
+const processor = Processor()
+```
+
+NOTE: We are using the name `processor` to avoid confusion with the `Asciidoctor` namespace.
+
 == Webpack
 
 ```js
