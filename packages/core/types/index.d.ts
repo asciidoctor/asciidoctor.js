@@ -1174,6 +1174,8 @@ export namespace Asciidoctor {
 
       matchFormat(value: string): void;
 
+      match(value: RegExp): void;
+
       process(block: (this: InlineMacroProcessor, parent: Document, target: string, attributes: any) => void): void;
     }
 
