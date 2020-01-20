@@ -154,6 +154,7 @@ registry.inlineMacro('package', function () {
 * Map `Asciidoctor.Callouts` (#814)
 * Map `Processor.parseAttributes` (#815)
 * Upgrade `@asciidoctor/cli` in the `asciidoctor` package to 3.1.1 (#820)
+* Add ES module interoperability when using TypeScript (#821)
 
 Infrastructure::
 
