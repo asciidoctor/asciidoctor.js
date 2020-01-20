@@ -1424,6 +1424,23 @@ sample content`, opts)
           const output = asciidoctor.convert('attrs:[A,foo=bar]', { extension_registry: registry, doctype: 'inline' })
           expect(output).to.contain('a=A,2=b,b=nil,foo=bar')
         })
+
+        it('should match the regular expression', () => {
+          const registry = asciidoctor.Extensions.create()
+          registry.inlineMacro(function () {
+            this.named('@mention')
+            this.match(/@(\w+)/)
+            this.process(function (parent, target) {
+              const mentionsUriPattern = parent.getDocument().getAttribute('mentions-uri-pattern') || 'https://github.com/%s'
+              const mentionsUri = mentionsUriPattern.replace('%s', target)
+              return this.createAnchor(parent, `@${target}`, { type: 'link', target: mentionsUri })
+            })
+          })
+          const result = asciidoctor.convert('@mojavelinux', { extension_registry: registry })
+          expect(result).to.contain(`<div class="paragraph">
+<p><a href="https://github.com/mojavelinux">@mojavelinux</a></p>
+</div>`)
+        })
       })
 
       describe('Block macro processor', () => {

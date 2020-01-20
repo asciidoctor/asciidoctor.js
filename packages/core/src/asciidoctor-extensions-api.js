@@ -895,6 +895,14 @@ InlineMacroProcessor.prototype.matchFormat = function (value) {
 }
 
 /**
+ * @param {RegExp} value
+ * @memberof Extensions/InlineMacroProcessor
+ */
+InlineMacroProcessor.prototype.match = function (value) {
+  this.$match(value)
+}
+
+/**
  * @namespace
  * @module Extensions/IncludeProcessor
  */

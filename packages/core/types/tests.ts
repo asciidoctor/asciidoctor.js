@@ -295,6 +295,15 @@ const testRegistry = processor.Extensions.create('test', function() {
       return this.createInlinePass(parent, `*${target}*`, {attributes: {subs: 'normal'}});
     });
   });
+  this.inlineMacro(function() {
+    this.named('@mention');
+    this.match(/@(\w+)/);
+    this.process(function(parent, target) {
+      const mentionsUriPattern = parent.getDocument().getAttribute('mentions-uri-pattern') || 'https://github.com/%s';
+      const mentionsUri = mentionsUriPattern.replace('%s', target);
+      return this.createAnchor(parent, `@${target}`, {type: 'link', target: mentionsUri});
+    });
+  });
 });
 
 const PackageInlineMacro = processor.Extensions.createInlineMacroProcessor('PackageInlineMacro', {
@@ -435,6 +444,11 @@ assert(html === `<div class="ulist">
 <p></p>
 </li>
 </ul>
+</div>`);
+
+html = processor.convert('@mojavelinux', opts);
+assert(html === `<div class="paragraph">
+<p><a href="https://github.com/mojavelinux">@mojavelinux</a></p>
 </div>`);
 
 const docWithImage = processor.load('img::image-name[]', opts);
