@@ -1,0 +1,11 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "dtslint/dtslint.json"
+    ],
+    "jsRules": {},
+    "rules": {
+      "only-arrow-functions": false
+    },
+    "rulesDirectory": []
+}

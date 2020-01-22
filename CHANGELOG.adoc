@@ -35,7 +35,7 @@ const registry = asciidoctor.Extensions.create(function () {
 Improvements::
 
 * `Processor.resolvesAttributes` is deprecated (in favor of `resolveAttributes`)
-* Add a TypeScript Declaration file (#752, #775)
+* Add a TypeScript Declaration file (#752, #775, #826)
 * Map `AbstractBlock.setStyle` (#737)
 * Map `AbstractBlock.setTitle` (#737)
 * Map `AbstractBlock.getSourceLocation` (#737)

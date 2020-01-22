@@ -4,6 +4,7 @@ import 'module-alias/register';
 import asciidoctor, { Asciidoctor } from '@asciidoctor/core';
 import { strict as assert } from 'assert';
 import * as ospath from 'path';
+import fs from 'fs';
 import pkg from '../package.json';
 
 const processor = asciidoctor();
@@ -626,3 +627,196 @@ assert(wrap.getBlocks().length === 2);
 assert(Object.keys(wrap.getBlocks()[0].getAttributes()).length === 2);
 assert(Object.keys(wrap.getBlocks()[1].getAttributes()).length === 2);
 assert(wrap.getBlocks()[1].getAttributes()['foo'] === undefined);
+
+let memoryLogger = processor.MemoryLogger.create();
+const timings = processor.Timings.create();
+processor.convert('Hello *world*', {timings});
+timings.printReport(memoryLogger, 'stdin');
+const messages = memoryLogger.getMessages();
+assert(messages.length === 4);
+assert(messages[0].getSeverity() === 'INFO');
+assert(messages[0].getText() === 'Input file: stdin');
+
+const registry = processor.Extensions.create();
+registry.block(function() {
+  const self = this;
+  self.named('plantuml');
+  self.onContext(['listing']);
+  self.parseContentAs('raw');
+  self.process((parent, reader) => {
+    const lines = reader.getLines();
+    if (lines.length === 0) {
+      reader.getLogger().log('warn', reader.createLogMessage('plantuml block is empty', {source_location: reader.getCursor()}));
+      reader.getLogger().fatal('game over');
+    }
+  });
+});
+const defaultLogger = processor.LoggerManager.getLogger();
+assert(defaultLogger.getLevel() === 2);
+assert(defaultLogger.getProgramName() === 'asciidoctor');
+assert(defaultLogger.getMaxSeverity() === undefined);
+defaultLogger.setProgramName('asciidoctor.js');
+assert(defaultLogger.getProgramName() === 'asciidoctor.js');
+memoryLogger = processor.MemoryLogger.create();
+try {
+  processor.LoggerManager.setLogger(memoryLogger);
+  processor.convert(`[plantuml]
+----
+----`, {extension_registry: registry});
+  const warnMessage = memoryLogger.getMessages()[0];
+  assert(warnMessage.getSeverity() === 'WARN');
+  assert(warnMessage.getText() === 'plantuml block is empty');
+  const sourceLocation = warnMessage.getSourceLocation();
+  assert(sourceLocation.getLineNumber() === 1);
+  assert(sourceLocation.getFile() === undefined);
+  assert(sourceLocation.getDirectory() === '.');
+  assert(sourceLocation.getPath() === '<stdin>');
+  const fatalMessage = memoryLogger.getMessages()[1];
+  assert(fatalMessage.getSeverity() === 'FATAL');
+  assert(fatalMessage.getText() === 'game over');
+} finally {
+  processor.LoggerManager.setLogger(defaultLogger);
+  defaultLogger.setProgramName('asciidoctor'); // reset
+}
+
+const defaultLog = console.log;
+try {
+  const data: any[] = [];
+  console.log = function() {
+    data.push({method: 'log', arguments});
+    return defaultLog.apply(console, arguments);
+  };
+  const timings = processor.Timings.create();
+  processor.convert('Hello *world*', {timings});
+  timings.printReport(console, 'stdin');
+  assert(data.length === 4);
+  assert(data[0].arguments[0] === 'Input file: stdin');
+} finally {
+  console.log = defaultLog;
+}
+const defaultFormatter = defaultLogger.getFormatter();
+const processStderrWriteFunction = process.stderr.write;
+let stderrOutput = '';
+process.stderr.write = function(chunk: string) {
+  stderrOutput += chunk;
+  return true;
+};
+try {
+  defaultLogger.setFormatter(processor.LoggerManager.newFormatter('JsonFormatter', {
+    call(severity, time, programName, message) {
+      const text = (message as Asciidoctor.RubyLoggerMessage).text;
+      const sourceLocation = (message as Asciidoctor.RubyLoggerMessage).source_location;
+      return JSON.stringify({
+        programName,
+        message: text,
+        sourceLocation: {
+          lineNumber: sourceLocation.getLineNumber(),
+          path: sourceLocation.getPath()
+        },
+        severity
+      }) + '\n';
+    }
+  }));
+  processor.convert(`= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
+`);
+  assert(stderrOutput === '{"programName":"asciidoctor",' +
+    '"message":"invalid part, must have at least one section (e.g., chapter, appendix, etc.)",' +
+    '"sourceLocation":{"lineNumber":8,"path":"<stdin>"},' +
+    '"severity":"ERROR"}\n');
+  assert(JSON.parse(stderrOutput).message === 'invalid part, must have at least one section (e.g., chapter, appendix, etc.)');
+} finally {
+  defaultLogger.setFormatter(defaultFormatter);
+  process.stderr.write = processStderrWriteFunction;
+}
+
+const nullLogger = processor.NullLogger.create();
+const stderrWriteFunction = process.stderr.write;
+stderrOutput = '';
+process.stderr.write = function(chunk: string) {
+  stderrOutput += chunk;
+  return true;
+};
+try {
+  processor.LoggerManager.setLogger(nullLogger);
+  processor.convert(`= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
+`);
+  assert(nullLogger.getMaxSeverity() === 3);
+  assert(stderrOutput === '');
+} finally {
+  process.stderr.write = stderrWriteFunction;
+  processor.LoggerManager.setLogger(defaultLogger);
+}
+
+const logs: any[] = [];
+const customLogger = processor.LoggerManager.newLogger('CustomLogger', {
+  add(severity, message, progname) {
+    logs.push({severity, message: message || progname, progname});
+  }
+});
+customLogger.error('hello');
+customLogger.add('warn', 'hi', 'asciidoctor.js');
+const errorMessage = logs[0];
+assert(errorMessage.severity === 3);
+assert(errorMessage.message === 'hello');
+const warnMessage = logs[1];
+assert(warnMessage.severity === 2);
+assert(warnMessage.message === 'hi');
+assert(warnMessage.progname === 'asciidoctor.js');
+
+function truncateFile(path: string) {
+  try {
+    fs.truncateSync(path, 0); // file must be empty
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      // it's OK, if the file does not exists
+    }
+  }
+}
+
+(async () => {
+  const logFile = ospath.join(__dirname, '..', 'build', 'async.log');
+  const asyncLogger = processor.LoggerManager.newLogger('AsyncFileLogger', {
+    postConstruct() {
+      this.writer = fs.createWriteStream(logFile, {
+        flags: 'a'
+      });
+      truncateFile(logFile);
+    },
+    add(severity, _, message) {
+      const log = this.formatter.call(severity, new Date(), this.progname, message);
+      this.writer.write(log);
+    }
+  });
+  try {
+    processor.LoggerManager.setLogger(asyncLogger);
+    processor.convert(`= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
+`);
+    await new Promise((resolve, _) => {
+      asyncLogger.writer.end(() => {
+        const content = fs.readFileSync(logFile, 'UTF-8');
+        assert(content === 'asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n');
+        resolve();
+      });
+    });
+  } finally {
+    processor.LoggerManager.setLogger(defaultLogger);
+  }
+})();

@@ -17,7 +17,7 @@ export namespace Asciidoctor {
     framework: string;
   }
 
-  class Reader {
+  class Reader implements Logging {
     /**
      * Push source onto the front of the reader and switch the context based on the file, document-relative path and line information given.
      *
@@ -124,6 +124,10 @@ export namespace Asciidoctor {
      * @returns a Boolean indicating whether there was a line to discard.
      */
     advance(): boolean;
+
+    getLogger(): Logger;
+
+    createLogMessage(text: string, context: any): LoggerMessage;
   }
 
   namespace Reader {
@@ -276,6 +280,157 @@ export namespace Asciidoctor {
      * Rewind the list index pointer, intended to be used when switching from the parsing to conversion phase.
      */
     rewind(): void;
+  }
+
+  /**
+   * Logger
+   */
+  interface LoggerFormatterFunction {
+    postConstruct?: (this: LoggerFormatter) => any;
+    call?: (this: LoggerFormatter, severity: string, time: Date, programName: string, message: string | RubyLoggerMessage) => string;
+  }
+
+  interface LoggerFunction {
+    postConstruct?: (this: Logger) => any;
+    add?: (this: Logger, severity: string, message: string | RubyLoggerMessage | undefined, programName: string) => void;
+  }
+
+  namespace LoggerManager {
+    function getLogger(): Logger;
+
+    function setLogger(logger: Logger): void;
+
+    function newLogger(name: string, functions: LoggerFunction): Logger;
+
+    function newFormatter(name: string, functions: LoggerFormatterFunction): LoggerFormatter;
+  }
+
+  interface Writer {
+    write(message: string | LoggerMessage): void;
+  }
+
+  interface BasicLogger {
+    log(message: string | LoggerMessage): void;
+  }
+
+  class RubyLogger {
+    $add(severity: string | number, message: string | LoggerMessage, programName?: string): any;
+
+    add(severity: string | number, message: string | LoggerMessage, programName?: string): any;
+
+    log(severity: string | number, message: string | LoggerMessage, programName?: string): any;
+
+    debug(message: string): any;
+
+    info(message: string): any;
+
+    warn(message: string): any;
+
+    error(message: string): any;
+
+    fatal(message: string): any;
+
+    isDebugEnabled(): boolean;
+
+    isInfoEnabled(): boolean;
+
+    isWarnEnabled(): boolean;
+
+    isErrorEnabled(): boolean;
+
+    isFatalEnabled(): boolean;
+  }
+
+  class Logger extends RubyLogger {
+    [key: string]: any;
+
+    formatter: LoggerFormatter;
+
+    getMaxSeverity(): undefined | number;
+
+    getFormatter(): LoggerFormatter;
+
+    setFormatter(formatter: LoggerFormatter): any;
+
+    getLevel(): number;
+
+    setLevel(level: number): any;
+
+    getProgramName(): string;
+
+    setProgramName(programName: string): any;
+  }
+
+  class MemoryLogger extends Logger {
+    /**
+     * Create a new MemoryLogger.
+     * @returns a new MemoryLogger
+     */
+    static create(): MemoryLogger;
+
+    getMessages(): LoggerMessage[];
+  }
+
+  class NullLogger extends Logger {
+    /**
+     * Create a new NullLogger.
+     * @returns a new NullLogger
+     */
+    static create(): NullLogger;
+
+    getMaxSeverity(): undefined | number;
+  }
+
+  class LoggerFormatter {
+    call(severity: string, time: Date, programName: string, message: string): string;
+  }
+
+  interface Logging {
+    getLogger(): Logger;
+
+    createLogMessage(text: string, context: any): LoggerMessage;
+  }
+
+  namespace LoggerSeverity {
+    function get(severity: string): number;
+  }
+
+  interface RubyLoggerMessage {
+    message: string;
+    source_location: SourceLocation;
+    text: string;
+  }
+
+  class LoggerMessage implements RubyLoggerMessage {
+    message: string;
+    source_location: SourceLocation;
+    text: string;
+
+    getText(): string;
+
+    getSeverity(): string;
+
+    getSourceLocation(): SourceLocation;
+  }
+
+  interface SourceLocation {
+    getLineNumber(): number;
+
+    getFile(): undefined | string;
+
+    getDirectory(): string;
+
+    getPath(): string;
+  }
+
+  class Timings {
+    /**
+     * Create a new Timings.
+     * @returns a new Timings
+     */
+    static create(): Timings;
+
+    printReport(to: undefined | Writer | BasicLogger | RubyLogger, subject: string): void;
   }
 
   namespace Document {
@@ -438,7 +593,7 @@ export namespace Asciidoctor {
   interface ParseAttributesOptions {
     [key: string]: any;
 
-    positional_attributes?: string|string[];
+    positional_attributes?: string | string[];
     sub_attributes?: boolean;
   }
 
@@ -1250,7 +1405,7 @@ export namespace Asciidoctor {
     }
 
     class BlockProcessorDsl extends SyntaxProcessorDsl {
-      onContext(context: string): void;
+      onContext(context: string | string[]): void;
 
       onContexts(...contexts: string[]): void;
 
@@ -2520,6 +2675,14 @@ export class Asciidoctor {
   Html5Converter: typeof Asciidoctor.Html5Converter;
 
   ConverterFactory: Asciidoctor.ConverterFactory;
+
+  MemoryLogger: typeof Asciidoctor.MemoryLogger;
+
+  NullLogger: typeof Asciidoctor.MemoryLogger;
+
+  Timings: typeof Asciidoctor.Timings;
+
+  LoggerManager: typeof Asciidoctor.LoggerManager;
 }
 
 export default function asciidoctor(): Asciidoctor;
