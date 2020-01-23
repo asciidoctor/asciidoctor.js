@@ -601,6 +601,87 @@ export namespace Asciidoctor {
     [key: string]: any;
   }
 
+  interface ProcessorOptions {
+    [key: string]: any;
+
+    /**
+     * Sets additional document attributes, which override equivalently-named attributes defined in the document unless the value ends with @.
+     * Any number of built-in or user-defined attributes in one of the following formats:
+     * - JSON: {'name': 'value'}
+     * - Array:['name=value']
+     * - String: 'name=value'
+     */
+    attributes?: Attributes | string[] | string;
+    /**
+     * Selects the converter to use (as registered with this keyword).
+     */
+    backend?: string;
+    /**
+     * Sets the base (aka working) directory containing the document and resources.
+     */
+    base_dir?: string;
+    /**
+     * If true, tells the parser to capture images and links in the reference table.
+     * (Normally only IDs, footnotes and indexterms are included).
+     * The reference table is available via the references property on the document AST object.
+     * (Experimental).
+     */
+    catalog_assets?: boolean;
+    /**
+     * Sets the document type.
+     */
+    doctype?: string;
+    /**
+     * Overrides the extensions registry instance.
+     * Instead of providing a JavaScript function containing extensions to register,
+     * this option lets you replace the extension registry itself,
+     * giving you complete control over how extensions are registered for this processor.
+     */
+    extension_registry?: Registry;
+    /**
+     * @deprecated Please use {@link ProcessorOptions#standalone}
+     */
+    header_footer?: boolean;
+    /**
+     * If true, add the document header and footer (i.e., framing) around the body content in the output.
+     */
+    standalone?: boolean;
+    /**
+     * If true, the processor will create the necessary output directories if they don’t yet exist.
+     */
+    mkdirs?: boolean;
+    /**
+     * If true, the source is parsed eagerly (i.e., as soon as the source is passed to the load or loadFile API).
+     * If false, parsing is deferred until the parse method is explicitly invoked.
+     */
+    parse?: boolean;
+    /**
+     * Sets the safe mode.
+     */
+    safe?: string | number;
+    /**
+     * Keeps track of the file and line number for each parsed block.
+     * (Useful for tooling applications where the association between the converted output and the source file is important).
+     */
+    sourcemap?: boolean;
+    /**
+     * An array of directories containing templates to be used instead of the default built-in templates.
+     */
+    template_dirs?: string[];
+    /**
+     * Capture time taken to read, parse, and convert document. Internal use only.
+     */
+    timings?: Timings;
+    /**
+     * Destination directory for output file(s), relative to base_dir.
+     */
+    to_dir?: string;
+    /**
+     * The name of the output file to write, or true to use the default output file (docname + outfilesuffix).
+     */
+    to_file?: boolean | string;
+  }
+
   /**
    * @description
    * Extensions provide a way to participate in the parsing and converting
@@ -2623,7 +2704,7 @@ export class Asciidoctor {
    *
    * var html = asciidoctor.convert(input);
    */
-  convert(input: string | Buffer, options?: any): string | Asciidoctor.Document;
+  convert(input: string | Buffer, options?: Asciidoctor.ProcessorOptions): string | Asciidoctor.Document;
 
   /**
    * Parse the AsciiDoc source input into an {@link Asciidoctor/Document} and convert it to the specified backend format.
@@ -2635,7 +2716,7 @@ export class Asciidoctor {
    * @example
    * var html = asciidoctor.convertFile('./document.adoc');
    */
-  convertFile(filename: string, options?: any): string | Asciidoctor.Document;
+  convertFile(filename: string, options?: Asciidoctor.ProcessorOptions): string | Asciidoctor.Document;
 
   /**
    * Parse the AsciiDoc source input into an {@link Asciidoctor/Document}
@@ -2646,7 +2727,7 @@ export class Asciidoctor {
    * @param options - a JSON of options to control processing (default: {})
    * @returns the {@link Asciidoctor/Document} object
    */
-  load(input: string | Buffer, options?: any): Asciidoctor.Document;
+  load(input: string | Buffer, options?: Asciidoctor.ProcessorOptions): Asciidoctor.Document;
 
   /**
    * Parse the contents of the AsciiDoc source file into an {@link Asciidoctor/Document}
@@ -2655,7 +2736,7 @@ export class Asciidoctor {
    * @param options - a JSON of options to control processing (default: {})
    * @returns the {@link Asciidoctor/Document} object
    */
-  loadFile(filename: string, options?: any): Asciidoctor.Document;
+  loadFile(filename: string, options?: Asciidoctor.ProcessorOptions): Asciidoctor.Document;
 
   /**
    * Get Asciidoctor.js version number.
