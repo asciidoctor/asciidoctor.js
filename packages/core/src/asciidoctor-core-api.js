@@ -394,7 +394,8 @@ AbstractBlock.prototype.getSourceLocation = function () {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getCaption = function () {
-  return this.$caption()
+  var caption = this.$caption()
+  return caption === Opal.nil ? undefined : caption
 }
 
 /**
