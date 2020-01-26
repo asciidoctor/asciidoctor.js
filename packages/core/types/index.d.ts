@@ -2528,6 +2528,7 @@ export namespace Asciidoctor {
 
     // alias
     getLogger(): Logger;
+
     createLogMessage(text: string, context: any): LoggerMessage;
   }
 
@@ -2658,6 +2659,178 @@ export namespace Asciidoctor {
      */
     getDefault(initialize: boolean): ConverterFactory;
   }
+
+  interface SyntaxHighlighterHighlightOptions {
+    [key: string]: any;
+
+    /**
+     * An Object of callouts extracted from the source, indexed by line number (1-based) (optional).
+     */
+    callouts?: any;
+    /**
+     * The String CSS mode ("class" or "inline").
+     */
+    css_mode?: string;
+    /**
+     * A 1-based Array of Integer line numbers to highlight (aka emphasize) (optional).
+     */
+    highlight_lines?: number[];
+    /**
+     * A String indicating whether lines should be numbered ("table" or "inline") (optional).
+     */
+    number_lines?: string;
+    /**
+     * The starting Integer (1-based) line number (optional, default: 1).
+     */
+    start_line_number?: number;
+    /**
+     * The String style (aka theme) to use for colorizing the code (optional).
+     */
+    style?: string;
+  }
+
+  interface SyntaxHighlighterDocinfoOptions {
+    [key: string]: any;
+
+    /**
+     * A Boolean indicating whether the stylesheet should be linked instead of embedded (optional).
+     */
+    linkcss?: boolean;
+    /**
+     * The String base URL for assets loaded from the CDN.
+     */
+    cdn_base_url?: string;
+    /**
+     * The String '/' if the converter calling this method emits self-closing tags.
+     */
+    self_closing_tag_slash?: string;
+  }
+
+  interface SyntaxHighlighterFormatOptions {
+    [key: string]: any;
+
+    /**
+     * A Boolean that indicates whether wrapping should be disabled (optional).
+     */
+    nowrap?: boolean;
+  }
+
+  /**
+   * Syntax highlighter functions
+   */
+  interface SyntaxHighlighterFunctions {
+    postConstruct?: (this: SyntaxHighlighter) => any;
+    initialize?: (this: SyntaxHighlighter, name: string, backend: string, opts: any) => void;
+    format?: (this: SyntaxHighlighter, parent: Document, target: string, attributes?: any) => string;
+    highlight?: (this: SyntaxHighlighter, node: Block, source: string, lang: string, opts: SyntaxHighlighterHighlightOptions) => any;
+    handlesHighlighting?: (this: SyntaxHighlighter) => boolean;
+    hasDocinfo?: (this: SyntaxHighlighter, location: string) => boolean;
+    docinfo?: (this: SyntaxHighlighter, location: string, doc: Document, opts: SyntaxHighlighterDocinfoOptions) => string;
+  }
+
+  /**
+   * @description
+   * This API is experimental and subject to change.
+   *
+   * A pluggable adapter for integrating a syntax (aka code) highlighter into AsciiDoc processing.
+   *
+   * There are two types of syntax highlighter adapters. The first performs syntax highlighting during the convert phase.
+   * This adapter type must define a "handlesHighlighting" method that returns true.
+   * The companion "highlight" method will then be called to handle the "specialcharacters" substitution for source blocks.
+   *
+   * The second assumes syntax highlighting is performed on the client (e.g., when the HTML document is loaded).
+   * This adapter type must define a "hasDocinfo" method that returns true.
+   * The companion "docinfo" method will then be called to insert markup into the output document.
+   * The docinfo functionality is available to both adapter types.
+   *
+   * Asciidoctor.js provides several a built-in adapter for highlight.js.
+   * Additional adapters can be registered using SyntaxHighlighter.register.
+   */
+  namespace SyntaxHighlighter {
+    /**
+     * Associates the syntax highlighter class or object with the specified names.
+     *
+     * @description This API is experimental and subject to change.
+     *
+     * @param names - A {string} name or an {Array} of {string} names
+     * @param functions - A list of functions representing a {SyntaxHighlighter} or a {SyntaxHighlighter} class to instantiate
+     */
+    function register(names: string | string[], functions: SyntaxHighlighterFunctions|object): void;
+
+    // SyntaxHighlighter.for can be defined because "for" is a reserved keyword :|
+
+    /**
+     * Retrieves the syntax highlighter class or object registered for the specified name.
+     *
+     * @description This API is experimental and subject to change.
+     *
+     * @param name - The {string} name of the syntax highlighter to retrieve.
+     * @returns the {SyntaxHighlighter} registered for this name.
+     */
+    function get(name: string): SyntaxHighlighter | undefined;
+  }
+
+  class SyntaxHighlighter {
+    $$name: string;
+
+    [key: string]: any;
+
+    super: (...params: any[]) => void;
+
+    /**
+     * Format the highlighted source for inclusion in an HTML document.
+     *
+     * @param node - The source Block being processed.
+     * @param lang - The source language String for this Block (e.g., ruby).
+     * @param opts - An object of options that control syntax highlighting.
+     *
+     * @returns the highlighted source String wrapped in preformatted tags (e.g., pre and code)
+     */
+    format(node: Block, lang: string, opts?: SyntaxHighlighterFormatOptions): string;
+
+    /**
+     * Highlights the specified source when this source block is being converted.
+     *
+     * If the source contains callout marks, the caller assumes the source remains on the same lines and no closing tags are added to the end of each line.
+     * If the source gets shifted by one or more lines, this method must return a tuple containing the highlighted source and the number of lines by which the source was shifted.
+     *
+     * @param node - The source Block to syntax highlight.
+     * @param source - The raw source text String of this source block (after preprocessing).
+     * @param lang - The source language String specified on this block (e.g., ruby).
+     * @param opts - An object of options that configure the syntax highlighting.
+     *
+     * @returns the highlighted source String or a tuple of the highlighted source String and an Integer line offset.
+     */
+    highlight(node: Block, source: string, lang: string, opts: SyntaxHighlighterHighlightOptions): any;
+
+    /**
+     * Indicates whether highlighting is handled by this syntax highlighter or by the client.
+     *
+     * @returns a Boolean indicating whether the highlight method should be used to handle the "specialchars" substitution.
+     */
+    handlesHighlighting(): boolean;
+
+    /**
+     * Indicates whether this syntax highlighter has docinfo (i.e., markup) to insert into the output document at the specified location.
+     * Should be called by converter after main content has been converted.
+     *
+     * @param location - The String representing the location slot ("head" or "footer").
+     *
+     * @returns a Boolean indicating whether the docinfo method should be called for this location.
+     */
+    hasDocinfo(location: string): boolean;
+
+    /**
+     * Generates docinfo markup for this syntax highlighter to insert at the specified location in the output document.
+     * Should be called by converter after main content has been converted.
+     *
+     * @param location - The String representing the location slot ("head" or "footer").
+     * @param doc - The Document in which this syntax highlighter is being used.
+     * @param opts - A Object of options that configure the syntax highlighting
+     * @returns the String markup to insert.
+     */
+    docinfo(location: string, doc: Document, opts: SyntaxHighlighterDocinfoOptions): string;
+  }
 }
 
 /**
@@ -2777,6 +2950,8 @@ export class Asciidoctor {
   Timings: typeof Asciidoctor.Timings;
 
   LoggerManager: typeof Asciidoctor.LoggerManager;
+
+  SyntaxHighlighter: typeof Asciidoctor.SyntaxHighlighter;
 }
 
 export default function asciidoctor(): Asciidoctor;

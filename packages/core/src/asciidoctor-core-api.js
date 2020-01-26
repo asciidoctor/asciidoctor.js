@@ -2931,7 +2931,7 @@ Opal.Asciidoctor.SyntaxHighlighter = SyntaxHighlighter
  * @description This API is experimental and subject to change.
  *
  * @param {string|Array} names - A {string} name or an {Array} of {string} names
- * @param functions - A {SyntaxHighlighter} Class or Object instance
+ * @param functions - A list of functions representing a {SyntaxHighlighter} or a {SyntaxHighlighter} class to instantiate
  * @memberof SyntaxHighlighter
  */
 SyntaxHighlighter.register = function (names, functions) {
@@ -3015,13 +3015,18 @@ SyntaxHighlighter.register = function (names, functions) {
  * @description This API is experimental and subject to change.
  *
  * @param {string} name - The {string} name of the syntax highlighter to retrieve.
- * @returns {SyntaxHighlighter} - the {SyntaxHighlighter} Class or Object instance registered for this name.
+ * @returns {SyntaxHighlighter} - the {SyntaxHighlighter} registered for this name.
  * @memberof SyntaxHighlighter
  */
-SyntaxHighlighter.for = function (name) {
+SyntaxHighlighter.get = function (name) {
   var result = SyntaxHighlighter.$for(name)
   return result === Opal.nil ? undefined : result
 }
+
+/**
+ * @deprecated Please use {SyntaxHighlighter#get} method as "for" is a reserved keyword.
+ */
+SyntaxHighlighter.for = SyntaxHighlighter.get
 
 /**
  * @namespace
