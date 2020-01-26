@@ -1989,7 +1989,7 @@ export namespace Asciidoctor {
      * Get the caption for this block.
      * @returns the caption for this block
      */
-    getCaption(): string;
+    getCaption(): string | undefined;
 
     /**
      * Set the caption for this block.
