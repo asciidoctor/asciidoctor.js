@@ -1246,7 +1246,7 @@ Converter.prototype.convert = function (node, transform, opts) {
  * @param {string} backend - look for a converter bound to this keyword.
  * @param {Object} opts - a JSON of options to pass to the converter (default: {})
  * @returns {Converter} - a converter instance for converting nodes in an Asciidoctor AST.
- * @memberof Converter/Factory
+ * @memberof Converter
  */
 Converter.create = function (backend, opts) {
   return this.$create(backend, toHash(opts))
@@ -1383,10 +1383,27 @@ var Html5Converter = Opal.Asciidoctor.Converter.Html5Converter
 // Alias
 Opal.Asciidoctor.Html5Converter = Html5Converter
 
+/**
+ * Create a new Html5Converter.
+ * @returns {Html5Converter} - a Html5Converter
+ * @memberof Converter/Html5Converter
+ */
 Html5Converter.create = function () {
   return this.$new()
 }
 
+/**
+ * Converts an {AbstractNode} using the given transform.
+ * This method must be implemented by a concrete converter class.
+ *
+ * @param {AbstractNode} node - The concrete instance of AbstractNode to convert.
+ * @param {string} [transform] - An optional String transform that hints at which transformation should be applied to this node.
+ * If a transform is not given, the transform is often derived from the value of the {AbstractNode#getNodeName} property. (optional, default: undefined)
+ * @param {Object} [opts]- An optional JSON of options hints about how to convert the node. (optional, default: undefined)
+ *
+ * @returns {string} - the String result.
+ * @memberof Converter/Html5Converter
+ */
 Html5Converter.prototype.convert = function (node, transform, opts) {
   return this.$convert(node, transform, opts)
 }

@@ -2577,18 +2577,30 @@ var LoggerManager = Opal.const_get_qualified(Opal.Asciidoctor, 'LoggerManager', 
 // Alias
 Opal.Asciidoctor.LoggerManager = LoggerManager
 
+/**
+ * @memberof LoggerManager
+ */
 LoggerManager.getLogger = function () {
   return this.$logger()
 }
 
+/**
+ * @memberof LoggerManager
+ */
 LoggerManager.setLogger = function (logger) {
   this.logger = logger
 }
 
+/**
+ * @memberof LoggerManager
+ */
 LoggerManager.newLogger = function (name, functions) {
   return initializeLoggerClass(name, functions).$new()
 }
 
+/**
+ * @memberof LoggerManager
+ */
 LoggerManager.newFormatter = function (name, functions) {
   return initializeLoggerFormatterClass(name, functions).$new()
 }
@@ -2601,6 +2613,9 @@ var LoggerSeverity = Opal.const_get_qualified(Opal.Logger, 'Severity', true)
 // Alias
 Opal.Asciidoctor.LoggerSeverity = LoggerSeverity
 
+/**
+ * @memberof LoggerSeverity
+ */
 LoggerSeverity.get = function (severity) {
   return LoggerSeverity.$constants()[severity]
 }
@@ -2613,6 +2628,9 @@ var LoggerFormatter = Opal.const_get_qualified(Opal.Logger, 'Formatter', true)
 // Alias
 Opal.Asciidoctor.LoggerFormatter = LoggerFormatter
 
+/**
+ * @memberof LoggerFormatter
+ */
 LoggerFormatter.prototype.call = function (severity, time, programName, message) {
   return this.$call(LoggerSeverity.get(severity), time, programName, message)
 }
@@ -2625,9 +2643,19 @@ var MemoryLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'MemoryLogger', tr
 // Alias
 Opal.Asciidoctor.MemoryLogger = MemoryLogger
 
+/**
+ * Create a new MemoryLogger.
+ * @returns {MemoryLogger} - a MemoryLogger
+ * @memberof MemoryLogger
+ */
 MemoryLogger.create = function () {
   return this.$new()
 }
+
+/**
+ * @returns {Array<Object>} - a list of messages
+ * @memberof MemoryLogger
+ */
 MemoryLogger.prototype.getMessages = function () {
   var messages = this.messages
   var result = []
@@ -2669,10 +2697,23 @@ Logging.createLogMessage = function (text, context) {
 }
 
 // alias
+
+/**
+ * @memberof Reader
+ */
 Reader.prototype.getLogger = Logging.getLogger
+/**
+ * @memberof Reader
+ */
 Reader.prototype.createLogMessage = Logging.createLogMessage
 
+/**
+ * @memberof AbstractNode
+ */
 AbstractNode.prototype.getLogger = Logging.getLogger
+/**
+ * @memberof AbstractNode
+ */
 AbstractNode.prototype.createLogMessage = Logging.createLogMessage
 
 /**
@@ -2683,25 +2724,53 @@ var Logger = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger', true)
 // Alias
 Opal.Asciidoctor.Logger = Logger
 
+/**
+ * @returns {number|undefined} - the maximum severity
+ * @memberof Logger
+ */
 Logger.prototype.getMaxSeverity = function () {
   var result = this.max_severity
   return result === Opal.nil ? undefined : result
 }
+/**
+ * @returns {LoggerFormatter} - the formatter
+ * @memberof Logger
+ */
 Logger.prototype.getFormatter = function () {
   return this.formatter
 }
+/**
+ * @param {LoggerFormatter} formatter - the formatter
+ * @memberof Logger
+ */
 Logger.prototype.setFormatter = function (formatter) {
   this.formatter = formatter
 }
+/**
+ * @returns {number} - the logging severity threshold
+ * @memberof Logger
+ */
 Logger.prototype.getLevel = function () {
   return this.level
 }
+/**
+ * @param {number} level - the logging severity threshold
+ * @memberof Logger
+ */
 Logger.prototype.setLevel = function (level) {
   this.level = level
 }
+/**
+ * @returns {string} - the program name
+ * @memberof Logger
+ */
 Logger.prototype.getProgramName = function () {
   return this.progname
 }
+/**
+ * @param {string} programName - the program name
+ * @memberof Logger
+ */
 Logger.prototype.setProgramName = function (programName) {
   this.progname = programName
 }
@@ -2755,9 +2824,19 @@ var NullLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'NullLogger', true)
 // Alias
 Opal.Asciidoctor.NullLogger = NullLogger
 
+/**
+ * Create a new NullLogger.
+ * @returns {NullLogger} - a NullLogger
+ * @memberof NullLogger
+ */
 NullLogger.create = function () {
   return this.$new()
 }
+
+/**
+ * @returns {number|undefined} - the maximum severity
+ * @memberof NullLogger
+ */
 NullLogger.prototype.getMaxSeverity = function () {
   return this.max_severity
 }
@@ -2773,10 +2852,25 @@ var Timings = Opal.const_get_qualified(Opal.Asciidoctor, 'Timings', true)
 // Alias
 Opal.Asciidoctor.Timings = Timings
 
+/**
+ * Create a new Timings.
+ * @returns {Timings} - a Timings
+ * @memberof Timings
+ */
 Timings.create = function () {
   return this.$new()
 }
 
+/**
+ * Print a report to the specified output.
+ * The report will include:
+ * - the time to read and parse source
+ * - the time to convert document
+ * - the total time (read, parse and convert)
+ * @param {RubyLogger|console|Object} [to] - an optional output (by default stdout)
+ * @param {string} [subject] - an optional subject (usually the file name)
+ * @memberof Timings
+ */
 Timings.prototype.printReport = function (to, subject) {
   var outputFunction
   if (to) {

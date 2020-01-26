@@ -426,10 +426,19 @@ export namespace Asciidoctor {
   class Timings {
     /**
      * Create a new Timings.
-     * @returns a new Timings
+     * @returns a Timings
      */
     static create(): Timings;
 
+    /**
+     * Print a report to the specified output.
+     * The report will include:
+     * - the time to read and parse source
+     * - the time to convert document
+     * - the total time (read, parse and convert)
+     * @param to - an optional output (by default stdout)
+     * @param subject - an optional subject (usually the file name)
+     */
     printReport(to: undefined | Writer | BasicLogger | RubyLogger, subject: string): void;
   }
 
@@ -2273,7 +2282,7 @@ export namespace Asciidoctor {
    * An abstract base class that provides state and methods for managing a node of AsciiDoc content.
    * The state and methods on this class are common to all content segments in an AsciiDoc document.
    */
-  class AbstractNode {
+  class AbstractNode implements Logging {
     /**
      * Apply the specified substitutions to the text.
      *
@@ -2516,6 +2525,10 @@ export namespace Asciidoctor {
     /**
      */
     normalizeAssetPath(): void;
+
+    // alias
+    getLogger(): Logger;
+    createLogMessage(text: string, context: any): LoggerMessage;
   }
 
   /**
