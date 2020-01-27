@@ -17,7 +17,7 @@
     "README.adoc"
   ],
   "scripts": {
-    "test:graalvm": "node tasks/graalvm.js && ./build/graalvm/bin/node spec/graalvm/run.js",
+    "test:graalvm": "node tasks/graalvm.js",
     "test:node": "mocha spec/*/*.spec.js",
     "test:browser": "node spec/browser/run.js",
     "test:types": "rm -f types/tests.js && dtslint types && tsc --build types/tsconfig.json && node types/tests.js",
