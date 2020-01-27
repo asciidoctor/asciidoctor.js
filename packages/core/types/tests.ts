@@ -28,6 +28,13 @@ assert(processor.SafeMode.getValueForName('secure') === 20);
 assert(processor.SafeMode.getNameForValue(0) === 'unsafe');
 assert(processor.SafeMode.getNameForValue(50) === undefined);
 
+const defaultLogger = processor.LoggerManager.getLogger();
+assert(defaultLogger.getLevel() === 2);
+assert(defaultLogger.getProgramName() === 'asciidoctor');
+assert(defaultLogger.getMaxSeverity() === undefined);
+defaultLogger.setProgramName('asciidoctor.js');
+assert(defaultLogger.getProgramName() === 'asciidoctor.js');
+
 const input = `= Main Title: Subtitle
 Doc Writer <doc.writer@asciidoc.org>; John Smith <john.smith@asciidoc.org>
 v1.0, 2013-05-20: First draft
@@ -546,14 +553,14 @@ class BlogConverter {
   }
 }
 
-processor.ConverterFactory.register(new BlogConverter(), ['html5']);
+processor.ConverterFactory.register(new BlogConverter(), ['blog']);
 const blogResult = processor.convert(`= One Thing to Write the Perfect Blog Post
 Guillaume Grossetie <ggrossetie@yuzutech.fr>
 
 == Write in AsciiDoc!
 
 AsciiDoc is about being able to focus on expressing your ideas, writing with ease and passing on knowledge without the distraction of complex applications or angle brackets.
-In other words, it’s about discovering writing zen.`, {safe: 'safe', header_footer: true}) as string;
+In other words, it’s about discovering writing zen.`, {safe: 'safe', header_footer: true, backend: 'blog'}) as string;
 assert(blogResult.includes('<span class="blog-author">Guillaume Grossetie</span>')); // custom blog converter
 assert(blogResult.includes('<div class="sect1">')); // built-in HTML5 converter
 
@@ -628,6 +635,168 @@ assert(Object.keys(wrap.getBlocks()[0].getAttributes()).length === 2);
 assert(Object.keys(wrap.getBlocks()[1].getAttributes()).length === 2);
 assert(wrap.getBlocks()[1].getAttributes()['foo'] === undefined);
 
+const highlightjsSyntaxHighlighter = processor.SyntaxHighlighter.get('highlight.js');
+assert(highlightjsSyntaxHighlighter && highlightjsSyntaxHighlighter.$$name === 'HighlightJsAdapter');
+const rougeSyntaxHighlighter = processor.SyntaxHighlighter.get('rouge');
+assert(rougeSyntaxHighlighter === undefined);
+
+processor.SyntaxHighlighter.register('unavailable', {
+  initialize(name, backend, opts) {
+    this.backend = opts.document.getAttribute('backend');
+    this.super();
+  },
+  format(node, language) {
+    return `<pre class="highlight"><code class="language-${language}" data-lang="${language}">${node.getContent()}</code></pre>`;
+  },
+  handlesHighlighting() {
+    return false;
+  },
+  hasDocinfo(location) {
+    return location === 'head';
+  },
+  docinfo(location) {
+    if (this.backend !== 'html5') {
+      return '';
+    }
+    if (location === 'head') {
+      return '<style>pre.highlight{background-color: lightgrey}</style>';
+    }
+    return '';
+  }
+});
+const docWithUnavailableSourceHighlighter = processor.load(`[source,ruby]
+----
+puts 'Hello, World!'
+----`, {attributes: {'source-highlighter': 'unavailable'}});
+html = docWithUnavailableSourceHighlighter.convert({standalone: true});
+assert(html.includes('<pre class="highlight"><code class="language-ruby" data-lang="ruby">puts \'Hello, World!\'</code></pre>'));
+assert(html.includes('<style>pre.highlight{background-color: lightgrey}</style>'));
+
+class PrismClientHighlighter {
+  private readonly backend: string;
+
+  constructor(name: string, backend: string, opts: any) {
+    this.backend = opts.document.getAttribute('backend');
+  }
+
+  format(node: Asciidoctor.Block, lang: string, opts: Asciidoctor.SyntaxHighlighterFormatOptions) {
+    if (lang) {
+      return `<pre${lang ? ` lang="${lang}"` : ''} class="prism${opts.nowrap ? ' nowrap' : ' wrap'}"><code>${node.getContent()}</code></pre>`;
+    }
+    return `<pre>${node.getContent()}</pre>`;
+  }
+
+  hasDocinfo(location: string) {
+    return location === 'head';
+  }
+
+  docinfo(location: string) {
+    if (this.backend !== 'html5') {
+      return '';
+    }
+    if (location === 'head') {
+      return '<style>pre.prism{background-color: lightgrey}</style>';
+    }
+  }
+}
+
+processor.SyntaxHighlighter.register('prism', PrismClientHighlighter);
+const docWithPrismSyntaxHighlighter = processor.load(`[source,ruby]
+----
+puts 'Hello, World!'
+----
+
+[source]
+.options/zones.txt
+----
+Europe/London
+America/New_York
+----`, {attributes: {'source-highlighter': 'prism'}});
+html = docWithPrismSyntaxHighlighter.convert({standalone: true});
+assert(html.includes('<pre lang="ruby" class="prism wrap"><code>puts \'Hello, World!\'</code></pre>'));
+assert(html.includes('<pre>Europe/London\nAmerica/New_York</pre>'));
+assert(html.includes('<style>pre.prism{background-color: lightgrey}</style>'));
+
+class HtmlPipelineAdapter {
+  private readonly defaultClass: string;
+
+  constructor() {
+    this.defaultClass = 'prettyprint';
+  }
+
+  format(node: Asciidoctor.Block, lang: string) {
+    return `<pre${lang ? ` lang="${lang}"` : ''} class="${this.defaultClass}"><code>${node.getContent()}</code></pre>`;
+  }
+}
+
+processor.SyntaxHighlighter.register('html-pipeline', HtmlPipelineAdapter);
+const docWithHtmlPipeline = processor.load(`[source,ruby]
+----
+puts 'Hello, World!'
+----`, {attributes: {'source-highlighter': 'html-pipeline'}});
+html = docWithHtmlPipeline.convert();
+assert(html.includes('<pre lang="ruby" class="prettyprint"><code>puts \'Hello, World!\'</code></pre>'));
+
+class ServerSideSyntaxHighlighter {
+  private readonly defaultClass: string;
+
+  constructor() {
+    this.defaultClass = 'prettyprint';
+  }
+
+  format(node: Asciidoctor.Block, lang: string) {
+    if (lang) {
+      return `<pre${lang ? ` lang="${lang}"` : ''} class="${this.defaultClass}"><code>${node.getContent()}</code></pre>`;
+    }
+    return `<pre>${node.getContent()}</pre>`;
+  }
+
+  highlight(node: Asciidoctor.Block, source: string, lang: string, opts: Asciidoctor.SyntaxHighlighterHighlightOptions) {
+    if (opts.callouts) {
+      const lines = source.split('\n');
+      for (const idx in opts.callouts) {
+        const lineIndex = parseInt(idx, 0);
+        const line = lines[lineIndex];
+        lines[lineIndex] = `<span class="has-callout${opts.callouts[idx][0][0] ? ' has-comment' : ''}">${line}</span>`;
+      }
+      source = lines.join('\n');
+    }
+    if (lang) {
+      return `<span class="has-lang lang-${lang}">${source}</span>`;
+    }
+    return source;
+  }
+
+  handlesHighlighting() {
+    return true;
+  }
+
+  hasDocinfo() {
+    return false;
+  }
+}
+
+processor.SyntaxHighlighter.register('server-side', ServerSideSyntaxHighlighter);
+const docWithServerSideSyntaxHighlighter = processor.load(`[source,ruby]
+----
+puts 'Hello, World!' # <1>
+<2>
+----
+<1> Prints 'Hello, World!'
+<2> ...
+
+[source]
+.options/zones.txt
+----
+Europe/London
+America/New_York
+----`, {attributes: {'source-highlighter': 'server-side'}});
+html = docWithServerSideSyntaxHighlighter.convert();
+assert(html.includes(`<pre lang="ruby" class="prettyprint"><code><span class="has-lang lang-ruby"><span class="has-callout has-comment">puts 'Hello, World!' </span># <b class="conum">(1)</b>
+<span class="has-callout"></span><b class="conum">(2)</b>
+</span></code></pre>`));
+assert(html.includes('<pre>Europe/London\nAmerica/New_York</pre>'));
+
 let memoryLogger = processor.MemoryLogger.create();
 const timings = processor.Timings.create();
 processor.convert('Hello *world*', {timings});
@@ -651,12 +820,6 @@ registry.block(function() {
     }
   });
 });
-const defaultLogger = processor.LoggerManager.getLogger();
-assert(defaultLogger.getLevel() === 2);
-assert(defaultLogger.getProgramName() === 'asciidoctor');
-assert(defaultLogger.getMaxSeverity() === undefined);
-defaultLogger.setProgramName('asciidoctor.js');
-assert(defaultLogger.getProgramName() === 'asciidoctor.js');
 memoryLogger = processor.MemoryLogger.create();
 try {
   processor.LoggerManager.setLogger(memoryLogger);
