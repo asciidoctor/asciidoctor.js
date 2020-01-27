@@ -8,8 +8,7 @@
     "esModuleInterop": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "strictNullChecks": false,
-    "strictFunctionTypes": true,
+    "strict": true,
     "baseUrl": "../",
     "paths": {
       "@asciidoctor/core": [

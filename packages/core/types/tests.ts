@@ -537,7 +537,7 @@ class BlogConverter {
     };
   }
 
-  convert(node: Asciidoctor.AbstractNode, transform: string | null, opts: any) {
+  convert(node: Asciidoctor.AbstractNode, transform: string | undefined, opts: any) {
     const template = this.transforms[transform || node.getNodeName()];
     if (template) {
       return template(node);
@@ -578,7 +578,7 @@ assert(callouts.getListIndex() === 2);
 assert(callouts.getCalloutIds(1) === '');
 assert(callouts.getCurrentList().length === 0);
 
-let parsedAttrs: Asciidoctor.Attributes;
+let parsedAttrs: Asciidoctor.Attributes = {};
 const registryAttrs = processor.Extensions.create();
 registryAttrs.block(function() {
   this.named('attrs');
@@ -684,7 +684,7 @@ try {
   const data: any[] = [];
   console.log = function() {
     data.push({method: 'log', arguments});
-    return defaultLog.apply(console, arguments);
+    defaultLog.apply(console, arguments as any);
   };
   const timings = processor.Timings.create();
   processor.convert('Hello *world*', {timings});
