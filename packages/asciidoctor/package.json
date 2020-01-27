@@ -3,6 +3,7 @@
   "version": "2.1.0",
   "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
   "main": "index.js",
+  "types": "types",
   "bin": {
     "asciidoctor": "bin/asciidoctor",
     "asciidoctorjs": "bin/asciidoctor"
@@ -13,7 +14,8 @@
     "yarn": ">=1.1.0"
   },
   "files": [
-    "bin"
+    "bin",
+    "types/index.d.ts"
   ],
   "repository": {
     "type": "git",

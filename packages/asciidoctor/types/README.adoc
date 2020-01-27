@@ -1,0 +1,3 @@
+= README
+
+The file [.path]_index.d.ts_ will be automatically copied from [.path]_packages/core/types/index.d.ts_ when a release is performed.

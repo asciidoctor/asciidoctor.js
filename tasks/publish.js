@@ -23,6 +23,8 @@ const publish = async (directory) => {
       log.warn('Dry run! To publish the release, run the command again without DRY_RUN environment variable')
     }
     const projectRootDirectory = path.join(__dirname, '..')
+    // copy packages/core/types/index.d.ts to packages/asciidoctor/types/index.d.ts
+    fs.copyFileSync(`${projectRootDirectory}/packages/core/types/index.d.ts`, `${projectRootDirectory}/packages/asciidoctor/types/index.d.ts`)
     await publish(path.join(projectRootDirectory, 'packages', 'core'))
     await publish(path.join(projectRootDirectory, 'packages', 'asciidoctor'))
   } catch (e) {

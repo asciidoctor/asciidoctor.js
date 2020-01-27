@@ -12,6 +12,7 @@
   },
   "files": [
     "dist",
+    "types/index.d.ts",
     "LICENSE",
     "README.adoc"
   ],
