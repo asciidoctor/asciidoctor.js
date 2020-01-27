@@ -10,6 +10,23 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 Bug Fixes::
 
+* Fix type definition for `AbstractBlock.getCaption` (#831) - thanks @cexbrayat
+* Return `undefined` if the style is `Opal.nil` on `AbstractBlock.getCaption` (#831) - thanks @cexbrayat
+* Add the missing `SyntaxHighlighter` type definition (#832)
+
+Improvements::
+
+* Deprecate `SyntaxHighlighter.for`, use `SyntaxHighlighter.get` instead (#832)
+
+Infrastructure::
+
+* Include the TypeScript Definition File in the npm packages 😅 (#827)
+
+
+== v2.1.0 (2020-01-26)
+
+Bug Fixes::
+
 * Return `undefined` if the style is `Opal.nil` on `AbstractBlock.getStyle`
 * Return `undefined` if the level is `Opal.nil` on `AbstractBlock.getLevel`
 * `Processor.resolveAttributes` can take a JSON, a boolean, a string, an array of strings or a list of strings as argument (#780)
