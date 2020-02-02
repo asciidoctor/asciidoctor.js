@@ -1494,13 +1494,8 @@ bob -> alice`)
       it('should read utf8 encoded data', () => {
         const doc = asciidoctor.load('empty', { attributes: { 'allow-uri-read': true } })
         const csv = doc.readContents(testOptions.baseDir + '/spec/fixtures/sales.csv')
-        expect(csv).to.equal(`Month,Value
-
-January,12
-February,24
-March,20
-April,32
-`)
+          .replace(/\r\n|\n|\r/gm, '-')
+        expect(csv).to.equal(`Month,Value--January,12-February,24-March,20-April,32-`)
       })
     })
 
