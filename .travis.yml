@@ -20,10 +20,10 @@ install:
 - npm ci
 - npm ci --prefix packages/core
 
-# keep the npm cache around to speed up installs
 cache:
   directories:
   - "$HOME/.npm"
+  - "$HOME/.dts"
 
 script:
 - npm run lint
