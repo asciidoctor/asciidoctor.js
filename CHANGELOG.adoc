@@ -17,6 +17,7 @@ Bug Fixes::
 Improvements::
 
 * Deprecate `SyntaxHighlighter.for`, use `SyntaxHighlighter.get` instead (#832)
+* Upgrade `@asciidoctor/cli` in the `asciidoctor` package to 3.2.0
 
 Infrastructure::
 
