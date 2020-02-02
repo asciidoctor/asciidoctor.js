@@ -96,6 +96,6 @@
     ]
   },
   "_moduleAliases": {
-    "@asciidoctor/core": "dist/node/asciidoctor.js"
+    "@asciidoctor/core": "build/asciidoctor-node.js"
   }
 }
