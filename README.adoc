@@ -15,6 +15,7 @@ ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
 :endash:
 
 ifdef::env-github[]
+image:https://github.com/asciidoctor/asciidoctor.js/workflows/Build/badge.svg[GitHub Actions Status, link=https://github.com/asciidoctor/asciidoctor.js/actions]
 image:https://img.shields.io/travis/asciidoctor/asciidoctor.js/master.svg[Travis build status, link=https://travis-ci.org/asciidoctor/asciidoctor.js]
 image:https://ci.appveyor.com/api/projects/status/i69sqvvyr95sf6i7/branch/master?svg=true[Appveyor build status, link=https://ci.appveyor.com/project/asciidoctor/asciidoctor-js]
 image:https://img.shields.io/npm/v/asciidoctor.svg[npm version, link=https://www.npmjs.org/package/asciidoctor]
