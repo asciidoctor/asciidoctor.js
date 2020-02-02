@@ -47,11 +47,16 @@ const graalvmRun = (name, jdkInstallDir) => {
 
   const start = process.hrtime()
 
-  let javacBin
-  let javaBin
-  const jdkBinDir = path.join(jdkInstallDir, 'bin')
-  javacBin = path.join(jdkBinDir, 'javac')
-  javaBin = path.join(jdkBinDir, 'java')
+  let jdkBinDir
+  const platform = process.platform
+  if (platform === 'darwin') {
+    jdkBinDir = path.join(jdkInstallDir, 'Contents', 'Home', 'bin')
+  } else {
+    jdkBinDir = path.join(jdkInstallDir, 'bin')
+  }
+  const javacBin = path.join(jdkBinDir, 'javac')
+  const javaBin = path.join(jdkBinDir, 'java')
+  const nodeBin = path.join(jdkBinDir, 'node')
 
   // Java classes
   const asciidoctorClassName = 'AsciidoctorConvertWithGraalVM'
@@ -60,6 +65,21 @@ const graalvmRun = (name, jdkInstallDir) => {
   log.info(`run ${name} java`)
   const javaResult = graalvmJavaCompileAndRun(asciidoctorSpec, asciidoctorClassName, javacBin, javaBin)
   graalvmCheckConvert(javaResult, `run with ${name} java`)
+
+  // Run with GraalVM node
+  try {
+    log.info(`run ${name} node`)
+    const result = childProcess.execSync(`${nodeBin} spec/graalvm/run.js`).toString('utf8')
+    process.stdout.write(result)
+  } catch (e) {
+    if (e.stdout) {
+      process.stdout.write(e.stdout.toString())
+    }
+    if (e.stderr) {
+      process.stderr.write(e.stderr.toString())
+    }
+    process.exit(1)
+  }
   log.success(`Done ${name} in ${process.hrtime(start)[0]}s`)
 }
 
@@ -71,12 +91,17 @@ const downloadGraalVM = async (version) => {
     log.info(target + ' file already exists, skipping "download" task')
     return
   }
-  await download.getContentFromURL(`https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${version}/graalvm-ce-java8-linux-amd64-${version}.tar.gz`, target)
-  if (fs.existsSync('build/graalvm')) {
-    log.info('build/graalvm directory already exists, skipping "untar" task')
-    return Promise.resolve({})
+  const platform = process.platform
+  if (platform === 'darwin' || platform === 'linux') {
+    await download.getContentFromURL(`https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${version}/graalvm-ce-java8-${platform}-amd64-${version}.tar.gz`, target)
+    if (fs.existsSync('build/graalvm')) {
+      log.info('build/graalvm directory already exists, skipping "untar" task')
+      return Promise.resolve({})
+    }
+    return bfs.untar(target, 'graalvm', 'build')
+  } else {
+    throw new Error(`The platform ${platform} is not supported!`)
   }
-  return bfs.untar(target, 'graalvm', 'build')
 }
 
 module.exports = class GraalVM {
