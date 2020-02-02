@@ -2056,8 +2056,8 @@ header_attribute::foo[bar]`
     })
     it('should return the string content of the file', () => {
       const doc = asciidoctor.load('')
-      const content = doc.readAsset('spec/fixtures/include.adoc')
-      expect(content).to.equal('include content\n')
+      const content = doc.readAsset('spec/fixtures/include.adoc').trim()
+      expect(content).to.equal('include content')
     })
   })
 
