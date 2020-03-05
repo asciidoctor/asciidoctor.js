@@ -3,5 +3,7 @@
 'use strict'
 
 process.title = 'asciidoctor'
-const cli = require('@asciidoctor/cli')
-cli.run(process.argv)
+const { Options, Invoker } = require('@asciidoctor/cli')
+
+const options = new Options().parse(process.argv)
+new Invoker(options).invoke()
