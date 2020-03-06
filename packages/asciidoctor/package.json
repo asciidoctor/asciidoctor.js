@@ -8,6 +8,9 @@
     "asciidoctor": "bin/asciidoctor",
     "asciidoctorjs": "bin/asciidoctor"
   },
+  "scripts": {
+    "test": "./bin/asciidoctor --version"
+  },
   "engines": {
     "node": ">=8.11",
     "npm": ">=5.0.0",
