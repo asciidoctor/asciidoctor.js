@@ -844,6 +844,64 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       expect(para.applySubstitutions('{start}--{finish}')).to.equal('start&#8212;&#8203;finish')
     })
 
+    it('should resolve substitutions on a block', () => {
+      const doc = asciidoctor.load(`paragraph`)
+      const block = doc.getBlocks()[0]
+      expect(block.resolveSubstitutions('attributes+', 'block')).to.have.members(['attributes'])
+    })
+
+    it('should resolve a list of substitutions on a block', () => {
+      const doc = asciidoctor.load(`paragraph`)
+      const block = doc.getBlocks()[0]
+      expect(block.resolveBlockSubstitutions('specialchars,attributes,quotes,replacements,macros,post_replacements'))
+        .to.have.members(['specialcharacters', 'attributes', 'quotes', 'replacements', 'macros', 'post_replacements'])
+    })
+
+    it('should resolve a list of substitutions on a block with defaults', () => {
+      const doc = asciidoctor.load(`paragraph`)
+      const block = doc.getBlocks()[0]
+      expect(block.resolveBlockSubstitutions('attributes+,+replacements,-callouts', ['verbatim', 'quotes', 'callouts']))
+        .to.have.members(['attributes', 'verbatim', 'quotes', 'replacements'])
+    })
+
+    it('should resolve a normal substitutions on a block', () => {
+      const doc = asciidoctor.load(`paragraph`)
+      const block = doc.getBlocks()[0]
+      expect(block.resolveBlockSubstitutions('normal'))
+        .to.have.members(['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
+    })
+
+    it('should resolve a macros pass substitutions on a block', () => {
+      const doc = asciidoctor.load(`paragraph`)
+      const block = doc.getBlocks()[0]
+      expect(block.resolvePassSubstitutions('macros'))
+        .to.have.members(['macros'])
+    })
+
+    it('should resolve a verbatim pass substitutions on a block', () => {
+      const doc = asciidoctor.load(`paragraph`)
+      const block = doc.getBlocks()[0]
+      expect(block.resolvePassSubstitutions('verbatim'))
+        .to.have.members(['specialcharacters'])
+    })
+
+    it('should warn about an invalid substitutions on a block', () => {
+      const defaultLogger = asciidoctor.LoggerManager.getLogger()
+      const memoryLogger = asciidoctor.MemoryLogger.create()
+      try {
+        asciidoctor.LoggerManager.setLogger(memoryLogger)
+        const doc = asciidoctor.load(`paragraph`)
+        const block = doc.getBlocks()[0]
+        expect(block.resolvePassSubstitutions('tomato+'))
+          .to.have.members([])
+        const warnMessage = memoryLogger.getMessages()[0]
+        expect(warnMessage.getSeverity()).to.equal('WARN')
+        expect(warnMessage.getText()).to.equal('invalid substitution type for passthrough macro: tomato')
+      } finally {
+        asciidoctor.LoggerManager.setLogger(defaultLogger)
+      }
+    })
+
     it('should be able to apply specific inline substitutions to text', () => {
       const doc = asciidoctor.load('para', { attributes: { start: 'start', finish: 'finish' } })
       const para = doc.getBlocks()[0]
