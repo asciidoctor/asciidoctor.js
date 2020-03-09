@@ -1050,6 +1050,22 @@ stem:normal[\\\\sqrt{{value}} = 2 \\]]`
         })
       }
 
+      it('should restore attributes to the previously saved state (attributes in header).', function () {
+        const docWithAttributes = asciidoctor.load(`= Document Title
+:foo: bar
+
+content
+
+:foo: baz
+
+content`)
+        expect(docWithAttributes.getAttribute('foo')).to.equal('bar')
+        docWithAttributes.convert()
+        expect(docWithAttributes.getAttribute('foo')).to.equal('baz')
+        docWithAttributes.restoreAttributes()
+        expect(docWithAttributes.getAttribute('foo')).to.equal('bar')
+      })
+
       describe('Embed an image when data-uri is defined', function () {
         it('should embed a jpeg image', function () {
           const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }

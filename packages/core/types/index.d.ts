@@ -1773,6 +1773,11 @@ export namespace Asciidoctor {
     deleteAttribute(name: string): boolean;
 
     /**
+     * Restore the attributes to the previously saved state (attributes in header).
+     */
+    restoreAttributes(): void;
+
+    /**
      * Determine if the attribute has been locked by being assigned in document options.
      *
      * @param key - The attribute key to check
