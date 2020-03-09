@@ -15,6 +15,7 @@ Bug Fixes::
 Improvements::
 
 * Map `Document.restoreAttributes` (#843)
+* Map an internal API `Document.playbackAttributes` (#844)
 
 
 == v2.1.1 (2020-02-01)

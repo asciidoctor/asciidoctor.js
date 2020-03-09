@@ -1100,6 +1100,49 @@ content`)
           }
         })
       })
+
+      it('should playback attributes', function () {
+        const content = `= Title
+:next-section:
+
+This is a preamble!
+
+:next-section: First section
+
+== First section
+
+:next-section: Second section
+
+== Second section
+`
+        const doc = asciidoctor.load(content)
+        const blocks = doc.getBlocks()
+        expect(blocks.length).to.equal(3)
+        for (let i = 0; i < blocks.length; i++) {
+          const block = blocks[i]
+          if (i === 0) {
+            expect(doc.getAttribute('next-section')).to.equal('')
+            doc.playbackAttributes(block.getAttributes())
+            expect(doc.getAttribute('next-section')).to.equal('')
+          } else if (i === 1) {
+            expect(doc.getAttribute('next-section')).to.equal('')
+            doc.playbackAttributes(block.getAttributes())
+            expect(doc.getAttribute('next-section')).to.equal('First section')
+          } else if (i === 2) {
+            expect(doc.getAttribute('next-section')).to.equal('First section')
+            doc.playbackAttributes(block.getAttributes())
+            expect(doc.getAttribute('next-section')).to.equal('Second section')
+          }
+        }
+        doc.playbackAttributes({
+          attribute_entries: [{
+            name: 'next-section',
+            value: 'Third section',
+            negate: false
+          }]
+        })
+        expect(doc.getAttribute('next-section')).to.equal('Third section')
+      })
     })
 
     describe('Wildcard character match', function () {

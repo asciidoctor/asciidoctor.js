@@ -506,6 +506,12 @@ export namespace Asciidoctor {
       getText(): string | undefined;
     }
 
+    interface AttributeEntry {
+      name: string;
+      value: string;
+      negate: boolean;
+    }
+
     /**
      *
      */
@@ -592,6 +598,10 @@ export namespace Asciidoctor {
 
       content_model?: string;
       subs?: string | string[];
+    }
+
+    interface Attributes {
+      attribute_entries?: Document.AttributeEntry[];
     }
   }
 
@@ -1760,6 +1770,17 @@ export namespace Asciidoctor {
     /**
      */
     hasHeader(): boolean;
+
+    /**
+     * Replay attribute assignments at the block level
+     *
+     * <i>This method belongs to an internal API that deals with how attributes are managed by the processor.</i>
+     * If you understand why this group of methods are necessary, and what they do, feel free to use them.
+     * <strong>However, keep in mind they are subject to change at any time.</strong>
+     *
+     * @param blockAttributes - a JSON of attributes
+     */
+   playbackAttributes(blockAttributes: Block.Attributes): void;
 
     /**
      * Delete the specified attribute from the document if the name is not locked.
