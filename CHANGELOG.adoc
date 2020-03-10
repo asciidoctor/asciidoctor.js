@@ -12,6 +12,10 @@ Bug Fixes::
 
 * Fix the Asciidoctor CLI provided by the `asciidoctor` package (#846) - thanks @thorstenkampe
 
+Improvements::
+
+* Map `Document.restoreAttributes` (#843)
+
 
 == v2.1.1 (2020-02-01)
 

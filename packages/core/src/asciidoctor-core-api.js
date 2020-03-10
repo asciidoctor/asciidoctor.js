@@ -1884,6 +1884,15 @@ Document.prototype.isAttributeLocked = function (key) {
 }
 
 /**
+ * Restore the attributes to the previously saved state (attributes in header).
+ *
+ * @memberof Document
+ */
+Document.prototype.restoreAttributes = function () {
+  return this.$restore_attributes()
+}
+
+/**
  * Parse the AsciiDoc source stored in the {Reader} into an abstract syntax tree.
  *
  * If the data parameter is not nil, create a new {PreprocessorReader} and assigned it to the reader property of this object.

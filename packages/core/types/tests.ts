@@ -983,3 +983,17 @@ intro
     processor.LoggerManager.setLogger(defaultLogger);
   }
 })();
+
+const docWithAttributes = processor.load(`= Document Title
+:foo: bar
+
+content
+
+:foo: baz
+
+content`);
+assert(docWithAttributes.getAttribute('foo') === 'bar');
+docWithAttributes.convert();
+assert(docWithAttributes.getAttribute('foo') === 'baz');
+docWithAttributes.restoreAttributes();
+assert(docWithAttributes.getAttribute('foo') === 'bar');
