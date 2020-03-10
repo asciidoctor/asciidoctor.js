@@ -1734,6 +1734,24 @@ America/New_York
         expect(table.getContext()).to.equal('table')
         expect(table.hasHeaderOption()).to.equal(true)
       })
+      it('should return true fro hashHeaderOption(), hasFooterOption() and hasAutowidth', function () {
+        const options = {}
+        const source = `
+[%header%footer%autowidth]    
+|===
+|This is a header cell
+
+| This is a normal cell
+
+| This is a footer cell
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.hasHeaderOption()).to.equal(true)
+        expect(table.hasFooterOption()).to.equal(true)
+        expect(table.hasAutowidthOption()).to.equal(true)
+      })
       it('should return true for hasHeader(), true for hasHeaderOption() and true for hasRows() ', function () {
         const options = {}
         const source = `
