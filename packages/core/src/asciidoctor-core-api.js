@@ -3083,8 +3083,8 @@ Table.create = function (parent, attributes) {
  * @returns {string|undefined}
  */
 Table.prototype.getAttribute = function (name) {
-  var ret = this.getAttributes()[name]
-  return (ret !== Opal.nil) ? ret : undefined
+  var value = this.getAttributes()[name]
+  return value === Opal.nil ? undefined : value
 }
 
 /**
@@ -3140,7 +3140,7 @@ Table.prototype.getFoot = function () {
  * @returns {boolean}
  */
 Table.prototype.hasRows = function () {
-  return (this.rows !== Opal.nil) && (this.rows.body.length > 0)
+  return this.rows !== Opal.nil && this.rows.body.length > 0
 }
 
 /**
@@ -3148,7 +3148,7 @@ Table.prototype.hasRows = function () {
  * @returns {boolean}
  */
 Table.prototype.hasHeader = function () {
-  return (this.rows !== Opal.nil) && (this.rows.head.length > 0)
+  return this.rows !== Opal.nil && this.rows.head.length > 0
 }
 
 /**
@@ -3164,7 +3164,7 @@ Table.prototype.hasHeaderOption = function () {
  * @returns {boolean}
  */
 Table.prototype.hasFooter = function () {
-  return (this.rows !== Opal.nil) && (this.rows.foot.length > 0)
+  return this.rows !== Opal.nil && this.rows.foot.length > 0
 }
 
 /**
@@ -3173,7 +3173,7 @@ Table.prototype.hasFooter = function () {
  */
 Table.prototype.hasFooterOption = function () {
   var footerOption = this.getAttributes()['footer-option'] === ''
-  return footerOption !== Opal.nil ? footerOption : false
+  return footerOption === Opal.nil ? false : footerOption
 }
 
 /**
@@ -3182,7 +3182,7 @@ Table.prototype.hasFooterOption = function () {
  */
 Table.prototype.hasAutowidthOption = function () {
   var autowidthOption = this.getAttributes()['autowidth-option'] === ''
-  return autowidthOption !== Opal.nil ? autowidthOption : false
+  return autowidthOption === Opal.nil ? false : autowidthOption
 }
 
 /**
@@ -3230,8 +3230,8 @@ Column.create = function (table, index, attributes) {
  * @returns {string|undefined}
  */
 Column.prototype.getAttribute = function (name) {
-  var ret = this.getAttributes()[name]
-  return (ret !== Opal.nil) ? ret : undefined
+  var value = this.getAttributes()[name]
+  return value === Opal.nil ? undefined : value
 }
 
 /**
@@ -3272,7 +3272,7 @@ Column.prototype.getVAlign = function () {
  */
 Column.prototype.getStyle = function () {
   var style = this.style
-  return style !== Opal.nil ? style : undefined
+  return style === Opal.nil ? undefined : style
 }
 
 // Table Cell
@@ -3303,8 +3303,8 @@ Cell.create = function (column, cellText, attributes, opts) {
  * @returns {string|undefined}
  */
 Cell.prototype.getAttribute = function (name) {
-  let ret = this.getAttributes()[name]
-  return (ret !== Opal.nil) ? ret : undefined
+  var value = this.getAttributes()[name]
+  return value === Opal.nil ? undefined : value
 }
 
 /**
@@ -3353,7 +3353,7 @@ Cell.prototype.setRowspan = function (value) {
  */
 Cell.prototype.getContent = function () {
   var content = this['$content']()
-  return content !== Opal.nil ? content : undefined
+  return content === Opal.nil ? undefined : content
 }
 
 /**
@@ -3362,7 +3362,7 @@ Cell.prototype.getContent = function () {
  */
 Cell.prototype.getText = function () {
   var text = this['$text']()
-  return text !== Opal.nil ? text : undefined
+  return text === Opal.nil ? undefined : text
 }
 
 /**
@@ -3371,7 +3371,7 @@ Cell.prototype.getText = function () {
  */
 Cell.prototype.getSource = function () {
   var source = this['$source']()
-  return source !== Opal.nil ? source : undefined
+  return source === Opal.nil ? undefined : source
 }
 
 /**
@@ -3380,7 +3380,7 @@ Cell.prototype.getSource = function () {
  */
 Cell.prototype.getLines = function () {
   var lines = this['$lines']()
-  return lines !== Opal.nil ? lines : undefined
+  return lines === Opal.nil ? undefined : lines
 }
 
 /**
@@ -3389,7 +3389,7 @@ Cell.prototype.getLines = function () {
  */
 Cell.prototype.getLineno = function () {
   var lineno = this['$lineno']()
-  return lineno !== Opal.nil ? lineno : undefined
+  return lineno === Opal.nil ? undefined : lineno
 }
 
 /**
@@ -3398,7 +3398,7 @@ Cell.prototype.getLineno = function () {
  */
 Cell.prototype.getFile = function () {
   var file = this['$file']()
-  return file !== Opal.nil ? file : undefined
+  return file === Opal.nil ? undefined : file
 }
 
 /**
@@ -3407,7 +3407,7 @@ Cell.prototype.getFile = function () {
  */
 Cell.prototype.getStyle = function () {
   var style = this['$style']()
-  return style !== Opal.nil ? style : undefined
+  return style === Opal.nil ? undefined : style
 }
 
 /**
@@ -3416,7 +3416,7 @@ Cell.prototype.getStyle = function () {
  */
 Cell.prototype.getColumn = function () {
   var column = this.$column()
-  return column !== Opal.nil ? column : undefined
+  return column === Opal.nil ? undefined : column
 }
 
 /**
