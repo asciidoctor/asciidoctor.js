@@ -1684,37 +1684,65 @@ America/New_York
     describe('Table stuff', function () {
       it('should return true for hasRows()', function () {
         const options = {}
-        const doc = asciidoctor.load('= Document Title\n\n|===\n\n|This is a title\n|===', options)
+        const source = `
+|===
+
+|This is a body cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
         expect(table.hasRows()).to.equal(true)
       })
       it('should return false for hasRows(). Only header is set', function () {
         const options = {}
-        const doc = asciidoctor.load('= Document Title\n\n|===\n|Header\n|===', options)
+        const source = `
+|===
+|This is a header cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.hasRows()).to.equal(true)
+        expect(table.hasRows()).to.equal(false)
       })
-      it('should return true for hasHeaderOption()', function () {
+      it('should return false for hasHeaderOption()', function () {
         const options = {}
-        const doc = asciidoctor.load('= Document Title\n\n|===\n|Header\n\n|\n|===', options)
+        const source = `
+|===
+|This is a header cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
         expect(table.hasHeader()).to.equal(true)
         expect(table.hasHeaderOption()).to.equal(true)
-        expect(table.hasRows()).to.equal(true)
+        expect(table.hasRows()).to.equal(false)
       })
       it('should return true for hasHeaderOption()', function () {
         const options = {}
-        const doc = asciidoctor.load('= Document Title\n\n[%header]\n|===\n|Header\n\n|value\n|===', options)
+        const source = `
+[%header]    
+|===
+|This is a header cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
         expect(table.hasHeaderOption()).to.equal(true)
       })
       it('should return true for hasHeader(), true for hasHeaderOption() and true for hasRows() ', function () {
         const options = {}
-        const doc = asciidoctor.load('= Document Title\n\n|===\n|Header\n\n|value\n|===', options)
+        const source = `
+|===
+|This is a header cell
+
+|This is a body cell
+|===`
+        const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
         expect(table.hasHeader()).to.equal(true)
@@ -1723,21 +1751,39 @@ America/New_York
       })
       it('should return 3 for getRowcount() since header row is also counted', function () {
         const options = {}
-        const doc = asciidoctor.load('= Document Title\n\n[%header]\n|===\n|Header\n\n|value\n\n|value\n|===', options)
+        const source = `
+|===
+|This is a header cell
+
+|This is a body cell
+|This is a body cell
+|===`
+        const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
         expect(table.getRowcount()).to.equal(3)
       })
       it('should return 1 for getColcount() ', function () {
         const options = {}
-        const doc = asciidoctor.load('= Document Title\n\n[%header]\n|===\n|Header\n\n|value\n\n|value\n|===', options)
+        const source = `
+|===
+|This is a header cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
         expect(table.getColcount()).to.equal(1)
       })
       it('should return "Table 1. " for getCaption(), "Table 1. Caption" for getCaptionedTitle() and "Caption" for getTitle()', function () {
         const options = {}
-        const doc = asciidoctor.load('= Document Title\n\n.Caption\n|===\n|Header\n\n|value\n\n|value\n|===', options)
+        const source = `
+.Caption
+|===
+|This is a header cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
         expect(table.getCaption()).to.equal('Table 1. ')
@@ -1746,7 +1792,13 @@ America/New_York
       })
       it('should return a Rows object with a size-1 head and a size-1 body', function () {
         const options = {}
-        const doc = asciidoctor.load('= Document Title\n\n|===\n|Header\n\n|Col 1.1\n|===', options)
+        const source = `
+|===
+|This is a header cell
+
+|Cell in column 1, row 1
+|===`
+        const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
         expect(table.getRows().head.length).to.equal(1)
@@ -1754,11 +1806,19 @@ America/New_York
       })
       it('should return a row in the  body', function () {
         const options = {}
-        const doc = asciidoctor.load('= Document Title\n\n|===\n|Header\n\n|Col 1.1\n|===', options)
+        const source = `= Document Title
+
+|===
+|Header
+
+|Cell in column 1, row 1
+|Cell in column 1, row 2
+|===`
+        const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
         expect(table.getHead()[0][0].getText()).to.equal('Header')
-        expect(table.getBody()[0][0].getLines()[0]).to.equal('Col 1.1')
+        expect(table.getBody()[0][0].getLines()[0]).to.equal('Cell in column 1, row 1')
         expect(table.getBody()[0][0].getLineno()).to.equal(undefined)
         expect(table.getBody()[0][0].getFile()).to.equal(undefined)
       })

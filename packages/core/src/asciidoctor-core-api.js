@@ -3077,25 +3077,13 @@ Table.create = function (parent, attributes) {
 }
 
 /**
- * Check, if a given option is set
- * @param {string} opt the option to check
- * @returns {boolean}
- */
-Table.prototype.hasOption = function (opt) {
-  if (fromHash(this.attributes)[opt + '-option'] !== undefined) {
-    return true
-  }
-  return false
-}
-
-/**
  * Get the attribute with the given name. If the attribute is not
  * set, undefined will be returned
  * @param {string} name the name of the attribute
  * @returns {string|undefined}
  */
 Table.prototype.getAttribute = function (name) {
-  let ret = this.getAttributes()[name]
+  var ret = this.getAttributes()[name]
   return (ret !== Opal.nil) ? ret : undefined
 }
 
@@ -3184,7 +3172,8 @@ Table.prototype.hasFooter = function () {
  * @returns {boolean}
  */
 Table.prototype.hasFooterOption = function () {
-  return this.hasOption('footer')
+  var footerOption = this.getAttributes()['footer-option'] === ''
+  return footerOption !== Opal.nil ? footerOption : false
 }
 
 /**
@@ -3192,7 +3181,8 @@ Table.prototype.hasFooterOption = function () {
  * @returns {boolean}
  */
 Table.prototype.hasAutowidthOption = function () {
-  return this.hasOption('autowidth')
+  var autowidthOption = this.getAttributes()['autowidth-option'] === ''
+  return autowidthOption !== Opal.nil ? autowidthOption : false
 }
 
 /**
@@ -3230,8 +3220,7 @@ var Column = Opal.Asciidoctor.Table.Column
  * @returns Column
  */
 Column.create = function (table, index, attributes) {
-  let ret = this.$new(table, index, attributes)
-  return ret
+  return this.$new(table, index, toHash(attributes))
 }
 
 /**
@@ -3241,7 +3230,7 @@ Column.create = function (table, index, attributes) {
  * @returns {string|undefined}
  */
 Column.prototype.getAttribute = function (name) {
-  let ret = this.getAttributes()[name]
+  var ret = this.getAttributes()[name]
   return (ret !== Opal.nil) ? ret : undefined
 }
 
@@ -3282,8 +3271,8 @@ Column.prototype.getVAlign = function () {
  * @returns {string}
  */
 Column.prototype.getStyle = function () {
-  let ret = this.style
-  return (ret !== Opal.nil) ? ret : undefined
+  var style = this.style
+  return style !== Opal.nil ? style : undefined
 }
 
 // Table Cell
@@ -3359,22 +3348,12 @@ Cell.prototype.setRowspan = function (value) {
 }
 
 /**
- * get the rowspan of this {@link Cell} node
- * @memberof Cell
- * @returns {number}  An Integer of the number of rows this cell will span (default undefined)
- */
-Cell.prototype.getRowspan = function () {
-  var rowspan = this.rowspan
-  return rowspan === Opal.nil ? undefined : rowspan
-}
-
-/**
  * Get the content of the cell
  * This method should not be used for cells in the head row or that have the literal style.
  */
 Cell.prototype.getContent = function () {
-  let ret = this['$content']()
-  return (ret !== Opal.nil) ? ret : undefined
+  var content = this['$content']()
+  return content !== Opal.nil ? content : undefined
 }
 
 /**
@@ -3382,8 +3361,8 @@ Cell.prototype.getContent = function () {
  * @returns {string}
  */
 Cell.prototype.getText = function () {
-  let ret = this['$text']()
-  return (ret !== Opal.nil) ? ret : undefined
+  var text = this['$text']()
+  return text !== Opal.nil ? text : undefined
 }
 
 /**
@@ -3391,8 +3370,8 @@ Cell.prototype.getText = function () {
  * @returns {string}
  */
 Cell.prototype.getSource = function () {
-  let ret = this['$source']()
-  return (ret !== Opal.nil) ? ret : undefined
+  var source = this['$source']()
+  return source !== Opal.nil ? source : undefined
 }
 
 /**
@@ -3400,8 +3379,8 @@ Cell.prototype.getSource = function () {
  * @returns {Array}
  */
 Cell.prototype.getLines = function () {
-  let ret = this['$lines']()
-  return (ret !== Opal.nil) ? ret : undefined
+  var lines = this['$lines']()
+  return lines !== Opal.nil ? lines : undefined
 }
 
 /**
@@ -3409,8 +3388,8 @@ Cell.prototype.getLines = function () {
  * @returns {string}
  */
 Cell.prototype.getLineno = function () {
-  let ret = this['$lineno']()
-  return (ret !== Opal.nil) ? ret : undefined
+  var lineno = this['$lineno']()
+  return lineno !== Opal.nil ? lineno : undefined
 }
 
 /**
@@ -3418,8 +3397,8 @@ Cell.prototype.getLineno = function () {
  * @returns {string}
  */
 Cell.prototype.getFile = function () {
-  let ret = this['$file']()
-  return (ret !== Opal.nil) ? ret : undefined
+  var file = this['$file']()
+  return file !== Opal.nil ? file : undefined
 }
 
 /**
@@ -3427,8 +3406,8 @@ Cell.prototype.getFile = function () {
  * @returns {string}
  */
 Cell.prototype.getStyle = function () {
-  let ret = this['$style']()
-  return (ret !== Opal.nil) ? ret : undefined
+  var style = this['$style']()
+  return style !== Opal.nil ? style : undefined
 }
 
 /**
@@ -3436,8 +3415,8 @@ Cell.prototype.getStyle = function () {
  * @returns {Column}
  */
 Cell.prototype.getColumn = function () {
-  let ret = this.$column()
-  return (ret !== Opal.nil) ? ret : undefined
+  var column = this.$column()
+  return column !== Opal.nil ? column : undefined
 }
 
 /**
