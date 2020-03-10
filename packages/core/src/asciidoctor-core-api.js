@@ -46,7 +46,7 @@ var prepareOptions = function (options) {
 }
 
 function initializeClass (superClass, className, functions, defaultFunctions, argProxyFunctions) {
-  var scope = Opal.klass(Opal.Object, superClass, className, function () {})
+  var scope = Opal.klass(Opal.Object, superClass, className, function () { })
   var postConstructFunction
   var initializeFunction
   var constructorFunction
@@ -3055,4 +3055,403 @@ Opal.Asciidoctor.SyntaxHighlighterBase = SyntaxHighlighterBase
  */
 SyntaxHighlighterBase.prototype.registerFor = function (names) {
   SyntaxHighlighter['$register'](this, names)
+}
+
+// Table API
+
+/**
+ * Methods for managing AsciiDoc tables.
+ * @namespace
+ * @extends AbstractBlock
+ */
+var Table = Opal.Asciidoctor.Table
+
+/**
+ * Create a new Table element
+ * @param {AbstractBlock} parent
+ * @param {Object|undefined} attributes
+ * @returns {Table}
+ */
+Table.create = function (parent, attributes) {
+  return this.$new(parent, attributes)
+}
+
+/**
+ * Check, if a given option is set
+ * @param {string} opt the option to check
+ * @returns {boolean}
+ */
+Table.prototype.hasOption = function (opt) {
+  if (fromHash(this.attributes)[opt + '-option'] !== undefined) {
+    return true
+  }
+  return false
+}
+
+/**
+ * Get the attribute with the given name. If the attribute is not
+ * set, undefined will be returned
+ * @param {string} name the name of the attribute
+ * @returns {string|undefined}
+ */
+Table.prototype.getAttribute = function (name) {
+  let ret = this.getAttributes()[name]
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the caption of the table
+ * @returns {string}
+ */
+Table.prototype.getCaption = function () {
+  return this.caption
+}
+
+/**
+ * Get the rows of this table
+ * @returns {Object} An object with the members "head", "body" and "foot"
+ */
+Table.prototype.getRows = function () {
+  return this.rows
+}
+
+/**
+ * Get the columns of this table
+ * @returns {Array<Column>}
+ */
+Table.prototype.getColumns = function () {
+  return this.columns
+}
+
+/**
+ * Get the head rows of this table
+ * @returns an Array of Array of Cell
+ */
+Table.prototype.getHead = function () {
+  return this.rows.head
+}
+
+/**
+ * Get the body rows of this table
+ * @returns an Array of Array of Cell
+ */
+Table.prototype.getBody = function () {
+  return this.rows.body
+}
+
+/**
+ * Get the foot rows of this table
+ * @returns an Array of Array of Cell
+ */
+Table.prototype.getFoot = function () {
+  return this.rows.foot
+}
+
+/**
+ * Check if the table has rows
+ * @returns {boolean}
+ */
+Table.prototype.hasRows = function () {
+  return (this.rows !== Opal.nil) && (this.rows.body.length > 0)
+}
+
+/**
+ * Check if the table has a header
+ * @returns {boolean}
+ */
+Table.prototype.hasHeader = function () {
+  return (this.rows !== Opal.nil) && (this.rows.head.length > 0)
+}
+
+/**
+ * Check if the table has a header option set
+ * @returns {boolean}
+ */
+Table.prototype.hasHeaderOption = function () {
+  return this.has_header_option
+}
+
+/**
+ * Check if the table has a footer
+ * @returns {boolean}
+ */
+Table.prototype.hasFooter = function () {
+  return (this.rows !== Opal.nil) && (this.rows.foot.length > 0)
+}
+
+/**
+ * Check if the table has the footer option set
+ * @returns {boolean}
+ */
+Table.prototype.hasFooterOption = function () {
+  return this.hasOption('footer')
+}
+
+/**
+ * Check if the table has the autowidth option set
+ * @returns {boolean}
+ */
+Table.prototype.hasAutowidthOption = function () {
+  return this.hasOption('autowidth')
+}
+
+/**
+ * Get the number of rows in the table. Please be carefull, the
+ * header and footer rows are also counted
+ * @returns {string|undefined}
+ */
+Table.prototype.getRowcount = function () {
+  return this.getAttribute('rowcount')
+}
+
+/**
+ * Get the number of columns in the table
+ * @returns {string|undefined}
+ */
+Table.prototype.getColcount = function () {
+  return this.getAttribute('colcount')
+}
+
+// Table Column
+
+/**
+ * Methods to manage the columns of an AsciiDoc table. In particular, it
+ * keeps track of the column specs
+ * @namespace
+ * @extends AbstractNode
+ */
+var Column = Opal.Asciidoctor.Table.Column
+
+/**
+ * Create a new Column element
+ * @param {Table} table
+ * @param {number} index
+ * @param {Object|undefined} attributes
+ * @returns Column
+ */
+Column.create = function (table, index, attributes) {
+  let ret = this.$new(table, index, attributes)
+  return ret
+}
+
+/**
+ * Get the attribute with the given name. If the attribute is not
+ * set, undefined will be returned
+ * @param {string} name the name of the attribute
+ * @returns {string|undefined}
+ */
+Column.prototype.getAttribute = function (name) {
+  let ret = this.getAttributes()[name]
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the colnumber of this cell
+ * @returns {string|undefined}
+ */
+Column.prototype.getColnumber = function () {
+  return this.getAttribute('colnumber')
+}
+
+/**
+ * Get the width of this cell
+ * @returns {string|undefined}
+ */
+Column.prototype.getWidth = function () {
+  return this.getAttribute('width')
+}
+
+/**
+ * Get the hAlign of this cell
+ * @returns {string|undefined}
+ */
+Column.prototype.getHAlign = function () {
+  return this.getAttribute('halign')
+}
+
+/**
+ * Get the vAlign of this cell
+ * @returns {string|undefined}
+ */
+Column.prototype.getVAlign = function () {
+  return this.getAttribute('valign')
+}
+
+/**
+ * Get the style of this cell
+ * @returns {string}
+ */
+Column.prototype.getStyle = function () {
+  let ret = this.style
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+// Table Cell
+
+/**
+ * Methods for managing the a cell in an AsciiDoc table.
+ * @namespace
+ * @extends AbstractBlock
+ */
+var Cell = Opal.Asciidoctor.Table.Cell
+
+/**
+ * Create a new Cell element
+ * @param {Column} column
+ * @param {string} cellText
+ * @param {Object|undefined} attributes
+ * @param {Object|undefined} opts
+ * @returns {Cell}
+ */
+Cell.create = function (column, cellText, attributes, opts) {
+  return this.$new(column, cellText, attributes, opts)
+}
+
+/**
+ * Get the attribute with the given name. If the attribute is not
+ * set, undefined will be returned
+ * @param {string} name the name of the attribute
+ * @returns {string|undefined}
+ */
+Cell.prototype.getAttribute = function (name) {
+  let ret = this.getAttributes()[name]
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the colspan of this {@link Cell} node
+ * @memberof Cell
+ * @returns {number}  An Integer of the number of columns this cell will span (default undefines)
+ */
+Cell.prototype.getColspan = function () {
+  var colspan = this.colspan
+  return colspan === Opal.nil ? undefined : colspan
+}
+
+/**
+ * set the colspan of this {@link Cell} node
+ * @param {string} value
+ * @returns{string} the new colspan value
+ * @memberof Cell
+ */
+Cell.prototype.setColspan = function (value) {
+  return this['$colspan='](value)
+}
+
+/**
+ * get the rowspan of this {@link Cell} node
+ * @memberof Cell
+ * @returns {number}  An Integer of the number of rows this cell will span (default undefined)
+ */
+Cell.prototype.getRowspan = function () {
+  var rowspan = this.rowspan
+  return rowspan === Opal.nil ? undefined : rowspan
+}
+
+/**
+ * set the rowspan of this {@link Cell} node
+ * @param {string} value
+ * @returns{string} the new rowspan value
+ * @memberof Cell
+ */
+Cell.prototype.setRowspan = function (value) {
+  return this['$rowspan='](value)
+}
+
+/**
+ * get the rowspan of this {@link Cell} node
+ * @memberof Cell
+ * @returns {number}  An Integer of the number of rows this cell will span (default undefined)
+ */
+Cell.prototype.getRowspan = function () {
+  var rowspan = this.rowspan
+  return rowspan === Opal.nil ? undefined : rowspan
+}
+
+/**
+ * Get the content of the cell
+ * This method should not be used for cells in the head row or that have the literal style.
+ */
+Cell.prototype.getContent = function () {
+  let ret = this['$content']()
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the text of the cell
+ * @returns {string}
+ */
+Cell.prototype.getText = function () {
+  let ret = this['$text']()
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the source of the cell
+ * @returns {string}
+ */
+Cell.prototype.getSource = function () {
+  let ret = this['$source']()
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the lines of the cell
+ * @returns {Array}
+ */
+Cell.prototype.getLines = function () {
+  let ret = this['$lines']()
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the lineno of the cell
+ * @returns {string}
+ */
+Cell.prototype.getLineno = function () {
+  let ret = this['$lineno']()
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the file of the cell
+ * @returns {string}
+ */
+Cell.prototype.getFile = function () {
+  let ret = this['$file']()
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the style of the cell
+ * @returns {string}
+ */
+Cell.prototype.getStyle = function () {
+  let ret = this['$style']()
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the column of this cell
+ * @returns {Column}
+ */
+Cell.prototype.getColumn = function () {
+  let ret = this.$column()
+  return (ret !== Opal.nil) ? ret : undefined
+}
+
+/**
+ * Get the width of this cell
+ * @returns {string|undefined}
+ */
+Cell.prototype.getWidth = function () {
+  return this.getAttribute('width')
+}
+
+/**
+ * Get the colpcwidth of this cell
+ * @returns {string|undefined}
+ */
+Cell.prototype.getColpcwidth = function () {
+  return this.getAttribute('colpcwidth')
 }
