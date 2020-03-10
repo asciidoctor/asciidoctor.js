@@ -1847,6 +1847,7 @@ America/New_York
         expect(table.hasFooterOption()).to.equal(true)
         expect(table.getColumns()[0].getColnumber()).to.equal(1)
         expect(table.getBody()[0][0].getColumn().getColnumber()).to.equal(1)
+        expect(table.getBody()[0][1].getColumn().getColnumber()).to.equal(2)
         expect(table.getBody()[0][0].getColumn().getWidth()).to.equal(1)
         expect(table.getBody()[0][0].getWidth()).to.equal(1)
         expect(table.getHead()[0][0].getStyle()).to.equal(undefined)
