@@ -1682,6 +1682,35 @@ America/New_York
       })
     })
     describe('Table stuff', function () {
+      it('should create a table, a column and a cell', function () {
+        try {
+          asciidoctor.Extensions.register(function () {
+            this.blockMacro('table', function () {
+              const self = this
+              self.process(function (parent) {
+                const table = asciidoctor.Table.create(parent, {})
+                table.setAttribute('rowcount', 1)
+                const firstColumn = asciidoctor.Table.Column.create(table, 0, {})
+                const firstCell = asciidoctor.Table.Cell.create(firstColumn, 'Cell in column 1, row 1', {}, {})
+                table.getBody().push([firstCell])
+                return table
+              })
+            })
+          })
+          const html = asciidoctor.convert('table::[]')
+          expect(html).to.equal(`<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 1, row 1</p></td>
+</tr>
+</tbody>
+</table>`)
+        } finally {
+          asciidoctor.Extensions.unregisterAll()
+        }
+      })
       it('should return true for hasRows()', function () {
         const options = {}
         const source = `
@@ -1724,7 +1753,7 @@ America/New_York
       it('should return true for hasHeaderOption()', function () {
         const options = {}
         const source = `
-[%header]    
+[%header]
 |===
 |This is a header cell
 
@@ -1734,10 +1763,10 @@ America/New_York
         expect(table.getContext()).to.equal('table')
         expect(table.hasHeaderOption()).to.equal(true)
       })
-      it('should return true fro hashHeaderOption(), hasFooterOption() and hasAutowidth', function () {
+      it('should return true for hashHeaderOption(), hasFooterOption() and hasAutowidth', function () {
         const options = {}
         const source = `
-[%header%footer%autowidth]    
+[%header%footer%autowidth]
 |===
 |This is a header cell
 
@@ -1822,7 +1851,7 @@ America/New_York
         expect(table.getRows().head.length).to.equal(1)
         expect(table.getRows().body.length).to.equal(1)
       })
-      it('should return a row in the  body', function () {
+      it('should return a row in the body', function () {
         const options = {}
         const source = `= Document Title
 
