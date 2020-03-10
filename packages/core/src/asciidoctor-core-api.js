@@ -3073,7 +3073,7 @@ var Table = Opal.Asciidoctor.Table
  * @returns {Table}
  */
 Table.create = function (parent, attributes) {
-  return this.$new(parent, attributes)
+  return this.$new(parent, toHash(attributes))
 }
 
 /**
@@ -3293,7 +3293,7 @@ var Cell = Opal.Asciidoctor.Table.Cell
  * @returns {Cell}
  */
 Cell.create = function (column, cellText, attributes, opts) {
-  return this.$new(column, cellText, attributes, opts)
+  return this.$new(column, cellText, toHash(attributes), toHash(opts))
 }
 
 /**
