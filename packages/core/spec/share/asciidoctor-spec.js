@@ -1689,7 +1689,7 @@ America/New_York
               const self = this
               self.process(function (parent) {
                 const table = asciidoctor.Table.create(parent, {})
-                table.setAttribute('rowcount', 1)
+                table.setRowCount(1)
                 const firstColumn = asciidoctor.Table.Column.create(table, 0, {})
                 const firstCell = asciidoctor.Table.Cell.create(firstColumn, 'Cell in column 1, row 1', {}, {})
                 table.getBody().push([firstCell])
@@ -1704,6 +1704,43 @@ America/New_York
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 1, row 1</p></td>
+</tr>
+</tbody>
+</table>`)
+        } finally {
+          asciidoctor.Extensions.unregisterAll()
+        }
+      })
+      it('should create a table, a column and a cell with a row span', function () {
+        try {
+          asciidoctor.Extensions.register(function () {
+            this.blockMacro('table', function () {
+              const self = this
+              self.process(function (parent) {
+                const table = asciidoctor.Table.create(parent, {})
+                table.setRowCount(2)
+                const firstColumn = asciidoctor.Table.Column.create(table, 0, {})
+                const firstColumnFirstCell = asciidoctor.Table.Cell.create(firstColumn, 'Asciidoctor', {}, {})
+                firstColumnFirstCell.setRowSpan(2)
+                const secondColumn = asciidoctor.Table.Column.create(table, 0, {})
+                const secondColumnFirstCell = asciidoctor.Table.Cell.create(secondColumn, 'Awesome way to write documentation', {}, {})
+                const secondColumnSecondCell = asciidoctor.Table.Cell.create(secondColumn, 'Works on the JVM', {}, {})
+                table.getBody().push([firstColumnFirstCell, secondColumnFirstCell], [secondColumnSecondCell])
+                return table
+              })
+            })
+          })
+          const html = asciidoctor.convert('table::[]')
+          expect(html).to.equal(`<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">Asciidoctor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Awesome way to write documentation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Works on the JVM</p></td>
 </tr>
 </tbody>
 </table>`)
@@ -1796,7 +1833,7 @@ America/New_York
         expect(table.hasHeaderOption()).to.equal(true)
         expect(table.hasRows()).to.equal(true)
       })
-      it('should return 3 for getRowcount() since header row is also counted', function () {
+      it('should return 3 for getRowCount() since header row is also counted', function () {
         const options = {}
         const source = `
 |===
@@ -1808,9 +1845,9 @@ America/New_York
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.getRowcount()).to.equal(3)
+        expect(table.getRowCount()).to.equal(3)
       })
-      it('should return 1 for getColcount() ', function () {
+      it('should return 1 for getColumnCount() ', function () {
         const options = {}
         const source = `
 |===
@@ -1820,7 +1857,7 @@ America/New_York
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.getColcount()).to.equal(1)
+        expect(table.getColumnCount()).to.equal(1)
       })
       it('should return "Table 1. " for getCaption(), "Table 1. Caption" for getCaptionedTitle() and "Caption" for getTitle()', function () {
         const options = {}
@@ -1892,9 +1929,9 @@ America/New_York
         expect(table.hasHeaderOption()).to.equal(true)
         expect(table.hasFooter()).to.equal(true)
         expect(table.hasFooterOption()).to.equal(true)
-        expect(table.getColumns()[0].getColnumber()).to.equal(1)
-        expect(table.getBody()[0][0].getColumn().getColnumber()).to.equal(1)
-        expect(table.getBody()[0][1].getColumn().getColnumber()).to.equal(2)
+        expect(table.getColumns()[0].getColumnNumber()).to.equal(1)
+        expect(table.getBody()[0][0].getColumn().getColumnNumber()).to.equal(1)
+        expect(table.getBody()[0][1].getColumn().getColumnNumber()).to.equal(2)
         expect(table.getBody()[0][0].getColumn().getWidth()).to.equal(1)
         expect(table.getBody()[0][0].getWidth()).to.equal(1)
         expect(table.getHead()[0][0].getStyle()).to.equal(undefined)

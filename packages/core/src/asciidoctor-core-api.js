@@ -3067,7 +3067,7 @@ SyntaxHighlighterBase.prototype.registerFor = function (names) {
 var Table = Opal.Asciidoctor.Table
 
 /**
- * Create a new Table element
+ * Create a new Table element.
  * @param {AbstractBlock} parent
  * @param {Object|undefined} attributes
  * @returns {Table}
@@ -3077,90 +3077,88 @@ Table.create = function (parent, attributes) {
 }
 
 /**
- * Get the attribute with the given name. If the attribute is not
- * set, undefined will be returned
- * @param {string} name the name of the attribute
- * @returns {string|undefined}
- */
-Table.prototype.getAttribute = function (name) {
-  var value = this.getAttributes()[name]
-  return value === Opal.nil ? undefined : value
-}
-
-/**
- * Get the caption of the table
+ * Get the caption of the table.
  * @returns {string}
+ * @memberof Table
  */
 Table.prototype.getCaption = function () {
   return this.caption
 }
 
 /**
- * Get the rows of this table
+ * Get the rows of this table.
  * @returns {Object} An object with the members "head", "body" and "foot"
+ * @memberof Table
  */
 Table.prototype.getRows = function () {
   return this.rows
 }
 
 /**
- * Get the columns of this table
+ * Get the columns of this table.
  * @returns {Array<Column>}
+ * @memberof Table
  */
 Table.prototype.getColumns = function () {
   return this.columns
 }
 
 /**
- * Get the head rows of this table
- * @returns an Array of Array of Cell
+ * Get the head rows of this table.
+ * @returns {Array<Array<Cell>>} - an Array of Array of Cell
+ * @memberof Table
  */
 Table.prototype.getHead = function () {
   return this.rows.head
 }
 
 /**
- * Get the body rows of this table
- * @returns an Array of Array of Cell
+ * Get the body rows of this table.
+ * @returns {Array<Array<Cell>>} - an Array of Array of Cell
+ * @memberof Table
  */
 Table.prototype.getBody = function () {
   return this.rows.body
 }
 
 /**
- * Get the foot rows of this table
- * @returns an Array of Array of Cell
+ * Get the foot rows of this table.
+ * @returns {Array<Array<Cell>>} - an Array of Array of Cell
+ * @memberof Table
  */
 Table.prototype.getFoot = function () {
   return this.rows.foot
 }
 
 /**
- * Check if the table has rows
+ * Check if the table has rows.
  * @returns {boolean}
+ * @memberof Table
  */
 Table.prototype.hasRows = function () {
   return this.rows !== Opal.nil && this.rows.body.length > 0
 }
 
 /**
- * Check if the table has a header
+ * Check if the table has a header.
  * @returns {boolean}
+ * @memberof Table
  */
 Table.prototype.hasHeader = function () {
   return this.rows !== Opal.nil && this.rows.head.length > 0
 }
 
 /**
- * Check if the table has a header option set
+ * Check if the table has a header option set.
  * @returns {boolean}
+ * @memberof Table
  */
 Table.prototype.hasHeaderOption = function () {
   return this.has_header_option
 }
 
 /**
- * Check if the table has a footer
+ * Check if the table has a footer.
  * @returns {boolean}
  */
 Table.prototype.hasFooter = function () {
@@ -3168,17 +3166,19 @@ Table.prototype.hasFooter = function () {
 }
 
 /**
- * Check if the table has the footer option set
+ * Check if the table has the footer option set.
  * @returns {boolean}
+ * @memberof Table
  */
 Table.prototype.hasFooterOption = function () {
-  var footerOption = this.getAttributes()['footer-option'] === ''
-  return footerOption === Opal.nil ? false : footerOption
+  var footerOption = this.getAttributes()['footer-option']
+  return footerOption === Opal.nil ? false : footerOption === ''
 }
 
 /**
- * Check if the table has the autowidth option set
+ * Check if the table has the autowidth option set.
  * @returns {boolean}
+ * @memberof Table
  */
 Table.prototype.hasAutowidthOption = function () {
   var autowidthOption = this.getAttributes()['autowidth-option'] === ''
@@ -3186,34 +3186,46 @@ Table.prototype.hasAutowidthOption = function () {
 }
 
 /**
- * Get the number of rows in the table. Please be carefull, the
- * header and footer rows are also counted
- * @returns {string|undefined}
+ * Get the number of rows in the table.
+ * Please note that the header and footer rows are also counted.
+ * @returns {number|undefined}
+ * @memberof Table
  */
-Table.prototype.getRowcount = function () {
+Table.prototype.getRowCount = function () {
   return this.getAttribute('rowcount')
 }
 
 /**
- * Get the number of columns in the table
- * @returns {string|undefined}
+ * Set the number of rows in the table.
+ * Please note that the header and footer rows are also counted.
+ * @param {number} value - the value
+ * @memberof Table
  */
-Table.prototype.getColcount = function () {
+Table.prototype.setRowCount = function (value) {
+  this.setAttribute('rowcount', value)
+}
+
+/**
+ * Get the number of columns in the table.
+ * @returns {number|undefined}
+ * @memberof Table
+ */
+Table.prototype.getColumnCount = function () {
   return this.getAttribute('colcount')
 }
 
 // Table Column
 
 /**
- * Methods to manage the columns of an AsciiDoc table. In particular, it
- * keeps track of the column specs
+ * Methods to manage the columns of an AsciiDoc table.
+ * In particular, it keeps track of the column specs.
  * @namespace
  * @extends AbstractNode
  */
 var Column = Opal.Asciidoctor.Table.Column
 
 /**
- * Create a new Column element
+ * Create a new Column element.
  * @param {Table} table
  * @param {number} index
  * @param {Object|undefined} attributes
@@ -3224,51 +3236,45 @@ Column.create = function (table, index, attributes) {
 }
 
 /**
- * Get the attribute with the given name. If the attribute is not
- * set, undefined will be returned
- * @param {string} name the name of the attribute
- * @returns {string|undefined}
+ * Get the column number of this cell.
+ * @returns {number|undefined}
+ * @memberof Column
  */
-Column.prototype.getAttribute = function (name) {
-  var value = this.getAttributes()[name]
-  return value === Opal.nil ? undefined : value
-}
-
-/**
- * Get the colnumber of this cell
- * @returns {string|undefined}
- */
-Column.prototype.getColnumber = function () {
+Column.prototype.getColumnNumber = function () {
   return this.getAttribute('colnumber')
 }
 
 /**
- * Get the width of this cell
+ * Get the width of this cell.
  * @returns {string|undefined}
+ * @memberof Column
  */
 Column.prototype.getWidth = function () {
   return this.getAttribute('width')
 }
 
 /**
- * Get the hAlign of this cell
+ * Get the horizontal align of this cell
  * @returns {string|undefined}
+ * @memberof Column
  */
-Column.prototype.getHAlign = function () {
+Column.prototype.getHorizontalAlign = function () {
   return this.getAttribute('halign')
 }
 
 /**
- * Get the vAlign of this cell
+ * Get the vertical align of this cell.
  * @returns {string|undefined}
+ * @memberof Column
  */
-Column.prototype.getVAlign = function () {
+Column.prototype.getVerticalAlign = function () {
   return this.getAttribute('valign')
 }
 
 /**
- * Get the style of this cell
+ * Get the style of this cell.
  * @returns {string}
+ * @memberof Column
  */
 Column.prototype.getStyle = function () {
   var style = this.style
@@ -3297,20 +3303,9 @@ Cell.create = function (column, cellText, attributes, opts) {
 }
 
 /**
- * Get the attribute with the given name. If the attribute is not
- * set, undefined will be returned
- * @param {string} name the name of the attribute
- * @returns {string|undefined}
- */
-Cell.prototype.getAttribute = function (name) {
-  var value = this.getAttributes()[name]
-  return value === Opal.nil ? undefined : value
-}
-
-/**
- * Get the column span of this {@link Cell} node
+ * Get the column span of this {@link Cell} node.
+ * @returns {number} - An Integer of the number of columns this cell will span (default: undefined)
  * @memberof Cell
- * @returns {number}  An Integer of the number of columns this cell will span (default undefines)
  */
 Cell.prototype.getColumnSpan = function () {
   var colspan = this.colspan
@@ -3318,38 +3313,40 @@ Cell.prototype.getColumnSpan = function () {
 }
 
 /**
- * set the colspan of this {@link Cell} node
- * @param {string} value
- * @returns{string} the new colspan value
+ * Set the column span of this {@link Cell} node.
+ * @param {number} value
+ * @returns {number} - The new colspan value
  * @memberof Cell
  */
-Cell.prototype.setColspan = function (value) {
+Cell.prototype.setColumnSpan = function (value) {
   return this['$colspan='](value)
 }
 
 /**
- * get the rowspan of this {@link Cell} node
+ * Get the row span of this {@link Cell} node
+ * @returns {number} - An Integer of the number of rows this cell will span (default: undefined)
  * @memberof Cell
- * @returns {number}  An Integer of the number of rows this cell will span (default undefined)
  */
-Cell.prototype.getRowspan = function () {
+Cell.prototype.getRowSpan = function () {
   var rowspan = this.rowspan
   return rowspan === Opal.nil ? undefined : rowspan
 }
 
 /**
- * set the rowspan of this {@link Cell} node
- * @param {string} value
- * @returns{string} the new rowspan value
+ * Set the row span of this {@link Cell} node
+ * @param {number} value
+ * @returns {number} - The new rowspan value
  * @memberof Cell
  */
-Cell.prototype.setRowspan = function (value) {
+Cell.prototype.setRowSpan = function (value) {
   return this['$rowspan='](value)
 }
 
 /**
- * Get the content of the cell
+ * Get the content of the cell.
  * This method should not be used for cells in the head row or that have the literal style.
+ * @returns {string}
+ * @memberof Cell
  */
 Cell.prototype.getContent = function () {
   var content = this['$content']()
@@ -3357,8 +3354,9 @@ Cell.prototype.getContent = function () {
 }
 
 /**
- * Get the text of the cell
+ * Get the text of the cell.
  * @returns {string}
+ * @memberof Cell
  */
 Cell.prototype.getText = function () {
   var text = this['$text']()
@@ -3366,8 +3364,9 @@ Cell.prototype.getText = function () {
 }
 
 /**
- * Get the source of the cell
+ * Get the source of the cell.
  * @returns {string}
+ * @memberof Cell
  */
 Cell.prototype.getSource = function () {
   var source = this['$source']()
@@ -3375,8 +3374,9 @@ Cell.prototype.getSource = function () {
 }
 
 /**
- * Get the lines of the cell
- * @returns {Array}
+ * Get the lines of the cell.
+ * @returns {Array<string>}
+ * @memberof Cell
  */
 Cell.prototype.getLines = function () {
   var lines = this['$lines']()
@@ -3384,8 +3384,9 @@ Cell.prototype.getLines = function () {
 }
 
 /**
- * Get the line number of the cell
- * @returns {string}
+ * Get the line number of the cell.
+ * @returns {number}
+ * @memberof Cell
  */
 Cell.prototype.getLineNumber = function () {
   var lineno = this['$lineno']()
@@ -3393,8 +3394,9 @@ Cell.prototype.getLineNumber = function () {
 }
 
 /**
- * Get the file of the cell
+ * Get the file of the cell.
  * @returns {string}
+ * @memberof Cell
  */
 Cell.prototype.getFile = function () {
   var file = this['$file']()
@@ -3402,8 +3404,9 @@ Cell.prototype.getFile = function () {
 }
 
 /**
- * Get the style of the cell
+ * Get the style of the cell.
  * @returns {string}
+ * @memberof Cell
  */
 Cell.prototype.getStyle = function () {
   var style = this['$style']()
@@ -3411,8 +3414,9 @@ Cell.prototype.getStyle = function () {
 }
 
 /**
- * Get the column of this cell
+ * Get the column of this cell.
  * @returns {Column}
+ * @memberof Cell
  */
 Cell.prototype.getColumn = function () {
   var column = this.$column()
@@ -3420,16 +3424,18 @@ Cell.prototype.getColumn = function () {
 }
 
 /**
- * Get the width of this cell
+ * Get the width of this cell.
  * @returns {string|undefined}
+ * @memberof Cell
  */
 Cell.prototype.getWidth = function () {
   return this.getAttribute('width')
 }
 
 /**
- * Get the colpcwidth of this cell
+ * Get the column width in percentage of this cell.
  * @returns {string|undefined}
+ * @memberof Cell
  */
 Cell.prototype.getColumnPercentageWidth = function () {
   return this.getAttribute('colpcwidth')
