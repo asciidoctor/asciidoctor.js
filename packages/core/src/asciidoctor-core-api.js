@@ -3181,8 +3181,8 @@ Table.prototype.hasFooterOption = function () {
  * @memberof Table
  */
 Table.prototype.hasAutowidthOption = function () {
-  var autowidthOption = this.getAttributes()['autowidth-option'] === ''
-  return autowidthOption === Opal.nil ? false : autowidthOption
+  var autowidthOption = this.getAttributes()['autowidth-option']
+  return autowidthOption === Opal.nil ? false : autowidthOption === ''
 }
 
 /**
