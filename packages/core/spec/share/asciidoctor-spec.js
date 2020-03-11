@@ -1866,7 +1866,7 @@ America/New_York
         expect(table.getContext()).to.equal('table')
         expect(table.getHead()[0][0].getText()).to.equal('Header')
         expect(table.getBody()[0][0].getLines()[0]).to.equal('Cell in column 1, row 1')
-        expect(table.getBody()[0][0].getLineno()).to.equal(undefined)
+        expect(table.getBody()[0][0].getLineNumber()).to.equal(undefined)
         expect(table.getBody()[0][0].getFile()).to.equal(undefined)
       })
       it('should be a table with headers and footers', function () {
