@@ -1939,7 +1939,7 @@ America/New_York
         expect(table.getBody()[0][0].getWidth()).to.equal(1)
         expect(table.getHead()[0][0].getStyle()).to.equal(undefined)
       })
-      it('should return tablewidth', function () {
+      it('should return tablewidth 75%', function () {
         const options = {}
         const source = `
 [width=75%]
@@ -1953,6 +1953,66 @@ America/New_York
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
         expect(table.getAttribute('width')).to.equal('75%')
+      })
+      it('should handle colspan and rowspan', function () {
+        const options = {}
+        const source = `
+|===
+
+|Column 1, row 1 |Column 2, row 1 |Column 3, row 1 |Column 4, row 1
+
+|Column 1, row 2
+2.3+|Content in a single cell that spans over rows and columns
+|Column 4, row 2
+
+|Column 1, row 3
+|Column 4, row 3
+
+|Column 1, row 4
+|Column 4, row 4
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getBody()[1][1].getColumnSpan()).to.equal(2)
+        expect(table.getBody()[1][1].getRowSpan()).to.equal(3)
+      })
+      it('should handle cell duplication', function () {
+        const options = {}
+        const source = `
+|===
+
+|Column 1, row 1 |Column 2, row 1 |Column 3, row 1 |Column 4, row 1
+
+3*|Same text
+|Different text
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getBody()[1][0].getText()).to.equal('Same text')
+        expect(table.getBody()[1][1].getText()).to.equal('Same text')
+        expect(table.getBody()[1][2].getText()).to.equal('Same text')
+        expect(table.getBody()[1][3].getText()).to.equal('Different text')
+      })
+      it('should handle CSV format', function () {
+        const options = {}
+        const source = `
+[%header,format=csv]
+|===
+Artist,Track,Genre
+Baauer,Harlem Shake,Hip Hop
+The Lumineers,Ho Hey,Folk Rock
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getHead()[0][0].getText()).to.equal('Artist')
+        expect(table.getHead()[0][1].getText()).to.equal('Track')
+        expect(table.getHead()[0][2].getText()).to.equal('Genre')
+        expect(table.getBody()[0][0].getText()).to.equal('Baauer')
+        expect(table.getBody()[0][1].getText()).to.equal('Harlem Shake')
+        expect(table.getBody()[0][2].getText()).to.equal('Hip Hop')
       })
     })
   })
