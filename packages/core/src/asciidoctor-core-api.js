@@ -3308,11 +3308,11 @@ Cell.prototype.getAttribute = function (name) {
 }
 
 /**
- * Get the colspan of this {@link Cell} node
+ * Get the column span of this {@link Cell} node
  * @memberof Cell
  * @returns {number}  An Integer of the number of columns this cell will span (default undefines)
  */
-Cell.prototype.getColspan = function () {
+Cell.prototype.getColumnSpan = function () {
   var colspan = this.colspan
   return colspan === Opal.nil ? undefined : colspan
 }
@@ -3384,10 +3384,10 @@ Cell.prototype.getLines = function () {
 }
 
 /**
- * Get the lineno of the cell
+ * Get the line number of the cell
  * @returns {string}
  */
-Cell.prototype.getLineno = function () {
+Cell.prototype.getLineNumber = function () {
   var lineno = this['$lineno']()
   return lineno === Opal.nil ? undefined : lineno
 }
@@ -3431,6 +3431,6 @@ Cell.prototype.getWidth = function () {
  * Get the colpcwidth of this cell
  * @returns {string|undefined}
  */
-Cell.prototype.getColpcwidth = function () {
+Cell.prototype.getColumnPercentageWidth = function () {
   return this.getAttribute('colpcwidth')
 }
