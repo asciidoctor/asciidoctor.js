@@ -2014,6 +2014,25 @@ The Lumineers,Ho Hey,Folk Rock
         expect(table.getBody()[0][1].getText()).to.equal('Harlem Shake')
         expect(table.getBody()[0][2].getText()).to.equal('Hip Hop')
       })
+      it('should handle CSV shorthand syntax', function () {
+        const options = {}
+        const source = `
+,===
+Artist,Track,Genre
+
+Baauer,Harlem Shake,Hip Hop
+The Lumineers,Ho Hey,Folk Rock
+,===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getHead()[0][0].getText()).to.equal('Artist')
+        expect(table.getHead()[0][1].getText()).to.equal('Track')
+        expect(table.getHead()[0][2].getText()).to.equal('Genre')
+        expect(table.getBody()[0][0].getText()).to.equal('Baauer')
+        expect(table.getBody()[0][1].getText()).to.equal('Harlem Shake')
+        expect(table.getBody()[0][2].getText()).to.equal('Hip Hop')
+      })
     })
   })
 }
