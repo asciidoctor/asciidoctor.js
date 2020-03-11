@@ -1759,7 +1759,7 @@ America/New_York
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.hasRows()).to.equal(true)
+        expect(table.hasBodyRows()).to.equal(true)
       })
       it('should return false for hasRows(). Only header is set', function () {
         const options = {}
@@ -1771,7 +1771,7 @@ America/New_York
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.hasRows()).to.equal(false)
+        expect(table.hasBodyRows()).to.equal(false)
       })
       it('should return false for hasHeaderOption()', function () {
         const options = {}
@@ -1783,9 +1783,9 @@ America/New_York
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.hasHeader()).to.equal(true)
+        expect(table.hasHeadRows()).to.equal(true)
         expect(table.hasHeaderOption()).to.equal(true)
-        expect(table.hasRows()).to.equal(false)
+        expect(table.hasBodyRows()).to.equal(false)
       })
       it('should return true for hasHeaderOption()', function () {
         const options = {}
@@ -1817,6 +1817,9 @@ America/New_York
         expect(table.hasHeaderOption()).to.equal(true)
         expect(table.hasFooterOption()).to.equal(true)
         expect(table.hasAutowidthOption()).to.equal(true)
+        expect(table.hasHeadRows()).to.equal(true)
+        expect(table.hasBodyRows()).to.equal(true)
+        expect(table.hasFootRows()).to.equal(true)
       })
       it('should return true for hasHeader(), true for hasHeaderOption() and true for hasRows() ', function () {
         const options = {}
@@ -1829,9 +1832,9 @@ America/New_York
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.hasHeader()).to.equal(true)
+        expect(table.hasHeadRows()).to.equal(true)
         expect(table.hasHeaderOption()).to.equal(true)
-        expect(table.hasRows()).to.equal(true)
+        expect(table.hasBodyRows()).to.equal(true)
       })
       it('should return 3 for getRowCount() since header row is also counted', function () {
         const options = {}
@@ -1925,9 +1928,9 @@ America/New_York
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.hasHeader()).to.equal(true)
+        expect(table.hasHeadRows()).to.equal(true)
         expect(table.hasHeaderOption()).to.equal(true)
-        expect(table.hasFooter()).to.equal(true)
+        expect(table.hasFootRows()).to.equal(true)
         expect(table.hasFooterOption()).to.equal(true)
         expect(table.getColumns()[0].getColumnNumber()).to.equal(1)
         expect(table.getBody()[0][0].getColumn().getColumnNumber()).to.equal(1)
@@ -1935,6 +1938,21 @@ America/New_York
         expect(table.getBody()[0][0].getColumn().getWidth()).to.equal(1)
         expect(table.getBody()[0][0].getWidth()).to.equal(1)
         expect(table.getHead()[0][0].getStyle()).to.equal(undefined)
+      })
+      it('should return tablewidth', function () {
+        const options = {}
+        const source = `
+[width=75%]
+|===
+|Header
+
+|Cell in column 1, row 1
+|Cell in column 1, row 2
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getAttribute('width')).to.equal('75%')
       })
     })
   })

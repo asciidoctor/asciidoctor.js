@@ -3122,6 +3122,14 @@ Table.prototype.getBody = function () {
 }
 
 /**
+ * Check if the table has a body rows.
+ * @returns {boolean}
+ */
+Table.prototype.hasBodyRows = function () {
+  return this.rows !== Opal.nil && this.rows.body.length > 0
+}
+
+/**
  * Get the foot rows of this table.
  * @returns {Array<Array<Cell>>} - an Array of Array of Cell
  * @memberof Table
@@ -3131,20 +3139,11 @@ Table.prototype.getFoot = function () {
 }
 
 /**
- * Check if the table has rows.
+ * Check if the table has a head rows.
  * @returns {boolean}
  * @memberof Table
  */
-Table.prototype.hasRows = function () {
-  return this.rows !== Opal.nil && this.rows.body.length > 0
-}
-
-/**
- * Check if the table has a header.
- * @returns {boolean}
- * @memberof Table
- */
-Table.prototype.hasHeader = function () {
+Table.prototype.hasHeadRows = function () {
   return this.rows !== Opal.nil && this.rows.head.length > 0
 }
 
@@ -3158,10 +3157,10 @@ Table.prototype.hasHeaderOption = function () {
 }
 
 /**
- * Check if the table has a footer.
+ * Check if the table has a foot rows.
  * @returns {boolean}
  */
-Table.prototype.hasFooter = function () {
+Table.prototype.hasFootRows = function () {
   return this.rows !== Opal.nil && this.rows.foot.length > 0
 }
 
