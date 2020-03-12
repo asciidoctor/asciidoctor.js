@@ -717,7 +717,7 @@ Section.prototype.getName = function () {
  * Methods for managing AsciiDoc content blocks.
  *
  * @example
- * block = asciidoctor.Block.create(parent, 'paragraph', {source: '_This_ is a <test>'}) 
+ * block = asciidoctor.Block.create(parent, 'paragraph', {source: '_This_ is a <test>'})
  * block.getContent()
  * // "<em>This</em> is a &lt;test&gt;"
  *
