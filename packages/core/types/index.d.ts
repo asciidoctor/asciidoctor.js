@@ -2396,18 +2396,54 @@ export namespace Asciidoctor {
    */
   namespace Table {
     class Rows {
+      /**
+       * head rows.
+       */
       head: Cell[][];
+      /**
+       * body rows.
+       */
       body: Cell[][];
+      /**
+       * foot rows.
+       */
       foot: Cell[][];
 
+      /**
+       * Create a new {Rows} object.
+       * @param head - head rows
+       * @param foot - foot rows
+       * @param body - body rows
+       * @returns a new {Rows} object.
+       */
       static create(head: Cell[][], foot: Cell[][], body: Cell[][]): Rows;
 
+      /**
+       * Get head rows.
+       * @returns head rows.
+       */
       getHead(): Cell[][];
 
+      /**
+       * Get body rows.
+       * @returns body rows.
+       */
       getBody(): Cell[][];
 
+      /**
+       * Get foot rows.
+       * @returns foot rows.
+       */
       getFoot(): Cell[][];
 
+      /**
+       * Retrieve the rows grouped by section as a nested {Array}.
+       * Creates a 2-dimensional array of two element entries.
+       * The first element is the section name as a String.
+       * The second element is the Array of rows in that section.
+       * The entries are in document order (head, foot, body).
+       * @returns a 2-dimensional {Array} two element entries
+       */
       bySection(): Array<[string, Cell[][]]>;
     }
 
