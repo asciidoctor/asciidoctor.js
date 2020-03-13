@@ -538,7 +538,10 @@ AbstractBlock.prototype.getLineNumber = function () {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.hasSections = function () {
-  return this['$sections?']()
+  // REMIND: call directly the underlying method "$sections?"
+  // once https://github.com/asciidoctor/asciidoctor/pull/3591 is merged and a new version is released.
+  // return this['$sections?']()
+  return this.next_section_index !== Opal.nil && this.next_section_index > 0
 }
 
 /**

@@ -519,6 +519,35 @@ intro
         expect(doc.getSections().length).to.equal(0)
       })
 
+      it('should return false when hasSection is called on something other than a Section or a Document', function () {
+        const source = `= Title
+
+== First section
+
+This is a paragraph.
+
+[NOTE]
+This is a note.
+
+== Second section
+
+This section has a subsection!
+
+=== Subsection
+
+This is another paragraph.
+`
+        const doc = asciidoctor.load(source)
+        expect(doc.hasSections()).to.equal(true)
+        const sections = doc.findBy({ context: 'section' })
+        expect(sections[1].hasSections()).to.equal(false)
+        expect(sections[2].hasSections()).to.equal(true)
+        const firstParagraph = doc.findBy({ context: 'paragraph' })[0]
+        expect(firstParagraph.hasSections()).to.equal(false)
+        const firstAdmonition = doc.findBy({ context: 'admonition' })[0]
+        expect(firstAdmonition.hasSections()).to.equal(false)
+      })
+
       it('should get sections', function () {
         const source = '= Title\n:sectnums!:\n\n== First section\n\n:sectnums:\n== Second section\n\n[abstract]\n== Abstract section\n\n:appendix-caption: Appx\n[appendix]\n== Copyright and License'
         const doc = asciidoctor.load(source)
