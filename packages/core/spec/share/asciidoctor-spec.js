@@ -1681,7 +1681,7 @@ America/New_York
         expect(html).to.include('<style>pre.prism{background-color: lightgrey}</style>')
       })
     })
-    describe('Table stuff', function () {
+    describe('Table', function () {
       it('should create a table, a column and a cell', function () {
         try {
           asciidoctor.Extensions.register(function () {
@@ -1690,9 +1690,10 @@ America/New_York
               self.process(function (parent) {
                 const table = asciidoctor.Table.create(parent, {})
                 table.setRowCount(1)
+                table.setColumnCount(1)
                 const firstColumn = asciidoctor.Table.Column.create(table, 0, {})
                 const firstCell = asciidoctor.Table.Cell.create(firstColumn, 'Cell in column 1, row 1', {}, {})
-                table.getBody().push([firstCell])
+                table.getBodyRows().push([firstCell])
                 return table
               })
             })
@@ -1725,7 +1726,7 @@ America/New_York
                 const secondColumn = asciidoctor.Table.Column.create(table, 0, {})
                 const secondColumnFirstCell = asciidoctor.Table.Cell.create(secondColumn, 'Awesome way to write documentation', {}, {})
                 const secondColumnSecondCell = asciidoctor.Table.Cell.create(secondColumn, 'Works on the JVM', {}, {})
-                table.getBody().push([firstColumnFirstCell, secondColumnFirstCell], [secondColumnSecondCell])
+                table.getBodyRows().push([firstColumnFirstCell, secondColumnFirstCell], [secondColumnSecondCell])
                 return table
               })
             })
@@ -1748,7 +1749,7 @@ America/New_York
           asciidoctor.Extensions.unregisterAll()
         }
       })
-      it('should return true for hasRows()', function () {
+      it('should return true for hasBodyRows()', function () {
         const options = {}
         const source = `
 |===
@@ -1761,7 +1762,7 @@ America/New_York
         expect(table.getContext()).to.equal('table')
         expect(table.hasBodyRows()).to.equal(true)
       })
-      it('should return false for hasRows(). Only header is set', function () {
+      it('should return false for hasBodyRows() when only header is set', function () {
         const options = {}
         const source = `
 |===
@@ -1786,6 +1787,12 @@ America/New_York
         expect(table.hasHeadRows()).to.equal(true)
         expect(table.hasHeaderOption()).to.equal(true)
         expect(table.hasBodyRows()).to.equal(false)
+        expect(table.getFootRows()).to.be.an('array').that.is.empty()
+        expect(table.getBodyRows()).to.be.an('array').that.is.empty()
+        expect(table.getRows().getBody().length).to.equal(0)
+        expect(table.getRows().getFoot().length).to.equal(0)
+        expect(table.getRows().getHead().length).to.equal(1)
+        expect(table.getHeadRows().length).to.equal(1)
       })
       it('should return true for hasHeaderOption()', function () {
         const options = {}
@@ -1800,16 +1807,56 @@ America/New_York
         expect(table.getContext()).to.equal('table')
         expect(table.hasHeaderOption()).to.equal(true)
       })
-      it('should return true for hashHeaderOption(), hasFooterOption() and hasAutowidth', function () {
+      it('should get the table rows', function () {
+        const options = {}
+        const source = `
+[%header%footer]
+|===
+|This is a header cell
+
+|This is a normal cell
+
+|This is a footer cell
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        const rows = table.getRows()
+        expect(rows.getHead().length).to.equal(1)
+        expect(rows.getBody().length).to.equal(1)
+        expect(rows.getFoot().length).to.equal(1)
+        expect(rows.getBody()[0][0].getText()).to.equal('This is a normal cell')
+      })
+      it('should get the table rows by section', function () {
+        const options = {}
+        const source = `
+[%header%footer]
+|===
+|This is a header cell
+
+|This is a normal cell
+
+|This is a footer cell
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        const rowsBySection = table.getRows().bySection()
+        expect(rowsBySection[0][0]).to.equal('head')
+        expect(rowsBySection[0][1][0][0].getText()).to.equal('This is a header cell')
+        expect(rowsBySection[1][0]).to.equal('body')
+        expect(rowsBySection[2][0]).to.equal('foot')
+      })
+      it('should return true for hasHeaderOption(), hasFooterOption() and hasAutowidthOption()', function () {
         const options = {}
         const source = `
 [%header%footer%autowidth]
 |===
 |This is a header cell
 
-| This is a normal cell
+|This is a normal cell
 
-| This is a footer cell
+|This is a footer cell
 |===`
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
@@ -1821,7 +1868,7 @@ America/New_York
         expect(table.hasBodyRows()).to.equal(true)
         expect(table.hasFootRows()).to.equal(true)
       })
-      it('should return true for hasHeader(), true for hasHeaderOption() and true for hasRows() ', function () {
+      it('should return true for hasHeadRows(), hasHeaderOption() and hasBodyRows() ', function () {
         const options = {}
         const source = `
 |===
@@ -1904,10 +1951,11 @@ America/New_York
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.getHead()[0][0].getText()).to.equal('Header')
-        expect(table.getBody()[0][0].getLines()[0]).to.equal('Cell in column 1, row 1')
-        expect(table.getBody()[0][0].getLineNumber()).to.equal(undefined)
-        expect(table.getBody()[0][0].getFile()).to.equal(undefined)
+        expect(table.getHeadRows()[0][0].getText()).to.equal('Header')
+        const firstColumnFirstCellBody = table.getBodyRows()[0][0]
+        expect(firstColumnFirstCellBody.getLines()[0]).to.equal('Cell in column 1, row 1')
+        expect(firstColumnFirstCellBody.getLineNumber()).to.equal(undefined)
+        expect(firstColumnFirstCellBody.getFile()).to.equal(undefined)
       })
       it('should be a table with headers and footers', function () {
         const source = `[options="footer"]
@@ -1933,11 +1981,11 @@ America/New_York
         expect(table.hasFootRows()).to.equal(true)
         expect(table.hasFooterOption()).to.equal(true)
         expect(table.getColumns()[0].getColumnNumber()).to.equal(1)
-        expect(table.getBody()[0][0].getColumn().getColumnNumber()).to.equal(1)
-        expect(table.getBody()[0][1].getColumn().getColumnNumber()).to.equal(2)
-        expect(table.getBody()[0][0].getColumn().getWidth()).to.equal(1)
-        expect(table.getBody()[0][0].getWidth()).to.equal(1)
-        expect(table.getHead()[0][0].getStyle()).to.equal(undefined)
+        expect(table.getBodyRows()[0][0].getColumn().getColumnNumber()).to.equal(1)
+        expect(table.getBodyRows()[0][1].getColumn().getColumnNumber()).to.equal(2)
+        expect(table.getBodyRows()[0][0].getColumn().getWidth()).to.equal(1)
+        expect(table.getBodyRows()[0][0].getWidth()).to.equal(1)
+        expect(table.getHeadRows()[0][0].getStyle()).to.equal(undefined)
       })
       it('should return tablewidth 75%', function () {
         const options = {}
@@ -1974,8 +2022,8 @@ America/New_York
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.getBody()[1][1].getColumnSpan()).to.equal(2)
-        expect(table.getBody()[1][1].getRowSpan()).to.equal(3)
+        expect(table.getBodyRows()[1][1].getColumnSpan()).to.equal(2)
+        expect(table.getBodyRows()[1][1].getRowSpan()).to.equal(3)
       })
       it('should handle cell duplication', function () {
         const options = {}
@@ -1990,10 +2038,10 @@ America/New_York
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.getBody()[1][0].getText()).to.equal('Same text')
-        expect(table.getBody()[1][1].getText()).to.equal('Same text')
-        expect(table.getBody()[1][2].getText()).to.equal('Same text')
-        expect(table.getBody()[1][3].getText()).to.equal('Different text')
+        expect(table.getBodyRows()[1][0].getText()).to.equal('Same text')
+        expect(table.getBodyRows()[1][1].getText()).to.equal('Same text')
+        expect(table.getBodyRows()[1][2].getText()).to.equal('Same text')
+        expect(table.getBodyRows()[1][3].getText()).to.equal('Different text')
       })
       it('should handle CSV format', function () {
         const options = {}
@@ -2007,12 +2055,12 @@ The Lumineers,Ho Hey,Folk Rock
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.getHead()[0][0].getText()).to.equal('Artist')
-        expect(table.getHead()[0][1].getText()).to.equal('Track')
-        expect(table.getHead()[0][2].getText()).to.equal('Genre')
-        expect(table.getBody()[0][0].getText()).to.equal('Baauer')
-        expect(table.getBody()[0][1].getText()).to.equal('Harlem Shake')
-        expect(table.getBody()[0][2].getText()).to.equal('Hip Hop')
+        expect(table.getHeadRows()[0][0].getText()).to.equal('Artist')
+        expect(table.getHeadRows()[0][1].getText()).to.equal('Track')
+        expect(table.getHeadRows()[0][2].getText()).to.equal('Genre')
+        expect(table.getBodyRows()[0][0].getText()).to.equal('Baauer')
+        expect(table.getBodyRows()[0][1].getText()).to.equal('Harlem Shake')
+        expect(table.getBodyRows()[0][2].getText()).to.equal('Hip Hop')
       })
       it('should handle CSV shorthand syntax', function () {
         const options = {}
@@ -2026,12 +2074,12 @@ The Lumineers,Ho Hey,Folk Rock
         const doc = asciidoctor.load(source, options)
         const table = doc.getBlocks()[0]
         expect(table.getContext()).to.equal('table')
-        expect(table.getHead()[0][0].getText()).to.equal('Artist')
-        expect(table.getHead()[0][1].getText()).to.equal('Track')
-        expect(table.getHead()[0][2].getText()).to.equal('Genre')
-        expect(table.getBody()[0][0].getText()).to.equal('Baauer')
-        expect(table.getBody()[0][1].getText()).to.equal('Harlem Shake')
-        expect(table.getBody()[0][2].getText()).to.equal('Hip Hop')
+        expect(table.getHeadRows()[0][0].getText()).to.equal('Artist')
+        expect(table.getHeadRows()[0][1].getText()).to.equal('Track')
+        expect(table.getHeadRows()[0][2].getText()).to.equal('Genre')
+        expect(table.getBodyRows()[0][0].getText()).to.equal('Baauer')
+        expect(table.getBodyRows()[0][1].getText()).to.equal('Harlem Shake')
+        expect(table.getBodyRows()[0][2].getText()).to.equal('Hip Hop')
       })
     })
   })

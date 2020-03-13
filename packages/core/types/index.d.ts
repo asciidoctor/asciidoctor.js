@@ -2282,6 +2282,266 @@ export namespace Asciidoctor {
     getSourceLines(): string[];
   }
 
+  /** Methods for managing AsciiDoc tables. */
+  class Table extends AbstractBlock {
+    /**
+     * Create a new Table element.
+     * @param parent - The parent {AbstractBlock}.
+     * @param attributes - a JSON of attributes
+     * @returns a new {Table} object
+     */
+    static create(parent: AbstractBlock, attributes: Attributes): Table;
+
+    /**
+     * Get the caption of the table.
+     * @returns the String caption
+     */
+    getCaption(): string;
+
+    /**
+     * Get the rows of this table.
+     * @returns an {Table.Rows} object with the members "head", "body" and "foot"
+     */
+    getRows(): Table.Rows;
+
+    /**
+     * Get the columns of this table.
+     * @returns an {Array} of {Table.Column}
+     */
+    getColumns(): Table.Column[];
+
+    /**
+     * Get the head rows of this table.
+     * @returns an {Array} of {Array} of {Table.Cell}.
+     */
+    getHeadRows(): Table.Cell[][];
+
+    /**
+     * Check if the table has a head rows.
+     * @returns true if the table has head rows, false otherwise.
+     */
+    hasHeadRows(): boolean;
+
+    /**
+     * Get the body rows of this table.
+     * @returns an {Array} of {Array} of {Table.Cell}.
+     */
+    getBodyRows(): Table.Cell[][];
+
+    /**
+     * Check if the table has a body rows.
+     * @returns true if the table has body rows, false otherwise.
+     */
+    hasBodyRows(): boolean;
+
+    /**
+     * Get the foot rows of this table.
+     * @returns an {Array} of {Array} of {Table.Cell}.
+     */
+    getFootRows(): Table.Cell[][];
+
+    /**
+     * Check if the table has a foot rows.
+     * @returns true if the table has foot rows, false otherwise.
+     */
+    hasFootRows(): boolean;
+
+    /**
+     * Check if the table has a header option set.
+     * @returns true if the header option is set, false otherwise.
+     */
+    hasHeaderOption(): boolean;
+
+    /**
+     * Check if the table has the footer option set.
+     * @returns true if the footer option is set, false otherwise.
+     */
+    hasFooterOption(): boolean;
+
+    /**
+     * Check if the table has the autowidth option set.
+     * @returns true if the autowidth option is set, false otherwise.
+     */
+    hasAutowidthOption(): boolean;
+
+    /**
+     * Get the number of rows in the table.
+     * Please note that the header and footer rows are also counted.
+     * @returns the number of rows in the table.
+     */
+    getRowCount(): number;
+
+    /**
+     * Set the number of rows in the table.
+     * Please note that the header and footer rows are also counted.
+     * @param value - the value
+     */
+    setRowCount(value: number): void;
+
+    /**
+     * Get the number of columns in the table.
+     * @returns the number of columns in the table.
+     */
+    getColumnCount(): number;
+
+    /**
+     * Set the number of columns in the table.
+     * @param value - the value
+     */
+    setColumnCount(value: number): void;
+  }
+
+  /**
+   * Methods for managing AsciiDoc tables.
+   */
+  namespace Table {
+    class Rows {
+      head: Cell[][];
+      body: Cell[][];
+      foot: Cell[][];
+
+      static create(head: Cell[][], foot: Cell[][], body: Cell[][]): Rows;
+
+      getHead(): Cell[][];
+
+      getBody(): Cell[][];
+
+      getFoot(): Cell[][];
+
+      bySection(): Array<[string, Cell[][]]>;
+    }
+
+    /**
+     * Methods to manage the columns of an AsciiDoc table.
+     * In particular, it keeps track of the column specs.
+     */
+    class Column {
+      static create(table: Table, index: number, attributes: Attributes): Column;
+
+      /**
+       * Get the column number of this cell.
+       * @returns the column number.
+       */
+      getColumnNumber(): number;
+
+      /**
+       * Get the width of this cell.
+       * @returns the width of this cell.
+       */
+      getWidth(): string | undefined;
+
+      /**
+       * Get the horizontal align of this cell.
+       * @returns the horizontal align of this cell.
+       */
+      getHorizontalAlign(): string | undefined;
+
+      /**
+       * Get the vertical align of this cell.
+       * @returns the vertical align of this cell.
+       */
+      getVerticalAlign(): string | undefined;
+
+      /**
+       * Get the style of this cell.
+       * @returns the style of this cell.
+       */
+      getStyle(): string | undefined;
+    }
+
+    /**
+     * Methods for managing the cells in an AsciiDoc table.
+     */
+    class Cell {
+      /**
+       * Get the column span of this {@link Cell} node.
+       * @returns a {number} of the number of columns this cell will span (default: undefined).
+       */
+      getColumnSpan(): number | undefined;
+
+      /**
+       * Set the column span of this {@link Cell} node.
+       * @param value - the value
+       * @returns the new colspan value.
+       */
+      setColumnSpan(value: number): number;
+
+      /**
+       * Get the row span of this {@link Cell} node
+       * @returns a {number} of the number of rows this cell will span (default: undefined).
+       */
+      getRowSpan(): number | undefined;
+
+      /**
+       * Set the row span of this {@link Cell} node
+       * @param value - the value
+       * @returns the new rowspan value.
+       */
+      setRowSpan(value: number): number;
+
+      /**
+       * Get the content of the cell.
+       * This method should not be used for cells in the head row or that have the literal style.
+       * @returns the String content of the cell.
+       */
+      getContent(): string;
+
+      /**
+       * Get the text of the cell.
+       * @returns the text of the cell.
+       */
+      getText(): string;
+
+      /**
+       * Get the source of the cell.
+       * @returns the source of the cell.
+       */
+      getSource(): string;
+
+      /**
+       * Get the lines of the cell.
+       * @returns the lines of the cell.
+       */
+      getLines(): string[];
+
+      /**
+       * Get the line number of the cell.
+       * @returns the line number of the cell.
+       */
+      getLineNumber(): number | undefined;
+
+      /**
+       * Get the source file of the cell.
+       * @returns the file of the cell.
+       */
+      getFile(): string | undefined;
+
+      /**
+       * Get the style of the cell.
+       * @returns the style of the cell.
+       */
+      getStyle(): string | undefined;
+
+      /**
+       * Get the column of this cell.
+       * @returns the column of this cell.
+       */
+      getColumn(): Column | undefined;
+
+      /**
+       * Get the width of this cell.
+       * @returns the width of this cell.
+       */
+      getWidth(): string | undefined;
+
+      /**
+       * Get the column width in percentage of this cell.
+       * @returns the column width in percentage of this cell.
+       */
+      getColumnPercentageWidth(): string | undefined;
+    }
+  }
+
   /**
    * @description
    * An abstract base class that provides state and methods for managing a node of AsciiDoc content.
@@ -2760,7 +3020,7 @@ export namespace Asciidoctor {
      * @param names - A {string} name or an {Array} of {string} names
      * @param functions - A list of functions representing a {SyntaxHighlighter} or a {SyntaxHighlighter} class to instantiate
      */
-    function register(names: string | string[], functions: SyntaxHighlighterFunctions|object): void;
+    function register(names: string | string[], functions: SyntaxHighlighterFunctions | object): void;
 
     // SyntaxHighlighter.for can be defined because "for" is a reserved keyword :|
 

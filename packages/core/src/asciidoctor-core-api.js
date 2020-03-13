@@ -3070,7 +3070,7 @@ var Table = Opal.Asciidoctor.Table
  * Create a new Table element.
  * @param {AbstractBlock} parent
  * @param {Object|undefined} attributes
- * @returns {Table}
+ * @returns {Table} - a new {Table} object
  */
 Table.create = function (parent, attributes) {
   return this.$new(parent, toHash(attributes))
@@ -3087,7 +3087,7 @@ Table.prototype.getCaption = function () {
 
 /**
  * Get the rows of this table.
- * @returns {Object} An object with the members "head", "body" and "foot"
+ * @returns {Table.Rows} - an {Table.Rows} object with the members "head", "body" and "foot"
  * @memberof Table
  */
 Table.prototype.getRows = function () {
@@ -3108,8 +3108,17 @@ Table.prototype.getColumns = function () {
  * @returns {Array<Array<Cell>>} - an Array of Array of Cell
  * @memberof Table
  */
-Table.prototype.getHead = function () {
+Table.prototype.getHeadRows = function () {
   return this.rows.head
+}
+
+/**
+ * Check if the table has a head rows.
+ * @returns {boolean}
+ * @memberof Table
+ */
+Table.prototype.hasHeadRows = function () {
+  return this.rows !== Opal.nil && this.rows.head.length > 0
 }
 
 /**
@@ -3117,7 +3126,7 @@ Table.prototype.getHead = function () {
  * @returns {Array<Array<Cell>>} - an Array of Array of Cell
  * @memberof Table
  */
-Table.prototype.getBody = function () {
+Table.prototype.getBodyRows = function () {
   return this.rows.body
 }
 
@@ -3134,17 +3143,16 @@ Table.prototype.hasBodyRows = function () {
  * @returns {Array<Array<Cell>>} - an Array of Array of Cell
  * @memberof Table
  */
-Table.prototype.getFoot = function () {
+Table.prototype.getFootRows = function () {
   return this.rows.foot
 }
 
 /**
- * Check if the table has a head rows.
+ * Check if the table has a foot rows.
  * @returns {boolean}
- * @memberof Table
  */
-Table.prototype.hasHeadRows = function () {
-  return this.rows !== Opal.nil && this.rows.head.length > 0
+Table.prototype.hasFootRows = function () {
+  return this.rows !== Opal.nil && this.rows.foot.length > 0
 }
 
 /**
@@ -3154,14 +3162,6 @@ Table.prototype.hasHeadRows = function () {
  */
 Table.prototype.hasHeaderOption = function () {
   return this.has_header_option
-}
-
-/**
- * Check if the table has a foot rows.
- * @returns {boolean}
- */
-Table.prototype.hasFootRows = function () {
-  return this.rows !== Opal.nil && this.rows.foot.length > 0
 }
 
 /**
@@ -3213,6 +3213,70 @@ Table.prototype.getColumnCount = function () {
   return this.getAttribute('colcount')
 }
 
+/**
+ * Set the number of columns in the table.
+ * @param {number} value - the value
+ * @memberof Table
+ */
+Table.prototype.setColumnCount = function (value) {
+  this.setAttribute('colcount', value)
+}
+
+// Rows
+
+/**
+ * @namespace
+ */
+var Rows = Opal.Asciidoctor.Table.Rows
+
+/**
+ * Create a new Rows element.
+ * @param {array<array<Cell>>} head
+ * @param {array<array<Cell>>} foot
+ * @param {array<array<Cell>>} body
+ * @returns Rows
+ */
+Rows.create = function (head, foot, body) {
+  return this.$new(head, foot, body)
+}
+
+/**
+ * Get head rows.
+ * @returns {array<array<Cell>>}
+ */
+Rows.prototype.getHead = function () {
+  return this.head
+}
+
+/**
+ * Get foot rows.
+ * @returns {array<array<Cell>>}
+ */
+Rows.prototype.getFoot = function () {
+  return this.foot
+}
+
+/**
+ * Get body rows.
+ * @returns {array<array<Cell>>}
+ */
+Rows.prototype.getBody = function () {
+  return this.body
+}
+
+/**
+ * Retrieve the rows grouped by section as a nested Array.
+ *
+ * Creates a 2-dimensional array of two element entries.
+ * The first element is the section name as a string.
+ * The second element is the Array of rows in that section.
+ * The entries are in document order (head, foot, body).
+ * @returns {[[string, array<array<Cell>>], [string, array<array<Cell>>], [string, array<array<Cell>>]]}
+ */
+Rows.prototype.bySection = function () {
+  return [['head', this.head], ['body', this.body], ['foot', this.foot]]
+}
+
 // Table Column
 
 /**
@@ -3253,7 +3317,7 @@ Column.prototype.getWidth = function () {
 }
 
 /**
- * Get the horizontal align of this cell
+ * Get the horizontal align of this cell.
  * @returns {string|undefined}
  * @memberof Column
  */
@@ -3283,7 +3347,7 @@ Column.prototype.getStyle = function () {
 // Table Cell
 
 /**
- * Methods for managing the a cell in an AsciiDoc table.
+ * Methods for managing the cells in an AsciiDoc table.
  * @namespace
  * @extends AbstractBlock
  */
@@ -3323,7 +3387,7 @@ Cell.prototype.setColumnSpan = function (value) {
 
 /**
  * Get the row span of this {@link Cell} node
- * @returns {number} - An Integer of the number of rows this cell will span (default: undefined)
+ * @returns {number|undefined} - An Integer of the number of rows this cell will span (default: undefined)
  * @memberof Cell
  */
 Cell.prototype.getRowSpan = function () {
@@ -3348,8 +3412,7 @@ Cell.prototype.setRowSpan = function (value) {
  * @memberof Cell
  */
 Cell.prototype.getContent = function () {
-  var content = this['$content']()
-  return content === Opal.nil ? undefined : content
+  return this['$content']()
 }
 
 /**
@@ -3358,8 +3421,7 @@ Cell.prototype.getContent = function () {
  * @memberof Cell
  */
 Cell.prototype.getText = function () {
-  var text = this['$text']()
-  return text === Opal.nil ? undefined : text
+  return this['$text']()
 }
 
 /**
@@ -3368,8 +3430,7 @@ Cell.prototype.getText = function () {
  * @memberof Cell
  */
 Cell.prototype.getSource = function () {
-  var source = this['$source']()
-  return source === Opal.nil ? undefined : source
+  return this['$source']()
 }
 
 /**
@@ -3378,13 +3439,12 @@ Cell.prototype.getSource = function () {
  * @memberof Cell
  */
 Cell.prototype.getLines = function () {
-  var lines = this['$lines']()
-  return lines === Opal.nil ? undefined : lines
+  return this['$lines']()
 }
 
 /**
  * Get the line number of the cell.
- * @returns {number}
+ * @returns {number|undefined}
  * @memberof Cell
  */
 Cell.prototype.getLineNumber = function () {
@@ -3393,8 +3453,8 @@ Cell.prototype.getLineNumber = function () {
 }
 
 /**
- * Get the file of the cell.
- * @returns {string}
+ * Get the source file of the cell.
+ * @returns {string|undefined}
  * @memberof Cell
  */
 Cell.prototype.getFile = function () {
@@ -3404,7 +3464,7 @@ Cell.prototype.getFile = function () {
 
 /**
  * Get the style of the cell.
- * @returns {string}
+ * @returns {string|undefined}
  * @memberof Cell
  */
 Cell.prototype.getStyle = function () {
@@ -3414,7 +3474,7 @@ Cell.prototype.getStyle = function () {
 
 /**
  * Get the column of this cell.
- * @returns {Column}
+ * @returns {Column|undefined}
  * @memberof Cell
  */
 Cell.prototype.getColumn = function () {
