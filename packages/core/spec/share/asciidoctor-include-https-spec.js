@@ -1,6 +1,7 @@
 /* global it, describe, define */
 const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
   describe('Include https URI', function () {
+    const timeout = 15000 // 15 seconds
     it('should include file with an absolute https URI (base_dir is an absolute https URI)', function () {
       const opts = {
         safe: 'safe',
@@ -9,7 +10,7 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
       }
       const html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/README.adoc[]', opts)
       expect(html).to.include('Asciidoctor.js')
-    }).timeout(5000)
+    }).timeout(timeout)
 
     it('should partially include file with an absolute https URI (using tag)', function () {
       const opts = {
@@ -20,7 +21,7 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
       expect(html).to.include('tag-a')
       html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/packages/core/spec/fixtures/include-tag.adoc[tag=b]', opts)
       expect(html).to.include('tag-b')
-    }).timeout(5000)
+    }).timeout(timeout)
 
     it('should partially include file with an absolute https URI (using lines)', function () {
       const opts = {
@@ -33,13 +34,13 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
       html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/packages/core/spec/fixtures/include-lines.adoc[lines=3..4]', opts)
       expect(html).to.include('Third line')
       expect(html).to.include('Fourth line')
-    }).timeout(5000)
+    }).timeout(timeout)
 
     it('should include file with an absolute https URI (base_dir is not defined)', function () {
       const opts = { safe: 'safe', attributes: { 'allow-uri-read': true } }
       const html = asciidoctor.convert('include::https://raw.githubusercontent.com/HubPress/dev.hubpress.io/gh-pages/README.adoc[]', opts)
       expect(html).to.include('HubPress')
-    }).timeout(5000)
+    }).timeout(timeout)
     if (testOptions.platform === 'Node.js') {
       // When running on Node.js, the following exception is thrown:
       // "SecurityError: Jail is not an absolute path: https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master"
@@ -52,7 +53,7 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
         }
         const html = asciidoctor.convert('include::README.adoc[]', opts)
         expect(html).to.include('Asciidoctor.js')
-      }).timeout(5000)
+      }).timeout(timeout)
     }
 
     if (testOptions.platform !== 'Browser') {
@@ -68,13 +69,13 @@ const includeHttpsSpec = function (testOptions, asciidoctor, expect) {
         }
         const html = asciidoctor.convert('include::../v1.5.0/README.adoc[]', opts)
         expect(html).to.include('Bower')
-      }).timeout(5000)
+      }).timeout(timeout)
 
       it('should include file with an absolute expandable https URI (base_dir is not defined)', function () {
         const opts = { safe: 'safe', attributes: { 'allow-uri-read': true } }
         const html = asciidoctor.convert('include::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/../v1.5.0/README.adoc[]', opts)
         expect(html).to.include('Bower')
-      }).timeout(5000)
+      }).timeout(timeout)
     }
   })
 }
