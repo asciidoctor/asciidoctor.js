@@ -717,9 +717,9 @@ Section.prototype.getName = function () {
  * Methods for managing AsciiDoc content blocks.
  *
  * @example
- * block = Asciidoctor::Block.new(parent, :paragraph, source: '_This_ is a <test>')
- * block.content
- * => "<em>This</em> is a &lt;test&gt;"
+ * block = asciidoctor.Block.create(parent, 'paragraph', {source: '_This_ is a <test>'})
+ * block.getContent()
+ * // "<em>This</em> is a &lt;test&gt;"
  *
  * @namespace
  * @extends AbstractBlock
