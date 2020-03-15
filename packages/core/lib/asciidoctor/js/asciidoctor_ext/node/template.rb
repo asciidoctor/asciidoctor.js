@@ -20,7 +20,6 @@ class Converter::TemplateConverter < Converter::Base
     @templates = {}
     @template_dirs = template_dirs
     @safe = opts[:safe]
-    @active_engines = {}
     @engine = opts[:template_engine]
     @engine_options = {}
     if (overrides = opts[:template_engine_options])
@@ -165,18 +164,15 @@ class Converter::TemplateConverter < Converter::Base
         extsym = path_segments[-1].to_sym
         case extsym
         when :pug
-          unless @active_engines[extsym]
-            %x{
-              try {
-               const pug = require('pug')
-               template = { render: pug.compileFile(file), '$file': function() { return file } }
-              }
-              catch (e) {
-               throw #{IOError.new 'Unable to require the module \'pug\', please make sure that the module is installed.'}
-              }
+          %x{
+            try {
+             const pug = require('pug')
+             template = { render: pug.compileFile(file), '$file': function() { return file } }
             }
-            @active_engines[extsym] = true
-          end
+            catch (e) {
+             throw #{IOError.new 'Unable to require the module \'pug\', please make sure that the module is installed.'}
+            }
+          }
         when :js
           template = `{ render: require(file), '$file': function() { return file } }`
         else
