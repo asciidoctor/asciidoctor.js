@@ -519,6 +519,35 @@ intro
         expect(doc.getSections().length).to.equal(0)
       })
 
+      it('should return false when hasSection is called on something other than a Section or a Document', function () {
+        const source = `= Title
+
+== First section
+
+This is a paragraph.
+
+[NOTE]
+This is a note.
+
+== Second section
+
+This section has a subsection!
+
+=== Subsection
+
+This is another paragraph.
+`
+        const doc = asciidoctor.load(source)
+        expect(doc.hasSections()).to.equal(true)
+        const sections = doc.findBy({ context: 'section' })
+        expect(sections[1].hasSections()).to.equal(false)
+        expect(sections[2].hasSections()).to.equal(true)
+        const firstParagraph = doc.findBy({ context: 'paragraph' })[0]
+        expect(firstParagraph.hasSections()).to.equal(false)
+        const firstAdmonition = doc.findBy({ context: 'admonition' })[0]
+        expect(firstAdmonition.hasSections()).to.equal(false)
+      })
+
       it('should get sections', function () {
         const source = '= Title\n:sectnums!:\n\n== First section\n\n:sectnums:\n== Second section\n\n[abstract]\n== Abstract section\n\n:appendix-caption: Appx\n[appendix]\n== Copyright and License'
         const doc = asciidoctor.load(source)
@@ -1722,6 +1751,407 @@ America/New_York
         expect(html).to.include('<pre lang="ruby" class="prism wrap"><code>puts \'Hello, World!\'</code></pre>')
         expect(html).to.include('<pre>Europe/London\nAmerica/New_York</pre>')
         expect(html).to.include('<style>pre.prism{background-color: lightgrey}</style>')
+      })
+    })
+    describe('Table', function () {
+      it('should create a table, a column and a cell', function () {
+        try {
+          asciidoctor.Extensions.register(function () {
+            this.blockMacro('table', function () {
+              const self = this
+              self.process(function (parent) {
+                const table = asciidoctor.Table.create(parent, {})
+                table.setRowCount(1)
+                table.setColumnCount(1)
+                const firstColumn = asciidoctor.Table.Column.create(table, 0, {})
+                const firstCell = asciidoctor.Table.Cell.create(firstColumn, 'Cell in column 1, row 1', {}, {})
+                table.getBodyRows().push([firstCell])
+                return table
+              })
+            })
+          })
+          const html = asciidoctor.convert('table::[]')
+          expect(html).to.equal(`<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cell in column 1, row 1</p></td>
+</tr>
+</tbody>
+</table>`)
+        } finally {
+          asciidoctor.Extensions.unregisterAll()
+        }
+      })
+      it('should create a table, a column and a cell with a row span', function () {
+        try {
+          asciidoctor.Extensions.register(function () {
+            this.blockMacro('table', function () {
+              const self = this
+              self.process(function (parent) {
+                const table = asciidoctor.Table.create(parent, {})
+                table.setRowCount(2)
+                const firstColumn = asciidoctor.Table.Column.create(table, 0, {})
+                const firstColumnFirstCell = asciidoctor.Table.Cell.create(firstColumn, 'Asciidoctor', {}, {})
+                firstColumnFirstCell.setRowSpan(2)
+                const secondColumn = asciidoctor.Table.Column.create(table, 0, {})
+                const secondColumnFirstCell = asciidoctor.Table.Cell.create(secondColumn, 'Awesome way to write documentation', {}, {})
+                const secondColumnSecondCell = asciidoctor.Table.Cell.create(secondColumn, 'Works on the JVM', {}, {})
+                table.getBodyRows().push([firstColumnFirstCell, secondColumnFirstCell], [secondColumnSecondCell])
+                return table
+              })
+            })
+          })
+          const html = asciidoctor.convert('table::[]')
+          expect(html).to.equal(`<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock">Asciidoctor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Awesome way to write documentation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Works on the JVM</p></td>
+</tr>
+</tbody>
+</table>`)
+        } finally {
+          asciidoctor.Extensions.unregisterAll()
+        }
+      })
+      it('should return true for hasBodyRows()', function () {
+        const options = {}
+        const source = `
+|===
+
+|This is a body cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.hasBodyRows()).to.equal(true)
+      })
+      it('should return false for hasBodyRows() when only header is set', function () {
+        const options = {}
+        const source = `
+|===
+|This is a header cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.hasBodyRows()).to.equal(false)
+      })
+      it('should return false for hasHeaderOption()', function () {
+        const options = {}
+        const source = `
+|===
+|This is a header cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.hasHeadRows()).to.equal(true)
+        expect(table.hasHeaderOption()).to.equal(true)
+        expect(table.hasBodyRows()).to.equal(false)
+        expect(table.getFootRows()).to.be.an('array').that.is.empty()
+        expect(table.getBodyRows()).to.be.an('array').that.is.empty()
+        expect(table.getRows().getBody().length).to.equal(0)
+        expect(table.getRows().getFoot().length).to.equal(0)
+        expect(table.getRows().getHead().length).to.equal(1)
+        expect(table.getHeadRows().length).to.equal(1)
+      })
+      it('should return true for hasHeaderOption()', function () {
+        const options = {}
+        const source = `
+[%header]
+|===
+|This is a header cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.hasHeaderOption()).to.equal(true)
+      })
+      it('should get the table rows', function () {
+        const options = {}
+        const source = `
+[%header%footer]
+|===
+|This is a header cell
+
+|This is a normal cell
+
+|This is a footer cell
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        const rows = table.getRows()
+        expect(rows.getHead().length).to.equal(1)
+        expect(rows.getBody().length).to.equal(1)
+        expect(rows.getFoot().length).to.equal(1)
+        expect(rows.getBody()[0][0].getText()).to.equal('This is a normal cell')
+      })
+      it('should get the table rows by section', function () {
+        const options = {}
+        const source = `
+[%header%footer]
+|===
+|This is a header cell
+
+|This is a normal cell
+
+|This is a footer cell
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        const rowsBySection = table.getRows().bySection()
+        expect(rowsBySection[0][0]).to.equal('head')
+        expect(rowsBySection[0][1][0][0].getText()).to.equal('This is a header cell')
+        expect(rowsBySection[1][0]).to.equal('body')
+        expect(rowsBySection[2][0]).to.equal('foot')
+      })
+      it('should return true for hasHeaderOption(), hasFooterOption() and hasAutowidthOption()', function () {
+        const options = {}
+        const source = `
+[%header%footer%autowidth]
+|===
+|This is a header cell
+
+|This is a normal cell
+
+|This is a footer cell
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.hasHeaderOption()).to.equal(true)
+        expect(table.hasFooterOption()).to.equal(true)
+        expect(table.hasAutowidthOption()).to.equal(true)
+        expect(table.hasHeadRows()).to.equal(true)
+        expect(table.hasBodyRows()).to.equal(true)
+        expect(table.hasFootRows()).to.equal(true)
+      })
+      it('should return true for hasHeadRows(), hasHeaderOption() and hasBodyRows() ', function () {
+        const options = {}
+        const source = `
+|===
+|This is a header cell
+
+|This is a body cell
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.hasHeadRows()).to.equal(true)
+        expect(table.hasHeaderOption()).to.equal(true)
+        expect(table.hasBodyRows()).to.equal(true)
+      })
+      it('should return 3 for getRowCount() since header row is also counted', function () {
+        const options = {}
+        const source = `
+|===
+|This is a header cell
+
+|This is a body cell
+|This is a body cell
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getRowCount()).to.equal(3)
+      })
+      it('should return 1 for getColumnCount() ', function () {
+        const options = {}
+        const source = `
+|===
+|This is a header cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getColumnCount()).to.equal(1)
+      })
+      it('should return "Table 1. " for getCaption(), "Table 1. Caption" for getCaptionedTitle() and "Caption" for getTitle()', function () {
+        const options = {}
+        const source = `
+.Caption
+|===
+|This is a header cell
+
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getCaption()).to.equal('Table 1. ')
+        expect(table.getCaptionedTitle()).to.equal('Table 1. Caption')
+        expect(table.getTitle()).to.equal('Caption')
+      })
+      it('should return a Rows object with a size-1 head and a size-1 body', function () {
+        const options = {}
+        const source = `
+|===
+|This is a header cell
+
+|Cell in column 1, row 1
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getRows().head.length).to.equal(1)
+        expect(table.getRows().body.length).to.equal(1)
+      })
+      it('should return a row in the body', function () {
+        const options = {}
+        const source = `= Document Title
+
+|===
+|Header
+
+|Cell in column 1, row 1
+|Cell in column 1, row 2
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getHeadRows()[0][0].getText()).to.equal('Header')
+        const firstColumnFirstCellBody = table.getBodyRows()[0][0]
+        expect(firstColumnFirstCellBody.getLines()[0]).to.equal('Cell in column 1, row 1')
+        expect(firstColumnFirstCellBody.getLineNumber()).to.equal(undefined)
+        expect(firstColumnFirstCellBody.getFile()).to.equal(undefined)
+      })
+      it('should be a table with headers and footers', function () {
+        const source = `[options="footer"]
+|===
+|Name of Column 1 |Name of Column 2
+
+|Cell in column 1, row 1
+|Cell in column 2, row 1
+
+|Cell in column 1, row 2
+|Cell in column 2, row 2
+
+|Footer in column 1, row 3
+|Footer in column 2, row 3
+|===
+`
+        const options = {}
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.hasHeadRows()).to.equal(true)
+        expect(table.hasHeaderOption()).to.equal(true)
+        expect(table.hasFootRows()).to.equal(true)
+        expect(table.hasFooterOption()).to.equal(true)
+        expect(table.getColumns()[0].getColumnNumber()).to.equal(1)
+        expect(table.getBodyRows()[0][0].getColumn().getColumnNumber()).to.equal(1)
+        expect(table.getBodyRows()[0][1].getColumn().getColumnNumber()).to.equal(2)
+        expect(table.getBodyRows()[0][0].getColumn().getWidth()).to.equal(1)
+        expect(table.getBodyRows()[0][0].getWidth()).to.equal(1)
+        expect(table.getHeadRows()[0][0].getStyle()).to.equal(undefined)
+      })
+      it('should return tablewidth 75%', function () {
+        const options = {}
+        const source = `
+[width=75%]
+|===
+|Header
+
+|Cell in column 1, row 1
+|Cell in column 1, row 2
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getAttribute('width')).to.equal('75%')
+      })
+      it('should handle colspan and rowspan', function () {
+        const options = {}
+        const source = `
+|===
+
+|Column 1, row 1 |Column 2, row 1 |Column 3, row 1 |Column 4, row 1
+
+|Column 1, row 2
+2.3+|Content in a single cell that spans over rows and columns
+|Column 4, row 2
+
+|Column 1, row 3
+|Column 4, row 3
+
+|Column 1, row 4
+|Column 4, row 4
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getBodyRows()[1][1].getColumnSpan()).to.equal(2)
+        expect(table.getBodyRows()[1][1].getRowSpan()).to.equal(3)
+      })
+      it('should handle cell duplication', function () {
+        const options = {}
+        const source = `
+|===
+
+|Column 1, row 1 |Column 2, row 1 |Column 3, row 1 |Column 4, row 1
+
+3*|Same text
+|Different text
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getBodyRows()[1][0].getText()).to.equal('Same text')
+        expect(table.getBodyRows()[1][1].getText()).to.equal('Same text')
+        expect(table.getBodyRows()[1][2].getText()).to.equal('Same text')
+        expect(table.getBodyRows()[1][3].getText()).to.equal('Different text')
+      })
+      it('should handle CSV format', function () {
+        const options = {}
+        const source = `
+[%header,format=csv]
+|===
+Artist,Track,Genre
+Baauer,Harlem Shake,Hip Hop
+The Lumineers,Ho Hey,Folk Rock
+|===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getHeadRows()[0][0].getText()).to.equal('Artist')
+        expect(table.getHeadRows()[0][1].getText()).to.equal('Track')
+        expect(table.getHeadRows()[0][2].getText()).to.equal('Genre')
+        expect(table.getBodyRows()[0][0].getText()).to.equal('Baauer')
+        expect(table.getBodyRows()[0][1].getText()).to.equal('Harlem Shake')
+        expect(table.getBodyRows()[0][2].getText()).to.equal('Hip Hop')
+      })
+      it('should handle CSV shorthand syntax', function () {
+        const options = {}
+        const source = `
+,===
+Artist,Track,Genre
+
+Baauer,Harlem Shake,Hip Hop
+The Lumineers,Ho Hey,Folk Rock
+,===`
+        const doc = asciidoctor.load(source, options)
+        const table = doc.getBlocks()[0]
+        expect(table.getContext()).to.equal('table')
+        expect(table.getHeadRows()[0][0].getText()).to.equal('Artist')
+        expect(table.getHeadRows()[0][1].getText()).to.equal('Track')
+        expect(table.getHeadRows()[0][2].getText()).to.equal('Genre')
+        expect(table.getBodyRows()[0][0].getText()).to.equal('Baauer')
+        expect(table.getBodyRows()[0][1].getText()).to.equal('Harlem Shake')
+        expect(table.getBodyRows()[0][2].getText()).to.equal('Hip Hop')
       })
     })
   })
