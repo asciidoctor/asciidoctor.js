@@ -984,6 +984,31 @@ intro
   }
 })();
 
+const docWithAttributeOverride = processor.load(`= Title
+:next-section:
+
+This is a preamble!
+
+:next-section: First section
+
+== First section
+
+:next-section: Second section
+
+== Second section
+`);
+assert(docWithAttributeOverride.getAttribute('next-section') === '');
+docWithAttributeOverride.playbackAttributes(docWithAttributeOverride.getBlocks()[1].getAttributes());
+assert(docWithAttributeOverride.getAttribute('next-section') === 'First section');
+docWithAttributeOverride.playbackAttributes({
+  attribute_entries: [{
+    name: 'next-section',
+    value: 'Third section',
+    negate: false
+  }]
+});
+assert(docWithAttributeOverride.getAttribute('next-section') === 'Third section');
+
 const docWithAttributes = processor.load(`= Document Title
 :foo: bar
 

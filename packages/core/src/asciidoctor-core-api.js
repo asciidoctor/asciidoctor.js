@@ -1861,6 +1861,43 @@ Document.prototype.hasHeader = function () {
 }
 
 /**
+ * Replay attribute assignments at the block level.
+ *
+ * <i>This method belongs to an internal API that deals with how attributes are managed by the processor.</i>
+ * If you understand why this group of methods are necessary, and what they do, feel free to use them.
+ * <strong>However, keep in mind they are subject to change at any time.</strong>
+ *
+ * @param {Object} blockAttributes - A JSON of attributes
+ * @memberof Document
+ */
+Document.prototype.playbackAttributes = function (blockAttributes) {
+  blockAttributes = toHash(blockAttributes)
+  if (blockAttributes) {
+    var attrEntries = blockAttributes['$[]']('attribute_entries')
+    if (attrEntries && Array.isArray(attrEntries)) {
+      var result = []
+      for (var i = 0; i < attrEntries.length; i++) {
+        var attrEntryObject = attrEntries[i]
+        if (attrEntryObject && typeof attrEntryObject === 'object' && attrEntryObject.constructor.name === 'Object') {
+          attrEntryObject.$name = function () {
+            return this.name
+          }
+          attrEntryObject.$value = function () {
+            return this.value
+          }
+          attrEntryObject.$negate = function () {
+            return this.negate
+          }
+        }
+        result.push(attrEntryObject)
+      }
+      blockAttributes['$[]=']('attribute_entries', result)
+    }
+  }
+  this.$playback_attributes(blockAttributes)
+}
+
+/**
  * Delete the specified attribute from the document if the name is not locked.
  * If the attribute is locked, false is returned.
  * Otherwise, the attribute is deleted.

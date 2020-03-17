@@ -15,6 +15,7 @@ Bug Fixes::
 Improvements::
 
 * Map `Document.restoreAttributes` (#843)
+* Map an internal API `Document.playbackAttributes` (#844)
 * Map `Table`, `Table.Rows`, `Table.Column` and `Table.Cell` (#848)
 
 
