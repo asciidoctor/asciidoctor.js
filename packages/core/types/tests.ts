@@ -997,3 +997,21 @@ docWithAttributes.convert();
 assert(docWithAttributes.getAttribute('foo') === 'baz');
 docWithAttributes.restoreAttributes();
 assert(docWithAttributes.getAttribute('foo') === 'bar');
+
+const docWithTable = processor.load(`
+[%header%footer]
+|===
+|This is a header cell
+
+|This is a normal cell
+
+|This is a footer cell
+|===`);
+const table = docWithTable.getBlocks()[0];
+assert(table.getContext() === 'table');
+const rowsBySection = table.getRows().bySection();
+assert(table.getContext() === 'table');
+assert(rowsBySection[0][0] === 'head');
+assert(rowsBySection[0][1][0][0].getText() === 'This is a header cell');
+assert(rowsBySection[1][0] === 'body');
+assert(rowsBySection[2][0] === 'foot');
