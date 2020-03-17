@@ -797,6 +797,48 @@ AbstractNode.prototype.applySubstitutions = function (text, subs) {
 }
 
 /**
+ * Resolve the list of comma-delimited subs against the possible options.
+ *
+ * @param {string} subs - The comma-delimited String of substitution names or aliases.
+ * @param {string} [type] - A String representing the context for which the subs are being resolved (default: 'block').
+ * @param {Array<string>} [defaults] - An Array of substitutions to start with when computing incremental substitutions (default: undefined).
+ * @param {string} [subject] - The String to use in log messages to communicate the subject for which subs are being resolved (default: undefined)
+ *
+ * @returns {Array<string>} - An Array of Strings representing the substitution operation or nothing if no subs are found.
+ * @memberof AbstractNode
+ */
+AbstractNode.prototype.resolveSubstitutions = function (subs, type, defaults, subject) {
+  if (typeof type === 'undefined') {
+    type = 'block'
+  }
+  if (typeof defaults === 'undefined') {
+    defaults = Opal.nil
+  }
+  if (typeof subject === 'undefined') {
+    subject = Opal.nil
+  }
+  return this.$resolve_subs(subs, type, defaults, subject)
+}
+
+/**
+ * Call {@link AbstractNode#resolveSubstitutions} for the 'block' type.
+ *
+ * @see {@link AbstractNode#resolveSubstitutions}
+ */
+AbstractNode.prototype.resolveBlockSubstitutions = function (subs, defaults, subject) {
+  return this.resolveSubstitutions(subs, 'block', defaults, subject)
+}
+
+/**
+ * Call {@link AbstractNode#resolveSubstitutions} for the 'inline' type with the subject set as passthrough macro.
+ *
+ * @see {@link AbstractNode#resolveSubstitutions}
+ */
+AbstractNode.prototype.resolvePassSubstitutions = function (subs) {
+  return this.resolveSubstitutions(subs, 'inline', undefined, 'passthrough macro')
+}
+
+/**
  * @returns {string} - the String name of this node
  * @memberof AbstractNode
  */

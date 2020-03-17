@@ -2606,6 +2606,32 @@ export namespace Asciidoctor {
    */
   class AbstractNode implements Logging {
     /**
+     * Resolve the list of comma-delimited subs against the possible options.
+     *
+     * @param subs - The comma-delimited String of substitution names or aliases.
+     * @param [type] - A String representing the context for which the subs are being resolved (default: 'block').
+     * @param [defaults] - An Array of substitutions to start with when computing incremental substitutions (default: undefined).
+     * @param [subject] - The String to use in log messages to communicate the subject for which subs are being resolved (default: undefined)
+     *
+     * @returns An Array of Strings representing the substitution operation or nothing if no subs are found.
+     */
+    resolveSubstitutions(subs: string, type?: string, defaults?: string[], subject?: string): string[] | void;
+
+    /**
+     * Call {@link AbstractNode#resolveSubstitutions} for the 'block' type.
+     *
+     * @see {@link AbstractNode#resolveSubstitutions}
+     */
+    resolveBlockSubstitutions(subs: string, defaults?: string[], subject?: string): string[] | void;
+
+    /**
+     * Call {@link AbstractNode#resolveSubstitutions} for the 'inline' type with the subject set as passthrough macro.
+     *
+     * @see {@link AbstractNode#resolveSubstitutions}
+     */
+    resolvePassSubstitutions(subs: string): string[] | void;
+
+    /**
      * Apply the specified substitutions to the text.
      *
      * @param text - The String or String Array of text to process; must not be undefined.

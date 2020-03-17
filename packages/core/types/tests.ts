@@ -983,7 +983,6 @@ intro
     processor.LoggerManager.setLogger(defaultLogger);
   }
 })();
-
 const docWithAttributeOverride = processor.load(`= Title
 :next-section:
 
@@ -1040,3 +1039,35 @@ assert(rowsBySection[0][0] === 'head');
 assert(rowsBySection[0][1][0][0].getText() === 'This is a header cell');
 assert(rowsBySection[1][0] === 'body');
 assert(rowsBySection[2][0] === 'foot');
+
+const docWithParagraph = processor.load(`paragraph`);
+const paragraphBlock = docWithParagraph.getBlocks()[0];
+assert(paragraphBlock.resolveSubstitutions('attributes+', 'block')[0] === 'attributes');
+const blockSubs1 = paragraphBlock.resolveBlockSubstitutions('specialchars,attributes,quotes,replacements,macros,post_replacements', 'block');
+assert(blockSubs1.length === 6);
+assert(blockSubs1[0] === 'specialcharacters');
+assert(blockSubs1[1] === 'attributes');
+assert(blockSubs1[2] === 'quotes');
+assert(blockSubs1[3] === 'replacements');
+assert(blockSubs1[4] === 'macros');
+assert(blockSubs1[5] === 'post_replacements');
+const blockSubs2 = paragraphBlock.resolveBlockSubstitutions('attributes+,+replacements,-callouts', ['verbatim', 'quotes', 'callouts']);
+assert(blockSubs2.length === 4);
+assert(blockSubs2[0] === 'attributes');
+assert(blockSubs2[1] === 'verbatim');
+assert(blockSubs2[2] === 'quotes');
+assert(blockSubs2[3] === 'replacements');
+const blockSubs3 = paragraphBlock.resolveBlockSubstitutions('normal');
+assert(blockSubs3.length === 6);
+assert(blockSubs3[0] === 'specialcharacters');
+assert(blockSubs3[1] === 'quotes');
+assert(blockSubs3[2] === 'attributes');
+assert(blockSubs3[3] === 'replacements');
+assert(blockSubs3[4] === 'macros');
+assert(blockSubs3[5] === 'post_replacements');
+const blockSubs4 = paragraphBlock.resolvePassSubstitutions('macros');
+assert(blockSubs4.length === 1);
+assert(blockSubs4[0] === 'macros');
+const blockSubs5 = paragraphBlock.resolvePassSubstitutions('verbatim');
+assert(blockSubs5.length === 1);
+assert(blockSubs5[0] === 'specialcharacters');
