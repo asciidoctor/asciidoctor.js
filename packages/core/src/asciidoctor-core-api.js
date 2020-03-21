@@ -52,7 +52,7 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
   var constructorFunction
   var defaultFunctionsOverridden = {}
   for (var functionName in functions) {
-    if (functions.hasOwnProperty(functionName)) {
+    if (Object.prototype.hasOwnProperty.call(functions, functionName)) {
       (function (functionName) {
         var userFunction = functions[functionName]
         if (functionName === 'postConstruct') {
@@ -62,12 +62,12 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
         } else if (functionName === 'constructor') {
           constructorFunction = userFunction
         } else {
-          if (defaultFunctions && defaultFunctions.hasOwnProperty(functionName)) {
+          if (defaultFunctions && Object.prototype.hasOwnProperty.call(defaultFunctions, functionName)) {
             defaultFunctionsOverridden[functionName] = true
           }
           Opal.def(scope, '$' + functionName, function () {
             var args
-            if (argProxyFunctions && argProxyFunctions.hasOwnProperty(functionName)) {
+            if (argProxyFunctions && Object.prototype.hasOwnProperty.call(argProxyFunctions, functionName)) {
               args = argProxyFunctions[functionName](arguments)
             } else {
               args = arguments
@@ -135,7 +135,7 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
   })
   if (defaultFunctions) {
     for (var defaultFunctionName in defaultFunctions) {
-      if (defaultFunctions.hasOwnProperty(defaultFunctionName) && !defaultFunctionsOverridden.hasOwnProperty(defaultFunctionName)) {
+      if (Object.prototype.hasOwnProperty.call(defaultFunctions, defaultFunctionName) && !Object.prototype.hasOwnProperty.call(defaultFunctionsOverridden, defaultFunctionName)) {
         (function (defaultFunctionName) {
           var defaultFunction = defaultFunctions[defaultFunctionName]
           Opal.def(scope, '$' + defaultFunctionName, function () {
@@ -174,7 +174,7 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
  *
  * const doc = asciidoctor.load("= Document Title\n\nfirst paragraph\n\nsecond paragraph", { 'safe': 'safe' }) // Parse an AsciiDoc string into a document object
  */
-var Asciidoctor = Opal.Asciidoctor['$$class']
+var Asciidoctor = Opal.Asciidoctor.$$class
 
 /**
  * Get Asciidoctor core version number.
@@ -368,19 +368,19 @@ AbstractBlock.prototype.getSourceLocation = function () {
   if (sourceLocation === Opal.nil) {
     return undefined
   }
-  sourceLocation['getFile'] = function () {
+  sourceLocation.getFile = function () {
     var file = this.file
     return file === Opal.nil ? undefined : file
   }
-  sourceLocation['getDirectory'] = function () {
+  sourceLocation.getDirectory = function () {
     var dir = this.dir
     return dir === Opal.nil ? undefined : dir
   }
-  sourceLocation['getPath'] = function () {
+  sourceLocation.getPath = function () {
     var path = this.path
     return path === Opal.nil ? undefined : path
   }
-  sourceLocation['getLineNumber'] = function () {
+  sourceLocation.getLineNumber = function () {
     var lineno = this.lineno
     return lineno === Opal.nil ? undefined : lineno
   }
@@ -2513,7 +2513,7 @@ Reader.prototype.isEmpty = function () {
  */
 Reader.prototype.peekLine = function (direct) {
   direct = direct || false
-  var line = this['$peek_line'](direct)
+  var line = this.$peek_line(direct)
   return line === Opal.nil ? undefined : line
 }
 
@@ -2526,7 +2526,7 @@ Reader.prototype.peekLine = function (direct) {
  * @memberof Reader
  */
 Reader.prototype.readLine = function () {
-  var line = this['$read_line']()
+  var line = this.$read_line()
   return line === Opal.nil ? undefined : line
 }
 
@@ -2542,7 +2542,7 @@ Reader.prototype.readLine = function () {
  * @memberof Reader
  */
 Reader.prototype.readLines = function () {
-  return this['$read_lines']()
+  return this.$read_lines()
 }
 
 /**
@@ -2556,7 +2556,7 @@ Reader.prototype.readLines = function () {
  * @memberof Reader
  */
 Reader.prototype.read = function () {
-  return this['$read']()
+  return this.$read()
 }
 
 /**
@@ -2566,7 +2566,7 @@ Reader.prototype.read = function () {
  * @memberof Reader
  */
 Reader.prototype.advance = function () {
-  return this['$advance']()
+  return this.$advance()
 }
 
 // Cursor API
@@ -2618,7 +2618,7 @@ Cursor.prototype.getLineNumber = function () {
 function initializeLoggerFormatterClass (className, functions) {
   var superclass = Opal.const_get_qualified(Opal.Logger, 'Formatter')
   return initializeClass(superclass, className, functions, {}, {
-    'call': function (args) {
+    call: function (args) {
       for (var i = 0; i < args.length; i++) {
         // convert all (Opal) Hash arguments to JSON.
         if (typeof args[i] === 'object' && '$$smap' in args[i]) {
@@ -2633,17 +2633,17 @@ function initializeLoggerFormatterClass (className, functions) {
 function initializeLoggerClass (className, functions) {
   var superClass = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger')
   return initializeClass(superClass, className, functions, {}, {
-    'add': function (args) {
+    add: function (args) {
       if (args.length >= 2 && typeof args[2] === 'object' && '$$smap' in args[2]) {
         var message = args[2]
         var messageObject = fromHash(message)
         messageObject.getText = function () {
-          return this['text']
+          return this.text
         }
         messageObject.getSourceLocation = function () {
-          return this['source_location']
+          return this.source_location
         }
-        messageObject['$inspect'] = function () {
+        messageObject.$inspect = function () {
           var sourceLocation = this.getSourceLocation()
           if (sourceLocation) {
             return sourceLocation.getPath() + ': line ' + sourceLocation.getLineNumber() + ': ' + this.getText()
@@ -2762,14 +2762,14 @@ MemoryLogger.prototype.getMessages = function () {
       // also convert the message attribute
       messageObject.message = fromHash(messageObject.message)
       messageObject.getText = function () {
-        return this.message['text']
+        return this.message.text
       }
     }
     messageObject.getSeverity = function () {
       return this.severity.toString()
     }
     messageObject.getSourceLocation = function () {
-      return this.message['source_location']
+      return this.message.source_location
     }
     result.push(messageObject)
   }
@@ -2874,7 +2874,7 @@ var log = function (logger, level, message) {
 }
 RubyLogger.prototype.add = function (severity, message, programName) {
   var severityValue = typeof severity === 'string' ? LoggerSeverity[severity.toUpperCase()] : severity
-  this['$add'](severityValue, message, programName)
+  this.$add(severityValue, message, programName)
 }
 RubyLogger.prototype.log = RubyLogger.prototype.add
 RubyLogger.prototype.debug = function (message) {
@@ -2966,9 +2966,9 @@ Timings.create = function () {
 Timings.prototype.printReport = function (to, subject) {
   var outputFunction
   if (to) {
-    if (typeof to['$add'] === 'function') {
+    if (typeof to.$add === 'function') {
       outputFunction = function (message) {
-        to['$add'](1, message)
+        to.$add(1, message)
       }
     } else if (typeof to.log === 'function') {
       outputFunction = to.log
@@ -2981,7 +2981,7 @@ Timings.prototype.printReport = function (to, subject) {
     }
   } else {
     outputFunction = function (message) {
-      Opal.gvars.stdout['$write'](message)
+      Opal.gvars.stdout.$write(message)
     }
   }
   if (subject) {
@@ -3038,7 +3038,7 @@ SyntaxHighlighter.register = function (names, functions) {
     }
   }
   var scope = initializeClass(SyntaxHighlighterBase, name, functions, {}, {
-    'format': function (args) {
+    format: function (args) {
       if (args.length >= 2 && typeof args[2] === 'object' && '$$smap' in args[2]) {
         args[2] = fromHash(args[2])
       }
@@ -3047,7 +3047,7 @@ SyntaxHighlighter.register = function (names, functions) {
       }
       return args
     },
-    'highlight': function (args) {
+    highlight: function (args) {
       if (args.length >= 3 && typeof args[3] === 'object' && '$$smap' in args[3]) {
         var opts = args[3]
         opts = fromHash(opts)
@@ -3078,7 +3078,7 @@ SyntaxHighlighter.register = function (names, functions) {
     }
   })
   for (var functionName in functions) {
-    if (functions.hasOwnProperty(functionName)) {
+    if (Object.prototype.hasOwnProperty.call(functions, functionName)) {
       (function (functionName) {
         var userFunction = functions[functionName]
         if (functionName === 'handlesHighlighting') {
@@ -3096,7 +3096,7 @@ SyntaxHighlighter.register = function (names, functions) {
   Opal.def(scope, '$name', function () {
     return name
   })
-  SyntaxHighlighter['$register'](scope, names)
+  SyntaxHighlighter.$register(scope, names)
   return scope
 }
 
@@ -3136,7 +3136,7 @@ Opal.Asciidoctor.SyntaxHighlighterBase = SyntaxHighlighterBase
  * @memberof SyntaxHighlighterBase
  */
 SyntaxHighlighterBase.prototype.registerFor = function (names) {
-  SyntaxHighlighter['$register'](this, names)
+  SyntaxHighlighter.$register(this, names)
 }
 
 // Table API
@@ -3494,7 +3494,7 @@ Cell.prototype.setRowSpan = function (value) {
  * @memberof Cell
  */
 Cell.prototype.getContent = function () {
-  return this['$content']()
+  return this.$content()
 }
 
 /**
@@ -3503,7 +3503,7 @@ Cell.prototype.getContent = function () {
  * @memberof Cell
  */
 Cell.prototype.getText = function () {
-  return this['$text']()
+  return this.$text()
 }
 
 /**
@@ -3512,7 +3512,7 @@ Cell.prototype.getText = function () {
  * @memberof Cell
  */
 Cell.prototype.getSource = function () {
-  return this['$source']()
+  return this.$source()
 }
 
 /**
@@ -3521,7 +3521,7 @@ Cell.prototype.getSource = function () {
  * @memberof Cell
  */
 Cell.prototype.getLines = function () {
-  return this['$lines']()
+  return this.$lines()
 }
 
 /**
@@ -3530,7 +3530,7 @@ Cell.prototype.getLines = function () {
  * @memberof Cell
  */
 Cell.prototype.getLineNumber = function () {
-  var lineno = this['$lineno']()
+  var lineno = this.$lineno()
   return lineno === Opal.nil ? undefined : lineno
 }
 
@@ -3540,7 +3540,7 @@ Cell.prototype.getLineNumber = function () {
  * @memberof Cell
  */
 Cell.prototype.getFile = function () {
-  var file = this['$file']()
+  var file = this.$file()
   return file === Opal.nil ? undefined : file
 }
 
@@ -3550,7 +3550,7 @@ Cell.prototype.getFile = function () {
  * @memberof Cell
  */
 Cell.prototype.getStyle = function () {
-  var style = this['$style']()
+  var style = this.$style()
   return style === Opal.nil ? undefined : style
 }
 

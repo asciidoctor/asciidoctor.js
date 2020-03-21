@@ -16,7 +16,7 @@ const toSemVer = (version) => {
 }
 
 const semVer = (version) => {
-  let currentSemver = toSemVer(version)
+  const currentSemver = toSemVer(version)
   return {
     lte: (ver) => {
       const semver = toSemVer(ver)

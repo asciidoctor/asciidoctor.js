@@ -16,7 +16,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
           RegExp,
           Array
         ]
-        for (let index in fundamentalObjects) {
+        for (const index in fundamentalObjects) {
           const fundamentalObject = fundamentalObjects[index]
           expect(fundamentalObject.call, `${fundamentalObject.name}.call should be a Function`).to.be.an.instanceof(Function)
           expect(fundamentalObject.apply, `${fundamentalObject.name}.apply should be a Function`).to.be.an.instanceof(Function)
@@ -85,7 +85,7 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
       })
 
       it('should populate the catalog', function () {
-        const doc = asciidoctor.load('link:index.html[Docs]', { 'safe': 'safe', 'catalog_assets': true })
+        const doc = asciidoctor.load('link:index.html[Docs]', { safe: 'safe', catalog_assets: true })
         doc.convert()
         const links = doc.getCatalog().links
         expect(links).to.have.members(['index.html'])
@@ -102,7 +102,7 @@ doc.convert() // <3>
 ----
 <1> require @asciidoctor/core
 <2> load the document
-<3> convert the document`, { 'safe': 'safe', 'catalog_assets': true })
+<3> convert the document`, { safe: 'safe', catalog_assets: true })
         doc.convert()
         const callouts = doc.getCallouts()
         expect(callouts.getLists()[0].length).to.equal(3)
@@ -116,8 +116,8 @@ doc.convert() // <3>
 
       it('should return attributes as JSON object', function () {
         const doc = asciidoctor.load('= Authors\nGuillaume Grossetie; Anders Nawroth\n')
-        expect(doc.getAttributes()['author']).to.equal('Guillaume Grossetie')
-        expect(doc.getAttributes()['authors']).to.equal('Guillaume Grossetie, Anders Nawroth')
+        expect(doc.getAttributes().author).to.equal('Guillaume Grossetie')
+        expect(doc.getAttributes().authors).to.equal('Guillaume Grossetie, Anders Nawroth')
       })
 
       it('should get icon uri string reference', function () {
@@ -604,7 +604,7 @@ This is another paragraph.
       it('should instantiate an Inline element', function () {
         const opts = { safe: 'safe', base_dir: testOptions.baseDir }
         const doc = asciidoctor.load('= Empty document', opts)
-        const inlineElement = asciidoctor.Inline.create(doc, 'anchor', 'Tigers', { 'type': 'ref', 'target': 'tigers' })
+        const inlineElement = asciidoctor.Inline.create(doc, 'anchor', 'Tigers', { type: 'ref', target: 'tigers' })
         expect(inlineElement.getType()).to.equal('ref')
         expect(inlineElement.getText()).to.equal('Tigers')
         expect(inlineElement.getTarget()).to.equal('tigers')
@@ -769,7 +769,7 @@ content
 content`
           const doc = asciidoctor.load(input)
           let visitedLast = false
-          const result = doc.findBy({ 'id': 'subsection' }, (candidate) => {
+          const result = doc.findBy({ id: 'subsection' }, (candidate) => {
             if (candidate.getId() === 'last') {
               visitedLast = true
             }
@@ -1113,7 +1113,7 @@ content`)
         })
         it('should embed a remote png image', function () {
           const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
-          const html = asciidoctor.convert(`image::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/packages/core/spec/fixtures/images/cat.png[]`, options)
+          const html = asciidoctor.convert('image::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/packages/core/spec/fixtures/images/cat.png[]', options)
           expect(html).to.include('img src="data:image/png;base64,')
         }).timeout(5000)
         it('should not throw an exception if the image does not exists', function () {
@@ -1493,10 +1493,10 @@ This is a preamble!
 a,b,c,key=val
 --
 `, { extension_registry: registry })
-        expect(parsedAttrs['a']).to.equal('a')
-        expect(parsedAttrs['b']).to.equal('b')
-        expect(parsedAttrs['key']).to.equal('val')
-        expect(parsedAttrs['foo']).to.equal('bar')
+        expect(parsedAttrs.a).to.equal('a')
+        expect(parsedAttrs.b).to.equal('b')
+        expect(parsedAttrs.key).to.equal('val')
+        expect(parsedAttrs.foo).to.equal('bar')
       })
 
       it('should not share attributes between parsed blocks', function () {
@@ -1528,7 +1528,7 @@ content
         expect(wrap.getBlocks().length).to.equal(2)
         expect(Object.keys(wrap.getBlocks()[0].getAttributes()).length).to.equal(2)
         expect(Object.keys(wrap.getBlocks()[1].getAttributes()).length).to.equal(2)
-        expect(wrap.getBlocks()[1].getAttributes()['foo']).to.be.undefined()
+        expect(wrap.getBlocks()[1].getAttributes().foo).to.be.undefined()
       })
     })
 
@@ -1583,7 +1583,7 @@ bob -> alice`)
         const doc = asciidoctor.load('empty', { attributes: { 'allow-uri-read': true } })
         const csv = doc.readContents(testOptions.baseDir + '/spec/fixtures/sales.csv')
           .replace(/\r\n|\n|\r/gm, '-')
-        expect(csv).to.equal(`Month,Value--January,12-February,24-March,20-April,32-`)
+        expect(csv).to.equal('Month,Value--January,12-February,24-March,20-April,32-')
       })
     })
 
@@ -1662,9 +1662,9 @@ puts 'Hello, World!'
           highlight (node, source, lang, opts) {
             if (opts.callouts) {
               const lines = source.split('\n')
-              for (let idx in opts.callouts) {
+              for (const idx in opts.callouts) {
                 const lineIndex = parseInt(idx)
-                let line = lines[lineIndex]
+                const line = lines[lineIndex]
                 lines[lineIndex] = `<span class="has-callout${opts.callouts[idx][0][0] ? ' has-comment' : ''}">${line}</span>`
               }
               source = lines.join('\n')

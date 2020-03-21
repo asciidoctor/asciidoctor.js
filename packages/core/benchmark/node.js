@@ -17,7 +17,7 @@ const options = {
   header_footer: true,
   attributes: 'linkcss copycss! toc! numbered! icons! compat-mode'
 }
-const asciidoctor = Asciidoctor({ 'runtime': { 'platform': 'node' } })
+const asciidoctor = Asciidoctor({ runtime: { platform: 'node' } })
 
 let content
 if (include) {
@@ -28,9 +28,9 @@ if (include) {
 let html
 const durations = []
 for (let i = 1; i <= runs; i++) {
-  let start = new Date().getTime()
+  const start = new Date().getTime()
   html = asciidoctor.convert(content, options)
-  let duration = new Date().getTime() - start
+  const duration = new Date().getTime() - start
   durations.push(duration)
   console.log(`Run #${i}: ${(duration / 1000.0)}s`)
 }

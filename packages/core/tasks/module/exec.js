@@ -5,7 +5,7 @@ const log = require('bestikk-log')
 module.exports.execSync = (command) => {
   log.debug(command)
   if (!process.env.DRY_RUN) {
-    let stdout = childProcess.execSync(command)
+    const stdout = childProcess.execSync(command)
     process.stdout.write(stdout)
     return stdout
   }

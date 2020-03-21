@@ -161,7 +161,7 @@ Registry.prototype.prefer = function (name, processor) {
   }
   if (typeof processor === 'object' || processor.$$is_class) {
     // processor is an instance or a class
-    return this['$prefer'](name, processor)
+    return this.$prefer(name, processor)
   } else {
     // processor is a function/lambda
     return Opal.send(this, 'prefer', name && [name], toBlock(processor))
@@ -344,7 +344,7 @@ Registry.prototype.hasInlineMacros = function () {
  * @returns an {array} of Extension proxy objects.
  */
 Registry.prototype.getPreprocessors = function () {
-  return this['$preprocessors']()
+  return this.$preprocessors()
 }
 
 /**
@@ -354,7 +354,7 @@ Registry.prototype.getPreprocessors = function () {
  * @returns an {array} of Extension proxy objects.
  */
 Registry.prototype.getTreeProcessors = function () {
-  return this['$tree_processors']()
+  return this.$tree_processors()
 }
 
 /**
@@ -364,7 +364,7 @@ Registry.prototype.getTreeProcessors = function () {
  * @returns an {array} of Extension proxy objects.
  */
 Registry.prototype.getIncludeProcessors = function () {
-  return this['$include_processors']()
+  return this.$include_processors()
 }
 
 /**
@@ -374,7 +374,7 @@ Registry.prototype.getIncludeProcessors = function () {
  * @returns an {array} of Extension proxy objects.
  */
 Registry.prototype.getPostprocessors = function () {
-  return this['$postprocessors']()
+  return this.$postprocessors()
 }
 
 /**
@@ -385,7 +385,7 @@ Registry.prototype.getPostprocessors = function () {
  * @returns an {array} of Extension proxy objects.
  */
 Registry.prototype.getDocinfoProcessors = function (location) {
-  return this['$docinfo_processors'](location)
+  return this.$docinfo_processors(location)
 }
 
 /**
@@ -395,7 +395,7 @@ Registry.prototype.getDocinfoProcessors = function (location) {
  * @returns an {array} of Extension proxy objects.
  */
 Registry.prototype.getBlocks = function () {
-  return this.block_extensions['$values']()
+  return this.block_extensions.$values()
 }
 
 /**
@@ -405,7 +405,7 @@ Registry.prototype.getBlocks = function () {
  * @returns an {array} of Extension proxy objects.
  */
 Registry.prototype.getBlockMacros = function () {
-  return this.block_macro_extensions['$values']()
+  return this.block_macro_extensions.$values()
 }
 
 /**
@@ -415,7 +415,7 @@ Registry.prototype.getBlockMacros = function () {
  * @returns an {array} of Extension proxy objects.
  */
 Registry.prototype.getInlineMacros = function () {
-  return this['$inline_macros']()
+  return this.$inline_macros()
 }
 
 /**
@@ -439,7 +439,7 @@ Registry.prototype.getInlineMacroFor = function (name) {
  */
 Registry.prototype.getBlockFor = function (name, context) {
   if (typeof context === 'undefined') {
-    var ext = this['$find_block_extension'](name)
+    var ext = this.$find_block_extension(name)
     return ext === Opal.nil ? undefined : ext
   }
   var result = this['$registered_for_block?'](name, context)
@@ -1293,7 +1293,7 @@ ConverterFactory.register = function (converter, backends) {
   if (typeof converter === 'function') {
     // Class
     object = initializeClass(ConverterBase, converter.constructor.name, {
-      'initialize': function (backend, opts) {
+      initialize: function (backend, opts) {
         var self = this
         var result = new converter(backend, opts) // eslint-disable-line
         Object.assign(this, result)
