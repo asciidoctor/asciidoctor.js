@@ -10,7 +10,7 @@ const sortNumber = (a, b) => a - b
 
 const quantile = (durations, percentile) => {
   durations.sort(sortNumber)
-  let index = percentile / 100.0 * (durations.length - 1)
+  const index = percentile / 100.0 * (durations.length - 1)
   let result
   let i
   let fraction

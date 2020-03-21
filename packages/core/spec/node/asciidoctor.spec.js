@@ -107,7 +107,7 @@ describe('Node.js', () => {
       it('should be able to get logger\'s info', () => {
         const defaultLogger = asciidoctor.LoggerManager.getLogger()
         expect(defaultLogger.getLevel()).to.equal(2)
-        expect(defaultLogger.getFormatter()['$$class'].displayName).to.equal('::BasicFormatter')
+        expect(defaultLogger.getFormatter().$$class.displayName).to.equal('::BasicFormatter')
         expect(defaultLogger.getProgramName()).to.equal('asciidoctor')
         expect(defaultLogger.getMaxSeverity()).to.equal(3)
       })
@@ -208,11 +208,11 @@ intro
           stderrOutput += chunk
         }
         try {
-          expect(defaultFormatter['$$class']['$$name']).to.equal('BasicFormatter')
+          expect(defaultFormatter.$$class.$$name).to.equal('BasicFormatter')
           defaultLogger.setFormatter(asciidoctor.LoggerManager.newFormatter('JsonFormatter', {
             call: function (severity, time, programName, message) {
-              const text = message['text']
-              const sourceLocation = message['source_location']
+              const text = message.text
+              const sourceLocation = message.source_location
               return JSON.stringify({
                 programName: programName,
                 message: text,
@@ -232,7 +232,7 @@ intro
 [partintro]
 intro
 `
-          expect(defaultLogger.getFormatter()['$$class']['$$name']).to.equal('JsonFormatter')
+          expect(defaultLogger.getFormatter().$$class.$$name).to.equal('JsonFormatter')
           asciidoctor.convert(input)
           expect(stderrOutput).to.equal('{"programName":"asciidoctor","message":"invalid part, must have at least one section (e.g., chapter, appendix, etc.)","sourceLocation":{"lineNumber":8,"path":"<stdin>"},"severity":"ERROR"}\n')
           expect(JSON.parse(stderrOutput).message).to.equal('invalid part, must have at least one section (e.g., chapter, appendix, etc.)')
@@ -608,7 +608,7 @@ intro
       expect(nextValue).to.equal(1)
       nextValue = doc.counterIncrement('mycounter', block) // deprecated alias
       expect(nextValue).to.equal(2)
-      expect(doc.getCounters()['mycounter']).to.equal(2)
+      expect(doc.getCounters().mycounter).to.equal(2)
 
       expect(blocks[3].hasBlocks()).to.be.false()
       expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o]</span>?')
@@ -626,7 +626,7 @@ mailto:hello@opendevise.com[OpenDevise]
 irc://irc.freenode.org/#fedora
 
 http://discuss.asciidoctor.org[Discuss Asciidoctor^]`
-      const doc = asciidoctor.load(input, { 'catalog_assets': true })
+      const doc = asciidoctor.load(input, { catalog_assets: true })
       doc.convert() // available only once the document has been converted
       const linksCatalog = doc.getLinks()
       expect(linksCatalog).to.have.members([
@@ -717,10 +717,10 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       const quoteBlocks = doc.findBy((b) => b.getStyle() === 'quote')
       expect(quoteBlocks.length).to.equal(1)
 
-      const sectionBlocks = doc.findBy({ 'context': 'section' })
+      const sectionBlocks = doc.findBy({ context: 'section' })
       expect(sectionBlocks.length).to.equal(5)
 
-      const abstractSectionBlocks = doc.findBy({ 'context': 'section' }, (b) => b.getTitle() === 'Second Section')
+      const abstractSectionBlocks = doc.findBy({ context: 'section' }, (b) => b.getTitle() === 'Second Section')
       expect(abstractSectionBlocks.length).to.equal(1)
     })
 
@@ -845,41 +845,41 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
     })
 
     it('should resolve substitutions on a block', () => {
-      const doc = asciidoctor.load(`paragraph`)
+      const doc = asciidoctor.load('paragraph')
       const block = doc.getBlocks()[0]
       expect(block.resolveSubstitutions('attributes+', 'block')).to.have.members(['attributes'])
     })
 
     it('should resolve a list of substitutions on a block', () => {
-      const doc = asciidoctor.load(`paragraph`)
+      const doc = asciidoctor.load('paragraph')
       const block = doc.getBlocks()[0]
       expect(block.resolveBlockSubstitutions('specialchars,attributes,quotes,replacements,macros,post_replacements'))
         .to.have.members(['specialcharacters', 'attributes', 'quotes', 'replacements', 'macros', 'post_replacements'])
     })
 
     it('should resolve a list of substitutions on a block with defaults', () => {
-      const doc = asciidoctor.load(`paragraph`)
+      const doc = asciidoctor.load('paragraph')
       const block = doc.getBlocks()[0]
       expect(block.resolveBlockSubstitutions('attributes+,+replacements,-callouts', ['verbatim', 'quotes', 'callouts']))
         .to.have.members(['attributes', 'verbatim', 'quotes', 'replacements'])
     })
 
     it('should resolve a normal substitutions on a block', () => {
-      const doc = asciidoctor.load(`paragraph`)
+      const doc = asciidoctor.load('paragraph')
       const block = doc.getBlocks()[0]
       expect(block.resolveBlockSubstitutions('normal'))
         .to.have.members(['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
     })
 
     it('should resolve a macros pass substitutions on a block', () => {
-      const doc = asciidoctor.load(`paragraph`)
+      const doc = asciidoctor.load('paragraph')
       const block = doc.getBlocks()[0]
       expect(block.resolvePassSubstitutions('macros'))
         .to.have.members(['macros'])
     })
 
     it('should resolve a verbatim pass substitutions on a block', () => {
-      const doc = asciidoctor.load(`paragraph`)
+      const doc = asciidoctor.load('paragraph')
       const block = doc.getBlocks()[0]
       expect(block.resolvePassSubstitutions('verbatim'))
         .to.have.members(['specialcharacters'])
@@ -890,7 +890,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       const memoryLogger = asciidoctor.MemoryLogger.create()
       try {
         asciidoctor.LoggerManager.setLogger(memoryLogger)
-        const doc = asciidoctor.load(`paragraph`)
+        const doc = asciidoctor.load('paragraph')
         const block = doc.getBlocks()[0]
         expect(block.resolvePassSubstitutions('tomato+'))
           .to.have.members([])
@@ -1339,7 +1339,7 @@ sample content`, opts)
                 })
               })
             })
-            let html = asciidoctor.convert('[test]\nreplace me')
+            const html = asciidoctor.convert('[test]\nreplace me')
             expect(html).to.contain('<p>this was only a test</p>')
             extensions.unregister('test')
           } finally {
@@ -1359,7 +1359,7 @@ sample content`, opts)
                 })
               })
             })
-            let html = asciidoctor.convert('[test]\nreplace me')
+            const html = asciidoctor.convert('[test]\nreplace me')
             expect(html).to.contain(`<div class="ulist">
 <ul>
 </ul>
@@ -1386,7 +1386,7 @@ sample content`, opts)
                 })
               })
             })
-            let html = asciidoctor.convert('[test]\nreplace me')
+            const html = asciidoctor.convert('[test]\nreplace me')
             expect(html).to.contain(`<div class="ulist">
 <ul>
 <li>
@@ -1413,7 +1413,7 @@ sample content`, opts)
           const simleyInlineMacroProcessor = asciidoctor.Extensions.newInlineMacroProcessor('SimleyInlineMacroProcessor', {
             process: function (parent, target) {
               const text = target === 'wink' ? ';)' : ':)'
-              return this.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert()
+              return this.createInline(parent, 'quoted', text, { type: 'strong' }).convert()
             }
           })
           expect(simleyInlineMacroProcessor.getName()).to.be.undefined()
@@ -1426,7 +1426,7 @@ sample content`, opts)
           const simleyInlineMacroProcessor = asciidoctor.Extensions.newInlineMacroProcessor('SimleyInlineMacroProcessor', {
             process: function (parent, target) {
               const text = target === 'wink' ? ';)' : ':)'
-              return this.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert()
+              return this.createInline(parent, 'quoted', text, { type: 'strong' }).convert()
             }
           })
           registry.inlineMacro('smiley', simleyInlineMacroProcessor)
@@ -1473,10 +1473,10 @@ sample content`, opts)
           registry.inlineMacro('attrs', function () {
             const self = this
             self.matchFormat('short')
-            self.defaultAttributes({ 1: 'a', 2: 'b', 'foo': 'baz' })
+            self.defaultAttributes({ 1: 'a', 2: 'b', foo: 'baz' })
             self.positionalAttributes('a', 'b')
             self.process((parent, _, attrs) => {
-              return this.createInline(parent, 'quoted', `a=${attrs['a']},2=${attrs[2]},b=${attrs['b'] || 'nil'},foo=${attrs['foo']}`)
+              return this.createInline(parent, 'quoted', `a=${attrs.a},2=${attrs[2]},b=${attrs.b || 'nil'},foo=${attrs.foo}`)
             })
           })
           const output = asciidoctor.convert('attrs:[A,foo=bar]', { extension_registry: registry, doctype: 'inline' })
@@ -1710,7 +1710,7 @@ hello
           const opts = { extension_registry: registry }
           const doc = asciidoctor.load('mention:mojavelinux[Dan]', opts)
           const result = doc.convert(opts)
-          expect(result).to.contain(`<a href="https://github.com/mojavelinux">Dan</a>`)
+          expect(result).to.contain('<a href="https://github.com/mojavelinux">Dan</a>')
         })
 
         it('should be able to create an inline pass from a processor extension', () => {
@@ -1718,14 +1718,14 @@ hello
             this.inlineMacro(function () {
               this.named('say')
               this.process((parent, target) => {
-                return this.createInlinePass(parent, `*${target}*`, { attributes: { 'subs': 'normal' } })
+                return this.createInlinePass(parent, `*${target}*`, { attributes: { subs: 'normal' } })
               })
             })
           })
           const opts = { extension_registry: registry }
           const doc = asciidoctor.load('say:yo[]', opts)
           const result = doc.convert(opts)
-          expect(result).to.contain(`<strong>yo</strong>`)
+          expect(result).to.contain('<strong>yo</strong>')
         })
 
         it('should be able to set header attribute in block macro processor', () => {
@@ -1734,14 +1734,14 @@ hello
               this.named('attribute')
               this.resolvesAttributes('1:value')
               this.process((parent, target, attrs) => {
-                parent.getDocument().setAttribute(target, attrs['value'])
+                parent.getDocument().setAttribute(target, attrs.value)
               })
             })
             this.blockMacro(function () {
               this.named('header_attribute')
               this.resolvesAttributes('1:value')
               this.process((parent, target, attrs) => {
-                parent.getDocument().setHeaderAttribute(target, attrs['value'])
+                parent.getDocument().setHeaderAttribute(target, attrs.value)
               })
             })
           })
@@ -1767,8 +1767,8 @@ header_attribute::foo[bar]`
                     this.resolveAttributes(args[0])
                   }
                   this.process(function (parent, target, attributes) {
-                    const units = attributes['units'] || (parent.getDocument().getAttribute('temperature-unit', 'C'))
-                    const precision = parseInt(attributes['precision'])
+                    const units = attributes.units || (parent.getDocument().getAttribute('temperature-unit', 'C'))
+                    const precision = parseInt(attributes.precision)
                     const c = parseFloat(target)
                     if (units === 'C') {
                       return this.createInline(parent, 'quoted', `${c.toFixed(precision).toString()} &#176;C`, { type: 'unquoted' })
@@ -1791,7 +1791,7 @@ header_attribute::foo[bar]`
 
           itShouldResolveAttributes('using a list of arguments as a specification', '1:units', 'precision=1')
           itShouldResolveAttributes('using an array as a specification', ['1:units', 'precision=1'])
-          itShouldResolveAttributes('using a JSON as a specification', { '1:units': undefined, 'precision': 1 })
+          itShouldResolveAttributes('using a JSON as a specification', { '1:units': undefined, precision: 1 })
 
           // resolve attributes as text
           function itShouldResolveAttributesAsText (when, arg) {
@@ -1806,7 +1806,7 @@ header_attribute::foo[bar]`
                 })
               })
               const opts = { extension_registry: registry }
-              let html = asciidoctor.convert('attr:[C,precision=0].', opts)
+              const html = asciidoctor.convert('attr:[C,precision=0].', opts)
               expect(html).to.contain('C,precision=0.')
             })
           }
@@ -1827,7 +1827,7 @@ header_attribute::foo[bar]`
                 })
               })
               const opts = { extension_registry: registry }
-              let html = asciidoctor.convert('attr:[C,precision=0].', opts)
+              const html = asciidoctor.convert('attr:[C,precision=0].', opts)
               expect(html).to.contain('precision is 0.')
             })
           }
@@ -1897,8 +1897,8 @@ header_attribute::foo[bar]`
             }
           }))
           const opts = {}
-          opts['extension_registry'] = registry
-          opts['safe'] = 'safe'
+          opts.extension_registry = registry
+          opts.safe = 'safe'
           const result = asciidoctor.convert('include::whatever.adoc[]', opts)
           expect(result).to.contain('included content')
         })
@@ -1906,7 +1906,7 @@ header_attribute::foo[bar]`
         it('should be able to register an include processor class with a state', () => {
           const registry = asciidoctor.Extensions.create()
           const $callback = Symbol('callback')
-          let includeProcessor = asciidoctor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
+          const includeProcessor = asciidoctor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
             postConstruct: function () {
               this[$callback] = value => 'you should ' + value
             },
@@ -1914,18 +1914,18 @@ header_attribute::foo[bar]`
               reader.pushInclude([this[$callback]('pass')], target, target, 1, attrs)
             }
           })
-          let includeProcessorInstance = includeProcessor.$new()
+          const includeProcessorInstance = includeProcessor.$new()
           registry.includeProcessor(includeProcessorInstance)
           const opts = {}
-          opts['extension_registry'] = registry
-          opts['safe'] = 'safe'
+          opts.extension_registry = registry
+          opts.safe = 'safe'
           const result = asciidoctor.convert('include::whatever.adoc[]', opts)
           expect(result).to.contain('you should pass')
         })
 
         it('should be able to register an include processor class with a postConstruct and a custom initialize function', () => {
           const registry = asciidoctor.Extensions.create()
-          let includeProcessor = asciidoctor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
+          const includeProcessor = asciidoctor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
             initialize: function (value) {
               this.value = value
               this.super()
@@ -1937,11 +1937,11 @@ header_attribute::foo[bar]`
               reader.pushInclude([this.value + this.bar], target, target, 1, attrs)
             }
           })
-          let includeProcessorInstance = includeProcessor.$new('foo')
+          const includeProcessorInstance = includeProcessor.$new('foo')
           registry.includeProcessor(includeProcessorInstance)
           const opts = {}
-          opts['extension_registry'] = registry
-          opts['safe'] = 'safe'
+          opts.extension_registry = registry
+          opts.safe = 'safe'
           const result = asciidoctor.convert('include::whatever.adoc[]', opts)
           expect(result).to.contain('foobar')
         })
@@ -1954,8 +1954,8 @@ header_attribute::foo[bar]`
             }
           }))
           const opts = {}
-          opts['extension_registry'] = registry
-          opts['safe'] = 'safe'
+          opts.extension_registry = registry
+          opts.safe = 'safe'
           const result = asciidoctor.convert('include::whatever.adoc[]', opts)
           expect(result).to.contain('included content')
         })
@@ -1979,8 +1979,8 @@ header_attribute::foo[bar]`
           expect(packageInlineMacro.getConfig().defaultPackageUrlFormat).to.equal('https://apps.fedoraproject.org/packages/%s')
           registry.inlineMacro(packageInlineMacro)
           const opts = {}
-          opts['extension_registry'] = registry
-          opts['safe'] = 'safe'
+          opts.extension_registry = registry
+          opts.safe = 'safe'
           const result = asciidoctor.convert('Install package:asciidoctor[]', opts)
           expect(result).to.contain('Install <a href="https://apps.fedoraproject.org/packages/asciidoctor" target="_blank" rel="noopener">asciidoctor</a>')
         })
@@ -1998,8 +1998,8 @@ header_attribute::foo[bar]`
             })
           })
           const opts = {}
-          opts['extension_registry'] = registry
-          opts['safe'] = 'safe'
+          opts.extension_registry = registry
+          opts.safe = 'safe'
           const result = asciidoctor.convert('Install package:asciidoctor[]', opts)
           expect(result).to.contain('Install <a href="https://packages.ubuntu.com/bionic/asciidoctor" target="_blank" rel="noopener">asciidoctor</a>')
         })
@@ -2014,13 +2014,13 @@ header_attribute::foo[bar]`
     })
 
     it('should include a file with a relative path', () => {
-      const options = { safe: 'unsafe', header_footer: false, 'to_file': false }
+      const options = { safe: 'unsafe', header_footer: false, to_file: false }
       const html = asciidoctor.convertFile('spec/fixtures/chapter-01/index.adoc', options)
       expect(html).to.contain('We recommend to use version 1.2.3')
     })
 
     it('should include a file as a UTF-8 file', () => {
-      const options = { safe: 'unsafe', header_footer: false, 'to_file': false }
+      const options = { safe: 'unsafe', header_footer: false, to_file: false }
       const html = asciidoctor.convertFile('spec/fixtures/encoding.adoc', options)
       expect(html).to.contain('À propos des majuscules accentuées')
       expect(html).to.contain('Le français c&#8217;est pas compliqué :)')
@@ -2064,11 +2064,11 @@ header_attribute::foo[bar]`
 
   describe('Docinfo files', () => {
     const defs = {
-      'docinfo': { head_script: true, meta: false, top_link: false, footer_script: true, navbar: true },
+      docinfo: { head_script: true, meta: false, top_link: false, footer_script: true, navbar: true },
       'docinfo=private': { head_script: true, meta: false, top_link: false, footer_script: true, navbar: true },
-      'docinfo1': { head_script: false, meta: true, top_link: true, footer_script: false, navbar: false },
+      docinfo1: { head_script: false, meta: true, top_link: true, footer_script: false, navbar: false },
       'docinfo=shared': { head_script: false, meta: true, top_link: true, footer_script: false, navbar: false },
-      'docinfo2': { head_script: true, meta: true, top_link: true, footer_script: true, navbar: true },
+      docinfo2: { head_script: true, meta: true, top_link: true, footer_script: true, navbar: true },
       'docinfo docinfo2': { head_script: true, meta: true, top_link: true, footer_script: true, navbar: true },
       'docinfo=private,shared': { head_script: true, meta: true, top_link: true, footer_script: true, navbar: true },
       'docinfo=private-head': { head_script: true, meta: false, top_link: false, footer_script: false, navbar: false },
@@ -2078,26 +2078,26 @@ header_attribute::foo[bar]`
       'docinfo=shared-footer': { head_script: false, meta: false, top_link: true, footer_script: false, navbar: false },
       'docinfo=private-head,shared-footer': { head_script: true, meta: false, top_link: true, footer_script: false, navbar: false }
     }
-    for (let key in defs) {
-      if (defs.hasOwnProperty(key)) {
-        let markup = defs[key]
+    for (const key in defs) {
+      if (Object.prototype.hasOwnProperty.call(defs, key)) {
+        const markup = defs[key]
         it(`should include docinfo files for html backend with attribute ${key}`, () => {
           const attributes = ['linkcss', 'copycss!'].concat(key.split(' '))
           const options = { safe: 'safe', standalone: true, to_file: false, attributes: attributes }
           const html = asciidoctor.convertFile('spec/fixtures/basic.adoc', options)
-          if (markup['head_script']) {
+          if (markup.head_script) {
             expect(html).to.contain('<script src="modernizr.js"></script>')
           }
-          if (markup['meta']) {
+          if (markup.meta) {
             expect(html).to.contain('<meta http-equiv="imagetoolbar" content="false">')
           }
-          if (markup['top_link']) {
+          if (markup.top_link) {
             expect(html).to.contain('<a id="top" href="#">Back to top</a>')
           }
-          if (markup['footer_script']) {
+          if (markup.footer_script) {
             expect(html).to.contain('var p1 = document.createElement(\'script\'); p1.async = true; p1.src = \'https://apis.google.com/js/plusone.js\';')
           }
-          if (markup['navbar']) {
+          if (markup.navbar) {
             expect(html).to.contain('<nav class="navbar">')
             expect(html).to.contain('</nav>\n<div id="header">')
           }

@@ -6,7 +6,7 @@ const puppeteer = require('puppeteer')
 const opts = {
   headless: true,
   timeout: 30000, // 30 seconds
-  args: [ '--allow-file-access-from-files', '--no-sandbox' ]
+  args: ['--allow-file-access-from-files', '--no-sandbox']
 }
 
 const log = async (msg) => {

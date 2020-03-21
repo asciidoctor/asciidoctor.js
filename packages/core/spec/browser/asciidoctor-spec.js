@@ -48,9 +48,9 @@
 
       it('should resolve a stylesheet using chrome:// protocol (root)', function () {
         const attributes = {
-          'stylesheet': 'asciidoctor-plus.css',
-          'stylesdir': 'chrome://asciidoctor/extension/css',
-          'copycss': false
+          stylesheet: 'asciidoctor-plus.css',
+          stylesdir: 'chrome://asciidoctor/extension/css',
+          copycss: false
         }
         const options = {
           doctype: 'article',
@@ -64,7 +64,7 @@
         } catch (e) {
           // the resource does not exist but chrome:// is a root path and should not be prepended by "./"
           // we expect the processor to try to load the resource 'chrome://asciidoctor/extension/css/asciidoctor-plus.css' and fail!
-          expect(e.message).to.include(`Failed to load 'chrome://asciidoctor/extension/css/asciidoctor-plus.css'`)
+          expect(e.message).to.include('Failed to load \'chrome://asciidoctor/extension/css/asciidoctor-plus.css\'')
         }
       })
     })

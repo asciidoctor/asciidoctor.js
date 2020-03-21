@@ -82,13 +82,13 @@ const generateFlavors = (asciidoctorCoreTarget, environments) => {
     } else {
       data = opalExtData.concat('\n').concat(asciidoctorCoreData)
     }
-    let asciidoctorData = parseTemplateData(data, {
+    const asciidoctorData = parseTemplateData(data, {
       '//{{requireOpalRuntimeExt}}': `self.$require("asciidoctor/js/opal_ext/${environment}");`,
       // no specific runtime for GraalVM
       '//{{requireAsciidoctorRuntimeExt}}': environment === 'graalvm' ? '' : `self.$require("asciidoctor/js/asciidoctor_ext/${environment}");`
     })
     let templateFile
-    let target = `build/asciidoctor-${environment}.js`
+    const target = `build/asciidoctor-${environment}.js`
     if (environment === 'node' || environment === 'electron') {
       templateFile = 'src/template-asciidoctor-node.js'
     } else {

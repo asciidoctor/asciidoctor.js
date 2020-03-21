@@ -21,7 +21,7 @@ const compileExt = (name, environment, skipped) => {
     // For performance reason we build "asciidoctor_ext" without "asciidoctor" core.
     // As a result Ruby modules required in "asciidoctor_ext" won't be found at compile time but will be resolved at runtime.
     opalBuilder.missing_require_severity = 'ignore'
-    let data = opalBuilder.build(module).toString()
+    const data = opalBuilder.build(module).toString()
     fs.writeFileSync(target, data, 'utf8')
   }
 }
@@ -41,7 +41,7 @@ const compileRuntimeEnvironments = (environments) => {
 
 const compileAsciidoctorCore = (asciidoctorCoreDependency) => {
   log.task('compile core lib')
-  const module = `asciidoctor/lib`
+  const module = 'asciidoctor/lib'
   log.debug(module)
   const target = asciidoctorCoreDependency.target
   if (fs.existsSync(target)) {

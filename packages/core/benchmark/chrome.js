@@ -26,7 +26,7 @@ puppeteer.launch({ args: ['--disable-gpu', '--no-sandbox', '--single-process', '
       header_footer: true,
       attributes: 'linkcss copycss! toc! numbered! icons! compat-mode'
     }
-    var asciidoctor = Asciidoctor({ 'runtime': { 'ioModule': 'xmlhttprequest' } })
+    var asciidoctor = Asciidoctor({ runtime: { ioModule: 'xmlhttprequest' } })
     var content
     if (environment.include) {
       content = 'include::' + environment.baseDir + '/userguide.adoc[]'
