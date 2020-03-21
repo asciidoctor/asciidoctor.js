@@ -71,7 +71,7 @@
     "unxhr": "1.0.1"
   },
   "devDependencies": {
-    "@types/node": "^12.7.8",
+    "@types/node": "^13.9.2",
     "bestikk-download": "1.0.0",
     "bestikk-fs": "1.0.0",
     "bestikk-log": "0.1.0",
