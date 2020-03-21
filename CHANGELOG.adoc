@@ -11,12 +11,13 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 Bug Fixes::
 
 * Fix the Asciidoctor CLI provided by the `asciidoctor` package (#846) - thanks @thorstenkampe
+* `AbstractNode.hasSection` now returns false for anything that isn't itself a `Section` (#840) - thanks @henriette-einstein
 
 Improvements::
 
 * Map `Document.restoreAttributes` (#843)
 * Map an internal API `Document.playbackAttributes` (#844)
-* Map `Table`, `Table.Rows`, `Table.Column` and `Table.Cell` (#848)
+* Map `Table`, `Table.Rows`, `Table.Column` and `Table.Cell` (#848) - thanks @henriette-einstein
 * Map `AbstractNode.resolveSubstitutions`, `AbstractBlock.resolveBlockSubstitutions` and `AbstractNode.resolvePassSubstitutions` (#845)
 
 
