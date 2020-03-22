@@ -12,14 +12,14 @@ const prepareRelease = (releaseVersion) => {
   }
   const projectRootDirectory = path.join(__dirname, '..', '..')
   try {
-    childProcess.execSync(`git diff-index --quiet HEAD --`, { cwd: projectRootDirectory })
+    childProcess.execSync('git diff-index --quiet HEAD --', { cwd: projectRootDirectory })
   } catch (e) {
     log.error('Git working directory not clean')
-    const status = childProcess.execSync(`git status -s`)
+    const status = childProcess.execSync('git status -s')
     process.stdout.write(status)
     process.exit(1)
   }
-  const branchName = childProcess.execSync(`git symbolic-ref --short HEAD`, { cwd: projectRootDirectory }).toString('utf-8').trim()
+  const branchName = childProcess.execSync('git symbolic-ref --short HEAD', { cwd: projectRootDirectory }).toString('utf-8').trim()
   if (branchName !== 'master') {
     log.error('Release must be performed on master branch')
     process.exit(1)
