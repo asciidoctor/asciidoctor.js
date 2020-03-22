@@ -67,7 +67,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "asciidoctor-opal-runtime": "0.3.0",
+    "asciidoctor-opal-runtime": "0.4.0",
     "unxhr": "1.0.1"
   },
   "devDependencies": {
