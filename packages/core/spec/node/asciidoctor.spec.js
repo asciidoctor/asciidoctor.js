@@ -1,4 +1,4 @@
-/* global it, describe, afterEach */
+/* global it, describe, before, after, afterEach */
 const path = require('path')
 const fs = require('fs')
 const process = require('process')
@@ -27,14 +27,6 @@ const Opal = require('asciidoctor-opal-runtime').Opal // for testing purpose onl
 const packageJson = require('../../package.json')
 
 const asciidoctorCoreSemVer = semVer(asciidoctor.getCoreVersion())
-const testOptions = {
-  platform: 'Node.js',
-  baseDir: path.join(__dirname, '..', '..'),
-  coreVersion: asciidoctorCoreSemVer
-}
-
-shareSpec(testOptions, asciidoctor, expect)
-includeHttpsSpec(testOptions, asciidoctor, expect)
 
 function fileExists (path) {
   try {
@@ -66,6 +58,46 @@ const resolveFixture = (name) => {
 }
 
 describe('Node.js', () => {
+  const testOptions = {
+    platform: 'Node.js',
+    baseDir: path.join(__dirname, '..', '..'),
+    coreVersion: asciidoctorCoreSemVer
+  }
+
+  const MockServer = require('../share/mock-server.js')
+  let mockServer
+
+  before(async function () {
+    this.timeout(5000) // starting the mock server can take a few seconds
+    try {
+      const { uri: remoteBaseUri } = await new Promise((resolve, reject) => {
+        mockServer = new MockServer((msg) => {
+          if (msg.event === 'started') {
+            resolve({ uri: `http://localhost:${msg.port}` })
+          }
+        })
+      })
+      testOptions.remoteBaseUri = remoteBaseUri
+    } catch (err) {
+      console.error('Unable to start the mock server', err)
+      throw err
+    }
+  })
+
+  after(async () => {
+    try {
+      if (mockServer) {
+        await mockServer.close()
+      }
+    } catch (err) {
+      console.error('Unable to stop the mock server', err)
+      throw err
+    }
+  })
+
+  shareSpec(testOptions, asciidoctor, expect)
+  includeHttpsSpec(testOptions, asciidoctor, expect)
+
   describe('Asciidoctor.js API', () => {
     it('should return Asciidoctor.js version', () => {
       expect(asciidoctor.getVersion()).to.equal(packageJson.version)

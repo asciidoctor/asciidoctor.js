@@ -1,11 +1,12 @@
-/* global it, describe, mocha, chai, mochaOpts, shareSpec, includeHttpsSpec, includeFileSpec, semVer */
+/* global it, describe, mocha, chai, mochaOpts, testOpts, shareSpec, includeHttpsSpec, includeFileSpec, semVer */
 import Asciidoctor from '../../build/asciidoctor-browser.js'
 
 // bootstrap
 (async () => {
   let reporter
   if (typeof mochaOpts === 'function') {
-    reporter = await mochaOpts().reporter
+    const opts = await mochaOpts()
+    reporter = opts.reporter
   } else {
     reporter = 'html'
   }
@@ -23,10 +24,16 @@ import Asciidoctor from '../../build/asciidoctor-browser.js'
   parts.pop()
   const baseDir = parts.join('/')
   const asciidoctorCoreSemVer = semVer(asciidoctor.getCoreVersion())
+  let remoteBaseUri
+  if (typeof testOpts === 'function') {
+    const opts = await testOpts()
+    remoteBaseUri = opts.remoteBaseUri
+  }
   const testOptions = {
     platform: 'Browser',
     baseDir: baseDir,
-    coreVersion: asciidoctorCoreSemVer
+    coreVersion: asciidoctorCoreSemVer,
+    remoteBaseUri: remoteBaseUri
   }
   shareSpec(testOptions, asciidoctor, expect)
   includeHttpsSpec(testOptions, asciidoctor, expect)
