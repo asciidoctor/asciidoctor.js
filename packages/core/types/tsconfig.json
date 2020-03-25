@@ -6,8 +6,6 @@
       "es6"
     ],
     "esModuleInterop": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
     "strict": true,
     "baseUrl": "../",
     "paths": {
