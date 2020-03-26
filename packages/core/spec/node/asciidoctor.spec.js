@@ -82,27 +82,37 @@ describe('Node.js', () => {
         const message = pipe.$string()
         expect(message).to.contain('WARN -- asciidoctor: hello')
         expect(message).to.contain('W, [')
-        const datetime = /W, \[([^\]]+)].*/g.exec(message)[1]
-        const datetimeRegexp = new RegExp(/([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]{6})/)
-        const result = datetimeRegexp.exec(datetime)
-        const year = parseInt(result[1])
-        const month = parseInt(result[2])
-        const day = parseInt(result[3])
-        const hours = parseInt(result[4])
-        const minutes = parseInt(result[5])
-        const seconds = parseInt(result[6])
-        const nowYear = now.getFullYear()
-        const nowMonth = now.getMonth()
-        const nowDay = now.getDate()
-        const nowHours = now.getHours()
-        const nowMinutes = now.getMinutes()
-        const nowSeconds = now.getSeconds()
-        expect(year).to.be.within(nowYear - 1, nowYear + 1)
-        expect(month).to.be.within(nowMonth - 1, nowMonth + 1)
-        expect(day).to.be.within(nowDay - 1, nowDay + 1)
-        expect(hours).to.be.within(nowHours - 1, nowHours + 1)
-        expect(minutes).to.be.within(nowMinutes - 1, nowMinutes + 1)
-        expect(seconds).to.be.within(nowSeconds - 10, nowSeconds + 10)
+        const messageRegexp = /W, \[([^\]]+)].*/g
+        const messageMatch = messageRegexp.exec(message)
+        if (messageMatch) {
+          const datetime = messageMatch[1]
+          const datetimeRegexp = new RegExp(/([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})\.([0-9]+)/)
+          const datetimeMatch = datetimeRegexp.exec(datetime)
+          if (datetimeMatch) {
+            const year = parseInt(datetimeMatch[1])
+            const month = parseInt(datetimeMatch[2])
+            const day = parseInt(datetimeMatch[3])
+            const hours = parseInt(datetimeMatch[4])
+            const minutes = parseInt(datetimeMatch[5])
+            const seconds = parseInt(datetimeMatch[6])
+            const nowYear = now.getFullYear()
+            const nowMonth = now.getMonth()
+            const nowDay = now.getDate()
+            const nowHours = now.getHours()
+            const nowMinutes = now.getMinutes()
+            const nowSeconds = now.getSeconds()
+            expect(year).to.be.within(nowYear - 1, nowYear + 1)
+            expect(month).to.be.within(nowMonth - 1, nowMonth + 1)
+            expect(day).to.be.within(nowDay - 1, nowDay + 1)
+            expect(hours).to.be.within(nowHours - 1, nowHours + 1)
+            expect(minutes).to.be.within(nowMinutes - 1, nowMinutes + 1)
+            expect(seconds).to.be.within(nowSeconds - 10, nowSeconds + 10)
+          } else {
+            expect.fail('', '', `the date time: ${datetime} does not match the regular expression: ${datetimeRegexp}`)
+          }
+        } else {
+          expect.fail('', '', `the message: ${message} does not match the regular expression: ${messageRegexp}`)
+        }
       })
       it('should be able to get logger\'s info', () => {
         const defaultLogger = asciidoctor.LoggerManager.getLogger()
