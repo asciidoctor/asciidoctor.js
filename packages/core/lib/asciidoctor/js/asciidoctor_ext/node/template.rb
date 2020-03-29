@@ -141,6 +141,17 @@ class Converter::TemplateConverter < Converter::Base
     end
   end
 
+  def node_require module_name
+    %x{
+      try {
+        return require(#{module_name})
+      }
+      catch (e) {
+        throw #{IOError.new "Unable to require the module '#{module_name}', please make sure that the module is installed."}
+      }
+    }
+  end
+
   # Internal: Scan the specified directory for template files matching pattern and instantiate
   # a Tilt template for each matched file.
   #
@@ -163,20 +174,40 @@ class Converter::TemplateConverter < Converter::Base
       unless template_cache && (template = template_cache[file])
         extsym = path_segments[-1].to_sym
         case extsym
-        when :pug
+        when :nunjucks, :njk
+          nunjucks = node_require 'nunjucks'
           %x{
-            try {
-             const pug = require('pug')
-             template = { render: pug.compileFile(file), '$file': function() { return file } }
-            }
-            catch (e) {
-             throw #{IOError.new 'Unable to require the module \'pug\', please make sure that the module is installed.'}
-            }
+            var fs = require('fs')
+            var env = nunjucks.configure(#{template_dir}, {})
+            template = Object.assign(nunjucks.compile(fs.readFileSync(file, 'utf8'), env), { '$file': function() { return file } })
+          }
+        when :handlebars, :hbs
+          handlebars = node_require 'handlebars'
+          %x{
+            var fs = require('fs')
+            template = { render: handlebars.compile(fs.readFileSync(file, 'utf8')), '$file': function() { return file } }
+          }
+        when :ejs
+          ejs = node_require 'ejs'
+          %x{
+            var fs = require('fs')
+            template = { render: ejs.compile(fs.readFileSync(file, 'utf8')), '$file': function() { return file } }
+          }
+        when :pug
+          pug = node_require 'pug'
+          %x{
+            template = { render: pug.compileFile(file), '$file': function() { return file } }
           }
         when :js
           template = `{ render: require(file), '$file': function() { return file } }`
         else
-          next
+          %x{
+            var registry = Opal.Asciidoctor.TemplateEngine.registry
+            var templateEngine = registry[#{extsym}]
+            if (templateEngine && typeof templateEngine.compile === 'function') {
+              template = Object.assign(templateEngine.compile(file, name), { '$file': function() { return file } })
+            }
+          }
         end
       end
       result[name] = template

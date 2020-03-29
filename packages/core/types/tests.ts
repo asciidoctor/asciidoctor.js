@@ -1114,3 +1114,22 @@ assert(typeof normalCell.getInnerDocument() === 'undefined');
 assert(asciidocCell.getInnerDocument()!.getAttributes().foo === 'foo');
 assert(typeof asciidocCell.getInnerDocument()!.getParentDocument()!.getAttributes().foo === 'undefined');
 assert(asciidocCell.getInnerDocument()!.getParentDocument()!.getDocumentTitle() === 'Table');
+
+class DotTemplateEngineAdapter implements Asciidoctor.TemplateEngine.Adapter {
+  private readonly doT: any;
+
+  constructor() {
+    this.doT = require('dot');
+  }
+
+  compile(file: string) {
+    const templateFn = this.doT.template(fs.readFileSync(file, 'utf8'));
+    return {
+      render: templateFn
+    };
+  }
+}
+
+processor.TemplateEngine.register('dot', new DotTemplateEngineAdapter());
+const htmlUsingDotTemplate = processor.convert('content', { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/dot', template_engine: 'dot' });
+assert(htmlUsingDotTemplate === '<p class="paragraph-dot">content</p>');

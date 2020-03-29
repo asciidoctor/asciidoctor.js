@@ -2457,17 +2457,53 @@ In other words, it’s about discovering writing zen.`
 
   describe('Using a template converter', () => {
     it('should use a Pug template', () => {
-      const options = { safe: 'safe', backend: ':html5', template_dir: 'spec/fixtures/templates/pug' }
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/pug' }
       const result = asciidoctor.convert('content', options)
       expect(result).to.contain('<p class="paragraph-pug">content</p>')
     }).timeout(15000) // can take a few seconds in GraalVM and macOS on GitHub Actions... :|
+    it('should use a Nunjucks template', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<p class="paragraph-nunjucks">content</p>')
+    }).timeout(5000)
+    it('should use an EJS template', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/ejs' }
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<p class="paragraph-ejs">content</p>')
+    }).timeout(5000)
+    it('should use a Handlebars template', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/handlebars' }
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<p class="paragraph-handlebars">content</p>')
+    }).timeout(5000)
+    it('should use a doT template', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/dot', template_engine: 'dot' }
+      const fs = require('fs')
+
+      class DotTemplateEngineAdapter {
+        constructor () {
+          this.doT = require('dot')
+        }
+
+        compile (file, _) {
+          const templateFn = this.doT.template(fs.readFileSync(file, 'utf8'))
+          return {
+            render: templateFn
+          }
+        }
+      }
+
+      asciidoctor.TemplateEngine.register('dot', new DotTemplateEngineAdapter())
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<p class="paragraph-dot">content</p>')
+    }).timeout(5000)
     it('should use a JavaScript template', () => {
-      const options = { safe: 'safe', backend: ':html5', template_dir: 'spec/fixtures/templates/js' }
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/js' }
       const result = asciidoctor.convert('*bold* statement', options)
       expect(result).to.contain('<p class="paragraph-js"><strong>bold</strong> statement</p>')
     })
     it('should require an helpers file', () => {
-      const options = { safe: 'safe', backend: ':html5', template_dir: 'spec/fixtures/templates/js-with-helpers' }
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/js-with-helpers' }
       const result = asciidoctor.convert('video::TLV4_xaYynY[]', options)
       expect(result).to.contain('<iframe src="https://www.youtube.com/embed/TLV4_xaYynY?enablejsapi=1&amp;rel=0&amp;showinfo=0&amp;controls=0&amp;disablekb=1" width="undefined" height="undefined" frameborder="0" allowfullscreen="true" data-rewind="" data-volume=""/>')
     }).timeout(5000) // can take a few seconds in GraalVM

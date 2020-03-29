@@ -3591,3 +3591,48 @@ Cell.prototype.getInnerDocument = function () {
   const innerDocument = this.inner_document
   return innerDocument === Opal.nil ? undefined : innerDocument
 }
+
+/**
+ * @namespace
+ * @description
+ * This API is experimental and subject to change.
+ *
+ * A pluggable adapter for integrating a template engine into the built-in template converter.
+ */
+var TemplateEngine = {}
+TemplateEngine.registry = {}
+
+// Alias
+Opal.Asciidoctor.TemplateEngine = TemplateEngine
+
+/**
+ * Register a template engine adapter for the given names.
+ * @param {string|Array} names - a {string} name or an {Array} of {string} names
+ * @param {Object} templateEngineAdapter - a template engine adapter instance
+ * @example
+ *  const fs = require('fs')
+ *  class DotTemplateEngineAdapter {
+ *    constructor () {
+ *      this.doT = require('dot')
+ *    }
+ *    compile (file, _) {
+ *      const templateFn = this.doT.template(fs.readFileSync(file, 'utf8'))
+ *      return {
+ *        render: templateFn
+ *      }
+ *    }
+ *  }
+ *  asciidoctor.TemplateEngine.register('dot, new DotTemplateEngineAdapter())
+ * @memberof TemplateEngine
+ */
+TemplateEngine.register = function (names, templateEngineAdapter) {
+  if (typeof names === 'string') {
+    this.registry[names] = templateEngineAdapter
+  } else {
+    // array
+    for (var i = 0; i < names.length; i++) {
+      var name = names[i]
+      this.registry[name] = templateEngineAdapter
+    }
+  }
+}

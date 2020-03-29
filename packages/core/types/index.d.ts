@@ -1780,7 +1780,7 @@ export namespace Asciidoctor {
      *
      * @param blockAttributes - a JSON of attributes
      */
-   playbackAttributes(blockAttributes: Block.Attributes): void;
+    playbackAttributes(blockAttributes: Block.Attributes): void;
 
     /**
      * Delete the specified attribute from the document if the name is not locked.
@@ -3205,6 +3205,78 @@ export namespace Asciidoctor {
      */
     docinfo(location: string, doc: Document, opts: SyntaxHighlighterDocinfoOptions): string;
   }
+
+  namespace Template {
+    interface Context {
+      node: AbstractNode;
+      opts: Options;
+      helpers: any;
+    }
+  }
+
+  /**
+   * Handles template rendering.
+   */
+  interface Template {
+    /**
+     * Render the template with a given context.
+     * @param context - A context that contains the {AbstractNode}
+     * @returns The resulting {string}
+     */
+    render: (context: Template.Context) => string;
+  }
+
+  namespace TemplateEngine {
+    interface Registry {
+      [key: string]: Adapter;
+    }
+    /**
+     * Handles template compilation.
+     */
+    interface Adapter {
+      /**
+       * Compile a file to a {Template}.
+       * @param file - The file path
+       * @param nodeName - The node name
+       */
+      compile: (file: string, nodeName: string) => Template;
+    }
+  }
+
+  /**
+   * @description
+   * This API is experimental and subject to change.
+   *
+   * A global registry for integrating a template engine into the built-in template converter.
+   */
+  class TemplateEngine {
+    /**
+     * The template engine registry.
+     */
+    registry: TemplateEngine.Registry;
+
+    /**
+     * Register a template engine adapter for the given names.
+     * @param names - a {string} name or an {Array} of {string} names
+     * @param templateEngineAdapter - a template engine adapter instance
+     * @example
+     * import fs from 'fs';
+     * class DotTemplateEngineAdapter implements Asciidoctor.TemplateEngine.Adapter {
+     *   private readonly doT: any;
+     *   constructor() {
+     *     this.doT = require('dot');
+     *   }
+     *   compile file: string) {
+     *     const templateFn = this.doT.template(fs.readFileSync(file, 'utf8'));
+     *     return {
+     *       render: templateFn
+     *     };
+     *   }
+     * }
+     * processor.TemplateEngine.register('dot', new DotTemplateEngineAdapter());
+     */
+    static register(names: string | string[], templateEngineAdapter: TemplateEngine.Adapter): void;
+  }
 }
 
 /**
@@ -3326,6 +3398,8 @@ export class Asciidoctor {
   LoggerManager: typeof Asciidoctor.LoggerManager;
 
   SyntaxHighlighter: typeof Asciidoctor.SyntaxHighlighter;
+
+  TemplateEngine: typeof Asciidoctor.TemplateEngine;
 }
 
 export default function asciidoctor(): Asciidoctor;
