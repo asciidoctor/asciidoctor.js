@@ -3,6 +3,7 @@
 :uri-plantuml-server: https://github.com/plantuml/plantuml-server
 :uri-chartist: https://gionkunz.github.io/chartist-js/
 :uri-kroki: https://kroki.io/
+:uri-bytefield: https://bytefield-svg.deepsymmetry.org/
 
 :uri-ext-interactive-runner-gh: https://github.com/oncletom/asciidoctor-extension-interactive-runner
 :uri-ext-plantuml-gh: https://github.com/eshepelyuk/asciidoctor-plantuml.js
@@ -10,8 +11,13 @@
 :uri-ext-chart-gh: https://github.com/mogztter/asciidoctor-chart
 :uri-ext-kroki-gh: https://github.com/Mogztter/asciidoctor-kroki
 :uri-ext-tweet-gh: https://github.com/Mogztter/asciidoctor-tweet
+:uri-ext-bytefield-gh: https://github.com/Deep-Symmetry/bytefield-svg
 
 Here's a list of extensions provided by the awesome community:
+
+Byte field::
+Draw byte field diagrams using {uri-bytefield}[bytefield-svg]. +
+{uri-ext-bytefield-gh}
 
 Chart::
 Render charts using {uri-chartist}[Chartist.js]. +
