@@ -9,8 +9,9 @@
 :uri-ext-plantuml-gh: https://github.com/eshepelyuk/asciidoctor-plantuml.js
 :uri-ext-emoji-gh: https://github.com/mogztter/asciidoctor-emoji
 :uri-ext-chart-gh: https://github.com/mogztter/asciidoctor-chart
-:uri-ext-kroki-gh: https://github.com/Mogztter/asciidoctor-kroki
-:uri-ext-tweet-gh: https://github.com/Mogztter/asciidoctor-tweet
+:uri-ext-color-gh: https://github.com/mogztter/asciidoctor-color
+:uri-ext-kroki-gh: https://github.com/mogztter/asciidoctor-kroki
+:uri-ext-tweet-gh: https://github.com/mogztter/asciidoctor-tweet
 :uri-ext-bytefield-gh: https://github.com/Deep-Symmetry/bytefield-svg
 
 Here's a list of extensions provided by the awesome community:
@@ -22,6 +23,10 @@ Draw byte field diagrams using {uri-bytefield}[bytefield-svg]. +
 Chart::
 Render charts using {uri-chartist}[Chartist.js]. +
 {uri-ext-chart-gh}
+
+Color::
+Render color chips for a given color reference (either a name, rgb, rgba, hsl, hsla or hex reference) +
+{uri-ext-color-gh}
 
 Diagrams::
 Convert diagrams to images using {uri-kroki}[Kroki]. +
