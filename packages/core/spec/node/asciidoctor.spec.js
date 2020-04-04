@@ -2514,8 +2514,8 @@ In other words, it’s about discovering writing zen.`
       asciidoctor.load('content', options)
       const cache = asciidoctor.TemplateConverter.getCache()
       const templatesPattern = path.resolve(`${__dirname}/../fixtures/templates/nunjucks/*`)
-      expect(cache.scans[templatesPattern].paragraph.tmplStr).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>\n')
-      expect(cache.templates[path.resolve(`${__dirname}/../fixtures/templates/nunjucks/paragraph.njk`)].tmplStr).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>\n')
+      expect(cache.scans[templatesPattern].paragraph.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
+      expect(cache.templates[path.resolve(`${__dirname}/../fixtures/templates/nunjucks/paragraph.njk`)].tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
     }).timeout(5000)
     it('should handle a given node', () => {
       const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
@@ -2536,10 +2536,10 @@ In other words, it’s about discovering writing zen.`
       const doc = asciidoctor.load('content', options)
       const templateConverter = doc.getConverter()
       const templates = templateConverter.getTemplates()
-      expect(templates.paragraph.tmplStr).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>\n')
+      expect(templates.paragraph.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
       expect(templates.admonition).to.be.undefined()
       const paragraph = asciidoctor.Block.create(doc, 'paragraph', { source: 'This is a <test>' })
-      expect(templates.paragraph.render({ node: paragraph })).to.equal('<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>\n')
+      expect(templates.paragraph.render({ node: paragraph }).trim()).to.equal('<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>')
     }).timeout(5000)
     it('should replace an existing template', () => {
       const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
@@ -2550,7 +2550,7 @@ In other words, it’s about discovering writing zen.`
       templateConverter.register('paragraph', template)
       const templates = templateConverter.getTemplates()
       const paragraph = asciidoctor.Block.create(doc, 'paragraph', { source: 'This is a <test>' })
-      expect(templates.paragraph.render({ node: paragraph })).to.equal('<p class="paragraph nunjucks">This is a &lt;test&gt;</p>')
+      expect(templates.paragraph.render({ node: paragraph }).trim()).to.equal('<p class="paragraph nunjucks">This is a &lt;test&gt;</p>')
     }).timeout(5000)
     it('should register a new template', () => {
       const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }

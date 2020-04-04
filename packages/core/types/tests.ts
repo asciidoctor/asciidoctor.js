@@ -1140,8 +1140,9 @@ processor.TemplateConverter.clearCache(); // since the cache is global, we are u
 const docWithTemplateConverter = processor.load('content', {safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks'});
 const cache = processor.TemplateConverter.getCache();
 const templatesPattern = ospath.resolve(`${__dirname}/../spec/fixtures/templates/nunjucks/*`);
-assert(cache.scans && cache.scans[templatesPattern].paragraph.tmplStr === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>\n');
-assert(cache.templates && cache.templates[ospath.resolve(`${__dirname}/../spec/fixtures/templates/nunjucks/paragraph.njk`)].tmplStr === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>\n');
+assert(cache.scans && cache.scans[templatesPattern].paragraph.tmplStr.trim() === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>');
+const templateFilePath = ospath.resolve(`${__dirname}/../spec/fixtures/templates/nunjucks/paragraph.njk`);
+assert(cache.templates && cache.templates[templateFilePath].tmplStr.trim() === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>');
 
 // handle a given node
 const templateConverter = docWithTemplateConverter.getConverter() as Asciidoctor.TemplateConverter;
@@ -1153,15 +1154,20 @@ const paragraph = processor.Block.create(doc, 'paragraph', {source: 'This is a <
 assert(templateConverter.convert(paragraph, 'paragraph') === '<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>');
 
 // get templates
-const templates = templateConverter.getTemplates();
-assert(templates.paragraph.tmplStr === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>\n');
+let templates = templateConverter.getTemplates();
+assert(templates.paragraph.tmplStr.trim() === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>');
 assert(typeof templates.admonition === 'undefined');
-assert(templates.paragraph.render({node: paragraph}) === '<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>\n');
+
+// render the "default" template
+const defaultParagraphResult = templates.paragraph.render({node: paragraph}).trim();
+assert(defaultParagraphResult === '<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>');
 
 // replace an existing template (paragraph)
-const paragraphTemplate = nunjucks.compile('<p class="paragraph nunjucks">{{ node.getContent() }}</p>');
+const paragraphTemplate = nunjucks.compile('<p class="paragraph nunjucks new">{{ node.getContent() }}</p>');
 templateConverter.register('paragraph', paragraphTemplate);
-assert(templates.paragraph.render({node: paragraph}) === '<p class="paragraph nunjucks">This is a &lt;test&gt;</p>');
+templates = templateConverter.getTemplates();
+const newParagraphResult = templates.paragraph.render({node: paragraph}).trim();
+assert(newParagraphResult === '<p class="paragraph nunjucks new">This is a &lt;test&gt;</p>');
 
 // register a new template (admonition)
 const admonitionTemplate = nunjucks.compile(`<article class="message is-info">
@@ -1173,6 +1179,7 @@ const admonitionTemplate = nunjucks.compile(`<article class="message is-info">
   </div>
 </article>`);
 templateConverter.register('admonition', admonitionTemplate);
+templates = templateConverter.getTemplates();
 const admonition = processor.Block.create(doc, 'admonition', {source: 'An admonition paragraph, like this note, grabs the reader’s attention.', attributes: {textlabel: 'Note'}});
 assert(templates.admonition.render({node: admonition}) === `<article class="message is-info">
   <div class="message-header">
