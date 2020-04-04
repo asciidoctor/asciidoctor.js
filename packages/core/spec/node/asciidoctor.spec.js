@@ -2517,8 +2517,14 @@ In other words, it’s about discovering writing zen.`
       console.log('__dirname', __dirname)
       console.log('templatesPattern', templatesPattern)
       console.log('debug windows path!', cache.scans)
-      expect(cache.scans[templatesPattern].paragraph.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
-      expect(cache.templates[path.resolve(`${__dirname}/../fixtures/templates/nunjucks/paragraph.njk`)].tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
+      expect(cache.scans).to.have.property(templatesPattern)
+      const templates = cache.scans[templatesPattern]
+      expect(templates).to.have.property('paragraph')
+      expect(templates.paragraph.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
+      const templateFilePath = path.resolve(`${__dirname}/../fixtures/templates/nunjucks/paragraph.njk`)
+      expect(cache.templates).to.have.property(templateFilePath)
+      const paragraphTemplate = cache.templates[templateFilePath]
+      expect(paragraphTemplate.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
     }).timeout(5000)
     it('should handle a given node', () => {
       const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
