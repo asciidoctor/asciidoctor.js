@@ -1139,9 +1139,9 @@ assert(htmlUsingDotTemplate === '<p class="paragraph-dot">content</p>');
 processor.TemplateConverter.clearCache(); // since the cache is global, we are using "clearCache" to make sure that other tests won't affect the result
 const docWithTemplateConverter = processor.load('content', {safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks'});
 const cache = processor.TemplateConverter.getCache();
-const templatesPattern = ospath.resolve(`${__dirname}/../spec/fixtures/templates/nunjucks/*`);
+const templatesPattern = ospath.resolve(`${__dirname}/../spec/fixtures/templates/nunjucks/*`).replace(/\\/g, '/');
 assert(cache.scans && cache.scans[templatesPattern].paragraph.tmplStr.trim() === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>');
-const templateFilePath = ospath.resolve(`${__dirname}/../spec/fixtures/templates/nunjucks/paragraph.njk`);
+const templateFilePath = ospath.resolve(`${__dirname}/../spec/fixtures/templates/nunjucks/paragraph.njk`).replace(/\\/g, '/');
 assert(cache.templates && cache.templates[templateFilePath].tmplStr.trim() === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>');
 
 // handle a given node

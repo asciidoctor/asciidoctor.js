@@ -2513,15 +2513,12 @@ In other words, it’s about discovering writing zen.`
       const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
       asciidoctor.load('content', options)
       const cache = asciidoctor.TemplateConverter.getCache()
-      const templatesPattern = path.resolve(`${__dirname}/../fixtures/templates/nunjucks/*`)
-      console.log('__dirname', __dirname)
-      console.log('templatesPattern', templatesPattern)
-      console.log('debug windows path!', cache.scans)
+      const templatesPattern = path.resolve(`${__dirname}/../fixtures/templates/nunjucks/*`).replace(/\\/g, '/')
       expect(cache.scans).to.have.property(templatesPattern)
       const templates = cache.scans[templatesPattern]
       expect(templates).to.have.property('paragraph')
       expect(templates.paragraph.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
-      const templateFilePath = path.resolve(`${__dirname}/../fixtures/templates/nunjucks/paragraph.njk`)
+      const templateFilePath = path.resolve(`${__dirname}/../fixtures/templates/nunjucks/paragraph.njk`).replace(/\\/g, '/')
       expect(cache.templates).to.have.property(templateFilePath)
       const paragraphTemplate = cache.templates[templateFilePath]
       expect(paragraphTemplate.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
