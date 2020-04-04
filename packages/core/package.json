@@ -72,6 +72,7 @@
   },
   "devDependencies": {
     "@types/node": "^13.9.2",
+    "@types/nunjucks": "^3.1.3",
     "bestikk-download": "1.0.0",
     "bestikk-fs": "1.0.0",
     "bestikk-log": "0.1.0",

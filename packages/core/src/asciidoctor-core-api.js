@@ -3592,47 +3592,165 @@ Cell.prototype.getInnerDocument = function () {
   return innerDocument === Opal.nil ? undefined : innerDocument
 }
 
+// Templates
+
 /**
- * @namespace
  * @description
  * This API is experimental and subject to change.
  *
- * A pluggable adapter for integrating a template engine into the built-in template converter.
+ * Please note that this API is currently only available in a Node environment.
+ * We recommend to use a custom converter if you are running in the browser.
+ *
+ * @namespace
+ * @module Converter/TemplateConverter
  */
-var TemplateEngine = {}
-TemplateEngine.registry = {}
+var TemplateConverter = Opal.Asciidoctor.Converter.TemplateConverter
 
-// Alias
-Opal.Asciidoctor.TemplateEngine = TemplateEngine
+if (TemplateConverter) {
+  // Alias
+  Opal.Asciidoctor.TemplateConverter = TemplateConverter
 
-/**
- * Register a template engine adapter for the given names.
- * @param {string|Array} names - a {string} name or an {Array} of {string} names
- * @param {Object} templateEngineAdapter - a template engine adapter instance
- * @example
- *  const fs = require('fs')
- *  class DotTemplateEngineAdapter {
- *    constructor () {
- *      this.doT = require('dot')
- *    }
- *    compile (file, _) {
- *      const templateFn = this.doT.template(fs.readFileSync(file, 'utf8'))
- *      return {
- *        render: templateFn
- *      }
- *    }
- *  }
- *  asciidoctor.TemplateEngine.register('dot, new DotTemplateEngineAdapter())
- * @memberof TemplateEngine
- */
-TemplateEngine.register = function (names, templateEngineAdapter) {
-  if (typeof names === 'string') {
-    this.registry[names] = templateEngineAdapter
-  } else {
-    // array
-    for (var i = 0; i < names.length; i++) {
-      var name = names[i]
-      this.registry[name] = templateEngineAdapter
+  /**
+   * Create a new TemplateConverter.
+   * @param {string} backend - the backend name
+   * @param templateDirectories - a list of template directories
+   * @param {Object} opts - a JSON of options
+   * @param {string} opts.template_engine - the name of the template engine
+   * @param {Object} [opts.template_cache] - an optional template cache
+   * @param {Object} [opts.template_cache.scans] - a JSON of template objects keyed by template name keyed by path patterns
+   * @param {Object} [opts.template_cache.templates] - a JSON of template objects keyed by file paths
+   * @returns {TemplateConverter}
+   * @memberof Converter/TemplateConverter
+   */
+  TemplateConverter.create = function (backend, templateDirectories, opts) {
+    if (opts && opts.template_cache) {
+      opts.template_cache = toHash(opts.template_cache)
+    }
+    this.$new(backend, templateDirectories, toHash(opts))
+  }
+
+  /**
+   * @returns {Object} - The global cache
+   * @memberof Converter/TemplateConverter
+   */
+  TemplateConverter.getCache = function () {
+    var caches = fromHash(this.caches)
+    if (caches) {
+      if (caches.scans) {
+        caches.scans = fromHash(caches.scans)
+        for (var key in caches.scans) {
+          caches.scans[key] = fromHash(caches.scans[key])
+        }
+      }
+      if (caches.templates) {
+        caches.templates = fromHash(caches.templates)
+      }
+    }
+    return caches
+  }
+
+  /**
+   * Clear the global cache.
+   * @memberof Converter/TemplateConverter
+   */
+  TemplateConverter.clearCache = function () {
+    this.$clear_caches()
+  }
+
+  /**
+   * Convert an {AbstractNode} to the backend format using the named template.
+   *
+   * Looks for a template that matches the value of the template name or,
+   * if the template name is not specified, the value of the {@see AbstractNode.getNodeName} function.
+   *
+   * @param {AbstractNode} node - the AbstractNode to convert
+   * @param {string} templateName - the {string} name of the template to use, or the node name of the node if a template name is not specified. (optional, default: undefined)
+   * @param {Object} opts - an optional JSON that is passed as local variables to the template. (optional, default: undefined)
+   * @returns {string} - The {string} result from rendering the template
+   * @memberof Converter/TemplateConverter
+   */
+  TemplateConverter.prototype.convert = function (node, templateName, opts) {
+    return this.$convert(node, templateName, toHash(opts))
+  }
+
+  /**
+   * Checks whether there is a template registered with the specified name.
+   *
+   * @param {string} name - the {string} template name
+   * @returns {boolean} - a {boolean} that indicates whether a template is registered for the specified template name.
+   * @memberof Converter/TemplateConverter
+   */
+  TemplateConverter.prototype.handles = function (name) {
+    return this['$handles?'](name)
+  }
+
+  /**
+   * Retrieves the templates that this converter manages.
+   *
+   * @returns {Object} - a JSON of template objects keyed by template name
+   * @memberof Converter/TemplateConverter
+   */
+  TemplateConverter.prototype.getTemplates = function () {
+    return fromHash(this.$templates())
+  }
+
+  /**
+   * Registers a template with this converter.
+   *
+   * @param {string} name - the {string} template name
+   * @param {Object} template - the template object to register
+   * @returns {Object} - the template object
+   * @memberof Converter/TemplateConverter
+   */
+  TemplateConverter.prototype.register = function (name, template) {
+    return this.$register(name, template)
+  }
+
+  /**
+   * @namespace
+   * @description
+   * This API is experimental and subject to change.
+   *
+   * Please note that this API is currently only available in a Node environment.
+   * We recommend to use a custom converter if you are running in the browser.
+   *
+   * A pluggable adapter for integrating a template engine into the built-in template converter.
+   */
+  var TemplateEngine = {}
+  TemplateEngine.registry = {}
+
+  // Alias
+  Opal.Asciidoctor.TemplateEngine = TemplateEngine
+
+  /**
+   * Register a template engine adapter for the given names.
+   * @param {string|Array} names - a {string} name or an {Array} of {string} names
+   * @param {Object} templateEngineAdapter - a template engine adapter instance
+   * @example
+   *  const fs = require('fs')
+   *  class DotTemplateEngineAdapter {
+   *    constructor () {
+   *      this.doT = require('dot')
+   *    }
+   *    compile (file, _) {
+   *      const templateFn = this.doT.template(fs.readFileSync(file, 'utf8'))
+   *      return {
+   *        render: templateFn
+   *      }
+   *    }
+   *  }
+   *  asciidoctor.TemplateEngine.register('dot, new DotTemplateEngineAdapter())
+   * @memberof TemplateEngine
+   */
+  TemplateEngine.register = function (names, templateEngineAdapter) {
+    if (typeof names === 'string') {
+      this.registry[names] = templateEngineAdapter
+    } else {
+      // array
+      for (var i = 0; i < names.length; i++) {
+        var name = names[i]
+        this.registry[name] = templateEngineAdapter
+      }
     }
   }
 }

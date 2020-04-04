@@ -3206,11 +3206,114 @@ export namespace Asciidoctor {
     docinfo(location: string, doc: Document, opts: SyntaxHighlighterDocinfoOptions): string;
   }
 
+  /**
+   * @description
+   * This API is experimental and subject to change.
+   *
+   * Please note that this API is currently only available in a Node environment.
+   * We recommend to use a custom converter if you are running in the browser.
+   */
+  namespace TemplateConverter {
+    interface CreateOptions {
+      [key: string]: any;
+
+      template_engine?: string;
+      template_cache?: TemplateCache;
+    }
+
+    interface TemplateCache {
+      [key: string]: any;
+
+      /**
+       * a JSON of template objects keyed by template name keyed by path patterns
+       */
+      scans?: TemplatesIndexed;
+      /**
+       * a JSON of template objects keyed by file paths
+       */
+      templates?: TemplateIndexed;
+    }
+
+    interface TemplatesIndexed {
+      [key: string]: TemplateIndexed;
+    }
+
+    interface TemplateIndexed {
+      [key: string]: Template;
+    }
+
+    /**
+     * Create a new {@link TemplateConverter}.
+     * @param backend - the backend name
+     * @param templateDirectories - a list of template directories
+     * @param [opts] - a JSON of options
+     * @param [opts.template_engine] - the name of the template engine
+     * @param [opts.template_cache] - a template cache
+     * @param [opts.template_cache.scans] - a JSON of template objects keyed by template name keyed by path patterns
+     * @param [opts.template_cache.templates] - a JSON of template objects keyed by file paths
+     * @returns a {@link TemplateConverter}
+     */
+    function create(backend: string, templateDirectories: string[], opts?: CreateOptions): TemplateConverter;
+  }
+
+  /**
+   * A built-in {Converter} implementation that uses templates composed in template languages
+   * to convert {AbstractNode} objects from a parsed AsciiDoc document tree to the backend format.
+   */
+  class TemplateConverter extends Converter {
+    /**
+     * @returns the global cache
+     */
+    static getCache(): TemplateConverter.TemplateCache;
+
+    /**
+     * Clear the global cache.
+     */
+    static clearCache(): void;
+
+    /**
+     * Convert an {AbstractNode} to the backend format using the named template.
+     *
+     * Looks for a template that matches the value of the template name or,
+     * if the template name is not specified, the value of the {@see AbstractNode.getNodeName} function.
+     *
+     * @param node - the AbstractNode to convert
+     * @param [templateName] - the {string} name of the template to use, or the node name of the node if a template name is not specified. (optional, default: undefined)
+     * @param [opts] - an optional JSON that is passed as local variables to the template. (optional, default: undefined)
+     * @returns The {string} result from rendering the template
+     */
+    convert(node: AbstractNode, templateName?: string, opts?: any): string;
+
+    /**
+     * Checks whether there is a template registered with the specified name.
+     *
+     * @param name - the {string} template name
+     * @returns a {boolean} that indicates whether a template is registered for the specified template name.
+     */
+    handles(name: string): boolean;
+
+    /**
+     * Retrieves the templates that this converter manages.
+     *
+     * @returns a JSON of template objects keyed by template name
+     */
+    getTemplates(): TemplateConverter.TemplateIndexed;
+
+    /**
+     * Registers a template with this converter.
+     *
+     * @param name - the {string} template name
+     * @param template - the template object to register
+     * @returns the template object
+     */
+    register(name: string, template: Template): TemplateConverter.TemplateIndexed;
+  }
+
   namespace Template {
     interface Context {
       node: AbstractNode;
-      opts: Options;
-      helpers: any;
+      opts?: Options;
+      helpers?: any;
     }
   }
 
@@ -3218,6 +3321,8 @@ export namespace Asciidoctor {
    * Handles template rendering.
    */
   interface Template {
+    [key: string]: any;
+
     /**
      * Render the template with a given context.
      * @param context - A context that contains the {AbstractNode}
@@ -3386,6 +3491,8 @@ export class Asciidoctor {
   Extensions: typeof Asciidoctor.Extensions;
 
   Html5Converter: typeof Asciidoctor.Html5Converter;
+
+  TemplateConverter: typeof Asciidoctor.TemplateConverter;
 
   ConverterFactory: Asciidoctor.ConverterFactory;
 

@@ -19,14 +19,7 @@ class Converter::TemplateConverter < Converter::Base
     @backend = backend
     @templates = {}
     @template_dirs = template_dirs
-    @safe = opts[:safe]
     @engine = opts[:template_engine]
-    @engine_options = {}
-    if (overrides = opts[:template_engine_options])
-      overrides.each do |engine, override_opts|
-        (@engine_options[engine] ||= {}).update override_opts
-      end
-    end
     case opts[:template_cache]
     when true
       @caches = self.class.caches
@@ -87,7 +80,7 @@ class Converter::TemplateConverter < Converter::Base
   #
   # Returns the template object
   def register name, template
-    @templates[name] = if (template_cache = @caches[:templates])
+    @templates[name] = if (template_cache = @caches[:templates] && `template.$file`)
       template_cache[template.file] = template
     else
       template
@@ -141,6 +134,10 @@ class Converter::TemplateConverter < Converter::Base
     end
   end
 
+  # Internal: Require an optional Node module for a given name.
+  #
+  # Returns the required module
+  # Throws an IOError if the module is not available.
   def node_require module_name
     %x{
       try {
@@ -152,8 +149,7 @@ class Converter::TemplateConverter < Converter::Base
     }
   end
 
-  # Internal: Scan the specified directory for template files matching pattern and instantiate
-  # a Tilt template for each matched file.
+  # Internal: Scan the specified directory for template files matching pattern and instantiate a Tilt template for each matched file.
   #
   # Returns the scan result as a [Hash]
   def scan_dir template_dir, pattern, template_cache = nil

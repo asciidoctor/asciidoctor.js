@@ -2507,6 +2507,76 @@ In other words, it’s about discovering writing zen.`
       const result = asciidoctor.convert('video::TLV4_xaYynY[]', options)
       expect(result).to.contain('<iframe src="https://www.youtube.com/embed/TLV4_xaYynY?enablejsapi=1&amp;rel=0&amp;showinfo=0&amp;controls=0&amp;disablekb=1" width="undefined" height="undefined" frameborder="0" allowfullscreen="true" data-rewind="" data-volume=""/>')
     }).timeout(5000) // can take a few seconds in GraalVM
+    it('should get the template converter caches', () => {
+      // since the cache is global, we are using "clearCache" to make sure that other tests won't affect the result
+      asciidoctor.TemplateConverter.clearCache()
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      asciidoctor.load('content', options)
+      const cache = asciidoctor.TemplateConverter.getCache()
+      const templatesPattern = path.resolve(`${__dirname}/../fixtures/templates/nunjucks/*`)
+      expect(cache.scans[templatesPattern].paragraph.tmplStr).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>\n')
+      expect(cache.templates[path.resolve(`${__dirname}/../fixtures/templates/nunjucks/paragraph.njk`)].tmplStr).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>\n')
+    }).timeout(5000)
+    it('should handle a given node', () => {
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const templateConverter = doc.getConverter()
+      expect(templateConverter.handles('paragraph')).to.be.true()
+      expect(templateConverter.handles('admonition')).to.be.false()
+    }).timeout(5000)
+    it('should convert a given node', () => {
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const templateConverter = doc.getConverter()
+      const paragraph = asciidoctor.Block.create(doc, 'paragraph', { source: 'This is a <test>' })
+      expect(templateConverter.convert(paragraph, 'paragraph')).to.equal('<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>')
+    }).timeout(5000)
+    it('should get templates', () => {
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const templateConverter = doc.getConverter()
+      const templates = templateConverter.getTemplates()
+      expect(templates.paragraph.tmplStr).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>\n')
+      expect(templates.admonition).to.be.undefined()
+      const paragraph = asciidoctor.Block.create(doc, 'paragraph', { source: 'This is a <test>' })
+      expect(templates.paragraph.render({ node: paragraph })).to.equal('<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>\n')
+    }).timeout(5000)
+    it('should replace an existing template', () => {
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const templateConverter = doc.getConverter()
+      const nunjucks = require('nunjucks')
+      const template = nunjucks.compile('<p class="paragraph nunjucks">{{ node.getContent() }}</p>')
+      templateConverter.register('paragraph', template)
+      const templates = templateConverter.getTemplates()
+      const paragraph = asciidoctor.Block.create(doc, 'paragraph', { source: 'This is a <test>' })
+      expect(templates.paragraph.render({ node: paragraph })).to.equal('<p class="paragraph nunjucks">This is a &lt;test&gt;</p>')
+    }).timeout(5000)
+    it('should register a new template', () => {
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const templateConverter = doc.getConverter()
+      const nunjucks = require('nunjucks')
+      const template = nunjucks.compile(`<article class="message is-info">
+  <div class="message-header">
+    <p>{{ node.getAttribute('textlabel') }}</p>
+  </div>
+  <div class="message-body">
+    {{ node.getContent() }}
+  </div>
+</article>`)
+      templateConverter.register('admonition', template)
+      const templates = templateConverter.getTemplates()
+      const admonition = asciidoctor.Block.create(doc, 'admonition', { source: 'An admonition paragraph, like this note, grabs the reader’s attention.', attributes: { textlabel: 'Note' } })
+      expect(templates.admonition.render({ node: admonition })).to.equal(`<article class="message is-info">
+  <div class="message-header">
+    <p>Note</p>
+  </div>
+  <div class="message-body">
+    An admonition paragraph, like this note, grabs the reader’s attention.
+  </div>
+</article>`)
+    }).timeout(5000)
   })
 
   if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {
