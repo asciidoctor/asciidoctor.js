@@ -2514,6 +2514,8 @@ In other words, it’s about discovering writing zen.`
       asciidoctor.load('content', options)
       const cache = asciidoctor.TemplateConverter.getCache()
       const templatesPattern = path.resolve(`${__dirname}/../fixtures/templates/nunjucks/*`)
+      console.log('__dirname', __dirname)
+      console.log('templatesPattern', templatesPattern)
       console.log('debug windows path!', cache.scans)
       expect(cache.scans[templatesPattern].paragraph.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
       expect(cache.templates[path.resolve(`${__dirname}/../fixtures/templates/nunjucks/paragraph.njk`)].tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
