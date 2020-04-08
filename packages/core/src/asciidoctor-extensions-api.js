@@ -1281,14 +1281,23 @@ Opal.Asciidoctor.ConverterBackendTraits = ConverterBackendTraits
  */
 ConverterFactory.register = function (converter, backends) {
   var object
-  var buildBackendTraitsFromInstance = instance => {
+  var buildBackendTraitsFromObject = obj => {
     return Object.assign({},
-      instance.basebackend ? { basebackend: instance.basebackend } : {},
-      instance.outfilesuffix ? { outfilesuffix: instance.outfilesuffix } : {},
-      instance.filetype ? { filetype: instance.filetype } : {},
-      instance.htmlsyntax ? { htmlsyntax: instance.htmlsyntax } : {},
-      instance.supports_templates ? { supports_templates: instance.supports_templates } : {}
+      obj.basebackend ? { basebackend: obj.basebackend } : {},
+      obj.outfilesuffix ? { outfilesuffix: obj.outfilesuffix } : {},
+      obj.filetype ? { filetype: obj.filetype } : {},
+      obj.htmlsyntax ? { htmlsyntax: obj.htmlsyntax } : {},
+      obj.supports_templates ? { supports_templates: obj.supports_templates } : {}
     )
+  }
+  var assignBackendTraitsToInstance = (obj, instance) => {
+    if (obj.backend_traits) {
+      instance.backend_traits = toHash(obj.backend_traits)
+    } else if (obj.backendTraits) {
+      instance.backend_traits = toHash(obj.backendTraits)
+    } else if (obj.basebackend || obj.outfilesuffix || obj.filetype || obj.htmlsyntax || obj.supports_templates) {
+      instance.backend_traits = toHash(buildBackendTraitsFromObject(obj))
+    }
   }
   if (typeof converter === 'function') {
     // Class
@@ -1297,13 +1306,7 @@ ConverterFactory.register = function (converter, backends) {
         var self = this
         var result = new converter(backend, opts) // eslint-disable-line
         Object.assign(this, result)
-        if (result.backend_traits) {
-          self.backend_traits = toHash(result.backend_traits)
-        } else if (result.backendTraits) {
-          self.backend_traits = toHash(result.backendTraits)
-        } else if (result.basebackend || result.outfilesuffix || result.filetype || result.htmlsyntax || result.supports_templates) {
-          self.$init_backend_traits(toHash(buildBackendTraitsFromInstance(result)))
-        }
+        assignBackendTraitsToInstance(result, self)
         var propertyNames = Object.getOwnPropertyNames(converter.prototype)
         for (var i = 0; i < propertyNames.length; i++) {
           var propertyName = propertyNames[i]
@@ -1323,9 +1326,9 @@ ConverterFactory.register = function (converter, backends) {
     if (typeof converter.$convert === 'undefined' && typeof converter.convert === 'function') {
       converter.$convert = converter.convert
     }
-    if (converter.basebackend || converter.outfilesuffix || converter.filetype || converter.htmlsyntax || converter.supports_templates) {
+    assignBackendTraitsToInstance(converter, converter)
+    if (converter.backend_traits) {
       // "extends" ConverterBackendTraits
-      converter.backend_traits = toHash(buildBackendTraitsFromInstance(converter))
       var converterBackendTraitsFunctionNames = [
         'basebackend',
         'filetype',

@@ -2173,7 +2173,7 @@ header_attribute::foo[bar]`
       const result = asciidoctor.convert('content', options)
       expect(result).to.contain('<delegate>content</delegate>')
     })
-    it('should retrieve backend traits from a converter class', () => {
+    it('should retrieve backend traits from a converter class using backendTraits', () => {
       class TEIConverter {
         constructor (backend, _) {
           this.backend = backend
@@ -2212,17 +2212,19 @@ header_attribute::foo[bar]`
       const result = doc.convert()
       expect(result).to.contain('<tei>content</tei>')
     })
-    it('should retrieve backend traits from a converter instance', () => {
-      class TEIConverter {
+    it('should retrieve backend traits from a converter instance using backendTraits property', () => {
+      class TxtConverter {
         constructor () {
-          this.backend = 'tei'
-          this.basebackend = 'xml'
-          this.outfilesuffix = '.xml'
-          this.filetype = 'xml'
-          this.htmlsyntax = 'xml'
+          this.backendTraits = {
+            basebackend: 'txt',
+            outfilesuffix: '.txt',
+            filetype: 'txt',
+            htmlsyntax: 'txt',
+            supports_templates: true
+          }
           this.transforms = {
             embedded: (node) => {
-              return `<tei>${node.getContent()}</tei>`
+              return `${node.getContent()}`
             }
           }
         }
@@ -2240,14 +2242,86 @@ header_attribute::foo[bar]`
         }
       }
 
-      asciidoctor.ConverterFactory.register(new TEIConverter(), ['tei'])
-      const doc = asciidoctor.load('content', { safe: 'safe', backend: 'tei' })
+      asciidoctor.ConverterFactory.register(new TxtConverter(), ['txt'])
+      const doc = asciidoctor.load('content', { safe: 'safe', backend: 'txt' })
+      expect(doc.getAttribute('basebackend')).to.equal('txt')
+      expect(doc.getAttribute('outfilesuffix')).to.equal('.txt')
+      expect(doc.getAttribute('filetype')).to.equal('txt')
+      expect(doc.getAttribute('htmlsyntax')).to.equal('txt')
+      const result = doc.convert()
+      expect(result).to.contain('content')
+    })
+    it('should retrieve backend traits from a converter instance using plain properties', () => {
+      class XMLConverter {
+        constructor () {
+          this.backend = 'xml'
+          this.basebackend = 'xml'
+          this.outfilesuffix = '.xml'
+          this.filetype = 'xml'
+          this.htmlsyntax = 'xml'
+          this.transforms = {
+            embedded: (node) => {
+              return `<xml>${node.getContent()}</xml>`
+            }
+          }
+        }
+
+        convert (node, transform) {
+          const name = transform || node.node_name
+          if (name === 'paragraph') {
+            return this.convertParagraph(node)
+          }
+          return this.transforms[name](node)
+        }
+
+        convertParagraph (node) {
+          return node.getContent()
+        }
+      }
+
+      asciidoctor.ConverterFactory.register(new XMLConverter(), ['xml'])
+      const doc = asciidoctor.load('content', { safe: 'safe', backend: 'xml' })
       expect(doc.getAttribute('basebackend')).to.equal('xml')
       expect(doc.getAttribute('outfilesuffix')).to.equal('.xml')
       expect(doc.getAttribute('filetype')).to.equal('xml')
       expect(doc.getAttribute('htmlsyntax')).to.equal('xml')
       const result = doc.convert()
-      expect(result).to.contain('<tei>content</tei>')
+      expect(result).to.contain('<xml>content</xml>')
+    })
+    it('should retrieve backend traits from a converter class using plain properties', () => {
+      class EPUB3Converter {
+        constructor () {
+          this.backend = 'epub3'
+          this.basebackend = 'html'
+          this.outfilesuffix = '.epub'
+          this.htmlsyntax = 'xml'
+          this.transforms = {
+            embedded: (node) => {
+              return `<epub3>${node.getContent()}</epub3>`
+            }
+          }
+        }
+
+        convert (node, transform) {
+          const name = transform || node.node_name
+          if (name === 'paragraph') {
+            return this.convertParagraph(node)
+          }
+          return this.transforms[name](node)
+        }
+
+        convertParagraph (node) {
+          return node.getContent()
+        }
+      }
+
+      asciidoctor.ConverterFactory.register(new EPUB3Converter(), ['epub3'])
+      const doc = asciidoctor.load('content', { safe: 'safe', backend: 'epub3' })
+      expect(doc.getAttribute('basebackend')).to.equal('html')
+      expect(doc.getAttribute('outfilesuffix')).to.equal('.epub')
+      expect(doc.getAttribute('htmlsyntax')).to.equal('xml')
+      const result = doc.convert()
+      expect(result).to.contain('<epub3>content</epub3>')
     })
     it('should register a custom converter (fallback to the built-in HTML5 converter)', () => {
       class BlogConverter {
