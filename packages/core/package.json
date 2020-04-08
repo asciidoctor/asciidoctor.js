@@ -79,7 +79,7 @@
     "chai": "4.2.0",
     "cross-env": "6.0.3",
     "dirty-chai": "2.0.1",
-    "documentation": "12.2.0",
+    "documentation": "12.3.0",
     "dtslint": "latest",
     "eslint": "6.8.0",
     "http-server": "0.12.1",
