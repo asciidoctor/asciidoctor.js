@@ -2130,6 +2130,25 @@ header_attribute::foo[bar]`
   })
 
   describe('Registering converter', () => {
+    it('should return the default converter registry', () => {
+      const doc = asciidoctor.load('')
+      let registry = asciidoctor.ConverterFactory.getRegistry()
+      expect(registry).to.have.property('html5')
+      class BlankConverter {
+        convert () {
+          return ''
+        }
+      }
+      asciidoctor.ConverterFactory.register(new BlankConverter(), ['blank'])
+      registry = asciidoctor.ConverterFactory.getRegistry()
+      expect(registry).to.have.all.keys('html5', 'blank')
+      const result = registry.blank.convert()
+      expect(result).to.equal('')
+      const html5Converter = registry.html5.create()
+      expect(html5Converter.convert(asciidoctor.Block.create(doc, 'paragraph'))).to.equal(`<div class="paragraph">
+<p></p>
+</div>`)
+    })
     it('should register a custom converter', () => {
       class DummyConverter {
         constructor () {

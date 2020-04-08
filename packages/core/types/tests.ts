@@ -1071,3 +1071,22 @@ assert(blockSubs4[0] === 'macros');
 const blockSubs5 = paragraphBlock.resolvePassSubstitutions('verbatim');
 assert(blockSubs5.length === 1);
 assert(blockSubs5[0] === 'specialcharacters');
+
+let converterRegistry = processor.ConverterFactory.getRegistry();
+assert(typeof converterRegistry.html5 === 'function');
+
+class BlankConverter {
+  convert() {
+    return '';
+  }
+}
+
+processor.ConverterFactory.register(new BlankConverter(), ['blank']);
+converterRegistry = processor.ConverterFactory.getRegistry();
+assert(typeof converterRegistry.html5 === 'function');
+assert(typeof converterRegistry.blank === 'object');
+const html5Converter = (converterRegistry.html5 as typeof Asciidoctor.Html5Converter).create();
+assert(html5Converter.convert(processor.Block.create(doc, 'paragraph')) === `<div class="paragraph">
+<p></p>
+</div>`);
+assert((converterRegistry.blank as Asciidoctor.Converter).convert(processor.Block.create(doc, 'paragraph')) === '');
