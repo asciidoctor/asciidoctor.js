@@ -1375,6 +1375,15 @@ ConverterFactory.prototype.create = function (backend, opts) {
   return this.$create(backend, toHash(opts))
 }
 
+/**
+ * Get the converter registry.
+ * @returns the registry of converter instances or classes keyed by backend name
+ * @memberof Converter/Factory
+ */
+ConverterFactory.getRegistry = function () {
+  return fromHash(Converter.$registry())
+}
+
 // Built-in converter
 
 /**

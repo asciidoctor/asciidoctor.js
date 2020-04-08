@@ -2988,6 +2988,13 @@ export namespace Asciidoctor {
     function create(backend: string, opts?: any): Converter;
   }
 
+  /**
+   * A registry of {Converter} instances or classes keyed by backend name.
+   */
+  interface ConverterRegistry {
+    [key: string]: typeof Converter|Converter;
+  }
+
   class ConverterFactory {
     /**
      * Register a custom converter in the global converter factory to handle conversion to the specified backends.
@@ -3006,6 +3013,12 @@ export namespace Asciidoctor {
      * @returns an instance of the {ConverterFactory}.
      */
     getDefault(initialize: boolean): ConverterFactory;
+
+    /**
+     * Get the converter registry.
+     * @returns the registry
+     */
+    getRegistry(): ConverterRegistry;
   }
 
   interface SyntaxHighlighterHighlightOptions {

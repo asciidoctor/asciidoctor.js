@@ -19,7 +19,19 @@ Improvements::
 * Map an internal API `Document.playbackAttributes` (#844)
 * Map `Table`, `Table.Rows`, `Table.Column` and `Table.Cell` (#848) - thanks @henriette-einstein
 * Map `AbstractNode.resolveSubstitutions`, `AbstractBlock.resolveBlockSubstitutions` and `AbstractNode.resolvePassSubstitutions` (#845)
-
+* Map `ConverterFactory.getRegistry` (#909)
++
+[source,js]
+----
+class BlankConverter {
+  convert () {
+    return ''
+  }
+}
+asciidoctor.ConverterFactory.register(new BlankConverter(), ['blank'])
+const registry = asciidoctor.ConverterFactory.getRegistry()
+registry.blank.convert()
+----
 
 == v2.1.1 (2020-02-01)
 
