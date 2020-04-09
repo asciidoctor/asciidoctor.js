@@ -12,6 +12,7 @@ Bug Fixes::
 
 * Fix the Asciidoctor CLI provided by the `asciidoctor` package (#846) - thanks @thorstenkampe
 * `AbstractNode.hasSection` now returns false for anything that isn't itself a `Section` (#840) - thanks @henriette-einstein
+* Properly assign backend traits on converter instances (#904)
 
 Improvements::
 
@@ -32,6 +33,40 @@ asciidoctor.ConverterFactory.register(new BlankConverter(), ['blank'])
 const registry = asciidoctor.ConverterFactory.getRegistry()
 registry.blank.convert()
 ----
+* Upgrade `@asciidoctor/cli` in the `asciidoctor` package to 3.4.0 (#902)
+
+Infrastructure::
+
+* Upgrade development dependencies
+** Bump `libnpmpublish` from 1.1.1 to 3.0.0 (#863)
+** Bump `cross-env` from 5.1.4 to 6.0.3 in /packages/core (#879)
+** Bump `dtslint` from 2.0.3 to 3.4.0 in /packages/core (#888) (#871)
+** Bump `@types/node` from 12.7.8 to 13.11.1 in /packages/core (#889) (#874) (#866) (#913) 
+** Bump `documentation` from 12.1.3 to 12.3.0 in /packages/core (#882) (#897) (#903)
+** Bump `sinon` from 5.0.6 to 8.1.1 (#872)
+** Bump `puppeteer` from 1.18.0 to 2.1.1 in /packages/core (#876)
+** Bump `eslint` from 5.12.1 to 6.8.0 in /packages/core (#877)
+** Bump `standard` from 12.0.1 to 14.3.3 (#862)
+** Bump `standard` from 12.0.1 to 14.3.3 in /packages/core (#870)
+** Bump `mocha` from 6.1.4 to 7.1.1 in /packages/core (#864)
+** Bump `mocha` from 5.1.1 to 7.1.1 (#867)
+** Bump `chai` from 4.1.2 to 4.2.0 in /packages/core (#868)
+** Bump `chai` from 4.1.2 to 4.2.0 (#869)
+** Bump `acorn` from 5.7.3 to 5.7.4 in /packages/core (#860)
+** Bump `acorn` from 6.1.1 to 6.4.1 (#859)
+* Add an explicit failure if the regular expression does not match in tests (#890)
+* Replace a Ruby example with a JavaScript example in the JSDoc (#856)
+* Increase tests timeout (#857)
+* Fix the `test:graalvm` task on macOS (#840)
+* Keep `.dts` directory to workaround an issue with npm/Travis (#842)
+* Test types against the built file (not the dist file) (#841)
+* Build on GitHub Actions (Windows) (#835)
+* Build the project on upstream changes (#839)
+* Fix newlines compatibility issues in tests (#838)
+* Add GitHub Actions badge (#836)
+* Run GitHub Actions on pull requests (#837)
+* Add the color extension in the documentation
+* Add the bytefield-svg extension in the documentation (#898)
 
 == v2.1.1 (2020-02-01)
 
