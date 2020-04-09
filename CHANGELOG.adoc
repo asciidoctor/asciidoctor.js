@@ -41,7 +41,7 @@ Infrastructure::
 ** Bump `libnpmpublish` from 1.1.1 to 3.0.0 (#863)
 ** Bump `cross-env` from 5.1.4 to 6.0.3 in /packages/core (#879)
 ** Bump `dtslint` from 2.0.3 to 3.4.0 in /packages/core (#888) (#871)
-** Bump `@types/node` from 12.7.8 to 13.11.0 in /packages/core (#889) (#874) (#866)
+** Bump `@types/node` from 12.7.8 to 13.11.1 in /packages/core (#889) (#874) (#866) (#913) 
 ** Bump `documentation` from 12.1.3 to 12.3.0 in /packages/core (#882) (#897) (#903)
 ** Bump `sinon` from 5.0.6 to 8.1.1 (#872)
 ** Bump `puppeteer` from 1.18.0 to 2.1.1 in /packages/core (#876)
