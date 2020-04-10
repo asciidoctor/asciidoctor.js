@@ -19,6 +19,11 @@ Bug Fixes::
 Improvements::
 
 * Upgrade `@asciidoctor/cli` in the `asciidoctor` package to 3.4.0 (#902)
+* Add a built-in template converter which support out-of-the-box the following template engines (optional dependency):
+** Pug
+** Nunjucks
+** EJS
+** Handlebars
 * Map `Document.restoreAttributes` (#843)
 * Map an internal API `Document.playbackAttributes` (#844)
 * Map `Table`, `Table.Rows`, `Table.Column` and `Table.Cell` (#848) - thanks @henriette-einstein
