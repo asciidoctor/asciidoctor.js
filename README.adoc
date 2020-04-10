@@ -21,7 +21,6 @@ image:https://ci.appveyor.com/api/projects/status/i69sqvvyr95sf6i7/branch/master
 image:https://img.shields.io/npm/v/asciidoctor.svg[npm version, link=https://www.npmjs.org/package/asciidoctor]
 image:https://img.shields.io/npm/dm/asciidoctor[npm stats, link=https://www.npmjs.org/package/asciidoctor]
 image:https://img.shields.io/badge/jsdoc-master-blue.svg[JSDoc, link=http://asciidoctor.github.io/asciidoctor.js/master]
-image:https://inch-ci.org/github/asciidoctor/asciidoctor.js.svg?branch=master[InchCI, link=https://inch-ci.org/github/asciidoctor/asciidoctor.js]
 endif::[]
 
 Asciidoctor.js brings AsciiDoc to the JavaScript world!
