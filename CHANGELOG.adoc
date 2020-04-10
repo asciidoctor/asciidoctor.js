@@ -13,9 +13,11 @@ Bug Fixes::
 * Fix the Asciidoctor CLI provided by the `asciidoctor` package (#846) - thanks @thorstenkampe
 * `AbstractNode.hasSection` now returns false for anything that isn't itself a `Section` (#840) - thanks @henriette-einstein
 * Properly assign backend traits on converter instances (#904)
+* Bridge `Converter.handles?` method (#906)
 
 Improvements::
 
+* Upgrade `@asciidoctor/cli` in the `asciidoctor` package to 3.4.0 (#902)
 * Map `Document.restoreAttributes` (#843)
 * Map an internal API `Document.playbackAttributes` (#844)
 * Map `Table`, `Table.Rows`, `Table.Column` and `Table.Cell` (#848) - thanks @henriette-einstein
@@ -43,8 +45,6 @@ builtinHtml5Converter.convert()
 
 asciidoctor.ConverterFactory.for('foo') // undefined
 ----
-* Upgrade `@asciidoctor/cli` in the `asciidoctor` package to 3.4.0 (#902)
-
 
 Infrastructure::
 

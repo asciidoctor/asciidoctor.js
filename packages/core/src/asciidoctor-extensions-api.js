@@ -1299,6 +1299,18 @@ ConverterFactory.register = function (converter, backends) {
       instance.backend_traits = toHash(buildBackendTraitsFromObject(obj))
     }
   }
+  var bridgeHandlesMethodToInstance = (obj, instance) => {
+    if (typeof obj['$handles?'] === 'undefined') {
+      if (typeof obj.handles === 'function') {
+        instance['$handles?'] = obj.handles
+      } else {
+        // default implementation
+        instance['$handles?'] = function () {
+          return true
+        }
+      }
+    }
+  }
   if (typeof converter === 'function') {
     // Class
     object = initializeClass(ConverterBase, converter.constructor.name, {
@@ -1317,6 +1329,7 @@ ConverterFactory.register = function (converter, backends) {
         if (typeof result.$convert === 'undefined' && typeof result.convert === 'function') {
           self.$convert = result.convert
         }
+        bridgeHandlesMethodToInstance(result, self)
         self.super(backend, opts)
       }
     })
@@ -1344,6 +1357,7 @@ ConverterFactory.register = function (converter, backends) {
       }
       converter.$$meta = ConverterBackendTraits
     }
+    bridgeHandlesMethodToInstance(converter, converter)
     object = converter
   }
   var args = [object].concat(backends)
