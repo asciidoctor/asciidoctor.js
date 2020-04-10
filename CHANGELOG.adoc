@@ -34,6 +34,15 @@ asciidoctor.ConverterFactory.register(new BlankConverter(), ['blank'])
 const registry = asciidoctor.ConverterFactory.getRegistry()
 registry.blank.convert()
 ----
+* Map `ConverterFactory.for` (#910)
++
+[source,js]
+----
+const builtinHtml5Converter = asciidoctor.ConverterFactory.for('html5')
+builtinHtml5Converter.convert()
+
+asciidoctor.ConverterFactory.for('foo') // undefined
+----
 * Upgrade `@asciidoctor/cli` in the `asciidoctor` package to 3.4.0 (#902)
 
 

@@ -3025,6 +3025,13 @@ export namespace Asciidoctor {
      * @returns the registry
      */
     getRegistry(): ConverterRegistry;
+
+    /**
+     * Lookup the custom converter registered with this factory to handle the specified backend.
+     * @param backend - The {string} backend name.
+     * @returns the {Converter} class or instance registered to convert the specified backend or undefined if no match is found.
+     */
+    for(backend: string): typeof Converter|Converter|undefined;
   }
 
   interface SyntaxHighlighterHighlightOptions {

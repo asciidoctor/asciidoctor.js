@@ -1384,6 +1384,18 @@ ConverterFactory.getRegistry = function () {
   return fromHash(Converter.$registry())
 }
 
+/**
+ * Lookup the custom converter registered with this factory to handle the specified backend.
+ *
+ * @param {string} backend - The {string} backend name.
+ * @returns the {Converter} class or instance registered to convert the specified backend or undefined if no match is found.
+ * @memberof Converter/Factory
+ */
+ConverterFactory.for = function (backend) {
+  const converter = Converter.$for(backend)
+  return converter === Opal.nil ? undefined : converter
+}
+
 // Built-in converter
 
 /**

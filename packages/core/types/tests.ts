@@ -1085,6 +1085,9 @@ processor.ConverterFactory.register(new BlankConverter(), ['blank']);
 converterRegistry = processor.ConverterFactory.getRegistry();
 assert(typeof converterRegistry.html5 === 'function');
 assert(typeof converterRegistry.blank === 'object');
+assert(typeof processor.ConverterFactory.for('html5') === 'function');
+assert(typeof processor.ConverterFactory.for('blank') === 'object');
+assert(typeof processor.ConverterFactory.for('foo') === 'undefined');
 const html5Converter = (converterRegistry.html5 as typeof Asciidoctor.Html5Converter).create();
 assert(html5Converter.convert(processor.Block.create(doc, 'paragraph')) === `<div class="paragraph">
 <p></p>
