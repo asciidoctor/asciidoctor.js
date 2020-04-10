@@ -2596,6 +2596,12 @@ export namespace Asciidoctor {
        * @returns the column width in percentage of this cell.
        */
       getColumnPercentageWidth(): string | undefined;
+
+      /**
+       * Get the nested {Document} of this cell when style is 'asciidoc'.
+       * @returns the nested {Document}
+       */
+      getInnerDocument(): Document | undefined;
     }
   }
 
