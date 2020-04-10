@@ -2260,6 +2260,33 @@ header_attribute::foo[bar]`
         return `- content: ${node.node.getContent()}`
       }
     }
+
+    class CompositeAwareConverter {
+      constructor () {
+        this.adjective = 'boring'
+        this.backendTraits = {
+          supports_templates: true
+        }
+      }
+
+      convert (node, transform) {
+        const name = transform || node.node_name
+        if (name === 'embedded') {
+          return `<div class="${this.adjective}">${node.getContent()}</div>`
+        }
+        return `<p>${node.getContent()}</p>`
+      }
+
+      handles (name) {
+        return name === 'paragraph' || name === 'embedded'
+      }
+
+      composed () {
+        // callback!
+        this.adjective = 'fun'
+      }
+    }
+
     it('should return the default converter registry', () => {
       const doc = asciidoctor.load('')
       let registry = asciidoctor.ConverterFactory.getRegistry()
@@ -2452,6 +2479,11 @@ In other words, it’s about discovering writing zen.`
       const yamlConverter = yamlConverterClass.$new()
       expect(yamlConverter['$respond_to?']('convert')).to.be.true()
       expect(yamlConverter['$respond_to?']('composed')).to.be.false()
+    })
+    it('should call the composed method when the converter is used in a composite converter', () => {
+      asciidoctor.ConverterFactory.register(CompositeAwareConverter, 'composite')
+      const html = asciidoctor.convert('Hello icon:wave[]', { backend: 'composite', template_dir: 'spec/fixtures/templates/composite', standalone: false })
+      expect(html).to.equal('<div class="fun"><p>Hello <i class="icon-nunjucks icon-wave"></i></p></div>')
     })
   })
 
