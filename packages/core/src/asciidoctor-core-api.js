@@ -3585,6 +3585,7 @@ Cell.prototype.getColumnPercentageWidth = function () {
 /**
  * Get the nested {Document} of this cell when style is 'asciidoc'.
  * @returns {Document|undefined} - the nested {Document}
+ * @memberof Cell
  */
 Cell.prototype.getInnerDocument = function () {
   const innerDocument = this.inner_document
