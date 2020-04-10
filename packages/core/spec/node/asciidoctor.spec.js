@@ -2134,6 +2134,7 @@ header_attribute::foo[bar]`
       const doc = asciidoctor.load('')
       let registry = asciidoctor.ConverterFactory.getRegistry()
       expect(registry).to.have.property('html5')
+      expect(asciidoctor.ConverterFactory.for('blank')).to.be.undefined()
       class BlankConverter {
         convert () {
           return ''
@@ -2142,6 +2143,9 @@ header_attribute::foo[bar]`
       asciidoctor.ConverterFactory.register(new BlankConverter(), ['blank'])
       registry = asciidoctor.ConverterFactory.getRegistry()
       expect(registry).to.have.all.keys('html5', 'blank')
+      expect(typeof asciidoctor.ConverterFactory.for('html5')).to.equal('function')
+      expect(typeof asciidoctor.ConverterFactory.for('blank')).to.equal('object')
+      expect(asciidoctor.ConverterFactory.for('foo')).to.be.undefined()
       const result = registry.blank.convert()
       expect(result).to.equal('')
       const html5Converter = registry.html5.create()
