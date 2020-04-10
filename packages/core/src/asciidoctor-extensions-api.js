@@ -1311,6 +1311,13 @@ ConverterFactory.register = function (converter, backends) {
       }
     }
   }
+  var addRespondToMethod = (instance) => {
+    if (typeof instance['$respond_to?'] !== 'function') {
+      instance['$respond_to?'] = function (name) {
+        return typeof this[name] === 'function'
+      }
+    }
+  }
   if (typeof converter === 'function') {
     // Class
     object = initializeClass(ConverterBase, converter.constructor.name, {
@@ -1330,6 +1337,7 @@ ConverterFactory.register = function (converter, backends) {
           self.$convert = result.convert
         }
         bridgeHandlesMethodToInstance(result, self)
+        addRespondToMethod(self)
         self.super(backend, opts)
       }
     })
@@ -1358,6 +1366,7 @@ ConverterFactory.register = function (converter, backends) {
       converter.$$meta = ConverterBackendTraits
     }
     bridgeHandlesMethodToInstance(converter, converter)
+    addRespondToMethod(converter)
     object = converter
   }
   var args = [object].concat(backends)

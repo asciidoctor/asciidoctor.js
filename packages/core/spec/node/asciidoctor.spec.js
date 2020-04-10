@@ -2255,6 +2255,11 @@ header_attribute::foo[bar]`
       }
     }
 
+    class YamlConverter {
+      convert (node) {
+        return `- content: ${node.node.getContent()}`
+      }
+    }
     it('should return the default converter registry', () => {
       const doc = asciidoctor.load('')
       let registry = asciidoctor.ConverterFactory.getRegistry()
@@ -2434,6 +2439,19 @@ In other words, it’s about discovering writing zen.`
       const result = asciidoctor.convert(input, options)
       expect(result).to.contain('<span class="blog-author">Guillaume Grossetie</span>') // custom blog converter
       expect(result).to.contain('<div class="sect1">') // built-in HTML5 converter
+    })
+    it('should automatically add a $respond_to? method when the converter is registered as an instance', () => {
+      asciidoctor.ConverterFactory.register(new YamlConverter(), 'yaml')
+      const yamlConverter = asciidoctor.ConverterFactory.for('yaml')
+      expect(yamlConverter['$respond_to?']('convert')).to.be.true()
+      expect(yamlConverter['$respond_to?']('composed')).to.be.false()
+    })
+    it('should automatically add a $respond_to? method when the converter is registered as a class', () => {
+      asciidoctor.ConverterFactory.register(YamlConverter, 'yaml')
+      const yamlConverterClass = asciidoctor.ConverterFactory.for('yaml')
+      const yamlConverter = yamlConverterClass.$new()
+      expect(yamlConverter['$respond_to?']('convert')).to.be.true()
+      expect(yamlConverter['$respond_to?']('composed')).to.be.false()
     })
   })
 

@@ -14,6 +14,7 @@ Bug Fixes::
 * `AbstractNode.hasSection` now returns false for anything that isn't itself a `Section` (#840) - thanks @henriette-einstein
 * Properly assign backend traits on converter instances (#904)
 * Bridge `Converter.handles?` method (#906)
+* Add or bridge the `Converter.respond_to?` method (#908)
 
 Improvements::
 
