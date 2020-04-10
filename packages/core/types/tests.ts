@@ -1090,3 +1090,24 @@ assert(html5Converter.convert(processor.Block.create(doc, 'paragraph')) === `<di
 <p></p>
 </div>`);
 assert((converterRegistry.blank as Asciidoctor.Converter).convert(processor.Block.create(doc, 'paragraph')) === '');
+
+// Inner document in AsciiDoc cell
+const docWithAsciiDocCell = processor.load(`
+= Table
+
+[%header,cols=1]
+|===
+|Header
+
+|Normal cell
+a|
+:foo: foo
+AsciiDoc cell
+|===`);
+const tableWithAsciiDocCell = docWithAsciiDocCell.findBy({context: 'table'})[0] as Asciidoctor.Table;
+const normalCell = tableWithAsciiDocCell.getBodyRows()[0][0];
+const asciidocCell = tableWithAsciiDocCell.getBodyRows()[1][0];
+assert(typeof normalCell.getInnerDocument() === 'undefined');
+assert(asciidocCell.getInnerDocument()!.getAttributes().foo === 'foo');
+assert(typeof asciidocCell.getInnerDocument()!.getParentDocument()!.getAttributes().foo === 'undefined');
+assert(asciidocCell.getInnerDocument()!.getParentDocument()!.getDocumentTitle() === 'Table');

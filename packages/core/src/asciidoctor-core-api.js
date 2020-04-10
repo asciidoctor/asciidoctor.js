@@ -3581,3 +3581,12 @@ Cell.prototype.getWidth = function () {
 Cell.prototype.getColumnPercentageWidth = function () {
   return this.getAttribute('colpcwidth')
 }
+
+/**
+ * Get the nested {Document} of this cell when style is 'asciidoc'.
+ * @returns {Document|undefined} - the nested {Document}
+ */
+Cell.prototype.getInnerDocument = function () {
+  const innerDocument = this.inner_document
+  return innerDocument === Opal.nil ? undefined : innerDocument
+}

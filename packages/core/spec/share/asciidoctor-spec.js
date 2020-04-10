@@ -2153,6 +2153,27 @@ The Lumineers,Ho Hey,Folk Rock
         expect(table.getBodyRows()[0][1].getText()).to.equal('Harlem Shake')
         expect(table.getBodyRows()[0][2].getText()).to.equal('Hip Hop')
       })
+      it('should return the inner document', function () {
+        const doc = asciidoctor.load(`
+= Table
+
+[%header,cols=1]
+|===
+|Header
+
+|Normal cell
+a|
+:foo: foo
+AsciiDoc cell
+|===`)
+        const table = doc.findBy({ context: 'table' })[0]
+        const normalCell = table.getBodyRows()[0][0]
+        const asciidocCell = table.getBodyRows()[1][0]
+        expect(normalCell.getInnerDocument()).to.be.undefined()
+        expect(asciidocCell.getInnerDocument().getAttributes().foo).to.be.equal('foo')
+        expect(asciidocCell.getInnerDocument().getParentDocument().getAttributes().foo).to.be.undefined()
+        expect(asciidocCell.getInnerDocument().getParentDocument().getDocumentTitle()).to.be.equal('Table')
+      })
     })
   })
 }
