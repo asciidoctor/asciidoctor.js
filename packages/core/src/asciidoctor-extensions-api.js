@@ -1281,7 +1281,7 @@ Opal.Asciidoctor.ConverterBackendTraits = ConverterBackendTraits
  */
 ConverterFactory.register = function (converter, backends) {
   var object
-  var buildBackendTraitsFromObject = obj => {
+  var buildBackendTraitsFromObject = function (obj) {
     return Object.assign({},
       obj.basebackend ? { basebackend: obj.basebackend } : {},
       obj.outfilesuffix ? { outfilesuffix: obj.outfilesuffix } : {},
@@ -1290,7 +1290,7 @@ ConverterFactory.register = function (converter, backends) {
       obj.supports_templates ? { supports_templates: obj.supports_templates } : {}
     )
   }
-  var assignBackendTraitsToInstance = (obj, instance) => {
+  var assignBackendTraitsToInstance = function (obj, instance) {
     if (obj.backend_traits) {
       instance.backend_traits = toHash(obj.backend_traits)
     } else if (obj.backendTraits) {
@@ -1299,19 +1299,24 @@ ConverterFactory.register = function (converter, backends) {
       instance.backend_traits = toHash(buildBackendTraitsFromObject(obj))
     }
   }
-  var bridgeHandlesMethodToInstance = (obj, instance) => {
-    if (typeof obj['$handles?'] === 'undefined') {
-      if (typeof obj.handles === 'function') {
-        instance['$handles?'] = obj.handles
-      } else {
-        // default implementation
-        instance['$handles?'] = function () {
-          return true
-        }
+  var bridgeHandlesMethodToInstance = function (obj, instance) {
+    bridgeMethodToInstance(obj, instance, '$handles?', 'handles', function () {
+      return true
+    })
+  }
+  var bridgeComposedMethodToInstance = function (obj, instance) {
+    bridgeMethodToInstance(obj, instance, '$composed', 'composed')
+  }
+  var bridgeMethodToInstance = function (obj, instance, methodName, functionName, defaultImplementation) {
+    if (typeof obj[methodName] === 'undefined') {
+      if (typeof obj[functionName] === 'function') {
+        instance[methodName] = obj[functionName]
+      } else if (defaultImplementation) {
+        instance[methodName] = defaultImplementation
       }
     }
   }
-  var addRespondToMethod = (instance) => {
+  var addRespondToMethod = function (instance) {
     if (typeof instance['$respond_to?'] !== 'function') {
       instance['$respond_to?'] = function (name) {
         return typeof this[name] === 'function'
@@ -1337,6 +1342,7 @@ ConverterFactory.register = function (converter, backends) {
           self.$convert = result.convert
         }
         bridgeHandlesMethodToInstance(result, self)
+        bridgeComposedMethodToInstance(result, self)
         addRespondToMethod(self)
         self.super(backend, opts)
       }
@@ -1366,6 +1372,7 @@ ConverterFactory.register = function (converter, backends) {
       converter.$$meta = ConverterBackendTraits
     }
     bridgeHandlesMethodToInstance(converter, converter)
+    bridgeComposedMethodToInstance(converter, converter)
     addRespondToMethod(converter)
     object = converter
   }

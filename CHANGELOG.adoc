@@ -15,6 +15,7 @@ Bug Fixes::
 * Properly assign backend traits on converter instances (#904)
 * Bridge `Converter.handles?` method (#906)
 * Add or bridge the `Converter.respond_to?` method (#908)
+* Add or bridge the `Converter.composed` method (#907)
 
 Improvements::
 
