@@ -5,4 +5,8 @@ set -e
 
 # Trigger a deployment on asciidoctor/docs.asciidoctor.org (using Netlify webhook).
 # The variable "NETLIFY_WEBHOOK_URL" is defined on Travis/GitHub.
-curl -X POST -d '' "$NETLIFY_WEBHOOK_URL"
+if [[ -z "$NETLIFY_WEBHOOK_URL" ]]; then
+  echo 'The variable NETLIFY_WEBHOOK_URL is not defined, unable to notify Netlify!'
+else
+  curl -X POST -d '' "$NETLIFY_WEBHOOK_URL"
+fi
