@@ -85,6 +85,7 @@ Infrastructure::
 * Add the color extension in the documentation
 * Add the bytefield-svg extension in the documentation (#898)
 
+
 == v2.1.1 (2020-02-01)
 
 Bug Fixes::
