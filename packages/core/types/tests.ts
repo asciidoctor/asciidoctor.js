@@ -5,6 +5,7 @@ import asciidoctor, { Asciidoctor } from '@asciidoctor/core';
 import { strict as assert } from 'assert';
 import * as ospath from 'path';
 import fs from 'fs';
+import nunjucks from 'nunjucks';
 import pkg from '../package.json';
 
 const processor = asciidoctor();
@@ -1114,3 +1115,77 @@ assert(typeof normalCell.getInnerDocument() === 'undefined');
 assert(asciidocCell.getInnerDocument()!.getAttributes().foo === 'foo');
 assert(typeof asciidocCell.getInnerDocument()!.getParentDocument()!.getAttributes().foo === 'undefined');
 assert(asciidocCell.getInnerDocument()!.getParentDocument()!.getDocumentTitle() === 'Table');
+
+class DotTemplateEngineAdapter implements Asciidoctor.TemplateEngine.Adapter {
+  private readonly doT: any;
+
+  constructor() {
+    this.doT = require('dot');
+  }
+
+  compile(file: string) {
+    const templateFn = this.doT.template(fs.readFileSync(file, 'utf8'));
+    return {
+      render: templateFn
+    };
+  }
+}
+
+processor.TemplateEngine.register('dot', new DotTemplateEngineAdapter());
+const htmlUsingDotTemplate = processor.convert('content', {safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/dot', template_engine: 'dot'});
+assert(htmlUsingDotTemplate === '<p class="paragraph-dot">content</p>');
+
+// templates
+processor.TemplateConverter.clearCache(); // since the cache is global, we are using "clearCache" to make sure that other tests won't affect the result
+const docWithTemplateConverter = processor.load('content', {safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks'});
+const cache = processor.TemplateConverter.getCache();
+const templatesPattern = ospath.resolve(`${__dirname}/../spec/fixtures/templates/nunjucks/*`).replace(/\\/g, '/');
+assert(cache.scans && cache.scans[templatesPattern].paragraph.tmplStr.trim() === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>');
+const templateFilePath = ospath.resolve(`${__dirname}/../spec/fixtures/templates/nunjucks/paragraph.njk`).replace(/\\/g, '/');
+assert(cache.templates && cache.templates[templateFilePath].tmplStr.trim() === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>');
+
+// handle a given node
+const templateConverter = docWithTemplateConverter.getConverter() as Asciidoctor.TemplateConverter;
+assert(templateConverter.handles('paragraph'));
+assert(!templateConverter.handles('admonition'));
+
+// convert a given node
+const paragraph = processor.Block.create(doc, 'paragraph', {source: 'This is a <test>'});
+assert(templateConverter.convert(paragraph, 'paragraph') === '<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>');
+
+// get templates
+let templates = templateConverter.getTemplates();
+assert(templates.paragraph.tmplStr.trim() === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>');
+assert(typeof templates.admonition === 'undefined');
+
+// render the "default" template
+const defaultParagraphResult = templates.paragraph.render({node: paragraph}).trim();
+assert(defaultParagraphResult === '<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>');
+
+// replace an existing template (paragraph)
+const paragraphTemplate = nunjucks.compile('<p class="paragraph nunjucks new">{{ node.getContent() }}</p>');
+templateConverter.register('paragraph', paragraphTemplate);
+templates = templateConverter.getTemplates();
+const newParagraphResult = templates.paragraph.render({node: paragraph}).trim();
+assert(newParagraphResult === '<p class="paragraph nunjucks new">This is a &lt;test&gt;</p>');
+
+// register a new template (admonition)
+const admonitionTemplate = nunjucks.compile(`<article class="message is-info">
+  <div class="message-header">
+    <p>{{ node.getAttribute('textlabel') }}</p>
+  </div>
+  <div class="message-body">
+    {{ node.getContent() }}
+  </div>
+</article>`);
+templateConverter.register('admonition', admonitionTemplate);
+templates = templateConverter.getTemplates();
+const admonition = processor.Block.create(doc, 'admonition', {source: 'An admonition paragraph, like this note, grabs the reader’s attention.', attributes: {textlabel: 'Note'}});
+assert(templates.admonition.render({node: admonition}) === `<article class="message is-info">
+  <div class="message-header">
+    <p>Note</p>
+  </div>
+  <div class="message-body">
+    An admonition paragraph, like this note, grabs the reader’s attention.
+  </div>
+</article>`);

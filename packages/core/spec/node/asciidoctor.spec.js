@@ -2427,8 +2427,8 @@ header_attribute::foo[bar]`
         }
       }
 
-      asciidoctor.ConverterFactory.register(new BlogConverter(), ['html5'])
-      const options = { safe: 'safe', header_footer: true }
+      asciidoctor.ConverterFactory.register(new BlogConverter(), ['blog'])
+      const options = { safe: 'safe', header_footer: true, backend: 'blog' }
       const input = `= One Thing to Write the Perfect Blog Post
 Guillaume Grossetie <ggrossetie@yuzutech.fr>
 
@@ -2453,6 +2453,136 @@ In other words, it’s about discovering writing zen.`
       expect(yamlConverter['$respond_to?']('convert')).to.be.true()
       expect(yamlConverter['$respond_to?']('composed')).to.be.false()
     })
+  })
+
+  describe('Using a template converter', () => {
+    it('should use a Pug template', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/pug' }
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<p class="paragraph-pug">content</p>')
+    }).timeout(15000) // can take a few seconds in GraalVM and macOS on GitHub Actions... :|
+    it('should use a Nunjucks template', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<p class="paragraph-nunjucks">content</p>')
+    }).timeout(5000)
+    it('should use an EJS template', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/ejs' }
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<p class="paragraph-ejs">content</p>')
+    }).timeout(5000)
+    it('should use a Handlebars template', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/handlebars' }
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<p class="paragraph-handlebars">content</p>')
+    }).timeout(5000)
+    it('should use a doT template', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/dot', template_engine: 'dot' }
+      const fs = require('fs')
+
+      class DotTemplateEngineAdapter {
+        constructor () {
+          this.doT = require('dot')
+        }
+
+        compile (file, _) {
+          const templateFn = this.doT.template(fs.readFileSync(file, 'utf8'))
+          return {
+            render: templateFn
+          }
+        }
+      }
+
+      asciidoctor.TemplateEngine.register('dot', new DotTemplateEngineAdapter())
+      const result = asciidoctor.convert('content', options)
+      expect(result).to.contain('<p class="paragraph-dot">content</p>')
+    }).timeout(5000)
+    it('should use a JavaScript template', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/js' }
+      const result = asciidoctor.convert('*bold* statement', options)
+      expect(result).to.contain('<p class="paragraph-js"><strong>bold</strong> statement</p>')
+    })
+    it('should require an helpers file', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/js-with-helpers' }
+      const result = asciidoctor.convert('video::TLV4_xaYynY[]', options)
+      expect(result).to.contain('<iframe src="https://www.youtube.com/embed/TLV4_xaYynY?enablejsapi=1&amp;rel=0&amp;showinfo=0&amp;controls=0&amp;disablekb=1" width="undefined" height="undefined" frameborder="0" allowfullscreen="true" data-rewind="" data-volume=""/>')
+    }).timeout(5000) // can take a few seconds in GraalVM
+    it('should get the template converter caches', () => {
+      // since the cache is global, we are using "clearCache" to make sure that other tests won't affect the result
+      asciidoctor.TemplateConverter.clearCache()
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      asciidoctor.load('content', options)
+      const cache = asciidoctor.TemplateConverter.getCache()
+      const templatesPattern = path.resolve(`${__dirname}/../fixtures/templates/nunjucks/*`).replace(/\\/g, '/')
+      expect(cache.scans).to.have.property(templatesPattern)
+      const templates = cache.scans[templatesPattern]
+      expect(templates).to.have.property('paragraph')
+      expect(templates.paragraph.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
+      const templateFilePath = path.resolve(`${__dirname}/../fixtures/templates/nunjucks/paragraph.njk`).replace(/\\/g, '/')
+      expect(cache.templates).to.have.property(templateFilePath)
+      const paragraphTemplate = cache.templates[templateFilePath]
+      expect(paragraphTemplate.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
+    }).timeout(5000)
+    it('should handle a given node', () => {
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const templateConverter = doc.getConverter()
+      expect(templateConverter.handles('paragraph')).to.be.true()
+      expect(templateConverter.handles('admonition')).to.be.false()
+    }).timeout(5000)
+    it('should convert a given node', () => {
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const templateConverter = doc.getConverter()
+      const paragraph = asciidoctor.Block.create(doc, 'paragraph', { source: 'This is a <test>' })
+      expect(templateConverter.convert(paragraph, 'paragraph')).to.equal('<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>')
+    }).timeout(5000)
+    it('should get templates', () => {
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const templateConverter = doc.getConverter()
+      const templates = templateConverter.getTemplates()
+      expect(templates.paragraph.tmplStr.trim()).to.equal('<p class="paragraph-nunjucks">{{ node.getContent() }}</p>')
+      expect(templates.admonition).to.be.undefined()
+      const paragraph = asciidoctor.Block.create(doc, 'paragraph', { source: 'This is a <test>' })
+      expect(templates.paragraph.render({ node: paragraph }).trim()).to.equal('<p class="paragraph-nunjucks">This is a &lt;test&gt;</p>')
+    }).timeout(5000)
+    it('should replace an existing template', () => {
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const templateConverter = doc.getConverter()
+      const nunjucks = require('nunjucks')
+      const template = nunjucks.compile('<p class="paragraph nunjucks">{{ node.getContent() }}</p>')
+      templateConverter.register('paragraph', template)
+      const templates = templateConverter.getTemplates()
+      const paragraph = asciidoctor.Block.create(doc, 'paragraph', { source: 'This is a <test>' })
+      expect(templates.paragraph.render({ node: paragraph }).trim()).to.equal('<p class="paragraph nunjucks">This is a &lt;test&gt;</p>')
+    }).timeout(5000)
+    it('should register a new template', () => {
+      const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const templateConverter = doc.getConverter()
+      const nunjucks = require('nunjucks')
+      const template = nunjucks.compile(`<article class="message is-info">
+  <div class="message-header">
+    <p>{{ node.getAttribute('textlabel') }}</p>
+  </div>
+  <div class="message-body">
+    {{ node.getContent() }}
+  </div>
+</article>`)
+      templateConverter.register('admonition', template)
+      const templates = templateConverter.getTemplates()
+      const admonition = asciidoctor.Block.create(doc, 'admonition', { source: 'An admonition paragraph, like this note, grabs the reader’s attention.', attributes: { textlabel: 'Note' } })
+      expect(templates.admonition.render({ node: admonition })).to.equal(`<article class="message is-info">
+  <div class="message-header">
+    <p>Note</p>
+  </div>
+  <div class="message-body">
+    An admonition paragraph, like this note, grabs the reader’s attention.
+  </div>
+</article>`)
+    }).timeout(5000)
   })
 
   if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {

@@ -21,8 +21,13 @@ const compileExt = (name, environment, skipped) => {
     // For performance reason we build "asciidoctor_ext" without "asciidoctor" core.
     // As a result Ruby modules required in "asciidoctor_ext" won't be found at compile time but will be resolved at runtime.
     opalBuilder.missing_require_severity = 'ignore'
-    const data = opalBuilder.build(module).toString()
-    fs.writeFileSync(target, data, 'utf8')
+    try {
+      const data = opalBuilder.build(module).toString()
+      fs.writeFileSync(target, data, 'utf8')
+    } catch (e) {
+      console.error(`Unable to compile: ${module}`, e)
+      throw e
+    }
   }
 }
 
