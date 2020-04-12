@@ -85,7 +85,7 @@
     "dtslint": "latest",
     "ejs": "^3.0.1",
     "eslint": "6.8.0",
-    "handlebars": "^4.7.3",
+    "handlebars": "^4.7.6",
     "http-server": "0.12.1",
     "mocha": "7.1.1",
     "module-alias": "2.2.2",
