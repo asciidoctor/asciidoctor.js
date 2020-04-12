@@ -16,6 +16,7 @@ Bug Fixes::
 * Bridge `Converter.handles?` method (#906)
 * Add or bridge the `Converter.respond_to?` method (#908)
 * Add or bridge the `Converter.composed` method (#907)
+* `AbstractNode.getAttributes` now returns `undefined` when the value is `Opal.nil` (#920)
 
 Improvements::
 

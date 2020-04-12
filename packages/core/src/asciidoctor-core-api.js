@@ -14,18 +14,24 @@ var toHash = function (object) {
  */
 var fromHash = function (hash) {
   var object = {}
-  var data = hash.$$smap
-  for (var key in data) {
-    object[key] = data[key]
+  if (hash) {
+    var data = hash.$$smap
+    for (var key in data) {
+      var value = data[key]
+      object[key] = value === Opal.nil ? undefined : value
+    }
   }
   return object
 }
 
 var fromHashKeys = function (hash) {
   var object = {}
-  var data = hash.$$keys
-  for (var key in data) {
-    object[key.toString()] = data[key].value
+  if (hash) {
+    var data = hash.$$keys
+    for (var key in data) {
+      var value = data[key].value
+      object[key.toString()] = value === Opal.nil ? undefined : value
+    }
   }
   return object
 }
@@ -3253,7 +3259,7 @@ Table.prototype.hasHeaderOption = function () {
  */
 Table.prototype.hasFooterOption = function () {
   var footerOption = this.getAttributes()['footer-option']
-  return footerOption === Opal.nil ? false : footerOption === ''
+  return footerOption === ''
 }
 
 /**
@@ -3263,7 +3269,7 @@ Table.prototype.hasFooterOption = function () {
  */
 Table.prototype.hasAutowidthOption = function () {
   var autowidthOption = this.getAttributes()['autowidth-option']
-  return autowidthOption === Opal.nil ? false : autowidthOption === ''
+  return autowidthOption === ''
 }
 
 /**

@@ -1426,6 +1426,15 @@ ConverterFactory.for = function (backend) {
   return converter === Opal.nil ? undefined : converter
 }
 
+/*
+ * Unregister any custom converter classes that are registered with this factory.
+ * Intended for testing only!
+ */
+ConverterFactory.unregisterAll = function () {
+  var internalRegistry = Converter.DefaultFactory.$$cvars['@@registry']
+  Converter.DefaultFactory.$$cvars['@@registry'] = toHash({ html5: internalRegistry['$[]']('html5') })
+}
+
 // Built-in converter
 
 /**
