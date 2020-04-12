@@ -2534,6 +2534,109 @@ In other words, it’s about discovering writing zen.`
       const result = asciidoctor.convert('content', options)
       expect(result).to.contain('<p class="paragraph-handlebars">content</p>')
     }).timeout(5000)
+    describe('Using Handlebar helpers', () => {
+      it('should render the id', () => {
+        const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/handlebars-json' }
+        const content = `
+[#id1]
+content`
+        const result = asciidoctor.convert(content, options).replace(/\s{2,}|\r?\n|\r/g, '')
+        expect(result).to.contain('<div id="id1" class="paragraph-handlebars"><p>content</p>\n</div>'.replace(/\s{2,}|\r?\n|\r/g, ''))
+      }).timeout(5000)
+      it('should render additional classes of the paragraph', () => {
+        const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/handlebars-json' }
+        const content = `
+[#id1.text-center]
+content`
+        const result = asciidoctor.convert(content, options).replace(/\s{2,}|\r?\n|\r/g, '')
+        const expected = `<div id="id1" class="paragraph-handlebars text-center">
+  <p>content</p>
+</div>`
+        expect(result).to.contain(expected.replace(/\s{2,}|\r?\n|\r/g, ''))
+      }).timeout(5000)
+      it('should render the title of the paragraph', () => {
+        const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/handlebars-json' }
+        const content = `
+.MyTitle
+[#id1.text-center]
+content`
+        const result = asciidoctor.convert(content, options).replace(/\s{2,}|\r?\n|\r/g, '')
+        const expected = `<div id="id1" class="paragraph-handlebars text-center">
+  <div class="title">MyTitle</div>
+  <p>content</p>
+</div>`
+        expect(result).to.contain(expected.replace(/\s{2,}|\r?\n|\r/g, ''))
+      }).timeout(5000)
+      it('should render an ordered list', () => {
+        const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/handlebars-json' }
+        const content = `
+. Item1
+. Item2`
+        const result = asciidoctor.convert(content, options).replace(/\s{2,}|\r?\n|\r/g, '')
+        const expected = `<div class="olist arabic">
+  <ol class="arabic">
+    <li><p>Item1</p>
+    </li>
+    <li><p>Item2</p>
+    </li>
+  </ol>
+</div>`
+        expect(result).to.contain(expected.replace(/\s{2,}|\r?\n|\r/g, ''))
+      }).timeout(5000)
+      it('should render a nested ordered list', () => {
+        const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/handlebars-json' }
+        const content = `
+. Item1
+.. Item1.1`
+        const result = asciidoctor.convert(content, options).replace(/\s{2,}|\r?\n|\r/g, '')
+        const expected = `<div class="olist arabic">
+      <ol class="arabic">
+        <li><p>Item1</p>
+          <div class="olist loweralpha">
+          <ol class="loweralpha">
+            <li><p>Item1.1</p></li>
+          </ol>
+        </div>
+        </li>
+      </ol>
+</div>`
+        expect(result).to.contain(expected.replace(/\s{2,}|\r?\n|\r/g, ''))
+      }).timeout(5000)
+      it('should recognize the reversed option of the list', () => {
+        const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/handlebars-json' }
+        const content = `
+[%reversed]
+. Item1
+. Item2`
+        const result = asciidoctor.convert(content, options).replace(/\s{2,}|\r?\n|\r/g, '')
+        const expected = `<div class="olist arabic">
+  <ol class="arabic" reversed="true">
+    <li><p>Item1</p>
+    </li>
+    <li><p>Item2</p>
+    </li>
+  </ol>
+</div>`
+        expect(result).to.contain(expected.replace(/\s{2,}|\r?\n|\r/g, ''))
+      }).timeout(5000)
+      it('should recognize the start attribute of the list', () => {
+        const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/handlebars-json' }
+        const content = `
+[start=4]
+. Item1
+. Item2`
+        const result = asciidoctor.convert(content, options).replace(/\s{2,}|\r?\n|\r/g, '')
+        const expected = `<div class="olist arabic">
+  <ol class="arabic" start="4">
+    <li><p>Item1</p>
+    </li>
+    <li><p>Item2</p>
+    </li>
+  </ol>
+</div>`
+        expect(result).to.contain(expected.replace(/\s{2,}|\r?\n|\r/g, ''))
+      }).timeout(5000)
+    })
     it('should use a doT template', () => {
       const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/dot', template_engine: 'dot' }
       const fs = require('fs')
