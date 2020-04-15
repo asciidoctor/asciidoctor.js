@@ -2641,6 +2641,33 @@ In other words, it’s about discovering writing zen.`
   </div>
 </article>`)
     }).timeout(5000)
+    it('should create an isolated environment per template directory', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dirs: ['spec/fixtures/templates/nunjucks-ctx-a', 'spec/fixtures/templates/nunjucks-ctx-b'] }
+      const result = asciidoctor.convert(`
+image:a.png[]
+
+image::b.png[]
+`, options)
+      expect(result).to.equal(`<div class="paragraph">
+<p><img class="inline" src="https://cdn.jsdelivr.net/a.png"/></p>
+</div>
+<img src="https://cdn.statically.io/b.png"/>`)
+    }).timeout(5000)
+    it('should allow to use different template engines inside the same directory', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/mixed' }
+      const result = asciidoctor.convert(`This a paragraph with an inline image image:b.png[].
+And here's a block image:
+
+image::b.png[]
+`, options)
+      expect(result).to.equal(`<p class="paragraph-handlebars">This a paragraph with an inline image <img class="inline" src="https://cdn.jsdelivr.net/b.png"/>.
+And here&#8217;s a block image:</p>
+<div class="imageblock">
+<div class="content">
+<img src="b.png" alt="b">
+</div>
+</div>`)
+    }).timeout(5000)
   })
 
   if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {

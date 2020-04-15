@@ -154,6 +154,9 @@ class Converter::TemplateConverter < Converter::Base
   # Returns the scan result as a [Hash]
   def scan_dir template_dir, pattern, template_cache = nil
     result, helpers = {}, nil
+    %x{
+      var enginesContext = {}
+    }
     # Grab the files in the top level of the directory (do not recurse)
     ::Dir.glob(pattern).select {|match| ::File.file? match }.each do |file|
       if (basename = ::File.basename file) == 'helpers.js'
@@ -174,14 +177,27 @@ class Converter::TemplateConverter < Converter::Base
           nunjucks = node_require 'nunjucks'
           %x{
             var fs = require('fs')
-            var env = nunjucks.configure(#{template_dir}, {})
+            var env
+            if (enginesContext.nunjucks && enginesContext.nunjucks.environment) {
+              env = enginesContext.nunjucks.environment
+            } else {
+              env = nunjucks.configure(#{template_dir}, {})
+              enginesContext.nunjucks = { environment: env }
+            }
             template = Object.assign(nunjucks.compile(fs.readFileSync(file, 'utf8'), env), { '$file': function() { return file } })
           }
         when :handlebars, :hbs
           handlebars = node_require 'handlebars'
           %x{
             var fs = require('fs')
-            template = { render: handlebars.compile(fs.readFileSync(file, 'utf8')), '$file': function() { return file } }
+            var env
+            if (enginesContext.handlebars && enginesContext.handlebars.environment) {
+              env = enginesContext.handlebars.environment
+            } else {
+              env = handlebars.create()
+              enginesContext.handlebars = { environment: env }
+            }
+            template = { render: env.compile(fs.readFileSync(file, 'utf8')), '$file': function() { return file } }
           }
         when :ejs
           ejs = node_require 'ejs'
@@ -209,7 +225,13 @@ class Converter::TemplateConverter < Converter::Base
       result[name] = template
     end
     if helpers || ::File.file?(helpers = %(#{template_dir}/helpers.js))
-      @helpers = `require(helpers)`
+      %x{
+        var helpers = require(helpers)
+        if (typeof helpers.configure === 'function') {
+          helpers.configure(enginesContext)
+        }
+      }
+      @helpers = `helpers`
     end
     result
   end
