@@ -12,4 +12,5 @@
 ** xref:extensions/include-processor.adoc[Include Processor]
 ** xref:extensions/compile-ruby-extension.adoc[Compile Ruby Extension]
 ** xref:extensions/ecosystem.adoc[Extensions ecosystem]
+* xref:converter/template-converter.adoc[Template Converter]
 * xref:converter/custom-converter.adoc[Custom Converter]

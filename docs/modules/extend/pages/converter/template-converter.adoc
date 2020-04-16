@@ -1,0 +1,176 @@
+= Template Converter
+:uri-jsapi: http://asciidoctor.github.io/asciidoctor.js/master
+:uri-jsapi-abstractnode: {uri-jsapi}/#abstractnode
+:uri-jsapi-section: {uri-jsapi}/#section
+:uri-jsapi-document: {uri-jsapi}/#document
+:uri-jsapi-block: {uri-jsapi}/#block
+:uri-handlebars-register-helpers: https://handlebarsjs.com/api-reference/runtime.html#handlebars-registerhelper-name-helper
+:uri-handlebars-register-partials: https://handlebarsjs.com/api-reference/runtime.html#handlebars-registerpartial-name-partial
+:uri-nunjucks-add-filter: https://mozilla.github.io/nunjucks/api.html#addfilter
+
+On this page, you'll learn how to use templates to have full control over the output.
+
+== Built-in template engines
+
+By default, Asciidoctor.js supports the following template engines with the corresponding file extensions:
+
+EJS::
+`.ejs`
+
+Handlebars::
+`.handlebars`, `.hbs`
+
+Nunjucks::
+`.nunjucks`, `.njk`
+
+Pug::
+`.pug`
+
+[NOTE]
+====
+Please note that the dependencies are optional, so you will need to install them explicitly.
+For instance, if you want to use Nunjucks, you will need to install the `nunjucks` package:
+
+ $ npm i nunjucks
+====
+
+Once the dependency is installed, you can create template files in a directory.
+
+== Naming convention
+
+Let's say, we want to use Nunjucks to write templates.
+We create a directory named _templates_ and a file named _paragraph.njk_:
+
+[source,njk]
+----
+<p class="paragraph">{{ node.getContent() | safe }}</p>
+----
+
+[NOTE]
+====
+By default, Nunjucks will automatically escape all output for safety.
+Here, we are using the built-in `safe` filter to mark the output as safe.
+As a result, Nunjucks will not escape this output.
+====
+
+As mention above, the file extension _njk_ is important because it tells Asciidoctor.js that this file is a Nunjucks template.
+But the file name _paragraph_ is also important as it matches a Node name.
+For reference, here's the complete list of node's name:
+
+// NOTE:
+// It's probably a bad idea to duplicate this list
+* document
+* embedded
+* outline
+* section
+* admonition
+* audio
+* colist
+* dlist
+* example
+* floating-title
+* image
+* listing
+* literal
+* stem
+* olist
+* open
+* page_break
+* paragraph
+* preamble
+* quote
+* thematic_break
+* sidebar
+* table
+* toc
+* ulist
+* verse
+* video
+* inline_anchor
+* inline_break
+* inline_button
+* inline_callout
+* inline_footnote
+* inline_image
+* inline_indexterm
+* inline_kbd
+* inline_menu
+* inline_quoted
+
+You don't need to create a template for all the nodes.
+Asciidoctor.js can fallback on a built-in converter.
+For instance, we can use the built-in HTML 5 converter for every node except for paragraph nodes where we use a custom template.
+
+== Use the template directory
+
+You can instruct Asciidoctor.js to use a template directory from the CLI with the `--template-dir` option (or `-T` for short):
+
+ $ asciidoctor --template-dir ./templates doc.adoc
+
+You can also configure the template directory using the API:
+
+[source,js]
+----
+asciidoctor.convertFile('doc.adoc', { safe: 'safe', backend: 'html5', template_dir: './templates' })
+----
+
+=== Use multiple template directories
+
+It's also possible to use more than one template directory.
+In this case, we can repeat the `--template-dir` option from the CLI:
+
+ $ asciidoctor --template-dir ./templates-a --template-dir ./templates-b doc.adoc
+
+In the above command, we are using two template directories named _templates-a_ and _templates-b_.
+
+From the API, we will need to define the `template_dirs` option:
+
+[source,js]
+----
+asciidoctor.convertFile('doc.adoc', { safe: 'safe', backend: 'html5', template_dirs: ['./templates-a', './templates-b'] })
+----
+
+// NOTE:
+// Add a section about "Conflict resolution"
+// What happens when multiple templates exist for the same node in multiple directories?
+// I believe that the last one wins? In this case, the template in "templates-b" will win?
+// What happens when multiple templates exist for the same node in the same directory (using different template engines)
+// - paragraph.hbs
+// - paragraph.njk
+// paragraph.njk will win because n is after h in alphabetical order?
+
+== Template context
+
+Asciidoctor.js will pass the following context to the template:
+
+`node`::
+An {uri-jsapi-abstractnode}[AbstractNode] from the Asciidoctor.js AST.
+Depending on the context, it can be a {uri-jsapi-section}[Section], a {uri-jsapi-document}[Document], a {uri-jsapi-block}[Block]...
++
+We recommend reading the {uri-jsapi}[JS API documentation] to find out what it's available on each Node.
+
+`opts`::
+An optional JSON of options from the converter.
+
+`helpers`::
+An "helpers" object, <<helpers-js-file,see below>>.
+
+[[helpers-js-file]]
+== helpers.js file
+
+You can create a `helpers.js` file in your template directory.
+This file can be used to declare utility functions that can be used in the templates.
+For instance, if you are using Handlebars, you might want to register {uri-handlebars-register-partials}[partials] or {uri-handlebars-register-helpers}[helpers].
+Similarly, if you are using Nunjucks, you might want to {uri-nunjucks-add-filter}[add custom filters].
+
+If this file exists, Asciidoctor.js will load it (using the Node.js `require` directive) and call the `configure` function if the `helpers.js` file exports a function with this name:
+
+[source,js]
+----
+module.exports.configure = (context) => {
+  // ...
+}
+----
+
+// NOTE:
+// Describe the context object
