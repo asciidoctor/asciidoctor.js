@@ -25,7 +25,7 @@ console.log(html)
 [NOTE]
 ====
 When converting a string, the header and footer are excluded by default to make Asciidoctor consistent with other lightweight markup engines like Markdown.
-If you want to produce a standalone document, just enable it using the `standalone` option:
+If you want to produce a standalone document, enable it using the `standalone` option:
 
 ```js
 var html = asciidoctor.convert('*This* is Asciidoctor.', { standalone: true })
