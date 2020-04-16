@@ -50,9 +50,9 @@ class Converter::TemplateConverter < Converter::Base
     end
 
     if template_name == 'document'
-      `template.render({node: node, opts: opts, helpers: self.helpers})`.strip
+      `template.render({node: node, opts: fromHash(opts), helpers: self.helpers})`.strip
     else
-      `template.render({node: node, opts: opts, helpers: self.helpers})`.rstrip
+      `template.render({node: node, opts: fromHash(opts), helpers: self.helpers})`.rstrip
     end
   end
 
