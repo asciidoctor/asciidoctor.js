@@ -23,7 +23,7 @@ See below for a link to the right one and instructions on how to use it.
 
 == Basic browser setup
 
-Just include Asciidoctor.js in a script tag.
+Include Asciidoctor.js in a `<script>` tag.
 You can instantiate the processor using the `Asciidoctor` global variable.
 
 ```html

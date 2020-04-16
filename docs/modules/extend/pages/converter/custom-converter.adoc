@@ -48,7 +48,7 @@ class CustomConverter {
 <1> `node` is a node that extends {uri-abstractnode-jsdoc}[AbstractNode].
 <2> `transform` will only be defined when the node is a {uri-document-jsdoc}[Document]. +
 The value will be equals to `embedded` if we convert to an embeddable document,
-or `document` if we convert to a standalone document (ie. `header_footer` is equals to `true`).
+or `document` if we convert to a standalone document (ie. `standalone` is equals to `true`).
 
 To register a custom converter we can use the function `register` on the `ConverterFactory`:
 
