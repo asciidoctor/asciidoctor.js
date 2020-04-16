@@ -55,6 +55,7 @@ asciidoctor.ConverterFactory.for('foo') // undefined
 
 Infrastructure::
 
+* Publish binaries of the `asciidoctor` CLI on GitHub releases (#929)
 * Upgrade development dependencies
 ** Bump `libnpmpublish` from 1.1.1 to 3.0.0 (#863)
 ** Bump `cross-env` from 5.1.4 to 6.0.3 in /packages/core (#879)

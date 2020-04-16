@@ -44,7 +44,9 @@ jobs:
       deploy:
         - provider: releases
           api_key: ${GITHUB_TOKEN}
-          file: packages/core/bin/asciidoctor.js.dist.*
+          file:
+            - packages/core/bin/asciidoctor.js.dist.*
+            - packages/asciidoctor/dist/*
           skip_cleanup: true
           file_glob: true
           on:
