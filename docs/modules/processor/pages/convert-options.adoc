@@ -43,11 +43,6 @@ Instead of providing a JavaScript function containing extensions to register, th
 |_not set_
 |`Extensions.Registry` instance
 
-|header_footer
-|If true, add the document header and footer (i.e., framing) around the body content in the output.
-|false
-|_boolean_
-
 |mkdirs
 |If true, the processor will create the necessary output directories if they don't yet exist.
 |false
@@ -66,6 +61,11 @@ Instead of providing a JavaScript function containing extensions to register, th
 |sourcemap
 |Keeps track of the file and line number for each parsed block.
  (Useful for tooling applications where the association between the converted output and the source file is important).
+|false
+|_boolean_
+
+|standalone
+|If true, add the document header and footer (i.e., framing) around the body content in the output.
 |false
 |_boolean_
 

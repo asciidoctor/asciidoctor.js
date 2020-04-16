@@ -25,10 +25,10 @@ console.log(html)
 [NOTE]
 ====
 When converting a string, the header and footer are excluded by default to make Asciidoctor consistent with other lightweight markup engines like Markdown.
-If you want the header and footer, just enable it using the `header_footer` option:
+If you want to produce a standalone document, just enable it using the `standalone` option:
 
 ```js
-var html = asciidoctor.convert('*This* is Asciidoctor.', { 'header_footer': true })
+var html = asciidoctor.convert('*This* is Asciidoctor.', { standalone: true })
 ```
 ====
 
@@ -43,7 +43,7 @@ The variable `doc` will contain an {uri-js-api-doc}/#document[Asciidoctor.Docume
 Alternatively, you can capture the HTML 5 output in a variable instead of writing it to a file:
 
 ```js
-var html = asciidoctor.convertFile('/path/to/file.adoc', { 'to_file': false, 'header_footer': true })
+var html = asciidoctor.convertFile('/path/to/file.adoc', { to_file: false, standalone: true })
 ```
 
 [NOTE]
@@ -101,11 +101,11 @@ TIP: The default stylesheet is located at [.path]_node_modules/asciidoctor.js/di
 When you generate a document using Node.js, the `asciidoctor.css` stylesheet is embedded into the HTML output by default (when the safe mode is less than `secure`).
 
 ```js
-asciidoctor.convertFile('/path/to/file.adoc', { 'safe': 'safe' })
+asciidoctor.convertFile('/path/to/file.adoc', { safe: 'safe' })
 ```
 
 To have your document link to the stylesheet, set the `linkcss` attribute:
 
 ```js
-asciidoctor.convertFile('/path/to/file.adoc', { 'safe': 'safe', 'attributes': { 'linkcss': true } })
+asciidoctor.convertFile('/path/to/file.adoc', { safe: 'safe', attributes: { linkcss: true } })
 ```
