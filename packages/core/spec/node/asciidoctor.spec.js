@@ -2666,6 +2666,15 @@ And here&#8217;s a block image:</p>
 </div>
 </div>`)
     }).timeout(5000)
+    it('should resolve Nunjucks include', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/nunjucks-include' }
+      const result = asciidoctor.convert(`
+* foo
+* bar
+* baz
+`, options)
+      expect(result.replace(/\r/g, '').replace(/\n/g, '')).to.equal('<ul class="ulist"><p>foo</p><p>bar</p><p>baz</p></ul>')
+    }).timeout(5000)
   })
 
   if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {

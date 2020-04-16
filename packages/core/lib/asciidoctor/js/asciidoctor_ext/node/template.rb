@@ -218,11 +218,13 @@ class Converter::TemplateConverter < Converter::Base
             var templateEngine = registry[#{extsym}]
             if (templateEngine && typeof templateEngine.compile === 'function') {
               template = Object.assign(templateEngine.compile(file, name), { '$file': function() { return file } })
+            } else {
+              template = undefined
             }
           }
         end
       end
-      result[name] = template
+      result[name] = template if template
     end
     if helpers || ::File.file?(helpers = %(#{template_dir}/helpers.js))
       %x{
