@@ -40,8 +40,16 @@ const shareSpec = function (testOptions, asciidoctor, expect) {
 
       it('should load document attributes', function () {
         const options = { attributes: 'icons=font@ data-uri!' }
-        const doc = asciidoctor.load('= Document Title\n:attribute-key: attribute-value\n\ncontent', options)
-        expect(doc.getAttribute('attribute-key')).to.equal('attribute-value')
+        const doc = asciidoctor.load(`= Document attributes
+:bar: value
+:!foo:
+
+content`, options)
+        expect(doc.getAttribute('bar')).to.equal('value')
+        expect(doc.getAttribute('quz')).to.be.undefined()
+        expect(doc.getAttributes().quz).to.be.undefined()
+        expect(doc.getAttribute('foo')).to.be.undefined()
+        expect(doc.getAttributes().foo).to.be.undefined()
       })
 
       it('should load document with array attributes !', function () {

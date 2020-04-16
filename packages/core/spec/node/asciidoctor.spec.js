@@ -1,4 +1,4 @@
-/* global it, describe */
+/* global it, describe, afterEach */
 const path = require('path')
 const fs = require('fs')
 const process = require('process')
@@ -2130,6 +2130,47 @@ header_attribute::foo[bar]`
   })
 
   describe('Registering converter', () => {
+    afterEach(() => {
+      asciidoctor.ConverterFactory.unregisterAll()
+    })
+
+    class BlankConverter {
+      convert () {
+        return ''
+      }
+    }
+
+    class DummyConverter {
+      constructor () {
+        this.transforms = {
+          embedded: (node) => {
+            return `<dummy>${node.getContent()}</dummy>`
+          },
+          paragraph: (node) => {
+            return node.getContent()
+          }
+        }
+      }
+
+      convert (node, transform) {
+        return this.transforms[transform || node.node_name](node)
+      }
+    }
+
+    class DelegateConverter {
+      convert (node, transform) {
+        return this[`convert_${transform || node.node_name}`](node)
+      }
+
+      convert_embedded (node) { // eslint-disable-line camelcase
+        return `<delegate>${node.getContent()}</delegate>`
+      }
+
+      convert_paragraph (node) { // eslint-disable-line camelcase
+        return node.getContent()
+      }
+    }
+
     class TEIConverter {
       constructor (backend, _) {
         this.backend = backend
@@ -2287,18 +2328,34 @@ header_attribute::foo[bar]`
       }
     }
 
+    class XrefConverter {
+      convert (node, transform) {
+        const name = transform || node.node_name
+        if (name === 'inline_anchor') {
+          return this.convertInlineAnchor(node)
+        }
+        return node.getContent()
+      }
+
+      convertInlineAnchor (node) {
+        return `
+getAttributes().fragment: ${typeof node.getAttributes().fragment === 'undefined'}
+getAttribute('fragment'): ${typeof node.getAttribute('fragment') === 'undefined'}`
+      }
+    }
+
+    it('should get inline anchor attributes', () => {
+      asciidoctor.ConverterFactory.register(new XrefConverter(), ['xref'])
+      const html = asciidoctor.convert('xref:file.adoc[]', { backend: 'xref' })
+      expect(html).to.equal(`
+getAttributes().fragment: true
+getAttribute('fragment'): true`)
+    })
     it('should return the default converter registry', () => {
       const doc = asciidoctor.load('')
       let registry = asciidoctor.ConverterFactory.getRegistry()
       expect(registry).to.have.property('html5')
       expect(asciidoctor.ConverterFactory.for('blank')).to.be.undefined()
-
-      class BlankConverter {
-        convert () {
-          return ''
-        }
-      }
-
       asciidoctor.ConverterFactory.register(new BlankConverter(), ['blank'])
       registry = asciidoctor.ConverterFactory.getRegistry()
       expect(registry).to.have.all.keys('html5', 'blank')
@@ -2313,43 +2370,12 @@ header_attribute::foo[bar]`
 </div>`)
     })
     it('should register a custom converter', () => {
-      class DummyConverter {
-        constructor () {
-          this.transforms = {
-            embedded: (node) => {
-              return `<dummy>${node.getContent()}</dummy>`
-            },
-            paragraph: (node) => {
-              return node.getContent()
-            }
-          }
-        }
-
-        convert (node, transform) {
-          return this.transforms[transform || node.node_name](node)
-        }
-      }
-
       asciidoctor.ConverterFactory.register(new DummyConverter(), ['dummy'])
       const options = { safe: 'safe', backend: 'dummy' }
       const result = asciidoctor.convert('content', options)
       expect(result).to.contain('<dummy>content</dummy>')
     })
     it('should register a custom converter with delegate', () => {
-      class DelegateConverter {
-        convert (node, transform) {
-          return this[`convert_${transform || node.node_name}`](node)
-        }
-
-        convert_embedded (node) { // eslint-disable-line camelcase
-          return `<delegate>${node.getContent()}</delegate>`
-        }
-
-        convert_paragraph (node) { // eslint-disable-line camelcase
-          return node.getContent()
-        }
-      }
-
       asciidoctor.ConverterFactory.register(new DelegateConverter(), ['delegate'])
       const options = { safe: 'safe', backend: 'delegate' }
       const result = asciidoctor.convert('content', options)
