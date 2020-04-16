@@ -2648,9 +2648,7 @@ image:a.png[]
 
 image::b.png[]
 `, options)
-      expect(result).to.equal(`<div class="paragraph">
-<p><img class="inline" src="https://cdn.jsdelivr.net/a.png"/></p>
-</div>
+      expect(result).to.equal(`<p class="paragraph"><img class="inline" src="https://cdn.jsdelivr.net/a.png"/></p>
 <img src="https://cdn.statically.io/b.png"/>`)
     }).timeout(5000)
     it('should allow to use different template engines inside the same directory', () => {
