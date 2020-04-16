@@ -16,6 +16,10 @@ Stylesheets::
 As mentioned above, Asciidoctor provided a default stylesheet but you can xref:stylesheets/index.adoc#apply-theme[apply an alternative theme]. +
 You can also create your own themes.
 
+Docinfo files::
+You can add custom content to the head or footer of an output document using docinfo files.
+Docinfo files are useful for injecting auxiliary metadata, stylesheet, and script information into the output not added by the converter.
+
 Template converter::
 A template converter is an implementation that uses templates to convert each block from a parsed AsciiDoc document tree to the output format.
 
