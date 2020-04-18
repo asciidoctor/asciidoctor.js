@@ -2675,6 +2675,32 @@ And here&#8217;s a block image:</p>
 `, options)
       expect(result.replace(/\r/g, '').replace(/\n/g, '')).to.equal('<ul class="ulist"><p>foo</p><p>bar</p><p>baz</p></ul>')
     }).timeout(5000)
+    it('should resolve conflicts consistently when the same template exists in multiple directories', () => {
+      // the template paragraph.njk is present in both the "nunjucks" and "nunjucks-ctx-b" directory!
+      // the rule is that the last one wins so the template order in "template_dirs" is important.
+      let result = asciidoctor.convert(`a simple paragraph`, {
+        safe: 'safe',
+        backend: 'html5',
+        template_dirs: ['spec/fixtures/templates/nunjucks', 'spec/fixtures/templates/nunjucks-ctx-b']
+      })
+      expect(result).to.equal('<p class="paragraph">a simple paragraph</p>')
+      result = asciidoctor.convert(`a simple paragraph`, {
+        safe: 'safe',
+        backend: 'html5',
+        template_dirs: ['spec/fixtures/templates/nunjucks-ctx-b', 'spec/fixtures/templates/nunjucks']
+      })
+      expect(result).to.equal('<p class="paragraph-nunjucks">a simple paragraph</p>')
+    }).timeout(5000)
+    it('should resolve conflicts consistently when the same template exists in the same directory', () => {
+      // we have two templates for the node "paragraph" in the same directory using two distinct template engine!
+      // the rule is that the last one wins (in alphabetical order) in this case Nunjucks wins because "njk" is after "hbs".
+      const result = asciidoctor.convert(`a simple paragraph`, {
+        safe: 'safe',
+        backend: 'html5',
+        template_dir: ['spec/fixtures/templates/conflict']
+      })
+      expect(result).to.equal('<p class="paragraph-nunjucks">a simple paragraph</p>')
+    }).timeout(5000)
   })
 
   if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {

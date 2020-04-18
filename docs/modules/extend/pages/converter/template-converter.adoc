@@ -130,14 +130,36 @@ From the API, we will need to define the `template_dirs` option:
 asciidoctor.convertFile('doc.adoc', { safe: 'safe', backend: 'html5', template_dirs: ['./templates-a', './templates-b'] })
 ----
 
-// NOTE:
-// Add a section about "Conflict resolution"
-// What happens when multiple templates exist for the same node in multiple directories?
-// I believe that the last one wins? In this case, the template in "templates-b" will win?
-// What happens when multiple templates exist for the same node in the same directory (using different template engines)
-// - paragraph.hbs
-// - paragraph.njk
-// paragraph.njk will win because n is after h in alphabetical order?
+=== Conflicts resolution
+
+Here's how Asciidoctor.js resolve conflicts in the following situations:
+
+Two or more templates are defined for the same node name in the same directory::
+For instance, you have a _paragraph.njk_ and a _paragraph.hbs_ file in your template directory.
+In this case, the rule is "last one wins" in alphabetical order.
+Since _njk_ is after _hbs_ in alphabetical order, Asciidoctor.js will use the Nunjucks template over the Handlebars template.
+
+Two or more templates are defined for the same node in different directories::
+For instance, we have a _paragraph.njk_ in _template-a_ directory and a _paragraph.njk_ in _template-b_ directory.
+In this case, the rule is still "last one wins" but the order in `template_dirs` option is important. +
+If I declare the following:
++
+[source,js]
+----
+const options = { template_dirs: ['template-a', 'template-b'] }
+----
++
+Then _template-b/paragraph.njk_ will win because it's effectively the last one.
+But if I change the order in `template_dirs`:
++
+[source,js]
+----
+const options = { template_dirs: ['template-b', 'template-a'] }
+----
++
+Now _template-a/paragraph.njk_ will win!
+
+Please note that it's not recommended practice and you should try to avoid conflicts upstream.
 
 == Template context
 
