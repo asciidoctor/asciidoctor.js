@@ -57,45 +57,7 @@ As mention above, the file extension _njk_ is important because it tells Asciido
 But the file name _paragraph_ is also important as it matches a Node name.
 For reference, here's the complete list of node's name:
 
-// NOTE:
-// It's probably a bad idea to duplicate this list
-* document
-* embedded
-* outline
-* section
-* admonition
-* audio
-* colist
-* dlist
-* example
-* floating-title
-* image
-* listing
-* literal
-* stem
-* olist
-* open
-* page_break
-* paragraph
-* preamble
-* quote
-* thematic_break
-* sidebar
-* table
-* toc
-* ulist
-* verse
-* video
-* inline_anchor
-* inline_break
-* inline_button
-* inline_callout
-* inline_footnote
-* inline_image
-* inline_indexterm
-* inline_kbd
-* inline_menu
-* inline_quoted
+include::partial$node-name-list.adoc[]
 
 You don't need to create a template for all the nodes.
 Asciidoctor.js can fallback on a built-in converter.
