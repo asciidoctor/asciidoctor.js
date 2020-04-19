@@ -23,6 +23,5 @@ module.exports = function ({ node, _, helpers }) {
   const src = `${helpers.getAssetUriScheme(document)}//www.youtube.com/embed/${target}?${params.join('&amp;')}`
   return `<figure class="video ${node.getRole()}"${node.getId() ? ` id="${node.getId()}"` : ''}>
   <iframe src="${src}" width="${helpers.getLocalAttribute(node, 'width')}" height="${helpers.getLocalAttribute(node, 'height')}" frameborder="0" allowfullscreen="${node.isOption('nofullscreen') ? '' : 'true'}" data-rewind="${rew || ''}" data-volume="${vol || ''}"/>
-</iframe>
 </figure>`
 }

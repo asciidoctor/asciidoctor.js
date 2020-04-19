@@ -36,7 +36,17 @@ For instance, if you want to use Nunjucks, you will need to install the `nunjuck
 
 Once the dependency is installed, you can create template files in a directory.
 
-// todo: we should also explain how to use plain JavaScript templates
+== Plain JavaScript templates
+
+Asciidoctor.js also supports templates written in plain JavaScript.
+In this case, you should write JavaScript files that export a default function:
+
+[source,js]
+----
+module.exports = ({ node }) => `<p class="paragraph">${node.getContent()}</p>`
+----
+
+This function will be called with a <<template-context>> as argument.
 
 == Naming convention
 
@@ -55,8 +65,8 @@ Here, we are using the built-in `safe` filter to mark the output as safe.
 As a result, Nunjucks will not escape this output.
 ====
 
-As mention above, the file extension _njk_ is important because it tells Asciidoctor.js that this file is a Nunjucks template.
-But the file name _paragraph_ is also important as it matches a Node name.
+As mentioned above, the file extension _njk_ is important because it tells Asciidoctor.js that this file is a Nunjucks template.
+Moreover, the name _paragraph_ is also important as it matches a node name.
 For reference, here's the complete list of node's name:
 
 include::partial$node-name-list.adoc[]
@@ -65,7 +75,7 @@ You don't need to create a template for all the nodes.
 Asciidoctor.js can fallback on a built-in converter.
 For instance, we can use the built-in HTML 5 converter for every node except for paragraph nodes where we use a custom template.
 
-== Template directory
+== Templates directory
 
 You can instruct Asciidoctor.js to use a template directory from the CLI with the `--template-dir` option (or `-T` for short):
 
@@ -78,14 +88,14 @@ You can also configure the template directory using the API:
 asciidoctor.convertFile('doc.adoc', { safe: 'safe', backend: 'html5', template_dir: './templates' })
 ----
 
-=== Multiple template directories
+=== Multiple templates directories
 
 It's also possible to use more than one template directory.
 In this case, we can repeat the `--template-dir` option from the CLI:
 
  $ asciidoctor --template-dir ./templates-a --template-dir ./templates-b doc.adoc
 
-In the above command, we are using two template directories named _templates-a_ and _templates-b_.
+In the above command, we are using two templates directories named _templates-a_ and _templates-b_.
 
 From the API, we will need to define the `template_dirs` option:
 
@@ -105,7 +115,7 @@ Since _njk_ is after _hbs_ in alphabetical order, Asciidoctor.js will use the Nu
 
 Two or more templates are defined for the same node in different directories::
 For instance, we have a _paragraph.njk_ in _template-a_ directory and a _paragraph.njk_ in _template-b_ directory.
-In this case, the rule is still "last one wins" but the order in `template_dirs` option is important. +
+In this case, the rule is still "last one wins" but the order in the `template_dirs` option is important. +
 If I declare the following:
 +
 [source,js]
@@ -114,16 +124,16 @@ const options = { template_dirs: ['template-a', 'template-b'] }
 ----
 +
 Then _template-b/paragraph.njk_ will win because it's effectively the last one.
-But if I change the order in `template_dirs`:
+Now, if I change the order in the `template_dirs` option:
 +
 [source,js]
 ----
 const options = { template_dirs: ['template-b', 'template-a'] }
 ----
 +
-Now _template-a/paragraph.njk_ will win!
+Then _template-a/paragraph.njk_ will win!
 
-Please note that it's not recommended practice and you should try to avoid conflicts upstream.
+Please note that it's not a recommended practice, and you should try to avoid conflicts upstream.
 
 [[helpers-js-file]]
 === helpers.js file
@@ -135,6 +145,7 @@ Similarly, if you are using Nunjucks, you might want to {uri-nunjucks-add-filter
 
 If this file exists, Asciidoctor.js will load it (using the Node.js `require` directive) and call the `configure` function if it's exported:
 
+.helpers.js
 [source,js]
 ----
 module.exports.configure = (context) => {
@@ -142,26 +153,17 @@ module.exports.configure = (context) => {
 }
 ----
 
-The `context` object will contain an <<isolated environment,isolated environement>> (if supported) template engine keyed by template engine name:
+The `context` object will contain an <<isolated-environment,isolated environement>> (if supported) template engine keyed by template engine name:
 
-[source,js]
-----
-const context = {
-  handlebars: {
-    environment: /* */ // <1>
-  },
-  nunjucks: {
-    environment: /* */ // <2>
-  }
-}
-----
-<1> An isolated Handlebars environment obtained via https://handlebarsjs.com/api-reference/runtime.html#handlebars-create[`Handlebars.create()`]
-<2> An isolated Nunjucks environment obtained via https://mozilla.github.io/nunjucks/api.html#configure[`nunjucks.configure()`]
+`handlebars.environment`::
+An isolated Handlebars environment obtained via https://handlebarsjs.com/api-reference/runtime.html#handlebars-create[`Handlebars.create()`]
 
-NOTE: Since EJS and Pug are "stateless", their context will be undefined.
+`nunjucks.environment`::
+An isolated Nunjucks environment obtained via https://mozilla.github.io/nunjucks/api.html#configure[`nunjucks.configure()`]
 
-And here's a concrete example where we add a Nunjucks filter `shorten` which returns the first count characters in a string, with count defaulting to 5:
+Here's a concrete example where we add a Nunjucks filter `shorten` which returns the first count characters in a string, with count defaulting to 5:
 
+.helpers.js
 [source,js]
 ----
 module.exports.configure = (context) => {
@@ -169,13 +171,42 @@ module.exports.configure = (context) => {
 }
 ----
 
-// todo: this feature seems to compete with the built-in capabilities of the template engines.
-// maybe we should only introduce this feature when using plain JavaScript templates? and only enable it when using plain JavaScript templates?
-// another idea, would be to use the return value of the "configure" function?
+[[isolated-environment]]
+==== Isolated environment
 
-////
-In addition, the `helpers.js` file can export values and functions that will be available in the template context:
+An isolated environment means that each environment has its own helpers, partials, filters...
+It's worth noting that an environment is isolated per template directory. +
+For instance, if we define a value with the same name in two directories the last one won't overwrite the first one:
 
+.web/helpers.js
+[source,js]
+----
+module.exports.configure = (context) => {
+  context.nunjucks.environment.addGlobal('cdn', '//cdn.web.com')
+}
+----
+
+.blog/helpers.js
+[source,js]
+----
+module.exports.configure = (context) => {
+  context.nunjucks.environment.addGlobal('cdn', '//cdn.blog.io')
+}
+----
+
+With the above definition, the value `cdn` will be equals to:
+
+[horizontal]
+`//cdn.web.com`:: if we are using the template directory _web_
+`//cdn.blog.io`:: if we are using the template directory _blog_
+
+==== Stateless
+
+EJS, Plain JavaScript and Pug templates do not rely on an "environment". +
+As a result, you don't need to define a `configure` function.
+Instead, you can use the `helpers.js` file to export values and functions that will be accessible in all templates:
+
+.helpers.js
 [source,js]
 ----
 let assetUriScheme
@@ -189,51 +220,33 @@ module.exports.getAssetUriScheme = (document) => {
   return assetUriScheme
 }
 ----
-////
 
-[[isolated-environement]]
-=== Isolated environment
+In the above example, the value `version` and the function `getAssetUriScheme` will be available on the `helpers` key in the template context:
 
-An isolated environment means that each environment has its own helpers, partials, filters...
-It's worth noting that an environment is isolated per template directory. +
-For instance, if we define a value with the same name in two directories the last one won't overwrite the first one:
-
-.web/helpers.js
+.video.js
 [source,js]
 ----
-module.exports.configure = (context) => {
-  context.nunjucks.environment.addGlobal('cdn', '//cdn.jsdelivr.net')
+module.exports = function ({ node, _, helpers }) {
+  const target = node.getAttribute('target')
+  const document = node.getDocument()
+  const src = `${helpers.getAssetUriScheme(document)}//www.youtube.com/embed/${target}}` // <1>
+  return `<figure class="video"><iframe src="${src}" frameborder="0"/></figure>`
 }
 ----
+<1> Use the `getAssetUriScheme` function defined in the `helpers.js` file
 
-.blog/helpers.js
-[source,js]
-----
-module.exports.configure = (context) => {
-  context.nunjucks.environment.addGlobal('cdn', '//cdn.statically.io')
-}
-----
-
-With the above definition, the value `cdn` will be equals to:
-
-[horizontal]
-`//cdn.jsdelivr.net`:: if we are using the templare directory _web_
-`//cdn.statically.io`:: if we are using the templare directory _blog_
-
-The above remains true even if we are using both template directories at the same time: (ie. using `{ template_dirs: ['web, 'blog'] }`).
-
+[[template-context]]
 == Template context
 
 Asciidoctor.js will pass the following context to the template:
 
 `node`::
 An {uri-jsapi-abstractnode}[AbstractNode] from the Asciidoctor.js AST.
-Depending on the context, it can be a {uri-jsapi-section}[Section], a {uri-jsapi-document}[Document], a {uri-jsapi-block}[Block]...
-+
+Depending on the context, it can be a {uri-jsapi-section}[Section], a {uri-jsapi-document}[Document], a {uri-jsapi-block}[Block]... +
 We recommend reading the {uri-jsapi}[JS API documentation] to find out what it's available on each Node.
 
 `opts`::
-An optional JSON of options from the converter.
+An optional JSON of options.
 
 `helpers`::
-An "helpers" object, <<helpers-js-file,see below>>.
+The functions and values exported from the _helpers.js_ file.
