@@ -1,4 +1,3 @@
-const handlebars = require('handlebars')
-handlebars.registerHelper('content', function (node) {
-  return node.getContent()
-})
+module.exports.configure = (context) => {
+  context.handlebars.environment.registerHelper('content', (node) => node.getContent())
+}
