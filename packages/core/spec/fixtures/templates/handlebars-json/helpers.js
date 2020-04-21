@@ -272,16 +272,7 @@ function toAttribute (name, value) {
 }
 
 function configure (options) {
-  options = options || { handlebars: {} }
-  let handlebars
-
-  if (options.handlebars !== undefined) {
-    handlebars = options.handlebars.environment || require('handlebars')
-  } else {
-    handlebars = require('handlebars')
-  }
-
-
+  const handlebars = options.handlebars.environment
   handlebars.registerHelper('concat', function (value1, value2) {
     const val1 = value1 !== undefined ? value1 : ''
     const val2 = value2 !== undefined ? value2 : ''
@@ -305,8 +296,6 @@ function configure (options) {
     return new handlebars.SafeString(toAttribute(name, value))
   })
 }
-
-configure({})
 
 module.exports.toJSON = toJSON
 module.exports.toAttribute = toAttribute
