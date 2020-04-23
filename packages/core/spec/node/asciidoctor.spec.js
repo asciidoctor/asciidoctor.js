@@ -2529,6 +2529,31 @@ In other words, it’s about discovering writing zen.`
       const result = asciidoctor.convert('content', options)
       expect(result).to.contain('<p class="paragraph-ejs">content</p>')
     }).timeout(5000)
+    describe('Using EJS Codelab templates', () => {
+      it('should render a Codelab HTML instance', () => {
+        const options = { safe: 'safe', standalone: 'true', backend: 'html5', template_dir: 'spec/fixtures/templates/ejs-codelabs' }
+        const content = `
+= Codelab Test
+:id: my-id
+:feedback-link: http://my-feedback.org
+
+This is a preamble
+
+[duration=5]
+== Step 1
+`
+        const result = asciidoctor.convert(content, options)
+        expect(result).to.contain('<google-codelab')
+        expect(result).to.contain('title="Codelab Test"')
+        // Feedback and ID set
+        expect(result).to.contain('id="my-id"')
+        expect(result).to.contain('feedback-link="http://my-feedback.org"')
+        // Preamble becomes overview
+        expect(result).to.contain('label="Overview"')
+        expect(result).to.contain('label="Step 1"')
+        expect(result).to.contain('duration="5"')
+      }).timeout(5000)
+    })
     it('should use a Handlebars template', () => {
       const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/handlebars' }
       const result = asciidoctor.convert('content', options)
