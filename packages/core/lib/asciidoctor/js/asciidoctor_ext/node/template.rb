@@ -20,6 +20,7 @@ class Converter::TemplateConverter < Converter::Base
     @templates = {}
     @template_dirs = template_dirs
     @engine = opts[:template_engine]
+    @engine_options = opts[:template_engine_options] || {}
     case opts[:template_cache]
     when true
       @caches = self.class.caches
@@ -181,7 +182,9 @@ class Converter::TemplateConverter < Converter::Base
             if (enginesContext.nunjucks && enginesContext.nunjucks.environment) {
               env = enginesContext.nunjucks.environment
             } else {
-              env = nunjucks.configure(#{template_dir}, {})
+              var opts = self.engine_options['nunjucks'] || {}
+              delete opts.web // unsupported option
+              env = nunjucks.configure(#{template_dir}, opts)
               enginesContext.nunjucks = { environment: env }
             }
             template = Object.assign(nunjucks.compile(fs.readFileSync(file, 'utf8'), env), { '$file': function() { return file } })
@@ -191,24 +194,32 @@ class Converter::TemplateConverter < Converter::Base
           %x{
             var fs = require('fs')
             var env
+            var opts = self.engine_options['handlebars'] || {}
             if (enginesContext.handlebars && enginesContext.handlebars.environment) {
               env = enginesContext.handlebars.environment
             } else {
               env = handlebars.create()
               enginesContext.handlebars = { environment: env }
             }
-            template = { render: env.compile(fs.readFileSync(file, 'utf8')), '$file': function() { return file } }
+            template = { render: env.compile(fs.readFileSync(file, 'utf8'), opts), '$file': function() { return file } }
           }
         when :ejs
           ejs = node_require 'ejs'
           %x{
             var fs = require('fs')
-            template = { render: ejs.compile(fs.readFileSync(file, 'utf8')), '$file': function() { return file } }
+            var opts = self.engine_options['ejs'] || {}
+            opts.filename = file
+            // unsupported options
+            delete opts.async
+            delete opts.client
+            template = { render: ejs.compile(fs.readFileSync(file, 'utf8'), opts), '$file': function() { return file } }
           }
         when :pug
           pug = node_require 'pug'
           %x{
-            template = { render: pug.compileFile(file), '$file': function() { return file } }
+            var opts = self.engine_options['pug'] || {}
+            opts.filename = file
+            template = { render: pug.compileFile(file, opts), '$file': function() { return file } }
           }
         when :js
           template = `{ render: require(file), '$file': function() { return file } }`

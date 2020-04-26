@@ -1570,9 +1570,10 @@ sample content`, opts)
           const opts = { extension_registry: registry }
           const doc = asciidoctor.load('img::image-name[]', opts)
           const images = doc.findBy((b) => b.getContext() === 'image')
-          expect(images.length).to.equal(1)
-          expect(images[0].getTitle()).to.equal('title')
-          expect(images[0].getCaption()).to.equal('caption')
+          expect(images).to.have.length(1)
+          const firstImage = images[0]
+          expect(firstImage.getTitle()).to.equal('title')
+          expect(firstImage.getCaption()).to.equal('caption')
           const result = doc.convert(opts)
           expect(result).to.contain('<img src="image-name.png" alt="image name">')
         })
@@ -2759,7 +2760,10 @@ content`
 </article>`)
       templateConverter.register('admonition', template)
       const templates = templateConverter.getTemplates()
-      const admonition = asciidoctor.Block.create(doc, 'admonition', { source: 'An admonition paragraph, like this note, grabs the reader’s attention.', attributes: { textlabel: 'Note' } })
+      const admonition = asciidoctor.Block.create(doc, 'admonition', {
+        source: 'An admonition paragraph, like this note, grabs the reader’s attention.',
+        attributes: { textlabel: 'Note' }
+      })
       expect(templates.admonition.render({ node: admonition })).to.equal(`<article class="message is-info">
   <div class="message-header">
     <p>Note</p>
@@ -2803,6 +2807,71 @@ And here&#8217;s a block image:</p>
 `, options)
       expect(result.replace(/\r/g, '').replace(/\n/g, '')).to.equal('<ul class="ulist"><p>foo</p><p>bar</p><p>baz</p></ul>')
     }).timeout(5000)
+    it('should configure Nunjucks environment using the template_engine_options', () => {
+      const options = {
+        safe: 'safe',
+        backend: 'html5',
+        template_dir: 'spec/fixtures/templates/nunjucks',
+        template_cache: false, // disable template cache to recreate templates with the given options
+        template_engine_options: {
+          nunjucks: {
+            autoescape: false,
+            web: {
+              async: true
+            }
+          }
+        }
+      }
+      const result = asciidoctor.convert('Simple paragraph with an inline image image:cat.png[]', options)
+      expect(result).to.equal('<p class="paragraph-nunjucks">Simple paragraph with an inline image <span class="image"><img src="cat.png" alt="cat"></span></p>')
+    })
+    it('should configure Handlebars environment using the template_engine_options', () => {
+      const options = {
+        safe: 'safe',
+        backend: 'html5',
+        template_dir: 'spec/fixtures/templates/handlebars',
+        template_cache: false, // disable template cache to recreate templates with the given options
+        template_engine_options: {
+          handlebars: {
+            noEscape: true
+          }
+        }
+      }
+      const result = asciidoctor.convert('Simple paragraph with an inline image image:cat.png[]', options)
+      expect(result).to.equal('<p class="paragraph-handlebars">Simple paragraph with an inline image <span class="image"><img src="cat.png" alt="cat"></span></p>')
+    })
+    it('should configure Pug templates using the template_engine_options', () => {
+      const options = {
+        safe: 'safe',
+        backend: 'html5',
+        template_dir: 'spec/fixtures/templates/pug',
+        template_cache: false, // disable template cache to recreate templates with the given options
+        template_engine_options: {
+          pug: {
+            doctype: 'xml'
+          }
+        }
+      }
+      const result = asciidoctor.convert('image:cat.png[]', options)
+      expect(result).to.equal('<p class="paragraph-pug"><img src="cat.png"></img></p>')
+    })
+    it('should configure EJS templates using the template_engine_options', () => {
+      const options = {
+        safe: 'safe',
+        backend: 'html5',
+        template_dir: 'spec/fixtures/templates/ejs-custom-delimiters',
+        template_cache: false, // disable template cache to recreate templates with the given options
+        template_engine_options: {
+          ejs: {
+            delimiter: '?',
+            openDelimiter: '[',
+            closeDelimiter: ']'
+          }
+        }
+      }
+      const result = asciidoctor.convert('A simple paragraph.', options)
+      expect(result).to.equal('<p class="paragraph-ejs">A simple paragraph.</p>')
+    })
     it('should resolve conflicts consistently when the same template exists in multiple directories', () => {
       // the template paragraph.njk is present in both the "nunjucks" and "nunjucks-ctx-b" directory!
       // the rule is that the last one wins so the template order in "template_dirs" is important.

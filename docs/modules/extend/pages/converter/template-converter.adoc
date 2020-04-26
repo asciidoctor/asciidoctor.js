@@ -250,3 +250,77 @@ An optional JSON of options.
 
 `helpers`::
 The functions and values exported from the _helpers.js_ file.
+
+== Template options
+
+You can configure the template engine using the `template_engine_options` option.
+Here's a few examples:
+
+[source,js]
+----
+const options = {
+  template_engine_options: {
+    nunjucks: {
+      autoescape: false
+    },
+    handlebars: {
+      noEscape: true
+    },
+    pug: {
+      doctype: 'xml'
+    },
+    ejs: {
+      delimiter: '?',
+      openDelimiter: '[',
+      closeDelimiter: ']'
+    }
+  }
+}
+----
+
+To find out which options you can use, please read the official documentation of your template engine:
+
+EJS::
+https://github.com/mde/ejs#options
+
+Handlebars::
+https://handlebarsjs.com/api-reference/compilation.html#handlebars-compile-template-options
+
+Nunjucks::
+https://mozilla.github.io/nunjucks/api.html#constructor
+
+Pug::
+https://pugjs.org/api/reference.html#options
+
+== Template cache
+
+For performance reasons, templates are cached, but you can disable this feature using the `template_cache` option:
+
+[source,js]
+----
+asciidoctor.convert(input, { template_cache: false })
+----
+
+It might be useful when you want to configure the same template directory with different options.
+In the following example, we want to an XML https://pugjs.org/language/doctype.html[doctype].
+We need to disable the cache otherwise the second conversion will not reconfigure the templates with the `doctype: 'xml'` option:
+
+[source,js]
+----
+const options = {
+  safe: 'safe',
+  doctype: 'inline',
+  backend: 'html5',
+  template_dir: '/path/to/templates/pug',
+  template_cache: false, // disable template cache
+}
+
+console.log(asciidoctor.convert(`image:cat.png[]`, options)) // <img src="cat.png"/>
+console.log(asciidoctor.convert('image:cat.png[]', Object.assign(options, {
+  template_engine_options: {
+    pug: {
+      doctype: 'xml'
+    }
+  }
+}))) // <img src="cat.png"></img>
+----
