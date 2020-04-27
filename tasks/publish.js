@@ -1,19 +1,15 @@
 'use strict'
 const path = require('path')
 const fs = require('fs')
-const childProcess = require('child_process')
 const { publish: npmPublish } = require('libnpmpublish')
 const log = require('bestikk-log')
 
 const publish = async (directory) => {
-    const pkgName = childProcess.execSync(`npm pack`, { cwd: directory }).toString('utf-8').trim()
     const pkg = require(path.join(directory, 'package.json'))
-    const pkgPath = path.join(directory, pkgName)
-    const tarball = fs.createReadStream(pkgPath)
     if (process.env.DRY_RUN) {
-      log.debug(`${pkg.name}@${pkg.version} - ${pkgPath}`)
+      console.log(`${pkg.name}@${pkg.version}`)
     } else {
-      return npmPublish(pkg, tarball, { token: process.env.NPM_AUTH_TOKEN })
+      return npmPublish(directory, pkg, { token: process.env.NPM_AUTH_TOKEN, access: 'public' })
     }
   }
 

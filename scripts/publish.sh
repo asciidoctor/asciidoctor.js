@@ -3,7 +3,9 @@
 
 set -e
 
-cd "$(dirname "$0")"
+SCRIPT=`realpath $0`
+SCRIPT_PATH=`dirname ${SCRIPT}`
 
+cd "$(dirname "$0")"
 cd ..
 node tasks/publish.js
