@@ -47,13 +47,14 @@ jobs:
           npm ci
           npm ci --prefix packages/core
       # package and publish
-      - name: Package and publish
+      - name: Package
+        run: ./scripts/package.sh
+      - name: Publish
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          ./scripts/package.sh
-          ./scripts/publish.sh
-          ./scripts/binaries.sh
+        run: ./scripts/publish.sh
+      - name: Produce binaries
+        run: ./scripts/binaries.sh
       # create the GitHub release
       - name: Create release
         id: create_release
