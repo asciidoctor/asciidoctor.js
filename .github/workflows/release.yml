@@ -48,6 +48,8 @@ jobs:
           npm ci --prefix packages/core
       # package and publish
       - name: Package
+        env:
+          ASCIIDOCTOR_CORE_VERSION: v2.0.10
         run: ./scripts/package.sh
       - name: Publish
         env:
