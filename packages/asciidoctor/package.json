@@ -10,7 +10,7 @@
   },
   "scripts": {
     "test": "./bin/asciidoctor --version",
-    "dist": "pkg bin/asciidoctor --out-path dist"
+    "dist": "pkg package.json --out-path dist"
   },
   "engines": {
     "node": ">=8.11",
