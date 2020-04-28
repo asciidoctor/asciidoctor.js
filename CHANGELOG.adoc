@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
+
+
+== v2.2.0 (2020-04-25)
+
 Bug Fixes::
 
 * Fix the Asciidoctor CLI provided by the `asciidoctor` package (#846) - thanks @thorstenkampe
