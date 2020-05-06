@@ -1093,6 +1093,7 @@ const html5Converter = (converterRegistry.html5 as typeof Asciidoctor.Html5Conve
 assert(html5Converter.convert(processor.Block.create(doc, 'paragraph')) === `<div class="paragraph">
 <p></p>
 </div>`);
+// tslint:disable-next-line:no-unnecessary-type-assertion
 assert((converterRegistry.blank as Asciidoctor.Converter).convert(processor.Block.create(doc, 'paragraph')) === '');
 
 // Inner document in AsciiDoc cell
