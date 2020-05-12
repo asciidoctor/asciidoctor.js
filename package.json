@@ -17,6 +17,6 @@
     "libnpmpublish": "3.0.1",
     "mocha": "7.1.2",
     "sinon": "8.1.1",
-    "standard": "14.3.3"
+    "standard": "14.3.4"
   }
 }
