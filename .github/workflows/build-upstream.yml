@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Node 13.x
+      - name: Set up Node 12.x
         uses: actions/setup-node@v1
         with:
-          node-version: 13.x
+          node-version: 12.x
       # libgbm-dev is required by Puppeteer 3+
       - name: Install system dependencies
         run: |
