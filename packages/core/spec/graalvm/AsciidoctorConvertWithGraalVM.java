@@ -16,8 +16,7 @@ public class AsciidoctorConvertWithGraalVM {
       .build();
     context.getPolyglotBindings().putMember("IncludeResolver", new IncludeResolver());
     context.eval("js", "var IncludeResolver = Polyglot.import('IncludeResolver');");
-    context.eval("js", "load('./build/asciidoctor-graalvm.js')");
-    context.eval("js", "load('./spec/graalvm/asciidoctor-convert.js')");
+    context.eval("js", "load('./spec/graalvm/asciidoctor-convert.mjs')");
   }
 
   public static class IncludeResolver {

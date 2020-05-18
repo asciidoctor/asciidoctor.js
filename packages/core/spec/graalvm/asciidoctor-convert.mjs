@@ -1,4 +1,5 @@
 /* global Asciidoctor */
+import Asciidoctor from '../../build/asciidoctor-graalvm.js'
 var asciidoctor = Asciidoctor()
 
 var data = '= asciidoctor.js, AsciiDoc in JavaScript\n' +
