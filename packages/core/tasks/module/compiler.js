@@ -40,7 +40,7 @@ const compileRuntimeEnvironments = (environments) => {
     compileExt('asciidoctor', environment, skipped)
   })
   if (skipped.length > 0) {
-    log.info(`${skipped.join(', ')} files already exist, skipping "compile" task.\nTIP: Use "npm run clean:ext" to compile again from Ruby sources.`)
+    log.info(`${skipped.join(', ')} files already exist, skipping "compile" task.\nTIP: Use "npm run clean:patch" to compile again from Ruby sources.`)
   }
 }
 

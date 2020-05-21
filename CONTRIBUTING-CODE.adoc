@@ -54,6 +54,9 @@ To build Asciidoctor.js, simply run the npm `build` script from the root of the 
 
  $ npm run build --prefix packages/core
 
+WARNING: The build system does not automate updating the dependency on ruby asciidoctor.
+If there is any chance the asciidoctor.js copy of the asciidoctor ruby code is out of date, run `npm clean --prefix packages/core`.
+
 NOTE: The build task will make some minor code changes on Asciidoctor Ruby code.
 As you may know, {uri-mdn-string}[strings are immutable] in JavaScript, so we need to replace the `gsub!` and `sub!` methods.
 These changes are made at build time to keep the Ruby code as fast as possible.
@@ -76,6 +79,43 @@ If you want to build against a release of Asciidoctor, you will need to define t
 For instance to build against Asciidoctor (Ruby) v2.0.10 use:
 
  $ ASCIIDOCTOR_CORE_VERSION=v2.0.10 npm run build --prefix packages/core
+
+==== Building against a local copy of Ruby Asciidoctor
+
+The transpilation relies on a copy of the Ruby source in `packages/core/build/asciidoctor`.
+The build instructions above supply this by unpacking a tar.gz of the repository constructed by GitHub.
+Alternatively, you can supply this copy yourself.
+For the following posix-centric suggestions, assume `ASCIIDOCTOR_RB` is the local location of your Asciidoctor Ruby project.
+
+* Remove the current (contents of the) Ruby source directory:
++
+----
+rm -rf packages/core/build/asciidoctor
+----
+* Choose a method:
+** Using a symlink:
++
+----
+ln -s $ASCIIDOCTOR_RB packages/core/build/asciidoctor`
+----
+** Copying:
++
+----
+cp -r $ASCIIDOCTOR_RB packages/core/build/
+----
+** Unpacking a gem:
++
+----
+mkdir packages/core/build/asciidoctor
+tar -xf $ASCIIDOCTOR_RB/pkg/asciidoctor-*.gem -C packages/core/build --include data.tar.gz
+tar -xzf packages/core/build/data.tar.gz -C packages/core/build/asciidoctor
+----
+* For all of these, `touch packages/core/build/asciidoctor.tar.gz` will prevent `npm build --prefix packages/core` from overwriting your copy with a downloaded one.
+* To actually use your local source you'll need to force recompile by:
++
+----
+npm run clean:core --prefix packages/core
+----
 
 ==== Using "quick" mode
 
