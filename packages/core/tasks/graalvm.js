@@ -1,6 +1,6 @@
 'use strict'
 
-const GraalVMModule = require('./module/graalvm')
+const GraalVMModule = require('./module/graalvm.js')
 const graalvmModule = new GraalVMModule()
 
 ;(async () => {

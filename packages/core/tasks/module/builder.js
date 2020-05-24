@@ -1,4 +1,5 @@
 'use strict'
+
 const fs = require('fs')
 const path = require('path')
 const log = require('bestikk-log')
@@ -6,8 +7,8 @@ const bfs = require('bestikk-fs')
 const Download = require('bestikk-download')
 const download = new Download({})
 
-const compilerModule = require('./compiler')
-const uglifyModule = require('./uglify')
+const compilerModule = require('./compiler.js')
+const uglifyModule = require('./uglify.js')
 
 const downloadDependencies = async (asciidoctorCoreDependency) => {
   log.task('download dependencies')
@@ -51,7 +52,7 @@ const parseTemplateData = (data, templateModel) => {
     .join('\n')
 }
 
-const generateFlavors = (asciidoctorCoreTarget, environments) => {
+const generateFlavors = async (asciidoctorCoreTarget, environments) => {
   log.task('generate flavors')
 
   // Asciidoctor core + extensions
@@ -71,7 +72,7 @@ const generateFlavors = (asciidoctorCoreTarget, environments) => {
   }
 
   // Build a dedicated JavaScript file for each environment
-  environments.forEach((environment) => {
+  for (const environment of environments) {
     log.debug(environment)
     const opalExtData = fs.readFileSync(`build/opal-ext-${environment}.js`, 'utf8')
     const asciidoctorCoreData = fs.readFileSync(asciidoctorCoreTarget, 'utf8')
@@ -89,7 +90,7 @@ const generateFlavors = (asciidoctorCoreTarget, environments) => {
     })
     let templateFile
     const target = `build/asciidoctor-${environment}.js`
-    if (environment === 'node' || environment === 'electron') {
+    if (environment === 'node') {
       templateFile = 'src/template-asciidoctor-node.js'
     } else {
       templateFile = 'src/template-asciidoctor-browser.js'
@@ -108,7 +109,7 @@ const generateFlavors = (asciidoctorCoreTarget, environments) => {
     } else {
       fs.writeFileSync(target, content, 'utf8')
     }
-  })
+  }
 }
 
 const removeDistDirSync = (environments) => {
@@ -161,7 +162,7 @@ module.exports = class Builder {
 
     bfs.mkdirsSync('build/css')
     await rebuild(asciidoctorCoreDependency, this.environments)
-    generateFlavors(this.asciidoctorCoreTarget, this.environments)
+    await generateFlavors(this.asciidoctorCoreTarget, this.environments)
     await uglifyModule.uglify()
     if (process.env.COPY_DIST) {
       this.copyToDist()
@@ -174,8 +175,8 @@ module.exports = class Builder {
     removeDistDirSync(this.environments)
     bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css')
     bfs.copySync('build/asciidoctor-browser.min.js', 'dist/browser/asciidoctor.min.js')
-    this.environments.forEach((environment) => {
+    for (const environment of this.environments) {
       bfs.copySync(`build/asciidoctor-${environment}.js`, `dist/${environment}/asciidoctor.js`)
-    })
+    }
   }
 }
