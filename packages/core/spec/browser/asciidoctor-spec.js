@@ -1,4 +1,6 @@
-/* global it, describe, mocha, chai, Asciidoctor, mochaOpts, shareSpec, includeHttpsSpec, includeFileSpec, semVer */
+/* global it, describe, mocha, chai, mochaOpts, shareSpec, includeHttpsSpec, includeFileSpec, semVer */
+import Asciidoctor from '../../build/asciidoctor-browser.js'
+
 // bootstrap
 (async () => {
   let reporter
