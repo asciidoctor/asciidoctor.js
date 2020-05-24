@@ -7,7 +7,7 @@ const bfs = require('bestikk-fs')
 const Download = require('bestikk-download')
 const download = new Download({})
 const OpalBuilder = require('opal-compiler').Builder
-const BuilderModule = require('./module/builder')
+const BuilderModule = require('./module/builder.js')
 
 const compileExamples = () => {
   log.task('compile examples')

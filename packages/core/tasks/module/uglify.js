@@ -1,4 +1,5 @@
 'use strict'
+
 const log = require('bestikk-log')
 const Uglify = require('bestikk-uglify')
 

@@ -1,9 +1,8 @@
 'use strict'
 
 const log = require('bestikk-log')
-const bfs = require('bestikk-fs')
-const execModule = require('./module/exec')
-const BuilderModule = require('./module/builder')
+const execModule = require('./module/exec.js')
+const BuilderModule = require('./module/builder.js')
 
 const runTest = () => {
   execModule.execSync('npm run test')
@@ -14,7 +13,7 @@ const builderModule = new BuilderModule()
 const start = process.hrtime()
 
 ;(async () => {
-  process.env.COPY_DIST = true
+  process.env.COPY_DIST = "true"
   await builderModule.build()
   runTest()
   log.success(`Done in ${process.hrtime(start)[0]} s`)
