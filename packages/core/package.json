@@ -6,9 +6,9 @@
   "browser": "dist/browser/asciidoctor.js",
   "types": "types",
   "engines": {
-    "node": ">=8.11",
-    "npm": ">=5.0.0",
-    "yarn": ">=1.1.0"
+    "node": ">=12",
+    "npm": ">=6",
+    "yarn": ">=1.20"
   },
   "files": [
     "dist",
