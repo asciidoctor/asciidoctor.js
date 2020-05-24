@@ -91,6 +91,7 @@
     "module-alias": "2.2.2",
     "nunjucks": "^3.2.1",
     "opal-compiler": "2.0.0-alpha.1",
+    "portfinder": "1.0.26",
     "pug": "^2.0.4",
     "puppeteer": "3.1.0",
     "sinon": "8.1.1",
