@@ -8,8 +8,8 @@ const dirtyChai = require('dirty-chai')
 chai.use(dirtyChai)
 
 const shareSpec = require('../share/asciidoctor-spec.js')
-const includeHttpsSpec = require('../share/asciidoctor-include-https-spec')
-const semVer = require('../share/semver')
+const includeHttpsSpec = require('../share/asciidoctor-include-https-spec.js')
+const semVer = require('../share/semver.js')
 
 const config = {
   runtime: {
