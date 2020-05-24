@@ -4,13 +4,13 @@
 /**
  * @private
  */
-var toBlock = function (block) {
+const toBlock = function (block) {
   // arity is a mandatory field
   block.$$arity = block.length
   return block
 }
 
-var registerExtension = function (registry, type, processor, name) {
+const registerExtension = function (registry, type, processor, name) {
   if (typeof processor === 'object' || processor.$$is_class) {
     // processor is an instance or a class
     return registry['$' + type](processor, name)
@@ -57,7 +57,7 @@ var registerExtension = function (registry, type, processor, name) {
  *   });
  * });
  */
-var Extensions = Opal.const_get_qualified(Opal.Asciidoctor, 'Extensions')
+const Extensions = Opal.const_get_qualified(Opal.Asciidoctor, 'Extensions')
 
 // Alias
 Opal.Asciidoctor.Extensions = Extensions
@@ -115,15 +115,17 @@ Extensions.unregisterAll = function () {
  * @memberof Extensions
  */
 Extensions.unregister = function () {
-  var names = Array.prototype.concat.apply([], arguments)
-  var groups = this.$groups()
-  var groupNameIdx = {}
-  for (var i = 0, groupSymbolNames = groups.$$keys; i < groupSymbolNames.length; i++) {
-    var groupSymbolName = groupSymbolNames[i]
+  const names = Array.prototype.concat.apply([], arguments)
+  const groups = this.$groups()
+  const groupNameIdx = {}
+  let i = 0
+  const groupSymbolNames = groups.$$keys
+  for (; i < groupSymbolNames.length; i++) {
+    const groupSymbolName = groupSymbolNames[i]
     groupNameIdx[groupSymbolName.toString()] = groupSymbolName
   }
-  for (var j = 0; j < names.length; j++) {
-    var groupStringName = names[j]
+  for (let j = 0; j < names.length; j++) {
+    const groupStringName = names[j]
     if (groupStringName in groupNameIdx) Opal.hash_delete(groups, groupNameIdx[groupStringName])
   }
 }
@@ -132,7 +134,7 @@ Extensions.unregister = function () {
  * @namespace
  * @module Extensions/Registry
  */
-var Registry = Extensions.Registry
+const Registry = Extensions.Registry
 
 /**
  * @memberof Extensions/Registry
@@ -426,7 +428,7 @@ Registry.prototype.getInlineMacros = function () {
  * @returns the Extension proxy object for the {{@link Extensions/InlineMacroProcessor}} that matches the inline macro name or undefined if no match is found.
  */
 Registry.prototype.getInlineMacroFor = function (name) {
-  var result = this['$registered_for_inline_macro?'](name)
+  const result = this['$registered_for_inline_macro?'](name)
   return result === false ? undefined : result
 }
 
@@ -439,10 +441,10 @@ Registry.prototype.getInlineMacroFor = function (name) {
  */
 Registry.prototype.getBlockFor = function (name, context) {
   if (typeof context === 'undefined') {
-    var ext = this.$find_block_extension(name)
+    const ext = this.$find_block_extension(name)
     return ext === Opal.nil ? undefined : ext
   }
-  var result = this['$registered_for_block?'](name, context)
+  const result = this['$registered_for_block?'](name, context)
   return result === false ? undefined : result
 }
 
@@ -454,7 +456,7 @@ Registry.prototype.getBlockFor = function (name, context) {
  * @returns the Extension proxy object for the {{@link Extensions/BlockMacroProcessor}} that matches the macro name or undefined if no match is found.
  */
 Registry.prototype.getBlockMacroFor = function (name) {
-  var result = this['$registered_for_block_macro?'](name)
+  const result = this['$registered_for_block_macro?'](name)
   return result === false ? undefined : result
 }
 
@@ -462,7 +464,7 @@ Registry.prototype.getBlockMacroFor = function (name) {
  * @namespace
  * @module Extensions/Processor
  */
-var Processor = Extensions.Processor
+const Processor = Extensions.Processor
 
 /**
  * The extension will be added to the beginning of the list for that extension type. (default is append).
@@ -482,9 +484,9 @@ Processor.prototype.prepend = function () {
  * @memberof Extensions/Processor
  */
 Processor.prototype.process = function (block) {
-  var handler = {
+  const handler = {
     apply: function (target, thisArg, argumentsList) {
-      for (var i = 0; i < argumentsList.length; i++) {
+      for (let i = 0; i < argumentsList.length; i++) {
         // convert all (Opal) Hash arguments to JSON.
         if (typeof argumentsList[i] === 'object' && '$$smap' in argumentsList[i]) {
           argumentsList[i] = fromHash(argumentsList[i])
@@ -493,7 +495,7 @@ Processor.prototype.process = function (block) {
       return target.apply(thisArg, argumentsList)
     }
   }
-  var blockProxy = new Proxy(block, handler)
+  const blockProxy = new Proxy(block, handler)
   return Opal.send(this, 'process', null, toBlock(blockProxy))
 }
 
@@ -781,7 +783,7 @@ Processor.prototype.option = function (key, value) {
  * @namespace
  * @module Extensions/BlockProcessor
  */
-var BlockProcessor = Extensions.BlockProcessor
+const BlockProcessor = Extensions.BlockProcessor
 
 /**
  * @param {Object} value - a JSON of default values for attributes
@@ -812,7 +814,7 @@ BlockProcessor.prototype.onContexts = function (contexts) {
  * @memberof Extensions/BlockProcessor
  */
 BlockProcessor.prototype.getName = function () {
-  var name = this.name
+  const name = this.name
   return name === Opal.nil ? undefined : name
 }
 
@@ -828,7 +830,7 @@ BlockProcessor.prototype.parseContentAs = function (value) {
  * @namespace
  * @module Extensions/BlockMacroProcessor
  */
-var BlockMacroProcessor = Extensions.BlockMacroProcessor
+const BlockMacroProcessor = Extensions.BlockMacroProcessor
 
 /**
  * @param {Object} value - a JSON of default values for attributes
@@ -843,7 +845,7 @@ BlockMacroProcessor.prototype.defaultAttributes = function (value) {
  * @memberof Extensions/BlockMacroProcessor
  */
 BlockMacroProcessor.prototype.getName = function () {
-  var name = this.name
+  const name = this.name
   return name === Opal.nil ? undefined : name
 }
 
@@ -859,7 +861,7 @@ BlockMacroProcessor.prototype.parseContentAs = function (value) {
  * @namespace
  * @module Extensions/InlineMacroProcessor
  */
-var InlineMacroProcessor = Extensions.InlineMacroProcessor
+const InlineMacroProcessor = Extensions.InlineMacroProcessor
 
 /**
  * @param {Object} value - a JSON of default values for attributes
@@ -874,7 +876,7 @@ InlineMacroProcessor.prototype.defaultAttributes = function (value) {
  * @memberof Extensions/InlineMacroProcessor
  */
 InlineMacroProcessor.prototype.getName = function () {
-  var name = this.name
+  const name = this.name
   return name === Opal.nil ? undefined : name
 }
 
@@ -906,7 +908,7 @@ InlineMacroProcessor.prototype.match = function (value) {
  * @namespace
  * @module Extensions/IncludeProcessor
  */
-var IncludeProcessor = Extensions.IncludeProcessor
+const IncludeProcessor = Extensions.IncludeProcessor
 
 /**
  * @memberof Extensions/IncludeProcessor
@@ -926,7 +928,7 @@ IncludeProcessor.prototype.prefer = function () {
  * @namespace
  * @module Extensions/TreeProcessor
  */
-var TreeProcessor = Extensions.TreeProcessor
+const TreeProcessor = Extensions.TreeProcessor
 
 /**
  * @memberof Extensions/TreeProcessor
@@ -939,7 +941,7 @@ TreeProcessor.prototype.prefer = function () {
  * @namespace
  * @module Extensions/Postprocessor
  */
-var Postprocessor = Extensions.Postprocessor
+const Postprocessor = Extensions.Postprocessor
 
 /**
  * @memberof Extensions/Postprocessor
@@ -952,7 +954,7 @@ Postprocessor.prototype.prefer = function () {
  * @namespace
  * @module Extensions/Preprocessor
  */
-var Preprocessor = Extensions.Preprocessor
+const Preprocessor = Extensions.Preprocessor
 
 /**
  * @memberof Extensions/Preprocessor
@@ -965,7 +967,7 @@ Preprocessor.prototype.prefer = function () {
  * @namespace
  * @module Extensions/DocinfoProcessor
  */
-var DocinfoProcessor = Extensions.DocinfoProcessor
+const DocinfoProcessor = Extensions.DocinfoProcessor
 
 /**
  * @memberof Extensions/DocinfoProcessor
@@ -983,7 +985,7 @@ DocinfoProcessor.prototype.atLocation = function (value) {
 }
 
 function initializeProcessorClass (superclassName, className, functions) {
-  var superClass = Opal.const_get_qualified(Extensions, superclassName)
+  const superClass = Opal.const_get_qualified(Extensions, superclassName)
   return initializeClass(superClass, className, functions, {
     'handles?': function () {
       return true
@@ -1221,7 +1223,7 @@ Extensions.newBlockMacroProcessor = function (name, functions) {
  * @namespace
  * @module Converter
  */
-var Converter = Opal.const_get_qualified(Opal.Asciidoctor, 'Converter')
+const Converter = Opal.const_get_qualified(Opal.Asciidoctor, 'Converter')
 
 // Alias
 Opal.Asciidoctor.Converter = Converter
@@ -1258,14 +1260,14 @@ Converter.create = function (backend, opts) {
  * @namespace
  * @module Converter/Factory
  */
-var ConverterFactory = Opal.Asciidoctor.Converter.Factory
+const ConverterFactory = Opal.Asciidoctor.Converter.Factory
 
-var ConverterBase = Opal.Asciidoctor.Converter.Base
+const ConverterBase = Opal.Asciidoctor.Converter.Base
 
 // Alias
 Opal.Asciidoctor.ConverterFactory = ConverterFactory
 
-var ConverterBackendTraits = Opal.Asciidoctor.Converter.BackendTraits
+const ConverterBackendTraits = Opal.Asciidoctor.Converter.BackendTraits
 
 // Alias
 Opal.Asciidoctor.ConverterBackendTraits = ConverterBackendTraits
@@ -1280,8 +1282,8 @@ Opal.Asciidoctor.ConverterBackendTraits = ConverterBackendTraits
  * @memberof Converter/Factory
  */
 ConverterFactory.register = function (converter, backends) {
-  var object
-  var buildBackendTraitsFromObject = function (obj) {
+  let object
+  const buildBackendTraitsFromObject = function (obj) {
     return Object.assign({},
       obj.basebackend ? { basebackend: obj.basebackend } : {},
       obj.outfilesuffix ? { outfilesuffix: obj.outfilesuffix } : {},
@@ -1290,7 +1292,7 @@ ConverterFactory.register = function (converter, backends) {
       obj.supports_templates ? { supports_templates: obj.supports_templates } : {}
     )
   }
-  var assignBackendTraitsToInstance = function (obj, instance) {
+  const assignBackendTraitsToInstance = function (obj, instance) {
     if (obj.backend_traits) {
       instance.backend_traits = toHash(obj.backend_traits)
     } else if (obj.backendTraits) {
@@ -1299,12 +1301,12 @@ ConverterFactory.register = function (converter, backends) {
       instance.backend_traits = toHash(buildBackendTraitsFromObject(obj))
     }
   }
-  var bridgeHandlesMethodToInstance = function (obj, instance) {
+  const bridgeHandlesMethodToInstance = function (obj, instance) {
     bridgeMethodToInstance(obj, instance, '$handles?', 'handles', function () {
       return true
     })
   }
-  var bridgeComposedMethodToInstance = function (obj, instance) {
+  const bridgeComposedMethodToInstance = function (obj, instance) {
     bridgeMethodToInstance(obj, instance, '$composed', 'composed')
   }
   var bridgeMethodToInstance = function (obj, instance, methodName, functionName, defaultImplementation) {
@@ -1316,7 +1318,7 @@ ConverterFactory.register = function (converter, backends) {
       }
     }
   }
-  var addRespondToMethod = function (instance) {
+  const addRespondToMethod = function (instance) {
     if (typeof instance['$respond_to?'] !== 'function') {
       instance['$respond_to?'] = function (name) {
         return typeof this[name] === 'function'
@@ -1327,13 +1329,13 @@ ConverterFactory.register = function (converter, backends) {
     // Class
     object = initializeClass(ConverterBase, converter.constructor.name, {
       initialize: function (backend, opts) {
-        var self = this
-        var result = new converter(backend, opts) // eslint-disable-line
+        const self = this
+        const result = new converter(backend, opts) // eslint-disable-line
         Object.assign(this, result)
         assignBackendTraitsToInstance(result, self)
-        var propertyNames = Object.getOwnPropertyNames(converter.prototype)
-        for (var i = 0; i < propertyNames.length; i++) {
-          var propertyName = propertyNames[i]
+        const propertyNames = Object.getOwnPropertyNames(converter.prototype)
+        for (let i = 0; i < propertyNames.length; i++) {
+          const propertyName = propertyNames[i]
           if (propertyName !== 'constructor') {
             self[propertyName] = result[propertyName]
           }
@@ -1356,7 +1358,7 @@ ConverterFactory.register = function (converter, backends) {
     assignBackendTraitsToInstance(converter, converter)
     if (converter.backend_traits) {
       // "extends" ConverterBackendTraits
-      var converterBackendTraitsFunctionNames = [
+      const converterBackendTraitsFunctionNames = [
         'basebackend',
         'filetype',
         'htmlsyntax',
@@ -1376,7 +1378,7 @@ ConverterFactory.register = function (converter, backends) {
     addRespondToMethod(converter)
     object = converter
   }
-  var args = [object].concat(backends)
+  const args = [object].concat(backends)
   return Converter.$register.apply(Converter, args)
 }
 
@@ -1431,7 +1433,7 @@ ConverterFactory.for = function (backend) {
  * Intended for testing only!
  */
 ConverterFactory.unregisterAll = function () {
-  var internalRegistry = Converter.DefaultFactory.$$cvars['@@registry']
+  const internalRegistry = Converter.DefaultFactory.$$cvars['@@registry']
   Converter.DefaultFactory.$$cvars['@@registry'] = toHash({ html5: internalRegistry['$[]']('html5') })
 }
 
@@ -1441,7 +1443,7 @@ ConverterFactory.unregisterAll = function () {
  * @namespace
  * @module Converter/Html5Converter
  */
-var Html5Converter = Opal.Asciidoctor.Converter.Html5Converter
+const Html5Converter = Opal.Asciidoctor.Converter.Html5Converter
 
 // Alias
 Opal.Asciidoctor.Html5Converter = Html5Converter
