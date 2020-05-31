@@ -4,7 +4,7 @@ const expect = chai.expect
 const dirtyChai = require('dirty-chai')
 chai.use(dirtyChai)
 
-const semVer = require('./semver')
+const semVer = require('./semver.cjs')
 
 describe('Semantic Versioning', () => {
   it('should ignore .dev suffix (eq)', () => {

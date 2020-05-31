@@ -1,12 +1,12 @@
 const fs = require('fs')
-const stats = require('./stats.js')
+const stats = require('./stats.cjs')
 
 const verbose = process.env.VERBOSE
 const include = process.env.INCLUDE
 const runs = process.env.RUNS || 4
 
 const start = new Date().getTime()
-const Asciidoctor = require('../asciidoctor-node.js')
+const Asciidoctor = require('../asciidoctor-node.cjs')
 console.log(`Load scripts: ${((new Date().getTime() - start) / 1000.0)}s`)
 
 const baseDir = __dirname

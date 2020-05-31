@@ -7,7 +7,7 @@ const childProcess = require('child_process')
 class MockServer {
   constructor (listener) {
     // we need to use "fork" to spawn a new Node.js process otherwise we will create a deadlock.
-    this.childProcess = childProcess.fork(ospath.join(__dirname, 'bin', 'mock-server.js'))
+    this.childProcess = childProcess.fork(ospath.join(__dirname, 'bin', 'mock-server.cjs'))
     this.childProcess.on('message', (msg) => {
       if (msg.event === 'started') {
         // auto-configure

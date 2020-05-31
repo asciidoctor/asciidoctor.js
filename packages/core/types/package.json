@@ -1,0 +1,11 @@
+{
+  "name": "@asciidoctor/types",
+  "version": "1.0.0",
+  "description": "= TypeScript Declaration File",
+  "main": "tests.js",
+  "type": "commonjs",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "private": true
+}

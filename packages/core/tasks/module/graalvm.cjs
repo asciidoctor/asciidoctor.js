@@ -69,7 +69,7 @@ const graalvmRun = (name, jdkInstallDir) => {
   // Run with GraalVM node
   try {
     log.info(`run ${name} node`)
-    const result = childProcess.execSync(`${nodeBin} spec/graalvm/run.js`).toString('utf8')
+    const result = childProcess.execSync(`${nodeBin} spec/graalvm/run.cjs`).toString('utf8')
     process.stdout.write(result)
   } catch (e) {
     if (e.stdout) {

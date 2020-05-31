@@ -6,6 +6,7 @@
       "es6"
     ],
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "strict": true,
     "baseUrl": "../",
     "paths": {

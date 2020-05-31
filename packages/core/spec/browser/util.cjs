@@ -78,19 +78,19 @@ module.exports.configure = (mockServer) => {
     mimetype: 'application/javascript'
   }))
   files.push(rootRelativeFile({
-    path: '../share/asciidoctor-spec.js',
+    path: '../share/asciidoctor-spec.cjs',
     mimetype: 'application/javascript'
   }))
   files.push(rootRelativeFile({
-    path: '../share/asciidoctor-include-file-spec.js',
+    path: '../share/asciidoctor-include-file-spec.cjs',
     mimetype: 'application/javascript'
   }))
   files.push(rootRelativeFile({
-    path: '../share/asciidoctor-include-https-spec.js',
+    path: '../share/asciidoctor-include-https-spec.cjs',
     mimetype: 'application/javascript'
   }))
   files.push(rootRelativeFile({
-    path: '../share/semver.js',
+    path: '../share/semver.cjs',
     mimetype: 'application/javascript'
   }))
   files.push({
