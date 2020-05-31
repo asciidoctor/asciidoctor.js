@@ -6,9 +6,11 @@ const log = require('bestikk-log')
 const bfs = require('bestikk-fs')
 const Download = require('bestikk-download')
 const download = new Download({})
+const rollupPluginNodeResolve = require('@rollup/plugin-node-resolve')
+const { rollup } = require('rollup')
 
-const compilerModule = require('./compiler.js')
-const uglifyModule = require('./uglify.js')
+const compilerModule = require('./compiler.cjs')
+const uglifyModule = require('./uglify.cjs')
 
 const downloadDependencies = async (asciidoctorCoreDependency) => {
   log.task('download dependencies')
@@ -108,6 +110,13 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
       fs.writeFileSync(target, Buffer.concat(buffers), 'utf8')
     } else {
       fs.writeFileSync(target, content, 'utf8')
+      if (environment === 'node') {
+        const bundle = await rollup({ input: target })
+        await bundle.write({
+          file: `build/asciidoctor-${environment}.cjs`,
+          format: 'cjs'
+        })
+      }
     }
   }
 }

@@ -1,8 +1,8 @@
 'use strict'
 
 const log = require('bestikk-log')
-const execModule = require('./module/exec.js')
-const BuilderModule = require('./module/builder.js')
+const execModule = require('./module/exec.cjs')
+const BuilderModule = require('./module/builder.cjs')
 
 const runTest = () => {
   execModule.execSync('npm run test')

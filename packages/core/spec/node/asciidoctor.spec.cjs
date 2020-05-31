@@ -7,9 +7,9 @@ const expect = chai.expect
 const dirtyChai = require('dirty-chai')
 chai.use(dirtyChai)
 
-const shareSpec = require('../share/asciidoctor-spec.js')
-const includeHttpsSpec = require('../share/asciidoctor-include-https-spec.js')
-const semVer = require('../share/semver.js')
+const shareSpec = require('../share/asciidoctor-spec.cjs')
+const includeHttpsSpec = require('../share/asciidoctor-include-https-spec.cjs')
+const semVer = require('../share/semver.cjs')
 
 const config = {
   runtime: {
@@ -21,7 +21,7 @@ const config = {
 
 const isWin = process.platform === 'win32'
 
-const asciidoctor = require('../../build/asciidoctor-node.js')(config)
+const asciidoctor = require('../../build/asciidoctor-node.cjs')(config)
 
 const Opal = require('asciidoctor-opal-runtime').Opal // for testing purpose only
 const packageJson = require('../../package.json')

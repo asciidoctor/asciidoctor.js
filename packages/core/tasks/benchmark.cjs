@@ -5,8 +5,8 @@ const log = require('bestikk-log')
 const bfs = require('bestikk-fs')
 const Download = require('bestikk-download')
 const download = new Download({})
-const execModule = require('./module/exec.js')
-const BuilderModule = require('./module/builder.js')
+const execModule = require('./module/exec.cjs')
+const BuilderModule = require('./module/builder.cjs')
 
 const args = process.argv.slice(2)
 const runner = args[0]

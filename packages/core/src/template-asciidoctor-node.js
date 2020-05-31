@@ -1,12 +1,7 @@
-/* global Opal, Asciidoctor, ASCIIDOCTOR_JS_VERSION */
-const Opal = require('asciidoctor-opal-runtime').Opal
+/* global Asciidoctor, ASCIIDOCTOR_JS_VERSION */
+import { Opal } from 'asciidoctor-opal-runtime'
 
-// Node module
-;(function (root, factory) {
-  module.exports = factory
-  // default export for ES6 module interop
-  module.exports.default = factory
-}(this, function (moduleConfig) {
+export default function (moduleConfig) {
 //{{asciidoctorCode}}
 
 //{{asciidoctorAPI}}
@@ -19,8 +14,8 @@ const Opal = require('asciidoctor-opal-runtime').Opal
    * @memberof Asciidoctor
    * @returns {string} - returns the version number of Asciidoctor.js.
    */
-  Asciidoctor.prototype.getVersion = function () {
+  Opal.Asciidoctor.prototype.getVersion = function () {
     return ASCIIDOCTOR_JS_VERSION
   }
   return Opal.Asciidoctor
-}))
+}
