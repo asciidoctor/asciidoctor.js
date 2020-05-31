@@ -1,21 +1,21 @@
 /* global Opal */
-const Extensions = Opal.Asciidoctor.Extensions
-
 // NOTE: Below we are using a minimalist implementation to generate lorem ipsum text.
 // If you need a complete implementation, you can use the following Node package:
 // var lorem = require('lorem-ipsum');
-
-Extensions.register(function () {
-  this.blockMacro(function () {
-    const self = this
-    self.named('lorem')
-    self.process(function (parent, target, attrs) {
-      const size = parseInt(attrs.size)
-      const result = lorem({ count: size, units: target })
-      return self.createBlock(parent, 'paragraph', result)
+module.exports = () => {
+  const Extensions = Opal.Asciidoctor.Extensions
+  Extensions.register(function () {
+    this.blockMacro(function () {
+      const self = this
+      self.named('lorem')
+      self.process(function (parent, target, attrs) {
+        const size = parseInt(attrs.size)
+        const result = lorem({ count: size, units: target })
+        return self.createBlock(parent, 'paragraph', result)
+      })
     })
   })
-})
+}
 
 const dictionary = {
   words: [

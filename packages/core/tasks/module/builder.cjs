@@ -6,9 +6,12 @@ const log = require('bestikk-log')
 const bfs = require('bestikk-fs')
 const Download = require('bestikk-download')
 const download = new Download({})
+const { rollup } = require('rollup')
+const rollupPluginJson = require('@rollup/plugin-json')
+const rollupPluginCommonJS = require('@rollup/plugin-commonjs')
 
-const compilerModule = require('./compiler.js')
-const uglifyModule = require('./uglify.js')
+const compilerModule = require('./compiler.cjs')
+const uglifyModule = require('./uglify.cjs')
 
 const downloadDependencies = async (asciidoctorCoreDependency) => {
   log.task('download dependencies')
@@ -50,6 +53,49 @@ const parseTemplateData = (data, templateModel) => {
       }
     })
     .join('\n')
+}
+
+const generateCommonJSSpec = async () => {
+  log.task('generate commonjs spec')
+  const bundle = await rollup({
+    input: 'spec/node/asciidoctor.spec.js',
+    external: [
+      'child_process',
+      'module',
+      'url',
+      'path',
+      'fs',
+      'stream',
+      'process',
+      'chai',
+      'dirty-chai',
+      'dot',
+      'nunjucks',
+      'asciidoctor-opal-runtime',
+      'unxhr',
+      '../share/mock-server.cjs',
+      '../../build/asciidoctor-node.cjs'
+    ],
+    plugins: [
+      {
+        // make sure that linked resources (i.e. 'css/asciidoctor.css') will be correctly resolved.
+        resolveImportMeta: function (property, { moduleId }) {
+          if (property === 'url') {
+            if (moduleId.endsWith('asciidoctor-node.js')) {
+              const buildDir = path.join(__dirname, '..', '..', 'build').replace(/\\/g, '/')
+              return `new URL('file://${buildDir}/asciidoctor-node.js').href`
+            }
+          }
+        }
+      },
+      rollupPluginJson(),
+      rollupPluginCommonJS()
+    ]
+  })
+  await bundle.write({
+    file: 'spec/node/asciidoctor.spec.cjs',
+    format: 'cjs'
+  })
 }
 
 const generateFlavors = async (asciidoctorCoreTarget, environments) => {
@@ -111,6 +157,24 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
       fs.writeFileSync(target, Buffer.concat(buffers), 'utf8')
     } else {
       fs.writeFileSync(target, content, 'utf8')
+      if (environment === 'node') {
+        const bundle = await rollup({
+          input: target,
+          external: [
+            'module',
+            'url',
+            'path',
+            'fs',
+            'asciidoctor-opal-runtime',
+            'unxhr'
+          ]
+        })
+        await bundle.write({
+          file: `build/asciidoctor-${environment}.cjs`,
+          format: 'cjs',
+          exports: 'default'
+        })
+      }
     }
   }
 }
@@ -166,6 +230,7 @@ module.exports = class Builder {
     bfs.mkdirsSync('build/css')
     await rebuild(asciidoctorCoreDependency, this.environments)
     await generateFlavors(this.asciidoctorCoreTarget, this.environments)
+    await generateCommonJSSpec()
     await uglifyModule.uglify()
     if (process.env.COPY_DIST) {
       this.copyToDist()
