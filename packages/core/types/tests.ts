@@ -975,7 +975,7 @@ intro
 `);
     await new Promise((resolve, _) => {
       asyncLogger.writer.end(() => {
-        const content = fs.readFileSync(logFile, 'UTF-8');
+        const content = fs.readFileSync(logFile, 'utf8');
         assert(content === 'asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n');
         resolve();
       });
