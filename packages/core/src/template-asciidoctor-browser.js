@@ -1,6 +1,5 @@
 //{{opalCode}}
 
-// UMD Module
 export default function (moduleConfig) {
 //{{asciidoctorCode}}
 

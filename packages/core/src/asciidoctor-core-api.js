@@ -4,7 +4,7 @@
  * Convert a JSON to an (Opal) Hash.
  * @private
  */
-var toHash = function (object) {
+const toHash = function (object) {
   return object && !object.$$is_hash ? Opal.hash2(Object.keys(object), object) : object
 }
 
@@ -12,24 +12,24 @@ var toHash = function (object) {
  * Convert an (Opal) Hash to JSON.
  * @private
  */
-var fromHash = function (hash) {
-  var object = {}
+const fromHash = function (hash) {
+  const object = {}
   if (hash) {
-    var data = hash.$$smap
-    for (var key in data) {
-      var value = data[key]
+    const data = hash.$$smap
+    for (const key in data) {
+      const value = data[key]
       object[key] = value === Opal.nil ? undefined : value
     }
   }
   return object
 }
 
-var fromHashKeys = function (hash) {
-  var object = {}
+const fromHashKeys = function (hash) {
+  const object = {}
   if (hash) {
-    var data = hash.$$keys
-    for (var key in data) {
-      var value = data[key].value
+    const data = hash.$$keys
+    for (const key in data) {
+      const value = data[key].value
       object[key.toString()] = value === Opal.nil ? undefined : value
     }
   }
@@ -39,10 +39,10 @@ var fromHashKeys = function (hash) {
 /**
  * @private
  */
-var prepareOptions = function (options) {
+const prepareOptions = function (options) {
   options = toHash(options)
   if (options) {
-    var attrs = options['$[]']('attributes')
+    const attrs = options['$[]']('attributes')
     if (attrs && typeof attrs === 'object' && attrs.constructor.name === 'Object') {
       options = options.$dup()
       options['$[]=']('attributes', toHash(attrs))
@@ -52,15 +52,15 @@ var prepareOptions = function (options) {
 }
 
 function initializeClass (superClass, className, functions, defaultFunctions, argProxyFunctions) {
-  var scope = Opal.klass(Opal.Object, superClass, className, function () { })
-  var postConstructFunction
-  var initializeFunction
-  var constructorFunction
-  var defaultFunctionsOverridden = {}
-  for (var functionName in functions) {
+  const scope = Opal.klass(Opal.Object, superClass, className, function () { })
+  let postConstructFunction
+  let initializeFunction
+  let constructorFunction
+  const defaultFunctionsOverridden = {}
+  for (const functionName in functions) {
     if (Object.prototype.hasOwnProperty.call(functions, functionName)) {
       (function (functionName) {
-        var userFunction = functions[functionName]
+        const userFunction = functions[functionName]
         if (functionName === 'postConstruct') {
           postConstructFunction = userFunction
         } else if (functionName === 'initialize') {
@@ -72,7 +72,7 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
             defaultFunctionsOverridden[functionName] = true
           }
           Opal.def(scope, '$' + functionName, function () {
-            var args
+            let args
             if (argProxyFunctions && Object.prototype.hasOwnProperty.call(argProxyFunctions, functionName)) {
               args = argProxyFunctions[functionName](arguments)
             } else {
@@ -84,18 +84,18 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
       }(functionName))
     }
   }
-  var initialize
+  let initialize
   if (typeof constructorFunction === 'function') {
     initialize = function () {
-      var args = Array.from(arguments)
-      for (var i = 0; i < args.length; i++) {
+      const args = Array.from(arguments)
+      for (let i = 0; i < args.length; i++) {
         // convert all (Opal) Hash arguments to JSON.
         if (typeof args[i] === 'object' && '$$smap' in args[i]) {
           args[i] = fromHash(args[i])
         }
       }
       args.unshift(null)
-      var result = new (Function.prototype.bind.apply(constructorFunction, args)) // eslint-disable-line
+      const result = new (Function.prototype.bind.apply(constructorFunction, args)) // eslint-disable-line
       Object.assign(this, result)
       if (typeof postConstructFunction === 'function') {
         postConstructFunction.bind(this)()
@@ -103,8 +103,8 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
     }
   } else if (typeof initializeFunction === 'function') {
     initialize = function () {
-      var args = Array.from(arguments)
-      for (var i = 0; i < args.length; i++) {
+      const args = Array.from(arguments)
+      for (let i = 0; i < args.length; i++) {
         // convert all (Opal) Hash arguments to JSON.
         if (typeof args[i] === 'object' && '$$smap' in args[i]) {
           args[i] = fromHash(args[i])
@@ -129,8 +129,8 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
       Opal.send(this, Opal.find_super_dispatcher(this, func.name, func))
     } else {
       // Bind the initialize function to super();
-      var argumentsList = Array.from(arguments)
-      for (var i = 0; i < argumentsList.length; i++) {
+      const argumentsList = Array.from(arguments)
+      for (let i = 0; i < argumentsList.length; i++) {
         // convert all (Opal) Hash arguments to JSON.
         if (typeof argumentsList[i] === 'object') {
           argumentsList[i] = toHash(argumentsList[i])
@@ -140,10 +140,10 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
     }
   })
   if (defaultFunctions) {
-    for (var defaultFunctionName in defaultFunctions) {
+    for (const defaultFunctionName in defaultFunctions) {
       if (Object.prototype.hasOwnProperty.call(defaultFunctions, defaultFunctionName) && !Object.prototype.hasOwnProperty.call(defaultFunctionsOverridden, defaultFunctionName)) {
         (function (defaultFunctionName) {
-          var defaultFunction = defaultFunctions[defaultFunctionName]
+          const defaultFunction = defaultFunctions[defaultFunctionName]
           Opal.def(scope, '$' + defaultFunctionName, function () {
             return defaultFunction.apply(this, arguments)
           })
@@ -180,7 +180,7 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
  *
  * const doc = asciidoctor.load("= Document Title\n\nfirst paragraph\n\nsecond paragraph", { 'safe': 'safe' }) // Parse an AsciiDoc string into a document object
  */
-var Asciidoctor = Opal.Asciidoctor.$$class
+const Asciidoctor = Opal.Asciidoctor.$$class
 
 /**
  * Get Asciidoctor core version number.
@@ -231,7 +231,7 @@ Asciidoctor.prototype.convert = function (input, options) {
   if (typeof input === 'object' && input.constructor.name === 'Buffer') {
     input = input.toString('utf8')
   }
-  var result = this.$convert(input, prepareOptions(options))
+  const result = this.$convert(input, prepareOptions(options))
   return result === Opal.nil ? '' : result
 }
 
@@ -285,7 +285,7 @@ Asciidoctor.prototype.loadFile = function (filename, options) {
  * @namespace
  * @extends AbstractNode
  */
-var AbstractBlock = Opal.Asciidoctor.AbstractBlock
+const AbstractBlock = Opal.Asciidoctor.AbstractBlock
 
 /**
  * Append a block to this block's list of child blocks.
@@ -312,7 +312,7 @@ AbstractBlock.prototype.append = function (block) {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getTitle = function () {
-  var title = this.$title()
+  const title = this.$title()
   return title === Opal.nil ? undefined : title
 }
 
@@ -349,7 +349,7 @@ AbstractBlock.prototype.getCaptionedTitle = function () {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getStyle = function () {
-  var style = this.style
+  const style = this.style
   return style === Opal.nil ? undefined : style
 }
 
@@ -370,24 +370,24 @@ AbstractBlock.prototype.setStyle = function (style) {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getSourceLocation = function () {
-  var sourceLocation = this.source_location
+  const sourceLocation = this.source_location
   if (sourceLocation === Opal.nil) {
     return undefined
   }
   sourceLocation.getFile = function () {
-    var file = this.file
+    const file = this.file
     return file === Opal.nil ? undefined : file
   }
   sourceLocation.getDirectory = function () {
-    var dir = this.dir
+    const dir = this.dir
     return dir === Opal.nil ? undefined : dir
   }
   sourceLocation.getPath = function () {
-    var path = this.path
+    const path = this.path
     return path === Opal.nil ? undefined : path
   }
   sourceLocation.getLineNumber = function () {
-    var lineno = this.lineno
+    const lineno = this.lineno
     return lineno === Opal.nil ? undefined : lineno
   }
   return sourceLocation
@@ -400,7 +400,7 @@ AbstractBlock.prototype.getSourceLocation = function () {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getCaption = function () {
-  var caption = this.$caption()
+  const caption = this.$caption()
   return caption === Opal.nil ? undefined : caption
 }
 
@@ -421,7 +421,7 @@ AbstractBlock.prototype.setCaption = function (caption) {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getLevel = function () {
-  var level = this.level
+  const level = this.level
   return level === Opal.nil ? undefined : level
 }
 
@@ -533,7 +533,7 @@ AbstractBlock.prototype.findBy = function (selector, block) {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getLineNumber = function () {
-  var lineno = this.$lineno()
+  const lineno = this.$lineno()
   return lineno === Opal.nil ? undefined : lineno
 }
 
@@ -610,7 +610,7 @@ AbstractBlock.prototype.hasTitle = function () {
  * @namespace
  * @extends AbstractBlock
  */
-var Section = Opal.Asciidoctor.Section
+const Section = Opal.Asciidoctor.Section
 
 /**
  * Create a {Section} object.
@@ -661,7 +661,7 @@ Section.prototype.setIndex = function (index) {
  * @memberof Section
  */
 Section.prototype.getSectionName = function () {
-  var sectname = this.sectname
+  const sectname = this.sectname
   return sectname === Opal.nil ? undefined : sectname
 }
 
@@ -707,7 +707,7 @@ Section.prototype.isNumbered = function () {
  * @memberof Section
  */
 Section.prototype.getCaption = function () {
-  var value = this.caption
+  const value = this.caption
   return value === Opal.nil ? undefined : value
 }
 
@@ -733,7 +733,7 @@ Section.prototype.getName = function () {
  * @namespace
  * @extends AbstractBlock
  */
-var Block = Opal.Asciidoctor.Block
+const Block = Opal.Asciidoctor.Block
 
 /**
  * Create a {Block} object.
@@ -786,7 +786,7 @@ Block.prototype.getSourceLines = function () {
  * An abstract base class that provides state and methods for managing a node of AsciiDoc content.
  * The state and methods on this class are common to all content segments in an AsciiDoc document.
  */
-var AbstractNode = Opal.Asciidoctor.AbstractNode
+const AbstractNode = Opal.Asciidoctor.AbstractNode
 
 /**
  * Apply the specified substitutions to the text.
@@ -876,7 +876,7 @@ AbstractNode.prototype.getAttributes = function () {
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getAttribute = function (name, defaultValue, fallbackName) {
-  var value = this.$attr(name, defaultValue, fallbackName)
+  const value = this.$attr(name, defaultValue, fallbackName)
   return value === Opal.nil ? undefined : value
 }
 
@@ -907,7 +907,7 @@ AbstractNode.prototype.hasAttribute = function (name) {
  * @memberof AbstractNode
  */
 AbstractNode.prototype.isAttribute = function (name, expectedValue, fallbackName) {
-  var result = this['$attr?'](name, expectedValue, fallbackName)
+  const result = this['$attr?'](name, expectedValue, fallbackName)
   return result === Opal.nil ? false : result
 }
 
@@ -933,7 +933,7 @@ AbstractNode.prototype.setAttribute = function (name, value, overwrite) {
  * @memberof AbstractNode
  */
 AbstractNode.prototype.removeAttribute = function (name) {
-  var value = this.$remove_attr(name)
+  const value = this.$remove_attr(name)
   return value === Opal.nil ? undefined : value
 }
 
@@ -955,7 +955,7 @@ AbstractNode.prototype.getDocument = function () {
  * or undefined if this node has no parent.
  */
 AbstractNode.prototype.getParent = function () {
-  var parent = this.parent
+  const parent = this.parent
   return parent === Opal.nil ? undefined : parent
 }
 
@@ -1058,7 +1058,7 @@ AbstractNode.prototype.isReftext = function () {
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getReftext = function () {
-  var reftext = this.$reftext()
+  const reftext = this.$reftext()
   return reftext === Opal.nil ? undefined : reftext
 }
 
@@ -1067,7 +1067,7 @@ AbstractNode.prototype.getReftext = function () {
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getContext = function () {
-  var context = this.context
+  const context = this.context
   // Automatically convert Opal pseudo-symbol to String
   return typeof context === 'string' ? context : context.toString()
 }
@@ -1077,7 +1077,7 @@ AbstractNode.prototype.getContext = function () {
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getId = function () {
-  var id = this.id
+  const id = this.id
   return id === Opal.nil ? undefined : id
 }
 
@@ -1165,7 +1165,7 @@ AbstractNode.prototype.readContents = function (target, options) {
  * @memberof AbstractNode
  */
 AbstractNode.prototype.readAsset = function (path, options) {
-  var result = this.$read_asset(path, toHash(options))
+  const result = this.$read_asset(path, toHash(options))
   return result === Opal.nil ? undefined : result
 }
 
@@ -1225,7 +1225,7 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
  * @namespace
  * @extends AbstractBlock
  */
-var Document = Opal.Asciidoctor.Document
+const Document = Opal.Asciidoctor.Document
 
 /**
  * Returns a JSON {Object} of references captured by the processor.
@@ -1317,7 +1317,7 @@ Document.prototype.removeAttribute = function (name) {
  * @memberof Document
  */
 Document.prototype.convert = function (options) {
-  var result = this.$convert(toHash(options))
+  const result = this.$convert(toHash(options))
   return result === Opal.nil ? '' : result
 }
 
@@ -1417,7 +1417,7 @@ Document.prototype.isBasebackend = function (base) {
  * @memberof Document
  */
 Document.prototype.getTitle = function () {
-  var title = this.$title()
+  const title = this.$title()
   return title === Opal.nil ? undefined : title
 }
 
@@ -1441,7 +1441,7 @@ Document.prototype.setTitle = function (title) {
  * @memberof Document
  */
 Document.prototype.getDocumentTitle = function (options) {
-  var doctitle = this.$doctitle(toHash(options))
+  const doctitle = this.$doctitle(toHash(options))
   return doctitle === Opal.nil ? undefined : doctitle
 }
 
@@ -1542,14 +1542,14 @@ Document.prototype.getAuthors = function () {
  * @namespace
  * @module Document/Footnote
  */
-var Footnote = Document.Footnote
+const Footnote = Document.Footnote
 
 /**
  * @returns {number} - the footnote's index
  * @memberof Document/Footnote
  */
 Footnote.prototype.getIndex = function () {
-  var index = this.$$data.index
+  const index = this.$$data.index
   return index === Opal.nil ? undefined : index
 }
 
@@ -1558,7 +1558,7 @@ Footnote.prototype.getIndex = function () {
  * @memberof Document/Footnote
  */
 Footnote.prototype.getId = function () {
-  var id = this.$$data.id
+  const id = this.$$data.id
   return id === Opal.nil ? undefined : id
 }
 
@@ -1567,7 +1567,7 @@ Footnote.prototype.getId = function () {
  * @memberof Document/Footnote
  */
 Footnote.prototype.getText = function () {
-  var text = this.$$data.text
+  const text = this.$$data.text
   return text === Opal.nil ? undefined : text
 }
 
@@ -1577,7 +1577,7 @@ Footnote.prototype.getText = function () {
  * @class
  * @module Document/ImageReference
  */
-var ImageReference = Document.ImageReference
+const ImageReference = Document.ImageReference
 
 /**
  * @returns {string} - the image's target
@@ -1592,7 +1592,7 @@ ImageReference.prototype.getTarget = function () {
  * @memberof Document/ImageReference
  */
 ImageReference.prototype.getImagesDirectory = function () {
-  var value = this.$$data.imagesdir
+  const value = this.$$data.imagesdir
   return value === Opal.nil ? undefined : value
 }
 
@@ -1603,14 +1603,14 @@ ImageReference.prototype.getImagesDirectory = function () {
  * @namespace
  * @module Document/Author
  */
-var Author = Document.Author
+const Author = Document.Author
 
 /**
  * @returns {string} - the author's full name
  * @memberof Document/Author
  */
 Author.prototype.getName = function () {
-  var name = this.$$data.name
+  const name = this.$$data.name
   return name === Opal.nil ? undefined : name
 }
 
@@ -1619,7 +1619,7 @@ Author.prototype.getName = function () {
  * @memberof Document/Author
  */
 Author.prototype.getFirstName = function () {
-  var firstName = this.$$data.firstname
+  const firstName = this.$$data.firstname
   return firstName === Opal.nil ? undefined : firstName
 }
 
@@ -1628,7 +1628,7 @@ Author.prototype.getFirstName = function () {
  * @memberof Document/Author
  */
 Author.prototype.getMiddleName = function () {
-  var middleName = this.$$data.middlename
+  const middleName = this.$$data.middlename
   return middleName === Opal.nil ? undefined : middleName
 }
 
@@ -1637,7 +1637,7 @@ Author.prototype.getMiddleName = function () {
  * @memberof Document/Author
  */
 Author.prototype.getLastName = function () {
-  var lastName = this.$$data.lastname
+  const lastName = this.$$data.lastname
   return lastName === Opal.nil ? undefined : lastName
 }
 
@@ -1646,7 +1646,7 @@ Author.prototype.getLastName = function () {
  * @memberof Document/Author
  */
 Author.prototype.getInitials = function () {
-  var initials = this.$$data.initials
+  const initials = this.$$data.initials
   return initials === Opal.nil ? undefined : initials
 }
 
@@ -1655,7 +1655,7 @@ Author.prototype.getInitials = function () {
  * @memberof Document/Author
  */
 Author.prototype.getEmail = function () {
-  var email = this.$$data.email
+  const email = this.$$data.email
   return email === Opal.nil ? undefined : email
 }
 
@@ -1671,7 +1671,7 @@ Document.RevisionInfo = function (date, number, remark) {
  * @namespace
  * @module Document/RevisionInfo
  */
-var RevisionInfo = Document.RevisionInfo
+const RevisionInfo = Document.RevisionInfo
 
 /**
  * Get the document revision date from document header (document attribute <code>revdate</code>).
@@ -1714,7 +1714,7 @@ RevisionInfo.prototype.isEmpty = function () {
 /**
  * @namespace
  */
-var SafeMode = Opal.Asciidoctor.SafeMode
+const SafeMode = Opal.Asciidoctor.SafeMode
 
 /**
  * @param {string} name - the name of the security level
@@ -1729,7 +1729,7 @@ SafeMode.getValueForName = function (name) {
  * @returns {string} - the name of the corresponding security level
  */
 SafeMode.getNameForValue = function (value) {
-  var name = this.$name_for_value(value)
+  const name = this.$name_for_value(value)
   return name === Opal.nil ? undefined : name
 }
 
@@ -1746,7 +1746,7 @@ SafeMode.getNames = function () {
  * Maintains a catalog of callouts and their associations.
  * @namespace
  */
-var Callouts = Opal.Asciidoctor.Callouts
+const Callouts = Opal.Asciidoctor.Callouts
 
 /**
  * Create a new Callouts.
@@ -1803,12 +1803,12 @@ Callouts.prototype.getCalloutIds = function (ordinal) {
  * @memberof Callouts
  */
 Callouts.prototype.getLists = function () {
-  var lists = this.lists
+  const lists = this.lists
   if (lists && lists.length > 0) {
-    for (var i = 0; i < lists.length; i++) {
-      var list = lists[i]
+    for (let i = 0; i < lists.length; i++) {
+      const list = lists[i]
       if (list && list.length > 0) {
-        for (var j = 0; j < list.length; j++) {
+        for (let j = 0; j < list.length; j++) {
           if (typeof list[j] === 'object' && '$$smap' in list[j]) {
             list[j] = fromHash(list[j])
           }
@@ -1834,7 +1834,7 @@ Callouts.prototype.getListIndex = function () {
 Callouts.prototype.getCurrentList = function () {
   const currentList = this.$current_list()
   if (currentList && currentList.length > 0) {
-    for (var i = 0; i < currentList.length; i++) {
+    for (let i = 0; i < currentList.length; i++) {
       if (typeof currentList[i] === 'object' && '$$smap' in currentList[i]) {
         currentList[i] = fromHash(currentList[i])
       }
@@ -1872,7 +1872,7 @@ Document.prototype.getRevisionInfo = function () {
  * @memberof Document
  */
 Document.prototype.hasRevisionInfo = function () {
-  var revisionInfo = this.getRevisionInfo()
+  const revisionInfo = this.getRevisionInfo()
   return !revisionInfo.isEmpty()
 }
 
@@ -1921,11 +1921,11 @@ Document.prototype.hasHeader = function () {
 Document.prototype.playbackAttributes = function (blockAttributes) {
   blockAttributes = toHash(blockAttributes)
   if (blockAttributes) {
-    var attrEntries = blockAttributes['$[]']('attribute_entries')
+    const attrEntries = blockAttributes['$[]']('attribute_entries')
     if (attrEntries && Array.isArray(attrEntries)) {
-      var result = []
-      for (var i = 0; i < attrEntries.length; i++) {
-        var attrEntryObject = attrEntries[i]
+      const result = []
+      for (let i = 0; i < attrEntries.length; i++) {
+        const attrEntryObject = attrEntries[i]
         if (attrEntryObject && typeof attrEntryObject === 'object' && attrEntryObject.constructor.name === 'Object') {
           attrEntryObject.$name = function () {
             return this.name
@@ -2100,7 +2100,7 @@ Document.prototype.getCompatMode = function () {
  * @memberof Document
  */
 Document.prototype.getSourcemap = function () {
-  var sourcemap = this.sourcemap
+  const sourcemap = this.sourcemap
   return sourcemap === Opal.nil ? false : sourcemap
 }
 
@@ -2166,7 +2166,7 @@ Document.prototype.getOutfilesuffix = function () {
  * @memberof Document
  */
 Document.prototype.getParentDocument = function () {
-  var parentDocument = this.parent_document
+  const parentDocument = this.parent_document
   return parentDocument === Opal.nil ? undefined : parentDocument
 }
 
@@ -2194,7 +2194,7 @@ Document.prototype.getConverter = function () {
  * @memberof Document
  */
 Document.prototype.getExtensions = function () {
-  var extensions = this.extensions
+  const extensions = this.extensions
   return extensions === Opal.nil ? undefined : extensions
 }
 
@@ -2205,7 +2205,7 @@ Document.prototype.getExtensions = function () {
  * @namespace
  * @module Document/Title
  */
-var Title = Document.Title
+const Title = Document.Title
 
 /**
  * @returns {string}
@@ -2228,7 +2228,7 @@ Title.prototype.getCombined = function () {
  * @memberof Document/Title
  */
 Title.prototype.getSubtitle = function () {
-  var subtitle = this.subtitle
+  const subtitle = this.subtitle
   return subtitle === Opal.nil ? undefined : subtitle
 }
 
@@ -2237,7 +2237,7 @@ Title.prototype.getSubtitle = function () {
  * @memberof Document/Title
  */
 Title.prototype.isSanitized = function () {
-  var sanitized = this['$sanitized?']()
+  const sanitized = this['$sanitized?']()
   return sanitized === Opal.nil ? false : sanitized
 }
 
@@ -2256,7 +2256,7 @@ Title.prototype.hasSubtitle = function () {
  * @namespace
  * @extends AbstractNode
  */
-var Inline = Opal.Asciidoctor.Inline
+const Inline = Opal.Asciidoctor.Inline
 
 /**
  * Create a new Inline element.
@@ -2288,7 +2288,7 @@ Inline.prototype.convert = function () {
  * @memberof Inline
  */
 Inline.prototype.getText = function () {
-  var text = this.$text()
+  const text = this.$text()
   return text === Opal.nil ? undefined : text
 }
 
@@ -2312,7 +2312,7 @@ Inline.prototype.getType = function () {
  * @memberof Inline
  */
 Inline.prototype.getTarget = function () {
-  var target = this.$target()
+  const target = this.$target()
   return target === Opal.nil ? undefined : target
 }
 
@@ -2323,7 +2323,7 @@ Inline.prototype.getTarget = function () {
  * @namespace
  * @extends AbstractBlock
  */
-var List = Opal.Asciidoctor.List
+const List = Opal.Asciidoctor.List
 
 /**
  * Checks if the {@link List} contains any child {@link ListItem}.
@@ -2355,7 +2355,7 @@ List.prototype.getItems = function () {
  * @namespace
  * @extends AbstractBlock
  */
-var ListItem = Opal.Asciidoctor.ListItem
+const ListItem = Opal.Asciidoctor.ListItem
 
 /**
  * Get the converted String text of this {@link ListItem} node.
@@ -2427,7 +2427,7 @@ ListItem.prototype.getParent = ListItem.prototype.getList
 // Reader API
 
 /** @namespace */
-var Reader = Opal.Asciidoctor.Reader
+const Reader = Opal.Asciidoctor.Reader
 
 /**
  * Push source onto the front of the reader and switch the context based on the file, document-relative path and line information given.
@@ -2519,7 +2519,7 @@ Reader.prototype.isEmpty = function () {
  */
 Reader.prototype.peekLine = function (direct) {
   direct = direct || false
-  var line = this.$peek_line(direct)
+  const line = this.$peek_line(direct)
   return line === Opal.nil ? undefined : line
 }
 
@@ -2532,7 +2532,7 @@ Reader.prototype.peekLine = function (direct) {
  * @memberof Reader
  */
 Reader.prototype.readLine = function () {
-  var line = this.$read_line()
+  const line = this.$read_line()
   return line === Opal.nil ? undefined : line
 }
 
@@ -2578,7 +2578,7 @@ Reader.prototype.advance = function () {
 // Cursor API
 
 /** @namespace */
-var Cursor = Opal.Asciidoctor.Reader.Cursor
+const Cursor = Opal.Asciidoctor.Reader.Cursor
 
 /**
  * Get the file associated to the cursor.
@@ -2586,7 +2586,7 @@ var Cursor = Opal.Asciidoctor.Reader.Cursor
  * @memberof Cursor
  */
 Cursor.prototype.getFile = function () {
-  var file = this.file
+  const file = this.file
   return file === Opal.nil ? undefined : file
 }
 
@@ -2596,7 +2596,7 @@ Cursor.prototype.getFile = function () {
  * @memberof Cursor
  */
 Cursor.prototype.getDirectory = function () {
-  var dir = this.dir
+  const dir = this.dir
   return dir === Opal.nil ? undefined : dir
 }
 
@@ -2606,7 +2606,7 @@ Cursor.prototype.getDirectory = function () {
  * @memberof Cursor
  */
 Cursor.prototype.getPath = function () {
-  var path = this.path
+  const path = this.path
   return path === Opal.nil ? undefined : path
 }
 
@@ -2622,10 +2622,10 @@ Cursor.prototype.getLineNumber = function () {
 // Logger API (available in Asciidoctor 1.5.7+)
 
 function initializeLoggerFormatterClass (className, functions) {
-  var superclass = Opal.const_get_qualified(Opal.Logger, 'Formatter')
+  const superclass = Opal.const_get_qualified(Opal.Logger, 'Formatter')
   return initializeClass(superclass, className, functions, {}, {
     call: function (args) {
-      for (var i = 0; i < args.length; i++) {
+      for (let i = 0; i < args.length; i++) {
         // convert all (Opal) Hash arguments to JSON.
         if (typeof args[i] === 'object' && '$$smap' in args[i]) {
           args[i] = fromHash(args[i])
@@ -2637,12 +2637,12 @@ function initializeLoggerFormatterClass (className, functions) {
 }
 
 function initializeLoggerClass (className, functions) {
-  var superClass = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger')
+  const superClass = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger')
   return initializeClass(superClass, className, functions, {}, {
     add: function (args) {
       if (args.length >= 2 && typeof args[2] === 'object' && '$$smap' in args[2]) {
-        var message = args[2]
-        var messageObject = fromHash(message)
+        const message = args[2]
+        const messageObject = fromHash(message)
         messageObject.getText = function () {
           return this.text
         }
@@ -2650,7 +2650,7 @@ function initializeLoggerClass (className, functions) {
           return this.source_location
         }
         messageObject.$inspect = function () {
-          var sourceLocation = this.getSourceLocation()
+          const sourceLocation = this.getSourceLocation()
           if (sourceLocation) {
             return sourceLocation.getPath() + ': line ' + sourceLocation.getLineNumber() + ': ' + this.getText()
           } else {
@@ -2670,7 +2670,7 @@ function initializeLoggerClass (className, functions) {
 /**
  * @namespace
  */
-var LoggerManager = Opal.const_get_qualified(Opal.Asciidoctor, 'LoggerManager', true)
+const LoggerManager = Opal.const_get_qualified(Opal.Asciidoctor, 'LoggerManager', true)
 
 // Alias
 Opal.Asciidoctor.LoggerManager = LoggerManager
@@ -2706,7 +2706,7 @@ LoggerManager.newFormatter = function (name, functions) {
 /**
  * @namespace
  */
-var LoggerSeverity = Opal.const_get_qualified(Opal.Logger, 'Severity', true)
+const LoggerSeverity = Opal.const_get_qualified(Opal.Logger, 'Severity', true)
 
 // Alias
 Opal.Asciidoctor.LoggerSeverity = LoggerSeverity
@@ -2721,7 +2721,7 @@ LoggerSeverity.get = function (severity) {
 /**
  * @namespace
  */
-var LoggerFormatter = Opal.const_get_qualified(Opal.Logger, 'Formatter', true)
+const LoggerFormatter = Opal.const_get_qualified(Opal.Logger, 'Formatter', true)
 
 // Alias
 Opal.Asciidoctor.LoggerFormatter = LoggerFormatter
@@ -2736,7 +2736,7 @@ LoggerFormatter.prototype.call = function (severity, time, programName, message)
 /**
  * @namespace
  */
-var MemoryLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'MemoryLogger', true)
+const MemoryLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'MemoryLogger', true)
 
 // Alias
 Opal.Asciidoctor.MemoryLogger = MemoryLogger
@@ -2755,11 +2755,11 @@ MemoryLogger.create = function () {
  * @memberof MemoryLogger
  */
 MemoryLogger.prototype.getMessages = function () {
-  var messages = this.messages
-  var result = []
-  for (var i = 0; i < messages.length; i++) {
-    var message = messages[i]
-    var messageObject = fromHash(message)
+  const messages = this.messages
+  const result = []
+  for (let i = 0; i < messages.length; i++) {
+    const message = messages[i]
+    const messageObject = fromHash(message)
     if (typeof messageObject.message === 'string') {
       messageObject.getText = function () {
         return this.message
@@ -2782,7 +2782,7 @@ MemoryLogger.prototype.getMessages = function () {
   return result
 }
 
-var Logging = Opal.const_get_qualified(Opal.Asciidoctor, 'Logging', true)
+const Logging = Opal.const_get_qualified(Opal.Asciidoctor, 'Logging', true)
 
 Opal.Asciidoctor.Logging = Logging
 
@@ -2817,7 +2817,7 @@ AbstractNode.prototype.createLogMessage = Logging.createLogMessage
 /**
  * @namespace
  */
-var Logger = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger', true)
+const Logger = Opal.const_get_qualified(Opal.Asciidoctor, 'Logger', true)
 
 // Alias
 Opal.Asciidoctor.Logger = Logger
@@ -2827,7 +2827,7 @@ Opal.Asciidoctor.Logger = Logger
  * @memberof Logger
  */
 Logger.prototype.getMaxSeverity = function () {
-  var result = this.max_severity
+  const result = this.max_severity
   return result === Opal.nil ? undefined : result
 }
 /**
@@ -2873,13 +2873,13 @@ Logger.prototype.setProgramName = function (programName) {
   this.progname = programName
 }
 
-var RubyLogger = Opal.const_get_qualified('::', 'Logger')
+const RubyLogger = Opal.const_get_qualified('::', 'Logger')
 
-var log = function (logger, level, message) {
+const log = function (logger, level, message) {
   logger['$' + level](message)
 }
 RubyLogger.prototype.add = function (severity, message, programName) {
-  var severityValue = typeof severity === 'string' ? LoggerSeverity[severity.toUpperCase()] : severity
+  const severityValue = typeof severity === 'string' ? LoggerSeverity[severity.toUpperCase()] : severity
   this.$add(severityValue, message, programName)
 }
 RubyLogger.prototype.log = RubyLogger.prototype.add
@@ -2917,7 +2917,7 @@ RubyLogger.prototype.isFatalEnabled = function () {
 /**
  * @namespace
  */
-var NullLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'NullLogger', true)
+const NullLogger = Opal.const_get_qualified(Opal.Asciidoctor, 'NullLogger', true)
 
 // Alias
 Opal.Asciidoctor.NullLogger = NullLogger
@@ -2945,7 +2945,7 @@ Opal.Asciidoctor.StopIteration = Opal.StopIteration
 /**
  * @namespace
  */
-var Timings = Opal.const_get_qualified(Opal.Asciidoctor, 'Timings', true)
+const Timings = Opal.const_get_qualified(Opal.Asciidoctor, 'Timings', true)
 
 // Alias
 Opal.Asciidoctor.Timings = Timings
@@ -2970,7 +2970,7 @@ Timings.create = function () {
  * @memberof Timings
  */
 Timings.prototype.printReport = function (to, subject) {
-  var outputFunction
+  let outputFunction
   if (to) {
     if (typeof to.$add === 'function') {
       outputFunction = function (message) {
@@ -3017,7 +3017,7 @@ Timings.prototype.printReport = function (to, subject) {
  * Asciidoctor.js provides several a built-in adapter for highlight.js.
  * Additional adapters can be registered using SyntaxHighlighter.register.
  */
-var SyntaxHighlighter = Opal.const_get_qualified(Opal.Asciidoctor, 'SyntaxHighlighter', true)
+const SyntaxHighlighter = Opal.const_get_qualified(Opal.Asciidoctor, 'SyntaxHighlighter', true)
 
 // Alias
 Opal.Asciidoctor.SyntaxHighlighter = SyntaxHighlighter
@@ -3032,18 +3032,18 @@ Opal.Asciidoctor.SyntaxHighlighter = SyntaxHighlighter
  * @memberof SyntaxHighlighter
  */
 SyntaxHighlighter.register = function (names, functions) {
-  var name = typeof names === 'string' ? names : names[0]
+  const name = typeof names === 'string' ? names : names[0]
   if (typeof functions === 'function') {
-    var classObject = functions
-    var prototype = classObject.prototype
-    var properties = Object.getOwnPropertyNames(prototype)
+    const classObject = functions
+    const prototype = classObject.prototype
+    const properties = Object.getOwnPropertyNames(prototype)
     functions = {}
-    for (var propertyIdx in properties) {
-      var propertyName = properties[propertyIdx]
+    for (const propertyIdx in properties) {
+      const propertyName = properties[propertyIdx]
       functions[propertyName] = prototype[propertyName]
     }
   }
-  var scope = initializeClass(SyntaxHighlighterBase, name, functions, {}, {
+  const scope = initializeClass(SyntaxHighlighterBase, name, functions, {}, {
     format: function (args) {
       if (args.length >= 2 && typeof args[2] === 'object' && '$$smap' in args[2]) {
         args[2] = fromHash(args[2])
@@ -3055,17 +3055,17 @@ SyntaxHighlighter.register = function (names, functions) {
     },
     highlight: function (args) {
       if (args.length >= 3 && typeof args[3] === 'object' && '$$smap' in args[3]) {
-        var opts = args[3]
+        let opts = args[3]
         opts = fromHash(opts)
-        for (var key in opts) {
-          var value = opts[key]
+        for (const key in opts) {
+          const value = opts[key]
           if (key === 'callouts') {
-            var callouts = fromHashKeys(value)
-            for (var idx in callouts) {
-              var callout = callouts[idx]
-              for (var i = 0; i < callout.length; i++) {
-                var items = callout[i]
-                for (var j = 0; j < items.length; j++) {
+            const callouts = fromHashKeys(value)
+            for (const idx in callouts) {
+              const callout = callouts[idx]
+              for (let i = 0; i < callout.length; i++) {
+                const items = callout[i]
+                for (let j = 0; j < items.length; j++) {
                   items[j] = items[j] === Opal.nil ? undefined : items[j]
                 }
               }
@@ -3083,10 +3083,10 @@ SyntaxHighlighter.register = function (names, functions) {
       return args
     }
   })
-  for (var functionName in functions) {
+  for (const functionName in functions) {
     if (Object.prototype.hasOwnProperty.call(functions, functionName)) {
       (function (functionName) {
-        var userFunction = functions[functionName]
+        const userFunction = functions[functionName]
         if (functionName === 'handlesHighlighting') {
           Opal.def(scope, '$highlight?', function () {
             return userFunction.call()
@@ -3116,7 +3116,7 @@ SyntaxHighlighter.register = function (names, functions) {
  * @memberof SyntaxHighlighter
  */
 SyntaxHighlighter.get = function (name) {
-  var result = SyntaxHighlighter.$for(name)
+  const result = SyntaxHighlighter.$for(name)
   return result === Opal.nil ? undefined : result
 }
 
@@ -3152,7 +3152,7 @@ SyntaxHighlighterBase.prototype.registerFor = function (names) {
  * @namespace
  * @extends AbstractBlock
  */
-var Table = Opal.Asciidoctor.Table
+const Table = Opal.Asciidoctor.Table
 
 /**
  * Create a new Table element.
@@ -3258,7 +3258,7 @@ Table.prototype.hasHeaderOption = function () {
  * @memberof Table
  */
 Table.prototype.hasFooterOption = function () {
-  var footerOption = this.getAttributes()['footer-option']
+  const footerOption = this.getAttributes()['footer-option']
   return footerOption === ''
 }
 
@@ -3268,7 +3268,7 @@ Table.prototype.hasFooterOption = function () {
  * @memberof Table
  */
 Table.prototype.hasAutowidthOption = function () {
-  var autowidthOption = this.getAttributes()['autowidth-option']
+  const autowidthOption = this.getAttributes()['autowidth-option']
   return autowidthOption === ''
 }
 
@@ -3315,7 +3315,7 @@ Table.prototype.setColumnCount = function (value) {
 /**
  * @namespace
  */
-var Rows = Opal.Asciidoctor.Table.Rows
+const Rows = Opal.Asciidoctor.Table.Rows
 
 /**
  * Create a new Rows element.
@@ -3373,7 +3373,7 @@ Rows.prototype.bySection = function () {
  * @namespace
  * @extends AbstractNode
  */
-var Column = Opal.Asciidoctor.Table.Column
+const Column = Opal.Asciidoctor.Table.Column
 
 /**
  * Create a new Column element.
@@ -3428,7 +3428,7 @@ Column.prototype.getVerticalAlign = function () {
  * @memberof Column
  */
 Column.prototype.getStyle = function () {
-  var style = this.style
+  const style = this.style
   return style === Opal.nil ? undefined : style
 }
 
@@ -3439,7 +3439,7 @@ Column.prototype.getStyle = function () {
  * @namespace
  * @extends AbstractBlock
  */
-var Cell = Opal.Asciidoctor.Table.Cell
+const Cell = Opal.Asciidoctor.Table.Cell
 
 /**
  * Create a new Cell element
@@ -3459,7 +3459,7 @@ Cell.create = function (column, cellText, attributes, opts) {
  * @memberof Cell
  */
 Cell.prototype.getColumnSpan = function () {
-  var colspan = this.colspan
+  const colspan = this.colspan
   return colspan === Opal.nil ? undefined : colspan
 }
 
@@ -3479,7 +3479,7 @@ Cell.prototype.setColumnSpan = function (value) {
  * @memberof Cell
  */
 Cell.prototype.getRowSpan = function () {
-  var rowspan = this.rowspan
+  const rowspan = this.rowspan
   return rowspan === Opal.nil ? undefined : rowspan
 }
 
@@ -3536,7 +3536,7 @@ Cell.prototype.getLines = function () {
  * @memberof Cell
  */
 Cell.prototype.getLineNumber = function () {
-  var lineno = this.$lineno()
+  const lineno = this.$lineno()
   return lineno === Opal.nil ? undefined : lineno
 }
 
@@ -3546,7 +3546,7 @@ Cell.prototype.getLineNumber = function () {
  * @memberof Cell
  */
 Cell.prototype.getFile = function () {
-  var file = this.$file()
+  const file = this.$file()
   return file === Opal.nil ? undefined : file
 }
 
@@ -3556,7 +3556,7 @@ Cell.prototype.getFile = function () {
  * @memberof Cell
  */
 Cell.prototype.getStyle = function () {
-  var style = this.$style()
+  const style = this.$style()
   return style === Opal.nil ? undefined : style
 }
 
@@ -3566,7 +3566,7 @@ Cell.prototype.getStyle = function () {
  * @memberof Cell
  */
 Cell.prototype.getColumn = function () {
-  var column = this.$column()
+  const column = this.$column()
   return column === Opal.nil ? undefined : column
 }
 
@@ -3610,7 +3610,7 @@ Cell.prototype.getInnerDocument = function () {
  * @namespace
  * @module Converter/TemplateConverter
  */
-var TemplateConverter = Opal.Asciidoctor.Converter.TemplateConverter
+const TemplateConverter = Opal.Asciidoctor.Converter.TemplateConverter
 
 if (TemplateConverter) {
   // Alias
@@ -3640,11 +3640,11 @@ if (TemplateConverter) {
    * @memberof Converter/TemplateConverter
    */
   TemplateConverter.getCache = function () {
-    var caches = fromHash(this.caches)
+    const caches = fromHash(this.caches)
     if (caches) {
       if (caches.scans) {
         caches.scans = fromHash(caches.scans)
-        for (var key in caches.scans) {
+        for (const key in caches.scans) {
           caches.scans[key] = fromHash(caches.scans[key])
         }
       }
@@ -3722,7 +3722,7 @@ if (TemplateConverter) {
    *
    * A pluggable adapter for integrating a template engine into the built-in template converter.
    */
-  var TemplateEngine = {}
+  const TemplateEngine = {}
   TemplateEngine.registry = {}
 
   // Alias
@@ -3753,8 +3753,8 @@ if (TemplateConverter) {
       this.registry[names] = templateEngineAdapter
     } else {
       // array
-      for (var i = 0; i < names.length; i++) {
-        var name = names[i]
+      for (let i = 0; i < names.length; i++) {
+        const name = names[i]
         this.registry[name] = templateEngineAdapter
       }
     }
