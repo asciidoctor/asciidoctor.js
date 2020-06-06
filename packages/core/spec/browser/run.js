@@ -1,12 +1,13 @@
 /* eslint-env node, es6 */
 const path = require('path')
 const puppeteer = require('puppeteer')
+const MockServer = require('../share/mock-server.js')
 
 // puppeteer options
 const opts = {
   headless: true,
   timeout: 30000, // 30 seconds
-  args: ['--allow-file-access-from-files', '--no-sandbox']
+  args: ['--allow-file-access-from-files', '--no-sandbox', '--disable-web-security']
 }
 
 const log = async (msg) => {
@@ -23,30 +24,50 @@ const log = async (msg) => {
   }
   log.apply(this, args)
   return args
-};
+}
 
-(async function () {
+let mockServer
+
+const exit = async (exitCode) => {
+  if (mockServer) {
+    await mockServer.close()
+  }
+  process.exit(exitCode)
+}
+
+;(async function () {
   try {
+    const { uri: remoteBaseUri } = await new Promise((resolve, reject) => {
+      mockServer = new MockServer((msg) => {
+        if (msg.event === 'started') {
+          resolve({ uri: `http://localhost:${msg.port}` })
+        }
+      })
+    })
     const browser = await puppeteer.launch(opts)
     const page = await browser.newPage()
     page.exposeFunction('mochaOpts', () => ({ reporter: 'spec' }))
+    page.exposeFunction('testOpts', () => ({ remoteBaseUri }))
     page.on('console', async (msg) => {
       const args = await log(msg)
       if (args[0] && typeof args[0] === 'string') {
         if (args[0] === '%d failures') {
-          process.exit(parseInt(args[1]))
+          await exit(parseInt(args[1]))
         } else if (args[0].startsWith('Unable to start the browser tests suite:')) {
-          process.exit(1)
+          await exit(1)
         }
       }
     })
     await page.goto('file://' + path.join(__dirname, 'index.html'), { waitUntil: 'networkidle2' })
     browser.close()
+    if (mockServer) {
+      await mockServer.close()
+    }
   } catch (err) {
     console.error('Unable to run tests using Puppeteer', err)
-    process.exit(1)
+    await exit(1)
   }
-})().catch((err) => {
+})().catch(async (err) => {
   console.error('Unable to launch Chrome with Puppeteer', err)
-  process.exit(1)
+  await exit(1)
 })

@@ -1119,11 +1119,13 @@ content`)
           const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/cat.png[]`, options)
           expect(html).to.include('img src="data:image/png;base64,')
         })
-        it('should embed a remote png image', function () {
-          const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
-          const html = asciidoctor.convert('image::https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/packages/core/spec/fixtures/images/cat.png[]', options)
-          expect(html).to.include('img src="data:image/png;base64,')
-        }).timeout(5000)
+        if (testOptions.remoteBaseUri) {
+          it('should embed a remote png image', function () {
+            const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
+            const html = asciidoctor.convert(`image::${testOptions.remoteBaseUri}/cat.png[]`, options)
+            expect(html).to.include('img src="data:image/png;base64,')
+          })
+        }
         it('should not throw an exception if the image does not exists', function () {
           const options = { safe: 'safe', attributes: { 'data-uri': true, 'allow-uri-read': true } }
           const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/not_found.png[]`, options)
