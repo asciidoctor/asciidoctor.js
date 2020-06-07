@@ -12,17 +12,13 @@ import Asciidoctor from '../../build/asciidoctor-browser.js'
   }
   mocha.setup({
     ui: 'bdd',
-    ignoreLeaks: true,
+    checkLeaks: false,
     reporter: reporter
   })
 
   const expect = chai.expect
   const asciidoctor = Asciidoctor({ runtime: { platform: 'browser' } })
-  const parts = window.location.href.split('/') // break the string into an array
-  parts.pop()
-  parts.pop()
-  parts.pop()
-  const baseDir = parts.join('/')
+  const baseDir = window.location.origin
   const asciidoctorCoreSemVer = semVer(asciidoctor.getCoreVersion())
   let remoteBaseUri
   if (typeof testOpts === 'function') {

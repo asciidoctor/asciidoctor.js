@@ -114,6 +114,25 @@ tag-b
       this.childProcess.send({ event: 'exit' })
     })
   }
+
+  registerFiles (files) {
+    for (const file of files) {
+      const webPath = file.webPath
+      const path = file.path
+      this.childProcess.send({
+        event: 'configure',
+        data: {
+          method: 'GET',
+          path: webPath,
+          reply: {
+            status: 200,
+            headers: { 'content-type': file.mimetype },
+            body: fs.readFileSync(path, file.mimetype === 'image/png' || file.mimetype === 'image/jpg' ? 'binary' : 'utf8')
+          }
+        }
+      })
+    }
+  }
 }
 
 module.exports = MockServer

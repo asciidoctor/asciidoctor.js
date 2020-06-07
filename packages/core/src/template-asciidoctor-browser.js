@@ -1,6 +1,6 @@
 //{{opalCode}}
 
-export default function (moduleConfig) {
+export default function Asciidoctor(moduleConfig) {
 //{{asciidoctorCode}}
 
 //{{asciidoctorAPI}}
