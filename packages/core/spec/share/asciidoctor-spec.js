@@ -1,4 +1,4 @@
-/* global it, describe, define */
+/* global Opal, it, describe, define */
 const shareSpec = function (testOptions, asciidoctor, expect) {
   describe(testOptions.platform, function () {
     describe('When loaded', function () {
@@ -497,6 +497,22 @@ intro
         expect(secondBlock.getTitle()).to.equal('Section B')
         secondBlock.setTitle('Section BB')
         expect(secondBlock.getTitle()).to.equal('Section BB')
+      })
+
+      it('should set an undefined/nil title on a block', function () {
+        const doc = asciidoctor.load(`= Title
+
+== Section A
+
+== Section B
+`)
+        const firstBlock = doc.getBlocks()[0]
+        const secondBlock = doc.getBlocks()[1]
+        expect(firstBlock.getTitle()).to.equal('Section A')
+        expect(secondBlock.getTitle()).to.equal('Section B')
+        secondBlock.setTitle(undefined)
+        expect(secondBlock.title).to.equal(Opal.nil)
+        expect(secondBlock.getTitle()).to.be.undefined()
       })
 
       it('remove_attr should remove attribute and return previous value', function () {
