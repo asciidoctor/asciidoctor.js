@@ -329,6 +329,30 @@ AbstractBlock.prototype.setTitle = function (title) {
 }
 
 /**
+ * Generate and assign caption to block if not already assigned.
+ *
+ * If the block has a title and a caption prefix is available for this block,
+ * then build a caption from this information, assign it a number and store it
+ * to the caption attribute on the block.
+ *
+ * If a caption has already been assigned to this block, do nothing.
+ *
+ * The parts of a complete caption are: <prefix> <number>. <title>
+ * This partial caption represents the part the precedes the title.
+ *
+ * @param {string} value - the String caption to assign to this block or nil to use document attribute.
+ * @param {string} captionContext - the String context to use when resolving caption-related attributes.
+ * If not provided, the name of the context for this block is used. Only certain contexts allow the caption to be looked up.
+ *
+ * @memberof AbstractBlock
+ */
+AbstractBlock.prototype.assignCaption = function (value, captionContext) {
+  value = typeof value === 'undefined' ? Opal.nil : value
+  captionContext = typeof captionContext === 'undefined' ? null : captionContext
+  this.$assign_caption(value, captionContext)
+}
+
+/**
  * Convenience method that returns the interpreted title of the Block
  * with the caption prepended.
  * Concatenates the value of this Block's caption instance variable and the
@@ -412,7 +436,7 @@ AbstractBlock.prototype.getCaption = function () {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.setCaption = function (caption) {
-  this.caption = caption
+  this.caption = typeof caption === 'undefined' ? Opal.nil : caption
 }
 
 /**
