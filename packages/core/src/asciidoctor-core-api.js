@@ -324,6 +324,7 @@ AbstractBlock.prototype.getTitle = function () {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.setTitle = function (title) {
+  title = typeof title === 'undefined' ? Opal.nil : title
   return this['$title='](title)
 }
 
