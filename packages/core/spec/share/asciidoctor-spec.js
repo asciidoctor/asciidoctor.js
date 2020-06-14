@@ -952,6 +952,31 @@ paragraph 3
         expect(paragraph.getContent()).to.equal('<em>This</em> is a &lt;test&gt;')
         expect(paragraph.getAttribute('foo')).to.equal('bar')
       })
+
+      it('should assign a caption on a Block', function () {
+        const doc = asciidoctor.load('= Title')
+        const image = asciidoctor.Block.create(doc, 'image', {
+          content_model: 'empty',
+          attributes: {
+            target: `${testOptions.baseDir}/spec/fixtures/images/cat.png[]`,
+            format: 'png'
+          }
+        })
+        image.setTitle('A cat')
+        image.assignCaption(undefined, 'figure')
+        expect(image.getCaptionedTitle()).to.equal('Figure 1. A cat')
+        image.setCaption(undefined)
+        expect(image.getCaption()).to.be.undefined()
+        image.assignCaption('Figure A. ')
+        expect(image.getCaptionedTitle()).to.equal('Figure A. A cat')
+        image.setCaption(undefined)
+        image.setTitle('A nice cat')
+        image.assignCaption('Figure I. ')
+        expect(image.getCaptionedTitle()).to.equal('Figure I. A nice cat')
+        image.assignCaption('Figure X. ')
+        // caption is still assigned!
+        expect(image.getCaptionedTitle()).to.equal('Figure I. A nice cat')
+      })
     })
 
     describe('Converting', function () {
