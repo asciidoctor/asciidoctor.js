@@ -1971,14 +1971,14 @@ export namespace Asciidoctor {
      * block.title // "Foo 3^ # {two-colons} Bar(1)"
      * block.getTitle(); // "Foo 3^ # :: Bar(1)"
      */
-    getTitle(): string;
+    getTitle(): string|undefined;
 
     /**
      * Set the String block title.
      * @param title - The document title
      * @returns returns the new String title assigned to this Block.
      */
-    setTitle(title: string): string;
+    setTitle(title: string|undefined): string;
 
     /**
      * Convenience method that returns the interpreted title of the Block
