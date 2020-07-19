@@ -87,7 +87,7 @@
     "eslint": "6.8.0",
     "handlebars": "^4.7.6",
     "http-server": "0.12.3",
-    "mocha": "7.2.0",
+    "mocha": "8.0.1",
     "mock-http-server": "^1.4.2",
     "module-alias": "2.2.2",
     "nunjucks": "^3.2.1",
