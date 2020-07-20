@@ -92,7 +92,7 @@
     "module-alias": "2.2.2",
     "nunjucks": "^3.2.1",
     "opal-compiler": "2.0.0-alpha.2",
-    "portfinder": "1.0.26",
+    "portfinder": "1.0.27",
     "pug": "^2.0.4",
     "puppeteer": "5.1.0",
     "sinon": "8.1.1",
