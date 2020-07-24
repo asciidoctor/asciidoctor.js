@@ -13,6 +13,11 @@
 :uri-ext-kroki-gh: https://github.com/mogztter/asciidoctor-kroki
 :uri-ext-tweet-gh: https://github.com/mogztter/asciidoctor-tweet
 :uri-ext-bytefield-gh: https://github.com/Deep-Symmetry/bytefield-svg
+:uri-ext-antora-indexer-gl: https://gitlab.com/djencks/asciidoctor-antora-indexer
+:uri-ext-jsonpath-gl: https://gitlab.com/djencks/asciidoctor-jsonpath
+:uri-ext-mathjax-gl: https://gitlab.com/djencks/asciidoctor-mathjax.js
+:uri-ext-openblock-gl: https://gitlab.com/djencks/asciidoctor-openblock
+:uri-ext-template-gl: https://gitlab.com/djencks/asciidoctor-template
 
 Here's a list of extensions provided by the awesome community:
 
@@ -36,14 +41,36 @@ Emoji::
 Inline macro to render `emoji:heart[]` as an `<img>` that points to a remote SVG using {uri-twemoji}[Twemoji from Twitter]. +
 {uri-ext-emoji-gh}
 
-Interative runner::
+Interactive runner::
 Transform AsciiDoc code listings into interactive playgrounds which run in the browser.
 Add the `%interactive` option to your `[source]` block. +
 {uri-ext-interactive-runner-gh}
 
+MathJax::
+Server-side mathjax rendering into inline svg. +
+{uri-ext-mathjax-gl}
+
+Open Block::
+Nest open blocks to any depth using a block macro, at least until the spec allows this directly. +
+{uri-ext-openblock-gl}
+
 PlantUML::
 Render PlantUML, Ditaa and Graphiz (DOT) diagrams as PNG or SVG using a {uri-plantuml-server}[PlantUML server]. +
-{uri-ext-plantuml-gh}
+{uri-ext-plantuml-gh} +
+No longer maintained.
+Consider using Kroki instead.
+
+Queries::
+Query an external json document or (in Antora) the Antora content catalog and render the result as a list, table, count, or repeating template block.
+Json:::
+{uri-ext-jsonpath-gl}
+Antora:::
+{uri-ext-antora-indexer-gl}
+
+Template::
+Define a block or inline template and "call" it with "variables", with the result isolated from the main document:
+that is, the attributes do not leak out of the template. +
+{uri-ext-template-gl}
 
 Tweet::
 Render tweet using the Twitter API.
