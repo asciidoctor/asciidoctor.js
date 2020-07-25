@@ -15,10 +15,23 @@ const toHash = function (object) {
 const fromHash = function (hash) {
   const object = {}
   if (hash) {
-    const data = hash.$$smap
-    for (const key in data) {
-      const value = data[key]
+    const stringMap = hash.$$smap
+    for (const key in stringMap) {
+      const value = stringMap[key]
       object[key] = value === Opal.nil ? undefined : value
+    }
+    const numericMap = hash.$$map
+    if (numericMap) {
+      const positional = []
+      for (const key in numericMap) {
+        const entry = numericMap[key]
+        const value = entry.value
+        const index = entry.key - 1
+        positional[index] = value === Opal.nil ? undefined : value
+      }
+      if (positional.length > 0) {
+        object.$positional = positional
+      }
     }
   }
   return object
