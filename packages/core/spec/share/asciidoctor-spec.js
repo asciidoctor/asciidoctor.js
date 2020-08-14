@@ -419,11 +419,12 @@ doc.convert() // <3>
         expect(paragraphBlock.getAttribute('bold-statement')).to.equal('off')
       })
 
-      it('should hide positional attributes in getAttributes', function () {
+      it('should get positional attributes in getAttributes', function () {
         const doc = asciidoctor.load('[positional1,positional2,attr=value]\ntext')
         const block = doc.getBlocks()[0]
         const attributes = block.getAttributes()
-        expect(Object.getOwnPropertyNames(attributes).sort()).to.have.members(['attr', 'style'].sort())
+        expect(Object.getOwnPropertyNames(attributes).sort()).to.have.members(['$positional', 'attr', 'style'].sort())
+        expect(attributes.$positional).to.have.members(['positional1', 'positional2'])
       })
 
       it('should assign sectname, caption, and numeral to appendix section by default', function () {
