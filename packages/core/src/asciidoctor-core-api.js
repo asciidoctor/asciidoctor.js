@@ -15,10 +15,23 @@ var toHash = function (object) {
 var fromHash = function (hash) {
   var object = {}
   if (hash) {
-    var data = hash.$$smap
-    for (var key in data) {
-      var value = data[key]
-      object[key] = value === Opal.nil ? undefined : value
+    var stringMap = hash.$$smap
+    for (var stringMapKey in stringMap) {
+      var stringMapValue = stringMap[stringMapKey]
+      object[stringMapKey] = stringMapValue === Opal.nil ? undefined : stringMapValue
+    }
+    var numericMap = hash.$$map
+    if (numericMap) {
+      var positional = []
+      for (var numericMapKey in numericMap) {
+        var entry = numericMap[numericMapKey]
+        var numericMapValue = entry.value
+        var index = entry.key - 1
+        positional[index] = numericMapValue === Opal.nil ? undefined : numericMapValue
+      }
+      if (positional.length > 0) {
+        object.$positional = positional
+      }
     }
   }
   return object
@@ -1857,7 +1870,7 @@ Callouts.prototype.getListIndex = function () {
  * @memberof Callouts
  */
 Callouts.prototype.getCurrentList = function () {
-  const currentList = this.$current_list()
+  var currentList = this.$current_list()
   if (currentList && currentList.length > 0) {
     for (var i = 0; i < currentList.length; i++) {
       if (typeof currentList[i] === 'object' && '$$smap' in currentList[i]) {
@@ -3619,7 +3632,7 @@ Cell.prototype.getColumnPercentageWidth = function () {
  * @memberof Cell
  */
 Cell.prototype.getInnerDocument = function () {
-  const innerDocument = this.inner_document
+  var innerDocument = this.inner_document
   return innerDocument === Opal.nil ? undefined : innerDocument
 }
 
