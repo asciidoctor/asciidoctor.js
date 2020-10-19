@@ -2980,7 +2980,26 @@ export namespace Asciidoctor {
     function create(): Html5Converter;
   }
 
-  class Converter {
+  interface AbstractConverter {
+    /**
+     * Converts an {AbstractNode} using the given transform.
+     * This method must be implemented by a concrete converter class.
+     *
+     * @param node - The concrete instance of AbstractNode to convert.
+     * @param [transform] - An optional String transform that hints at which transformation should be applied to this node.
+     * If a transform is not given, the transform is often derived from the value of the {AbstractNode#getNodeName} property. (optional, default: undefined)
+     * @param [opts]- An optional JSON of options hints about how to convert the node. (optional, default: undefined)
+     *
+     * @returns the {String} result.
+     */
+    convert(node: AbstractNode, transform?: string, opts?: unknown): string;
+  }
+
+  interface ConverterConstructor {
+    new(backend?: string, opts?: unknown): AbstractConverter;
+  }
+
+  class Converter implements AbstractConverter {
     /**
      * Converts an {AbstractNode} using the given transform.
      * This method must be implemented by a concrete converter class.
@@ -3009,7 +3028,7 @@ export namespace Asciidoctor {
      * @param opts - a JSON of options to pass to the converter (default: {})
      * @returns a {Converter} instance for converting nodes in an Asciidoctor AST.
      */
-    function create(backend: string, opts?: any): Converter;
+    function create(backend: string, opts?: unknown): Converter;
   }
 
   /**
@@ -3027,7 +3046,7 @@ export namespace Asciidoctor {
      * @param converter - The {Converter} instance to register
      * @param backends- A {string} {Array} of backend names that this converter should be registered to handle (optional, default: ['*'])
      */
-    register(converter: any, backends?: string[]): void;
+    register(converter: AbstractConverter | ConverterConstructor, backends?: string[]): void;
 
     /**
      * Retrieves the singleton instance of the converter factory.

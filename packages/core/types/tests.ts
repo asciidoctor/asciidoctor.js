@@ -510,7 +510,7 @@ interface Transforms {
   [key: string]: (node: Asciidoctor.AbstractNode) => string;
 }
 
-class BlogConverter {
+class BlogConverter implements Asciidoctor.AbstractConverter {
   private readonly baseConverter: Asciidoctor.Html5Converter;
   private readonly transforms: Transforms;
 
@@ -1076,11 +1076,20 @@ assert(blockSubs5[0] === 'specialcharacters');
 let converterRegistry = processor.ConverterFactory.getRegistry();
 assert(typeof converterRegistry.html5 === 'function');
 
-class BlankConverter {
+class BlankConverter implements Asciidoctor.AbstractConverter {
   convert() {
     return '';
   }
 }
+
+const BlankConstructor = BlankConverter as Asciidoctor.ConverterConstructor;
+processor.ConverterFactory.register(BlankConstructor, ['blank']);
+converterRegistry = processor.ConverterFactory.getRegistry();
+assert(typeof converterRegistry.html5 === 'function');
+assert(typeof converterRegistry.blank === 'function');
+assert(typeof processor.ConverterFactory.for('html5') === 'function');
+assert(typeof processor.ConverterFactory.for('blank') === 'function');
+assert(typeof processor.ConverterFactory.for('foo') === 'undefined');
 
 processor.ConverterFactory.register(new BlankConverter(), ['blank']);
 converterRegistry = processor.ConverterFactory.getRegistry();
