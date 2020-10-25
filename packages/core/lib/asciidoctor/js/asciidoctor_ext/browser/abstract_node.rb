@@ -3,7 +3,7 @@ class AbstractNode
   def read_contents target, opts = {}
     doc = @document
     if (Helpers.uriish? target) || ((start = opts[:start]) && (Helpers.uriish? start) && (target = doc.path_resolver.web_path target, start))
-      if (doc.path_resolver.descends_from? target, doc.base_dir) || (doc.attr? 'allow-uri-read')
+      if (doc.path_resolver.descends_from? target, doc.base_dir) || (target.start_with? 'chrome://') || (doc.attr? 'allow-uri-read')
         begin
           if opts[:normalize]
             (Helpers.prepare_source_string ::File.read(target)).join LF
