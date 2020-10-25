@@ -66,6 +66,14 @@
           const errorMessage = memoryLogger.getMessages()[0]
           expect(errorMessage.getSeverity()).to.equal('WARN')
           expect(errorMessage.getText()).to.include('could not retrieve contents of stylesheet at URI: chrome://asciidoctor/extension/css/asciidoctor-plus.css')
+        } catch (e) {
+          // the resource does not exist but chrome:// is a root path and should not be prepended by "./"
+          // we expect the processor to try to load the resource 'chrome://asciidoctor/extension/css/asciidoctor-plus.css' and fail!
+          if (asciidoctorCoreSemVer.lte('2.0.10')) {
+            expect(e.message).to.include('Failed to load \'chrome://asciidoctor/extension/css/asciidoctor-plus.css\'')
+          } else {
+            throw e
+          }
         } finally {
           asciidoctor.LoggerManager.setLogger(defaultLogger)
         }
