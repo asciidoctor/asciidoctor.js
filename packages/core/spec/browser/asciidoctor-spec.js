@@ -58,13 +58,16 @@
           standalone: true,
           attributes
         }
+        const defaultLogger = asciidoctor.LoggerManager.getLogger()
+        const memoryLogger = asciidoctor.MemoryLogger.create()
         try {
+          asciidoctor.LoggerManager.setLogger(memoryLogger)
           asciidoctor.convert('Hello world', options)
-          expect.fail('the resource does not exist and the converter should throw an exception!')
-        } catch (e) {
-          // the resource does not exist but chrome:// is a root path and should not be prepended by "./"
-          // we expect the processor to try to load the resource 'chrome://asciidoctor/extension/css/asciidoctor-plus.css' and fail!
-          expect(e.message).to.include('Failed to load \'chrome://asciidoctor/extension/css/asciidoctor-plus.css\'')
+          const errorMessage = memoryLogger.getMessages()[0]
+          expect(errorMessage.getSeverity()).to.equal('WARN')
+          expect(errorMessage.getText()).to.include('could not retrieve contents of stylesheet at URI: chrome://asciidoctor/extension/css/asciidoctor-plus.css')
+        } finally {
+          asciidoctor.LoggerManager.setLogger(defaultLogger)
         }
       })
     })

@@ -984,6 +984,7 @@ paragraph 3
           doctype: 'article',
           safe: 'unsafe',
           header_footer: true,
+          base_dir: testOptions.baseDir,
           attributes: ['showtitle', 'stylesheet=asciidoctor.css', 'stylesdir=' + testOptions.baseDir + '/build/css']
         }
         const html = asciidoctor.convert('=== Test', options)
