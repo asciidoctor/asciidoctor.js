@@ -356,7 +356,13 @@ doc.convert() // <3>
         const blocks = doc.getBlocks()
         expect(blocks.length).to.equal(2)
         // preamble
-        expect(blocks[0].getLineNumber()).to.be.undefined()
+        if (testOptions.coreVersion.gte('2.0.11')) {
+          expect(blocks[0].getLineNumber()).to.equal(3)
+        } else {
+          // before 2.0.11, the source location was not available on a preamble block
+          // https://github.com/asciidoctor/asciidoctor/issues/3799
+          expect(blocks[0].getLineNumber()).to.be.undefined()
+        }
         expect(blocks[0].getBlocks().length).to.equal(1)
         expect(blocks[0].getBlocks()[0].getLineNumber()).to.equal(3)
         // first section
