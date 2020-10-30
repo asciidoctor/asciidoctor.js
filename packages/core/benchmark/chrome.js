@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs')
+const ospath = require('path')
 const stats = require('./stats.js')
 
 const verbose = process.env.VERBOSE
@@ -14,31 +15,31 @@ puppeteer.launch({ args: ['--disable-gpu', '--no-sandbox', '--single-process', '
   const start = new Date().getTime()
   await page.addScriptTag({ path: './build/asciidoctor.js' })
   console.log(`Load scripts: ${((new Date().getTime() - start) / 1000.0)}s`)
-  const data = fs.readFileSync(`${__dirname}/userguide.adoc`, 'utf-8')
+  const data = fs.readFileSync(ospath.join(__dirname, 'userguide.adoc'), 'utf-8')
   await page.exposeFunction('env', () => ({ verbose, include, runs, baseDir: `file://${__dirname}` }))
   const result = await page.evaluate(async (data) => {
     /* global Asciidoctor, env */
-    var environment = await env()
-    var options = {
+    const environment = await env()
+    const options = {
       safe: 'safe',
       base_dir: environment.baseDir,
       doctype: 'article',
       header_footer: true,
       attributes: 'linkcss copycss! toc! numbered! icons! compat-mode'
     }
-    var asciidoctor = Asciidoctor({ runtime: { ioModule: 'xmlhttprequest' } })
-    var content
+    const asciidoctor = Asciidoctor({ runtime: { ioModule: 'xmlhttprequest' } })
+    let content
     if (environment.include) {
       content = 'include::' + environment.baseDir + '/userguide.adoc[]'
     } else {
       content = data
     }
-    var html
-    var result = []
-    for (var i = 1; i <= environment.runs; i++) {
-      var start = new Date().getTime()
+    let html
+    const result = []
+    for (let i = 1; i <= environment.runs; i++) {
+      const start = new Date().getTime()
       html = asciidoctor.convert(content, options)
-      var duration = new Date().getTime() - start
+      const duration = new Date().getTime() - start
       result.push({ id: i, duration: duration, html: html })
     }
     return result

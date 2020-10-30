@@ -230,14 +230,17 @@ Asciidoctor.prototype.getRuntime = function () {
  * @returns {string|Document} - the {@link Document} object if the converted String is written to a file,
  * otherwise the converted String
  * @example
- * var input = '= Hello, AsciiDoc!\n' +
- *   'Guillaume Grossetie <ggrossetie@example.com>\n\n' +
- *   'An introduction to http://asciidoc.org[AsciiDoc].\n\n' +
- *   '== First Section\n\n' +
- *   '* item 1\n' +
- *   '* item 2\n';
+ * const input = `= Hello, AsciiDoc!
+ * Guillaume Grossetie <ggrossetie@example.com>
  *
- * var html = asciidoctor.convert(input);
+ * An introduction to http://asciidoc.org[AsciiDoc].
+ *
+ * == First Section
+ *
+ * * item 1
+ * * item 2`
+ *
+ * const html = asciidoctor.convert(input)
  * @memberof Asciidoctor
  */
 Asciidoctor.prototype.convert = function (input, options) {
@@ -256,7 +259,7 @@ Asciidoctor.prototype.convert = function (input, options) {
  * @returns {string|Document} - the {@link Document} object if the converted String is written to a file,
  * otherwise the converted String
  * @example
- * var html = asciidoctor.convertFile('./document.adoc');
+ * const html = asciidoctor.convertFile('./document.adoc')
  * @memberof Asciidoctor
  */
 Asciidoctor.prototype.convertFile = function (filename, options) {
@@ -1244,7 +1247,7 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
  * to enable all of Asciidoctor's features.
  *
  * <pre>
- *   var doc = Asciidoctor.load('= Hello, AsciiDoc!', { 'safe': 'safe' })
+ *   const doc = Asciidoctor.load('= Hello, AsciiDoc!', { 'safe': 'safe' })
  *   // => Asciidoctor::Document { doctype: "article", doctitle: "Hello, AsciiDoc!", blocks: 0 }
  * </pre>
  *
@@ -1254,8 +1257,8 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
  * The most basic usage of the Document object is to retrieve the document's title.
  *
  * <pre>
- *  var source = '= Document Title'
- *  var doc = asciidoctor.load(source, { 'safe': 'safe' })
+ *  const source = '= Document Title'
+ *  const doc = asciidoctor.load(source, { 'safe': 'safe' })
  *  console.log(doc.getTitle()) // 'Document Title'
  * </pre>
  *
@@ -3166,7 +3169,7 @@ SyntaxHighlighter.for = SyntaxHighlighter.get
 /**
  * @namespace
  */
-var SyntaxHighlighterBase = Opal.const_get_qualified(SyntaxHighlighter, 'Base', true)
+const SyntaxHighlighterBase = Opal.const_get_qualified(SyntaxHighlighter, 'Base', true)
 
 // Alias
 Opal.Asciidoctor.SyntaxHighlighterBase = SyntaxHighlighterBase
