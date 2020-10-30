@@ -85,7 +85,7 @@ const applyPatches = (asciidoctorCoreDependency) => {
 const patchOpalCompiler = () => {
   // revert https://github.com/opal/opal/commit/d46792d2160e4f524c3add711f6424dd99187d1c
   // see: https://github.com/opal/opal/issues/2099
-  const sourceFile = `${__dirname}/../../node_modules/opal-compiler/src/opal-builder.js`
+  const sourceFile = path.join(__dirname, '..', '..', 'node_modules', 'opal-compiler', 'src', 'opal-builder.js')
   const source = fs.readFileSync(sourceFile, 'utf8')
   fs.writeFileSync(sourceFile, source.replace(/(Opal\.modules\["opal\/parser\/patch"].*?)(\s+\(function\([^)]+\) {\n\s+var self = \$klass\(\$base, \$super, 'Lexer'\);.*},\s\$Lexer_source_buffer\$eq\$1\.\$\$arity = 1\), nil\) && 'source_buffer='\n\s+}\)\(\$\$\(\$nesting, 'Parser'\), null, \$nesting\);)/gs, '$1'))
 }

@@ -1,12 +1,13 @@
 'use strict'
 
 const fs = require('fs')
+const ospath = require('path')
 const childProcess = require('child_process')
 
 class MockServer {
   constructor (listener) {
     // we need to use "fork" to spawn a new Node.js process otherwise we will create a deadlock.
-    this.childProcess = childProcess.fork(`${__dirname}/bin/mock-server.js`)
+    this.childProcess = childProcess.fork(ospath.join(__dirname, 'bin', 'mock-server.js'))
     this.childProcess.on('message', (msg) => {
       if (msg.event === 'started') {
         // auto-configure
@@ -93,7 +94,7 @@ tag-b
             reply: {
               status: 200,
               headers: { 'content-type': 'image/png' },
-              body: fs.readFileSync(`${__dirname}/../fixtures/images/cat.png`, 'binary')
+              body: fs.readFileSync(ospath.join(__dirname, '..', 'fixtures', 'images', 'cat.png'), 'binary')
             }
           }
         })

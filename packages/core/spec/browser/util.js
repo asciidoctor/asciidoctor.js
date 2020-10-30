@@ -1,8 +1,10 @@
+const ospath = require('path')
+
 module.exports.configure = (mockServer) => {
   const baseDirRelativeFile = (file) => {
     return {
       webPath: `/${file.path}`,
-      path: `${__dirname}/../../${file.path}`,
+      path: ospath.join(__dirname, '..', '..', file.path),
       mimetype: file.mimetype
     }
   }
@@ -12,14 +14,14 @@ module.exports.configure = (mockServer) => {
       .replace(/\/\//g, '/')
     return {
       webPath: webPath.startsWith('/') ? webPath : `/${webPath}`,
-      path: `${__dirname}/${file.path}`,
+      path: ospath.join(__dirname, file.path),
       mimetype: file.mimetype
     }
   }
   const files = [
     {
       webPath: '/index.html',
-      path: `${__dirname}/index.html`,
+      path: ospath.join(__dirname, 'index.html'),
       mimetype: 'text/html'
     }
   ]
@@ -92,7 +94,7 @@ module.exports.configure = (mockServer) => {
     mimetype: 'application/javascript'
   }))
   files.push({
-    path: `${__dirname}/asciidoctor-spec.js`,
+    path: ospath.join(__dirname, 'asciidoctor-spec.js'),
     webPath: '/asciidoctor-spec.js',
     mimetype: 'application/javascript'
   })

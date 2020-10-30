@@ -691,7 +691,7 @@ Getting Real details the business, design, programming, and marketing principles
 `
           const doc = asciidoctor.load(input)
           expect(doc.getAuthors()).to.have.lengthOf(1)
-          var author = doc.getAuthors()[0]
+          const author = doc.getAuthors()[0]
           expect(author.getEmail()).to.equal('david@37signals.com')
           expect(author.getName()).to.equal('David Heinemeier Hansson')
           expect(author.getFirstName()).to.equal('David')
@@ -708,14 +708,14 @@ Getting Real details the business, design, programming, and marketing principles
 `
           const doc = asciidoctor.load(input)
           expect(doc.getAuthors()).to.have.lengthOf(2)
-          var firstAuthor = doc.getAuthors()[0]
+          const firstAuthor = doc.getAuthors()[0]
           expect(firstAuthor.getEmail()).to.equal('david@37signals.com')
           expect(firstAuthor.getName()).to.equal('David Heinemeier Hansson')
           expect(firstAuthor.getFirstName()).to.equal('David')
           expect(firstAuthor.getMiddleName()).to.equal('Heinemeier')
           expect(firstAuthor.getLastName()).to.equal('Hansson')
           expect(firstAuthor.getInitials()).to.equal('DHH')
-          var secondAuthor = doc.getAuthors()[1]
+          const secondAuthor = doc.getAuthors()[1]
           expect(secondAuthor.getEmail()).to.equal('jason@37signals.com')
           expect(secondAuthor.getName()).to.equal('Jason Fried')
           expect(secondAuthor.getFirstName()).to.equal('Jason')
@@ -735,14 +735,14 @@ Getting Real details the business, design, programming, and marketing principles
 `
           const doc = asciidoctor.load(input)
           expect(doc.getAuthors()).to.have.lengthOf(2)
-          var firstAuthor = doc.getAuthors()[0]
+          const firstAuthor = doc.getAuthors()[0]
           expect(firstAuthor.getEmail()).to.equal('david@37signals.com')
           expect(firstAuthor.getName()).to.equal('David Heinemeier Hansson')
           expect(firstAuthor.getFirstName()).to.equal('David')
           expect(firstAuthor.getMiddleName()).to.equal('Heinemeier')
           expect(firstAuthor.getLastName()).to.equal('Hansson')
           expect(firstAuthor.getInitials()).to.equal('DHH')
-          var secondAuthor = doc.getAuthors()[1]
+          const secondAuthor = doc.getAuthors()[1]
           expect(secondAuthor.getEmail()).to.equal('jason@37signals.com')
           expect(secondAuthor.getName()).to.equal('Jason Fried')
           expect(secondAuthor.getFirstName()).to.equal('Jason')

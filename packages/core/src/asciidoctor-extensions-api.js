@@ -47,15 +47,15 @@ const registerExtension = function (registry, type, processor, name) {
  * @example
  * asciidoctor.Extensions.register(function () {
  *   this.block(function () {
- *     var self = this;
- *     self.named('shout');
- *     self.onContext('paragraph');
+ *     const self = this
+ *     self.named('shout')
+ *     self.onContext('paragraph')
  *     self.process(function (parent, reader) {
- *       var lines = reader.getLines().map(function (l) { return l.toUpperCase(); });
- *       return self.createBlock(parent, 'paragraph', lines);
- *     });
- *   });
- * });
+ *       const lines = reader.getLines().map(function (l) { return l.toUpperCase(); })
+ *       return self.createBlock(parent, 'paragraph', lines)
+ *     })
+ *   })
+ * })
  */
 const Extensions = Opal.const_get_qualified(Opal.Asciidoctor, 'Extensions')
 
@@ -1309,7 +1309,7 @@ ConverterFactory.register = function (converter, backends) {
   const bridgeComposedMethodToInstance = function (obj, instance) {
     bridgeMethodToInstance(obj, instance, '$composed', 'composed')
   }
-  var bridgeMethodToInstance = function (obj, instance, methodName, functionName, defaultImplementation) {
+  const bridgeMethodToInstance = function (obj, instance, methodName, functionName, defaultImplementation) {
     if (typeof obj[methodName] === 'undefined') {
       if (typeof obj[functionName] === 'function') {
         instance[methodName] = obj[functionName]
@@ -1368,7 +1368,7 @@ ConverterFactory.register = function (converter, backends) {
         'init_backend_traits',
         'backend_traits'
       ]
-      for (var functionName of converterBackendTraitsFunctionNames) {
+      for (const functionName of converterBackendTraitsFunctionNames) {
         converter['$' + functionName] = ConverterBackendTraits.prototype['$' + functionName]
       }
       converter.$$meta = ConverterBackendTraits
