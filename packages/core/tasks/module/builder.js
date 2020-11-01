@@ -97,18 +97,17 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
     }
     templateModel['//{{asciidoctorCode}}'] = asciidoctorData
     const content = parseTemplateFile(templateFile, templateModel)
+      // remove the default export on Opal in the bundle because Asciidoctor is already the default export!
+      // otherwise, the following exception is thrown: "Uncaught SyntaxError: Duplicate export of 'default'"
+      .replace(/export default Opal/m, '')
     if (environment === 'browser') {
       const header = `/**
  * @license Asciidoctor.js ${packageJson.version} | MIT | https://github.com/asciidoctor/asciidoctor.js
  */
 `
       const buffers = []
-      const data = content
-        // remove the default export on Opal in the bundle because Asciidoctor is already the default export!
-        // otherwise, the following exception is thrown: "Uncaught SyntaxError: Duplicate export of 'default'"
-        .replace(/export default Opal/m, '')
       buffers.push(Buffer.from(header, 'utf8'))
-      buffers.push(Buffer.from(data, 'utf8'))
+      buffers.push(Buffer.from(content, 'utf8'))
       fs.writeFileSync(target, Buffer.concat(buffers), 'utf8')
     } else {
       fs.writeFileSync(target, content, 'utf8')
