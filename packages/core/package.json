@@ -4,6 +4,7 @@
   "description": "Asciidoctor - the core library",
   "main": "dist/node/asciidoctor.js",
   "browser": "dist/browser/asciidoctor.js",
+  "module": "dist/browser/asciidoctor.js",
   "types": "types",
   "engines": {
     "node": ">=12",
