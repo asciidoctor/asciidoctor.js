@@ -103,8 +103,12 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
  */
 `
       const buffers = []
+      const data = content
+        // remove the default export on Opal in the bundle because Asciidoctor is already the default export!
+        // otherwise, the following exception is thrown: "Uncaught SyntaxError: Duplicate export of 'default'"
+        .replace(/export default Opal/m, '')
       buffers.push(Buffer.from(header, 'utf8'))
-      buffers.push(Buffer.from(content, 'utf8'))
+      buffers.push(Buffer.from(data, 'utf8'))
       fs.writeFileSync(target, Buffer.concat(buffers), 'utf8')
     } else {
       fs.writeFileSync(target, content, 'utf8')
