@@ -23,7 +23,7 @@ const isWin = process.platform === 'win32'
 
 const asciidoctor = require('../../build/asciidoctor-node.js')(config)
 
-const Opal = require('asciidoctor-opal-runtime').Opal // for testing purpose only
+const Opal = require('asciidoctor-opal-runtime') // for testing purpose only
 const packageJson = require('../../package.json')
 
 const asciidoctorCoreSemVer = semVer(asciidoctor.getCoreVersion())
@@ -691,7 +691,11 @@ intro
       expect(doc.getCounters().mycounter).to.equal(2)
 
       expect(blocks[3].hasBlocks()).to.be.false()
-      expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o]</span>?')
+      if (asciidoctorCoreSemVer.gte('2.0.17')) {
+        expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o&#93;</span>?')
+      } else {
+        expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o]</span>?')
+      }
     })
 
     it('should get links catalog', () => {
