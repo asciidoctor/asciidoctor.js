@@ -14,7 +14,7 @@ export default function (moduleConfig) {
    * @memberof Asciidoctor
    * @returns {string} - returns the version number of Asciidoctor.js.
    */
-  Opal.Asciidoctor.prototype.getVersion = function () {
+  Asciidoctor.prototype.getVersion = function () {
     return ASCIIDOCTOR_JS_VERSION
   }
   return Opal.Asciidoctor
