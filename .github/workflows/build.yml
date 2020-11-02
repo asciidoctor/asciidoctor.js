@@ -67,12 +67,12 @@ jobs:
         env:
           ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
         working-directory: ./packages/core
-        run: node tasks/build.js
+        run: node tasks/build.cjs
       - name: Test Build
         env:
           ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
         working-directory: ./packages/core
-        run: node tasks/test/unsupported-features.js
+        run: node tasks/test/unsupported-features.cjs
       - name: Test Node
         env:
           ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
