@@ -23,7 +23,7 @@ const isWin = process.platform === 'win32'
 
 const asciidoctor = require('../../build/asciidoctor-node.cjs')(config)
 
-const Opal = require('asciidoctor-opal-runtime').Opal // for testing purpose only
+const Opal = require('asciidoctor-opal-runtime') // for testing purpose only
 const packageJson = require('../../package.json')
 
 const asciidoctorCoreSemVer = semVer(asciidoctor.getCoreVersion())
@@ -64,7 +64,7 @@ describe('Node.js', () => {
     coreVersion: asciidoctorCoreSemVer
   }
 
-  const MockServer = require('../share/mock-server.js')
+  const MockServer = require('../share/mock-server.cjs')
   let mockServer
 
   before(async function () {

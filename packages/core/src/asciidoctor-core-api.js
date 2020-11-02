@@ -202,7 +202,7 @@ const Asciidoctor = Opal.Asciidoctor.$$class
  * @memberof Asciidoctor
  */
 Asciidoctor.prototype.getCoreVersion = function () {
-  return this.$$const.VERSION
+  return Opal.Asciidoctor.$$const.VERSION
 }
 
 /**

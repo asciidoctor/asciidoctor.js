@@ -7,6 +7,7 @@ const bfs = require('bestikk-fs')
 const Download = require('bestikk-download')
 const download = new Download({})
 const rollupPluginNodeResolve = require('@rollup/plugin-node-resolve')
+const commonjs = require('@rollup/plugin-commonjs')
 const { rollup } = require('rollup')
 
 const compilerModule = require('./compiler.cjs')
@@ -111,7 +112,29 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
     } else {
       fs.writeFileSync(target, content, 'utf8')
       if (environment === 'node') {
-        const bundle = await rollup({ input: target })
+        /*
+        await rollup.rollup(
+          { input: target, plugins: [pluginRollupNodeResolve.nodeResolve()] },
+          { format: 'esm', file: 'build/asciidoctor-browser.js' })
+*/
+        const bundle = await rollup({
+          input: target,
+          /*
+          plugins: [rollupPluginNodeResolve.nodeResolve(), commonjs()],
+          external: [
+            'fs',
+            'path',
+            'util',
+            'os',
+            'events',
+            'assert',
+            'url',
+            'http',
+            'https',
+            'child_process'
+          ]
+           */
+        })
         await bundle.write({
           file: `build/asciidoctor-${environment}.cjs`,
           format: 'cjs'

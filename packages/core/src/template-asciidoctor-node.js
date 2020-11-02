@@ -1,5 +1,5 @@
 /* global Asciidoctor, ASCIIDOCTOR_JS_VERSION */
-import { Opal } from 'asciidoctor-opal-runtime'
+import Opal from 'asciidoctor-opal-runtime'
 
 export default function (moduleConfig) {
 //{{asciidoctorCode}}

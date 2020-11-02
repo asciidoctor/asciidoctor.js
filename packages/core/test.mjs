@@ -1,4 +1,4 @@
-import { Opal } from 'asciidoctor-opal-runtime'
+import Opal from 'asciidoctor-opal-runtime'
 
 Opal.top.$require("pathname")
 
