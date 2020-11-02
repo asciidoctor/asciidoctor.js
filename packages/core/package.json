@@ -22,7 +22,7 @@
     "test:graalvm": "node tasks/graalvm.cjs",
     "test:node": "mocha spec/*/*.spec.cjs",
     "test:browser": "node spec/browser/run.cjs",
-    "test:types": "rm -f types/tests.js && dtslint types && tsc --build types/tsconfig.json && node types/tests.js",
+    "test:types": "rm -f types/tests.js && dtslint types && tsc --build types/tsconfig.json && node --input-type=commonjs types/tests.js",
     "test": "node tasks/test/unsupported-features.cjs && npm run test:node && npm run test:browser && npm run test:types",
     "build": "node tasks/build.cjs && npm run test && npm run lint",
     "build:quick": "node tasks/build.cjs && npm run test:node && npm run code:lint",
@@ -107,6 +107,6 @@
     ]
   },
   "_moduleAliases": {
-    "@asciidoctor/core": "build/asciidoctor-node.js"
+    "@asciidoctor/core": "build/asciidoctor-node.cjs"
   }
 }
