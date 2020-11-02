@@ -160,7 +160,7 @@ class Converter::TemplateConverter < Converter::Base
     }
     # Grab the files in the top level of the directory (do not recurse)
     ::Dir.glob(pattern).select {|match| ::File.file? match }.each do |file|
-      if (basename = ::File.basename file) == 'helpers.js'
+      if (basename = ::File.basename file) == 'helpers.js' || (basename = ::File.basename file) == 'helpers.cjs'
         helpers = file
         next
       elsif (path_segments = basename.split '.').size < 2
@@ -221,7 +221,7 @@ class Converter::TemplateConverter < Converter::Base
             opts.filename = file
             template = { render: pug.compileFile(file, opts), '$file': function() { return file } }
           }
-        when :js
+        when :js, :cjs
           template = `{ render: require(file), '$file': function() { return file } }`
         else
           %x{
@@ -237,7 +237,7 @@ class Converter::TemplateConverter < Converter::Base
       end
       result[name] = template if template
     end
-    if helpers || ::File.file?(helpers = %(#{template_dir}/helpers.js))
+    if helpers || ::File.file?(helpers = %(#{template_dir}/helpers.js)) || ::File.file?(helpers = %(#{template_dir}/helpers.cjs))
       %x{
         var helpers = require(helpers)
         if (typeof helpers.configure === 'function') {

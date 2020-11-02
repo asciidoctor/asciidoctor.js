@@ -1141,7 +1141,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to process foo bar postprocessor extension', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/foo-bar-postprocessor.js')(registry)
+          require('../share/extensions/foo-bar-postprocessor.cjs')(registry)
           const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-bar-postprocessor-ex.adoc')), opts)
           expect(resultWithExtension).to.contain('bar, qux, bar.')
           expect(resultWithExtension).not.to.contain('foo')
@@ -1154,7 +1154,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to get the postprocessor registered', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/foo-bar-postprocessor.js')(registry)
+          require('../share/extensions/foo-bar-postprocessor.cjs')(registry)
           const doc = asciidoctor.load('test', opts)
           expect(doc.getExtensions().hasBlockMacros()).to.be.false()
           expect(doc.getExtensions().hasInlineMacros()).to.be.false()
@@ -1172,7 +1172,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to process love tree processor extension', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/love-tree-processor.js')(registry)
+          require('../share/extensions/love-tree-processor.cjs')(registry)
           const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('love-tree-processor-ex.adoc')), opts)
           expect(resultWithExtension).to.contain('Made with icon:heart[]')
 
@@ -1183,7 +1183,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to get the tree processor registered', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/love-tree-processor.js')(registry)
+          require('../share/extensions/love-tree-processor.cjs')(registry)
           const doc = asciidoctor.load('test', opts)
           expect(doc.getExtensions().hasBlockMacros()).to.be.false()
           expect(doc.getExtensions().hasPostprocessors()).to.be.false()
@@ -1201,7 +1201,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to process draft preprocessor extension', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/draft-preprocessor.js')(registry)
+          require('../share/extensions/draft-preprocessor.cjs')(registry)
           const doc = asciidoctor.load(fs.readFileSync(resolveFixture('draft-preprocessor-ex.adoc')), opts)
           expect(doc.getAttribute('status')).to.equal('DRAFT')
           const result = doc.convert()
@@ -1212,7 +1212,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to get the preprocessor registered', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/draft-preprocessor.js')(registry)
+          require('../share/extensions/draft-preprocessor.cjs')(registry)
           const doc = asciidoctor.load('test', opts)
           expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
           expect(doc.getExtensions().hasBlockMacros()).to.be.false()
@@ -1257,7 +1257,7 @@ sample content`, opts)
         it('should be able to process moar footer docinfo processor extension', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { safe: 'server', header_footer: true, extension_registry: registry }
-          require('../share/extensions/moar-footer-docinfo-processor.js')(registry)
+          require('../share/extensions/moar-footer-docinfo-processor.cjs')(registry)
           const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('moar-footer-docinfo-processor-ex.adoc')), opts)
           expect(resultWithExtension).to.contain('moar footer')
 
@@ -1268,7 +1268,7 @@ sample content`, opts)
         it('should be able to get the docinfo processor registered', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/moar-footer-docinfo-processor.js')(registry)
+          require('../share/extensions/moar-footer-docinfo-processor.cjs')(registry)
           const doc = asciidoctor.load('test', opts)
           expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
           expect(doc.getExtensions().hasBlockMacros()).to.be.false()
@@ -1341,7 +1341,7 @@ sample content`, opts)
 
         it('should be able to process custom block', () => {
           try {
-            require('../share/extensions/shout-block.js')
+            require('../share/extensions/shout-block.cjs')
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('shout-block-ex.adoc')))
             expect(result).to.contain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>')
           } finally {
@@ -1351,7 +1351,7 @@ sample content`, opts)
 
         it('should be able to process a custom literal block', () => {
           try {
-            require('../share/extensions/chart-block.js')
+            require('../share/extensions/chart-block.cjs')
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('chart-block-ex.adoc')))
             expect(result).to.contain('<div class="chart" data-chart-labels="{foo},{bar},{qux}" data-chart-series-0="28,48,40" data-chart-series-1="65,59,80"></div>')
           } finally {
@@ -1516,7 +1516,7 @@ sample content`, opts)
 
         it('should be able to process smiley extension', () => {
           try {
-            require('../share/extensions/smiley-inline-macro.js')
+            require('../share/extensions/smiley-inline-macro.cjs')
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('smiley-inline-macro-ex.adoc')))
             expect(result).to.contain('<strong>:D</strong>')
             expect(result).to.contain('<strong>;)</strong>')
@@ -1529,7 +1529,7 @@ sample content`, opts)
         it('should be able to process emoji inline macro processor extension', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/emoji-inline-macro.js')(registry)
+          require('../share/extensions/emoji-inline-macro.cjs')(registry)
           const result = asciidoctor.convert(fs.readFileSync(resolveFixture('emoji-inline-macro-ex.adoc')), opts)
           expect(result).to.contain('1f422.svg')
           expect(result).to.contain('2764.svg')
@@ -1608,7 +1608,7 @@ sample content`, opts)
 
         it('should be able to process lorem extension', () => {
           try {
-            require('../share/extensions/lorem-block-macro.js')
+            require('../share/extensions/lorem-block-macro.cjs')
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('lorem-block-macro-ex.adoc')))
             expect(result).to.contain('Lorem ipsum dolor sit amet')
           } finally {
@@ -1909,7 +1909,7 @@ header_attribute::foo[bar]`
       describe('Include processor', () => {
         it('should process a custom include processor when target does match', () => {
           try {
-            require('../share/extensions/foo-include.js')()
+            require('../share/extensions/foo-include.cjs')()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-include-ex.adoc')))
             expect(result).to.contain('foo\nfoo')
           } finally {
@@ -1919,7 +1919,7 @@ header_attribute::foo[bar]`
 
         it('should be able to get the include processor registered', () => {
           try {
-            require('../share/extensions/foo-include.js')()
+            require('../share/extensions/foo-include.cjs')()
             const doc = asciidoctor.load('test')
             expect(doc.getExtensions().hasBlockMacros()).to.be.false()
             expect(doc.getExtensions().hasPostprocessors()).to.be.false()
@@ -1937,7 +1937,7 @@ header_attribute::foo[bar]`
 
         it('should not process custom include processor when target does not match', () => {
           try {
-            require('../share/extensions/foo-include.js')()
+            require('../share/extensions/foo-include.cjs')()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('bar-include-ex.adoc')))
             expect(result).to.contain('bar')
           } finally {
@@ -1947,7 +1947,7 @@ header_attribute::foo[bar]`
 
         it('should be able to register an include processor class', () => {
           try {
-            const LoremIncludeProcessor = require('../share/extensions/include-processor-class.js')
+            const LoremIncludeProcessor = require('../share/extensions/include-processor-class.cjs')
             asciidoctor.Extensions.register(function () {
               this.includeProcessor(LoremIncludeProcessor)
             })

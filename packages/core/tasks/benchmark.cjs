@@ -27,8 +27,8 @@ const builder = new BuilderModule()
   await builder.build()
   bfs.mkdirsSync(builder.benchmarkBuildDir)
   const runners = ['node', 'chrome']
-  runners.forEach(runner => bfs.copyToDirSync(`benchmark/${runner}.js`, builder.benchmarkBuildDir))
-  bfs.copyToDirSync(`benchmark/stats.js`, builder.benchmarkBuildDir)
+  runners.forEach(runner => bfs.copyToDirSync(`benchmark/${runner}.cjs`, builder.benchmarkBuildDir))
+  bfs.copyToDirSync(`benchmark/stats.cjs`, builder.benchmarkBuildDir)
   log.task('download sample data from AsciiDoc repository')
   await Promise.all([
     getContentFromAsciiDocRepo('asciidoc.txt', 'build/benchmark/userguide.adoc'),
@@ -36,9 +36,9 @@ const builder = new BuilderModule()
   ])
   log.task('run benchmark')
   if (runner === 'chrome') {
-    execModule.execSync('node ' + path.join(builder.benchmarkBuildDir, 'chrome.js'))
+    execModule.execSync('node ' + path.join(builder.benchmarkBuildDir, 'chrome.cjs'))
   } else if (runner === 'node') {
-    execModule.execSync('node ' + path.join(builder.benchmarkBuildDir, 'node.js'))
+    execModule.execSync('node ' + path.join(builder.benchmarkBuildDir, 'node.cjs'))
   } else {
     log.error(`${runner} runner is unsupported!`)
   }

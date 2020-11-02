@@ -6,18 +6,18 @@ on:
       - master
   pull_request:
     branches:
-      - '*' 
+      - '*'
 
 jobs:
   build:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [12.x, 14.x]
+        node-version: [14.x, 15.x]
         asciidoctor-core-version: [v2.0.12, master]
         experimental: [false]
         include:
-          - node-version: 14.x
+          - node-version: 15.x
             os: macos-latest
             experimental: true
             asciidoctor-core-version: v2.0.12
@@ -50,8 +50,8 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 12.x
           - 14.x
+          - 15.x
         asciidoctor-core-version: [v2.0.12, master]
     steps:
       - uses: actions/checkout@v2
