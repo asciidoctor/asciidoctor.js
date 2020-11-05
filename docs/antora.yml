@@ -5,5 +5,6 @@ nav:
 - modules/setup/nav.adoc
 - modules/processor/nav.adoc
 - modules/extend/nav.adoc
+- modules/cli/nav.adoc
 - modules/spec/nav.adoc
 - modules/project/nav.adoc
