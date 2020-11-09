@@ -1074,10 +1074,13 @@ stem:normal[\\\\sqrt{{value}} = 2 \\]]`
           const options = { safe: 'safe', attributes: { 'allow-uri-read': true } }
           const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/cc-zero.svg[Embedded,300,opts=inline]`, options)
           expect(html).to.not.include('<?xml version="1.0" encoding="UTF-8" standalone="no"?>')
-          expect(html).to.include('<svg id="svg2" xmlns="http://www.w3.org/2000/svg" version="1.0" width="300px">')
+          if (testOptions.coreVersion.gte('2.0.12')) {
+            expect(html).to.include('<svg id="svg2" xmlns="http://www.w3.org/2000/svg" version="1.0" width="300">')
+          } else {
+            expect(html).to.include('<svg id="svg2" xmlns="http://www.w3.org/2000/svg" version="1.0" width="300px">')
+          }
           expect(html).to.include('<path d="m32 13.58c-10.564 0-13.22 9.97-13.22 18.42-0.002 8.452 2.66 18.42 13.22 18.42 10.565 0 13.22-9.97 13.22-18.42s-2.655-18.42-13.22-18.42zm0 6.95c0.43 0 0.82 0.06 1.19 0.15 0.76 0.66 1.13 1.564 0.4 2.83l-7.034 12.926c-0.216-1.636-0.246-3.24-0.246-4.436 0-3.723 0.257-11.474 5.69-11.474zm5.267 5.957c0.433 1.983 0.433 4.056 0.433 5.513 0 3.72-0.26 11.475-5.7 11.475-0.425 0-0.82-0.045-1.185-0.135-0.075-0.022-0.135-0.04-0.205-0.07-0.11-0.03-0.23-0.07-0.333-0.11-1.21-0.513-1.972-1.444-0.877-3.09l7.867-13.58z"/>')
         })
-
         it('should remove the preamble from embedded SVG', function () {
           const options = { safe: 'safe', attributes: { 'allow-uri-read': true } }
           const html = asciidoctor.convert(`image::${testOptions.baseDir}/spec/fixtures/images/cc-zero.svg[opts=inline]`, options)
