@@ -1,6 +1,6 @@
 name: asciidoctor.js
 title: Asciidoctor.js
-version: 3.0
+version: '3.0'
 nav:
 - modules/setup/nav.adoc
 - modules/processor/nav.adoc
