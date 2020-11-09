@@ -1035,7 +1035,8 @@ AbstractNode.prototype.isRole = function (expectedValue) {
  * @memberof AbstractNode
  */
 AbstractNode.prototype.getRole = function () {
-  return this.$role()
+  const role = this.$role()
+  return role === Opal.nil ? undefined : role
 }
 
 /**
