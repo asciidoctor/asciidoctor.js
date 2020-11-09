@@ -439,7 +439,7 @@ export namespace Asciidoctor {
      * @param to - an optional output (by default stdout)
      * @param subject - an optional subject (usually the file name)
      */
-    printReport(to: undefined | Writer | BasicLogger | RubyLogger, subject: string): void;
+    printReport(to?: Writer | BasicLogger | RubyLogger, subject?: string): void;
   }
 
   namespace Document {

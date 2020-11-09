@@ -798,11 +798,23 @@ assert(html.includes(`<pre lang="ruby" class="prettyprint"><code><span class="ha
 </span></code></pre>`));
 assert(html.includes('<pre>Europe/London\nAmerica/New_York</pre>'));
 
+let timings = processor.Timings.create();
+processor.convert('Hello *world*', {timings});
+timings.printReport();
+
+timings = processor.Timings.create();
 let memoryLogger = processor.MemoryLogger.create();
-const timings = processor.Timings.create();
+processor.convert('Hello *world*', {timings});
+timings.printReport(memoryLogger);
+let messages = memoryLogger.getMessages();
+assert(messages.length === 3);
+assert(messages[0].getSeverity() === 'INFO');
+
+timings = processor.Timings.create();
+memoryLogger = processor.MemoryLogger.create();
 processor.convert('Hello *world*', {timings});
 timings.printReport(memoryLogger, 'stdin');
-const messages = memoryLogger.getMessages();
+messages = memoryLogger.getMessages();
 assert(messages.length === 4);
 assert(messages[0].getSeverity() === 'INFO');
 assert(messages[0].getText() === 'Input file: stdin');
