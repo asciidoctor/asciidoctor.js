@@ -54,47 +54,48 @@ const parseTemplateData = (data, templateModel) => {
     })
     .join('\n')
 }
+
 const generateCommonJSSpec = async () => {
   log.task('generate commonjs spec')
-  // HACK: prevent rollup from including asciidoctor-node.js as a CommonJS module in the spec.
-  // in theory, it should work but in practice the "__dirname" resolution is wrong:
-  // const __asciidoctorDistDir__ = path.dirname(fileURLToPath(import.meta.url))
-  const esmSpec = path.join(__dirname, '..', '..', 'spec/node/asciidoctor.spec.js')
-  const originalContent = fs.readFileSync(esmSpec, 'utf8')
-  fs.writeFileSync(esmSpec, originalContent.replace('../../build/asciidoctor-node.js', '../../build/asciidoctor-node.cjs'), 'utf8')
-  try {
-    const bundle = await rollup({
-      input: 'spec/node/asciidoctor.spec.js',
-      external: [
-        'child_process',
-        'module',
-        'url',
-        'path',
-        'fs',
-        'stream',
-        'process',
-        'chai',
-        'dirty-chai',
-        'dot',
-        'nunjucks',
-        'asciidoctor-opal-runtime',
-        'unxhr',
-        '../share/mock-server.cjs',
-        '../../build/asciidoctor-node.cjs'
-      ],
-      plugins: [
-        rollupPluginJson(),
-        rollupPluginCommonJS()
-      ]
-    })
-    await bundle.write({
-      file: 'spec/node/asciidoctor.spec.cjs',
-      format: 'cjs'
-    })
-  } finally {
-    // restore
-    fs.writeFileSync(esmSpec, originalContent, 'utf8')
-  }
+  const bundle = await rollup({
+    input: 'spec/node/asciidoctor.spec.js',
+    external: [
+      'child_process',
+      'module',
+      'url',
+      'path',
+      'fs',
+      'stream',
+      'process',
+      'chai',
+      'dirty-chai',
+      'dot',
+      'nunjucks',
+      'asciidoctor-opal-runtime',
+      'unxhr',
+      '../share/mock-server.cjs',
+      '../../build/asciidoctor-node.cjs'
+    ],
+    plugins: [
+      {
+        // make sure that linked resources (i.e. 'css/asciidoctor.css') will be correctly resolved.
+        resolveImportMeta: function (property, { moduleId }) {
+          if (property === 'url') {
+            if (moduleId.endsWith('asciidoctor-node.js')) {
+              const buildDir = path.join(__dirname, '..', '..', 'build')
+              return `new URL('file://${buildDir}/asciidoctor-node.js').href`
+            }
+          }
+        }
+      },
+      rollupPluginJson(),
+      rollupPluginCommonJS()
+    ]
+  })
+  await bundle.write({
+    file: 'spec/node/asciidoctor.spec.cjs',
+    format: 'cjs'
+  })
 }
 
 const generateFlavors = async (asciidoctorCoreTarget, environments) => {
