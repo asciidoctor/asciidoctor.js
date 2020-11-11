@@ -33,7 +33,7 @@
     "clean:patch": "node tasks/clean.cjs patch",
     "clean:js": "node tasks/clean.cjs js",
     "dist": "cross-env MINIFY=1 node tasks/dist.cjs",
-    "lint": "npm run code:lint && npm run docs:lint",
+    "lint": "npm run code:lint",
     "code:lint": "standard src/**/*.js spec/**/*.cjs spec/**/*.js tasks/**/*.cjs benchmark/**/*.cjs",
     "package": "cross-env MINIFY=1 COPY_DIST=1 node tasks/build.cjs && cross-env MINIFY=1 npm run test",
     "examples": "node tasks/examples.cjs",
