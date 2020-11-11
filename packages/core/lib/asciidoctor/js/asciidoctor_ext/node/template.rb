@@ -142,7 +142,7 @@ class Converter::TemplateConverter < Converter::Base
   def node_require module_name
     %x{
       try {
-        return require(#{module_name})
+        return __require__(#{module_name})
       }
       catch (e) {
         throw #{IOError.new "Unable to require the module '#{module_name}', please make sure that the module is installed."}
@@ -177,7 +177,6 @@ class Converter::TemplateConverter < Converter::Base
         when :nunjucks, :njk
           nunjucks = node_require 'nunjucks'
           %x{
-            var fs = require('fs')
             var env
             if (enginesContext.nunjucks && enginesContext.nunjucks.environment) {
               env = enginesContext.nunjucks.environment
@@ -192,7 +191,6 @@ class Converter::TemplateConverter < Converter::Base
         when :handlebars, :hbs
           handlebars = node_require 'handlebars'
           %x{
-            var fs = require('fs')
             var env
             var opts = self.engine_options['handlebars'] || {}
             if (enginesContext.handlebars && enginesContext.handlebars.environment) {
@@ -206,7 +204,6 @@ class Converter::TemplateConverter < Converter::Base
         when :ejs
           ejs = node_require 'ejs'
           %x{
-            var fs = require('fs')
             var opts = self.engine_options['ejs'] || {}
             opts.filename = file
             // unsupported options
@@ -222,7 +219,7 @@ class Converter::TemplateConverter < Converter::Base
             template = { render: pug.compileFile(file, opts), '$file': function() { return file } }
           }
         when :js, :cjs
-          template = `{ render: require(file), '$file': function() { return file } }`
+          template = `{ render: __require__(file), '$file': function() { return file } }`
         else
           %x{
             var registry = Opal.Asciidoctor.TemplateEngine.registry
@@ -239,7 +236,7 @@ class Converter::TemplateConverter < Converter::Base
     end
     if helpers || ::File.file?(helpers = %(#{template_dir}/helpers.js)) || ::File.file?(helpers = %(#{template_dir}/helpers.cjs))
       %x{
-        var helpers = require(helpers)
+        var helpers = __require__(helpers)
         if (typeof helpers.configure === 'function') {
           helpers.configure(enginesContext)
         }

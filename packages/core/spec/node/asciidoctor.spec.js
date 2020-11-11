@@ -1,15 +1,37 @@
 /* global it, describe, before, after, afterEach */
-const path = require('path')
-const fs = require('fs')
-const process = require('process')
-const chai = require('chai')
-const expect = chai.expect
-const dirtyChai = require('dirty-chai')
-chai.use(dirtyChai)
+import path from 'path'
+import { Writable } from 'stream'
+import { fileURLToPath } from 'url'
+import fs from 'fs'
+import process from 'process'
+import chai from 'chai'
+import dirtyChai from 'dirty-chai'
+import dot from 'dot'
+import nunjucks from 'nunjucks'
+import Opal from 'asciidoctor-opal-runtime' // for testing purpose only
 
-const shareSpec = require('../share/asciidoctor-spec.cjs')
-const includeHttpsSpec = require('../share/asciidoctor-include-https-spec.cjs')
-const semVer = require('../share/semver.cjs')
+import semVer from '../share/semver.cjs'
+import MockServer from '../share/mock-server.cjs'
+import shareSpec from '../share/asciidoctor-spec.cjs'
+import includeHttpsSpec from '../share/asciidoctor-include-https-spec.cjs'
+import { fileExists, isWin, removeFile, resolveFixture, truncateFile } from './helpers.js'
+import Asciidoctor from '../../build/asciidoctor-node.js'
+import packageJson from '../../package.json'
+
+import fooBarPostProcessor from '../share/extensions/foo-bar-postprocessor.cjs'
+import loveTreeProcessor from '../share/extensions/love-tree-processor.cjs'
+import draftPreProcessor from '../share/extensions/draft-preprocessor.cjs'
+import footerDocinfoProcessor from '../share/extensions/moar-footer-docinfo-processor.cjs'
+import emojiInlineMacro from '../share/extensions/emoji-inline-macro.cjs'
+import fooInclude from '../share/extensions/foo-include.cjs'
+import loremIncludeProcessor from '../share/extensions/include-processor-class.cjs'
+import shoutBlock from '../share/extensions/shout-block.cjs'
+import chartBlockMacro from '../share/extensions/chart-block.cjs'
+import smileyInlineMacro from '../share/extensions/smiley-inline-macro.cjs'
+import loremBlockMacro from '../share/extensions/lorem-block-macro.cjs'
+
+const expect = chai.expect
+chai.use(dirtyChai)
 
 const config = {
   runtime: {
@@ -19,52 +41,16 @@ const config = {
   }
 }
 
-const isWin = process.platform === 'win32'
-
-const asciidoctor = require('../../build/asciidoctor-node.cjs')(config)
-
-const Opal = require('asciidoctor-opal-runtime') // for testing purpose only
-const packageJson = require('../../package.json')
-
+const asciidoctor = Asciidoctor(config)
 const asciidoctorCoreSemVer = semVer(asciidoctor.getCoreVersion())
-
-function fileExists (path) {
-  try {
-    fs.statSync(path)
-    return true
-  } catch (err) {
-    return !(err && err.code === 'ENOENT')
-  }
-}
-
-function removeFile (path) {
-  if (fileExists(path)) {
-    fs.unlinkSync(path)
-  }
-}
-
-function truncateFile (path) {
-  try {
-    fs.truncateSync(path, 0) // file must be empty
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      // it's OK, if the file does not exists
-    }
-  }
-}
-
-const resolveFixture = (name) => {
-  return path.resolve(path.join(__dirname, '..', 'fixtures', name))
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const testOptions = {
+  platform: 'Node.js',
+  baseDir: path.join(__dirname, '..', '..'),
+  coreVersion: asciidoctorCoreSemVer
 }
 
 describe('Node.js', () => {
-  const testOptions = {
-    platform: 'Node.js',
-    baseDir: path.join(__dirname, '..', '..'),
-    coreVersion: asciidoctorCoreSemVer
-  }
-
-  const MockServer = require('../share/mock-server.cjs')
   let mockServer
 
   before(async function () {
@@ -318,7 +304,6 @@ intro
 [partintro]
 intro
 `
-        const fs = require('fs')
         const defaultLogger = asciidoctor.LoggerManager.getLogger()
         const logFile = path.join(__dirname, '..', '..', 'build', 'async.log')
         const asyncLogger = asciidoctor.LoggerManager.newLogger('AsyncFileLogger', {
@@ -451,7 +436,6 @@ intro
 
   describe('Timings', () => {
     it('should print timings to a Stream', () => {
-      const { Writable } = require('stream')
       const data = []
       const outStream = new Writable({
         write (chunk, encoding, callback) {
@@ -1141,7 +1125,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to process foo bar postprocessor extension', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/foo-bar-postprocessor.cjs')(registry)
+          fooBarPostProcessor(registry)
           const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-bar-postprocessor-ex.adoc')), opts)
           expect(resultWithExtension).to.contain('bar, qux, bar.')
           expect(resultWithExtension).not.to.contain('foo')
@@ -1154,7 +1138,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to get the postprocessor registered', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/foo-bar-postprocessor.cjs')(registry)
+          fooBarPostProcessor(registry)
           const doc = asciidoctor.load('test', opts)
           expect(doc.getExtensions().hasBlockMacros()).to.be.false()
           expect(doc.getExtensions().hasInlineMacros()).to.be.false()
@@ -1172,7 +1156,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to process love tree processor extension', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/love-tree-processor.cjs')(registry)
+          loveTreeProcessor(registry)
           const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('love-tree-processor-ex.adoc')), opts)
           expect(resultWithExtension).to.contain('Made with icon:heart[]')
 
@@ -1183,7 +1167,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to get the tree processor registered', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/love-tree-processor.cjs')(registry)
+          loveTreeProcessor(registry)
           const doc = asciidoctor.load('test', opts)
           expect(doc.getExtensions().hasBlockMacros()).to.be.false()
           expect(doc.getExtensions().hasPostprocessors()).to.be.false()
@@ -1201,7 +1185,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to process draft preprocessor extension', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/draft-preprocessor.cjs')(registry)
+          draftPreProcessor(registry)
           const doc = asciidoctor.load(fs.readFileSync(resolveFixture('draft-preprocessor-ex.adoc')), opts)
           expect(doc.getAttribute('status')).to.equal('DRAFT')
           const result = doc.convert()
@@ -1212,7 +1196,7 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
         it('should be able to get the preprocessor registered', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/draft-preprocessor.cjs')(registry)
+          draftPreProcessor(registry)
           const doc = asciidoctor.load('test', opts)
           expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
           expect(doc.getExtensions().hasBlockMacros()).to.be.false()
@@ -1257,7 +1241,7 @@ sample content`, opts)
         it('should be able to process moar footer docinfo processor extension', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { safe: 'server', header_footer: true, extension_registry: registry }
-          require('../share/extensions/moar-footer-docinfo-processor.cjs')(registry)
+          footerDocinfoProcessor(registry)
           const resultWithExtension = asciidoctor.convert(fs.readFileSync(resolveFixture('moar-footer-docinfo-processor-ex.adoc')), opts)
           expect(resultWithExtension).to.contain('moar footer')
 
@@ -1268,7 +1252,7 @@ sample content`, opts)
         it('should be able to get the docinfo processor registered', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/moar-footer-docinfo-processor.cjs')(registry)
+          footerDocinfoProcessor(registry)
           const doc = asciidoctor.load('test', opts)
           expect(doc.getExtensions().hasTreeProcessors()).to.be.false()
           expect(doc.getExtensions().hasBlockMacros()).to.be.false()
@@ -1341,7 +1325,7 @@ sample content`, opts)
 
         it('should be able to process custom block', () => {
           try {
-            require('../share/extensions/shout-block.cjs')
+            shoutBlock()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('shout-block-ex.adoc')))
             expect(result).to.contain('<p>SAY IT LOUD.\nSAY IT PROUD.</p>')
           } finally {
@@ -1351,7 +1335,7 @@ sample content`, opts)
 
         it('should be able to process a custom literal block', () => {
           try {
-            require('../share/extensions/chart-block.cjs')
+            chartBlockMacro()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('chart-block-ex.adoc')))
             expect(result).to.contain('<div class="chart" data-chart-labels="{foo},{bar},{qux}" data-chart-series-0="28,48,40" data-chart-series-1="65,59,80"></div>')
           } finally {
@@ -1516,7 +1500,7 @@ sample content`, opts)
 
         it('should be able to process smiley extension', () => {
           try {
-            require('../share/extensions/smiley-inline-macro.cjs')
+            smileyInlineMacro()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('smiley-inline-macro-ex.adoc')))
             expect(result).to.contain('<strong>:D</strong>')
             expect(result).to.contain('<strong>;)</strong>')
@@ -1529,7 +1513,7 @@ sample content`, opts)
         it('should be able to process emoji inline macro processor extension', () => {
           const registry = asciidoctor.Extensions.create()
           const opts = { extension_registry: registry }
-          require('../share/extensions/emoji-inline-macro.cjs')(registry)
+          emojiInlineMacro(registry)
           const result = asciidoctor.convert(fs.readFileSync(resolveFixture('emoji-inline-macro-ex.adoc')), opts)
           expect(result).to.contain('1f422.svg')
           expect(result).to.contain('2764.svg')
@@ -1608,7 +1592,7 @@ sample content`, opts)
 
         it('should be able to process lorem extension', () => {
           try {
-            require('../share/extensions/lorem-block-macro.cjs')
+            loremBlockMacro()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('lorem-block-macro-ex.adoc')))
             expect(result).to.contain('Lorem ipsum dolor sit amet')
           } finally {
@@ -1909,7 +1893,7 @@ header_attribute::foo[bar]`
       describe('Include processor', () => {
         it('should process a custom include processor when target does match', () => {
           try {
-            require('../share/extensions/foo-include.cjs')()
+            fooInclude()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('foo-include-ex.adoc')))
             expect(result).to.contain('foo\nfoo')
           } finally {
@@ -1919,7 +1903,7 @@ header_attribute::foo[bar]`
 
         it('should be able to get the include processor registered', () => {
           try {
-            require('../share/extensions/foo-include.cjs')()
+            fooInclude()
             const doc = asciidoctor.load('test')
             expect(doc.getExtensions().hasBlockMacros()).to.be.false()
             expect(doc.getExtensions().hasPostprocessors()).to.be.false()
@@ -1937,7 +1921,7 @@ header_attribute::foo[bar]`
 
         it('should not process custom include processor when target does not match', () => {
           try {
-            require('../share/extensions/foo-include.cjs')()
+            fooInclude()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('bar-include-ex.adoc')))
             expect(result).to.contain('bar')
           } finally {
@@ -1947,9 +1931,8 @@ header_attribute::foo[bar]`
 
         it('should be able to register an include processor class', () => {
           try {
-            const LoremIncludeProcessor = require('../share/extensions/include-processor-class.cjs')
             asciidoctor.Extensions.register(function () {
-              this.includeProcessor(LoremIncludeProcessor)
+              this.includeProcessor(loremIncludeProcessor(Opal))
             })
             const html = asciidoctor.convert('include::fake.adoc[]', { safe: 'safe' })
             expect(html).to.contain('Lorem ipsum')
@@ -2723,11 +2706,10 @@ content`
     })
     it('should use a doT template', () => {
       const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/dot', template_engine: 'dot' }
-      const fs = require('fs')
 
       class DotTemplateEngineAdapter {
         constructor () {
-          this.doT = require('dot')
+          this.doT = dot
         }
 
         compile (file, _) {
@@ -2796,7 +2778,6 @@ content`
       const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
       const doc = asciidoctor.load('content', options)
       const templateConverter = doc.getConverter()
-      const nunjucks = require('nunjucks')
       const template = nunjucks.compile('<p class="paragraph nunjucks">{{ node.getContent() }}</p>')
       templateConverter.register('paragraph', template)
       const templates = templateConverter.getTemplates()
@@ -2807,7 +2788,6 @@ content`
       const options = { safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks' }
       const doc = asciidoctor.load('content', options)
       const templateConverter = doc.getConverter()
-      const nunjucks = require('nunjucks')
       const template = nunjucks.compile(`<article class="message is-info">
   <div class="message-header">
     <p>{{ node.getAttribute('textlabel') }}</p>

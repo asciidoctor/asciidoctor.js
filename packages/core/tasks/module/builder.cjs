@@ -7,6 +7,8 @@ const bfs = require('bestikk-fs')
 const Download = require('bestikk-download')
 const download = new Download({})
 const { rollup } = require('rollup')
+const rollupPluginJson = require('@rollup/plugin-json')
+const rollupPluginCommonJS = require('@rollup/plugin-commonjs')
 
 const compilerModule = require('./compiler.cjs')
 const uglifyModule = require('./uglify.cjs')
@@ -51,6 +53,48 @@ const parseTemplateData = (data, templateModel) => {
       }
     })
     .join('\n')
+}
+const generateCommonJSSpec = async () => {
+  log.task('generate commonjs spec')
+  // HACK: prevent rollup from including asciidoctor-node.js as a CommonJS module in the spec.
+  // in theory, it should work but in practice the "__dirname" resolution is wrong:
+  // const __asciidoctorDistDir__ = path.dirname(fileURLToPath(import.meta.url))
+  const esmSpec = path.join(__dirname, '..', '..', 'spec/node/asciidoctor.spec.js')
+  const originalContent = fs.readFileSync(esmSpec, 'utf8')
+  fs.writeFileSync(esmSpec, originalContent.replace('../../build/asciidoctor-node.js', '../../build/asciidoctor-node.cjs'), 'utf8')
+  try {
+    const bundle = await rollup({
+      input: 'spec/node/asciidoctor.spec.js',
+      external: [
+        'child_process',
+        'module',
+        'url',
+        'path',
+        'fs',
+        'stream',
+        'process',
+        'chai',
+        'dirty-chai',
+        'dot',
+        'nunjucks',
+        'asciidoctor-opal-runtime',
+        'unxhr',
+        '../share/mock-server.cjs',
+        '../../build/asciidoctor-node.cjs'
+      ],
+      plugins: [
+        rollupPluginJson(),
+        rollupPluginCommonJS()
+      ]
+    })
+    await bundle.write({
+      file: 'spec/node/asciidoctor.spec.cjs',
+      format: 'cjs'
+    })
+  } finally {
+    // restore
+    fs.writeFileSync(esmSpec, originalContent, 'utf8')
+  }
 }
 
 const generateFlavors = async (asciidoctorCoreTarget, environments) => {
@@ -113,7 +157,17 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
     } else {
       fs.writeFileSync(target, content, 'utf8')
       if (environment === 'node') {
-        const bundle = await rollup({ input: target, external: ['asciidoctor-opal-runtime'] })
+        const bundle = await rollup({
+          input: target,
+          external: [
+            'module',
+            'url',
+            'path',
+            'fs',
+            'asciidoctor-opal-runtime',
+            'unxhr'
+          ]
+        })
         await bundle.write({
           file: `build/asciidoctor-${environment}.cjs`,
           format: 'cjs',
@@ -175,6 +229,7 @@ module.exports = class Builder {
     bfs.mkdirsSync('build/css')
     await rebuild(asciidoctorCoreDependency, this.environments)
     await generateFlavors(this.asciidoctorCoreTarget, this.environments)
+    await generateCommonJSSpec()
     await uglifyModule.uglify()
     if (process.env.COPY_DIST) {
       this.copyToDist()
