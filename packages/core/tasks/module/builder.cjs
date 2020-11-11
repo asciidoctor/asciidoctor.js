@@ -82,7 +82,7 @@ const generateCommonJSSpec = async () => {
         resolveImportMeta: function (property, { moduleId }) {
           if (property === 'url') {
             if (moduleId.endsWith('asciidoctor-node.js')) {
-              const buildDir = path.join(__dirname, '..', '..', 'build')
+              const buildDir = path.join(__dirname, '..', '..', 'build').replace(/\\/g, '/')
               return `new URL('file://${buildDir}/asciidoctor-node.js').href`
             }
           }
