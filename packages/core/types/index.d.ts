@@ -2248,7 +2248,7 @@ export namespace Asciidoctor {
      * Create a new Inline element.
      * @returns a new Inline element
      */
-    static create(parent: AbstractBlock, context: string, text?: string, opts?: any): Inline;
+    static create(parent: AbstractBlock, context: string, text?: string, opts?: Record<string, unknown>): Inline;
 
     /**
      * Get the converted content for this inline node.
