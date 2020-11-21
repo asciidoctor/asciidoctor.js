@@ -467,10 +467,25 @@ const docWithSectionsWithAndWithoutRole = processor.load(`= Title
 
 == Section without role
 `);
-const sectionWithRole = docWithSectionsWithAndWithoutRole.getBlocks()[0];
-assert(sectionWithRole.getRole() === 'foreword');
+const sectionWithRoleForeword = docWithSectionsWithAndWithoutRole.getBlocks()[0];
+assert(sectionWithRoleForeword.getRole() === 'foreword');
 const sectionWithoutRole = docWithSectionsWithAndWithoutRole.getBlocks()[1];
 assert(sectionWithoutRole.getRole() === undefined);
+
+const docWithSingleSection = processor.load(`= Title
+
+[.foreword]
+== Foreword`);
+const sectionWithRole = docWithSingleSection.getBlocks()[0];
+assert(sectionWithRole.getRole() === 'foreword');
+sectionWithRole.setRole('afterword');
+assert(sectionWithRole.getRole() === 'afterword');
+sectionWithRole.setRole('afterword last');
+assert(sectionWithRole.getRole() === 'afterword last');
+sectionWithRole.setRole('lastword', 'closing');
+assert(sectionWithRole.getRole() === 'lastword closing');
+sectionWithRole.setRole(['finalword', 'conclude']);
+assert(sectionWithRole.getRole() === 'finalword conclude');
 
 const docWithImage = processor.load('img::image-name[]', opts);
 let images = docWithImage.findBy((b) => b.getContext() === 'image');

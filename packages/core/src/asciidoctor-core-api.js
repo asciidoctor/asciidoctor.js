@@ -1039,6 +1039,21 @@ AbstractNode.prototype.getRole = function () {
 }
 
 /**
+ * Sets the value of the role attribute on this node.
+ *
+ * @param {...string|Array<string>} names - A single role name, a space-separated String of role names, an Array of role names or a list of role names
+ *
+ * @returns {string} - the value of the role attribute
+ * @memberof AbstractNode
+ */
+AbstractNode.prototype.setRole = function (names) {
+  if (Array.isArray(names) || (typeof names === 'string' && arguments.length === 1)) {
+    return this['$role='](names)
+  }
+  return this['$role='](Array.from(arguments))
+}
+
+/**
  * Checks if the specified role is present in the list of roles for this node.
  *
  * @param {string} name - The String name of the role to find.

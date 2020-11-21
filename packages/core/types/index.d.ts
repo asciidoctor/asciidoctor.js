@@ -2775,6 +2775,24 @@ export namespace Asciidoctor {
     getRole(): string | undefined;
 
     /**
+     * Sets the value of the role attribute on this node.
+     *
+     * @param names - A single role name, a space-separated String of role names or a list of role names
+     *
+     * @returns the value of the role attribute.
+     */
+    setRole(...names: string[]): string;
+
+    /**
+     * Sets the value of the role attribute on this node.
+     *
+     * @param names - an Array of role names
+     *
+     * @returns the value of the role attribute.
+     */
+    setRole(names: string[]): string;
+
+    /**
      * Checks if the specified role is present in the list of roles for this node.
      *
      * @param name - The String name of the role to find.
