@@ -1008,6 +1008,17 @@ intro
     processor.LoggerManager.setLogger(defaultLogger);
   }
 })();
+
+const options = { attributes: 'sectnums' };
+const docWithOptions = processor.load('== Test', options);
+assert(docWithOptions.getAttribute('sectnums') === '');
+assert(docWithOptions.isAttribute('sectnums'));
+assert(docWithOptions.isAttribute('sectnums', ''));
+assert(!docWithOptions.isAttribute('sectnums', 'not this'));
+assert(!docWithOptions.isAttribute('foo'));
+assert(!docWithOptions.isAttribute('foo', ''));
+assert(!docWithOptions.isAttribute('foo', 'bar'));
+
 const docWithAttributeOverride = processor.load(`= Title
 :next-section:
 
