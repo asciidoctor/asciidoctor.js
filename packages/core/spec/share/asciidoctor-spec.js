@@ -673,6 +673,20 @@ This is another paragraph.
         expect(localSeconds).to.be.within(seconds - 10, seconds + 10)
       })
 
+      it('should get block role', function () {
+        const doc = asciidoctor.load(`= Title
+
+[.foreword]
+== Section with role
+
+== Section without role
+`)
+        const sectionWithRole = doc.getBlocks()[0]
+        expect(sectionWithRole.getRole()).to.equal('foreword')
+        const sectionWithoutRole = doc.getBlocks()[1]
+        expect(sectionWithoutRole.getRole()).to.be.undefined()
+      })
+
       describe('Get authors', function () {
         it('should return an empty list when the document has no author', function () {
           const input = `= Getting Real: The Smarter, Faster, Easier Way to Build a Successful Web Application

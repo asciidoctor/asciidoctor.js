@@ -460,6 +460,18 @@ assert(html === `<div class="paragraph">
 <p><a href="https://github.com/mojavelinux">@mojavelinux</a></p>
 </div>`);
 
+const docWithSectionsWithAndWithoutRole = processor.load(`= Title
+
+[.foreword]
+== Section with role
+
+== Section without role
+`);
+const sectionWithRole = docWithSectionsWithAndWithoutRole.getBlocks()[0];
+assert(sectionWithRole.getRole() === 'foreword');
+const sectionWithoutRole = docWithSectionsWithAndWithoutRole.getBlocks()[1];
+assert(sectionWithoutRole.getRole() === undefined);
+
 const docWithImage = processor.load('img::image-name[]', opts);
 let images = docWithImage.findBy((b) => b.getContext() === 'image');
 assert(images.length === 1);

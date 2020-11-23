@@ -2772,7 +2772,7 @@ export namespace Asciidoctor {
      *
      * @returns the role as a space-separated String.
      */
-    getRole(): string;
+    getRole(): string | undefined;
 
     /**
      * Checks if the specified role is present in the list of roles for this node.
