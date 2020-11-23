@@ -2639,21 +2639,21 @@ export namespace Asciidoctor {
      *
      * @returns An Array of Strings representing the substitution operation or nothing if no subs are found.
      */
-    resolveSubstitutions(subs: string, type?: string, defaults?: string[], subject?: string): string[] | void;
+    resolveSubstitutions(subs: string, type?: string, defaults?: string[], subject?: string): string[] | undefined;
 
     /**
      * Call {@link AbstractNode#resolveSubstitutions} for the 'block' type.
      *
      * @see {@link AbstractNode#resolveSubstitutions}
      */
-    resolveBlockSubstitutions(subs: string, defaults?: string[], subject?: string): string[] | void;
+    resolveBlockSubstitutions(subs: string, defaults?: string[], subject?: string): string[] | undefined;
 
     /**
      * Call {@link AbstractNode#resolveSubstitutions} for the 'inline' type with the subject set as passthrough macro.
      *
      * @see {@link AbstractNode#resolveSubstitutions}
      */
-    resolvePassSubstitutions(subs: string): string[] | void;
+    resolvePassSubstitutions(subs: string): string[] | undefined;
 
     /**
      * Apply the specified substitutions to the text.
