@@ -2713,7 +2713,7 @@ export namespace Asciidoctor {
      *
      * @returns a Boolean indicating whether the attribute exists and, if a truthy comparison value is specified, whether the value of the attribute matches the comparison value.
      */
-    isAttribute(name: string, expectedValue?: any, fallbackName?: string): void;
+    isAttribute(name: string, expectedValue?: any, fallbackName?: string): boolean;
 
     /**
      * Assign the value to the attribute name for the current node.

@@ -948,8 +948,7 @@ AbstractNode.prototype.hasAttribute = function (name) {
  * @memberof AbstractNode
  */
 AbstractNode.prototype.isAttribute = function (name, expectedValue, fallbackName) {
-  const result = this['$attr?'](name, expectedValue, fallbackName)
-  return result === Opal.nil ? false : result
+  return this['$attr?'](name, expectedValue, fallbackName)
 }
 
 /**
