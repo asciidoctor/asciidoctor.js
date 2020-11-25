@@ -1248,6 +1248,35 @@ This is a preamble!
         })
         expect(doc.getAttribute('next-section')).to.equal('Third section')
       })
+
+      it('should convert externalized footnotes', function () {
+        const content = `:fn-hail-and-rainbow: footnote:[The double hail-and-rainbow level makes my toes tingle.]
+:fn-disclaimer: footnote:disclaimer[Opinions are my own.]
+
+The hail-and-rainbow protocol can be initiated at five levels:
+double, tertiary, supernumerary, supermassive, and apocalyptic party.{fn-hail-and-rainbow}
+A bold statement!{fn-disclaimer}
+
+Another outrageous statement.{fn-disclaimer}`
+        const html = asciidoctor.convert(content, { standalone: false })
+        expect(html).to.equal(`<div class="paragraph">
+<p>The hail-and-rainbow protocol can be initiated at five levels:
+double, tertiary, supernumerary, supermassive, and apocalyptic party.<sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>
+A bold statement!<sup class="footnote" id="_footnote_disclaimer">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
+</div>
+<div class="paragraph">
+<p>Another outrageous statement.<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. The double hail-and-rainbow level makes my toes tingle.
+</div>
+<div class="footnote" id="_footnotedef_2">
+<a href="#_footnoteref_2">2</a>. Opinions are my own.
+</div>
+</div>`)
+      })
     })
 
     describe('Wildcard character match', function () {
