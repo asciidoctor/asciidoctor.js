@@ -8,6 +8,56 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
+Bug Fixes::
+
+* Pass `Opal.nil` when title is undefined (#1010)
+
+Improvements::
+
+* Map `AbstractBlock#assignCaption` (#1011)
++
+[source,js]
+----
+const doc = asciidoctor.load('= Title')
+const image = asciidoctor.Block.create(doc, 'image', {
+  content_model: 'empty',
+  attributes: {
+    target: `${testOptions.baseDir}/spec/fixtures/images/cat.png[]`,
+    format: 'png'
+  }
+})
+image.setTitle('A cat')
+image.assignCaption('Figure I. ')
+console.log(image.getCaptionedTitle()) // Figure I. A nice cat'
+----
+* Map positional attributes (#1047)
++
+[source,js]
+----
+const doc = asciidoctor.load('[positional1,positional2,attr=value]\ntext')
+const block = doc.getBlocks()[0]
+const attributes = block.getAttributes()
+console.log(Object.getOwnPropertyNames(attributes)) // ['attr', 'style']
+console.log(Object.getOwnPropertyNames(attributes)) // ['$positional', 'attr', 'style']
+console.log(attributes.$positional) // ['positional1', 'positional2'])
+----
+
+Infrastructure::
+
+* Build against the latest release of Asciidoctor 2.0.12 (#808)
+* Upgrade development dependencies
+** Bump `http-server` from 0.12.1 to 0.12.3 in /packages/core (#953)
+** Bump `dtslint` from 3.4.2 to 3.6.3 in /packages/core (#958) (#971) (#976)
+** Bump `puppeteer` from 3.0.1 to 3.1.0 in /packages/core (#956) (#961) (#963) (#974)
+** Bump `@types/node` from 13.13.4 to 13.13.5 in /packages/core (#960)
+** Bump `standard` from 14.3.3 to 14.3.4 (#966) (#965)
+** Bump `ejs` from 3.1.2 to 3.1.3 in /packages/core (#970)
+* Add an explicit dependency on `typescript` (development dependency)
+* Flag the macos runner as experimental and allow failures (#959)
+* Build against the current Node LTS and the latest stable version (#973)
+* Document how to compile a local asciidoctor Ruby code base - thanks @djenks (#978)
+* Run `npm audit fix`
+* Add a test case on externalized footnotes
 
 
 == v2.2.0 (2020-04-25)
@@ -78,7 +128,7 @@ Infrastructure::
 ** Bump `chai` from 4.1.2 to 4.2.0 (#869)
 ** Bump `acorn` from 5.7.3 to 5.7.4 in /packages/core (#860)
 ** Bump `acorn` from 6.1.1 to 6.4.1 (#859)
-** Bump `ejs` from 3.0.1 to 3.0.2 in /packages/core (#922) 
+** Bump `ejs` from 3.0.1 to 3.0.2 in /packages/core (#922)
 ** Bump `pkg` from 4.4.7 to 4.4.8 in /packages/asciidoctor (#948)
 * Add an explicit failure if the regular expression does not match in tests (#890)
 * Replace a Ruby example with a JavaScript example in the JSDoc (#856)
