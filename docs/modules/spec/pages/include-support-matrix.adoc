@@ -33,14 +33,14 @@ The resolved path is `/root/file:/root/path/to/file.adoc`.
 |:ok_hand:
 |:ok_hand:
 |:x: +
-include uri not readable: `file:///root/path/to/file.adoc`.
+include uri not readable: `\file:///root/path/to/file.adoc`.
 
 |+file:///root/path/../path/to/file.adoc+
 |
 |:ok_hand:
 |:ok_hand:
 |:x: +
-include uri not readable: `file:///root/path/../path/to/file.adoc`.
+include uri not readable: `\file:///root/path/../path/to/file.adoc`.
 
 |+path/to/file.adoc+
 |
@@ -54,7 +54,7 @@ Unable to get the current directory in a reliable way.
 |:ok_hand:
 |:ok_hand:
 |:x: +
-include uri not readable: `file:///root/path/to/file.adoc`.
+include uri not readable: `\file:///root/path/to/file.adoc`.
 
 |+https://raw.com/master/file.adoc+
 |+https://raw.com/master+
@@ -72,7 +72,7 @@ include uri not readable: `file:///root/path/to/file.adoc`.
 |+https://raw.com/master+
 |:ok_hand:
 |:x: +
-`SecurityError: Jail is not an absolute path: https://raw.com/master`
+`SecurityError: Jail is not an absolute path: \https://raw.com/master`
 |:x: +
 include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
 
@@ -80,7 +80,7 @@ include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
 |+https://raw.com/master+
 |:ok_hand:
 |:x: +
-`SecurityError: Jail is not an absolute path: https://raw.com/master`
+`SecurityError: Jail is not an absolute path: \https://raw.com/master`
 |:x: +
 include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
 
@@ -90,5 +90,4 @@ include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
 |:x: +
 The `xmlhttprequest` module does not expand path and therefore returns a 404.
 |:ok_hand:
-
 |===
