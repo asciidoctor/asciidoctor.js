@@ -24,7 +24,7 @@ If either test succeeds, the target is used as both the include path and the rel
 // QUESTION should we try to compute the relative path starting from the base dir in this case?
 If both these tests fail, the include is replaced with a link.
 
-* If the target is an absolute path (i.e., starts with a posix root, a Windows drive letter, or a UNC path), the file:// scheme (or file:/// if the path starts with a Windows drive letter) is prepended to the target and the result is used as both the include path and the relative path.
+* If the target is an absolute path (i.e., starts with a posix root, a Windows drive letter, or a UNC path), the file:// scheme (or \file:/// if the path starts with a Windows drive letter) is prepended to the target and the result is used as both the include path and the relative path.
 In this case, the base dir value has no impact.
 
 * If the target is relative and the base dir equals `.`, the target is used as both the include path and the relative path.
@@ -49,7 +49,7 @@ In this case, the base dir value has no impact.
 If both these tests fail, the include is replaced with a link.
 If either test succeeds, the target is used as both the include path and the relative path.
 
-* If the target is an absolute path (i.e., starts with a posix root, a Windows drive letter, or a UNC path), the file:// scheme (or file:/// when the path starts with a Windows drive letter) is prepended to the target and the result is used as both the include path and the relative path.
+* If the target is an absolute path (i.e., starts with a posix root, a Windows drive letter, or a UNC path), the file:// scheme (or \file:/// when the path starts with a Windows drive letter) is prepended to the target and the result is used as both the include path and the relative path.
 In this case, the base dir value has no impact.
 
 * If the target is relative and the parent dir equals `.`, the target is used as both the include path and the relative path.
