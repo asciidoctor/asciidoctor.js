@@ -1,4 +1,10 @@
 = Include directive support matrix
+:icon-ok: 👌
+:icon-ko: ❌
+ifdef::env-github[]
+:icon-ok: :ok_hand:
+:icon-ko: :x:
+endif::[]
 
 This document describes how the include directive is resolved in the following environments:
 
@@ -16,78 +22,78 @@ This document describes how the include directive is resolved in the following e
 
 |+path/to/file.adoc+
 |+file:///root+
-|:ok_hand:
-|:ok_hand:
-|:x: +
+|{icon-ok}
+|{icon-ok}
+|{icon-ko} +
 The resolved path is `/root/file:/root/path/to/file.adoc`.
 
 |+path/../path/to/file.adoc+
 |+file:///root+
-|:ok_hand:
-|:ok_hand:
-|:x: +
+|{icon-ok}
+|{icon-ok}
+|{icon-ko} +
 The resolved path is `/root/file:/root/path/to/file.adoc`.
 
 |+file:///root/path/to/file.adoc+
 |
-|:ok_hand:
-|:ok_hand:
-|:x: +
+|{icon-ok}
+|{icon-ok}
+|{icon-ko} +
 include uri not readable: `\file:///root/path/to/file.adoc`.
 
 |+file:///root/path/../path/to/file.adoc+
 |
-|:ok_hand:
-|:ok_hand:
-|:x: +
+|{icon-ok}
+|{icon-ok}
+|{icon-ko} +
 include uri not readable: `\file:///root/path/../path/to/file.adoc`.
 
 |+path/to/file.adoc+
 |
-|:x: +
+|{icon-ko} +
 Unable to get the current directory in a reliable way.
-|:ok_hand:
-|:ok_hand:
+|{icon-ok}
+|{icon-ok}
 
 |+file:///root/path/to/file.adoc+
 |+file:///root/path/to+
-|:ok_hand:
-|:ok_hand:
-|:x: +
+|{icon-ok}
+|{icon-ok}
+|{icon-ko} +
 include uri not readable: `\file:///root/path/to/file.adoc`.
 
 |+https://raw.com/master/file.adoc+
 |+https://raw.com/master+
-|:ok_hand:
-|:ok_hand:
-|:ok_hand:
+|{icon-ok}
+|{icon-ok}
+|{icon-ok}
 
 |+https://raw.com/master/file.adoc+
 |
-|:ok_hand:
-|:ok_hand:
-|:ok_hand:
+|{icon-ok}
+|{icon-ok}
+|{icon-ok}
 
 |+file.adoc+
 |+https://raw.com/master+
-|:ok_hand:
-|:x: +
+|{icon-ok}
+|{icon-ko} +
 `SecurityError: Jail is not an absolute path: \https://raw.com/master`
-|:x: +
+|{icon-ko} +
 include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
 
 |+../v1.5.0/file.adoc+
 |+https://raw.com/master+
-|:ok_hand:
-|:x: +
+|{icon-ok}
+|{icon-ko} +
 `SecurityError: Jail is not an absolute path: \https://raw.com/master`
-|:x: +
+|{icon-ko} +
 include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
 
 |+https://raw.com/master/../v1.5.0/file.adoc+
 |
-|:ok_hand:
-|:x: +
+|{icon-ok}
+|{icon-ko} +
 The `xmlhttprequest` module does not expand path and therefore returns a 404.
-|:ok_hand:
+|{icon-ok}
 |===
