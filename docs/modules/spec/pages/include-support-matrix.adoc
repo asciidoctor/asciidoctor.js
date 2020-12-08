@@ -20,47 +20,53 @@ This document describes how the include directive is resolved in the following e
 |Node.js
 |MRI
 
-|+path/to/file.adoc+
-|+file:///root+
+| +path/to/file.adoc+
+| +file:///root+
 |{icon-ok}
 |{icon-ok}
-|{icon-ko} +
-The resolved path is `/root/file:/root/path/to/file.adoc`.
+|{icon-ko}
+5+a|
+MRI: The resolved path is [.path]_/root/file:/root/path/to/file.adoc_.
 
 |+path/../path/to/file.adoc+
 |+file:///root+
 |{icon-ok}
 |{icon-ok}
-|{icon-ko} +
-The resolved path is `/root/file:/root/path/to/file.adoc`.
+|{icon-ko}
+5+a|
+MRI: The resolved path is [.path]_/root/file:/root/path/to/file.adoc_.
 
 |+file:///root/path/to/file.adoc+
 |
 |{icon-ok}
 |{icon-ok}
-|{icon-ko} +
-include uri not readable: `\file:///root/path/to/file.adoc`.
+|{icon-ko}
+5+a|
+MRI: include uri not readable: [.path]_\file:///root/path/to/file.adoc_.
 
 |+file:///root/path/../path/to/file.adoc+
 |
 |{icon-ok}
 |{icon-ok}
-|{icon-ko} +
-include uri not readable: `\file:///root/path/../path/to/file.adoc`.
+|{icon-ko}
+5+a|
+MRI: include uri not readable: [.path]_\file:///root/path/../path/to/file.adoc_.
 
 |+path/to/file.adoc+
 |
-|{icon-ko} +
-Unable to get the current directory in a reliable way.
+|{icon-ko}
 |{icon-ok}
 |{icon-ok}
+5+a|
+Browser: Unable to get the current directory in a reliable way.
 
 |+file:///root/path/to/file.adoc+
 |+file:///root/path/to+
 |{icon-ok}
 |{icon-ok}
-|{icon-ko} +
-include uri not readable: `\file:///root/path/to/file.adoc`.
+|{icon-ko}
+5+a|
+MRI: include uri not readable: [.path]_\file:///root/path/to/file.adoc_.
 
 |+https://raw.com/master/file.adoc+
 |+https://raw.com/master+
@@ -77,23 +83,28 @@ include uri not readable: `\file:///root/path/to/file.adoc`.
 |+file.adoc+
 |+https://raw.com/master+
 |{icon-ok}
-|{icon-ko} +
-`SecurityError: Jail is not an absolute path: \https://raw.com/master`
-|{icon-ko} +
-include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
+|{icon-ko}
+|{icon-ko}
+5+a|
+[%hardbreaks]
+Node.js: SecurityError: Jail is not an absolute path: [.path]_\https://raw.com/master_
+MRI: include file not found: [.path]_\{local_pwd}/https:/raw.com/master/file.adoc_.
 
 |+../v1.5.0/file.adoc+
 |+https://raw.com/master+
 |{icon-ok}
-|{icon-ko} +
-`SecurityError: Jail is not an absolute path: \https://raw.com/master`
-|{icon-ko} +
-include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
+|{icon-ko}
+|{icon-ko}
+5+a|
+[%hardbreaks]
+Node.js: SecurityError: Jail is not an absolute path: [.path]_\https://raw.com/master_
+MRI: include file not found: [.path]_\{local_pwd}/https:/raw.com/master/file.adoc_.
 
 |+https://raw.com/master/../v1.5.0/file.adoc+
 |
 |{icon-ok}
-|{icon-ko} +
-The `xmlhttprequest` module does not expand path and therefore returns a 404.
+|{icon-ko}
 |{icon-ok}
+5+a|
+Node.js: The xmlhttprequest module does not expand path and therefore returns a 404.
 |===
