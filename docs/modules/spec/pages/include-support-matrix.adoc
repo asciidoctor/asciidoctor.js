@@ -12,7 +12,7 @@ This document describes how the include directive is resolved in the following e
 * Node.js
 * Ruby (MRI)
 
-[cols="1m,1m,1,1,1", options="header"]
+[#include-support-table,cols="1m,1m,1,1,1",options="header"]
 |===
 |File / Message
 |Base dir
