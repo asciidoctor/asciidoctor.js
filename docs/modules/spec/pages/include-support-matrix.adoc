@@ -10,7 +10,7 @@ This document describes how the include directive is resolved in the following e
 
 * Browser (XMLHttpRequest IO module)
 * Node.js
-* MRI (Ruby)
+* Ruby (MRI)
 
 [cols="1m,1m,1,1,1", options="header"]
 |===
@@ -18,7 +18,7 @@ This document describes how the include directive is resolved in the following e
 |Base dir
 |Browser
 |Node.js
-|MRI
+|Ruby
 
 | +path/to/file.adoc+
 | +file:///root+
@@ -26,7 +26,7 @@ This document describes how the include directive is resolved in the following e
 |{icon-ok}
 |{icon-ko}
 5+a|
-MRI: The resolved path is [.path]_/root/file:/root/path/to/file.adoc_.
+Ruby: The resolved path is [.path]_/root/file:/root/path/to/file.adoc_.
 
 |+path/../path/to/file.adoc+
 |+file:///root+
@@ -34,7 +34,7 @@ MRI: The resolved path is [.path]_/root/file:/root/path/to/file.adoc_.
 |{icon-ok}
 |{icon-ko}
 5+a|
-MRI: The resolved path is [.path]_/root/file:/root/path/to/file.adoc_.
+Ruby: The resolved path is [.path]_/root/file:/root/path/to/file.adoc_.
 
 |+file:///root/path/to/file.adoc+
 |
@@ -42,7 +42,7 @@ MRI: The resolved path is [.path]_/root/file:/root/path/to/file.adoc_.
 |{icon-ok}
 |{icon-ko}
 5+a|
-MRI: include uri not readable: [.path]_\file:///root/path/to/file.adoc_.
+Ruby: include uri not readable: [.path]_\file:///root/path/to/file.adoc_.
 
 |+file:///root/path/../path/to/file.adoc+
 |
@@ -50,7 +50,7 @@ MRI: include uri not readable: [.path]_\file:///root/path/to/file.adoc_.
 |{icon-ok}
 |{icon-ko}
 5+a|
-MRI: include uri not readable: [.path]_\file:///root/path/../path/to/file.adoc_.
+Ruby: include uri not readable: [.path]_\file:///root/path/../path/to/file.adoc_.
 
 |+path/to/file.adoc+
 |
@@ -66,7 +66,7 @@ Browser: Unable to get the current directory in a reliable way.
 |{icon-ok}
 |{icon-ko}
 5+a|
-MRI: include uri not readable: [.path]_\file:///root/path/to/file.adoc_.
+Ruby: include uri not readable: [.path]_\file:///root/path/to/file.adoc_.
 
 |+https://raw.com/master/file.adoc+
 |+https://raw.com/master+
@@ -88,7 +88,7 @@ MRI: include uri not readable: [.path]_\file:///root/path/to/file.adoc_.
 5+a|
 [%hardbreaks]
 Node.js: SecurityError: Jail is not an absolute path: [.path]_\https://raw.com/master_
-MRI: include file not found: [.path]_\{local_pwd}/https:/raw.com/master/file.adoc_.
+Ruby: include file not found: [.path]_\{local_pwd}/https:/raw.com/master/file.adoc_.
 
 |+../v1.5.0/file.adoc+
 |+https://raw.com/master+
@@ -98,7 +98,7 @@ MRI: include file not found: [.path]_\{local_pwd}/https:/raw.com/master/file.ado
 5+a|
 [%hardbreaks]
 Node.js: SecurityError: Jail is not an absolute path: [.path]_\https://raw.com/master_
-MRI: include file not found: [.path]_\{local_pwd}/https:/raw.com/master/file.adoc_.
+Ruby: include file not found: [.path]_\{local_pwd}/https:/raw.com/master/file.adoc_.
 
 |+https://raw.com/master/../v1.5.0/file.adoc+
 |
