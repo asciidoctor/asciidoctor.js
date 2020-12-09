@@ -20,8 +20,8 @@ This document describes how the include directive is resolved in the following e
 |Node.js
 |Ruby
 
-| +path/to/file.adoc+
-| +file:///root+
+|+path/to/file.adoc+
+|+file:///root+
 |{icon-ok}
 |{icon-ok}
 |{icon-ko}
