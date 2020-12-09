@@ -14,7 +14,7 @@ This document describes how the include directive is resolved in the following e
 
 [cols="1m,1m,1,1,1", options="header"]
 |===
-|Path
+|File / Message
 |Base dir
 |Browser
 |Node.js
