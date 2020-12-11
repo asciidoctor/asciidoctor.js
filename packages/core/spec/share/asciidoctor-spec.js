@@ -964,6 +964,26 @@ paragraph 3
         expect(secondSection.getCaption()).to.be.undefined()
         expect(secondSection.getAttribute('foo')).to.equal('bar')
       })
+
+      it('should set role', function () {
+        const doc = asciidoctor.load(`= Title
+
+[.foreword]
+== Foreword`)
+        const sectionWithRole = doc.getBlocks()[0]
+        expect(sectionWithRole.getRole()).to.equal('foreword')
+        sectionWithRole.setRole('afterword')
+        expect(sectionWithRole.getRole()).to.equal('afterword')
+
+        sectionWithRole.setRole('afterword last')
+        expect(sectionWithRole.getRole()).to.equal('afterword last')
+
+        sectionWithRole.setRole('lastword', 'closing')
+        expect(sectionWithRole.getRole()).to.equal('lastword closing')
+
+        sectionWithRole.setRole(['finalword', 'conclude'])
+        expect(sectionWithRole.getRole()).to.equal('finalword conclude')
+      })
     })
 
     describe('Creating', function () {
