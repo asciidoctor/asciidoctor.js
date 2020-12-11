@@ -47,7 +47,7 @@
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
     "@asciidoctor/cli": "3.4.0",
-    "@asciidoctor/core": "2.2.0"
+    "@asciidoctor/core": "2.2.1"
   },
   "devDependencies": {
     "pkg": "^4.4.7"
