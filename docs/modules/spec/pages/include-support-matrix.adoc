@@ -73,12 +73,16 @@ Ruby: include uri not readable: [.path]_\file:///root/path/to/file.adoc_.
 |{icon-ok}
 |{icon-ok}
 |{icon-ok}
+5+d|
+Not applicable
 
 |+https://raw.com/master/file.adoc+
 |
 |{icon-ok}
 |{icon-ok}
 |{icon-ok}
+5+d|
+Not applicable
 
 |+file.adoc+
 |+https://raw.com/master+
