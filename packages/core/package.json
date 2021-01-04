@@ -85,7 +85,7 @@
     "dot": "^1.1.3",
     "dtslint": "latest",
     "ejs": "^3.0.1",
-    "eslint": "7.16.0",
+    "eslint": "7.17.0",
     "handlebars": "^4.7.6",
     "http-server": "0.12.3",
     "mocha": "8.2.1",
