@@ -11,7 +11,7 @@
 :uri-webworker: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 :uri-spidermonkey: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
 
-By default, Asciidoctor.js will try his best to automatically detect the runtime environment using Duck typing.
+By default, Asciidoctor.js will try its best to automatically detect the runtime environment using Duck typing.
 
 == Configure the Runtime environment
 
