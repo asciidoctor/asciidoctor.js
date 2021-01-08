@@ -9,7 +9,7 @@ Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Guillaume Grossetie <h
 ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
 :uri-contribute: {uri-rel-file-base}CONTRIBUTING.adoc
 :uri-contribute-code: {uri-rel-file-base}CONTRIBUTING-CODE.adoc
-:uri-user-manual: https://asciidoctor-docs.netlify.com/asciidoctor.js/3.0
+:uri-user-manual: https://asciidoctor-docs.netlify.com/asciidoctor.js/latest
 :license: {uri-repo}/blob/master/LICENSE
 :experimental:
 :endash:
