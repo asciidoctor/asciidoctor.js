@@ -635,10 +635,17 @@ This is another paragraph.
       it('should instantiate an Inline element', function () {
         const opts = { safe: 'safe', base_dir: testOptions.baseDir }
         const doc = asciidoctor.load('= Empty document', opts)
-        const inlineElement = asciidoctor.Inline.create(doc, 'anchor', 'Tigers', { type: 'ref', target: 'tigers' })
+        const inlineElement = asciidoctor.Inline.create(doc, 'anchor', 'Tigers', {
+          type: 'ref',
+          target: 'tigers',
+          attributes: {
+            alt: 'Beautiful tigers'
+          }
+        })
         expect(inlineElement.getType()).to.equal('ref')
         expect(inlineElement.getText()).to.equal('Tigers')
         expect(inlineElement.getTarget()).to.equal('tigers')
+        expect(inlineElement.getAlt()).to.equal('Beautiful tigers')
       })
 
       it('should get document date', function () {
@@ -1878,6 +1885,7 @@ America/New_York
         expect(html).to.include('<style>pre.prism{background-color: lightgrey}</style>')
       })
     })
+
     describe('Table', function () {
       it('should create a table, a column and a cell', function () {
         try {

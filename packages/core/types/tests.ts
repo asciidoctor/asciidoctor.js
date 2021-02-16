@@ -1123,6 +1123,23 @@ const blockSubs5 = paragraphBlock.resolvePassSubstitutions('verbatim');
 assert(blockSubs5.length === 1);
 assert(blockSubs5[0] === 'specialcharacters');
 
+const docWithImages = processor.load(`
+[#img-sunset]
+[caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
+image::sunset.jpg[*Sunset & Sunside*,300,200]
+
+image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]
+
+image::noop.png[alt=]
+
+image::tigers.svg[]`);
+const imageBlocks = docWithImages.findBy((b) => b.getNodeName() === 'image');
+assert(imageBlocks.length === 4);
+assert(imageBlocks[0].getAlt() === '*Sunset &amp; Sunside*');
+assert(imageBlocks[1].getAlt() === 'GitHub mascot');
+assert(imageBlocks[2].getAlt() === '');
+assert(imageBlocks[3].getAlt() === 'tigers');
+
 let converterRegistry = processor.ConverterFactory.getRegistry();
 assert(typeof converterRegistry.html5 === 'function');
 

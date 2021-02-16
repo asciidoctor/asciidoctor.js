@@ -2155,6 +2155,13 @@ export namespace Asciidoctor {
      * @returns a {boolean} indicating whether this block has a title.
      */
     hasTitle(): boolean;
+
+    /**
+     * Returns the converted alt text for this block image.
+     *
+     * @returns the {string} value of the alt attribute with XML special character and replacement substitutions applied.
+     */
+    getAlt(): string;
   }
 
   /**
@@ -2278,6 +2285,13 @@ export namespace Asciidoctor {
      * @returns the string target of this Inline node.
      */
     getTarget(): string | undefined;
+
+    /**
+     * Returns the converted alt text for this inline image.
+     *
+     * @returns the {string} value of the alt attribute.
+     */
+    getAlt(): string;
   }
 
   /**
