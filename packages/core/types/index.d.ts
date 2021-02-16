@@ -2746,7 +2746,7 @@ export namespace Asciidoctor {
      * @returns the {@link AbstractNode} object to which this node is attached,
      * or undefined if this node has no parent.
      */
-    getParent(): AbstractNode;
+    getParent(): AbstractNode | undefined;
 
     /**
      * @returns true if this {AbstractNode} is an instance of {Inline}
