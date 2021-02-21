@@ -1,15 +1,18 @@
 'use strict'
 const path = require('path')
 const fs = require('fs')
-const { publish: npmPublish } = require('libnpmpublish')
 const log = require('bestikk-log')
+const pacote = require('pacote') // see: http://npm.im/pacote
+const { publish: npmPublish } = require('libnpmpublish')
 
 const publish = async (directory) => {
-    const pkg = require(path.join(directory, 'package.json'))
     if (process.env.DRY_RUN) {
+      const pkg = require(path.join(directory, 'package.json'))
       console.log(`${pkg.name}@${pkg.version}`)
     } else {
-      return npmPublish(directory, pkg, { token: process.env.NPM_AUTH_TOKEN, access: 'public' })
+      const manifest = await pacote.manifest(directory)
+      const tarData = await pacote.tarball(directory)
+      return npmPublish(manifest, tarData, { token: process.env.NPM_AUTH_TOKEN, access: 'public' })
     }
   }
 
