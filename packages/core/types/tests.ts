@@ -1023,6 +1023,20 @@ assert(docWithAttributes.getAttribute('foo') === 'baz');
 docWithAttributes.restoreAttributes();
 assert(docWithAttributes.getAttribute('foo') === 'bar');
 
+const emptyDoc = processor.load('== Test', {
+  attributes: {
+    mediasdir: 'media',
+    imagesdir: 'img',
+    photosdir: 'photo',
+    iconsdir: 'icon'
+  }
+});
+assert(emptyDoc.getMediaUri('poney.mp4') === 'img/poney.mp4');
+assert(emptyDoc.getMediaUri('poney.mp4', 'mediasdir') === 'media/poney.mp4');
+assert(emptyDoc.getImageUri('whale.jpg') === 'img/whale.jpg');
+assert(emptyDoc.getImageUri('whale.jpg', 'photosdir') === 'photo/whale.jpg');
+assert(emptyDoc.getIconUri('note') === 'icon/note.png');
+
 const docWithTable = processor.load(`
 [%header%footer]
 |===

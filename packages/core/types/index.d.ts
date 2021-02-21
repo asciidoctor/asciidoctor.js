@@ -2854,16 +2854,58 @@ export namespace Asciidoctor {
     setOption(name: string): void;
 
     /**
+     * Construct a reference or data URI to an icon image for the specified icon name.
+     *
+     * If the 'icon' attribute is set on this block, the name is ignored and the value of this attribute is used as the target image path.
+     * Otherwise, construct a target image path by concatenating the value of the 'iconsdir' attribute,
+     * the icon name, and the value of the 'icontype' attribute (defaulting to 'png').
+     *
+     * The target image path is then passed through the {@link AbstractNode#getImageUri} method.
+     * If the 'data-uri' attribute is set on the document, the image will be safely converted to a data URI.
+     *
+     * The return value of this method can be safely used in an image tag.
+     *
+     * @param name - the String name of the icon
+     *
+     * @returns A String reference or data URI for an icon image
      */
-    getIconUri(): string;
+    getIconUri(name: string): string;
 
     /**
+     * Construct a URI reference to the target media.
+     *
+     * If the target media is a URI reference, then leave it untouched.
+     *
+     * The target media is resolved relative to the directory retrieved from the specified attribute key, if provided.
+     *
+     * The return value can be safely used in a media tag (img, audio, video).
+     *
+     * @param target - A String reference to the target media
+     * @param assetDirKey - The String attribute key used to lookup the directory where the media is located (default: 'imagesdir')
+     *
+     * @returns A String reference for the target media
      */
-    getMediaUri(): string;
+    getMediaUri(target: string, assetDirKey?: string): string;
 
     /**
+     * Construct a URI reference or data URI to the target image.
+     *
+     * If the target image is a URI reference, then leave it untouched.
+     *
+     * The target image is resolved relative to the directory retrieved from the specified attribute key, if provided.
+     *
+     * If the 'data-uri' attribute is set on the document, and the safe mode level is less than SafeMode.SECURE,
+     * the image will be safely converted to a data URI by reading it from the same directory.
+     * If neither of these conditions are satisfied, a relative path (i.e., URL) will be returned.
+     *
+     * The return value of this method can be safely used in an image tag.
+     *
+     * @param targetImage - A String path to the target image
+     * @param assetDirKey - The String attribute key used to lookup the directory where the image is located (default: 'imagesdir')
+     *
+     * @returns A String reference or data URI for the target image
      */
-    getImageUri(): string;
+    getImageUri(targetImage: string, assetDirKey?: string): string;
 
     /**
      * Get the {Converter} instance being used to convert the current {Document}.
