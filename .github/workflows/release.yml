@@ -48,8 +48,6 @@ jobs:
         run: |
           npm ci
           npm ci --prefix packages/core
-      - name: Patch libnpmpublish
-        run: node ./tasks/patch-libnpmpublish.js
       # package and publish
       - name: Package
         env:
