@@ -1664,10 +1664,11 @@ export namespace Asciidoctor {
     isBasebackend(): boolean;
 
     /**
-     * Get the title explicitly defined in the document attributes.
-     * @see {@link AbstractNode#getAttributes}
+     * Return the document title as a {string}
+     *
+     * @returns the resolved document title as a {string} or undefined if a document title cannot be resolved
      */
-    getTitle(): string;
+    getTitle(): string | undefined;
 
     /**
      * Set the title on the document header
@@ -1682,12 +1683,28 @@ export namespace Asciidoctor {
     setTitle(title: string): string;
 
     /**
-     * @returns a {@link Asciidoctor/Document/Title}
+     * Resolves the primary title for the document
+     *
+     * Searches the locations to find the first non-empty value:
+     *
+     * - document-level attribute named title
+     * - header title (known as the document title)
+     * - title of the first section
+     * - document-level attribute named untitled-label (if use_fallback option is set)
+     *
+     * If no value can be resolved, undefined is returned.
+     *
+     * If the partition attribute is specified, the value is parsed into an {@link Asciidoctor/Document/Title} object.
+     * If the sanitize attribute is specified, XML elements are removed from the value.
+     *
+     *
+     * @returns the resolved title as a {@link Asciidoctor/Document/Title} if the partition option is passed
+     * or a {string} if not or undefined if no value can be resolved.
      */
-    getDocumentTitle(options?: Title.Options): string | Title;
+    getDocumentTitle(options?: Title.Options): string | Title | undefined;
 
     /**
-     * @see {@link Document#getDocumentTitle}
+     * @see {@link Asciidoctor/Document#getDocumentTitle}
      */
     getDoctitle(options: Title.Options): string | Title;
 
