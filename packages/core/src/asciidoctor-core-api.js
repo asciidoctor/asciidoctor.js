@@ -873,7 +873,8 @@ AbstractNode.prototype.resolveSubstitutions = function (subs, type, defaults, su
   if (typeof subject === 'undefined') {
     subject = Opal.nil
   }
-  return this.$resolve_subs(subs, type, defaults, subject)
+  const value = this.$resolve_subs(subs, type, defaults, subject)
+  return value === Opal.nil ? undefined : value
 }
 
 /**
