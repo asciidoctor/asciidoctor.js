@@ -880,6 +880,12 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       expect(block.resolveSubstitutions('attributes+', 'block')).to.have.members(['attributes'])
     })
 
+    it('should resolve undefined when subs is empty', () => {
+      const doc = asciidoctor.load('paragraph')
+      const block = doc.getBlocks()[0]
+      expect(block.resolveSubstitutions('', 'block')).to.be.undefined()
+    })
+
     it('should resolve a list of substitutions on a block', () => {
       const doc = asciidoctor.load('paragraph')
       const block = doc.getBlocks()[0]
