@@ -116,3 +116,18 @@ jobs:
           asset_path: packages/asciidoctor/dist/asciidoctor-win.exe
           asset_name: asciidoctor-win.exe
           asset_content_type: application/octet-stream
+      - name: Set release version
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Announcement
+        uses: yuzutech/zulip-send-message-action@v0.1.0
+        with:
+          username: ${{ secrets.ZULIP_USERNAME }}
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          organization-url: 'https://asciidoctor.zulipchat.com'
+          to: 'announce 📢'
+          type: 'stream'
+          topic: 'releases'
+          content: |
+            Asciidoctor.js ${{ env.RELEASE_VERSION }} is out!
+
+            https://github.com/asciidoctor/asciidoctor.js/releases/tag/${{ env.RELEASE_VERSION }}
