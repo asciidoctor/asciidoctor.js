@@ -665,6 +665,26 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       expect(imagesCatalog[1].getImagesDirectory()).to.be.undefined()
     })
 
+    it('should get image alt', () => {
+      const input = `
+[#img-sunset]
+[caption="Figure 1: ",link=https://www.flickr.com/photos/javh/5448336655]
+image::sunset.jpg[*Sunset & Sunside*,300,200]
+
+image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]
+
+image::noop.png[alt=]
+
+image::tigers.svg[]`
+      const doc = asciidoctor.load(input)
+      const imageBlocks = doc.findBy((b) => b.getNodeName() === 'image')
+      expect(imageBlocks.length).to.equal(4)
+      expect(imageBlocks[0].getAlt()).to.equal('*Sunset &amp; Sunside*')
+      expect(imageBlocks[1].getAlt()).to.equal('GitHub mascot')
+      expect(imageBlocks[2].getAlt()).to.equal('')
+      expect(imageBlocks[3].getAlt()).to.equal('tigers')
+    })
+
     it('should not get images catalog when catalog_assets is enabled', () => {
       const input = `= Title
 
@@ -858,6 +878,12 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       const doc = asciidoctor.load('paragraph')
       const block = doc.getBlocks()[0]
       expect(block.resolveSubstitutions('attributes+', 'block')).to.have.members(['attributes'])
+    })
+
+    it('should resolve undefined when subs is empty', () => {
+      const doc = asciidoctor.load('paragraph')
+      const block = doc.getBlocks()[0]
+      expect(block.resolveSubstitutions('', 'block')).to.be.undefined()
     })
 
     it('should resolve a list of substitutions on a block', () => {

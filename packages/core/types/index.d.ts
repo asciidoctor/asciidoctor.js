@@ -1664,10 +1664,11 @@ export namespace Asciidoctor {
     isBasebackend(): boolean;
 
     /**
-     * Get the title explicitly defined in the document attributes.
-     * @see {@link AbstractNode#getAttributes}
+     * Return the document title as a {string}
+     *
+     * @returns the resolved document title as a {string} or undefined if a document title cannot be resolved
      */
-    getTitle(): string;
+    getTitle(): string | undefined;
 
     /**
      * Set the title on the document header
@@ -1682,12 +1683,28 @@ export namespace Asciidoctor {
     setTitle(title: string): string;
 
     /**
-     * @returns a {@link Asciidoctor/Document/Title}
+     * Resolves the primary title for the document
+     *
+     * Searches the locations to find the first non-empty value:
+     *
+     * - document-level attribute named title
+     * - header title (known as the document title)
+     * - title of the first section
+     * - document-level attribute named untitled-label (if use_fallback option is set)
+     *
+     * If no value can be resolved, undefined is returned.
+     *
+     * If the partition attribute is specified, the value is parsed into an {@link Asciidoctor/Document/Title} object.
+     * If the sanitize attribute is specified, XML elements are removed from the value.
+     *
+     *
+     * @returns the resolved title as a {@link Asciidoctor/Document/Title} if the partition option is passed
+     * or a {string} if not or undefined if no value can be resolved.
      */
-    getDocumentTitle(options?: Title.Options): string | Title;
+    getDocumentTitle(options?: Title.Options): string | Title | undefined;
 
     /**
-     * @see {@link Document#getDocumentTitle}
+     * @see {@link Asciidoctor/Document#getDocumentTitle}
      */
     getDoctitle(options: Title.Options): string | Title;
 
@@ -2155,6 +2172,13 @@ export namespace Asciidoctor {
      * @returns a {boolean} indicating whether this block has a title.
      */
     hasTitle(): boolean;
+
+    /**
+     * Returns the converted alt text for this block image.
+     *
+     * @returns the {string} value of the alt attribute with XML special character and replacement substitutions applied.
+     */
+    getAlt(): string;
   }
 
   /**
@@ -2278,6 +2302,13 @@ export namespace Asciidoctor {
      * @returns the string target of this Inline node.
      */
     getTarget(): string | undefined;
+
+    /**
+     * Returns the converted alt text for this inline image.
+     *
+     * @returns the {string} value of the alt attribute.
+     */
+    getAlt(): string;
   }
 
   /**
@@ -2746,7 +2777,7 @@ export namespace Asciidoctor {
      * @returns the {@link AbstractNode} object to which this node is attached,
      * or undefined if this node has no parent.
      */
-    getParent(): AbstractNode;
+    getParent(): AbstractNode | undefined;
 
     /**
      * @returns true if this {AbstractNode} is an instance of {Inline}
@@ -2854,16 +2885,58 @@ export namespace Asciidoctor {
     setOption(name: string): void;
 
     /**
+     * Construct a reference or data URI to an icon image for the specified icon name.
+     *
+     * If the 'icon' attribute is set on this block, the name is ignored and the value of this attribute is used as the target image path.
+     * Otherwise, construct a target image path by concatenating the value of the 'iconsdir' attribute,
+     * the icon name, and the value of the 'icontype' attribute (defaulting to 'png').
+     *
+     * The target image path is then passed through the {@link AbstractNode#getImageUri} method.
+     * If the 'data-uri' attribute is set on the document, the image will be safely converted to a data URI.
+     *
+     * The return value of this method can be safely used in an image tag.
+     *
+     * @param name - the String name of the icon
+     *
+     * @returns A String reference or data URI for an icon image
      */
-    getIconUri(): string;
+    getIconUri(name: string): string;
 
     /**
+     * Construct a URI reference to the target media.
+     *
+     * If the target media is a URI reference, then leave it untouched.
+     *
+     * The target media is resolved relative to the directory retrieved from the specified attribute key, if provided.
+     *
+     * The return value can be safely used in a media tag (img, audio, video).
+     *
+     * @param target - A String reference to the target media
+     * @param assetDirKey - The String attribute key used to lookup the directory where the media is located (default: 'imagesdir')
+     *
+     * @returns A String reference for the target media
      */
-    getMediaUri(): string;
+    getMediaUri(target: string, assetDirKey?: string): string;
 
     /**
+     * Construct a URI reference or data URI to the target image.
+     *
+     * If the target image is a URI reference, then leave it untouched.
+     *
+     * The target image is resolved relative to the directory retrieved from the specified attribute key, if provided.
+     *
+     * If the 'data-uri' attribute is set on the document, and the safe mode level is less than SafeMode.SECURE,
+     * the image will be safely converted to a data URI by reading it from the same directory.
+     * If neither of these conditions are satisfied, a relative path (i.e., URL) will be returned.
+     *
+     * The return value of this method can be safely used in an image tag.
+     *
+     * @param targetImage - A String path to the target image
+     * @param assetDirKey - The String attribute key used to lookup the directory where the image is located (default: 'imagesdir')
+     *
+     * @returns A String reference or data URI for the target image
      */
-    getImageUri(): string;
+    getImageUri(targetImage: string, assetDirKey?: string): string;
 
     /**
      * Get the {Converter} instance being used to convert the current {Document}.

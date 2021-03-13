@@ -629,6 +629,15 @@ AbstractBlock.prototype.hasTitle = function () {
   return this['$title?']()
 }
 
+/**
+ * Returns the converted alt text for this block image.
+ * @returns {string} - the {string} value of the alt attribute with XML special character and replacement substitutions applied.
+ * @memberof AbstractBlock
+ */
+AbstractBlock.prototype.getAlt = function () {
+  return this.$alt()
+}
+
 // Section API
 
 /**
@@ -861,7 +870,8 @@ AbstractNode.prototype.resolveSubstitutions = function (subs, type, defaults, su
   if (typeof subject === 'undefined') {
     subject = Opal.nil
   }
-  return this.$resolve_subs(subs, type, defaults, subject)
+  const value = this.$resolve_subs(subs, type, defaults, subject)
+  return value === Opal.nil ? undefined : value
 }
 
 /**
@@ -2306,7 +2316,7 @@ var Inline = Opal.Asciidoctor.Inline
  * @memberof Inline
  */
 Inline.create = function (parent, context, text, opts) {
-  return this.$new(parent, context, text, toHash(opts))
+  return this.$new(parent, context, text, prepareOptions(opts))
 }
 
 /**
@@ -2352,6 +2362,16 @@ Inline.prototype.getType = function () {
 Inline.prototype.getTarget = function () {
   var target = this.$target()
   return target === Opal.nil ? undefined : target
+}
+
+/**
+ * Returns the converted alt text for this inline image.
+ *
+ * @returns {string} - the String value of the alt attribute.
+ * @memberof Inline
+ */
+Inline.prototype.getAlt = function () {
+  return this.$alt()
 }
 
 // List API
