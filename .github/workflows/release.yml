@@ -124,7 +124,7 @@ jobs:
           username: ${{ secrets.ZULIP_USERNAME }}
           api-key: ${{ secrets.ZULIP_API_KEY }}
           organization-url: 'https://asciidoctor.zulipchat.com'
-          to: 'announce 📢'
+          to: '279652'
           type: 'stream'
           topic: 'releases'
           content: |
