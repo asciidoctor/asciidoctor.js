@@ -1,6 +1,16 @@
 /* global Opal, it, describe, define */
 const shareSpec = function (testOptions, asciidoctor, expect) {
   describe(testOptions.platform, function () {
+    describe('String encoding', () => {
+      it('should use UTF-8 as the default String encoding', () => {
+        expect(String('foo'.encoding)).to.equal('UTF-8')
+      })
+
+      it('should return correct bytes for String', () => {
+        expect('foo'.$bytesize()).to.equal(3)
+        expect('foo'.$each_byte().$to_a()).to.eql([102, 111, 111])
+      })
+    })
     describe('When loaded', function () {
       it('asciidoctor should not be null', function () {
         expect(asciidoctor).to.be.an.instanceof(Object)
