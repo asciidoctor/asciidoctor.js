@@ -1958,7 +1958,7 @@ export namespace Asciidoctor {
     /**
      * Get the {Converter} instance being used to convert the current {Document}.
      */
-    getConverter(): object;
+    getConverter(): AbstractConverter;
 
     /**
      * Get the activated {Extensions.Registry} associated with this document.
