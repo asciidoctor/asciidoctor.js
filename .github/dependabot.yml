@@ -1,0 +1,78 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: sinon
+    versions:
+    - ">= 9.a, < 10"
+  - dependency-name: pacote
+    versions:
+    - 11.3.0
+    - 11.3.2
+  - dependency-name: chai
+    versions:
+    - 4.3.1
+    - 4.3.3
+- package-ecosystem: npm
+  directory: "/packages/core"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: cross-env
+    versions:
+    - ">= 7.a, < 8"
+  - dependency-name: sinon
+    versions:
+    - ">= 9.a, < 10"
+  - dependency-name: "@types/node"
+    versions:
+    - 14.14.22
+    - 14.14.24
+    - 14.14.34
+    - 14.14.36
+    - 14.14.41
+    - 15.0.0
+  - dependency-name: documentation
+    versions:
+    - 13.2.0
+    - 13.2.4
+  - dependency-name: dtslint
+    versions:
+    - 4.0.9
+  - dependency-name: sinon
+    versions:
+    - 10.0.0
+  - dependency-name: mocha
+    versions:
+    - 8.3.1
+  - dependency-name: chai
+    versions:
+    - 4.3.1
+  - dependency-name: typescript
+    versions:
+    - 4.1.4
+  - dependency-name: puppeteer
+    versions:
+    - 6.0.0
+    - 7.0.0
+  - dependency-name: eslint
+    versions:
+    - 7.18.0
+    - 7.19.0
+  - dependency-name: unxhr
+    versions:
+    - 1.1.1
+- package-ecosystem: npm
+  directory: "/packages/asciidoctor"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: pkg
+    versions:
+    - 5.0.0
