@@ -1,6 +1,6 @@
 {
   "name": "@asciidoctor/core",
-  "version": "2.2.4-rc.2",
+  "version": "2.2.4",
   "description": "Asciidoctor - the core library",
   "main": "dist/node/asciidoctor.js",
   "browser": "dist/browser/asciidoctor.js",
