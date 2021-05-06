@@ -89,7 +89,7 @@ Then execute it on GraalVM using the `node` command (available in the [.path]_/b
 
 === Embed in a JVM-based application
 
-https://www.graalvm.org/docs/graalvm-as-a-platform/embed/[With the Graal Polyglot API, you can embed JavaScript code in a JVM-based application].
+https://www.graalvm.org/reference-manual/embed-languages/[With the Graal Polyglot API, you can embed JavaScript code in a JVM-based application].
 
 IMPORTANT: The Graal Polyglot feature gives you a "pure" JavaScript (ECMAScript) engine, not a Node.js engine.
 In other words, Node.js features such as `require` or core module such as `fs` won't be available.
