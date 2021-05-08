@@ -90,11 +90,13 @@ Then execute it on GraalVM using the `node` command (available in the [.path]_/b
 === Embed in a JVM-based application
 
 https://www.graalvm.org/reference-manual/embed-languages/[With the Graal Polyglot API, you can embed JavaScript code in a JVM-based application].
+However, this is currently an *experimental* feature.
+Please, share any feedback or issues you may have.
 
 IMPORTANT: The Graal Polyglot feature gives you a "pure" JavaScript (ECMAScript) engine, not a Node.js engine.
 In other words, Node.js features such as `require` or core module such as `fs` won't be available.
 
-To embed Asciidoctor.js in a Java application, create the following code snippet to a file named `app.js`:
+To embed Asciidoctor.js in a Java application, create the following code snippet to a file named `app.js` (tested on v21.1.0):
 
 .app.js
 ```js
@@ -106,50 +108,7 @@ Then create a Java file named `AsciidoctorGraalVM.java` with the following conte
 
 .AsciidoctorGraalVM.java
 ```java
-import org.graalvm.polyglot.Context;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-
-public class AsciidoctorGraalVM {
-
-  public static void main(String... args) {
-    Context context = Context.newBuilder("js").allowIO(true).build();
-    context.getPolyglotBindings().putMember("IncludeResolver", new IncludeResolver()); // <1>
-    context.eval("js", "var IncludeResolver = Polyglot.import('IncludeResolver');");
-    ClassLoader classLoader = AsciidoctorGraalVM.class.getClassLoader();
-    context.eval("js", "load('" + classLoader.getResource("asciidoctor.js") + "')"); // <2>
-    context.eval("js", "load('" + classLoader.getResource("app.js") +"')"); // <2>
-  }
-
-  public static class IncludeResolver {
-    public String read(String path) throws IOException, URISyntaxException {
-      Path filePath = Paths.get(path);
-      List<String> lines;
-      File file = filePath.toFile();
-      if (file.exists()) {
-        lines = Files.readAllLines(filePath, StandardCharsets.UTF_8);
-      } else {
-        Path fileName = filePath.getFileName();
-        URL url = this.getClass().getClassLoader().getResource(fileName.toString());
-        if (url != null) {
-          lines = Files.readAllLines(Paths.get(url.toURI()), StandardCharsets.UTF_8);
-        } else {
-          lines = new ArrayList<>();
-        }
-      }
-      return String.join("\n", lines);
-    }
-
-    public String pwd() {
-      return Paths.get("").toAbsolutePath().toString();
-    }
-  }
-}
+include::example$AsciidoctorGraalVM.java[]
 ```
 <1> The `IncludeResolver` class will be used to read the content of a file when using the `include::` directive
 <2> Make sure that `asciidoctor.js` and `app.js` are available in the classpath of the application
