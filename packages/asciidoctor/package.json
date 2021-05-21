@@ -50,6 +50,6 @@
     "@asciidoctor/core": "2.2.4"
   },
   "devDependencies": {
-    "pkg": "^4.4.7"
+    "pkg": "^5.2.0"
   }
 }
