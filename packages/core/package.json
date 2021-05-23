@@ -79,7 +79,7 @@
     "bestikk-log": "0.1.0",
     "bestikk-uglify": "3.0.0",
     "chai": "4.3.4",
-    "cross-env": "6.0.3",
+    "cross-env": "7.0.3",
     "dirty-chai": "2.0.1",
     "documentation": "13.2.5",
     "dot": "^1.1.3",
