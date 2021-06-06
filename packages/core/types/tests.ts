@@ -939,11 +939,15 @@ assert(warnMessage.severity === 2);
 assert(warnMessage.message === 'hi');
 assert(warnMessage.progname === 'asciidoctor.js');
 
+function isError(error: any): error is NodeJS.ErrnoException {
+    return error instanceof Error;
+}
+
 function truncateFile(path: string) {
   try {
     fs.truncateSync(path, 0); // file must be empty
   } catch (err) {
-    if (err.code === 'ENOENT') {
+    if (isError(err) && err.code === 'ENOENT') {
       // it's OK, if the file does not exists
     }
   }
