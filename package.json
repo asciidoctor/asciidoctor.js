@@ -14,7 +14,7 @@
     "bestikk-log": "0.1.0",
     "chai": "4.3.4",
     "dirty-chai": "2.0.1",
-    "libnpmpublish": "4.0.1",
+    "libnpmpublish": "4.0.2",
     "mocha": "8.4.0",
     "pacote": "^11.3.4",
     "sinon": "11.1.0",
