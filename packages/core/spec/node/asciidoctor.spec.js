@@ -428,6 +428,35 @@ intro
         expect(errorMessage.message).to.equal('hi')
         expect(errorMessage.progname).to.equal('asciidoctor.js')
       })
+      it('should accept a message as block argument', () => {
+        const messages = []
+        const memoryLogger = asciidoctor.LoggerManager.newLogger('CustomMemoryLogger', {
+          add: function (severity, message, programName, block) {
+            if (typeof block === 'function') {
+              messages.push(block())
+            } else {
+              messages.push(message)
+            }
+          }
+        })
+        const defaultLogger = asciidoctor.LoggerManager.getLogger()
+        try {
+          asciidoctor.LoggerManager.setLogger(memoryLogger)
+          memoryLogger.add('error', 'before', 'asciidoctor.js')
+          asciidoctor.convert('Hello, {name}!', {
+            attributes: {
+              'attribute-missing': 'drop-line'
+            }
+          })
+          memoryLogger.add('error', 'after', 'asciidoctor.js')
+          expect(messages.length).to.equal(3)
+          expect(messages).to.includes('before')
+          expect(messages).to.includes('dropping line containing reference to missing attribute: name')
+          expect(messages).to.includes('after')
+        } finally {
+          asciidoctor.LoggerManager.setLogger(defaultLogger)
+        }
+      })
     })
   }
 

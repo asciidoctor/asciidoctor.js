@@ -84,15 +84,23 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
           if (defaultFunctions && Object.prototype.hasOwnProperty.call(defaultFunctions, functionName)) {
             defaultFunctionsOverridden[functionName] = true
           }
-          Opal.def(scope, '$' + functionName, function () {
+          let $function
+          Opal.def(scope, '$' + functionName, ($function = function () {
             let args
             if (argProxyFunctions && Object.prototype.hasOwnProperty.call(argProxyFunctions, functionName)) {
               args = argProxyFunctions[functionName](arguments)
             } else {
               args = arguments
             }
+            // append Ruby block as the final argument
+            const $block = $function.$$p
+            if ($block) {
+              args[args.length] = function () { return Opal.yield1($block) }
+              args.length += 1
+              $function.$$p = null
+            }
             return userFunction.apply(this, args)
-          })
+          }))
         }
       }(functionName))
     }
