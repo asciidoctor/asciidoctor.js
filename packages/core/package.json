@@ -95,7 +95,7 @@
     "opal-compiler": "2.0.0-alpha.2",
     "portfinder": "1.0.28",
     "pug": "^3.0.0",
-    "puppeteer": "9.1.1",
+    "puppeteer": "10.0.0",
     "sinon": "11.1.0",
     "standard": "16.0.3",
     "typescript": "^4.0.2"
