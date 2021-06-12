@@ -999,6 +999,18 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       }
     })
 
+    it('should instantiate the specified logger class when the logger value is falsy', () => {
+      const defaultLogger = asciidoctor.LoggerManager.getLogger()
+      try {
+        asciidoctor.LoggerManager.setLogger(null)
+        const initialLogger = asciidoctor.LoggerManager.getLogger()
+        expect(initialLogger).to.be.instanceof(Object)
+        expect(initialLogger.progname).to.equal('asciidoctor')
+      } finally {
+        asciidoctor.LoggerManager.setLogger(defaultLogger)
+      }
+    })
+
     it('should be able to apply specific inline substitutions to text', () => {
       const doc = asciidoctor.load('para', { attributes: { start: 'start', finish: 'finish' } })
       const para = doc.getBlocks()[0]
