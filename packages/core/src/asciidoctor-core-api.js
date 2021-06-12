@@ -2744,7 +2744,7 @@ LoggerManager.getLogger = function () {
  * @memberof LoggerManager
  */
 LoggerManager.setLogger = function (logger) {
-  this.logger = logger
+  this['$logger='](logger)
 }
 
 /**
