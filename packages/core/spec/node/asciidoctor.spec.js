@@ -2071,13 +2071,13 @@ header_attribute::foo[bar]`
       expect(html).to.contain('include::nonexistent.adoc[]')
     })
 
-    it('should include file with a relative path (base_dir is not defined)', function () {
+    it('should include file with a relative path (base_dir is not defined)', () => {
       const opts = { safe: 'safe' }
       const html = asciidoctor.convert('include::spec/fixtures/include.adoc[]', opts)
       expect(html).to.contain('include content')
     })
 
-    it('should include file with an absolute path (base_dir is explicitly defined)', function () {
+    it('should include file with an absolute path (base_dir is explicitly defined)', () => {
       const opts = { safe: 'safe', base_dir: testOptions.baseDir }
       const html = asciidoctor.convert('include::' + testOptions.baseDir + '/spec/fixtures/include.adoc[]', opts)
       expect(html).to.contain('include content')
@@ -2096,6 +2096,25 @@ header_attribute::foo[bar]`
       const content = fs.readFileSync(resolveFixture('test.adoc'))
       const html = asciidoctor.convert(content, options)
       expect(html).to.contain('Hello world')
+    })
+
+    it('should start numbering the chapter should at 0', () => {
+      const options = { safe: 'safe' }
+      const html = asciidoctor.convert(`= Document Title
+:chapter-number: -1
+:sectnums:
+:doctype: book
+
+{asciidoctor-version}
+
+== Chapter A
+
+content
+
+== Chapter B
+
+content`, options)
+      expect(html).to.contain('0. Chapter A')
     })
   })
 
