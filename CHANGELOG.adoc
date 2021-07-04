@@ -8,6 +8,49 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
+
+== v2.2.4 (2021-04-30)
+
+Improvements::
+
+* Build against the latest release of Asciidoctor 2.0.12 2.0.15
+
+== v2.2.3 (2021-04-13)
+
+Improvements::
+
+* Build against the latest release of Asciidoctor 2.0.13
+
+== v2.2.2 (2021-03-24)
+
+Bug Fixes::
+
+* Upgrade to Asciidoctor Opal runtime 0.3.2 (#1228)
+** Critical performance optimization for Node.js > 10 on Array.shift (when Array.prototype has been modified). See: https://github.com/opal/opal/pull/2115
+** Check if Opal is already loaded. See: https://github.com/Mogztter/asciidoctor-opal-node-runtime/issues/58
+* Backport bug fixes on v2.2.x branch (#1234)
+* Fix incorrect type definitions on `AbstractNode#getImageUri`, `#getMediaUri`, `#getIconUri` (#1193)
+* Fix type definitions on `Document#getDocumentTitle`, `#getTitle` (can return undefined) (#1150)
+* Fix type definitions on `AbstractNode#getParent` (can return undefined) (#1131)
+* Map `AbstractBlock#alt` (and `Inline#alt`) (#1192)
+* `AbstractNode#resolveSubstitutions` returns `undefined` (#1153)
+
+Infrastructure::
+
+* Post a release announcement on Zulip (#1235)
+
+Documentation::
+
+* Suppress autolinks on include support matrix page
+* Escape URL `file:///`
+* Use emoji unicode or shortcode depending on the environment
+* Add Asciidoctor.js CLI in the nav
+* Add 5 new extensions: https://docs.asciidoctor.org/asciidoctor.js/latest/extend/extensions/ecosystem/ - thanks @djenks (#1044)
+* Use gender-neutral pronoun to refer to Asciidoctor.js - thanks @mojavelinux (#1175)
+* Improve support matrix readability (#1161)
+
+== v2.2.1 (2020-11-26)
+
 Bug Fixes::
 
 * Pass `Opal.nil` when title is undefined (#1010)
