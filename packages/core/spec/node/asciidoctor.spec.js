@@ -566,6 +566,15 @@ intro
       const doc = asciidoctor.load('== Test')
       expect(doc.getBaseDir()).to.equal(process.cwd().replace(/\\/g, '/'))
     })
+
+    it('should load source with BOM from Buffer', function () {
+      const source = Buffer.concat([Buffer.from([0xEF, 0xBB, 0xBF]), Buffer.from('= Document Title\n:lang: fr\n\ncontent is in {lang}')]).toString()
+      const opts = { safe: 'safe', base_dir: testOptions.baseDir }
+      const doc = asciidoctor.load(source, opts)
+      expect(doc.getAttribute('lang')).to.equal('fr')
+      const html = doc.convert()
+      expect(html).to.include('content is in fr')
+    })
   })
 
   describe('Loading file', () => {
