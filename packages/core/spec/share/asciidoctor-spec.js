@@ -623,9 +623,10 @@ This is another paragraph.
         expect(appendixSection.getCaption()).to.equal('Appx A: ')
       })
 
-      it('should load a file with bom', function () {
+      it('should load source with BOM from String', function () {
+        const source = '\xef\xbb\xbf= Document Title\n:lang: fr\n:fixtures-dir: spec/fixtures\n\ncontent is in {lang}\n\ninclude::{fixtures-dir}/include.adoc[]'
         const opts = { safe: 'safe', base_dir: testOptions.baseDir }
-        const doc = asciidoctor.load('\xef\xbb\xbf= Document Title\n:lang: fr\n:fixtures-dir: spec/fixtures\n\ncontent is in {lang}\n\ninclude::{fixtures-dir}/include.adoc[]', opts)
+        const doc = asciidoctor.load(source, opts)
         expect(doc.getAttribute('lang')).to.equal('fr')
         const html = doc.convert()
         expect(html).to.include('content is in fr')

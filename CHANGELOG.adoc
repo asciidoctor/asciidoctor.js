@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
+Bug Fixes::
+
+* Strip alternate BOM that uses char code 65279 when input passes through a Buffer (#1344)
+
 Infrastructure::
 
 * Upgrade GraalVM to 20.1.0 (#1035)
