@@ -1,5 +1,5 @@
 /* global Opal, Asciidoctor, ASCIIDOCTOR_JS_VERSION */
-const Opal = require('asciidoctor-opal-runtime').Opal
+const Opal = require('asciidoctor-opal-runtime')
 
 // Node module
 ;(function (root, factory) {

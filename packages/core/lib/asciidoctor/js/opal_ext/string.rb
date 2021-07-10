@@ -10,8 +10,15 @@ class String
   alias :_original_byteslice :byteslice
 
   def byteslice index, length = 1
-    if index == 3 && length >= index && `#{self}.charCodeAt() === 65279`
-      `#{self}.substr(1)`.byteslice 0, length - 3
+    if index == 3 && length >= index
+      firstCharCode = `#{self}.charCodeAt()`
+      if firstCharCode == 65279
+        `#{self}.substr(1, #{length} - 1)`
+      elsif firstCharCode === 239 && `#{self}.charCodeAt(1)` == 187 && `#{self}.charCodeAt(2)` == 191
+        `#{self}.substr(3, #{length} - 3)`
+      else
+        _original_byteslice index, length
+      end
     else
       _original_byteslice index, length
     end
@@ -21,7 +28,12 @@ class String
 
   def unpack format
     if format == 'C3'
-      `#{self}.charCodeAt() === 65279` ? [239, 187, 191] : self[0, 3].bytes.select.with_index {|_, i| i.even? }
+      firstCharCode = `#{self}.charCodeAt()`
+      if firstCharCode == 65279
+        [239, 187, 191]
+      else
+        [firstCharCode, `#{self}.charCodeAt(1)`, `#{self}.charCodeAt(2)`]
+      end
     else
       _original_unpack format
     end
