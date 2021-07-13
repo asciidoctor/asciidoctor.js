@@ -1,7 +1,7 @@
 const Mocha = require('mocha')
 const mocha = new Mocha()
 
-mocha.addFile('spec/node/asciidoctor.spec.js')
+mocha.addFile('spec/node/asciidoctor.spec.cjs')
 
 // Run the tests.
 mocha.run(function (failures) {

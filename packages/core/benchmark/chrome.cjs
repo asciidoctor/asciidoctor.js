@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs')
 const ospath = require('path')
-const stats = require('./stats.js')
+const stats = require('./stats.cjs')
 
 const verbose = process.env.VERBOSE
 const include = process.env.INCLUDE

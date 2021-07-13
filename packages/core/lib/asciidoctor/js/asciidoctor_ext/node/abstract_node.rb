@@ -1,8 +1,5 @@
 module Asciidoctor
 class AbstractNode
-  @__xmlhttprequest__ = `require('unxhr')`
-  `var __XMLHttpRequest__ = #{@__xmlhttprequest__}.XMLHttpRequest`
-
   def generate_data_uri_from_uri image_uri, cache_uri = false
     %x{
       var contentType = ''

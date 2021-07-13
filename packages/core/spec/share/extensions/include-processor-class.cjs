@@ -1,5 +1,5 @@
 /* global Opal */
-module.exports = (function (Opal) {
+module.exports = function (Opal) {
   const includeProcessor = Opal.const_get_qualified(
     Opal.const_get_qualified(
       Opal.const_get_relative(Opal, 'Asciidoctor'),
@@ -15,4 +15,4 @@ module.exports = (function (Opal) {
   })
 
   return scope
-})(Opal)
+}

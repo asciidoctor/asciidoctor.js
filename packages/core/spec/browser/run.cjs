@@ -1,7 +1,7 @@
 /* eslint-env node, es6 */
 const puppeteer = require('puppeteer')
-const util = require('./util.js')
-const MockServer = require('../share/mock-server.js')
+const util = require('./util.cjs')
+const MockServer = require('../share/mock-server.cjs')
 
 // puppeteer options
 const opts = {
