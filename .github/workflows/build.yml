@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [12.x, 14.x]
+        node-version: [14.x, 16.x]
         asciidoctor-core-version: [v2.0.15, master]
         experimental: [false]
         include:
@@ -50,8 +50,8 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 12.x
           - 14.x
+          - 16.x
         asciidoctor-core-version: [v2.0.15, master]
     steps:
       - uses: actions/checkout@v2
