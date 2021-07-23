@@ -3025,6 +3025,18 @@ And here&#8217;s a block image:</p>
       })
       expect(result).to.equal('<p class="paragraph-nunjucks">a simple paragraph</p>')
     }).timeout(5000)
+    it('should cache helpers', () => {
+      const options = {
+        safe: 'safe',
+        backend: 'html5',
+        template_cache: true,
+        template_dir: ['spec/fixtures/templates/helpers']
+      }
+      const first = asciidoctor.convert('image::test.png[]', options)
+      expect(first).to.equal('value')
+      const second = asciidoctor.convert('image::test.png[]', options)
+      expect(second).to.equal('value')
+    }).timeout(5000)
   })
 
   if (isWin && process.env.APPVEYOR_BUILD_FOLDER) {
