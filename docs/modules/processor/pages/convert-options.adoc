@@ -54,7 +54,8 @@ Instead of providing a JavaScript function containing extensions to register, th
 |_boolean_
 
 |safe
-|Sets the safe mode.
+|Sets the xref:asciidoctor::safe-modes.adoc[safe mode]. +
+Disables potentially dangerous macros in source files, such as `include::[]`.
 |secure
 |unsafe, safe, server or secure
 
