@@ -50,10 +50,11 @@ class Converter::TemplateConverter < Converter::Base
       raise %(Could not find a custom template to handle transform: #{template_name})
     end
 
+    helpers_ctx = @templates['helpers.js'] && @templates['helpers.js'].ctx
     if template_name == 'document'
-      `template.render({node: node, opts: fromHash(opts), helpers: self.helpers})`.strip
+      `template.render({node: node, opts: fromHash(opts), helpers: helpers_ctx})`.strip
     else
-      `template.render({node: node, opts: fromHash(opts), helpers: self.helpers})`.rstrip
+      `template.render({node: node, opts: fromHash(opts), helpers: helpers_ctx})`.rstrip
     end
   end
 
@@ -239,12 +240,12 @@ class Converter::TemplateConverter < Converter::Base
     end
     if helpers || ::File.file?(helpers = %(#{template_dir}/helpers.js))
       %x{
-        var helpers = require(helpers)
-        if (typeof helpers.configure === 'function') {
-          helpers.configure(enginesContext)
+        var ctx = require(helpers)
+        if (typeof ctx.configure === 'function') {
+          ctx.configure(enginesContext)
         }
       }
-      @helpers = `helpers`
+      result['helpers.js'] = `{ '$file': function() { return helpers }, $ctx: function() { return ctx } }`
     end
     result
   end
