@@ -10,7 +10,17 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 Bug Fixes::
 
-* Strip alternate BOM that uses char code 65279 when input passes through a Buffer (#1344)
+* Invoke `LoggerManager#setLogger` setter - thanks @mojavelinux (#1322)
+* Strip alternate BOM that uses char code 65279 when input passes through a Buffer - thanks @mojavelinux (#1344)
+* Properly cache the helpers file in the template converter - thanks @yGuy (#1373)
+
+Improvements::
+
+* Build against the latest release of Asciidoctor 2.0.16
+
+Infrastructure::
+
+* Run `npm audit fix`
 
 == v2.2.4 (2021-04-30)
 
