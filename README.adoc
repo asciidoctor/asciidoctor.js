@@ -2,7 +2,7 @@
 Dan Allen <https://github.com/mojavelinux[@mojavelinux]>; Guillaume Grossetie <https://github.com/mogztter[@mogztter]>; Anthonny Quérouil <https://github.com/anthonny[@anthonny]>
 :idprefix:
 :idseparator: -
-:uri-nodejs: https://nodejs.org
+:uri-nodejs: https://nodejs.org 
 :uri-opal: https://opalrb.com
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
 :uri-freesoftware: https://www.gnu.org/philosophy/free-sw.html
@@ -11,7 +11,7 @@ ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
 :uri-contribute-code: {uri-rel-file-base}CONTRIBUTING-CODE.adoc
 :uri-user-manual: https://docs.asciidoctor.org/asciidoctor.js/latest/
 :license: {uri-repo}/blob/master/LICENSE
-:experimental:
+:experimental: 
 :endash:
 
 ifdef::env-github[]
