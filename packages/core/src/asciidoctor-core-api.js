@@ -350,7 +350,7 @@ AbstractBlock.prototype.setTitle = function (title) {
  *
  * If a caption has already been assigned to this block, do nothing.
  *
- * The parts of a complete caption are: <prefix> <number>. <title>
+ * The parts of a complete caption are: `<prefix> <number>. <title>`
  * This partial caption represents the part the precedes the title.
  *
  * @param {string} value - the String caption to assign to this block or nil to use document attribute.
