@@ -684,6 +684,25 @@ AbstractBlock.prototype.convert = function () {
  * that match the specified selector (context, style, id, and/or role).
  * If a function block is given, it's used as an additional filter.
  * If no selector or function block is supplied, all block-level nodes in the tree are returned.
+ * Valid context names include: 
+ * document
+ * section
+ * paragraph
+ * image
+ * dlist (description list)
+ * ulist
+ * olist
+ * list_item
+ * literal
+ * listing
+ * admonition
+ * sidebar
+ * example
+ * open
+ * pass (a passthrough block)
+ * table
+ * thematic_break (horizontal rule)
+ * page_break
  * @param {Object} [selector]
  * @param {function} [block]
  * @example
