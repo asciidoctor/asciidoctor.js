@@ -125,7 +125,7 @@ const asciidoctor = require('asciidoctor')()
 
 class SemanticParagraphConverter {
   constructor () {
-    this.baseConverter = asciidoctor.Html5Converter.$new() // <1>
+    this.baseConverter = asciidoctor.Html5Converter.create() // <1>
   }
 
   convert (node, transform) {
