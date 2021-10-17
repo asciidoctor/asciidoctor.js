@@ -1,6 +1,7 @@
 = Extensions
 
 Asciidoctor provides an extension API that offers a xref:extensions/register.adoc[list of extension points] that open up the language to new use cases.
+https://asciidoctor.github.io/asciidoctor.js/{jsdoc-version}/#extensions[Extension API Reference]
 
 The goal for Asciidoctor has always been to allow extensions to be written using the full power of a programming language, similar to what we've done with the backend (conversion) mechanism.
 That way, you don't have to shave yaks to get the functionality you want, and you can distribute the extension using defacto-standard packaging mechanisms like npm.
