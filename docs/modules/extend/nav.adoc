@@ -14,5 +14,4 @@
 ** xref:extensions/ecosystem.adoc[Extensions ecosystem]
 * xref:converter/template-converter.adoc[Template Converter]
 * xref:converter/custom-converter.adoc[Custom Converter]
-
 .https://asciidoctor.github.io/asciidoctor.js/{jsdoc-version}/[API Reference]
