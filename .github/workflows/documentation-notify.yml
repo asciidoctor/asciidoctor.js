@@ -3,8 +3,10 @@ name: Documentation notify
 on:
   push:
     branches:
-      - master
-
+      - v2.2.x
+    paths:
+      - 'docs/**'
+      
 jobs:
   build:
     runs-on: ubuntu-latest
