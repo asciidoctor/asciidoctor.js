@@ -4,4 +4,3 @@
 ** xref:extract-api.adoc[Extract information from a document]
 ** xref:manipulate-api.adoc[Manipulate a document]
 ** xref:logging-api.adoc[Logging]
-* https://asciidoctor.github.io/asciidoctor.js/{jsdoc-version}/[JSDoc]
