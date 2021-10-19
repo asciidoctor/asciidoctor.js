@@ -1097,7 +1097,11 @@ The 'reftext' attribute can an also be set by the 'BlockId' element.
 |====`
         const html = asciidoctor.convert(content)
         expect(html).to.include('<table ')
-        expect(html).to.include('width: 14.2857%')
+        if (testOptions.coreVersion.gte('2.1.0')) {
+          expect(html).to.include(' width="14.2857%"')
+        } else {
+          expect(html).to.include('width: 14.2857%')
+        }
       })
 
       it('should convert a conditional expression', function () {
