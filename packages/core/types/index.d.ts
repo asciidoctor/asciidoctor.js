@@ -1,5 +1,5 @@
 /// <reference types="node" />
-// TypeScript Version: 3.6
+// TypeScript Version: 3.7
 export namespace Asciidoctor {
   import Author = Document.Author;
   import Title = Document.Title;
