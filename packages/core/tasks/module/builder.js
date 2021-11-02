@@ -132,7 +132,7 @@ module.exports = class Builder {
     } else {
       // assume ASCIIDOCTOR_CORE_VERSION is a ref (branch or tag) in asciidoctor/asciidoctor
       this.asciidoctorCoreUser = this.asciidoctorCoreRepo = 'asciidoctor'
-      this.asciidoctorCoreVersion = asciidoctorRef || 'master'
+      this.asciidoctorCoreVersion = asciidoctorRef || 'main'
     }
     this.benchmarkBuildDir = path.join('build', 'benchmark')
     this.examplesBuildDir = path.join('build', 'examples')
