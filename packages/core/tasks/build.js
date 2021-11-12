@@ -1,4 +1,12 @@
 'use strict'
 
 const BuilderModule = require('./module/builder.js')
-new BuilderModule().build()
+
+;(async () => {
+  try {
+    await new BuilderModule().build()
+  } catch (err) {
+    console.error(err.toString())
+    process.exit(1)
+  }
+})()
