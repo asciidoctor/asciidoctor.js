@@ -53,6 +53,14 @@ const compileAsciidoctorCore = (asciidoctorCoreDependency) => {
     log.info(`${target} file already exists, skipping "compile" task.\nTIP: Use "npm run clean:core" to compile again from Asciidoctor Ruby.`)
     return
   }
+  // FIXME: remove once https://github.com/asciidoctor/asciidoctor/pull/4205 is merged and released!
+  // start::asciidoctor#4205
+  const converterFilePath = path.join(__dirname, '..', '..', 'build', 'asciidoctor', 'lib', 'asciidoctor', 'converter.rb')
+  if (fs.existsSync(converterFilePath)) {
+    const converterSource = fs.readFileSync(converterFilePath, 'utf8')
+    fs.writeFileSync(converterFilePath, converterSource.replace(/^(\s+autoload :TemplateConverter,.*)$/m, '$1 unless RUBY_ENGINE == \'opal\''), 'utf-8')
+  }
+  // end::asciidoctor#4205
   const opalBuilder = require('opal-compiler').Builder.create()
   opalBuilder.appendPaths('build/asciidoctor/lib')
   opalBuilder.appendPaths('node_modules/opal-compiler/src/stdlib')
