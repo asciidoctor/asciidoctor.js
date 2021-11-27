@@ -35,10 +35,10 @@ const compileRuntimeEnvironments = (environments) => {
   log.task('compile runtime environments')
 
   const skipped = []
-  environments.forEach((environment) => {
+  for (const environment of environments) {
     compileExt('opal', environment, skipped)
     compileExt('asciidoctor', environment, skipped)
-  })
+  }
   if (skipped.length > 0) {
     log.info(`${skipped.join(', ')} files already exist, skipping "compile" task.\nTIP: Use "npm run clean:patch" to compile again from Ruby sources.`)
   }

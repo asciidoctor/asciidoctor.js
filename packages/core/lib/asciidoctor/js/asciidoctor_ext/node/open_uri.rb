@@ -1,9 +1,6 @@
 require 'stringio'
 
 module OpenURI
-  @__xmlhttprequest__ = `require('unxhr')`
-  `var __XMLHttpRequest__ = #{@__xmlhttprequest__}.XMLHttpRequest`
-
   def OpenURI.open_uri(uri, *rest)
     # Asciidoctor only uses "open_uri" to read utf-8 encoded file
     io = ::StringIO.new

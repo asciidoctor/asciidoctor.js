@@ -5,11 +5,11 @@
   "main": "dist/node/asciidoctor.js",
   "browser": "dist/browser/asciidoctor.js",
   "module": "dist/browser/asciidoctor.js",
+  "type": "module",
   "types": "types",
   "engines": {
-    "node": ">=12",
-    "npm": ">=6",
-    "yarn": ">=1.20"
+    "node": ">=14",
+    "npm": ">=7"
   },
   "files": [
     "dist",
@@ -18,25 +18,26 @@
     "README.adoc"
   ],
   "scripts": {
-    "test:graalvm": "node tasks/graalvm.js",
-    "test:node": "mocha spec/*/*.spec.js",
-    "test:browser": "node spec/browser/run.js",
-    "test:types": "rm -f types/tests.js && dtslint types && tsc --build types/tsconfig.json && node types/tests.js",
-    "test": "node tasks/test/unsupported-features.js && npm run test:node && npm run test:browser && npm run test:types",
-    "build": "node tasks/build.js && npm run test && npm run lint",
-    "build:quick": "node tasks/build.js && npm run test:node && npm run code:lint",
+    "test:graalvm": "node tasks/graalvm.cjs",
+    "test:node": "mocha spec/*/*.spec.cjs && npm run test:node:esm",
+    "test:node:esm": "mocha --experimental-json-modules spec/node/asciidoctor.spec.js",
+    "test:browser": "node spec/browser/run.cjs",
+    "test:types": "rm -f types/tests.js && eslint types --ext .ts && tsc --build types/tsconfig.json && node --input-type=commonjs types/tests.js",
+    "test": "node tasks/test/unsupported-features.cjs && npm run test:node && npm run test:browser && npm run test:types",
+    "build": "node tasks/build.cjs && npm run test && npm run lint",
+    "build:quick": "node tasks/build.cjs && npm run test:node && npm run code:lint",
     "clean": "npm run clean:all",
-    "clean:all": "node tasks/clean.js",
-    "clean:core": "node tasks/clean.js core",
-    "clean:patch": "node tasks/clean.js patch",
-    "clean:js": "node tasks/clean.js js",
-    "dist": "cross-env MINIFY=1 node tasks/dist.js",
-    "lint": "npm run code:lint && npm run docs:lint",
-    "code:lint": "standard src/**/*.js spec/**/*.js tasks/**/*.js benchmark/**/*.js",
-    "package": "cross-env MINIFY=1 COPY_DIST=1 node tasks/build.js && cross-env MINIFY=1 npm run test",
-    "examples": "node tasks/examples.js",
-    "server": "node tasks/server.js",
-    "benchmark": "node tasks/benchmark.js",
+    "clean:all": "node tasks/clean.cjs",
+    "clean:core": "node tasks/clean.cjs core",
+    "clean:patch": "node tasks/clean.cjs patch",
+    "clean:js": "node tasks/clean.cjs js",
+    "dist": "cross-env MINIFY=1 node tasks/dist.cjs",
+    "lint": "npm run code:lint",
+    "code:lint": "standard 'src/**/*.js' 'spec/**/*.cjs' 'spec/**/*.js' 'tasks/**/*.cjs' 'benchmark/**/*.cjs'",
+    "package": "cross-env MINIFY=1 COPY_DIST=1 node tasks/build.cjs && cross-env MINIFY=1 npm run test",
+    "examples": "node tasks/examples.cjs",
+    "server": "node tasks/server.cjs",
+    "benchmark": "node tasks/benchmark.cjs",
     "docs:lint": "documentation lint src/**",
     "docs:build": "documentation build src/** -f html -o build/docs -g",
     "docs:serve": "documentation serve src/** -g -w",
@@ -72,8 +73,13 @@
     "unxhr": "1.2.0"
   },
   "devDependencies": {
-    "@types/node": "^16.0.1",
+    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-replace": "^2.3.4",
+    "@types/node": "16.7.13",
     "@types/nunjucks": "^3.1.3",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
     "bestikk-download": "1.0.0",
     "bestikk-fs": "1.0.0",
     "bestikk-log": "0.1.0",
@@ -81,11 +87,10 @@
     "chai": "4.3.4",
     "cross-env": "7.0.3",
     "dirty-chai": "2.0.1",
-    "documentation": "13.2.5",
+    "documentation": "^13.2.5",
     "dot": "^1.1.3",
-    "dtslint": "^4.1.0",
     "ejs": "^3.0.1",
-    "eslint": "8.2.0",
+    "eslint": "^8.2.0",
     "handlebars": "^4.7.6",
     "http-server": "14.0.0",
     "mocha": "9.1.3",
@@ -96,16 +101,19 @@
     "portfinder": "1.0.28",
     "pug": "^3.0.0",
     "puppeteer": "11.0.0",
+    "rollup": "^2.41.5",
     "sinon": "12.0.1",
     "standard": "16.0.4",
-    "typescript": "^4.0.2"
+    "tsd": "^0.19.0",
+    "typescript": "^4.5.2"
   },
   "standard": {
     "ignore": [
-      "src/template-*.js"
+      "src/template-*.js",
+      "spec/node/asciidoctor.spec.cjs"
     ]
   },
   "_moduleAliases": {
-    "@asciidoctor/core": "build/asciidoctor-node.js"
+    "@asciidoctor/core": "build/asciidoctor-node.cjs"
   }
 }

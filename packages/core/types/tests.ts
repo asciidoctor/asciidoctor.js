@@ -885,15 +885,15 @@ try {
 const defaultLog = console.log;
 try {
   const data: any[] = [];
-  console.log = function() {
-    data.push({method: 'log', arguments});
-    defaultLog.apply(console, arguments as any);
+  console.log = function(...args) {
+    data.push({method: 'log', args});
+    defaultLog.apply(console, args as any);
   };
   const timings = processor.Timings.create();
   processor.convert('Hello *world*', {timings});
   timings.printReport(console, 'stdin');
   assert(data.length === 4);
-  assert(data[0].arguments[0] === 'Input file: stdin');
+  assert(data[0].args[0] === 'Input file: stdin');
 } finally {
   console.log = defaultLog;
 }
@@ -1207,9 +1207,9 @@ const tableWithAsciiDocCell = docWithAsciiDocCell.findBy({context: 'table'})[0] 
 const normalCell = tableWithAsciiDocCell.getBodyRows()[0][0];
 const asciidocCell = tableWithAsciiDocCell.getBodyRows()[1][0];
 assert(typeof normalCell.getInnerDocument() === 'undefined');
-assert(asciidocCell.getInnerDocument()!.getAttributes().foo === 'foo');
-assert(typeof asciidocCell.getInnerDocument()!.getParentDocument()!.getAttributes().foo === 'undefined');
-assert(asciidocCell.getInnerDocument()!.getParentDocument()!.getDocumentTitle() === 'Table');
+assert(asciidocCell.getInnerDocument()?.getAttributes().foo === 'foo');
+assert(typeof asciidocCell.getInnerDocument()?.getParentDocument()?.getAttributes().foo === 'undefined');
+assert(asciidocCell.getInnerDocument()?.getParentDocument()?.getDocumentTitle() === 'Table');
 
 class DotTemplateEngineAdapter implements Asciidoctor.TemplateEngine.Adapter {
   private readonly doT: any;

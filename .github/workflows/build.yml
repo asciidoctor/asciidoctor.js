@@ -13,11 +13,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node-version: [12.x, 14.x]
+        node-version: [14.x, 16.x]
         asciidoctor-core-version: [v2.0.15, main]
         experimental: [false]
         include:
-          - node-version: 14.x
+          - node-version: 16.x
             os: macos-latest
             experimental: true
             asciidoctor-core-version: v2.0.15
@@ -50,8 +50,8 @@ jobs:
     strategy:
       matrix:
         node-version:
-          - 12.x
           - 14.x
+          - 16.x
         asciidoctor-core-version: [v2.0.15, main]
     steps:
       - uses: actions/checkout@v2
@@ -67,12 +67,12 @@ jobs:
         env:
           ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
         working-directory: ./packages/core
-        run: node tasks/build.js
+        run: node tasks/build.cjs
       - name: Test Build
         env:
           ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
         working-directory: ./packages/core
-        run: node tasks/test/unsupported-features.js
+        run: node tasks/test/unsupported-features.cjs
       - name: Test Node
         env:
           ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
