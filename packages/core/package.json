@@ -100,7 +100,7 @@
     "opal-compiler": "2.0.0-beta.5",
     "portfinder": "1.0.28",
     "pug": "^3.0.0",
-    "puppeteer": "11.0.0",
+    "puppeteer": "12.0.0",
     "rollup": "^2.41.5",
     "sinon": "12.0.1",
     "standard": "16.0.4",
