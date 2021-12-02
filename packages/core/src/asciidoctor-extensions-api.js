@@ -703,7 +703,7 @@ Processor.prototype.createInline = function (parent, context, text, opts) {
  * @memberof Extensions/Processor
  */
 Processor.prototype.parseContent = function (parent, content, attrs) {
-  return this.$parse_content(parent, content, attrs)
+  return this.$parse_content(parent, content, toHash(attrs))
 }
 
 /**
