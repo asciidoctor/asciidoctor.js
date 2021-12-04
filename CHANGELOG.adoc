@@ -4,7 +4,7 @@
 :source-highlighter: highlight.js
 
 This document provides a high-level view of the changes introduced in Asciidoctor.js by release.
-For a detailed view of what has changed, refer to the {uri-repo}/commits/master[commit history] on GitHub.
+For a detailed view of what has changed, refer to the {uri-repo}/commits/main[commit history] on GitHub.
 
 == Unreleased
 
@@ -84,7 +84,7 @@ Infrastructure::
 ** Bump `chai` from 4.1.2 to 4.2.0 (#869)
 ** Bump `acorn` from 5.7.3 to 5.7.4 in /packages/core (#860)
 ** Bump `acorn` from 6.1.1 to 6.4.1 (#859)
-** Bump `ejs` from 3.0.1 to 3.0.2 in /packages/core (#922) 
+** Bump `ejs` from 3.0.1 to 3.0.2 in /packages/core (#922)
 ** Bump `pkg` from 4.4.7 to 4.4.8 in /packages/asciidoctor (#948)
 * Add an explicit failure if the regular expression does not match in tests (#890)
 * Replace a Ruby example with a JavaScript example in the JSDoc (#856)

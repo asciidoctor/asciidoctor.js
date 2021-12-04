@@ -31,7 +31,7 @@ describe('Build', function () {
 
       const result = releaseModule.pushRelease()
       expect(result).to.be.true()
-      expect(execSyncStub.getCall(0).args[0]).to.equal('git push upstream master')
+      expect(execSyncStub.getCall(0).args[0]).to.equal('git push upstream main')
       expect(execSyncStub.getCall(1).args[0]).to.equal('git push upstream --tags')
       execSyncStub.restore()
     })

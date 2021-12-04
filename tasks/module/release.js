@@ -20,8 +20,8 @@ const prepareRelease = (releaseVersion) => {
     process.exit(1)
   }
   const branchName = childProcess.execSync('git symbolic-ref --short HEAD', { cwd: projectRootDirectory }).toString('utf-8').trim()
-  if (branchName !== 'master') {
-    log.error('Release must be performed on master branch')
+  if (branchName !== 'main') {
+    log.error('Release must be performed on main branch')
     process.exit(1)
   }
   // update asciidoctor package version and dependencies
@@ -61,7 +61,7 @@ const pushRelease = () => {
     .reduce((a, b) => a + b, '')
 
   if (remoteName) {
-    execModule.execSync(`git push ${remoteName} master`)
+    execModule.execSync(`git push ${remoteName} main`)
     execModule.execSync(`git push ${remoteName} --tags`)
     return true
   }
@@ -73,7 +73,7 @@ const completeRelease = (releasePushed, releaseVersion) => {
   log.info('')
   log.info('To complete the release, you need to:')
   if (!releasePushed) {
-    log.info('[ ] push changes upstream: `git push origin master && git push origin --tags`')
+    log.info('[ ] push changes upstream: `git push origin main && git push origin --tags`')
   }
   log.info(`[ ] edit the release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/tag/v${releaseVersion}`)
 }

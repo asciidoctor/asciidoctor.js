@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE_DIR=`pwd`
-REMOTE_BASE_DIR="https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/master/spec"
+REMOTE_BASE_DIR="https://raw.githubusercontent.com/asciidoctor/asciidoctor.js/main/spec"
 
 RELATIVE_PATH="fixtures/include.adoc"
 RELATIVE_PATH_UNRESOLVED="fixtures/../fixtures/include.adoc"

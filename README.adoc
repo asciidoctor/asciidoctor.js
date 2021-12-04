@@ -10,7 +10,7 @@ ifndef::uri-rel-file-base[:uri-rel-file-base: link:]
 :uri-contribute: {uri-rel-file-base}CONTRIBUTING.adoc
 :uri-contribute-code: {uri-rel-file-base}CONTRIBUTING-CODE.adoc
 :uri-user-manual: https://docs.asciidoctor.org/asciidoctor.js/latest/
-:license: {uri-repo}/blob/master/LICENSE
+:license: {uri-repo}/blob/main/LICENSE
 :experimental:
 :endash:
 
@@ -18,7 +18,7 @@ ifdef::env-github[]
 image:https://github.com/asciidoctor/asciidoctor.js/workflows/Build/badge.svg[GitHub Actions Status, link=https://github.com/asciidoctor/asciidoctor.js/actions]
 image:https://img.shields.io/npm/v/asciidoctor.svg[npm version, link=https://www.npmjs.org/package/asciidoctor]
 image:https://img.shields.io/npm/dm/asciidoctor[npm stats, link=https://www.npmjs.org/package/asciidoctor]
-image:https://img.shields.io/badge/jsdoc-master-blue.svg[JSDoc, link=https://asciidoctor.github.io/asciidoctor.js/master]
+image:https://img.shields.io/badge/jsdoc-main-blue.svg[JSDoc, link=https://asciidoctor.github.io/asciidoctor.js/main]
 image:https://img.shields.io/badge/zulip-join_chat-brightgreen.svg[project chat,link=https://asciidoctor.zulipchat.com/]
 endif::[]
 
@@ -89,4 +89,4 @@ See the {license}[LICENSE] file for details.
 
 == Changelog
 
-Refer to the https://github.com/asciidoctor/asciidoctor.js/blob/master/CHANGELOG.adoc[CHANGELOG] for a complete list of changes.
+Refer to the https://github.com/asciidoctor/asciidoctor.js/blob/main/CHANGELOG.adoc[CHANGELOG] for a complete list of changes.
