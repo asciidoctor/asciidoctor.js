@@ -3,7 +3,11 @@ name: Documentation notify
 on:
   push:
     branches:
-      - master
+      - '**'
+    tags-ignore:
+      - '**'
+    paths:
+      - 'docs/**'
 
 jobs:
   build:
