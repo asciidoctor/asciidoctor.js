@@ -1,5 +1,4 @@
 = Register Extensions
-:uri-js-api-doc: http://asciidoctor.github.io/asciidoctor.js/master
 
 These extension points are currently available.
 
@@ -8,7 +7,7 @@ Processes the raw source lines before they are passed to the parser.
 See xref:extensions/preprocessor.adoc[Preprocessor Example].
 
 Tree processor::
-Processes the {uri-js-api-doc}/#document[Asciidoctor.Document (AST)] once parsing is complete.
+Processes the {url-jsdoc-latest}/#document[Asciidoctor.Document (AST)] once parsing is complete.
 See xref:extensions/tree-processor.adoc[Tree Processor Example].
 
 Postprocessor::
@@ -69,7 +68,7 @@ console.log(html)
 ----
 
 You can register more than one processor of each type, though you can only have one processor per custom block or macro.
-Each registered class is instantiated when the {uri-js-api-doc}/#document[Asciidoctor.Document] is created.
+Each registered class is instantiated when the {url-jsdoc-latest}/#document[Asciidoctor.Document] is created.
 
 NOTE: There is currently no extension point for processing a built-in block, such as a normal paragraph.
 Look for that feature in a future Asciidoctor release.

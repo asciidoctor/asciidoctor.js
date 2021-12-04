@@ -1,12 +1,11 @@
 = A quick tour
-:uri-js-api-doc: http://asciidoctor.github.io/asciidoctor.js/master
 
 Asciidoctor.js is a _fast_ text processor for converting AsciiDoc content to HTML5, slidedecks and other formats.
 This is quick tour will give you an overview of how to convert AsciiDoc content to HTML5.
 
 == Your first conversion
 
-The first thing you need to do is instantiate Asciidoctor.js to get a http://asciidoctor.github.io/asciidoctor.js/master/#asciidoctor[processor]:
+The first thing you need to do is instantiate Asciidoctor.js to get a {url-jsdoc-latest}/#asciidoctor[processor]:
 
 ```js
 var asciidoctor = Asciidoctor()

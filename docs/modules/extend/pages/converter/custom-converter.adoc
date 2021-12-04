@@ -1,9 +1,8 @@
 = Custom Converter
-:uri-jsdoc: http://asciidoctor.github.io/asciidoctor.js/master
-:uri-abstractnode-jsdoc: {uri-jsdoc}/#abstractnode
-:uri-document-jsdoc: {uri-jsdoc}/#document
-:uri-section-jsdoc: {uri-jsdoc}/#section
-:uri-class-mdn: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
+:url-abstractnode-jsdoc: {url-jsdoc-latest}/#abstractnode
+:url-document-jsdoc: {url-jsdoc-latest}/#document
+:url-section-jsdoc: {url-jsdoc-latest}/#section
+:url-class-mdn: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 
 On this page, you'll learn how to create and register a custom converter.
 
@@ -25,7 +24,7 @@ Let's take a concrete example with the following document:
 ----
 
 In the example above we have a document with two sections.
-Quite logically our tree representation will consist of a {uri-document-jsdoc}[Document] node that contains two {uri-section-jsdoc}[Section] nodes.
+Quite logically our tree representation will consist of a {url-document-jsdoc}[Document] node that contains two {url-section-jsdoc}[Section] nodes.
 As you can see the structure is hierarchical as the two `Section` nodes are the children of the `Document` node and the `Document` node itself is the root of the tree.
 
 If we convert this document, the converter will be responsible to convert every _node_ in your document.
@@ -35,7 +34,7 @@ In the example above, the task of the converter will be to convert a `Document` 
 
 Now let's see how to create a custom converter.
 
-A custom converter is a JavaScript {uri-class-mdn}[class] with a `convert` function:
+A custom converter is a JavaScript {url-class-mdn}[class] with a `convert` function:
 
 [source,js]
 ----
@@ -45,8 +44,8 @@ class CustomConverter {
   }
 }
 ----
-<1> `node` is a node that extends {uri-abstractnode-jsdoc}[AbstractNode].
-<2> `transform` will only be defined when the node is a {uri-document-jsdoc}[Document]. +
+<1> `node` is a node that extends {url-abstractnode-jsdoc}[AbstractNode].
+<2> `transform` will only be defined when the node is a {url-document-jsdoc}[Document]. +
 The value will be equals to `embedded` if we convert to an embeddable document,
 or `document` if we convert to a standalone document (ie. `standalone` is equals to `true`).
 

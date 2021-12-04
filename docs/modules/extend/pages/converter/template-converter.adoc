@@ -1,12 +1,11 @@
 = Template Converter
-:uri-jsapi: http://asciidoctor.github.io/asciidoctor.js/master
-:uri-jsapi-abstractnode: {uri-jsapi}/#abstractnode
-:uri-jsapi-section: {uri-jsapi}/#section
-:uri-jsapi-document: {uri-jsapi}/#document
-:uri-jsapi-block: {uri-jsapi}/#block
-:uri-handlebars-register-helpers: https://handlebarsjs.com/api-reference/runtime.html#handlebars-registerhelper-name-helper
-:uri-handlebars-register-partials: https://handlebarsjs.com/api-reference/runtime.html#handlebars-registerpartial-name-partial
-:uri-nunjucks-add-filter: https://mozilla.github.io/nunjucks/api.html#addfilter
+:url-abstractnode-jsdoc: {url-jsdoc-latest}/#abstractnode
+:url-section-jsdoc: {url-jsdoc-latest}/#section
+:url-document-jsdoc: {url-jsdoc-latest}/#document
+:url-block-jsdoc: {url-jsdoc-latest}/#block
+:url-handlebars-register-helpers: https://handlebarsjs.com/api-reference/runtime.html#handlebars-registerhelper-name-helper
+:url-handlebars-register-partials: https://handlebarsjs.com/api-reference/runtime.html#handlebars-registerpartial-name-partial
+:url-nunjucks-add-filter: https://mozilla.github.io/nunjucks/api.html#addfilter
 
 On this page, you'll learn how to use templates to have full control over the output.
 
@@ -140,8 +139,8 @@ Please note that it's not a recommended practice, and you should try to avoid co
 
 You can create a `helpers.js` file in your template directory.
 This file can be used to declare utility functions that can be used in the templates.
-For instance, if you are using Handlebars, you might want to register {uri-handlebars-register-partials}[partials] or {uri-handlebars-register-helpers}[helpers].
-Similarly, if you are using Nunjucks, you might want to {uri-nunjucks-add-filter}[add custom filters].
+For instance, if you are using Handlebars, you might want to register {url-handlebars-register-partials}[partials] or {url-handlebars-register-helpers}[helpers].
+Similarly, if you are using Nunjucks, you might want to {url-nunjucks-add-filter}[add custom filters].
 
 If this file exists, Asciidoctor.js will load it (using the Node.js `require` directive) and call the `configure` function if it's exported:
 
@@ -241,9 +240,9 @@ module.exports = function ({ node, _, helpers }) {
 Asciidoctor.js will pass the following context to the template:
 
 `node`::
-An {uri-jsapi-abstractnode}[AbstractNode] from the Asciidoctor.js AST.
-Depending on the context, it can be a {uri-jsapi-section}[Section], a {uri-jsapi-document}[Document], a {uri-jsapi-block}[Block]... +
-We recommend reading the {uri-jsapi}[JS API documentation] to find out what it's available on each Node.
+An {url-abstractnode-jsdoc}[AbstractNode] from the Asciidoctor.js AST.
+Depending on the context, it can be a {url-section-jsdoc}[Section], a {url-document-jsdoc}[Document], a {url-block-jsdoc}[Block]... +
+We recommend reading the {url-jsdoc-latest}[JS API documentation] to find out what it's available on each Node.
 
 `opts`::
 An optional JSON of options.
