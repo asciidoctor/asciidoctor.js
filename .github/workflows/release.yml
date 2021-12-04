@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    if: github.event.base_ref == 'refs/heads/master'
+    if: github.repository_owner == 'asciidoctor'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
           npm run test
           npm run travis --prefix packages/core
   publish:
-    if: github.event.base_ref == 'refs/heads/master'
+    if: github.repository_owner == 'asciidoctor'
     needs: build
     runs-on: ubuntu-latest
     steps:
