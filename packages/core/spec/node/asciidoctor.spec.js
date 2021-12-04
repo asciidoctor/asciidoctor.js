@@ -2460,6 +2460,18 @@ getAttribute('fragment'): ${typeof node.getAttribute('fragment') === 'undefined'
       }
     }
 
+    it('should bridge common Ruby object methods', () => {
+      asciidoctor.ConverterFactory.register(new DummyConverter(), ['dummy'])
+      const converterFactory = asciidoctor.ConverterFactory.getDefault()
+      const dummyConverterInstance = converterFactory.create('dummy')
+      const html5ConverterInstance = converterFactory.create('html5')
+      expect(dummyConverterInstance['$=='](dummyConverterInstance)).to.be.true()
+      expect(html5ConverterInstance['$=='](html5ConverterInstance)).to.be.true()
+      expect(dummyConverterInstance['$=='](html5ConverterInstance)).to.be.false()
+      expect(typeof html5ConverterInstance.$send).to.equal('function')
+      expect(typeof dummyConverterInstance.$send).to.equal('function')
+      expect(dummyConverterInstance.$send('convert', { getContent: () => 'Hello World' }, 'paragraph')).to.equal('Hello World')
+    })
     it('should get inline anchor attributes', () => {
       asciidoctor.ConverterFactory.register(new XrefConverter(), ['xref'])
       const html = asciidoctor.convert('xref:file.adoc[]', { backend: 'xref' })
