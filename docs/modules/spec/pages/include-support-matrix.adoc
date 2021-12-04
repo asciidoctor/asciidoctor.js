@@ -62,35 +62,35 @@ Unable to get the current directory in a reliable way.
 |{icon-ko} +
 include uri not readable: `\file:///root/path/to/file.adoc`.
 
-|+https://raw.com/master/file.adoc+
-|+https://raw.com/master+
+|+https://raw.com/main/file.adoc+
+|+https://raw.com/main+
 |{icon-ok}
 |{icon-ok}
 |{icon-ok}
 
-|+https://raw.com/master/file.adoc+
+|+https://raw.com/main/file.adoc+
 |
 |{icon-ok}
 |{icon-ok}
 |{icon-ok}
 
 |+file.adoc+
-|+https://raw.com/master+
+|+https://raw.com/main+
 |{icon-ok}
 |{icon-ko} +
-`SecurityError: Jail is not an absolute path: \https://raw.com/master`
+`SecurityError: Jail is not an absolute path: \https://raw.com/main`
 |{icon-ko} +
-include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
+include file not found: `\{local_pwd}/https:/raw.com/main/file.adoc`.
 
 |+../v1.5.0/file.adoc+
-|+https://raw.com/master+
+|+https://raw.com/main+
 |{icon-ok}
 |{icon-ko} +
-`SecurityError: Jail is not an absolute path: \https://raw.com/master`
+`SecurityError: Jail is not an absolute path: \https://raw.com/main`
 |{icon-ko} +
-include file not found: `\{local_pwd}/https:/raw.com/master/file.adoc`.
+include file not found: `\{local_pwd}/https:/raw.com/main/file.adoc`.
 
-|+https://raw.com/master/../v1.5.0/file.adoc+
+|+https://raw.com/main/../v1.5.0/file.adoc+
 |
 |{icon-ok}
 |{icon-ko} +
