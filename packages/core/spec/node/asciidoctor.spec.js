@@ -520,6 +520,7 @@ intro
     it('should be able to load a file', () => {
       const doc = asciidoctor.loadFile(resolveFixture('test.adoc'))
       expect(doc.getAttribute('docname')).to.equal('test')
+      expect(global.localdatetime).to.be.undefined()
     })
 
     it('should be able to load a buffer', () => {
