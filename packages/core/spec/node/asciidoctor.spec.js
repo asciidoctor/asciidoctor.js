@@ -630,7 +630,11 @@ intro
       expect(doc.getCounters().mycounter).to.equal(2)
 
       expect(blocks[3].hasBlocks()).to.be.false()
-      expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o]</span>?')
+      if (testOptions.coreVersion.gte('2.1.0')) {
+        expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o&#93;</span>?')
+      } else {
+        expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o]</span>?')
+      }
     })
 
     it('should get links catalog', () => {

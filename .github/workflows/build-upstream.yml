@@ -21,7 +21,7 @@ jobs:
           npm ci --prefix packages/core
       - name: Lint, build and test
         env:
-          ASCIIDOCTOR_CORE_VERSION: master
+          ASCIIDOCTOR_CORE_VERSION: main
         run: |
           npm run lint
           npm run test
