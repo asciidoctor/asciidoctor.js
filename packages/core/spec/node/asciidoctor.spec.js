@@ -29,6 +29,7 @@ import shoutBlock from '../share/extensions/shout-block.cjs'
 import chartBlockMacro from '../share/extensions/chart-block.cjs'
 import smileyInlineMacro from '../share/extensions/smiley-inline-macro.cjs'
 import loremBlockMacro from '../share/extensions/lorem-block-macro.cjs'
+import jiraBlockMacro from '../share/extensions/jira-block-macro.cjs'
 
 const expect = chai.expect
 chai.use(dirtyChai)
@@ -1650,6 +1651,16 @@ sample content`, opts)
             loremBlockMacro()
             const result = asciidoctor.convert(fs.readFileSync(resolveFixture('lorem-block-macro-ex.adoc')))
             expect(result).to.contain('Lorem ipsum dolor sit amet')
+          } finally {
+            asciidoctor.Extensions.unregisterAll()
+          }
+        })
+
+        it('should be able to process jira extension', () => {
+          try {
+            jiraBlockMacro()
+            const result = asciidoctor.convert(fs.readFileSync(resolveFixture('jira-block-macro-ex.adoc')))
+            expect(result).to.contain('<table>')
           } finally {
             asciidoctor.Extensions.unregisterAll()
           }
