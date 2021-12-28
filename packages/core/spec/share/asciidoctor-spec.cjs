@@ -1667,6 +1667,115 @@ content
         expect(Object.keys(wrap.getBlocks()[1].getAttributes()).length).to.equal(2)
         expect(wrap.getBlocks()[1].getAttributes().foo).to.be.undefined()
       })
+
+      describe('parseContent', () => {
+        it('should convert attributes to Hash when calling parseContent', () => {
+          const registry = asciidoctor.Extensions.create()
+          registry.block(function () {
+            this.named('test')
+            this.process((parent, reader) => {
+              this.parseContent(parent, reader.readLines(), { id: 'foo' })
+            })
+          })
+          const html = asciidoctor.convert('[test]\n*Hello world*', { extension_registry: registry })
+          expect(html).to.contain('<strong>Hello world</strong>')
+          expect(html).to.contain('<div id="foo" class="paragraph">')
+        })
+
+        it('should parse table content', () => {
+          const registry = asciidoctor.Extensions.create()
+          registry.blockMacro(function () {
+            this.named('jira')
+            this.process((parent, target, attrs) => {
+              const issues = [
+                {
+                  key: 'DOC-1234',
+                  fields: {
+                    summary: 'Parse content should work',
+                    created: '2021-12-28T14:38:12.056',
+                    priority: { name: 'High' },
+                    assignee: { displayName: 'CK' }
+                  }
+                }
+              ]
+              const content = []
+              content.push('[options="header",cols="2,1,1,2,6"]')
+              content.push('|====')
+              content.push('|ID | Priority | Created | Assignee | Summary')
+              for (const issue of issues) {
+                content.push('|' + issue.key)
+                content.push('|' + issue.fields.priority.name)
+                content.push('|' + issue.fields.created)
+                content.push('|' + (issue.fields.assignee && issue.fields.assignee.displayName) || 'Not assigned')
+                content.push('|' + issue.fields.summary)
+              }
+              content.push('|====')
+              this.parseContent(parent, content.join('\n'), attrs)
+            })
+          })
+          const html = asciidoctor.convert('jira::DOC[]', { extension_registry: registry })
+          expect(html).to.contain('<th class="tableblock halign-left valign-top">ID</th>')
+          expect(html).to.contain('<th class="tableblock halign-left valign-top">Priority</th>')
+          expect(html).to.contain('<td class="tableblock halign-left valign-top"><p class="tableblock">DOC-1234</p></td>')
+          expect(html).to.contain('<td class="tableblock halign-left valign-top"><p class="tableblock">Parse content should work</p></td>')
+        })
+
+        it('should append blocks to current parent', () => {
+          const registry = asciidoctor.Extensions.create()
+          registry.block(function () {
+            this.named('csv')
+            this.onContext('literal')
+            this.process((parent, reader) => {
+              this.parseContent(parent, [',==='].concat(...reader.readLines()).concat(',==='))
+              return undefined
+            })
+          })
+          const doc = asciidoctor.load(`
+before
+
+[csv]
+....
+a,b,c
+....
+
+after`, { extension_registry: registry })
+          expect(doc.getBlocks().length).to.equal(3)
+          const table = doc.getBlocks()[1]
+          expect(table.getContext()).to.equal('table')
+          expect(doc.convert()).to.contain('<td')
+        })
+
+        it('should not share attributes between parsed blocks', () => {
+          const registry = asciidoctor.Extensions.create()
+          registry.block(function () {
+            this.named('wrap')
+            this.onContext('open')
+            this.process((parent, reader, attrs) => {
+              const wrap = this.createOpenBlock(parent, undefined, attrs)
+              return this.parseContent(wrap, reader.readLines())
+            })
+          })
+          const doc = asciidoctor.load(`
+[wrap]
+--
+[foo=bar]
+====
+content
+====
+[baz=qux]
+====
+content
+====
+--
+`, { extension_registry: registry })
+          expect(doc.getBlocks().length).to.equal(1)
+          const wrap = doc.getBlocks()[0]
+          expect(wrap.getBlocks().length).to.equal(2)
+          expect(Object.keys(wrap.getBlocks()[0].getAttributes()).length).to.equal(2)
+          expect(Object.keys(wrap.getBlocks()[1].getAttributes()).length).to.equal(2)
+          expect(wrap.getBlocks()[1].getAttributes().foo).to.be.undefined()
+        })
+      })
     })
 
     describe('Reader', function () {
