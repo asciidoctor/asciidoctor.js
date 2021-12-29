@@ -8,6 +8,8 @@ class MockServer {
   constructor (listener) {
     // we need to use "fork" to spawn a new Node.js process otherwise we will create a deadlock.
     this.childProcess = childProcess.fork(ospath.join(__dirname, 'bin', 'mock-server.cjs'))
+    // ignore "possible EventEmitter memory leak detected" warning message
+    this.childProcess.setMaxListeners(0)
     this.childProcess.on('message', (msg) => {
       if (msg.event === 'started') {
         // auto-configure
@@ -98,6 +100,30 @@ tag-b
             }
           }
         })
+        this.childProcess.send({
+          event: 'configure',
+          data: {
+            method: 'GET',
+            path: '/cc-zero.svg',
+            reply: {
+              status: 200,
+              headers: { 'content-type': 'image/svg+xml' },
+              body: fs.readFileSync(ospath.join(__dirname, '..', 'fixtures', 'images', 'cc-zero.svg'), 'utf-8')
+            }
+          }
+        })
+        this.childProcess.send({
+          event: 'configure',
+          data: {
+            method: 'GET',
+            path: '/cc-heart.svg',
+            reply: {
+              status: 200,
+              headers: { 'content-type': 'image/svg+xml' },
+              body: fs.readFileSync(ospath.join(__dirname, '..', 'fixtures', 'images', 'cc-heart.svg'), 'utf-8')
+            }
+          }
+        })
       }
     })
     if (listener) {
@@ -133,6 +159,28 @@ tag-b
         }
       })
     }
+  }
+
+  async resetRequests () {
+    return new Promise((resolve, reject) => {
+      this.childProcess.on('message', (msg) => {
+        if (msg.event === 'requestsCleared') {
+          resolve()
+        }
+      })
+      this.childProcess.send({ event: 'resetRequests' })
+    })
+  }
+
+  async getRequests () {
+    return new Promise((resolve, reject) => {
+      this.childProcess.on('message', (msg) => {
+        if (msg.event === 'requestsReceived') {
+          resolve(msg.requestsReceived)
+        }
+      })
+      this.childProcess.send({ event: 'getRequests' })
+    })
   }
 }
 

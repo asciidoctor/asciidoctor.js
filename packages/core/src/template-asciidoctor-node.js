@@ -3,6 +3,7 @@ import { createRequire } from 'module'
 import { fileURLToPath } from 'url'
 import path from 'path'
 import fs from 'fs'
+import crypto from 'crypto'
 
 import Opal from 'asciidoctor-opal-runtime'
 import unxhr from 'unxhr'
@@ -13,6 +14,8 @@ const __asciidoctorDistDir__ = path.dirname(fileURLToPath(import.meta.url))
 const __require__ = createRequire(import.meta.url)
 
 export default function (moduleConfig) {
+//{{openUriCachedCode}}
+
 //{{asciidoctorCode}}
 
 //{{asciidoctorAPI}}
@@ -28,5 +31,40 @@ export default function (moduleConfig) {
   Asciidoctor.prototype.getVersion = function () {
     return ASCIIDOCTOR_JS_VERSION
   }
+
+  // Alias
+  Opal.Asciidoctor.Cache = {
+    disable: function () {
+      // QUESTION: should we also reset cache?
+      const openUriSingleton = Opal.OpenURI.$singleton_class()
+      if (Opal.OpenURI['$respond_to?']('original_open_uri')) {
+        openUriSingleton.$send('remove_method', 'open_uri')
+        openUriSingleton.$send('alias_method', 'open_uri', 'original_open_uri')
+      }
+    },
+    reset: function() {
+      // QUESTION: should we also reset the max value?
+      if (typeof Opal.OpenURI.Cache['$reset'] === 'function') {
+        Opal.OpenURI.Cache['$reset']()
+      }
+    },
+    enable: function () {
+      const result = Opal.require('open-uri/cached')
+      const openUriSingleton = Opal.OpenURI.$singleton_class()
+      openUriSingleton.$send('remove_method', 'open_uri')
+      openUriSingleton.$send('alias_method', 'open_uri', 'cache_open_uri')
+      return result
+    },
+    setMax: function (maxLength) {
+      if (!Opal.OpenURI['$respond_to?']('cache_open_uri')) {
+        this.enable()
+      }
+      if (typeof Opal.OpenURI.Cache['$max='] === 'function') {
+        Opal.OpenURI.Cache['$max='](maxLength)
+      }
+    }
+  }
+  Opal.Asciidoctor.Cache.DEFAULT_MAX = 16000000
+
   return Opal.Asciidoctor
 }

@@ -28,6 +28,10 @@ import chartBlockMacro from '../share/extensions/chart-block.cjs'
 import smileyInlineMacro from '../share/extensions/smiley-inline-macro.cjs'
 import loremBlockMacro from '../share/extensions/lorem-block-macro.cjs'
 
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+const packageJson = require('../../package.json')
+
 const expect = chai.expect
 chai.use(dirtyChai)
 
@@ -2206,6 +2210,109 @@ content
 
 content`, options)
       expect(html).to.contain('0. Chapter A')
+    })
+
+    describe('Cache', () => {
+      it('should cache remote SVG when allow-uri-read, cache-uri, and inline option are set', async () => {
+        try {
+          const input = `
+
+image::${testOptions.remoteBaseUri}/cc-zero.svg[opts=inline]
+
+image::${testOptions.remoteBaseUri}/cc-zero.svg[opts=inline]
+
+image::${testOptions.remoteBaseUri}/cc-zero.svg[opts=inline]
+`
+          await mockServer.resetRequests()
+          asciidoctor.convert(input, { safe: 'safe', attributes: { 'allow-uri-read': '', 'cache-uri': '' } })
+          const requestsReceived = await mockServer.getRequests()
+          expect(requestsReceived.length).to.equal(1)
+        } finally {
+          asciidoctor.Cache.disable()
+        }
+      })
+
+      it('should not cache remote SVG when cache-uri is absent (undefined)', async () => {
+        const input = `
+
+image::${testOptions.remoteBaseUri}/cc-zero.svg[opts=inline]
+
+image::${testOptions.remoteBaseUri}/cc-zero.svg[opts=inline]
+
+image::${testOptions.remoteBaseUri}/cc-zero.svg[opts=inline]
+`
+        await mockServer.resetRequests()
+        asciidoctor.convert(input, { safe: 'safe', attributes: { 'allow-uri-read': '' } })
+        const requestsReceived = await mockServer.getRequests()
+        expect(requestsReceived.length).to.equal(3)
+      })
+
+      it('should cache remote include when cache-uri is set', async () => {
+        try {
+          const input = `
+
+include::${testOptions.remoteBaseUri}/include-lines.adoc[lines=1..2]
+
+include::${testOptions.remoteBaseUri}/include-lines.adoc[lines=3..4]
+`
+          await mockServer.resetRequests()
+          asciidoctor.convert(input, { safe: 'safe', attributes: { 'allow-uri-read': true, 'cache-uri': '' } })
+          const requestsReceived = await mockServer.getRequests()
+          expect(requestsReceived.length).to.equal(1)
+        } finally {
+          asciidoctor.Cache.disable()
+        }
+      })
+
+      it('should not cache file if the size exceed the max cache', async () => {
+        try {
+          asciidoctor.Cache.setMax(1)
+          const input = `
+
+include::${testOptions.remoteBaseUri}/include-lines.adoc[lines=1..2]
+
+include::${testOptions.remoteBaseUri}/include-lines.adoc[lines=3..4]
+`
+          await mockServer.resetRequests()
+          asciidoctor.convert(input, { safe: 'safe', attributes: { 'allow-uri-read': true, 'cache-uri': '' } })
+          const requestsReceived = await mockServer.getRequests()
+          expect(requestsReceived.length).to.equal(2)
+        } finally {
+          asciidoctor.Cache.disable()
+          asciidoctor.Cache.reset()
+          asciidoctor.Cache.setMax(Opal.Asciidoctor.Cache.DEFAULT_MAX)
+        }
+      })
+
+      it('should not exceed max cache size', async () => {
+        try {
+          // cc-zero.svg exact size/length
+          const contentLength = fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'images', 'cc-zero.svg'), 'utf-8').length
+          asciidoctor.Cache.setMax(contentLength)
+          const input = `
+
+image::${testOptions.remoteBaseUri}/cc-zero.svg[opts=inline]
+
+image::${testOptions.remoteBaseUri}/cc-zero.svg[opts=inline]
+
+// will remove cc-zero.svg from the cache!
+image::${testOptions.remoteBaseUri}/cc-heart.svg[opts=inline]
+
+image::${testOptions.remoteBaseUri}/cc-heart.svg[opts=inline]
+
+image::${testOptions.remoteBaseUri}/cc-zero.svg[opts=inline]
+`
+          await mockServer.resetRequests()
+          asciidoctor.convert(input, { safe: 'safe', attributes: { 'allow-uri-read': true, 'cache-uri': '' } })
+          const requestsReceived = await mockServer.getRequests()
+          expect(requestsReceived.length).to.equal(3)
+          expect(requestsReceived.map((request) => request.pathname)).to.have.members(['/cc-zero.svg', '/cc-heart.svg', '/cc-heart.svg'])
+        } finally {
+          asciidoctor.Cache.disable()
+          asciidoctor.Cache.reset()
+          asciidoctor.Cache.setMax(Opal.Asciidoctor.Cache.DEFAULT_MAX)
+        }
+      })
     })
   })
 

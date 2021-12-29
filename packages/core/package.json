@@ -20,7 +20,7 @@
   "scripts": {
     "test:graalvm": "node tasks/graalvm.cjs",
     "test:node": "mocha spec/*/*.spec.cjs && npm run test:node:esm",
-    "test:node:esm": "mocha --experimental-json-modules spec/node/asciidoctor.spec.js",
+    "test:node:esm": "mocha spec/node/asciidoctor.spec.js",
     "test:browser": "node spec/browser/run.cjs",
     "test:types": "rm -f types/tests.js && eslint types --ext .ts && tsc --build types/tsconfig.json && node --input-type=commonjs types/tests.js",
     "test": "node tasks/test/unsupported-features.cjs && npm run test:node && npm run test:browser && npm run test:types",
