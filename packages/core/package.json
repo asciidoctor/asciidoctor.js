@@ -97,7 +97,7 @@
     "mock-http-server": "1.4.5",
     "module-alias": "2.2.2",
     "nunjucks": "3.2.3",
-    "opal-compiler": "2.0.0-beta.5",
+    "opal-compiler": "2.1.0",
     "portfinder": "1.0.28",
     "pug": "3.0.2",
     "puppeteer": "13.0.1",
