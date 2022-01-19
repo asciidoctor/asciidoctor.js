@@ -106,7 +106,7 @@ const downloadGraalVM = async (version) => {
 
 module.exports = class GraalVM {
   constructor () {
-    this.graalvmVersion = '19.3.0'
+    this.graalvmVersion = '20.1.0'
   }
 
   get () {
