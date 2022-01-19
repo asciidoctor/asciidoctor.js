@@ -1307,6 +1307,21 @@ ConverterFactory.register = function (converter, backends) {
   var bridgeComposedMethodToInstance = function (obj, instance) {
     bridgeMethodToInstance(obj, instance, '$composed', 'composed')
   }
+  var bridgeEqEqMethodToInstance = function (obj, instance) {
+    bridgeMethodToInstance(obj, instance, '$==', '==', function (other) {
+      return instance === other
+    })
+  }
+  var bridgeSendMethodToInstance = function (obj, instance) {
+    bridgeMethodToInstance(obj, instance, '$send', 'send', function (symbol) {
+      var [, ...args] = Array.from(arguments)
+      var func = instance['$' + symbol]
+      if (func) {
+        return func.apply(instance, args)
+      }
+      throw new Error(`undefined method \`${symbol}\` for \`${instance.toString()}\``)
+    })
+  }
   var bridgeMethodToInstance = function (obj, instance, methodName, functionName, defaultImplementation) {
     if (typeof obj[methodName] === 'undefined') {
       if (typeof obj[functionName] === 'function') {
@@ -1373,6 +1388,8 @@ ConverterFactory.register = function (converter, backends) {
     }
     bridgeHandlesMethodToInstance(converter, converter)
     bridgeComposedMethodToInstance(converter, converter)
+    bridgeEqEqMethodToInstance(converter, converter)
+    bridgeSendMethodToInstance(converter, converter)
     addRespondToMethod(converter)
     object = converter
   }
