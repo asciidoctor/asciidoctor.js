@@ -631,7 +631,7 @@ intro
       expect(doc.getCounters().mycounter).to.equal(2)
 
       expect(blocks[3].hasBlocks()).to.be.false()
-      if (testOptions.coreVersion.gte('2.1.0')) {
+      if (asciidoctorCoreSemVer.gte('2.0.17')) {
         expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o&#93;</span>?')
       } else {
         expect(blocks[3].getTitle()).to.equal('Got <span class="icon">[file pdf o]</span>?')
