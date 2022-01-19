@@ -13,7 +13,7 @@ Extensions.register(function () {
       } else {
         text = ':)'
       }
-      return self.createInline(parent, 'quoted', text, { 'type': 'strong' }).convert()
+      return self.createInline(parent, 'quoted', text, { type: 'strong' }).convert()
     })
   })
 })

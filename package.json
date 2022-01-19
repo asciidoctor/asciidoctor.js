@@ -12,11 +12,11 @@
   },
   "devDependencies": {
     "bestikk-log": "0.1.0",
-    "chai": "4.2.0",
+    "chai": "4.3.4",
     "dirty-chai": "2.0.1",
     "libnpmpublish": "3.0.1",
-    "mocha": "7.1.2",
-    "sinon": "8.1.1",
-    "standard": "14.3.4"
+    "mocha": "9.1.4",
+    "sinon": "12.0.1",
+    "standard": "16.0.4"
   }
 }
