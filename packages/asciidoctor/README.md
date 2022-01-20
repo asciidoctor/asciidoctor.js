@@ -47,13 +47,13 @@ In the spirit of [free software](https://www.gnu.org/philosophy/free-sw.html), _
 If you discover errors or omissions in the source code, documentation, or website content, please don't hesitate to submit an issue or open a pull request with a fix.
 New contributors are always welcome!
 
-The [Contributing](https://github.com/asciidoctor/asciidoctor.js/blob/master/CONTRIBUTING.adoc) guide provides information on how to contribute.
+The [Contributing](https://github.com/asciidoctor/asciidoctor.js/blob/main/CONTRIBUTING.adoc) guide provides information on how to contribute.
 
-If you want to write code, the [Contributing Code](https://github.com/asciidoctor/asciidoctor.js/blob/master/CONTRIBUTING-CODE.adoc) guide will help you to get started quickly.
+If you want to write code, the [Contributing Code](https://github.com/asciidoctor/asciidoctor.js/blob/main/CONTRIBUTING-CODE.adoc) guide will help you to get started quickly.
 
 ## Copyright
 
 Copyright (C) 2019 Dan Allen, Guillaume Grossetie, Anthonny Quérouil and the Asciidoctor Project.
 Free use of this software is granted under the terms of the MIT License.
 
-See the [LICENSE](https://github.com/asciidoctor/asciidoctor.js/blob/master/LICENSE) file for details.
+See the [LICENSE](https://github.com/asciidoctor/asciidoctor.js/blob/main/LICENSE) file for details.

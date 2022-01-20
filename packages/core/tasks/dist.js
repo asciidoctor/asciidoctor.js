@@ -1,7 +1,6 @@
 'use strict'
 
 const log = require('bestikk-log')
-const bfs = require('bestikk-fs')
 const execModule = require('./module/exec')
 const BuilderModule = require('./module/builder')
 

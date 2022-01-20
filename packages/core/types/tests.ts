@@ -510,7 +510,7 @@ interface Transforms {
   [key: string]: (node: Asciidoctor.AbstractNode) => string;
 }
 
-class BlogConverter {
+class BlogConverter implements Asciidoctor.AbstractConverter {
   private readonly baseConverter: Asciidoctor.Html5Converter;
   private readonly transforms: Transforms;
 
@@ -798,11 +798,23 @@ assert(html.includes(`<pre lang="ruby" class="prettyprint"><code><span class="ha
 </span></code></pre>`));
 assert(html.includes('<pre>Europe/London\nAmerica/New_York</pre>'));
 
+let timings = processor.Timings.create();
+processor.convert('Hello *world*', {timings});
+timings.printReport();
+
+timings = processor.Timings.create();
 let memoryLogger = processor.MemoryLogger.create();
-const timings = processor.Timings.create();
+processor.convert('Hello *world*', {timings});
+timings.printReport(memoryLogger);
+let messages = memoryLogger.getMessages();
+assert(messages.length === 3);
+assert(messages[0].getSeverity() === 'INFO');
+
+timings = processor.Timings.create();
+memoryLogger = processor.MemoryLogger.create();
 processor.convert('Hello *world*', {timings});
 timings.printReport(memoryLogger, 'stdin');
-const messages = memoryLogger.getMessages();
+messages = memoryLogger.getMessages();
 assert(messages.length === 4);
 assert(messages[0].getSeverity() === 'INFO');
 assert(messages[0].getText() === 'Input file: stdin');
@@ -846,15 +858,15 @@ try {
 const defaultLog = console.log;
 try {
   const data: any[] = [];
-  console.log = function() {
-    data.push({method: 'log', arguments});
-    defaultLog.apply(console, arguments as any);
+  console.log = function(...args) {
+    data.push({method: 'log', args});
+    defaultLog.apply(console, args as any);
   };
   const timings = processor.Timings.create();
   processor.convert('Hello *world*', {timings});
   timings.printReport(console, 'stdin');
   assert(data.length === 4);
-  assert(data[0].arguments[0] === 'Input file: stdin');
+  assert(data[0].args[0] === 'Input file: stdin');
 } finally {
   console.log = defaultLog;
 }
@@ -979,7 +991,7 @@ intro
 `);
     await new Promise((resolve, _) => {
       asyncLogger.writer.end(() => {
-        const content = fs.readFileSync(logFile, 'UTF-8');
+        const content = fs.readFileSync(logFile, 'utf8');
         assert(content === 'asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n');
         resolve({});
       });
@@ -988,6 +1000,17 @@ intro
     processor.LoggerManager.setLogger(defaultLogger);
   }
 })();
+
+const options = { attributes: 'sectnums' };
+const docWithOptions = processor.load('== Test', options);
+assert(docWithOptions.getAttribute('sectnums') === '');
+assert(docWithOptions.isAttribute('sectnums'));
+assert(docWithOptions.isAttribute('sectnums', ''));
+assert(!docWithOptions.isAttribute('sectnums', 'not this'));
+assert(!docWithOptions.isAttribute('foo'));
+assert(!docWithOptions.isAttribute('foo', ''));
+assert(!docWithOptions.isAttribute('foo', 'bar'));
+
 const docWithAttributeOverride = processor.load(`= Title
 :next-section:
 
@@ -1111,11 +1134,20 @@ assert(imageBlocks[3].getAlt() === 'tigers');
 let converterRegistry = processor.ConverterFactory.getRegistry();
 assert(typeof converterRegistry.html5 === 'function');
 
-class BlankConverter {
+class BlankConverter implements Asciidoctor.AbstractConverter {
   convert() {
     return '';
   }
 }
+
+const BlankConstructor = BlankConverter as Asciidoctor.ConverterConstructor;
+processor.ConverterFactory.register(BlankConstructor, ['blank']);
+converterRegistry = processor.ConverterFactory.getRegistry();
+assert(typeof converterRegistry.html5 === 'function');
+assert(typeof converterRegistry.blank === 'function');
+assert(typeof processor.ConverterFactory.for('html5') === 'function');
+assert(typeof processor.ConverterFactory.for('blank') === 'function');
+assert(typeof processor.ConverterFactory.for('foo') === 'undefined');
 
 processor.ConverterFactory.register(new BlankConverter(), ['blank']);
 converterRegistry = processor.ConverterFactory.getRegistry();
@@ -1148,9 +1180,9 @@ const tableWithAsciiDocCell = docWithAsciiDocCell.findBy({context: 'table'})[0] 
 const normalCell = tableWithAsciiDocCell.getBodyRows()[0][0];
 const asciidocCell = tableWithAsciiDocCell.getBodyRows()[1][0];
 assert(typeof normalCell.getInnerDocument() === 'undefined');
-assert(asciidocCell.getInnerDocument()!.getAttributes().foo === 'foo');
-assert(typeof asciidocCell.getInnerDocument()!.getParentDocument()!.getAttributes().foo === 'undefined');
-assert(asciidocCell.getInnerDocument()!.getParentDocument()!.getDocumentTitle() === 'Table');
+assert(asciidocCell.getInnerDocument()?.getAttributes().foo === 'foo');
+assert(typeof asciidocCell.getInnerDocument()?.getParentDocument()?.getAttributes().foo === 'undefined');
+assert(asciidocCell.getInnerDocument()?.getParentDocument()?.getDocumentTitle() === 'Table');
 
 class DotTemplateEngineAdapter implements Asciidoctor.TemplateEngine.Adapter {
   private readonly doT: any;

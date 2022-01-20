@@ -3,13 +3,14 @@
 (async () => {
   let reporter
   if (typeof mochaOpts === 'function') {
-    reporter = await mochaOpts().reporter
+    const opts = await mochaOpts()
+    reporter = opts.reporter
   } else {
     reporter = 'html'
   }
   mocha.setup({
     ui: 'bdd',
-    ignoreLeaks: true,
+    checkLeaks: false,
     reporter: reporter
   })
 

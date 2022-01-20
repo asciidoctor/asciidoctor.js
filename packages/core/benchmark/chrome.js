@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs')
+const ospath = require('path')
 const stats = require('./stats.js')
 
 const verbose = process.env.VERBOSE
@@ -14,7 +15,7 @@ puppeteer.launch({ args: ['--disable-gpu', '--no-sandbox', '--single-process', '
   const start = new Date().getTime()
   await page.addScriptTag({ path: './build/asciidoctor.js' })
   console.log(`Load scripts: ${((new Date().getTime() - start) / 1000.0)}s`)
-  const data = fs.readFileSync(`${__dirname}/userguide.adoc`, 'utf-8')
+  const data = fs.readFileSync(ospath.join(__dirname, 'userguide.adoc'), 'utf-8')
   await page.exposeFunction('env', () => ({ verbose, include, runs, baseDir: `file://${__dirname}` }))
   const result = await page.evaluate(async (data) => {
     /* global Asciidoctor, env */

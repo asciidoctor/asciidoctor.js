@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 module.exports = function (registry) {
   // https://github.com/jollygoodcode/twemoji/blob/3476e2700600ef2c89ffa34313b11b91e5f9baba/lib/twemoji/data/emoji-unicode.yml
   var emojiMap = {
