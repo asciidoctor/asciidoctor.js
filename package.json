@@ -16,7 +16,7 @@
     "dirty-chai": "2.0.1",
     "libnpmpublish": "4.0.2",
     "mocha": "9.1.3",
-    "pacote": "^12.0.2",
+    "pacote": "^13.0.2",
     "sinon": "12.0.1",
     "standard": "16.0.4"
   }
