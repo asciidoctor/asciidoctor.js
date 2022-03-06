@@ -207,6 +207,102 @@ assert(fooExtensionsRegistry.hasPreprocessors());
 assert(fooExtensionsRegistry.hasTreeProcessors());
 const docinfoProcessors = fooExtensionsRegistry.getDocinfoProcessors('head');
 assert(docinfoProcessors.length === 1);
+
+const PackageInlineMacro = processor.Extensions.createInlineMacroProcessor('PackageInlineMacro', {
+  initialize(name, config) {
+    this.DEFAULT_PACKAGE_URL_FORMAT = config.defaultPackageUrlFormat || 'https://packages.ubuntu.com/bionic/%s';
+    this.super(name, config);
+  },
+  process(parent, target) {
+    const format = parent.getDocument().getAttribute('url-package-url-format', this.DEFAULT_PACKAGE_URL_FORMAT);
+    const url = format.replace('%s', target);
+    const content = target;
+    const attributes = {window: '_blank'};
+    return this.createInline(parent, 'anchor', content, {type: 'link', target: url, attributes});
+  }
+});
+const inlineMacroProcessorInstance = PackageInlineMacro.$new('package', {defaultPackageUrlFormat: 'https://apps.fedoraproject.org/packages/%s'});
+assert(inlineMacroProcessorInstance.getConfig().defaultPackageUrlFormat === 'https://apps.fedoraproject.org/packages/%s');
+assert(inlineMacroProcessorInstance.getName() === 'package');
+const anotherRegistry = processor.Extensions.create();
+anotherRegistry.inlineMacro(inlineMacroProcessorInstance);
+anotherRegistry.inlineMacro('pkg', function() {
+  this.option('defaultPackageUrlFormat', 'https://apps.fedoraproject.org/packages/%s');
+  this.process(function(parent, target) {
+    const format = parent.getDocument().getAttribute('url-package-url-format', this.getConfig().defaultPackageUrlFormat);
+    const url = format.replace('%s', target);
+    const content = target;
+    const attributes = {window: '_blank'};
+    return this.createInline(parent, 'anchor', content, {type: 'link', target: url, attributes});
+  });
+});
+anotherRegistry.includeProcessor(processor.Extensions.newIncludeProcessor('StaticIncludeProcessor', {
+  process(doc, reader, target, attrs) {
+    reader.pushInclude(['included content'], target, target, 1, attrs);
+  }
+}));
+const includeProcessor = processor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
+  initialize(value) {
+    this.value = value;
+    this.super();
+  },
+  postConstruct() {
+    this.bar = 'bar';
+  },
+  process(doc, reader, target, attrs) {
+    reader.pushInclude([this.value + this.bar], target, target, 1, attrs);
+  }
+});
+const includeProcessorInstance = includeProcessor.$new('foo');
+anotherRegistry.includeProcessor(includeProcessorInstance);
+
+let html = processor.convert('Install package:asciidoctor[]', {extension_registry: anotherRegistry, header_footer: false, safe: 'safe'});
+assert(html === `<div class="paragraph">
+<p>Install <a href="https://apps.fedoraproject.org/packages/asciidoctor" target="_blank" rel="noopener">asciidoctor</a></p>
+</div>`);
+
+const SelfSigningTreeProcessor = processor.Extensions.createTreeProcessor('SelfSigningTreeProcessor', {
+  process(document) {
+    document.append(this.createBlock(document, 'paragraph', 'SelfSigningTreeProcessor', {}));
+  }
+});
+try {
+  processor.Extensions.register(function() {
+    this.treeProcessor(function() {
+      this.process(function(doc) {
+        doc.append(this.createBlock(doc, 'paragraph', 'd', {}));
+      });
+    });
+    this.treeProcessor(function() {
+      const self = this;
+      self.prefer();
+      self.process(function(doc) {
+        doc.append(this.createBlock(doc, 'paragraph', 'c', {}));
+      });
+    });
+    this.prefer('tree_processor', processor.Extensions.newTreeProcessor('AwesomeTreeProcessor', {
+      process(doc) {
+        doc.append(this.createBlock(doc, 'paragraph', 'b', {}));
+      }
+    }));
+    this.prefer('tree_processor', processor.Extensions.newTreeProcessor({
+      process(doc) {
+        doc.append(this.createBlock(doc, 'paragraph', 'a', {}));
+      }
+    }));
+    this.prefer('tree_processor', SelfSigningTreeProcessor);
+  });
+  const doc = processor.load('');
+  const lines = doc.getBlocks().map(block => block.getSourceLines()[0]);
+  assert(lines[0] === 'SelfSigningTreeProcessor');
+  assert(lines[1] === 'a');
+  assert(lines[2] === 'b');
+  assert(lines[3] === 'c');
+  assert(lines[4] === 'd');
+} finally {
+  processor.Extensions.unregisterAll();
+}
+
 const testRegistry = processor.Extensions.create('test', function() {
   this.inlineMacro('attrs', function() {
     const self = this;
@@ -315,100 +411,11 @@ const testRegistry = processor.Extensions.create('test', function() {
   });
 });
 
-const PackageInlineMacro = processor.Extensions.createInlineMacroProcessor('PackageInlineMacro', {
-  initialize(name, config) {
-    this.DEFAULT_PACKAGE_URL_FORMAT = config.defaultPackageUrlFormat || 'https://packages.ubuntu.com/bionic/%s';
-    this.super(name, config);
-  },
-  process(parent, target) {
-    const format = parent.getDocument().getAttribute('url-package-url-format', this.DEFAULT_PACKAGE_URL_FORMAT);
-    const url = format.replace('%s', target);
-    const content = target;
-    const attributes = {window: '_blank'};
-    return this.createInline(parent, 'anchor', content, {type: 'link', target: url, attributes});
-  }
-});
-const inlineMacroProcessorInstance = PackageInlineMacro.$new('package', {defaultPackageUrlFormat: 'https://apps.fedoraproject.org/packages/%s'});
-assert(inlineMacroProcessorInstance.getConfig().defaultPackageUrlFormat === 'https://apps.fedoraproject.org/packages/%s');
-assert(inlineMacroProcessorInstance.getName() === 'package');
-testRegistry.inlineMacro(inlineMacroProcessorInstance);
-testRegistry.inlineMacro('pkg', function() {
-  this.option('defaultPackageUrlFormat', 'https://apps.fedoraproject.org/packages/%s');
-  this.process(function(parent, target) {
-    const format = parent.getDocument().getAttribute('url-package-url-format', this.getConfig().defaultPackageUrlFormat);
-    const url = format.replace('%s', target);
-    const content = target;
-    const attributes = {window: '_blank'};
-    return this.createInline(parent, 'anchor', content, {type: 'link', target: url, attributes});
-  });
-});
-testRegistry.includeProcessor(processor.Extensions.newIncludeProcessor('StaticIncludeProcessor', {
-  process(doc, reader, target, attrs) {
-    reader.pushInclude(['included content'], target, target, 1, attrs);
-  }
-}));
-const includeProcessor = processor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
-  initialize(value) {
-    this.value = value;
-    this.super();
-  },
-  postConstruct() {
-    this.bar = 'bar';
-  },
-  process(doc, reader, target, attrs) {
-    reader.pushInclude([this.value + this.bar], target, target, 1, attrs);
-  }
-});
-const includeProcessorInstance = includeProcessor.$new('foo');
-testRegistry.includeProcessor(includeProcessorInstance);
-
-const SelfSigningTreeProcessor = processor.Extensions.createTreeProcessor('SelfSigningTreeProcessor', {
-  process(document) {
-    document.append(this.createBlock(document, 'paragraph', 'SelfSigningTreeProcessor', {}));
-  }
-});
-try {
-  processor.Extensions.register(function() {
-    this.treeProcessor(function() {
-      this.process(function(doc) {
-        doc.append(this.createBlock(doc, 'paragraph', 'd', {}));
-      });
-    });
-    this.treeProcessor(function() {
-      const self = this;
-      self.prefer();
-      self.process(function(doc) {
-        doc.append(this.createBlock(doc, 'paragraph', 'c', {}));
-      });
-    });
-    this.prefer('tree_processor', processor.Extensions.newTreeProcessor('AwesomeTreeProcessor', {
-      process(doc) {
-        doc.append(this.createBlock(doc, 'paragraph', 'b', {}));
-      }
-    }));
-    this.prefer('tree_processor', processor.Extensions.newTreeProcessor({
-      process(doc) {
-        doc.append(this.createBlock(doc, 'paragraph', 'a', {}));
-      }
-    }));
-    this.prefer('tree_processor', SelfSigningTreeProcessor);
-  });
-  const doc = processor.load('');
-  const lines = doc.getBlocks().map(block => block.getSourceLines()[0]);
-  assert(lines[0] === 'SelfSigningTreeProcessor');
-  assert(lines[1] === 'a');
-  assert(lines[2] === 'b');
-  assert(lines[3] === 'c');
-  assert(lines[4] === 'd');
-} finally {
-  processor.Extensions.unregisterAll();
-}
-
 const groups = testRegistry.getGroups();
 assert(Object.keys(groups)[0] === 'test');
 const opts = {extension_registry: testRegistry, header_footer: false, safe: 'safe'};
 
-let html = processor.convert('test::[]', opts);
+html = processor.convert('test::[]', opts);
 assert(html === `<div class="paragraph">
 <p>this was only a test</p>
 </div>`);
@@ -418,10 +425,6 @@ assert(html === `<div class="paragraph">
 <p>a=A,2=b,b=nil,foo=bar</p>
 </div>`);
 
-html = processor.convert('Install package:asciidoctor[]', opts);
-assert(html === `<div class="paragraph">
-<p>Install <a href="https://apps.fedoraproject.org/packages/asciidoctor" target="_blank" rel="noopener">asciidoctor</a></p>
-</div>`);
 html = processor.convert(`
 [yell]
 Hi there!
@@ -1157,6 +1160,33 @@ assert(imageBlocks[0].getAlt() === '*Sunset &amp; Sunside*');
 assert(imageBlocks[1].getAlt() === 'GitHub mascot');
 assert(imageBlocks[2].getAlt() === '');
 assert(imageBlocks[3].getAlt() === 'tigers');
+
+const noopImageBlocks = docWithImages.findBy({'context': 'image'}, (b) => b.getAttribute('target') === 'noop.png');
+assert(noopImageBlocks.length === 1);
+assert(noopImageBlocks[0].getAlt() === '');
+
+const docWithExample = processor.load(`paragraph 1
+
+====
+paragraph 2
+
+term::
++
+paragraph 3
+====
+
+paragraph 4`);
+const outerParagraphs = docWithExample.findBy((candidate) => {
+  const ctx = candidate.getContext();
+  if (ctx === 'example') {
+    return 'reject';
+  } else if (ctx === 'paragraph') {
+    return true;
+  }
+});
+assert(outerParagraphs.length === 2);
+assert(outerParagraphs[0].getContext() === 'paragraph');
+assert(outerParagraphs[1].getContext() === 'paragraph');
 
 let converterRegistry = processor.ConverterFactory.getRegistry();
 assert(typeof converterRegistry.html5 === 'function');
