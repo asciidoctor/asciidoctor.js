@@ -16,7 +16,6 @@ import shareSpec from '../share/asciidoctor-spec.cjs'
 import includeHttpsSpec from '../share/asciidoctor-include-https-spec.cjs'
 import { fileExists, isWin, removeFile, resolveFixture, truncateFile } from './helpers.js'
 import Asciidoctor from '../../build/asciidoctor-node.js'
-import packageJson from '../../package.json'
 
 import fooBarPostProcessor from '../share/extensions/foo-bar-postprocessor.cjs'
 import loveTreeProcessor from '../share/extensions/love-tree-processor.cjs'
@@ -45,6 +44,7 @@ const asciidoctor = Asciidoctor(config)
 
 const asciidoctorCoreSemVer = semVer(asciidoctor.getCoreVersion())
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), { encoding: 'utf8' }))
 const testOptions = {
   platform: 'Node.js',
   baseDir: path.join(__dirname, '..', '..'),
