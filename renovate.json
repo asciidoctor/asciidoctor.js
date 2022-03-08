@@ -6,7 +6,10 @@
   "repositories": [
     "asciidoctor/asciidoctor.js"
   ],
-  "commitMessagePrefix": "⬆️",
+  "labels": [
+    ":link: dependencies"
+  ],
+  "commitMessagePrefix": ":arrow_up:",
   "separateMajorMinor": true,
   "extends": [
     ":preserveSemverRanges",
