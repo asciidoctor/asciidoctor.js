@@ -13,7 +13,16 @@ on:
       - 'docs/**'
 
 jobs:
+  activate:
+    if: |
+      (github.event_name == 'schedule' && github.repository_owner == 'asciidoctor') ||
+      (github.event_name != 'schedule' && !endsWith(github.event.head_commit.message, '[skip ci]'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Proceed
+        run: echo ok go
   build:
+    needs: activate
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -50,6 +59,7 @@ jobs:
         npm run test
         npm run travis --prefix packages/core
   build-windows:
+    needs: activate
     runs-on: windows-latest
     strategy:
       matrix:
