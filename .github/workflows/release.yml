@@ -119,9 +119,9 @@ jobs:
       - name: Set release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Announcement
-        uses: yuzutech/zulip-send-message-action@v0.1.0
+        uses: zulip/github-actions-zulip/send-message@v1
         with:
-          username: ${{ secrets.ZULIP_USERNAME }}
+          email: ${{ secrets.ZULIP_USERNAME }}
           api-key: ${{ secrets.ZULIP_API_KEY }}
           organization-url: 'https://asciidoctor.zulipchat.com'
           to: '279652'
