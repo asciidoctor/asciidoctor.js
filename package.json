@@ -7,17 +7,18 @@
   "scripts": {
     "test": "mocha spec/*/*.spec.js",
     "lint": "npm run code:lint",
-    "code:lint": "standard spec/**/*.js tasks/**/*.js",
+    "code:lint": "eslint spec/**/*.js tasks/**/*.js",
     "release": "node tasks/release.js"
   },
   "devDependencies": {
     "bestikk-log": "0.1.0",
     "chai": "4.3.6",
     "dirty-chai": "2.0.1",
+    "eslint": "^8.10.0",
+    "eslint-config-standard": "^17.0.0-1",
     "libnpmpublish": "4.0.2",
     "mocha": "9.2.1",
     "pacote": "^12.0.2",
-    "sinon": "12.0.1",
-    "standard": "16.0.4"
+    "sinon": "12.0.1"
   }
 }
