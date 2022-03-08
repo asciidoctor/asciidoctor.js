@@ -10,7 +10,6 @@
   "extends": [
     ":preserveSemverRanges",
     "group:all",
-    "schedule:monthly",
     ":maintainLockFilesMonthly"
   ],
   "lockFileMaintenance": {
