@@ -8,8 +8,8 @@
   "type": "module",
   "types": "types",
   "engines": {
-    "node": ">=14",
-    "npm": ">=7"
+    "node": ">=16",
+    "npm": ">=8"
   },
   "files": [
     "dist",

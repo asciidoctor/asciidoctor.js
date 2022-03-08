@@ -13,8 +13,8 @@
     "dist": "pkg package.json --out-path dist"
   },
   "engines": {
-    "node": ">=14",
-    "npm": ">=7"
+    "node": ">=16",
+    "npm": ">=8"
   },
   "files": [
     "bin",
