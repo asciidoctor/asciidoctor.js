@@ -87,7 +87,7 @@ const release = (releaseVersion) => {
 }
 
 module.exports = {
-  release: release,
+  release,
   // for testing purpose
-  pushRelease: pushRelease
+  pushRelease
 }
