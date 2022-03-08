@@ -51,7 +51,7 @@ const testOptions = {
   coreVersion: asciidoctorCoreSemVer
 }
 
-describe('Node.js', () => {
+describe('Node.js', function () {
   let mockServer
 
   this.timeout(5000)
