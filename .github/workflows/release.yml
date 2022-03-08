@@ -62,7 +62,7 @@ jobs:
       # create the GitHub release
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1.0.0
+        uses: actions/create-release@v1.1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -72,7 +72,7 @@ jobs:
           prerelease: false
       # upload assets
       - name: Upload source code as a zip file
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -81,7 +81,7 @@ jobs:
           asset_name: asciidoctor.js.dist.zip
           asset_content_type: application/zip
       - name: Upload source code as a tar.gz file
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -90,7 +90,7 @@ jobs:
           asset_name: asciidoctor.js.dist.tar.gz
           asset_content_type: application/tar+gzip
       - name: Upload Linux binary
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -99,7 +99,7 @@ jobs:
           asset_name: asciidoctor-linux
           asset_content_type: application/octet-stream
       - name: Upload macOS binary
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -108,7 +108,7 @@ jobs:
           asset_name: asciidoctor-macos
           asset_content_type: application/octet-stream
       - name: Upload Windows binary
-        uses: actions/upload-release-asset@v1.0.1
+        uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
