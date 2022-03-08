@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
       # libgbm-dev is required by Puppeteer 3+
       - name: Install system dependencies
         run: |
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
           registry-url: https://registry.npmjs.org/
       # libgbm-dev is required by Puppeteer 3+
       - name: Install system dependencies
