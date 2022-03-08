@@ -1840,8 +1840,19 @@ export namespace Asciidoctor {
     parse(data?: string | string[]): Document;
 
     /**
+     * Read the docinfo file(s) for inclusion in the document template
+     *
+     * If the docinfo1 attribute is set, read the docinfo.ext file.
+     * If the docinfo attribute is set, read the doc-name.docinfo.ext file.
+     * If the docinfo2 attribute is set, read both files in that order.
+     *
+     * @param location - The Symbol location of the docinfo (e.g., head, footer, etc). (default: head)
+     * @param suffix   - The suffix of the docinfo file(s).
+     * If not set, the extension will be set to the outfilesuffix. (default: undefined)
+     *
+     * @returns the contents of the docinfo file(s) or empty string if no files are found or the safe mode is secure or greater.
      */
-    getDocinfo(): void;
+    getDocinfo(location: string, suffix?: string): string;
 
     /**
      * @param [docinfoLocation] - A {string} for checking docinfo extensions at a given location (head or footer) (default: head)
@@ -2129,7 +2140,7 @@ export namespace Asciidoctor {
      *
      * @returns a list of block-level nodes that match the filter or an empty list if no matches are found
      */
-    findBy(selector: Selector | ((block: AbstractBlock) => boolean | string)): AbstractBlock[];
+    findBy(selector: Selector | ((block: AbstractBlock) => boolean | string), block?: ((block: AbstractBlock) => boolean | string)): AbstractBlock[];
 
     /**
      * Get the source line number where this block started.

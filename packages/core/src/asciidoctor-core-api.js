@@ -2073,6 +2073,17 @@ Document.prototype.parse = function (data) {
 }
 
 /**
+ * Read the docinfo file(s) for inclusion in the document template
+ *
+ * If the docinfo1 attribute is set, read the docinfo.ext file.
+ * If the docinfo attribute is set, read the doc-name.docinfo.ext file.
+ * If the docinfo2 attribute is set, read both files in that order.
+ *
+ * @param {string} docinfoLocation - The Symbol location of the docinfo (e.g., head, footer, etc). (default: head)
+ * @param {string|undefined} suffix - The suffix of the docinfo file(s).
+ * If not set, the extension will be set to the outfilesuffix. (default: undefined)
+ *
+ * @returns {string} - the contents of the docinfo file(s) or empty string if no files are found or the safe mode is secure or greater.
  * @memberof Document
  */
 Document.prototype.getDocinfo = function (docinfoLocation, suffix) {
