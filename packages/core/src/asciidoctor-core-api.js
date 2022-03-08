@@ -255,7 +255,19 @@ Asciidoctor.prototype.convert = function (input, options) {
   if (typeof input === 'object' && input.constructor.name === 'Buffer') {
     input = input.toString('utf8')
   }
-  const result = this.$convert(input, prepareOptions(options))
+  const toFile = options && options.to_file
+  if (typeof toFile === 'object' && toFile.constructor.name === 'Writable' && typeof toFile.write === 'function') {
+    toFile['$respond_to?'] = (name) => name === 'write'
+    toFile.$object_id = () => ''
+    toFile.$write = function (data) {
+      this.write(data)
+    }
+  }
+  const opts = prepareOptions(options)
+  const result = this.$convert(input, opts)
+  if (typeof toFile === 'object' && toFile.constructor.name === 'Writable' && typeof toFile.end === 'function') {
+    toFile.end()
+  }
   return result === Opal.nil ? '' : result
 }
 
