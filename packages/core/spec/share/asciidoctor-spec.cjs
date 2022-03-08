@@ -1,7 +1,6 @@
 /* global Opal, it, describe, define */
 const shareSpec = function (testOptions, asciidoctor, expect) {
   describe(testOptions.platform, function () {
-
     this.timeout(5000)
 
     describe('When loaded', function () {
