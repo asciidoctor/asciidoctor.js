@@ -54,6 +54,8 @@ const testOptions = {
 describe('Node.js', () => {
   let mockServer
 
+  this.timeout(5000)
+
   before(async function () {
     this.timeout(5000) // starting the mock server can take a few seconds
     try {
