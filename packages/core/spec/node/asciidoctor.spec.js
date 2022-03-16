@@ -1,6 +1,6 @@
 /* global it, describe, before, after, afterEach */
-import path from 'path'
 import { Writable } from 'stream'
+import path from 'path'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
 import process from 'process'
@@ -9,7 +9,6 @@ import dirtyChai from 'dirty-chai'
 import dot from 'dot'
 import nunjucks from 'nunjucks'
 import Opal from 'asciidoctor-opal-runtime' // for testing purpose only
-
 import semVer from '../share/semver.cjs'
 import MockServer from '../share/mock-server.cjs'
 import shareSpec from '../share/asciidoctor-spec.cjs'
@@ -927,6 +926,26 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       } finally {
         removeFile(expectFilePath)
       }
+    })
+
+    it('should be able to convert a file into a Writable stream', () => {
+      const data = []
+      const writableStream = new Writable({
+        write (chunk, encoding, callback) {
+          data.push(chunk.toString())
+          callback()
+        }
+      })
+      const doc = asciidoctor.convert(`= Document Title
+:author: Guillaume Grossetie
+
+This is a preamble.
+
+== Section Title
+
+This is a paragraph.`, { to_file: writableStream, header_footer: false })
+      expect(doc.getAttribute('author')).to.equal('Guillaume Grossetie')
+      expect(data.join('')).to.contain('This is a paragraph.')
     })
 
     it('should be able to apply default inline substitutions to text', () => {
