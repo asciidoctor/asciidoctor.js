@@ -2279,7 +2279,7 @@ include::${testOptions.remoteBaseUri}/include-lines.adoc[lines=3..4]
           expect(requestsReceived.length).to.equal(2)
         } finally {
           asciidoctor.Cache.disable()
-          asciidoctor.Cache.reset()
+          asciidoctor.Cache.clear()
           asciidoctor.Cache.setMax(Opal.Asciidoctor.Cache.DEFAULT_MAX)
         }
       })
@@ -2309,7 +2309,7 @@ image::${testOptions.remoteBaseUri}/cc-zero.svg[opts=inline]
           expect(requestsReceived.map((request) => request.pathname)).to.have.members(['/cc-zero.svg', '/cc-heart.svg', '/cc-heart.svg'])
         } finally {
           asciidoctor.Cache.disable()
-          asciidoctor.Cache.reset()
+          asciidoctor.Cache.clear()
           asciidoctor.Cache.setMax(Opal.Asciidoctor.Cache.DEFAULT_MAX)
         }
       })

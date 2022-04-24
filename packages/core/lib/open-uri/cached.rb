@@ -45,7 +45,7 @@ module OpenURI
           }
         }
 
-        const reset = () => {
+        const clear = () => {
           cache = new Map()
           length = 0
           lruList = []
@@ -148,8 +148,8 @@ module OpenURI
         }
       end
 
-      def reset
-        `reset()`
+      def clear
+        `clear()`
       end
     end
   end

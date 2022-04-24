@@ -35,17 +35,15 @@ export default function (moduleConfig) {
   // Alias
   Opal.Asciidoctor.Cache = {
     disable: function () {
-      // QUESTION: should we also reset cache?
       const openUriSingleton = Opal.OpenURI.$singleton_class()
       if (Opal.OpenURI['$respond_to?']('original_open_uri')) {
         openUriSingleton.$send('remove_method', 'open_uri')
         openUriSingleton.$send('alias_method', 'open_uri', 'original_open_uri')
       }
     },
-    reset: function() {
-      // QUESTION: should we also reset the max value?
-      if (typeof Opal.OpenURI.Cache['$reset'] === 'function') {
-        Opal.OpenURI.Cache['$reset']()
+    clear: function() {
+      if (typeof Opal.OpenURI.Cache['$clear'] === 'function') {
+        Opal.OpenURI.Cache['$clear']()
       }
     },
     enable: function () {
