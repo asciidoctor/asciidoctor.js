@@ -19,6 +19,6 @@
     "libnpmpublish": "4.0.2",
     "mocha": "9.2.2",
     "pacote": "^12.0.2",
-    "sinon": "13.0.1"
+    "sinon": "13.0.2"
   }
 }
