@@ -34,8 +34,8 @@ const log = (durations) => {
 }
 
 module.exports = {
-  quantile: quantile,
-  average: average,
-  standardDeviation: standardDeviation,
-  log: log
+  quantile,
+  average,
+  standardDeviation,
+  log
 }

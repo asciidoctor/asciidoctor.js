@@ -3448,6 +3448,48 @@ export namespace Asciidoctor {
     register(name: string, template: Template): TemplateConverter.TemplateIndexed;
   }
 
+  /**
+   * A {Converter} implementation that delegates to the chain of {Converter}
+   * objects passed to the constructor. Selects the first {Converter} that
+   * identifies itself as the handler for a given transform.
+   */
+  class CompositeConverter extends Converter {
+    /**
+     * Delegates to the first converter that identifies itself as the handler for the given transform.
+     * The optional Hash is passed as the last option to the delegate's convert method.
+     *
+     * @param node - the AbstractNode to convert
+     * @param [transform] - the optional {string} transform, or the name of the node if no transform is specified. (optional, default: undefined)
+     * @param [opts] - an optional JSON that is passed as local variables to the template. (optional, default: undefined)
+     * @returns The {string} result from the delegate's convert method
+     */
+    convert(node: AbstractNode, transform?: string, opts?: any): string;
+
+    /**
+     * Checks whether there is a template registered with the specified name.
+     *
+     * @param name - the {string} template name
+     * @returns a {boolean} that indicates whether a template is registered for the specified template name.
+     */
+    handles(name: string): boolean;
+
+    /**
+     * Retrieves the templates that this converter manages.
+     *
+     * @returns a JSON of template objects keyed by template name
+     */
+    getTemplates(): TemplateConverter.TemplateIndexed;
+
+    /**
+     * Registers a template with this converter.
+     *
+     * @param name - the {string} template name
+     * @param template - the template object to register
+     * @returns the template object
+     */
+    register(name: string, template: Template): TemplateConverter.TemplateIndexed;
+  }
+
   namespace Template {
     interface Context {
       node: AbstractNode;

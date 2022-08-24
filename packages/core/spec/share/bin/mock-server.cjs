@@ -19,9 +19,9 @@ portfinder.getPort((err, port) => {
   if (err) {
     throw err
   }
-  server = new ServerMock({ host: 'localhost', port: port })
+  server = new ServerMock({ host: 'localhost', port })
   server.start(() => {
     console.log(`Running at http://localhost:${port}`)
-    process.send({ event: 'started', port: port })
+    process.send({ event: 'started', port })
   })
 })

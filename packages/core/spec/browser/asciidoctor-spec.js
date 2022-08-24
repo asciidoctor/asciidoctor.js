@@ -13,7 +13,7 @@ import Asciidoctor from '../../build/asciidoctor-browser.js'
   mocha.setup({
     ui: 'bdd',
     checkLeaks: false,
-    reporter: reporter
+    reporter
   })
 
   const expect = chai.expect
@@ -27,9 +27,9 @@ import Asciidoctor from '../../build/asciidoctor-browser.js'
   }
   const testOptions = {
     platform: 'Browser',
-    baseDir: baseDir,
+    baseDir,
     coreVersion: asciidoctorCoreSemVer,
-    remoteBaseUri: remoteBaseUri
+    remoteBaseUri
   }
   shareSpec(testOptions, asciidoctor, expect)
   includeHttpsSpec(testOptions, asciidoctor, expect)

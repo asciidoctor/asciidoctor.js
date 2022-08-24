@@ -1597,7 +1597,7 @@ A bold statement!<sup class="footnote" id="_footnote_disclaimer">[<a id="_footno
                 }
                 const openBlock = self.createBlock(parent, 'open', [], { role: 'external-url' })
                 openBlock.title = attrs.title
-                const link = self.createInline(parent, 'anchor', text, { type: 'link', target: target })
+                const link = self.createInline(parent, 'anchor', text, { type: 'link', target })
                 openBlock.append(link)
                 return openBlock
               })

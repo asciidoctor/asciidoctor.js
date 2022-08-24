@@ -40,7 +40,7 @@ puppeteer.launch({ args: ['--disable-gpu', '--no-sandbox', '--single-process', '
       const start = new Date().getTime()
       html = asciidoctor.convert(content, options)
       const duration = new Date().getTime() - start
-      result.push({ id: i, duration: duration, html: html })
+      result.push({ id: i, duration, html })
     }
     return result
   }, data)
