@@ -3867,3 +3867,26 @@ if (TemplateConverter) {
     }
   }
 }
+
+const CompositeConverter = Opal.Asciidoctor.Converter.CompositeConverter
+
+if (CompositeConverter) {
+  // Alias
+  Opal.Asciidoctor.CompositeConverter = CompositeConverter
+
+  /**
+   * Convert an {AbstractNode} to the backend format using the named template.
+   *
+   * Looks for a template that matches the value of the template name or,
+   * if the template name is not specified, the value of the {@see AbstractNode.getNodeName} function.
+   *
+   * @param {AbstractNode} node - the AbstractNode to convert
+   * @param {string} templateName - the {string} name of the template to use, or the node name of the node if a template name is not specified. (optional, default: undefined)
+   * @param {Object} opts - an optional JSON that is passed as local variables to the template. (optional, default: undefined)
+   * @returns {string} - The {string} result from rendering the template
+   * @memberof Converter/CompositeConverter
+   */
+  CompositeConverter.prototype.convert = function (node, templateName, opts) {
+    return this.$convert(node, templateName, toHash(opts))
+  }
+}
