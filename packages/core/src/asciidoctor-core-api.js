@@ -3798,6 +3798,27 @@ if (TemplateConverter) {
   }
 
   /**
+   * Converts the {AbstractNode} using only its converted content.
+   *
+   * @param {AbstractNode} node
+   * @returns {string} - the converted {string} content.
+   * @memberof Converter/TemplateConverter
+   */
+  TemplateConverter.prototype.getContentOnly = function (node) {
+    return this.$content_only(node)
+  }
+
+  /**
+   * Skips conversion of the {AbstractNode}.
+   *
+   * @param {AbstractNode} node
+   * @memberof Converter/TemplateConverter
+   */
+  TemplateConverter.prototype.skip = function (node) {
+    this.$skip(node)
+  }
+
+  /**
    * Retrieves the templates that this converter manages.
    *
    * @returns {Object} - a JSON of template objects keyed by template name
@@ -3865,5 +3886,84 @@ if (TemplateConverter) {
         this.registry[name] = templateEngineAdapter
       }
     }
+  }
+}
+
+/**
+ * @namespace
+ * @module Converter/CompositeConverter
+ */
+const CompositeConverter = Opal.Asciidoctor.Converter.CompositeConverter
+
+if (CompositeConverter) {
+  // Alias
+  Opal.Asciidoctor.CompositeConverter = CompositeConverter
+
+  /**
+   * Delegates to the first converter that identifies itself as the handler for the given transform.
+   * The optional Hash is passed as the last option to the delegate's convert method.
+   *
+   * @param node - the AbstractNode to convert
+   * @param [transform] - the optional {string} transform, or the name of the node if no transform is specified. (optional, default: undefined)
+   * @param [opts] - an optional JSON that is passed as local variables to the template. (optional, default: undefined)
+   * @returns The {string} result from the delegate's convert method
+   * @memberof Converter/CompositeConverter
+   */
+  CompositeConverter.prototype.convert = function (node, transform, opts) {
+    return this.$convert(node, transform, toHash(opts))
+  }
+
+  /**
+   * Converts the {AbstractNode} using only its converted content.
+   *
+   * @param {AbstractNode} node
+   * @returns {string} - the converted {string} content.
+   * @memberof Converter/CompositeConverter
+   */
+  CompositeConverter.prototype.getContentOnly = function (node) {
+    return this.$content_only(node)
+  }
+
+  /**
+   * Skips conversion of the {AbstractNode}.
+   *
+   * @param {AbstractNode} node
+   * @memberof Converter/CompositeConverter
+   */
+  CompositeConverter.prototype.skip = function (node) {
+    this.$skip(node)
+  }
+
+  /**
+   * Get the Array of Converter objects in the chain.
+   * @returns {[Converter]}
+   * @memberof Converter/CompositeConverter
+   */
+  CompositeConverter.prototype.getConverters = function () {
+    return this.converters
+  }
+
+  /**
+   * Retrieve the converter for the specified transform.
+   * @param transform
+   * @returns {Converter|undefined}
+   * @memberof Converter/CompositeConverter
+   */
+  CompositeConverter.prototype.getConverter = function (transform) {
+    const converter = this.$converter_for(transform)
+    return converter === Opal.nil ? undefined : converter
+  }
+
+  /**
+   * Find the converter for the specified transform.
+   * Throw an exception if no converter is found.
+   *
+   * @param transform
+   * @returns {Converter} - the matching converter
+   * @throws Error if no converter is found
+   * @memberof Converter/CompositeConverter
+   */
+  CompositeConverter.prototype.findConverter = function (transform) {
+    return this.$find_converter(transform)
   }
 }

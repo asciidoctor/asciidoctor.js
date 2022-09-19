@@ -244,13 +244,13 @@ intro
               const text = message.text
               const sourceLocation = message.source_location
               return JSON.stringify({
-                programName: programName,
+                programName,
                 message: text,
                 sourceLocation: {
                   lineNumber: sourceLocation.getLineNumber(),
                   path: sourceLocation.getPath()
                 },
-                severity: severity
+                severity
               }) + '\n'
             }
           }))
@@ -335,7 +335,7 @@ intro
       it('should print timings to the MemoryLogger', () => {
         const memoryLogger = asciidoctor.MemoryLogger.create()
         const timings = asciidoctor.Timings.create()
-        const options = { timings: timings }
+        const options = { timings }
         asciidoctor.convert('Hello *world*', options)
         timings.printReport(memoryLogger, 'stdin')
         const messages = memoryLogger.getMessages()
@@ -394,7 +394,7 @@ intro
         const logs = []
         const customLogger = asciidoctor.LoggerManager.newLogger('CustomLogger', {
           add: function (severity, message, progname) {
-            logs.push({ severity: severity, message: message || progname })
+            logs.push({ severity, message: message || progname })
           }
         })
         customLogger.error('hello')
@@ -406,7 +406,7 @@ intro
         const logs = []
         const customLogger = asciidoctor.LoggerManager.newLogger('CustomLogger', {
           add: function (severity, message, progname) {
-            logs.push({ severity: severity, message: message, progname: progname })
+            logs.push({ severity, message, progname })
           }
         })
         customLogger.add('error', 'hi', 'asciidoctor.js')
@@ -475,7 +475,7 @@ intro
         }
       })
       const timings = asciidoctor.Timings.create()
-      const options = { timings: timings }
+      const options = { timings }
       asciidoctor.convert('Hello *world*', options)
       timings.printReport(outStream, 'stdin')
       outStream.end()
@@ -487,11 +487,11 @@ intro
       try {
         const data = []
         console.log = function () {
-          data.push({ method: 'log', arguments: arguments })
+          data.push({ method: 'log', arguments })
           return defaultLog.apply(console, arguments)
         }
         const timings = asciidoctor.Timings.create()
-        const options = { timings: timings }
+        const options = { timings }
         asciidoctor.convert('Hello *world*', options)
         timings.printReport(console, 'stdin')
         expect(data.length).to.equal(4)
@@ -502,7 +502,7 @@ intro
     })
     it('should print timings to an object with a log function', () => {
       const timings = asciidoctor.Timings.create()
-      const options = { timings: timings }
+      const options = { timings }
       asciidoctor.convert('Hello *world*', options)
       const logger = {}
       const data = []
@@ -518,10 +518,10 @@ intro
       const data = []
       try {
         process.stdout.write = function () {
-          data.push({ method: 'log', arguments: arguments })
+          data.push({ method: 'log', arguments })
         }
         const timings = asciidoctor.Timings.create()
-        const options = { timings: timings }
+        const options = { timings }
         asciidoctor.convert('Hello *world*', options)
         timings.printReport(undefined, 'stdin')
         expect(data.length).to.equal(4)
@@ -2230,7 +2230,7 @@ content`, options)
         const markup = defs[key]
         it(`should include docinfo files for html backend with attribute ${key}`, () => {
           const attributes = ['linkcss', 'copycss!'].concat(key.split(' '))
-          const options = { safe: 'safe', standalone: true, to_file: false, attributes: attributes }
+          const options = { safe: 'safe', standalone: true, to_file: false, attributes }
           const html = asciidoctor.convertFile('spec/fixtures/basic.adoc', options)
           if (markup.head_script) {
             expect(html).to.contain('<script src="modernizr.js"></script>')
@@ -3054,6 +3054,31 @@ And here&#8217;s a block image:</p>
       expect(first).to.equal('value')
       const second = asciidoctor.convert('image::test.png[]', options)
       expect(second).to.equal('value')
+    }).timeout(5000)
+  })
+
+  describe('Using a composite converter', () => {
+    it('should get the converters', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const compositeConverter = doc.getConverter()
+      expect(compositeConverter.getConverters().length).to.equal(2)
+    }).timeout(5000)
+    it('should retrieve the converter for the specified transform', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const compositeConverter = doc.getConverter()
+      expect(compositeConverter.getConverter('paragraph').constructor.$$name).to.equal('TemplateConverter')
+      expect(compositeConverter.getConverter('admonition').constructor.$$name).to.equal('Html5Converter')
+      expect(() => compositeConverter.getConverter('invalid')).to.throw(Error, 'Could not find a converter to handle transform: invalid')
+    }).timeout(5000)
+    it('should find the converter for the specified transform', () => {
+      const options = { safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/nunjucks' }
+      const doc = asciidoctor.load('content', options)
+      const compositeConverter = doc.getConverter()
+      expect(compositeConverter.findConverter('paragraph').constructor.$$name).to.equal('TemplateConverter')
+      expect(compositeConverter.findConverter('admonition').constructor.$$name).to.equal('Html5Converter')
+      expect(() => compositeConverter.findConverter('invalid')).to.throw(Error, 'Could not find a converter to handle transform: invalid')
     }).timeout(5000)
   })
 
