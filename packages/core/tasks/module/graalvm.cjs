@@ -42,6 +42,35 @@ const graalvmJavaCompileAndRun = (specName, className, javacBin, javaBin) => {
   }
 }
 
+const graalvmInstallJs = (jdkInstallDir) => {
+  log.task('gu install nodejs')
+
+  const start = process.hrtime()
+
+  let jdkBinDir
+  const platform = process.platform
+  if (platform === 'darwin') {
+    jdkBinDir = path.join(jdkInstallDir, 'Contents', 'Home', 'bin')
+  } else {
+    jdkBinDir = path.join(jdkInstallDir, 'bin')
+  }
+  const guBin = path.join(jdkBinDir, 'gu')
+
+  try {
+    const result = childProcess.execSync(`${guBin} install nodejs`).toString('utf8')
+    process.stdout.write(result)
+  } catch (e) {
+    if (e.stdout) {
+      process.stdout.write(e.stdout.toString())
+    }
+    if (e.stderr) {
+      process.stderr.write(e.stderr.toString())
+    }
+    process.exit(1)
+  }
+  log.success(`Done in ${process.hrtime(start)[0]}s`)
+}
+
 const graalvmRun = (name, jdkInstallDir) => {
   log.task(`run against ${name}`)
 
@@ -66,9 +95,9 @@ const graalvmRun = (name, jdkInstallDir) => {
   const javaResult = graalvmJavaCompileAndRun(asciidoctorSpec, asciidoctorClassName, javacBin, javaBin)
   graalvmCheckConvert(javaResult, `run with ${name} java`)
 
-  // Run with GraalVM node
+  // Run with GraalVM node.js
   try {
-    log.info(`run ${name} node`)
+    log.info(`run ${name} node.js`)
     const result = childProcess.execSync(`${nodeBin} spec/graalvm/run.cjs`).toString('utf8')
     process.stdout.write(result)
   } catch (e) {
@@ -93,7 +122,7 @@ const downloadGraalVM = async (version) => {
   }
   const platform = process.platform
   if (platform === 'darwin' || platform === 'linux') {
-    await download.getContentFromURL(`https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${version}/graalvm-ce-java8-${platform}-amd64-${version}.tar.gz`, target)
+    await download.getContentFromURL(`https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${version}/graalvm-ce-java11-${platform}-amd64-${version}.tar.gz`, target)
     if (fs.existsSync('build/graalvm')) {
       log.info('build/graalvm directory already exists, skipping "untar" task')
       return Promise.resolve({})
@@ -106,11 +135,12 @@ const downloadGraalVM = async (version) => {
 
 module.exports = class GraalVM {
   constructor () {
-    this.graalvmVersion = '20.1.0'
+    this.graalvmVersion = '22.2.0'
   }
 
-  get () {
-    return downloadGraalVM(this.graalvmVersion)
+  async get () {
+    await downloadGraalVM(this.graalvmVersion)
+    graalvmInstallJs('./build/graalvm')
   }
 
   static run () {
