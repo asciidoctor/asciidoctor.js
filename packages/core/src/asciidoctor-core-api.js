@@ -3365,8 +3365,7 @@ Table.prototype.hasHeaderOption = function () {
  * @memberof Table
  */
 Table.prototype.hasFooterOption = function () {
-  const footerOption = this.getAttributes()['footer-option']
-  return footerOption === ''
+  return this.isOption('footer')
 }
 
 /**
@@ -3375,8 +3374,7 @@ Table.prototype.hasFooterOption = function () {
  * @memberof Table
  */
 Table.prototype.hasAutowidthOption = function () {
-  const autowidthOption = this.getAttributes()['autowidth-option']
-  return autowidthOption === ''
+  return this.isOption('autowidth')
 }
 
 /**
