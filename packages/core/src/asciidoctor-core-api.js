@@ -745,6 +745,17 @@ Section.prototype.setSectionName = function (value) {
 }
 
 /**
+ * Get the section numeral of this section.
+ * @returns {string}
+ * @memberof Section
+ */
+Section.prototype.getSectionNumeral = function () {
+  return this.$sectnum()
+}
+
+Section.prototype.getSectionNumber = Section.prototype.getSectionNumeral
+
+/**
  * Get the flag to indicate whether this is a special section or a child of one.
  * @returns {boolean}
  * @memberof Section

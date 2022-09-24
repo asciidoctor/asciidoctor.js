@@ -2248,6 +2248,14 @@ export namespace Asciidoctor {
     setSectionName(value: string): void;
 
     /**
+     * Get the section number of this section.
+     */
+    getSectionNumeral(): string;
+
+    // alias
+    getSectionNumber(): string;
+
+    /**
      * Get the flag to indicate whether this is a special section or a child of one.
      */
     isSpecial(): boolean;
