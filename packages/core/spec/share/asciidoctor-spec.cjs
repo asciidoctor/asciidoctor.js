@@ -605,6 +605,7 @@ This is another paragraph.
         expect(secondSection.getSectionName()).to.equal('section')
         expect(secondSection.isNumbered()).to.equal(true)
         expect(secondSection.getSectionNumeral()).to.equal('1.')
+        expect(secondSection.getSectionNumber()).to.equal('1.')
         expect(secondSection.isSpecial()).to.equal(false)
         expect(secondSection.getCaption()).to.be.undefined()
         const abstractSection = doc.getSections()[2]
