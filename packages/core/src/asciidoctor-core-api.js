@@ -745,7 +745,7 @@ Section.prototype.setSectionName = function (value) {
 }
 
 /**
- * Get the section number of this section.
+ * Get the section numeral of this section.
  * @returns {string}
  * @memberof Section
  */

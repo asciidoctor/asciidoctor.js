@@ -2248,7 +2248,7 @@ export namespace Asciidoctor {
     setSectionName(value: string): void;
 
     /**
-     * Get the section number of this section.
+     * Get the section numeral of this section.
      */
     getSectionNumeral(): string;
 
