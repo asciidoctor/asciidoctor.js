@@ -594,7 +594,7 @@ This is another paragraph.
         expect(firstSection.title).to.equal('First section')
         expect(firstSection.getSectionName()).to.equal('section')
         expect(firstSection.isNumbered()).to.equal(false)
-        expect(firstSection.getSectionNumber()).to.equal('.')
+        expect(firstSection.getSectionNumeral()).to.equal('.')
         expect(firstSection.isSpecial()).to.equal(false)
         expect(firstSection.getCaption()).to.be.undefined()
         const secondSection = doc.getSections()[1]
@@ -604,7 +604,7 @@ This is another paragraph.
         expect(secondSection.title).to.equal('Second section')
         expect(secondSection.getSectionName()).to.equal('section')
         expect(secondSection.isNumbered()).to.equal(true)
-        expect(secondSection.getSectionNumber()).to.equal('1.')
+        expect(secondSection.getSectionNumeral()).to.equal('1.')
         expect(secondSection.isSpecial()).to.equal(false)
         expect(secondSection.getCaption()).to.be.undefined()
         const abstractSection = doc.getSections()[2]
@@ -614,7 +614,7 @@ This is another paragraph.
         expect(abstractSection.title).to.equal('Abstract section')
         expect(abstractSection.getSectionName()).to.equal('abstract')
         expect(abstractSection.isNumbered()).to.equal(false)
-        expect(firstSection.getSectionNumber()).to.equal('.')
+        expect(firstSection.getSectionNumeral()).to.equal('.')
         expect(abstractSection.isSpecial()).to.equal(true)
         expect(abstractSection.getCaption()).to.be.undefined()
         const appendixSection = doc.getSections()[3]
@@ -623,7 +623,7 @@ This is another paragraph.
         expect(appendixSection.getTitle()).to.equal('Copyright and License')
         expect(appendixSection.title).to.equal('Copyright and License')
         expect(appendixSection.getSectionName()).to.equal('appendix')
-        expect(appendixSection.getSectionNumber()).to.equal('A.')
+        expect(appendixSection.getSectionNumeral()).to.equal('A.')
         expect(appendixSection.isNumbered()).to.equal(true)
         expect(appendixSection.isSpecial()).to.equal(true)
         expect(appendixSection.getCaption()).to.equal('Appx A: ')

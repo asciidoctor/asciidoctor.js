@@ -749,7 +749,7 @@ Section.prototype.setSectionName = function (value) {
  * @returns {string}
  * @memberof Section
  */
-Section.prototype.getSectionNumber = function () {
+Section.prototype.getSectionNumeral = function () {
   return this.$sectnum()
 }
 

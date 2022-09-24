@@ -2250,7 +2250,7 @@ export namespace Asciidoctor {
     /**
      * Get the section number of this section.
      */
-    getSectionNumber(): string;
+    getSectionNumeral(): string;
 
     /**
      * Get the flag to indicate whether this is a special section or a child of one.
