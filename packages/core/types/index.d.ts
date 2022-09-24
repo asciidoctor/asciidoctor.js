@@ -2242,6 +2242,11 @@ export namespace Asciidoctor {
     getSectionName(): string;
 
     /**
+     * Get the section name of this section.
+     */
+    getSectionNumber(): string;
+
+    /**
      * Set the section name of this section.
      * @param value - The section name
      */
