@@ -120,24 +120,27 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
   // Build a dedicated JavaScript file for each environment
   for (const environment of environments) {
     log.debug(environment)
-    const opalExtData = fs.readFileSync(`build/opal-ext-${environment}.js`, 'utf8')
+    const environmentName = environment === 'esm' ? 'browser' : environment
+    const opalExtData = fs.readFileSync(`build/opal-ext-${environmentName}.js`, 'utf8')
     const asciidoctorCoreData = fs.readFileSync(asciidoctorCoreTarget, 'utf8')
     let data
-    if (['node', 'browser'].includes(environment)) {
-      const asciidoctorExtData = fs.readFileSync(`build/asciidoctor-ext-${environment}.js`, 'utf8')
+    if (['node', 'browser'].includes(environmentName)) {
+      const asciidoctorExtData = fs.readFileSync(`build/asciidoctor-ext-${environmentName}.js`, 'utf8')
       data = opalExtData.concat('\n').concat(asciidoctorExtData).concat('\n').concat(asciidoctorCoreData)
     } else {
       data = opalExtData.concat('\n').concat(asciidoctorCoreData)
     }
     const asciidoctorData = parseTemplateData(data, {
-      '//{{requireOpalRuntimeExt}}': `self.$require("asciidoctor/js/opal_ext/${environment}");`,
+      '//{{requireOpalRuntimeExt}}': `self.$require("asciidoctor/js/opal_ext/${environmentName}");`,
       // no specific runtime for GraalVM
-      '//{{requireAsciidoctorRuntimeExt}}': environment === 'graalvm' ? '' : `self.$require("asciidoctor/js/asciidoctor_ext/${environment}");`
+      '//{{requireAsciidoctorRuntimeExt}}': environmentName === 'graalvm' ? '' : `self.$require("asciidoctor/js/asciidoctor_ext/${environmentName}");`
     })
     let templateFile
     const target = `build/asciidoctor-${environment}.js`
     if (environment === 'node') {
       templateFile = 'src/template-asciidoctor-node.js'
+    } else if (environment === 'esm') {
+      templateFile = 'src/template-asciidoctor-esm.js'
     } else {
       templateFile = 'src/template-asciidoctor-browser.js'
     }
@@ -146,6 +149,7 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
       // remove the default export on Opal in the bundle because Asciidoctor is already the default export!
       // otherwise, the following exception is thrown: "Uncaught SyntaxError: Duplicate export of 'default'"
       .replace(/export default Opal/m, '')
+    const outputFile = `build/asciidoctor-${environment}.js`
     if (environment === 'browser') {
       const header = `/**
  * @license Asciidoctor.js ${packageJson.version} | MIT | https://github.com/asciidoctor/asciidoctor.js
@@ -154,9 +158,9 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
       const buffers = []
       buffers.push(Buffer.from(header, 'utf8'))
       buffers.push(Buffer.from(content, 'utf8'))
-      fs.writeFileSync(target, Buffer.concat(buffers), 'utf8')
+      fs.writeFileSync(outputFile, Buffer.concat(buffers), 'utf8')
     } else {
-      fs.writeFileSync(target, content, 'utf8')
+      fs.writeFileSync(outputFile, content, 'utf8')
       if (environment === 'node') {
         const bundle = await rollup({
           input: target,
@@ -204,7 +208,7 @@ module.exports = class Builder {
     this.benchmarkBuildDir = path.join('build', 'benchmark')
     this.examplesBuildDir = path.join('build', 'examples')
     this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625'
-    this.environments = ['node', 'graalvm', 'browser']
+    this.environments = ['node', 'graalvm', 'browser', 'esm']
     this.asciidoctorCoreTarget = path.join('build', 'asciidoctor-core.js')
   }
 
@@ -242,9 +246,13 @@ module.exports = class Builder {
     log.task('copy to dist/')
     removeDistDirSync(this.environments)
     bfs.copySync('build/css/asciidoctor.css', 'dist/css/asciidoctor.css')
-    bfs.copySync('build/asciidoctor-browser.min.js', 'dist/browser/asciidoctor.min.js')
+    bfs.copySync('build/asciidoctor-browser.js', 'dist/browser/asciidoctor.js')
     for (const environment of this.environments) {
-      bfs.copySync(`build/asciidoctor-${environment}.js`, `dist/${environment}/asciidoctor.js`)
+      if (environment === 'esm') {
+        bfs.copySync(`build/asciidoctor-${environment}.js`, 'dist/browser/asciidoctor.esm.js')
+      } else {
+        bfs.copySync(`build/asciidoctor-${environment}.js`, `dist/${environment}/asciidoctor.js`)
+      }
     }
   }
 }
