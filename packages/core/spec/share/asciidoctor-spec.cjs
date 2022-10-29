@@ -1419,6 +1419,28 @@ A bold statement!<sup class="footnote" id="_footnote_disclaimer">[<a id="_footno
         const result = converter.convert(para)
         expect(result).to.include('<p>text</p>')
       })
+
+      it('should bridge converter declared as class and passed as option', function () {
+        class FooConverter {
+          convert () {
+            return 'foo'
+          }
+        }
+
+        const foo = asciidoctor.convert('Hello *world*', { converter: FooConverter })
+        expect(foo).to.equal('foo')
+      })
+
+      it('should bridge converter declared as instance and passed as option', function () {
+        class FooConverter {
+          convert () {
+            return 'foo'
+          }
+        }
+
+        const foo = asciidoctor.convert('Hello *world*', { converter: new FooConverter() })
+        expect(foo).to.equal('foo')
+      })
     })
 
     describe('Extensions', function () {
@@ -1840,7 +1862,7 @@ bob -> alice`)
       })
     })
 
-    describe('Syntax Highligther', function () {
+    describe('Syntax Highlighter', function () {
       it('should return the syntax highlighter class registered for the specified name', () => {
         const highlightjsSyntaxHighlighter = asciidoctor.SyntaxHighlighter.for('highlight.js')
         expect(highlightjsSyntaxHighlighter.$$name).to.equal('HighlightJsAdapter')

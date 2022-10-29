@@ -55,6 +55,10 @@ const fromHashKeys = function (hash) {
 const prepareOptions = function (options) {
   options = toHash(options)
   if (options) {
+    const converter = options['$[]']('converter')
+    if (converter && converter !== Opal.nil) {
+      options['$[]=']('converter', bridgeConverter(converter))
+    }
     const attrs = options['$[]']('attributes')
     if (attrs && typeof attrs === 'object' && attrs.constructor.name === 'Object') {
       options = options.$dup()
@@ -62,6 +66,124 @@ const prepareOptions = function (options) {
     }
   }
   return options
+}
+
+const bridgeConverter = function (converter) {
+  const buildBackendTraitsFromObject = function (obj) {
+    return Object.assign({},
+      obj.basebackend ? { basebackend: obj.basebackend } : {},
+      obj.outfilesuffix ? { outfilesuffix: obj.outfilesuffix } : {},
+      obj.filetype ? { filetype: obj.filetype } : {},
+      obj.htmlsyntax ? { htmlsyntax: obj.htmlsyntax } : {},
+      obj.supports_templates ? { supports_templates: obj.supports_templates } : {}
+    )
+  }
+  const assignBackendTraitsToInstance = function (obj, instance) {
+    if (obj.backend_traits) {
+      instance.backend_traits = toHash(obj.backend_traits)
+    } else if (obj.backendTraits) {
+      instance.backend_traits = toHash(obj.backendTraits)
+    } else if (obj.basebackend || obj.outfilesuffix || obj.filetype || obj.htmlsyntax || obj.supports_templates) {
+      instance.backend_traits = toHash(buildBackendTraitsFromObject(obj))
+    }
+  }
+  const bridgeHandlesMethodToInstance = function (obj, instance) {
+    bridgeMethodToInstance(obj, instance, '$handles?', 'handles', function () {
+      return true
+    })
+  }
+  const bridgeComposedMethodToInstance = function (obj, instance) {
+    bridgeMethodToInstance(obj, instance, '$composed', 'composed')
+  }
+  const bridgeEqEqMethodToInstance = function (obj, instance) {
+    bridgeMethodToInstance(obj, instance, '$==', '==', function (other) {
+      return instance === other
+    })
+  }
+  const bridgeSendMethodToInstance = function (obj, instance) {
+    bridgeMethodToInstance(obj, instance, '$send', 'send', function (symbol) {
+      const [, ...args] = Array.from(arguments)
+      const func = instance['$' + symbol]
+      if (func) {
+        return func.apply(instance, args)
+      }
+      throw new Error(`undefined method \`${symbol}\` for \`${instance.toString()}\``)
+    })
+  }
+  const bridgeMethodToInstance = function (obj, instance, methodName, functionName, defaultImplementation) {
+    if (typeof obj[methodName] === 'undefined') {
+      if (typeof obj[functionName] === 'function') {
+        instance[methodName] = obj[functionName]
+      } else if (defaultImplementation) {
+        instance[methodName] = defaultImplementation
+      }
+    }
+  }
+  const addRespondToMethod = function (instance) {
+    if (typeof instance['$respond_to?'] !== 'function') {
+      instance['$respond_to?'] = function (name) {
+        return typeof this[name] === 'function'
+      }
+    }
+  }
+  if (typeof converter === 'function') {
+    // Class
+    const object = initializeClass(ConverterBase, converter.constructor.name, {
+      initialize: function (backend, opts) {
+        const self = this
+        const result = new converter(backend, opts) // eslint-disable-line
+        Object.assign(this, result)
+        assignBackendTraitsToInstance(result, self)
+        const propertyNames = Object.getOwnPropertyNames(converter.prototype)
+        for (let i = 0; i < propertyNames.length; i++) {
+          const propertyName = propertyNames[i]
+          if (propertyName !== 'constructor') {
+            self[propertyName] = result[propertyName]
+          }
+        }
+        if (typeof result.$convert === 'undefined' && typeof result.convert === 'function') {
+          self.$convert = result.convert
+        }
+        bridgeHandlesMethodToInstance(result, self)
+        bridgeComposedMethodToInstance(result, self)
+        addRespondToMethod(self)
+        self.super(backend, opts)
+      }
+    })
+    object.$extend(ConverterBackendTraits)
+    return object
+  }
+  if (typeof converter === 'object') {
+    // Instance
+    if (typeof converter.$convert === 'undefined' && typeof converter.convert === 'function') {
+      converter.$convert = converter.convert
+    }
+    assignBackendTraitsToInstance(converter, converter)
+    if (converter.backend_traits) {
+      // "extends" ConverterBackendTraits
+      const converterBackendTraitsFunctionNames = [
+        'basebackend',
+        'filetype',
+        'htmlsyntax',
+        'outfilesuffix',
+        'supports_templates',
+        'supports_templates?',
+        'init_backend_traits',
+        'backend_traits'
+      ]
+      for (const functionName of converterBackendTraitsFunctionNames) {
+        converter['$' + functionName] = ConverterBackendTraits.prototype['$' + functionName]
+      }
+      converter.$$meta = ConverterBackendTraits
+    }
+    bridgeHandlesMethodToInstance(converter, converter)
+    bridgeComposedMethodToInstance(converter, converter)
+    bridgeEqEqMethodToInstance(converter, converter)
+    bridgeSendMethodToInstance(converter, converter)
+    addRespondToMethod(converter)
+    return converter
+  }
+  return converter
 }
 
 function initializeClass (superClass, className, functions, defaultFunctions, argProxyFunctions) {
@@ -3975,4 +4097,164 @@ if (CompositeConverter) {
   CompositeConverter.prototype.findConverter = function (transform) {
     return this.$find_converter(transform)
   }
+}
+
+// Converter API
+
+/**
+ * @namespace
+ * @module Converter
+ */
+const Converter = Opal.const_get_qualified(Opal.Asciidoctor, 'Converter')
+
+// Alias
+Opal.Asciidoctor.Converter = Converter
+
+/**
+ * Convert the specified node.
+ *
+ * @param {AbstractNode} node - the AbstractNode to convert
+ * @param {string} transform - an optional String transform that hints at
+ * which transformation should be applied to this node.
+ * @param {Object} opts - a JSON of options that provide additional hints about how to convert the node (default: {})
+ * @returns the {Object} result of the conversion, typically a {string}.
+ * @memberof Converter
+ */
+Converter.prototype.convert = function (node, transform, opts) {
+  return this.$convert(node, transform, toHash(opts))
+}
+
+/**
+ * Create an instance of the converter bound to the specified backend.
+ *
+ * @param {string} backend - look for a converter bound to this keyword.
+ * @param {Object} opts - a JSON of options to pass to the converter (default: {})
+ * @returns {Converter} - a converter instance for converting nodes in an Asciidoctor AST.
+ * @memberof Converter
+ */
+Converter.create = function (backend, opts) {
+  return this.$create(backend, toHash(opts))
+}
+
+// Converter Factory API
+
+/**
+ * @namespace
+ * @module Converter/Factory
+ */
+const ConverterFactory = Opal.Asciidoctor.Converter.Factory
+
+const ConverterBase = Opal.Asciidoctor.Converter.Base
+
+// Alias
+Opal.Asciidoctor.ConverterFactory = ConverterFactory
+
+const ConverterBackendTraits = Opal.Asciidoctor.Converter.BackendTraits
+
+// Alias
+Opal.Asciidoctor.ConverterBackendTraits = ConverterBackendTraits
+
+/**
+ * Register a custom converter in the global converter factory to handle conversion to the specified backends.
+ * If the backend value is an asterisk, the converter is used to handle any backend that does not have an explicit converter.
+ *
+ * @param converter - The Converter instance to register
+ * @param backends {Array} - A {string} {Array} of backend names that this converter should be registered to handle (optional, default: ['*'])
+ * @return {*} - Returns nothing
+ * @memberof Converter/Factory
+ */
+ConverterFactory.register = function (converter, backends) {
+  const args = [bridgeConverter(converter)].concat(backends)
+  return Converter.$register.apply(Converter, args)
+}
+
+/**
+ * Retrieves the singleton instance of the converter factory.
+ *
+ * @param {boolean} initialize - instantiate the singleton if it has not yet
+ * been instantiated. If this value is false and the singleton has not yet been
+ * instantiated, this method returns a fresh instance.
+ * @returns {Converter/Factory} an instance of the converter factory.
+ * @memberof Converter/Factory
+ */
+ConverterFactory.getDefault = function (initialize) {
+  return this.$default(initialize)
+}
+
+/**
+ * Create an instance of the converter bound to the specified backend.
+ *
+ * @param {string} backend - look for a converter bound to this keyword.
+ * @param {Object} opts - a JSON of options to pass to the converter (default: {})
+ * @returns {Converter} - a converter instance for converting nodes in an Asciidoctor AST.
+ * @memberof Converter/Factory
+ */
+ConverterFactory.prototype.create = function (backend, opts) {
+  return this.$create(backend, toHash(opts))
+}
+
+/**
+ * Get the converter registry.
+ * @returns the registry of converter instances or classes keyed by backend name
+ * @memberof Converter/Factory
+ */
+ConverterFactory.getRegistry = function () {
+  return fromHash(Converter.$registry())
+}
+
+/**
+ * Lookup the custom converter registered with this factory to handle the specified backend.
+ *
+ * @param {string} backend - The {string} backend name.
+ * @returns the {Converter} class or instance registered to convert the specified backend or undefined if no match is found.
+ * @memberof Converter/Factory
+ */
+ConverterFactory.for = function (backend) {
+  const converter = Converter.$for(backend)
+  return converter === Opal.nil ? undefined : converter
+}
+
+/*
+ * Unregister any custom converter classes that are registered with this factory.
+ * Intended for testing only!
+ */
+ConverterFactory.unregisterAll = function () {
+  const internalRegistry = Converter.DefaultFactory.$$cvars['@@registry']
+  Converter.DefaultFactory.$$cvars['@@registry'] = toHash({ html5: internalRegistry['$[]']('html5') })
+}
+
+// Built-in converter
+
+/**
+ * @namespace
+ * @module Converter/Html5Converter
+ */
+const Html5Converter = Opal.Asciidoctor.Converter.Html5Converter
+
+// Alias
+Opal.Asciidoctor.Html5Converter = Html5Converter
+
+/**
+ * Create a new Html5Converter.
+ * @returns {Html5Converter} - a Html5Converter
+ * @memberof Converter/Html5Converter
+ */
+Html5Converter.create = function () {
+  return this.$new()
+}
+
+/**
+ * Converts an {AbstractNode} using the given transform.
+ * This method must be implemented by a concrete converter class.
+ *
+ * @param {AbstractNode} node - The concrete instance of AbstractNode to convert.
+ * @param {string} [transform] - An optional String transform that hints at which transformation should be applied to this node.
+ * If a transform is not given, the transform is often derived from the value of the {AbstractNode#getNodeName} property. (optional, default: undefined)
+ * @param {Object} [opts]- An optional JSON of options hints about how to convert the node. (optional, default: undefined)
+ *
+ * @returns {string} - the String result.
+ * @memberof Converter/Html5Converter
+ */
+Html5Converter.prototype.convert = function (node, transform, opts) {
+  return this.$convert(node, transform, opts)
 }
