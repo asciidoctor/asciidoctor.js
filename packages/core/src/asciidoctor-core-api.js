@@ -1447,6 +1447,40 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
 const Document = Opal.Asciidoctor.Document
 
 /**
+ * Returns the SyntaxHighlighter associated with this document.
+ *
+ * @returns {SyntaxHighlighter} - the SyntaxHighlighter associated with this document.
+ * @memberof Document
+ */
+Document.prototype.getSyntaxHighlighter = function () {
+  const syntaxHighlighter = this.syntax_highlighter
+  // eslint-disable-next-line no-proto
+  const prototype = syntaxHighlighter.__proto__
+  if (prototype) {
+    if (typeof prototype['$highlight?'] === 'function') {
+      prototype.handlesHighlighting = function () {
+        const value = prototype['$highlight?']()
+        return value === Opal.nil ? false : value
+      }
+    }
+    if (typeof prototype['$docinfo?'] === 'function') {
+      prototype.hasDocinfo = prototype['$docinfo?']
+    }
+    if (typeof prototype.$format === 'function') {
+      prototype.format = function (node, lang, opts) {
+        return this.$format(node, lang, toHash(opts))
+      }
+    }
+    if (typeof prototype.$docinfo === 'function') {
+      prototype.docinfo = function (location, doc, opts) {
+        return this.$docinfo(location, doc, toHash(opts))
+      }
+    }
+  }
+  return syntaxHighlighter
+}
+
+/**
  * Returns a JSON {Object} of references captured by the processor.
  *
  * @returns {Object} - a JSON {Object} of {AbstractNode} in the document.

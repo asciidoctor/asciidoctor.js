@@ -1584,6 +1584,13 @@ export namespace Asciidoctor {
    */
   class Document extends AbstractBlock {
     /**
+     * Returns the SyntaxHighlighter associated with this document.
+     *
+     * @returns the {SyntaxHighlighter} associated with this document.
+     */
+    getSyntaxHighlighter(): SyntaxHighlighter;
+
+    /**
      * Returns a JSON {Object} of references captured by the processor.
      *
      * @returns a JSON object of {Asciidoctor/AbstractNode} in the document.
