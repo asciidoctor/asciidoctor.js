@@ -779,6 +779,21 @@ Getting Real details the business, design, programming, and marketing principles
           expect(secondAuthor.getLastName()).to.equal('Fried')
           expect(secondAuthor.getInitials()).to.equal('JF')
         })
+
+        it('should get syntax highlighter from document', function () {
+          const options = { attributes: { 'source-highlighter': 'highlight.js' } }
+          const doc = asciidoctor.load(`
+[source,js]
+console.log('hello')
+`, options)
+          const syntaxHighlighter = doc.getSyntaxHighlighter()
+          expect(syntaxHighlighter.name).to.equal('highlightjs')
+          expect(syntaxHighlighter.hasDocinfo()).to.equal(true)
+          expect(syntaxHighlighter.handlesHighlighting()).to.equal(false)
+          expect(syntaxHighlighter.docinfo('head', doc, { cdn_base_url: 'https://cdn.jsdelivr.net' })).to.equal('<link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/9.18.3/styles/github.min.css">')
+          const sourceBlock = doc.getBlocks()[0]
+          expect(syntaxHighlighter.format(sourceBlock, 'js', {})).to.equal('<pre class="highlightjs highlight"><code class="language-js hljs" data-lang="js">console.log(\'hello\')</code></pre>')
+        })
       })
 
       describe('findBy', function () {
