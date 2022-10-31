@@ -525,6 +525,7 @@ const result = docWithParagraphs.findBy((candidate) => {
   } else if (ctx === 'paragraph') {
     return true;
   }
+  return false;
 });
 assert(result.length === 2);
 assert(result[0].getContext() === 'paragraph');
@@ -1233,7 +1234,7 @@ a|
 :foo: foo
 AsciiDoc cell
 |===`);
-const tableWithAsciiDocCell = docWithAsciiDocCell.findBy({context: 'table'})[0] as Asciidoctor.Table;
+const tableWithAsciiDocCell = docWithAsciiDocCell.findBy({context: Asciidoctor.BuiltInContext.Table})[0] as Asciidoctor.Table;
 const normalCell = tableWithAsciiDocCell.getBodyRows()[0][0];
 const asciidocCell = tableWithAsciiDocCell.getBodyRows()[1][0];
 assert(typeof normalCell.getInnerDocument() === 'undefined');

@@ -684,25 +684,37 @@ AbstractBlock.prototype.convert = function () {
  * that match the specified selector (context, style, id, and/or role).
  * If a function block is given, it's used as an additional filter.
  * If no selector or function block is supplied, all block-level nodes in the tree are returned.
- * Valid context names include: 
- * document
- * section
- * paragraph
- * image
- * dlist (description list)
- * ulist
- * olist
- * list_item
- * literal
- * listing
- * admonition
- * sidebar
- * example
- * open
- * pass (a passthrough block)
- * table
- * thematic_break (horizontal rule)
- * page_break
+ * Valid context names include:
+ * <ul>
+ * <li>admonition - One of five admonition blocks.</li>
+ * <li>audio - An audio block</li>
+ * <li>colist - A callout list.</li>
+ * <li>dlist - A description list.</li>
+ * <li>document - The top-level document or the document in an AsciiDoc table cell.</li>
+ * <li>example - An example block.</li>
+ * <li>floating_title - A discrete heading</li>
+ * <li>image - An image block.</li>
+ * <li>list_item - An item in an ordered, unordered, or description list (only relevant inside a list or description list block). In a description list, this block is used to represent the term and the description.</li>
+ * <li>listing - A listing block.</li>
+ * <li>literal - A literal block.</li>
+ * <li>olist - An ordered list.</li>
+ * <li>open - An open block.</li>
+ * <li>page_break - A page break.</li>
+ * <li>paragraph - A paragraph.</li>
+ * <li>pass - A passthrough block.</li>
+ * <li>preamble - The preamble of the document.</li>
+ * <li>quote - A quote block (aka blockquote).</li>
+ * <li>section - A section. May also be a part, chapter, or special section.</li>
+ * <li>sidebar - A sidebar block.</li>
+ * <li>table - A table block.</li>
+ * <li>table_cell - A table cell (only relevant inside a table block).</li>
+ * <li>thematic_break - A thematic break (aka horizontal rule).</li>
+ * <li>toc - A TOC block (to designate custom TOC placement).</li>
+ * <li>ulist - An unordered list.</li>
+ * <li>verse - A verse block.</li>
+ * <li>video - A video block.</li>
+ * </ul>
+ * @see https://docs.asciidoctor.org/asciidoc/latest/blocks/#summary-of-built-in-contexts
  * @param {Object} [selector]
  * @param {function} [block]
  * @example
