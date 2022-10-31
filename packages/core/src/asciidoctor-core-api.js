@@ -680,6 +680,121 @@ AbstractBlock.prototype.convert = function () {
 }
 
 /**
+ * @namespace
+ * @extends BuiltInContext
+ */
+Opal.Asciidoctor.BuiltInContext = {
+  /**
+   * One of five admonition blocks.
+   */
+  Admonition: 'admonition',
+  /**
+   * An audio block.
+   */
+  Audio: 'audio',
+  /**
+   * A callout list.
+   */
+  CalloutList: 'colist',
+  /**
+   * A description list.
+   */
+  DescriptionList: 'dlist',
+  /**
+   * The top-level document or the document in an AsciiDoc table cell.
+   */
+  Document: 'document',
+  /**
+   * An example block.
+   */
+  Example: 'example',
+  /**
+   * A discrete heading.
+   */
+  FloatingTitle: 'floating_title',
+  /**
+   * An image block.
+   */
+  Image: 'image',
+  /**
+   * An item in an ordered, unordered, or description list (only relevant inside a list or description list block). In a description list, this block is used to represent the term and the description.
+   */
+  ListItem: 'list_item',
+  /**
+   * A listing block.
+   */
+  Listing: 'list_item',
+  /**
+   * A literal block.
+   */
+  Literal: 'list_item',
+  /**
+   * An ordered list.
+   */
+  OrderedList: 'olist',
+  /**
+   * An open block.
+   */
+  Open: 'open',
+  /**
+   * A page break.
+   */
+  PageBreak: 'page_break',
+  /**
+   * A paragraph.
+   */
+  Paragraph: 'paragraph',
+  /**
+   * A passthrough block.
+   */
+  Passthrough: 'pass',
+  /**
+   * The preamble of the document.
+   */
+  Preamble: 'preamble',
+  /**
+   * A quote block (aka blockquote).
+   */
+  Quote: 'quote',
+  /**
+   * A section. May also be a part, chapter, or special section.
+   */
+  Section: 'section',
+  /**
+   * A sidebar block.
+   */
+  Sidebar: 'sidebar',
+  /**
+   * A table block.
+   */
+  Table: 'table',
+  /**
+   * A table cell (only relevant inside a table block).
+   */
+  TableCell: 'table_cell',
+  /**
+   * A thematic break (aka horizontal rule).
+   */
+  ThematicBreak: 'thematic_break',
+  /**
+   * A TOC block.
+   */
+  TableOfContent: 'toc',
+  /**
+   * An unordered list.
+   */
+  UnorderedList: 'ulist',
+  /**
+   * An unordered list.
+   */
+  Verse: 'verse',
+  /**
+   * A video block.
+   */
+  Video: 'video'
+}
+
+/**
  * Query for all descendant block-level nodes in the document tree
  * that match the specified selector (context, style, id, and/or role).
  * If a function block is given, it's used as an additional filter.

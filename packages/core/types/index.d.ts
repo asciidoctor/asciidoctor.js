@@ -3796,6 +3796,8 @@ export class Asciidoctor {
    */
   getVersion(): string;
 
+  BuiltInContext: typeof Asciidoctor.BuiltInContext;
+
   Block: typeof Asciidoctor.Block;
 
   Section: typeof Asciidoctor.Section;
