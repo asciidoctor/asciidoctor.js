@@ -1184,6 +1184,7 @@ const outerParagraphs = docWithExample.findBy((candidate) => {
   } else if (ctx === 'paragraph') {
     return true;
   }
+  return false;
 });
 assert(outerParagraphs.length === 2);
 assert(outerParagraphs[0].getContext() === 'paragraph');
