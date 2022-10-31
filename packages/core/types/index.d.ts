@@ -2176,7 +2176,7 @@ export namespace Asciidoctor {
 
     /**
      * Get the location in the AsciiDoc source where this block begins.
-     * @returns the style for this blockfindBy
+     * @returns the style for this block
      */
     getSourceLocation(): Cursor;
 
