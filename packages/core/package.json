@@ -101,7 +101,7 @@
     "portfinder": "1.0.32",
     "pug": "3.0.2",
     "puppeteer": "19.4.1",
-    "rollup": "3.8.1",
+    "rollup": "3.9.0",
     "sinon": "14.0.2",
     "standard": "17.0.0",
     "tsd": "0.25.0",
