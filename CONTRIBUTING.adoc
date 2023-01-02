@@ -19,8 +19,11 @@ We also need documentation, automation, design, marketing, communication, advoca
 
 Here are just a few of the ways you can contribute to the project:
 
+* Join our thriving Asciidoctor community at https://asciidoctor.zulipchat.com/ where you can:
+** Share your feedback
+** Educate with your knowledge and techniques on a subject
+** Tell us about your great idea!
 * Reporting bugs (_The easiest way to get started!_)
-* Sharing ideas on http://discuss.asciidoctor.org
 * Suggesting new feature or improvements in the issue tracker
 * Speaking about the technology
 * Advocating for the technology
