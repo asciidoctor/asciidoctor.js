@@ -680,10 +680,156 @@ AbstractBlock.prototype.convert = function () {
 }
 
 /**
+ * @namespace
+ * @extends BuiltInContext
+ */
+Opal.Asciidoctor.BuiltInContext = {
+  /**
+   * One of five admonition blocks.
+   */
+  Admonition: 'admonition',
+  /**
+   * An audio block.
+   */
+  Audio: 'audio',
+  /**
+   * A callout list.
+   */
+  CalloutList: 'colist',
+  /**
+   * A description list.
+   */
+  DescriptionList: 'dlist',
+  /**
+   * The top-level document or the document in an AsciiDoc table cell.
+   */
+  Document: 'document',
+  /**
+   * An example block.
+   */
+  Example: 'example',
+  /**
+   * A discrete heading.
+   */
+  FloatingTitle: 'floating_title',
+  /**
+   * An image block.
+   */
+  Image: 'image',
+  /**
+   * An item in an ordered, unordered, or description list (only relevant inside a list or description list block). In a description list, this block is used to represent the term and the description.
+   */
+  ListItem: 'list_item',
+  /**
+   * A listing block.
+   */
+  Listing: 'list_item',
+  /**
+   * A literal block.
+   */
+  Literal: 'list_item',
+  /**
+   * An ordered list.
+   */
+  OrderedList: 'olist',
+  /**
+   * An open block.
+   */
+  Open: 'open',
+  /**
+   * A page break.
+   */
+  PageBreak: 'page_break',
+  /**
+   * A paragraph.
+   */
+  Paragraph: 'paragraph',
+  /**
+   * A passthrough block.
+   */
+  Passthrough: 'pass',
+  /**
+   * The preamble of the document.
+   */
+  Preamble: 'preamble',
+  /**
+   * A quote block (aka blockquote).
+   */
+  Quote: 'quote',
+  /**
+   * A section. May also be a part, chapter, or special section.
+   */
+  Section: 'section',
+  /**
+   * A sidebar block.
+   */
+  Sidebar: 'sidebar',
+  /**
+   * A table block.
+   */
+  Table: 'table',
+  /**
+   * A table cell (only relevant inside a table block).
+   */
+  TableCell: 'table_cell',
+  /**
+   * A thematic break (aka horizontal rule).
+   */
+  ThematicBreak: 'thematic_break',
+  /**
+   * A TOC block.
+   */
+  TableOfContent: 'toc',
+  /**
+   * An unordered list.
+   */
+  UnorderedList: 'ulist',
+  /**
+   * An unordered list.
+   */
+  Verse: 'verse',
+  /**
+   * A video block.
+   */
+  Video: 'video'
+}
+
+/**
  * Query for all descendant block-level nodes in the document tree
  * that match the specified selector (context, style, id, and/or role).
  * If a function block is given, it's used as an additional filter.
  * If no selector or function block is supplied, all block-level nodes in the tree are returned.
+ * Valid context names include:
+ * <ul>
+ * <li>admonition - One of five admonition blocks.</li>
+ * <li>audio - An audio block</li>
+ * <li>colist - A callout list.</li>
+ * <li>dlist - A description list.</li>
+ * <li>document - The top-level document or the document in an AsciiDoc table cell.</li>
+ * <li>example - An example block.</li>
+ * <li>floating_title - A discrete heading</li>
+ * <li>image - An image block.</li>
+ * <li>list_item - An item in an ordered, unordered, or description list (only relevant inside a list or description list block). In a description list, this block is used to represent the term and the description.</li>
+ * <li>listing - A listing block.</li>
+ * <li>literal - A literal block.</li>
+ * <li>olist - An ordered list.</li>
+ * <li>open - An open block.</li>
+ * <li>page_break - A page break.</li>
+ * <li>paragraph - A paragraph.</li>
+ * <li>pass - A passthrough block.</li>
+ * <li>preamble - The preamble of the document.</li>
+ * <li>quote - A quote block (aka blockquote).</li>
+ * <li>section - A section. May also be a part, chapter, or special section.</li>
+ * <li>sidebar - A sidebar block.</li>
+ * <li>table - A table block.</li>
+ * <li>table_cell - A table cell (only relevant inside a table block).</li>
+ * <li>thematic_break - A thematic break (aka horizontal rule).</li>
+ * <li>toc - A TOC block (to designate custom TOC placement).</li>
+ * <li>ulist - An unordered list.</li>
+ * <li>verse - A verse block.</li>
+ * <li>video - A video block.</li>
+ * </ul>
+ * @see https://docs.asciidoctor.org/asciidoc/latest/blocks/#summary-of-built-in-contexts
  * @param {Object} [selector]
  * @param {function} [block]
  * @example
