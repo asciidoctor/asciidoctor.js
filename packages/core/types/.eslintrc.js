@@ -2,11 +2,11 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: [
-    '@typescript-eslint',
+    '@typescript-eslint'
   ],
   extends: [
     'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended'
   ],
   overrides: [
     {
@@ -17,8 +17,8 @@ module.exports = {
         '@typescript-eslint/no-this-alias': [
           'error',
           {
-            'allowDestructuring': false,
-            'allowedNames': ['self']
+            allowDestructuring: false,
+            allowedNames: ['self']
           }
         ]
       }

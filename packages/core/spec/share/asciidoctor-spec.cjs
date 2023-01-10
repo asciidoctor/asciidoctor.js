@@ -2059,6 +2059,34 @@ America/New_York
         expect(html).to.include('<pre>Europe/London\nAmerica/New_York</pre>')
         expect(html).to.include('<style>pre.prism{background-color: lightgrey}</style>')
       })
+
+      it('should call super.format', () => {
+        class BuildHighlighter {
+          format (node, lang, opts) {
+            opts = Object.assign({}, opts, {
+              transform: (x, code) => {
+                code['$[]=']('class', `language-${lang || 'none'} hljs`)
+              }
+            })
+            return this.super.format(node, lang, opts)
+          }
+
+          handlesHighlighting () { return true }
+
+          highlight (node, source, lang, opts) {
+            return `<span>${source}</span><span>${lang}</span>`
+          }
+        }
+
+        asciidoctor.SyntaxHighlighter.register('build', BuildHighlighter)
+        const source = `[source,ruby]
+----
+puts 'Hello, World!'
+----`
+        const doc = asciidoctor.load(source, { attributes: { 'source-highlighter': 'build' } })
+        const html = doc.convert({ standalone: false })
+        expect(html).to.include('<pre class=" highlight"><code class="language-ruby hljs" data-lang="ruby"><span>puts \'Hello, World!\'</span><span>ruby</span></code></pre>')
+      })
     })
 
     describe('Table', function () {
