@@ -980,7 +980,7 @@ paragraph 3
         const doc = asciidoctor.load(`= Title
 
 == Section A`)
-        const sectionB = asciidoctor.Section.create(doc, 2, false, { attributes: { foo: 'bar' } })
+        const sectionB = asciidoctor.Section.create(doc, 2, true, { attributes: { foo: 'bar' } })
         sectionB.setTitle('Section B')
         doc.append(sectionB)
         const sections = doc.findBy({ context: 'section' })
@@ -989,10 +989,11 @@ paragraph 3
         expect(secondSection.getName()).to.equal('Section B')
         expect(secondSection.getTitle()).to.equal('Section B')
         expect(secondSection.getSectionName()).to.be.undefined()
-        expect(secondSection.isNumbered()).to.equal(false)
+        expect(secondSection.isNumbered()).to.equal(true)
         expect(secondSection.isSpecial()).to.equal(false)
         expect(secondSection.getCaption()).to.be.undefined()
         expect(secondSection.getAttribute('foo')).to.equal('bar')
+        expect(secondSection.getNumeral()).to.equal('1')
       })
 
       it('should set role', function () {
