@@ -5,7 +5,7 @@
   "main": "tests.js",
   "type": "commonjs",
   "keywords": [],
-  "author": "",
+  "author": "Guillaume Grossetie <ggrossetie@yuzutech.fr>",
   "license": "MIT",
   "private": true
 }

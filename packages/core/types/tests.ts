@@ -1,8 +1,24 @@
 // use module-alias to resolve @asciidoctor/core
 // see: https://github.com/microsoft/TypeScript/issues/10866
 import 'module-alias/register';
-import asciidoctor, { Asciidoctor } from '@asciidoctor/core';
-import { strict as assert } from 'assert';
+import asciidoctor, {
+  Document,
+  Attributes,
+  AbstractNode,
+  AbstractBlock,
+  Html5Converter,
+  AbstractConverter,
+  SyntaxHighlighterFormatOptions,
+  SyntaxHighlighterHighlightOptions,
+  Block,
+  TemplateConverter,
+  TemplateEngine,
+  Table,
+  RubyLoggerMessage,
+  ConverterConstructor,
+  Converter
+} from '@asciidoctor/core';
+import {strict as assert} from 'assert';
 import * as ospath from 'path';
 import fs from 'fs';
 import nunjucks from 'nunjucks';
@@ -63,7 +79,7 @@ const asciidoctorDocument = processor.load(input);
 
 // Document title
 const documentTitle = asciidoctorDocument.getDocumentTitle({partition: true});
-const documentTitlePartitioned = documentTitle as Asciidoctor.Document.Title;
+const documentTitlePartitioned = documentTitle as Document.Title;
 assert(documentTitlePartitioned.getMain() === 'Main Title');
 assert(documentTitlePartitioned.getSubtitle() === 'Subtitle');
 const documentTitleString = asciidoctorDocument.getDocumentTitle();
@@ -83,7 +99,7 @@ assert(firstAuthor.getMiddleName() === undefined);
 assert(firstAuthor.getInitials() === 'DW');
 
 const output = processor.convert(input, {to_file: `${__dirname}/output.html`, catalog_assets: true});
-const doc = output as Asciidoctor.Document;
+const doc = output as Document;
 assert(doc.hasSections());
 assert(!doc.getSourcemap());
 doc.setSourcemap(true);
@@ -151,14 +167,14 @@ assert(!emptyExtensionsRegistry.hasInlineMacros());
 assert(!emptyExtensionsRegistry.hasPostprocessors());
 assert(!emptyExtensionsRegistry.hasPreprocessors());
 assert(!emptyExtensionsRegistry.hasTreeProcessors());
-const fooRegistry = processor.Extensions.create('foo', function() {
-  this.includeProcessor(function() {
+const fooRegistry = processor.Extensions.create('foo', function () {
+  this.includeProcessor(function () {
     const self = this;
     self.process((doc, reader, target, attrs) => {
       reader.pushInclude(['included content'], target, target, 1, attrs);
     });
   });
-  this.treeProcessor(function() {
+  this.treeProcessor(function () {
     const self = this;
     self.process((document) => {
       document.setAttribute('firstname', 'Ghost');
@@ -166,20 +182,20 @@ const fooRegistry = processor.Extensions.create('foo', function() {
       return document;
     });
   });
-  this.postprocessor(function() {
+  this.postprocessor(function () {
     const self = this;
     self.process((document, output) => {
       return output.replace(/<(\w+).*?>/m, "<\\1>");
     });
   });
-  this.docinfoProcessor(function() {
+  this.docinfoProcessor(function () {
     const self = this;
     self.atLocation('head');
     self.process((_) => {
       return '<meta name="application-name" content="Asciidoctor App">';
     });
   });
-  this.preprocessor(function() {
+  this.preprocessor(function () {
     const self = this;
     self.process((document, reader) => {
       const lines = reader.getLines();
@@ -226,9 +242,9 @@ assert(inlineMacroProcessorInstance.getConfig().defaultPackageUrlFormat === 'htt
 assert(inlineMacroProcessorInstance.getName() === 'package');
 const anotherRegistry = processor.Extensions.create();
 anotherRegistry.inlineMacro(inlineMacroProcessorInstance);
-anotherRegistry.inlineMacro('pkg', function() {
+anotherRegistry.inlineMacro('pkg', function () {
   this.option('defaultPackageUrlFormat', 'https://apps.fedoraproject.org/packages/%s');
-  this.process(function(parent, target) {
+  this.process(function (parent, target) {
     const format = parent.getDocument().getAttribute('url-package-url-format', this.getConfig().defaultPackageUrlFormat);
     const url = format.replace('%s', target);
     const content = target;
@@ -256,7 +272,11 @@ const includeProcessor = processor.Extensions.createIncludeProcessor('StaticIncl
 const includeProcessorInstance = includeProcessor.$new('foo');
 anotherRegistry.includeProcessor(includeProcessorInstance);
 
-let html = processor.convert('Install package:asciidoctor[]', {extension_registry: anotherRegistry, header_footer: false, safe: 'safe'});
+let html = processor.convert('Install package:asciidoctor[]', {
+  extension_registry: anotherRegistry,
+  header_footer: false,
+  safe: 'safe'
+});
 assert(html === `<div class="paragraph">
 <p>Install <a href="https://apps.fedoraproject.org/packages/asciidoctor" target="_blank" rel="noopener">asciidoctor</a></p>
 </div>`);
@@ -267,16 +287,16 @@ const SelfSigningTreeProcessor = processor.Extensions.createTreeProcessor('SelfS
   }
 });
 try {
-  processor.Extensions.register(function() {
-    this.treeProcessor(function() {
-      this.process(function(doc) {
+  processor.Extensions.register(function () {
+    this.treeProcessor(function () {
+      this.process(function (doc) {
         doc.append(this.createBlock(doc, 'paragraph', 'd', {}));
       });
     });
-    this.treeProcessor(function() {
+    this.treeProcessor(function () {
       const self = this;
       self.prefer();
-      self.process(function(doc) {
+      self.process(function (doc) {
         doc.append(this.createBlock(doc, 'paragraph', 'c', {}));
       });
     });
@@ -303,27 +323,27 @@ try {
   processor.Extensions.unregisterAll();
 }
 
-const testRegistry = processor.Extensions.create('test', function() {
-  this.inlineMacro('attrs', function() {
+const testRegistry = processor.Extensions.create('test', function () {
+  this.inlineMacro('attrs', function () {
     const self = this;
     self.matchFormat('short');
     self.defaultAttributes({1: 'a', 2: 'b', foo: 'baz'});
     self.positionalAttributes('a', 'b');
-    self.process(function(parent, _, attrs) {
+    self.process(function (parent, _, attrs) {
       return this.createInline(parent, 'quoted', `a=${attrs['a']},2=${attrs[2]},b=${attrs['b'] || 'nil'},foo=${attrs['foo']}`);
     });
   });
-  this.blockMacro(function() {
+  this.blockMacro(function () {
     this.named('test');
-    this.process(function(parent) {
+    this.process(function (parent) {
       return this.createBlock(parent, 'paragraph', 'this was only a test');
     });
   });
-  this.block('yell', function() {
+  this.block('yell', function () {
     this.onContext('paragraph');
     this.positionalAttributes('chars');
     this.parseContentAs('simple');
-    this.process(function(parent, reader, attributes) {
+    this.process(function (parent, reader, attributes) {
       const chars = attributes['chars'];
       const lines = reader.getLines();
       if (chars) {
@@ -335,10 +355,10 @@ const testRegistry = processor.Extensions.create('test', function() {
       }
     });
   });
-  this.block('todo-list', function() {
+  this.block('todo-list', function () {
     this.onContext('paragraph');
     this.parseContentAs('simple');
-    this.process(function(parent, reader) {
+    this.process(function (parent, reader) {
       const list = this.createList(parent, 'ulist');
       const lines = reader.getLines();
       for (const line of lines) {
@@ -348,62 +368,62 @@ const testRegistry = processor.Extensions.create('test', function() {
       parent.append(list);
     });
   });
-  this.blockMacro(function() {
+  this.blockMacro(function () {
     this.named('img');
-    this.process(function(parent, target) {
+    this.process(function (parent, target) {
       return this.createImageBlock(parent, {target: target + '.png', title: 'title', caption: 'caption'});
     });
   });
-  this.blockMacro(function() {
+  this.blockMacro(function () {
     this.named('open');
-    this.process(function(parent, target) {
+    this.process(function (parent, target) {
       const block = this.createOpenBlock(parent);
       block.append(this.createParagraph(parent, target));
       return block;
     });
   });
-  this.blockMacro(function() {
+  this.blockMacro(function () {
     this.named('example');
-    this.process(function(parent, target) {
+    this.process(function (parent, target) {
       return this.createExampleBlock(parent, target);
     });
   });
-  this.blockMacro(function() {
+  this.blockMacro(function () {
     this.named('span');
-    this.process(function(parent, target) {
+    this.process(function (parent, target) {
       return this.createPassBlock(parent, `<span>${target}</span>`);
     });
   });
-  this.blockMacro(function() {
+  this.blockMacro(function () {
     this.named('listing');
-    this.process(function(parent, target) {
+    this.process(function (parent, target) {
       return this.createListingBlock(parent, `console.log('${target}')`);
     });
   });
-  this.blockMacro(function() {
+  this.blockMacro(function () {
     this.named('literal');
-    this.process(function(parent, target) {
+    this.process(function (parent, target) {
       return this.createLiteralBlock(parent, target);
     });
   });
-  this.inlineMacro(function() {
+  this.inlineMacro(function () {
     this.named('mention');
     this.resolveAttributes(false);
-    this.process(function(parent, target, attrs) {
+    this.process(function (parent, target, attrs) {
       const text = attrs.text ? attrs.text : target;
       return this.createAnchor(parent, text, {type: 'link', target: `https://github.com/${target}`});
     });
   });
-  this.inlineMacro(function() {
+  this.inlineMacro(function () {
     this.named('say');
-    this.process(function(parent, target) {
+    this.process(function (parent, target) {
       return this.createInlinePass(parent, `*${target}*`, {attributes: {subs: 'normal'}});
     });
   });
-  this.inlineMacro(function() {
+  this.inlineMacro(function () {
     this.named('@mention');
     this.match(/@(\w+)/);
-    this.process(function(parent, target) {
+    this.process(function (parent, target) {
       const mentionsUriPattern = parent.getDocument().getAttribute('mentions-uri-pattern') || 'https://github.com/%s';
       const mentionsUri = mentionsUriPattern.replace('%s', target);
       return this.createAnchor(parent, `@${target}`, {type: 'link', target: mentionsUri});
@@ -537,11 +557,11 @@ assert(html === `<div class="paragraph">
 </div>`);
 
 interface Transforms {
-  [key: string]: (node: Asciidoctor.AbstractNode) => string;
+  [key: string]: (node: AbstractNode) => string;
 }
 
-class BlogConverter implements Asciidoctor.AbstractConverter {
-  private readonly baseConverter: Asciidoctor.Html5Converter;
+class BlogConverter implements AbstractConverter {
+  private readonly baseConverter: Html5Converter;
   private readonly transforms: Transforms;
 
   constructor() {
@@ -565,17 +585,17 @@ class BlogConverter implements Asciidoctor.AbstractConverter {
         <time>${node.getDocument().getAttribute('revdate')}</time>
       </div>
     </div>
-    <h1 class="blog-title">${(node as Asciidoctor.Document).getDocumentTitle()}</h1>
+    <h1 class="blog-title">${(node as Document).getDocumentTitle()}</h1>
   </section>
   <section>
-    ${(node as Asciidoctor.AbstractBlock).getContent()}
+    ${(node as AbstractBlock).getContent()}
   </section>
 </body>`;
       }
     };
   }
 
-  convert(node: Asciidoctor.AbstractNode, transform: string | undefined, opts: any) {
+  convert(node: AbstractNode, transform: string | undefined, opts: any) {
     const template = this.transforms[transform || node.getNodeName()];
     if (template) {
       return template(node);
@@ -616,12 +636,12 @@ assert(callouts.getListIndex() === 2);
 assert(callouts.getCalloutIds(1) === '');
 assert(callouts.getCurrentList().length === 0);
 
-let parsedAttrs: Asciidoctor.Attributes = {};
+let parsedAttrs: Attributes = {};
 const registryAttrs = processor.Extensions.create();
-registryAttrs.block(function() {
+registryAttrs.block(function () {
   this.named('attrs');
   this.onContext('open');
-  this.process(function(parent, reader) {
+  this.process(function (parent, reader) {
     parsedAttrs = this.parseAttributes(parent, reader.readLine(), {positional_attributes: ['a', 'b']});
     Object.assign(parsedAttrs, this.parseAttributes(parent, 'foo={foo}', {sub_attributes: true}));
   });
@@ -638,10 +658,10 @@ assert(parsedAttrs && parsedAttrs['key'] === 'val');
 assert(parsedAttrs && parsedAttrs['foo'] === 'bar');
 
 const registryWrap = processor.Extensions.create();
-registryWrap.block(function() {
+registryWrap.block(function () {
   this.named('wrap');
   this.onContext('open');
-  this.process(function(parent, reader, attrs) {
+  this.process(function (parent, reader, attrs) {
     const wrap = this.createOpenBlock(parent, undefined, attrs);
     return this.parseContent(wrap, reader.readLines());
   });
@@ -710,7 +730,7 @@ class PrismClientHighlighter {
     this.backend = opts.document.getAttribute('backend');
   }
 
-  format(node: Asciidoctor.Block, lang: string, opts: Asciidoctor.SyntaxHighlighterFormatOptions) {
+  format(node: Block, lang: string, opts: SyntaxHighlighterFormatOptions) {
     if (lang) {
       return `<pre${lang ? ` lang="${lang}"` : ''} class="prism${opts.nowrap ? ' nowrap' : ' wrap'}"><code>${node.getContent()}</code></pre>`;
     }
@@ -755,7 +775,7 @@ class HtmlPipelineAdapter {
     this.defaultClass = 'prettyprint';
   }
 
-  format(node: Asciidoctor.Block, lang: string) {
+  format(node: Block, lang: string) {
     return `<pre${lang ? ` lang="${lang}"` : ''} class="${this.defaultClass}"><code>${node.getContent()}</code></pre>`;
   }
 }
@@ -775,14 +795,14 @@ class ServerSideSyntaxHighlighter {
     this.defaultClass = 'prettyprint';
   }
 
-  format(node: Asciidoctor.Block, lang: string) {
+  format(node: Block, lang: string) {
     if (lang) {
       return `<pre${lang ? ` lang="${lang}"` : ''} class="${this.defaultClass}"><code>${node.getContent()}</code></pre>`;
     }
     return `<pre>${node.getContent()}</pre>`;
   }
 
-  highlight(node: Asciidoctor.Block, source: string, lang: string, opts: Asciidoctor.SyntaxHighlighterHighlightOptions) {
+  highlight(node: Block, source: string, lang: string, opts: SyntaxHighlighterHighlightOptions) {
     if (opts.callouts) {
       const lines = source.split('\n');
       for (const idx in opts.callouts) {
@@ -850,7 +870,7 @@ assert(messages[0].getSeverity() === 'INFO');
 assert(messages[0].getText() === 'Input file: stdin');
 
 const registry = processor.Extensions.create();
-registry.block(function() {
+registry.block(function () {
   const self = this;
   self.named('plantuml');
   self.onContext(['listing']);
@@ -888,7 +908,7 @@ try {
 const defaultLog = console.log;
 try {
   const data: any[] = [];
-  console.log = function(...args) {
+  console.log = function (...args) {
     data.push({method: 'log', args});
     defaultLog.apply(console, args as any);
   };
@@ -903,15 +923,15 @@ try {
 const defaultFormatter = defaultLogger.getFormatter();
 const processStderrWriteFunction = process.stderr.write;
 let stderrOutput = '';
-process.stderr.write = function(chunk: string) {
+process.stderr.write = function (chunk: string) {
   stderrOutput += chunk;
   return true;
 };
 try {
   defaultLogger.setFormatter(processor.LoggerManager.newFormatter('JsonFormatter', {
     call(severity, time, programName, message) {
-      const text = (message as Asciidoctor.RubyLoggerMessage).text;
-      const sourceLocation = (message as Asciidoctor.RubyLoggerMessage).source_location;
+      const text = (message as RubyLoggerMessage).text;
+      const sourceLocation = (message as RubyLoggerMessage).source_location;
       return JSON.stringify({
         programName,
         message: text,
@@ -944,7 +964,7 @@ intro
 const nullLogger = processor.NullLogger.create();
 const stderrWriteFunction = process.stderr.write;
 stderrOutput = '';
-process.stderr.write = function(chunk: string) {
+process.stderr.write = function (chunk: string) {
   stderrOutput += chunk;
   return true;
 };
@@ -982,7 +1002,7 @@ assert(warnMessage.message === 'hi');
 assert(warnMessage.progname === 'asciidoctor.js');
 
 function isError(error: any): error is NodeJS.ErrnoException {
-    return error instanceof Error;
+  return error instanceof Error;
 }
 
 function truncateFile(path: string) {
@@ -1031,7 +1051,7 @@ intro
   }
 })();
 
-const options = { attributes: 'sectnums' };
+const options = {attributes: 'sectnums'};
 const docWithOptions = processor.load('== Test', options);
 assert(docWithOptions.getAttribute('sectnums') === '');
 assert(docWithOptions.isAttribute('sectnums'));
@@ -1191,13 +1211,13 @@ assert(outerParagraphs[1].getContext() === 'paragraph');
 let converterRegistry = processor.ConverterFactory.getRegistry();
 assert(typeof converterRegistry.html5 === 'function');
 
-class BlankConverter implements Asciidoctor.AbstractConverter {
+class BlankConverter implements AbstractConverter {
   convert() {
     return '';
   }
 }
 
-const BlankConstructor = BlankConverter as Asciidoctor.ConverterConstructor;
+const BlankConstructor = BlankConverter as ConverterConstructor;
 processor.ConverterFactory.register(BlankConstructor, ['blank']);
 converterRegistry = processor.ConverterFactory.getRegistry();
 assert(typeof converterRegistry.html5 === 'function');
@@ -1213,12 +1233,12 @@ assert(typeof converterRegistry.blank === 'object');
 assert(typeof processor.ConverterFactory.for('html5') === 'function');
 assert(typeof processor.ConverterFactory.for('blank') === 'object');
 assert(typeof processor.ConverterFactory.for('foo') === 'undefined');
-const html5Converter = (converterRegistry.html5 as typeof Asciidoctor.Html5Converter).create();
+const html5Converter = (converterRegistry.html5 as typeof Html5Converter).create();
 assert(html5Converter.convert(processor.Block.create(doc, 'paragraph')) === `<div class="paragraph">
 <p></p>
 </div>`);
 // tslint:disable-next-line:no-unnecessary-type-assertion
-assert((converterRegistry.blank as Asciidoctor.Converter).convert(processor.Block.create(doc, 'paragraph')) === '');
+assert((converterRegistry.blank as Converter).convert(processor.Block.create(doc, 'paragraph')) === '');
 
 // Inner document in AsciiDoc cell
 const docWithAsciiDocCell = processor.load(`
@@ -1233,7 +1253,7 @@ a|
 :foo: foo
 AsciiDoc cell
 |===`);
-const tableWithAsciiDocCell = docWithAsciiDocCell.findBy({context: 'table'})[0] as Asciidoctor.Table;
+const tableWithAsciiDocCell = docWithAsciiDocCell.findBy({context: 'table'})[0] as Table;
 const normalCell = tableWithAsciiDocCell.getBodyRows()[0][0];
 const asciidocCell = tableWithAsciiDocCell.getBodyRows()[1][0];
 assert(typeof normalCell.getInnerDocument() === 'undefined');
@@ -1241,7 +1261,7 @@ assert(asciidocCell.getInnerDocument()?.getAttributes().foo === 'foo');
 assert(typeof asciidocCell.getInnerDocument()?.getParentDocument()?.getAttributes().foo === 'undefined');
 assert(asciidocCell.getInnerDocument()?.getParentDocument()?.getDocumentTitle() === 'Table');
 
-class DotTemplateEngineAdapter implements Asciidoctor.TemplateEngine.Adapter {
+class DotTemplateEngineAdapter implements TemplateEngine.Adapter {
   private readonly doT: any;
 
   constructor() {
@@ -1257,12 +1277,21 @@ class DotTemplateEngineAdapter implements Asciidoctor.TemplateEngine.Adapter {
 }
 
 processor.TemplateEngine.register('dot', new DotTemplateEngineAdapter());
-const htmlUsingDotTemplate = processor.convert('content', {safe: 'safe', backend: 'html5', template_dir: 'spec/fixtures/templates/dot', template_engine: 'dot'});
+const htmlUsingDotTemplate = processor.convert('content', {
+  safe: 'safe',
+  backend: 'html5',
+  template_dir: 'spec/fixtures/templates/dot',
+  template_engine: 'dot'
+});
 assert(htmlUsingDotTemplate === '<p class="paragraph-dot">content</p>');
 
 // templates
 processor.TemplateConverter.clearCache(); // since the cache is global, we are using "clearCache" to make sure that other tests won't affect the result
-const docWithTemplateConverter = processor.load('content', {safe: 'safe', backend: '-', template_dir: 'spec/fixtures/templates/nunjucks'});
+const docWithTemplateConverter = processor.load('content', {
+  safe: 'safe',
+  backend: '-',
+  template_dir: 'spec/fixtures/templates/nunjucks'
+});
 const cache = processor.TemplateConverter.getCache();
 const templatesPattern = ospath.resolve(`${__dirname}/../spec/fixtures/templates/nunjucks/*`).replace(/\\/g, '/');
 assert(cache.scans && cache.scans[templatesPattern].paragraph.tmplStr.trim() === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>');
@@ -1270,7 +1299,7 @@ const templateFilePath = ospath.resolve(`${__dirname}/../spec/fixtures/templates
 assert(cache.templates && cache.templates[templateFilePath].tmplStr.trim() === '<p class="paragraph-nunjucks">{{ node.getContent() }}</p>');
 
 // handle a given node
-const templateConverter = docWithTemplateConverter.getConverter() as Asciidoctor.TemplateConverter;
+const templateConverter = docWithTemplateConverter.getConverter() as TemplateConverter;
 assert(templateConverter.handles('paragraph'));
 assert(!templateConverter.handles('admonition'));
 
@@ -1305,7 +1334,10 @@ const admonitionTemplate = nunjucks.compile(`<article class="message is-info">
 </article>`);
 templateConverter.register('admonition', admonitionTemplate);
 templates = templateConverter.getTemplates();
-const admonition = processor.Block.create(doc, 'admonition', {source: 'An admonition paragraph, like this note, grabs the reader’s attention.', attributes: {textlabel: 'Note'}});
+const admonition = processor.Block.create(doc, 'admonition', {
+  source: 'An admonition paragraph, like this note, grabs the reader’s attention.',
+  attributes: {textlabel: 'Note'}
+});
 assert(templates.admonition.render({node: admonition}) === `<article class="message is-info">
   <div class="message-header">
     <p>Note</p>
