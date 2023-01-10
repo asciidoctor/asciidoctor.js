@@ -446,6 +446,30 @@ Asciidoctor.prototype.loadFile = function (filename, options) {
 const AbstractBlock = Opal.Asciidoctor.AbstractBlock
 
 /**
+ *  Describes the type of content this block accepts and how it should be converted.
+ * @returns {string} - the type of content this block accepts.
+ * @memberof AbstractBlock
+ */
+AbstractBlock.prototype.getContentModel = function () {
+  const contentModel = this.content_model
+  return contentModel === Opal.nil ? undefined : contentModel
+}
+
+/**
+ *  Set the type of content this block accepts. Acceptable values are:
+ *  - compound - this block contains other blocks
+ *  - simple - this block holds a paragraph of prose that receives normal substitutions
+ *  - verbatim - this block holds verbatim text (displayed "as is") that receives verbatim substitutions
+ *  - raw - this block holds unprocessed content passed directly to the output with no substitutions applied
+ *  - empty - this block has no content
+ * @param {string} contentModel - type of content, one of: compound, simple, verbatim, raw or empty.
+ * @memberof AbstractBlock
+ */
+AbstractBlock.prototype.setContentModel = function (contentModel) {
+  this.content_model = contentModel
+}
+
+/**
  * Append a block to this block's list of child blocks.
  * @param {AbstractBlock} block - the block to append
  * @returns {AbstractBlock} - the parent block to which this block was appended.
@@ -457,7 +481,7 @@ AbstractBlock.prototype.append = function (block) {
 }
 
 /**
- * Get the String title of this Block with title substitions applied
+ * Get the String title of this Block with title substitutions applied
  *
  * The following substitutions are applied to block and section titles:
  *
@@ -664,7 +688,8 @@ AbstractBlock.prototype.getBlocks = function () {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getContent = function () {
-  return this.$content()
+  const content = this.$content()
+  return content === Opal.nil ? undefined : content
 }
 
 /**
