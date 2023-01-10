@@ -777,7 +777,8 @@ AbstractBlock.prototype.getSections = function () {
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getNumeral = function () {
-  return this.$numeral()
+  const numeral = this.$numeral()
+  return numeral === Opal.nil ? undefined : numeral
 }
 
 /**
@@ -1470,6 +1471,18 @@ AbstractNode.prototype.normalizeAssetPath = function (assetRef, assetName, autoC
  * @extends AbstractBlock
  */
 const Document = Opal.Asciidoctor.Document
+
+/**
+ * Append a content Block to this Document.
+ * If the child block is a Section, assign an index to it.
+ * @param {AbstractBlock} block - the child Block to append to this parent Block
+ * @returns {AbstractBlock} - the parent block to which this block was appended.
+ * @memberof Document
+ */
+Document.prototype.append = function (block) {
+  this['$<<'](block)
+  return this
+}
 
 /**
  * Returns the SyntaxHighlighter associated with this document.
