@@ -1,4 +1,4 @@
-# Asciidoctor core
+= Asciidoctor core
 
 This package provides Asciidoctor core functionality:
 
@@ -6,27 +6,27 @@ This package provides Asciidoctor core functionality:
 - built-in converters
 - extensions
 
-## Install
+== Install
 
-    $ npm i @asciidoctor/core --save
+ $ npm i @asciidoctor/core --save
 
-## Usage
+== Usage
 
 Here is a simple example that converts AsciiDoc to HTML5:
 
-**sample.js**
-
-```javascript
+.sample.js
+[source,javascript]
+----
 const asciidoctor = require('@asciidoctor/core')() // <1>
 const content = 'http://asciidoctor.org[*Asciidoctor*] ' +
   'running on https://opalrb.com[_Opal_] ' +
   'brings AsciiDoc to Node.js!'
 const html = asciidoctor.convert(content) // <2>
 console.log(html) // <3>
-```
-- <1> Instantiate the Asciidoctor.js library
-- <2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
-- <3> Print the HTML5 output to the console
+----
+<1> Instantiate the Asciidoctor.js library
+<2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
+<3> Print the HTML5 output to the console
 
 Save the file as _sample.js_ and run it using the `node` command:
 
@@ -34,14 +34,15 @@ Save the file as _sample.js_ and run it using the `node` command:
 
 You should see the following output in your terminal:
 
-```html
+[source,html]
+----
 <div class="paragraph">
 <p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.com"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
 </div>
-```
+----
 
-If you want to know more about Asciidoctor.js, please read the [User Manual](https://asciidoctor-docs.netlify.com/asciidoctor.js/).
+If you want to know more about Asciidoctor.js, please read the https://asciidoctor-docs.netlify.com/asciidoctor.js/[User Manual].
 
-## Changelog
+== Changelog
 
-Refer to the [CHANGELOG](https://github.com/asciidoctor/asciidoctor.js/blob/main/CHANGELOG.adoc) for a complete list of changes.
+Refer to the https://github.com/asciidoctor/asciidoctor.js/blob/main/CHANGELOG.adoc[CHANGELOG] for a complete list of changes.

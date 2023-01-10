@@ -15,9 +15,11 @@
     "dist",
     "types/index.d.ts",
     "LICENSE",
-    "README.adoc"
+    "README.md"
   ],
   "scripts": {
+    "postpublish": "downdoc --postpublish",
+    "prepublishOnly": "downdoc --prepublish",
     "test:graalvm": "node tasks/graalvm.cjs",
     "test:node": "mocha spec/*/*.spec.cjs && npm run test:node:esm",
     "test:node:esm": "mocha --experimental-json-modules spec/node/asciidoctor.spec.js",
@@ -89,8 +91,9 @@
     "dirty-chai": "2.0.1",
     "documentation": "^14.0.0",
     "dot": "1.1.3",
+    "downdoc": "^1.0.0-beta.8",
     "ejs": "3.1.8",
-    "eslint":"8.31.0",
+    "eslint": "8.31.0",
     "handlebars": "4.7.7",
     "http-server": "14.1.1",
     "mocha": "10.2.0",
