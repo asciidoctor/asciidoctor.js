@@ -1024,6 +1024,22 @@ paragraph 3
         expect(paragraph.getAttribute('foo')).to.equal('bar')
       })
 
+      it('should create a new paragraph block with verbatim content model', function () {
+        const doc = asciidoctor.load('= Title')
+        const paragraph = asciidoctor.Block.create(doc, 'paragraph', { source: '    _This_ is a <test>' })
+        paragraph.setContentModel('verbatim')
+        expect(paragraph.getContentModel()).to.equal('verbatim')
+        expect(paragraph.getContent()).to.equal('    _This_ is a <test>')
+      })
+
+      it('should create a new literal block with empty content model', function () {
+        const doc = asciidoctor.load('= Title')
+        const paragraph = asciidoctor.Block.create(doc, 'literal', { source: '_This_ is a <test>' })
+        paragraph.setContentModel('empty')
+        expect(paragraph.getContentModel()).to.equal('empty')
+        expect(paragraph.getContent()).to.be.undefined()
+      })
+
       it('should assign a caption on a Block', function () {
         const doc = asciidoctor.load('= Title')
         const image = asciidoctor.Block.create(doc, 'image', {

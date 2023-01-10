@@ -1983,15 +1983,35 @@ export class Document extends AbstractBlock {
   getExtensions(): Registry;
 }
 
-/**
- */
-export class AbstractBlock extends AbstractNode {
+type ContentModel = 'compound' | 'simple' | 'verbatim' | 'raw' | 'empty'
+
   /**
-   * Append a block to this block's list of child blocks.
-   * @param block - the block to append
-   * @returns the parent block to which this block was appended.
    */
-  append(block: AbstractBlock): AbstractBlock;
+ export class AbstractBlock extends AbstractNode {
+
+    /**
+     * Describes the type of content this block accepts and how it should be converted.
+     * @returns the type of content this block accepts.
+     */
+    getContentModel(): ContentModel
+
+    /**
+     *  Set the type of content this block accepts. Acceptable values are:
+     *  - compound - this block contains other blocks
+     *  - simple - this block holds a paragraph of prose that receives normal substitutions
+     *  - verbatim - this block holds verbatim text (displayed "as is") that receives verbatim substitutions
+     *  - raw - this block holds unprocessed content passed directly to the output with no substitutions applied
+     *  - empty - this block has no content
+     * @param contentModel - the type of content
+     */
+    setContentModel(contentModel: ContentModel): void;
+
+    /**
+     * Append a block to this block's list of child blocks.
+     * @param block - the block to append
+     * @returns the parent block to which this block was appended.
+     */
+    append(block: AbstractBlock): AbstractBlock;
 
   /**
    * Get the String title of this Block with title substitions applied
@@ -2118,7 +2138,7 @@ export class AbstractBlock extends AbstractNode {
    * Get the converted result of the child blocks by converting the children appropriate to content model that this block supports.
    * @returns the converted result of the child blocks
    */
-  getContent(): string;
+  getContent(): string|undefined;
 
   /**
    * Get the converted content for this block.

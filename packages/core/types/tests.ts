@@ -120,6 +120,16 @@ assert(attributes.count === 3);
 assert(attributes.awesome);
 assert(attributes.status === 'passive');
 
+const literalBlockWithEmptyContentModel = processor.Block.create(doc, 'literal', { source: '_This_ is a <test>' });
+literalBlockWithEmptyContentModel.setContentModel('empty')
+assert(literalBlockWithEmptyContentModel.getContentModel() === 'empty');
+assert(literalBlockWithEmptyContentModel.getContent() === undefined);
+
+const paragraphBlockWithVerbatimContentModel = processor.Block.create(doc, 'paragraph', { source: '_This_ is a <test>' });
+paragraphBlockWithVerbatimContentModel.setContentModel('verbatim')
+assert(paragraphBlockWithVerbatimContentModel.getContentModel() === 'verbatim');
+assert(paragraphBlockWithVerbatimContentModel.getContent() === '_This_ is a <test>');
+
 // Section
 const section = processor.Section.create();
 section.setId('sect1');
