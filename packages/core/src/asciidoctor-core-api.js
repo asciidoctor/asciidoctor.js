@@ -267,7 +267,8 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
     }
   }
   Opal.def(scope, '$initialize', initialize)
-  Opal.def(scope, 'super', function (func) {
+  let $superFunction
+  Opal.def(scope, 'super', ($superFunction = function (func) {
     if (typeof func === 'function') {
       Opal.send(this, Opal.find_super_dispatcher(this, func.name, func))
     } else {
@@ -281,7 +282,20 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
       }
       Opal.send(this, Opal.find_super_dispatcher(this, 'initialize', initialize), argumentsList)
     }
-  })
+  }))
+  for (const functionName in functions) {
+    $superFunction[functionName] = function () {
+      const argumentsList = Array.from(arguments)
+      for (let i = 0; i < argumentsList.length; i++) {
+        // convert all (Opal) Hash arguments to JSON.
+        if (typeof argumentsList[i] === 'object' && typeof argumentsList[i].constructor === 'function' && argumentsList[i].constructor.name === 'Object') {
+          argumentsList[i] = toHash(argumentsList[i])
+        }
+      }
+      const self = scope.$$prototype
+      return Opal.send(self, Opal.find_super_dispatcher(self, functionName, self[`$${functionName}`]), argumentsList)
+    }
+  }
   if (defaultFunctions) {
     for (const defaultFunctionName in defaultFunctions) {
       if (Object.prototype.hasOwnProperty.call(defaultFunctions, defaultFunctionName) && !Object.prototype.hasOwnProperty.call(defaultFunctionsOverridden, defaultFunctionName)) {
