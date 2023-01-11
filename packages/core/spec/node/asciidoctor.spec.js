@@ -8,7 +8,7 @@ import chai from 'chai'
 import dirtyChai from 'dirty-chai'
 import dot from 'dot'
 import nunjucks from 'nunjucks'
-import Opal from 'asciidoctor-opal-runtime' // for testing purpose only
+import Opal from '@asciidoctor/opal-runtime' // for testing purpose only
 import semVer from '../share/semver.cjs'
 import MockServer from '../share/mock-server.cjs'
 import shareSpec from '../share/asciidoctor-spec.cjs'

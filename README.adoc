@@ -36,11 +36,13 @@ Here is a simple example that converts AsciiDoc to HTML5:
 .sample.js
 [source,javascript]
 ----
-const asciidoctor = require('asciidoctor')() // <1>
+import asciidoctor from 'asciidoctor' // <1>
+
+const Asciidoctor = asciidoctor()
 const content = 'http://asciidoctor.org[*Asciidoctor*] ' +
   'running on https://opalrb.com[_Opal_] ' +
   'brings AsciiDoc to Node.js!'
-const html = asciidoctor.convert(content) // <2>
+const html = Asciidoctor.convert(content) // <2>
 console.log(html) // <3>
 ----
 <1> Instantiate the Asciidoctor.js library
@@ -82,7 +84,7 @@ If you want to write code, the {uri-contribute-code}[Contributing Code] guide wi
 
 == Copyright
 
-Copyright (C) 2020 Dan Allen, Guillaume Grossetie, Anthonny Quérouil and the Asciidoctor Project.
+Copyright (C) 2013-present Dan Allen, Guillaume Grossetie, Anthonny Quérouil and the Asciidoctor Project.
 Free use of this software is granted under the terms of the MIT License.
 
 See the {license}[LICENSE] file for details.

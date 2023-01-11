@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 import path from 'path'
 import fs from 'fs'
 
-import Opal from 'asciidoctor-opal-runtime'
+import Opal from '@asciidoctor/opal-runtime'
 import unxhr from 'unxhr'
 
 const __path__ = path
