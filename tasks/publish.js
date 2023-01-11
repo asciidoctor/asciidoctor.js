@@ -12,7 +12,12 @@ const publish = async (directory) => {
     } else {
       const manifest = await pacote.manifest(directory)
       const tarData = await pacote.tarball(directory)
-      return npmPublish(manifest, tarData, { token: process.env.NPM_AUTH_TOKEN, access: 'public' })
+      return npmPublish(manifest, tarData, {
+        access: 'public',
+        forceAuth: {
+          token: process.env.NPM_AUTH_TOKEN
+        }
+      })
     }
   }
 
