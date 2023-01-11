@@ -8,13 +8,56 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Breaking Changes::
+
+* Remove `Asciidoctor` namespace in TypeScript:
++
+[source,js]
+----
+import asciidoctor, { Document } from '@asciidoctor/core'
+----
+* Publish `@asciidoctor/core` as an ES6 module
+
 Bug Fixes::
 
 * Strip alternate BOM that uses char code 65279 when input passes through a Buffer (#1344)
+* Map `Document.append` (#1681)
+* Bridge converter pass as option (#1666)
+* Add `getSectionNumeral()` function by @benjaminleonard (#1659)
+* Fix `getDocinfo` and `findBy` type definition (#1621)
+* Bridge common Ruby object methods (#1491)
+* `parseContent` now calls `toHash` on attrs (#1519)
+
+Improvements::
+
+* Map `this.super.<method>` to call the parent function (#1682)
+* Map `AbstractBlock.getContentModel` and `AbstractBlock.setContentModel` (#1680)
+* Map `Document.getSyntaxHighlighter` (#1667)
+* Map `CompositeConverter#convert` (#1649)
+* Simplify table option checks by @mojavelinux (#1656)
+* Support Stream.Writable as `to_file` (#1624)
++
+[source,js]
+----
+const data = []
+const writableStream = new Writable({
+  write (chunk, encoding, callback) {
+    data.push(chunk.toString())
+    callback()
+  }
+})
+const doc = asciidoctor.convert(text, { to_file: writableStream, safe: safe })
+const html = data.join('')
+----
 
 Infrastructure::
 
 * Upgrade GraalVM to 20.1.0 (#1035)
+
+Documentation::
+
+* Improve contributing guide by @cunka (#1676)
+* Remove call to `convert()` on return value of process method for inline macro extension by @mojavelinux (#1653)
 
 == v2.2.0 (2020-04-25)
 
