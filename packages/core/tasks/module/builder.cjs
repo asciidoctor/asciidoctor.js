@@ -71,7 +71,7 @@ const generateCommonJSSpec = async () => {
       'dirty-chai',
       'dot',
       'nunjucks',
-      'asciidoctor-opal-runtime',
+      '@asciidoctor/opal-runtime',
       'unxhr',
       '../share/mock-server.cjs',
       '../../build/asciidoctor-node.cjs'
@@ -112,7 +112,7 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
 
   const packageJson = require('../../package.json')
   const templateModel = {
-    '//{{opalCode}}': fs.readFileSync('node_modules/asciidoctor-opal-runtime/src/opal.js', 'utf8'),
+    '//{{opalCode}}': fs.readFileSync('node_modules/@asciidoctor/opal-runtime/src/opal.js', 'utf8'),
     '//{{asciidoctorAPI}}': fs.readFileSync(apiBundle, 'utf8'),
     '//{{asciidoctorVersion}}': `var ASCIIDOCTOR_JS_VERSION = '${packageJson.version}';`
   }
@@ -165,7 +165,7 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
             'url',
             'path',
             'fs',
-            'asciidoctor-opal-runtime',
+            '@asciidoctor/opal-runtime',
             'unxhr'
           ]
         })
