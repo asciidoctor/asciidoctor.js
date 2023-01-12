@@ -1,23 +1,37 @@
 'use strict'
 const path = require('path')
 const fs = require('fs')
+const fsp = require('node:fs/promises')
 const log = require('bestikk-log')
+const semver = require('semver')
 const pacote = require('pacote') // see: http://npm.im/pacote
 const { publish: npmPublish } = require('libnpmpublish')
+const downdoc = require('downdoc')
 
 const publish = async (directory) => {
+    const pkg = require(path.join(directory, 'package.json'))
     if (process.env.DRY_RUN) {
-      const pkg = require(path.join(directory, 'package.json'))
       console.log(`${pkg.name}@${pkg.version}`)
     } else {
+      const inputReadme = path.join(directory, 'README.adoc')
+      const hiddenReadme = path.join(directory, '.README.adoc')
+      const outputReadme = path.join(directory, 'README.md')
+      await fsp
+        .readFile(inputReadme, 'utf8')
+        .then((asciidoc) => fsp.writeFile(outputReadme, downdoc(asciidoc) + '\n', 'utf8'))
+      await fsp.rename(inputReadme, hiddenReadme)
       const manifest = await pacote.manifest(directory)
       const tarData = await pacote.tarball(directory)
-      return npmPublish(manifest, tarData, {
+      const tag = semver.prerelease(pkg.version) ? 'testing' : 'latest'
+      await npmPublish(manifest, tarData, {
         access: 'public',
+        defaultTag: tag,
         forceAuth: {
           token: process.env.NPM_AUTH_TOKEN
         }
       })
+      await fsp.rename(hiddenReadme, inputReadme)
+      await fsp.unlink(outputReadme)
     }
   }
 

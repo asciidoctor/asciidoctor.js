@@ -1,0 +1,62 @@
+= Asciidoctor.js: AsciiDoc in JavaScript powered by Asciidoctor
+
+Asciidoctor.js brings AsciiDoc to the JavaScript world!
+
+This project uses https://opalrb.com/[Opal] to transpile http://asciidoctor.org[Asciidoctor], a modern implementation of AsciiDoc, from Ruby to JavaScript to produce _asciidoctor.js_.
+The _asciidoctor.js_ script can be run on any JavaScript platform, including Node.js, GraalVM and, of course, a web browser.
+
+== Install
+
+ $ npm i asciidoctor --save
+
+== Usage
+
+Here is a simple example that converts AsciiDoc to HTML5:
+
+.sample.js
+[source,javascript]
+----
+import asciidoctor from 'asciidoctor'
+
+const Asciidoctor = asciidoctor() // <1>
+const content = 'http://asciidoctor.org[*Asciidoctor*] ' +
+  'running on https://opalrb.com[_Opal_] ' +
+  'brings AsciiDoc to Node.js!'
+const html = Asciidoctor.convert(content) // <2>
+console.log(html) // <3>
+----
+<1> Instantiate the Asciidoctor.js library
+<2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
+<3> Print the HTML5 output to the console
+
+Save the file as _sample.js_ and run it using the `node` command:
+
+ $ node sample.js
+
+You should see the following output in your terminal:
+
+[source,html]
+----
+<div class="paragraph">
+<p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.com"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
+</div>
+----
+
+If you want to know more about Asciidoctor.js, please read the https://docs.asciidoctor.org/asciidoctor.js/latest/[User Manual].
+
+== Contributing
+
+In the spirit of https://www.gnu.org/philosophy/free-sw.html[free software], _everyone_ is encouraged to help improve this project.
+If you discover errors or omissions in the source code, documentation, or website content, please don't hesitate to submit an issue or open a pull request with a fix.
+New contributors are always welcome!
+
+The https://github.com/asciidoctor/asciidoctor.js/blob/main/CONTRIBUTING.adoc[Contributing] guide provides information on how to contribute.
+
+If you want to write code, the https://github.com/asciidoctor/asciidoctor.js/blob/main/CONTRIBUTING-CODE.adoc[Contributing Code] guide will help you to get started quickly.
+
+== Copyright
+
+Copyright (C) 2013-present Dan Allen, Guillaume Grossetie, Anthonny Quérouil and the Asciidoctor Project.
+Free use of this software is granted under the terms of the MIT License.
+
+See the https://github.com/asciidoctor/asciidoctor.js/blob/main/LICENSE[LICENSE] file for details.
