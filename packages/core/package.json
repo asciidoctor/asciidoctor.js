@@ -2,7 +2,12 @@
   "name": "@asciidoctor/core",
   "version": "3.0.0-alpha.4",
   "description": "Asciidoctor - the core library",
-  "main": "dist/node/asciidoctor.js",
+  "exports": {
+    ".": {
+     "require": "./dist/node/asciidoctor.cjs",
+     "import": "./dist/node/asciidoctor.js"
+    }
+  },
   "browser": "dist/browser/asciidoctor.js",
   "module": "dist/browser/asciidoctor.js",
   "type": "module",
