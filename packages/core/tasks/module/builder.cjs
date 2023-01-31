@@ -246,5 +246,6 @@ module.exports = class Builder {
     for (const environment of this.environments) {
       bfs.copySync(`build/asciidoctor-${environment}.js`, `dist/${environment}/asciidoctor.js`)
     }
+    bfs.copySync('build/asciidoctor-node.cjs', 'dist/node/asciidoctor.cjs')
   }
 }
