@@ -49,6 +49,6 @@
     "@asciidoctor/core": "3.0.0-alpha.4"
   },
   "devDependencies": {
-    "pkg": "5.8.0"
+    "pkg": "5.8.1"
   }
 }
