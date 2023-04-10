@@ -75,7 +75,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "@asciidoctor/opal-runtime": "2.2.0",
+    "@asciidoctor/opal-runtime": "3.0.0",
     "unxhr": "1.2.0"
   },
   "devDependencies": {
@@ -103,7 +103,7 @@
     "mock-http-server": "1.4.5",
     "module-alias": "2.2.2",
     "nunjucks": "3.2.3",
-    "opal-compiler": "2.3.0",
+    "opal-compiler": "3.0.0",
     "portfinder": "1.0.32",
     "pug": "3.0.2",
     "puppeteer": "19.8.2",
