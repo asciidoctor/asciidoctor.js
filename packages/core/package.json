@@ -9,7 +9,7 @@
   "exports": {
     "node": {
       "import": "./dist/node/asciidoctor.js",
-      "require": "./src/node/asciidoctor.cjs"
+      "require": "./dist/node/asciidoctor.cjs"
     },
     "default": "./dist/browser/asciidoctor.js"
   },
