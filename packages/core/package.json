@@ -1,6 +1,6 @@
 {
   "name": "@asciidoctor/core",
-  "version": "3.0.0-rc.2",
+  "version": "3.0.0-rc.1",
   "description": "Asciidoctor - the core library",
   "type": "module",
   "main": "dist/node/asciidoctor.js",
