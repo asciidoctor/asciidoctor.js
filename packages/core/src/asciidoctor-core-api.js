@@ -587,7 +587,7 @@ AbstractBlock.prototype.setStyle = function (style) {
 /**
  * Get the location in the AsciiDoc source where this block begins.
  *
- * @returns {string} - the style for this block
+ * @returns {Cursor} - the location in the AsciiDoc source where this block begins
  * @memberof AbstractBlock
  */
 AbstractBlock.prototype.getSourceLocation = function () {
