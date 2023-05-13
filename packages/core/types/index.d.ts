@@ -2079,7 +2079,7 @@ type ContentModel = 'compound' | 'simple' | 'verbatim' | 'raw' | 'empty'
 
   /**
    * Get the location in the AsciiDoc source where this block begins.
-   * @returns the style for this block
+   * @returns the location in the AsciiDoc source where this block begins
    */
   getSourceLocation(): Cursor;
 
