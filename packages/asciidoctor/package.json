@@ -45,8 +45,12 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "@asciidoctor/cli": "3.5.0",
-    "@asciidoctor/core": "3.0.0"
+    "@asciidoctor/cli": "4.0.0",
+    "@asciidoctor/core": "3.0.0",
+    "ejs": "^3.1.2",
+    "handlebars": "^4.7.6",
+    "nunjucks": "^3.2.1",
+    "pug": "^2.0.4"
   },
   "devDependencies": {
     "pkg": "5.8.1"
