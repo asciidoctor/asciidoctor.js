@@ -57,6 +57,9 @@ jobs:
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: ./scripts/publish.sh
+      - name: Make sure that @asciidoctor/core has been published on npmjs
+        run: |
+          timeout 60s ./scripts/wait-asciidoctor-core-published.sh
       - name: Produce binaries
         run: ./scripts/binaries.sh
       # create the GitHub release
