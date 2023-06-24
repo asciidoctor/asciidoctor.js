@@ -24,7 +24,7 @@ jobs:
           npm ci --prefix packages/core
       - name: Lint, build and test
         env:
-          ASCIIDOCTOR_CORE_VERSION: v2.0.18
+          ASCIIDOCTOR_CORE_VERSION: v2.0.20
         run: |
           npm run lint
           npm run test
@@ -51,7 +51,7 @@ jobs:
       # package and publish
       - name: Package
         env:
-          ASCIIDOCTOR_CORE_VERSION: v2.0.18
+          ASCIIDOCTOR_CORE_VERSION: v2.0.20
         run: ./scripts/package.sh
       - name: Publish
         env:
