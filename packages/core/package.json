@@ -8,12 +8,19 @@
   "module": "dist/browser/asciidoctor.js",
   "exports": {
     "node": {
-      "import": "./dist/node/asciidoctor.js",
-      "require": "./dist/node/asciidoctor.cjs"
+      "import": {
+        "default": "./dist/node/asciidoctor.js",
+        "types": "./types/index.d.ts"
+      },
+      "require": {
+        "default": "./dist/node/asciidoctor.cjs",
+        "types": "./types/index.d.ts"
+      }
     },
-    "default": "./dist/browser/asciidoctor.js"
+    "default": "./dist/browser/asciidoctor.js",
+    "types": "./types/index.d.ts"
   },
-  "types": "types",
+  "types": "types/index.d.ts",
   "engines": {
     "node": ">=16",
     "npm": ">=8"
