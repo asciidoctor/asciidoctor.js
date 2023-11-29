@@ -1,9 +1,10 @@
 /// <reference types="node" />
 // TypeScript Version: 3.7
-import Author = Document.Author;
-import Title = Document.Title;
-import Registry = Extensions.Registry;
-import Cursor = Reader.Cursor;
+type Author = Document.Author;
+type Title = Document.Title;
+type TitleOptions = Document.Title.Options;
+type Registry = Extensions.Registry;
+type Cursor = Reader.Cursor;
 
 declare class OpalKlass<T> {
   $new(...params: any[]): T;
@@ -1707,12 +1708,12 @@ export class Document extends AbstractBlock {
    * @returns the resolved title as a {@link Document/Title} if the partition option is passed
    * or a {string} if not or undefined if no value can be resolved.
    */
-  getDocumentTitle(options?: Title.Options): string | Title | undefined;
+  getDocumentTitle(options?: TitleOptions): string | Title | undefined;
 
   /**
    * @see {@link Document#getDocumentTitle}
    */
-  getDoctitle(options: Title.Options): string | Title;
+  getDoctitle(options: TitleOptions): string | Title;
 
   /**
    * Get the document catalog JSON object.
