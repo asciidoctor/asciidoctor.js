@@ -2,6 +2,7 @@
 /node_modules/
 /dist/
 npm-debug.log
+/types/index.d.cts
 
 # generated using rollup
 /spec/node/asciidoctor.spec.cjs

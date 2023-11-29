@@ -14,7 +14,7 @@
       },
       "require": {
         "default": "./dist/node/asciidoctor.cjs",
-        "types": "./types/index.d.ts"
+        "types": "./types/index.d.cts"
       }
     },
     "default": "./dist/browser/asciidoctor.js",
@@ -115,7 +115,8 @@
     "portfinder": "1.0.32",
     "pug": "3.0.2",
     "puppeteer": "19.11.1",
-    "rollup": "3.26.0",
+    "rollup": "~3.29",
+    "rollup-plugin-dts": "^6.1.0",
     "sinon": "15.2.0",
     "standard": "17.1.0",
     "tsd": "0.28.1",

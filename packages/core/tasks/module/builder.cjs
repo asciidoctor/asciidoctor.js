@@ -1,7 +1,7 @@
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
+const fs = require('node:fs')
+const path = require('node:path')
 const log = require('bestikk-log')
 const bfs = require('bestikk-fs')
 const Download = require('bestikk-download')
@@ -9,6 +9,7 @@ const download = new Download({})
 const { rollup } = require('rollup')
 const rollupPluginJson = require('@rollup/plugin-json')
 const rollupPluginCommonJS = require('@rollup/plugin-commonjs')
+const rollupPluginDts = require('rollup-plugin-dts')
 
 const compilerModule = require('./compiler.cjs')
 const uglifyModule = require('./uglify.cjs')
@@ -53,6 +54,17 @@ const parseTemplateData = (data, templateModel) => {
       }
     })
     .join('\n')
+}
+
+const generateCommonJSTypes = async () => {
+  const bundle = await rollup({
+    input: 'types/index.d.ts',
+    plugins: [rollupPluginDts.dts()]
+  })
+  await bundle.write({
+    file: 'types/index.d.cts',
+    format: 'cjs'
+  })
 }
 
 const generateCommonJSSpec = async () => {
@@ -231,6 +243,7 @@ module.exports = class Builder {
     await rebuild(asciidoctorCoreDependency, this.environments)
     await generateFlavors(this.asciidoctorCoreTarget, this.environments)
     await generateCommonJSSpec()
+    await generateCommonJSTypes()
     await uglifyModule.uglify()
     if (process.env.COPY_DIST) {
       this.copyToDist()
