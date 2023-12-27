@@ -2716,6 +2716,10 @@ export class AbstractNode implements Logging {
    *
    * @returns An Array of Strings representing the substitution operation or nothing if no subs are found.
    */
+
+  node_name: string;
+  context: string
+
   resolveSubstitutions(subs: string, type?: string, defaults?: string[], subject?: string): string[] | undefined;
 
   /**

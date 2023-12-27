@@ -6,3 +6,6 @@ npm-debug.log
 
 # generated using rollup
 /spec/node/asciidoctor.spec.cjs
+
+# IntelliJ project files
+/.idea/
