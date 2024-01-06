@@ -825,6 +825,22 @@ image::https://asciidoctor.org/images/octocat.jpg[GitHub mascot]`
       expect(blocksWithLineNumber.length >= 18).to.be.true()
     })
 
+    it('should be able to convert the context of a block', () => {
+      const doc = asciidoctor.loadFile(resolveFixture('documentblocks.adoc'))
+      const blocks = doc.findBy({ context: 'ulist' })
+      expect(blocks.length).to.equal(2)
+      blocks[0].context = 'colist'
+      expect(blocks[0].getContext()).to.equal('colist')
+    })
+
+    it('should be able to set the name of a node', () => {
+      const doc = asciidoctor.loadFile(resolveFixture('documentblocks.adoc'))
+      const blocks = doc.findBy({ context: 'ulist' })
+      expect(blocks.length).to.equal(2)
+      blocks[0].node_name = 'colist'
+      expect(blocks[0].getNodeName()).to.equal('colist')
+    })
+
     if (asciidoctorCoreSemVer.gte('200')) {
       // REMIND: Before Asciidoctor 2.0.0 date was not UTC
       it('should get document date (and honor SOURCE_DATE_EPOCH)', () => {

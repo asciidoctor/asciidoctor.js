@@ -108,6 +108,19 @@ assert(doc.getSourcemap());
 // Block
 const block = processor.Block.create(doc, 'paragraph');
 assert(block.getContext() === 'paragraph');
+
+// Try to alter the block context
+block.context = 'ulist';
+assert(block.getContext() === 'ulist');
+block.context = 'paragraph';
+assert(block.getContext() === 'paragraph');
+
+// Try to alter the name of the node
+block.node_name = 'ulist'
+assert(block.getNodeName() === 'ulist')
+block.node_name = 'paragraph'
+assert(block.getNodeName() === 'paragraph')
+
 assert(block.applySubstitutions('<html> -- the root of all web') === '&lt;html&gt;&#8201;&#8212;&#8201;the root of all web');
 assert(Object.keys(block.getAttributes()).length === 0);
 block.setAttribute('awesome', true);
