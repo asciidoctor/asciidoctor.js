@@ -6,7 +6,7 @@
 This document provides a high-level view of the changes introduced in Asciidoctor.js by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/main[commit history] on GitHub.
 
-== Unreleased
+== v3.0.2 (2023-06-24)
 
 Breaking Changes::
 
@@ -15,6 +15,9 @@ Breaking Changes::
 [source,js]
 ----
 import asciidoctor, { Document } from '@asciidoctor/core'
+
+const Asciidoctor = asciidoctor()
+Asciidoctor.convert('Hello _world_')
 ----
 * Publish `@asciidoctor/core` as an ES6 module
 
