@@ -6,6 +6,17 @@
 This document provides a high-level view of the changes introduced in Asciidoctor.js by release.
 For a detailed view of what has changed, refer to the {uri-repo}/commits/main[commit history] on GitHub.
 
+== Unreleased
+
+Bug Fixes::
+
+* Fix types exports in `package.json` - thanks @sinedied
+* Addd `context` and `node_name` accessor in the type definition - thanks @RayOffiah
+
+Infrastructure::
+
+* Update development dependencies
+
 == v3.0.2 (2023-06-24)
 
 Breaking Changes::
