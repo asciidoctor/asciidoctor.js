@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v3.0.3 (2024-01-13)
+
 Bug Fixes::
 
 * Fix types exports in `package.json` - thanks @sinedied
