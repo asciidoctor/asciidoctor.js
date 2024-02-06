@@ -9,16 +9,16 @@
   "exports": {
     "node": {
       "import": {
-        "default": "./dist/node/asciidoctor.js",
-        "types": "./types/index.d.ts"
+        "types": "./types/index.d.ts",
+        "default": "./dist/node/asciidoctor.js"
       },
       "require": {
-        "default": "./dist/node/asciidoctor.cjs",
-        "types": "./types/index.d.cts"
+        "types": "./types/index.d.cts",
+        "default": "./dist/node/asciidoctor.cjs"
       }
     },
-    "default": "./dist/browser/asciidoctor.js",
-    "types": "./types/index.d.ts"
+    "types": "./types/index.d.ts",
+    "default": "./dist/browser/asciidoctor.js"
   },
   "types": "types/index.d.ts",
   "engines": {
