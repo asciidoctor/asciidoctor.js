@@ -8,6 +8,14 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Bug Fixes::
+
+* Default condition should be last one in conditional exports otherwise the following error is thrown: "Module not found: Error: Default condition should be last one" (#1722) - thanks @roseckyj & @korva
+
+Infrastructure::
+
+* Update development dependencies
+
 == v3.0.3 (2024-01-13)
 
 Bug Fixes::
