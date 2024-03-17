@@ -207,160 +207,164 @@ assert(fooExtensionsRegistry.hasPreprocessors());
 assert(fooExtensionsRegistry.hasTreeProcessors());
 const docinfoProcessors = fooExtensionsRegistry.getDocinfoProcessors('head');
 assert(docinfoProcessors.length === 1);
-const testRegistry = processor.Extensions.create('test', function() {
-  this.inlineMacro('attrs', function() {
-    const self = this;
-    self.matchFormat('short');
-    self.defaultAttributes({1: 'a', 2: 'b', foo: 'baz'});
-    self.positionalAttributes('a', 'b');
-    self.process(function(parent, _, attrs) {
-      return this.createInline(parent, 'quoted', `a=${attrs['a']},2=${attrs[2]},b=${attrs['b'] || 'nil'},foo=${attrs['foo']}`);
-    });
-  });
-  this.blockMacro(function() {
-    this.named('test');
-    this.process(function(parent) {
-      return this.createBlock(parent, 'paragraph', 'this was only a test');
-    });
-  });
-  this.block('yell', function() {
-    this.onContext('paragraph');
-    this.positionalAttributes('chars');
-    this.parseContentAs('simple');
-    this.process(function(parent, reader, attributes) {
-      const chars = attributes['chars'];
-      const lines = reader.getLines();
-      if (chars) {
-        const regexp = new RegExp(`[${chars}]`, 'g');
-        return this.createParagraph(parent, lines.map((l) => l.toLowerCase().replace(regexp, (m) => m.toUpperCase())), attributes);
-      } else {
-        const source = lines.map((l) => l.toUpperCase());
-        return this.createParagraph(parent, source, attributes);
-      }
-    });
-  });
-  this.block('todo-list', function() {
-    this.onContext('paragraph');
-    this.parseContentAs('simple');
-    this.process(function(parent, reader) {
-      const list = this.createList(parent, 'ulist');
-      const lines = reader.getLines();
-      for (const line of lines) {
-        list.append(this.createListItem(list, line));
-      }
-      list.append(this.createListItem(list));
-      parent.append(list);
-    });
-  });
-  this.blockMacro(function() {
-    this.named('img');
-    this.process(function(parent, target) {
-      return this.createImageBlock(parent, {target: target + '.png', title: 'title', caption: 'caption'});
-    });
-  });
-  this.blockMacro(function() {
-    this.named('open');
-    this.process(function(parent, target) {
-      const block = this.createOpenBlock(parent);
-      block.append(this.createParagraph(parent, target));
-      return block;
-    });
-  });
-  this.blockMacro(function() {
-    this.named('example');
-    this.process(function(parent, target) {
-      return this.createExampleBlock(parent, target);
-    });
-  });
-  this.blockMacro(function() {
-    this.named('span');
-    this.process(function(parent, target) {
-      return this.createPassBlock(parent, `<span>${target}</span>`);
-    });
-  });
-  this.blockMacro(function() {
-    this.named('listing');
-    this.process(function(parent, target) {
-      return this.createListingBlock(parent, `console.log('${target}')`);
-    });
-  });
-  this.blockMacro(function() {
-    this.named('literal');
-    this.process(function(parent, target) {
-      return this.createLiteralBlock(parent, target);
-    });
-  });
-  this.inlineMacro(function() {
-    this.named('mention');
-    this.resolveAttributes(false);
-    this.process(function(parent, target, attrs) {
-      const text = attrs.text ? attrs.text : target;
-      return this.createAnchor(parent, text, {type: 'link', target: `https://github.com/${target}`});
-    });
-  });
-  this.inlineMacro(function() {
-    this.named('say');
-    this.process(function(parent, target) {
-      return this.createInlinePass(parent, `*${target}*`, {attributes: {subs: 'normal'}});
-    });
-  });
-  this.inlineMacro(function() {
-    this.named('@mention');
-    this.match(/@(\w+)/);
-    this.process(function(parent, target) {
-      const mentionsUriPattern = parent.getDocument().getAttribute('mentions-uri-pattern') || 'https://github.com/%s';
-      const mentionsUri = mentionsUriPattern.replace('%s', target);
-      return this.createAnchor(parent, `@${target}`, {type: 'link', target: mentionsUri});
-    });
-  });
-});
 
-const PackageInlineMacro = processor.Extensions.createInlineMacroProcessor('PackageInlineMacro', {
-  initialize(name, config) {
-    this.DEFAULT_PACKAGE_URL_FORMAT = config.defaultPackageUrlFormat || 'https://packages.ubuntu.com/bionic/%s';
-    this.super(name, config);
-  },
-  process(parent, target) {
-    const format = parent.getDocument().getAttribute('url-package-url-format', this.DEFAULT_PACKAGE_URL_FORMAT);
-    const url = format.replace('%s', target);
-    const content = target;
-    const attributes = {window: '_blank'};
-    return this.createInline(parent, 'anchor', content, {type: 'link', target: url, attributes});
-  }
-});
-const inlineMacroProcessorInstance = PackageInlineMacro.$new('package', {defaultPackageUrlFormat: 'https://apps.fedoraproject.org/packages/%s'});
-assert(inlineMacroProcessorInstance.getConfig().defaultPackageUrlFormat === 'https://apps.fedoraproject.org/packages/%s');
-assert(inlineMacroProcessorInstance.getName() === 'package');
-testRegistry.inlineMacro(inlineMacroProcessorInstance);
-testRegistry.inlineMacro('pkg', function() {
-  this.option('defaultPackageUrlFormat', 'https://apps.fedoraproject.org/packages/%s');
-  this.process(function(parent, target) {
-    const format = parent.getDocument().getAttribute('url-package-url-format', this.getConfig().defaultPackageUrlFormat);
-    const url = format.replace('%s', target);
-    const content = target;
-    const attributes = {window: '_blank'};
-    return this.createInline(parent, 'anchor', content, {type: 'link', target: url, attributes});
+function createTestRegistry(): Asciidoctor.Extensions.Registry {
+  const testRegistry = processor.Extensions.create('test', function () {
+    this.inlineMacro('attrs', function () {
+      const self = this;
+      self.matchFormat('short');
+      self.defaultAttributes({1: 'a', 2: 'b', foo: 'baz'});
+      self.positionalAttributes('a', 'b');
+      self.process(function (parent, _, attrs) {
+        return this.createInline(parent, 'quoted', `a=${attrs['a']},2=${attrs[2]},b=${attrs['b'] || 'nil'},foo=${attrs['foo']}`);
+      });
+    });
+    this.blockMacro(function () {
+      this.named('test');
+      this.process(function (parent) {
+        return this.createBlock(parent, 'paragraph', 'this was only a test');
+      });
+    });
+    this.block('yell', function () {
+      this.onContext('paragraph');
+      this.positionalAttributes('chars');
+      this.parseContentAs('simple');
+      this.process(function (parent, reader, attributes) {
+        const chars = attributes['chars'];
+        const lines = reader.getLines();
+        if (chars) {
+          const regexp = new RegExp(`[${chars}]`, 'g');
+          return this.createParagraph(parent, lines.map((l) => l.toLowerCase().replace(regexp, (m) => m.toUpperCase())), attributes);
+        } else {
+          const source = lines.map((l) => l.toUpperCase());
+          return this.createParagraph(parent, source, attributes);
+        }
+      });
+    });
+    this.block('todo-list', function () {
+      this.onContext('paragraph');
+      this.parseContentAs('simple');
+      this.process(function (parent, reader) {
+        const list = this.createList(parent, 'ulist');
+        const lines = reader.getLines();
+        for (const line of lines) {
+          list.append(this.createListItem(list, line));
+        }
+        list.append(this.createListItem(list));
+        parent.append(list);
+      });
+    });
+    this.blockMacro(function () {
+      this.named('img');
+      this.process(function (parent, target) {
+        return this.createImageBlock(parent, {target: target + '.png', title: 'title', caption: 'caption'});
+      });
+    });
+    this.blockMacro(function () {
+      this.named('open');
+      this.process(function (parent, target) {
+        const block = this.createOpenBlock(parent);
+        block.append(this.createParagraph(parent, target));
+        return block;
+      });
+    });
+    this.blockMacro(function () {
+      this.named('example');
+      this.process(function (parent, target) {
+        return this.createExampleBlock(parent, target);
+      });
+    });
+    this.blockMacro(function () {
+      this.named('span');
+      this.process(function (parent, target) {
+        return this.createPassBlock(parent, `<span>${target}</span>`);
+      });
+    });
+    this.blockMacro(function () {
+      this.named('listing');
+      this.process(function (parent, target) {
+        return this.createListingBlock(parent, `console.log('${target}')`);
+      });
+    });
+    this.blockMacro(function () {
+      this.named('literal');
+      this.process(function (parent, target) {
+        return this.createLiteralBlock(parent, target);
+      });
+    });
+    this.inlineMacro(function () {
+      this.named('mention');
+      this.resolveAttributes(false);
+      this.process(function (parent, target, attrs) {
+        const text = attrs.text ? attrs.text : target;
+        return this.createAnchor(parent, text, {type: 'link', target: `https://github.com/${target}`});
+      });
+    });
+    this.inlineMacro(function () {
+      this.named('say');
+      this.process(function (parent, target) {
+        return this.createInlinePass(parent, `*${target}*`, {attributes: {subs: 'normal'}});
+      });
+    });
+    this.inlineMacro(function () {
+      this.named('@mention');
+      this.match(/@(\w+)/);
+      this.process(function (parent, target) {
+        const mentionsUriPattern = parent.getDocument().getAttribute('mentions-uri-pattern') || 'https://github.com/%s';
+        const mentionsUri = mentionsUriPattern.replace('%s', target);
+        return this.createAnchor(parent, `@${target}`, {type: 'link', target: mentionsUri});
+      });
+    });
   });
-});
-testRegistry.includeProcessor(processor.Extensions.newIncludeProcessor('StaticIncludeProcessor', {
-  process(doc, reader, target, attrs) {
-    reader.pushInclude(['included content'], target, target, 1, attrs);
-  }
-}));
-const includeProcessor = processor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
-  initialize(value) {
-    this.value = value;
-    this.super();
-  },
-  postConstruct() {
-    this.bar = 'bar';
-  },
-  process(doc, reader, target, attrs) {
-    reader.pushInclude([this.value + this.bar], target, target, 1, attrs);
-  }
-});
-const includeProcessorInstance = includeProcessor.$new('foo');
-testRegistry.includeProcessor(includeProcessorInstance);
+
+  const PackageInlineMacro = processor.Extensions.createInlineMacroProcessor('PackageInlineMacro', {
+    initialize(name, config) {
+      this.DEFAULT_PACKAGE_URL_FORMAT = config.defaultPackageUrlFormat || 'https://packages.ubuntu.com/bionic/%s';
+      this.super(name, config);
+    },
+    process(parent, target) {
+      const format = parent.getDocument().getAttribute('url-package-url-format', this.DEFAULT_PACKAGE_URL_FORMAT);
+      const url = format.replace('%s', target);
+      const content = target;
+      const attributes = {window: '_blank'};
+      return this.createInline(parent, 'anchor', content, {type: 'link', target: url, attributes});
+    }
+  });
+  const inlineMacroProcessorInstance = PackageInlineMacro.$new('package', {defaultPackageUrlFormat: 'https://apps.fedoraproject.org/packages/%s'});
+  assert(inlineMacroProcessorInstance.getConfig().defaultPackageUrlFormat === 'https://apps.fedoraproject.org/packages/%s');
+  assert(inlineMacroProcessorInstance.getName() === 'package');
+  testRegistry.inlineMacro(inlineMacroProcessorInstance);
+  testRegistry.inlineMacro('pkg', function () {
+    this.option('defaultPackageUrlFormat', 'https://apps.fedoraproject.org/packages/%s');
+    this.process(function (parent, target) {
+      const format = parent.getDocument().getAttribute('url-package-url-format', this.getConfig().defaultPackageUrlFormat);
+      const url = format.replace('%s', target);
+      const content = target;
+      const attributes = {window: '_blank'};
+      return this.createInline(parent, 'anchor', content, {type: 'link', target: url, attributes});
+    });
+  });
+  testRegistry.includeProcessor(processor.Extensions.newIncludeProcessor('StaticIncludeProcessor', {
+    process(doc, reader, target, attrs) {
+      reader.pushInclude(['included content'], target, target, 1, attrs);
+    }
+  }));
+  const includeProcessor = processor.Extensions.createIncludeProcessor('StaticIncludeProcessor', {
+    initialize(value) {
+      this.value = value;
+      this.super();
+    },
+    postConstruct() {
+      this.bar = 'bar';
+    },
+    process(doc, reader, target, attrs) {
+      reader.pushInclude([this.value + this.bar], target, target, 1, attrs);
+    }
+  });
+  const includeProcessorInstance = includeProcessor.$new('foo');
+  testRegistry.includeProcessor(includeProcessorInstance);
+  return testRegistry;
+}
 
 const SelfSigningTreeProcessor = processor.Extensions.createTreeProcessor('SelfSigningTreeProcessor', {
   process(document) {
@@ -404,21 +408,32 @@ try {
   processor.Extensions.unregisterAll();
 }
 
+const testRegistry = createTestRegistry();
 const groups = testRegistry.getGroups();
 assert(Object.keys(groups)[0] === 'test');
-const opts = {extension_registry: testRegistry, header_footer: false, safe: 'safe'};
-
-let html = processor.convert('test::[]', opts);
+let html = processor.convert('test::[]', {
+  extension_registry: testRegistry,
+  standalone: false,
+  safe: 'safe'
+});
 assert(html === `<div class="paragraph">
 <p>this was only a test</p>
 </div>`);
 
-html = processor.convert('attrs:[A,foo=bar]', opts);
+html = processor.convert('attrs:[A,foo=bar]', {
+  extension_registry: createTestRegistry(),
+  standalone: false,
+  safe: 'safe'
+});
 assert(html === `<div class="paragraph">
 <p>a=A,2=b,b=nil,foo=bar</p>
 </div>`);
 
-html = processor.convert('Install package:asciidoctor[]', opts);
+html = processor.convert('Install package:asciidoctor[]', {
+  extension_registry: createTestRegistry(),
+  standalone: false,
+  safe: 'safe'
+});
 assert(html === `<div class="paragraph">
 <p>Install <a href="https://apps.fedoraproject.org/packages/asciidoctor" target="_blank" rel="noopener">asciidoctor</a></p>
 </div>`);
@@ -428,7 +443,11 @@ Hi there!
 
 [yell,chars=aeiou]
 Hi there!
-`, opts);
+`, {
+  extension_registry: createTestRegistry(),
+  standalone: false,
+  safe: 'safe'
+});
 assert(html === `<div class="paragraph">
 <p>HI THERE!</p>
 </div>
@@ -440,7 +459,11 @@ html = processor.convert(`
 [todo-list]
 redesign website
 do some nerdy stuff
-`, opts);
+`, {
+  extension_registry: createTestRegistry(),
+  standalone: false,
+  safe: 'safe'
+});
 assert(html === `<div class="ulist">
 <ul>
 <li>
@@ -455,12 +478,20 @@ assert(html === `<div class="ulist">
 </ul>
 </div>`);
 
-html = processor.convert('@mojavelinux', opts);
+html = processor.convert('@mojavelinux', {
+  extension_registry: createTestRegistry(),
+  standalone: false,
+  safe: 'safe'
+});
 assert(html === `<div class="paragraph">
 <p><a href="https://github.com/mojavelinux">@mojavelinux</a></p>
 </div>`);
 
-const docWithImage = processor.load('img::image-name[]', opts);
+const docWithImage = processor.load('img::image-name[]', {
+  extension_registry: createTestRegistry(),
+  standalone: false,
+  safe: 'safe'
+});
 let images = docWithImage.findBy((b) => b.getContext() === 'image');
 assert(images.length === 1);
 assert(images[0].getTitle() === 'title');
@@ -469,7 +500,11 @@ images = docWithImage.findBy({context: 'image'});
 assert(images.length === 1);
 assert(images[0].getTitle() === 'title');
 assert(images[0].getCaption() === 'caption');
-html = docWithImage.convert(opts);
+html = docWithImage.convert({
+  extension_registry: createTestRegistry(),
+  standalone: false,
+  safe: 'safe'
+});
 assert(html === `<div class="imageblock">
 <div class="content">
 <img src="image-name.png" alt="image name">
@@ -501,7 +536,7 @@ assert(result[0].getContext() === 'paragraph');
 assert(result[1].getContext() === 'paragraph');
 
 testRegistry.unregister('test');
-html = processor.convert('test::[]', {header_footer: false});
+html = processor.convert('test::[]', {standalone: false, extension_registry: testRegistry});
 assert(html === `<div class="paragraph">
 <p>test::[]</p>
 </div>`);
@@ -561,7 +596,7 @@ Guillaume Grossetie <ggrossetie@yuzutech.fr>
 == Write in AsciiDoc!
 
 AsciiDoc is about being able to focus on expressing your ideas, writing with ease and passing on knowledge without the distraction of complex applications or angle brackets.
-In other words, it’s about discovering writing zen.`, {safe: 'safe', header_footer: true, backend: 'blog'}) as string;
+In other words, it’s about discovering writing zen.`, {safe: 'safe', standalone: true, backend: 'blog'}) as string;
 assert(blogResult.includes('<span class="blog-author">Guillaume Grossetie</span>')); // custom blog converter
 assert(blogResult.includes('<div class="sect1">')); // built-in HTML5 converter
 
