@@ -8,6 +8,30 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 == Unreleased
 
+Improvements::
+* Build against the latest release of Asciidoctor 2.0.22
+
+== 2.2.6 (2022-01-21)
+
+Bug Fixes::
+* Fix global variable leak by @mojavelinux in #1494 (backport)
+* Bridge common Ruby object methods by @ggrossetie in #1550
+
+Improvements::
+* Build against the latest release of Asciidoctor 2.0.17
+
+Infrastructure::
+* Build against Asciidoctor 2.0.17 by @ggrossetie in #1540
+* Upgrade development dependencies by @ggrossetie in #1549
+* Retrieve upstream from main branch by @mojavelinux in #1495
+
+Documentation::
+* Fix 404 links to the GraalVM docs by @StarfallProjects in #1413
+* Rename "JSDoc" to "API Reference" and add link to extension API reference by @hqurve in #1447
+* Update HTML5Converter instantiation method in docs by @danyill in #1437
+
+== 2.2.5 (2021-08-08)
+
 Bug Fixes::
 
 * Invoke `LoggerManager#setLogger` setter - thanks @mojavelinux (#1322)
