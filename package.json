@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "bestikk-log": "0.1.0",
-    "chai": "4.4.1",
+    "chai": "5.1.0",
     "dirty-chai": "2.0.1",
     "downdoc": "^1.0.0-beta.9",
     "eslint": "^8.10.0",
