@@ -23,15 +23,23 @@ See below for a link to the right one and instructions on how to use it.
 
 == Basic browser setup
 
-Include Asciidoctor.js in a `<script>` tag.
-You can instantiate the processor using the `Asciidoctor` global variable.
+Import Asciidoctor.js in a `<script type="module">` tag.
+You can instantiate the processor using the `Asciidoctor()`.
 
 ```html
-<script src="node_modules/@asciidoctor/core/dist/browser/asciidoctor.js"></script>
+<script type="module">
+  import Asciidoctor from './node_modules/@asciidoctor/core/dist/browser/asciidoctor.js'
+  const asciidoctor = Asciidoctor()
+</script>
 ```
-```js
-var asciidoctor = Asciidoctor()
-```
+
+[NOTE]
+====
+You need to pay attention to local testing — if you try to load the HTML file locally (i.e. with a file:// URL), you'll run into CORS errors due to JavaScript module security requirements.
+You need to do your testing through a server. 
+
+Learn more about https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules[JavaScript modules].
+====
 
 == Node
 
