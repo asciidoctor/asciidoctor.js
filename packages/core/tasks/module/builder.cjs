@@ -72,6 +72,7 @@ const generateCommonJSSpec = async () => {
   const bundle = await rollup({
     input: 'spec/node/asciidoctor.spec.js',
     external: [
+      'crypto',
       'child_process',
       'module',
       'url',
@@ -154,6 +155,7 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
       templateFile = 'src/template-asciidoctor-browser.js'
     }
     templateModel['//{{asciidoctorCode}}'] = asciidoctorData
+    templateModel['//{{openUriCachedCode}}'] = fs.readFileSync('build/open-uri-cached.js', 'utf8')
     const content = parseTemplateFile(templateFile, templateModel)
       // remove the default export on Opal in the bundle because Asciidoctor is already the default export!
       // otherwise, the following exception is thrown: "Uncaught SyntaxError: Duplicate export of 'default'"
@@ -173,6 +175,7 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
         const bundle = await rollup({
           input: target,
           external: [
+            'crypto',
             'module',
             'url',
             'path',
