@@ -9,6 +9,13 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 == Unreleased
 
 Improvements::
+
+* Build against the latest release of Asciidoctor 2.0.23
+
+== 2.2.7 (2024-03-17)
+
+Improvements::
+
 * Build against the latest release of Asciidoctor 2.0.22
 
 == 2.2.6 (2022-01-21)
