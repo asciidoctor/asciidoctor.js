@@ -9,7 +9,7 @@ const publish = async (directory) => {
     if (process.env.DRY_RUN) {
       console.log(`${pkg.name}@${pkg.version}`)
     } else {
-      return npmPublish(directory, pkg, { token: process.env.NPM_AUTH_TOKEN, access: 'public' })
+      return npmPublish(directory, pkg, { token: process.env.NPM_AUTH_TOKEN, access: 'public', defaultTag: 'latest-2' })
     }
   }
 
