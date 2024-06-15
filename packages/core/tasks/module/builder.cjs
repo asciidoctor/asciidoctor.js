@@ -135,7 +135,7 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
     const opalExtData = fs.readFileSync(`build/opal-ext-${environment}.js`, 'utf8')
     const asciidoctorCoreData = fs.readFileSync(asciidoctorCoreTarget, 'utf8')
     let data
-    if (['node', 'browser'].includes(environment)) {
+    if (['node', 'browser', 'quickjs'].includes(environment)) {
       const asciidoctorExtData = fs.readFileSync(`build/asciidoctor-ext-${environment}.js`, 'utf8')
       data = opalExtData.concat('\n').concat(asciidoctorExtData).concat('\n').concat(asciidoctorCoreData)
     } else {
@@ -150,6 +150,8 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
     const target = `build/asciidoctor-${environment}.js`
     if (environment === 'node') {
       templateFile = 'src/template-asciidoctor-node.js'
+    } else if (environment === 'quickjs') {
+      templateFile = 'src/template-asciidoctor-quickjs.js'
     } else {
       templateFile = 'src/template-asciidoctor-browser.js'
     }
@@ -216,7 +218,7 @@ module.exports = class Builder {
     this.benchmarkBuildDir = path.join('build', 'benchmark')
     this.examplesBuildDir = path.join('build', 'examples')
     this.asciidocRepoBaseURI = 'https://raw.githubusercontent.com/asciidoc/asciidoc/d43faae38c4a8bf366dcba545971da99f2b2d625'
-    this.environments = ['node', 'graalvm', 'browser']
+    this.environments = ['node', 'graalvm', 'browser', 'quickjs']
     this.asciidoctorCoreTarget = path.join('build', 'asciidoctor-core.js')
   }
 

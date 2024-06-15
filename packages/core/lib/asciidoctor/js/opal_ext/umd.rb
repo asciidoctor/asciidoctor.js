@@ -2,6 +2,7 @@
   var isNode = typeof process === 'object' && typeof process.versions === 'object' && process.browser != true,
       isElectron = typeof navigator === 'object' && typeof navigator.userAgent === 'string' && typeof navigator.userAgent.indexOf('Electron') !== -1,
       isBrowser = typeof window === 'object',
+      isQuickjs = typeof std === 'object',
       isGraalVM = typeof Polyglot === 'object' && Polyglot.import,
       isPhantomJS = typeof window === 'object' && typeof window.phantom === 'object',
       isWebWorker = typeof importScripts === 'function',
@@ -36,6 +37,10 @@
       platform = platform || 'standalone';
       framework = framework || 'spidermonkey';
     }
+    else if (isQuickjs) {
+      platform = platform || 'browser';
+      framework = framework || 'quickjs';
+    }
     else if (isBrowser) {
       platform = platform || 'browser';
       if (isPhantomJS) {
@@ -65,15 +70,18 @@
     if (ioModule !== 'spidermonkey'
          && ioModule !== 'phantomjs'
          && ioModule !== 'node'
+         && ioModule !== 'quickjs'
          && ioModule !== 'graalvm'
          && ioModule !== 'xmlhttprequest') {
-      throw new Error('Invalid IO module, `config.ioModule` must be one of: spidermonkey, phantomjs, node, graalvm or xmlhttprequest');
+      throw new Error('Invalid IO module, `config.ioModule` must be one of: spidermonkey, quickjs, phantomjs, node, graalvm or xmlhttprequest');
     }
   } else {
     if (framework === 'spidermonkey') {
       ioModule = 'spidermonkey';
     } else if (framework === 'phantomjs') {
       ioModule = 'phantomjs';
+    } else if (framework === 'quickjs') {
+      ioModule = 'quickjs';
     } else if (platform === 'node') {
       ioModule = 'node';
     } else if (engine === 'graalvm') {
@@ -106,6 +114,9 @@ if JAVASCRIPT_IO_MODULE == 'phantomjs'
 end
 if JAVASCRIPT_IO_MODULE == 'spidermonkey'
   require 'asciidoctor/js/opal_ext/spidermonkey/file'
+end
+if JAVASCRIPT_IO_MODULE == 'quickjs'
+  require 'asciidoctor/js/opal_ext/quickjs/file'
 end
 if JAVASCRIPT_IO_MODULE == 'xmlhttprequest'
   require 'asciidoctor/js/opal_ext/browser/file'
