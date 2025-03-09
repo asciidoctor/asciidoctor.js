@@ -18,6 +18,7 @@
 :uri-ext-mathjax-gl: https://gitlab.com/djencks/asciidoctor-mathjax.js
 :uri-ext-openblock-gl: https://gitlab.com/djencks/asciidoctor-openblock
 :uri-ext-template-gl: https://gitlab.com/djencks/asciidoctor-template
+:uri-ext-highlight-gh: https://github.com/jirutka/asciidoctor-highlight.js
 
 Here's a list of extensions provided by the awesome community:
 
@@ -40,6 +41,10 @@ Convert diagrams to images using {uri-kroki}[Kroki]. +
 Emoji::
 Inline macro to render `emoji:heart[]` as an `<img>` that points to a remote SVG using {uri-twemoji}[Twemoji from Twitter]. +
 {uri-ext-emoji-gh}
+
+Highlight.js::
+Highlighting source listing blocks using https://highlightjs.org[highlight.js] during document conversion (instead of in browser as the built-in highlight.js support). +
+{uri-ext-highlight-gh}
 
 Interactive runner::
 Transform AsciiDoc code listings into interactive playgrounds which run in the browser.
