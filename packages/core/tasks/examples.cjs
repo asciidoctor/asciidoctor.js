@@ -15,7 +15,7 @@ const compileExamples = () => {
 
   const opalBuilder = OpalBuilder.create()
   opalBuilder.appendPaths('build/asciidoctor/lib')
-  opalBuilder.appendPaths('node_modules/opal-compiler/src/stdlib')
+  opalBuilder.appendPaths('../../node_modules/opal-compiler/src/stdlib')
   opalBuilder.appendPaths('lib')
 
   fs.writeFileSync(path.join(builder.examplesBuildDir, 'userguide_test.js'), opalBuilder.build('examples/userguide_test.rb').toString(), 'utf8')
