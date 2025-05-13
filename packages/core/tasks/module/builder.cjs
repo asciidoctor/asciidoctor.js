@@ -124,7 +124,7 @@ const generateFlavors = async (asciidoctorCoreTarget, environments) => {
 
   const packageJson = require('../../package.json')
   const templateModel = {
-    '//{{opalCode}}': fs.readFileSync('node_modules/@asciidoctor/opal-runtime/src/opal.js', 'utf8'),
+    '//{{opalCode}}': fs.readFileSync('../../node_modules/@asciidoctor/opal-runtime/src/opal.js', 'utf8'),
     '//{{asciidoctorAPI}}': fs.readFileSync(apiBundle, 'utf8'),
     '//{{asciidoctorVersion}}': `var ASCIIDOCTOR_JS_VERSION = '${packageJson.version}';`
   }
