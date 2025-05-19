@@ -1,4 +1,5 @@
 {
+  "name": "@asciidoctor/root",
   "private": true,
   "engines": {
     "node": ">=16",
