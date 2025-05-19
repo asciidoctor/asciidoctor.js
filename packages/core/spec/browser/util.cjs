@@ -62,19 +62,19 @@ module.exports.configure = (mockServer) => {
     mimetype: 'text/plain'
   }))
   files.push(rootRelativeFile({
-    path: '../../node_modules/mocha/mocha.js',
+    path: '../../../../node_modules/mocha/mocha.js',
     mimetype: 'application/javascript'
   }))
   files.push(rootRelativeFile({
-    path: '../../node_modules/mocha/mocha.css',
+    path: '../../../../node_modules/mocha/mocha.css',
     mimetype: 'text/plain'
   }))
   files.push(rootRelativeFile({
-    path: '../../node_modules/chai/chai.js',
+    path: '../../../../node_modules/chai/chai.js',
     mimetype: 'application/javascript'
   }))
   files.push(rootRelativeFile({
-    path: '../../node_modules/dirty-chai/lib/dirty-chai.js',
+    path: '../../../../node_modules/dirty-chai/lib/dirty-chai.js',
     mimetype: 'application/javascript'
   }))
   files.push(rootRelativeFile({

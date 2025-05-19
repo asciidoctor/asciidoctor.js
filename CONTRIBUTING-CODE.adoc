@@ -38,7 +38,6 @@ Start by cloning the source from GitHub:
 Next, run npm's `install` command:
 
  $ npm i
- $ npm i --prefix packages/core
 
 You're now ready to build Asciidoctor.js.
 
@@ -52,10 +51,10 @@ This section describes how to build Asciidoctor.js from source, execute the test
 
 To build Asciidoctor.js, simply run the npm `build` script from the root of the project:
 
- $ npm run build --prefix packages/core
+ $ npm run build -w packages/core
 
 WARNING: The build system does not automate updating the dependency on ruby asciidoctor.
-If there is any chance the asciidoctor.js copy of the asciidoctor ruby code is out of date, run `npm clean --prefix packages/core`.
+If there is any chance the asciidoctor.js copy of the asciidoctor ruby code is out of date, run `npm clean -w packages/core`.
 
 NOTE: The build task will make some minor code changes on Asciidoctor Ruby code.
 As you may know, {uri-mdn-string}[strings are immutable] in JavaScript, so we need to replace the `gsub!` and `sub!` methods.
@@ -78,7 +77,7 @@ If you want to build against a release of Asciidoctor, you will need to define t
 
 For instance to build against Asciidoctor (Ruby) v2.0.10 use:
 
- $ ASCIIDOCTOR_CORE_VERSION=v2.0.10 npm run build --prefix packages/core
+ $ ASCIIDOCTOR_CORE_VERSION=v2.0.10 npm run build -w packages/core
 
 ==== Building against a local copy of Ruby Asciidoctor
 
@@ -110,18 +109,18 @@ mkdir packages/core/build/asciidoctor
 tar -xf $ASCIIDOCTOR_RB/pkg/asciidoctor-*.gem -C packages/core/build --include data.tar.gz
 tar -xzf packages/core/build/data.tar.gz -C packages/core/build/asciidoctor
 ----
-* For all of these, `touch packages/core/build/asciidoctor.tar.gz` will prevent `npm build --prefix packages/core` from overwriting your copy with a downloaded one.
+* For all of these, `touch packages/core/build/asciidoctor.tar.gz` will prevent `npm build -w packages/core` from overwriting your copy with a downloaded one.
 * To actually use your local source you'll need to force recompile by:
 +
 ----
-npm run clean:core --prefix packages/core
+npm run clean:core -w packages/core
 ----
 
 ==== Using "quick" mode
 
 By default the build will run the whole tests suite but if you want to quickly iterate on your code, we recommend to use the task `build:quick`:
 
- $ npm run build:quick --prefix packages/core
+ $ npm run build:quick -w packages/core
 
 This task will run only the tests against a Node.js environment.
 
@@ -129,7 +128,7 @@ This task will run only the tests against a Node.js environment.
 
 To build the examples, simply run the npm `examples` task from the root of the project:
 
- $ npm run examples --prefix packages/core
+ $ npm run examples -w packages/core
 
 This command produces 3 examples in the [path]_packages/core/build/examples_ directory:
 
@@ -142,7 +141,7 @@ The Ruby script `userguide_test.rb` includes:
 * `asciidoctor_example.html` demonstrates how to convert a file using the include directive and insert the result in the HTML page
 
 In order to visualize the result, a local http server must be started within the root of this project otherwise you will have a cross origin issue which prevents to load some resources and render the HTML.
-For this purpose, you can run the following command to start a HTTP server locally: `npm run server --prefix packages/core`
+For this purpose, you can run the following command to start a HTTP server locally: `npm run server -w packages/core`
 
 Once the server is listening, you can point your browser at:
 
@@ -162,7 +161,7 @@ Currently, you can run benchmark against 3 JavaScript environment:
 
 The following command will run benchmark against Node.js:
 
- $ npm run benchmark node --prefix packages/core
+ $ npm run benchmark node -w packages/core
 
 Once `packages/core/build/benchmark` is initialized, you can run benchmark again (without building the project):
 

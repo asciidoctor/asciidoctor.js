@@ -4,6 +4,10 @@
   "engines": {
     "node": ">=22"
   },
+  "workspaces": [
+    "packages/asciidoctor",
+    "packages/core"
+  ],
   "scripts": {
     "test": "node --test spec/*/*.spec.js",
     "lint": "npm run code:lint",

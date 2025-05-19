@@ -21,14 +21,14 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm ci --prefix packages/core
+          npm ci -w packages/core
       - name: Lint, build and test
         env:
           ASCIIDOCTOR_CORE_VERSION: v2.0.23
         run: |
           npm run lint
           npm run test
-          npm run travis --prefix packages/core
+          npm run travis -w packages/core
   publish:
     if: github.repository_owner == 'asciidoctor'
     needs: build
@@ -47,7 +47,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm ci --prefix packages/core
+          npm ci -w packages/core
       # package and publish
       - name: Package
         env:
