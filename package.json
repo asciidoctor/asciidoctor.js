@@ -2,27 +2,23 @@
   "name": "@asciidoctor/root",
   "private": true,
   "engines": {
-    "node": ">=16",
-    "npm": ">=8.0.0"
+    "node": ">=22"
   },
   "scripts": {
-    "test": "mocha spec/*/*.spec.js",
+    "test": "node --test spec/*/*.spec.js",
     "lint": "npm run code:lint",
     "code:lint": "eslint spec/**/*.js tasks/**/*.js",
     "release": "node tasks/release.js"
   },
   "devDependencies": {
     "bestikk-log": "0.1.0",
-    "chai": "4.4.1",
-    "dirty-chai": "2.0.1",
-    "downdoc": "^1.0.0-beta.9",
+    "downdoc": "1.0.2-stable",
     "eslint": "^8.10.0",
     "eslint-config-standard": "^17.0.0-1",
     "libnpmpublish": "4.0.2",
-    "mocha": "10.3.0",
-    "pacote": "^12.0.2",
-    "semver": "^7.3.8",
-    "sinon": "17.0.1"
+    "pacote": "12.0.3",
+    "semver": "7.7.2",
+    "sinon": "20.0.0"
   },
   "volta": {
     "node": "22.14.0"
