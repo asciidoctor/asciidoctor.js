@@ -41,14 +41,19 @@ jobs:
       with:
         node-version: 22
     # libgbm-dev is required by Puppeteer 3+
-    - name: Install system dependencies
+    - name: Install Linux dependencies
       run: |
         sudo apt-get install -y libgbm-dev
       if: ${{ runner.os == 'Linux' }}
+    - name: Install macOS dependencies
+      run: |
+        brew install upx
+      if: ${{ runner.os == 'macOS' }}
     - name: Install dependencies
       run: |
         npm ci
         npm ci --prefix packages/core
+        git clone https://github.com/bellard/quickjs.git /tmp/qjs && cd /tmp/qjs && sudo make -j$(getconf _NPROCESSORS_ONLN) install
     - name: Lint, build and test
       env:
         ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
@@ -56,6 +61,12 @@ jobs:
         npm run lint
         npm run test
         npm run travis --prefix packages/core
+    - name: Compile
+      working-directory: ./packages/core
+      run: |
+        qjsc -o dist/asciidoctor-$(uname -s)-$(uname -m) -flto cli/quickjs.mjs
+        strip   dist/asciidoctor-$(uname -s)-$(uname -m)
+        upx  -9 dist/asciidoctor-$(uname -s)-$(uname -m)
   build-windows:
     needs: activate
     runs-on: windows-latest
@@ -97,3 +108,9 @@ jobs:
           ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
         working-directory: ./packages/core
         run: npm run examples
+      - name: Build exe
+        env:
+          ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
+        working-directory: ./packages/core
+        run: qjsc -o dist/asciidoctor-win-x64.exe -flto cli/quickjs.mjs && strip dist/asciidoctor-win-x64.exe && upx -9 dist/asciidoctor-win-x64.exe
+        if: ${{ runner.os == 'TODO:Find a way to make+install qjs in windows' }}

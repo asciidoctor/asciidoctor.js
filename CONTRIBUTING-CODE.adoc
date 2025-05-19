@@ -42,7 +42,7 @@ Next, run npm's `install` command:
 
 You're now ready to build Asciidoctor.js.
 
-TIP: Opal.js, the Ruby runtime in JavaScript is available in `packages/core/node_modules/asciidoctor-opal-runtime/src/opal.js`
+TIP: Opal.js, the Ruby runtime in JavaScript is available in `packages/core/node_modules/@asciidoctor/opal-runtime/src/opal.js`
 
 == Building
 
