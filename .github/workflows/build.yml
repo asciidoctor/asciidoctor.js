@@ -47,8 +47,8 @@ jobs:
       if: ${{ runner.os == 'Linux' }}
     - name: Install dependencies
       run: |
-        npm i
-        npm i --prefix packages/core
+        npm i --loglevel verbose
+        npm i --prefix packages/core --loglevel verbose
     - name: Lint, build and test
       env:
         ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
