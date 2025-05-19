@@ -1,11 +1,13 @@
-/* global it, describe, beforeEach, afterEach */
-const chai = require('chai')
-const expect = chai.expect
+const {
+  describe,
+  it,
+  beforeEach,
+  afterEach
+} = require('node:test')
+const assert = require('node:assert')
 const childProcess = require('child_process')
 const execModule = require('../../tasks/module/exec')
 const sinon = require('sinon')
-const dirtyChai = require('dirty-chai')
-chai.use(dirtyChai)
 
 let childProcessExecSyncStub
 
@@ -30,9 +32,9 @@ describe('Build', function () {
       execSyncStub.returns('void')
 
       const result = releaseModule.pushRelease()
-      expect(result).to.be.true()
-      expect(execSyncStub.getCall(0).args[0]).to.equal('git push upstream main')
-      expect(execSyncStub.getCall(1).args[0]).to.equal('git push upstream --tags')
+      assert.equal(result, true, 'pushRelease should return true')
+      assert.equal(execSyncStub.getCall(0).args[0], 'git push upstream main')
+      assert.equal(execSyncStub.getCall(1).args[0], 'git push upstream --tags')
       execSyncStub.restore()
     })
 
@@ -45,8 +47,8 @@ describe('Build', function () {
       execSyncStub.returns('void')
 
       const result = releaseModule.pushRelease()
-      expect(result).to.be.false()
-      expect(execSyncStub.called).to.be.false()
+      assert.equal(result, false, 'pushRelease should return false')
+      assert.equal(execSyncStub.called, false, 'execSync should not be called')
       execSyncStub.restore()
     })
   })
