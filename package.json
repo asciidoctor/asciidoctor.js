@@ -10,6 +10,10 @@
     "code:lint": "eslint spec/**/*.js tasks/**/*.js",
     "release": "node tasks/release.js"
   },
+  "workspaces": [
+    "packages/core",
+    "packages/asciidoctor"
+  ],
   "devDependencies": {
     "bestikk-log": "0.1.0",
     "downdoc": "1.0.2-stable",
@@ -21,6 +25,6 @@
     "sinon": "20.0.0"
   },
   "volta": {
-    "node": "22.14.0"
+    "node": "22.15.0"
   }
 }
