@@ -12,14 +12,19 @@ const prepareRelease = (releaseVersion) => {
   }
   const projectRootDirectory = path.join(__dirname, '..', '..')
   try {
-    childProcess.execSync('git diff-index --quiet HEAD --', { cwd: projectRootDirectory })
+    childProcess.execSync('git diff-index --quiet HEAD --', {
+      cwd: projectRootDirectory,
+    })
   } catch (e) {
     log.error('Git working directory not clean')
     const status = childProcess.execSync('git status -s')
     process.stdout.write(status)
     process.exit(1)
   }
-  const branchName = childProcess.execSync('git symbolic-ref --short HEAD', { cwd: projectRootDirectory }).toString('utf-8').trim()
+  const branchName = childProcess
+    .execSync('git symbolic-ref --short HEAD', { cwd: projectRootDirectory })
+    .toString('utf-8')
+    .trim()
   if (branchName !== 'main') {
     log.error('Release must be performed on main branch')
     process.exit(1)
@@ -46,18 +51,26 @@ const prepareRelease = (releaseVersion) => {
     fs.writeFileSync(corePkgPath, corePkgUpdated)
   }
   // git commit and tag
-  execModule.execSync(`git commit -a -m "${releaseVersion}"`, { cwd: projectRootDirectory })
-  execModule.execSync(`git tag v${releaseVersion} -m "${releaseVersion}"`, { cwd: projectRootDirectory })
+  execModule.execSync(`git commit -a -m "${releaseVersion}"`, {
+    cwd: projectRootDirectory,
+  })
+  execModule.execSync(`git tag v${releaseVersion} -m "${releaseVersion}"`, {
+    cwd: projectRootDirectory,
+  })
 }
 
 const pushRelease = () => {
   if (process.env.DRY_RUN || process.env.NO_PUSH) {
     return false
   }
-  const remoteName = childProcess.execSync('git remote -v').toString('utf8')
+  const remoteName = childProcess
+    .execSync('git remote -v')
+    .toString('utf8')
     .split(/\r?\n/)
-    .filter(line => { return line.includes('(push)') && line.includes('asciidoctor/asciidoctor.js.git') })
-    .map(line => line.split('\t')[0])
+    .filter((line) => {
+      return line.includes('(push)') && line.includes('asciidoctor/asciidoctor.js.git')
+    })
+    .map((line) => line.split('\t')[0])
     .reduce((a, b) => a + b, '')
 
   if (remoteName) {
@@ -75,7 +88,9 @@ const completeRelease = (releasePushed, releaseVersion) => {
   if (!releasePushed) {
     log.info('[ ] push changes upstream: `git push origin main && git push origin --tags`')
   }
-  log.info(`[ ] edit the release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/tag/v${releaseVersion}`)
+  log.info(
+    `[ ] edit the release page on GitHub: https://github.com/asciidoctor/asciidoctor.js/releases/tag/v${releaseVersion}`
+  )
 }
 
 const release = (releaseVersion) => {
@@ -89,5 +104,5 @@ const release = (releaseVersion) => {
 module.exports = {
   release,
   // for testing purpose
-  pushRelease
+  pushRelease,
 }

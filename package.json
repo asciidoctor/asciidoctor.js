@@ -6,17 +6,16 @@
   },
   "scripts": {
     "test": "node --test spec/*/*.spec.js",
-    "lint": "npm run code:lint",
-    "code:lint": "eslint spec/**/*.js tasks/**/*.js",
+    "lint": "npx prettier --check spec/**/*.js tasks/**/*.js",
+    "format": "npx prettier --write spec/**/*.js tasks/**/*.js",
     "release": "node tasks/release.js"
   },
   "devDependencies": {
     "bestikk-log": "0.1.0",
     "downdoc": "1.0.2-stable",
-    "eslint": "^8.10.0",
-    "eslint-config-standard": "^17.0.0-1",
     "libnpmpublish": "4.0.2",
     "pacote": "12.0.3",
+    "prettier": "3.5.3",
     "semver": "7.7.2",
     "sinon": "20.0.0"
   },
