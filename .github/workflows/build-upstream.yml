@@ -17,8 +17,8 @@ jobs:
           sudo apt-get install -y libgbm-dev
       - name: Install dependencies
         run: |
-          npm i
-          npm i --prefix packages/core
+          npm ci
+          npm ci --prefix packages/core
       - name: Lint, build and test
         env:
           ASCIIDOCTOR_CORE_VERSION: main
