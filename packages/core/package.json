@@ -114,7 +114,7 @@
     "opal-compiler": "3.0.0",
     "portfinder": "1.0.32",
     "pug": "3.0.2",
-    "puppeteer": "21.11.0",
+    "puppeteer": "24.8.2",
     "rollup": "~4.10.0",
     "rollup-plugin-dts": "^6.1.0",
     "sinon": "17.0.1",

@@ -1,4 +1,5 @@
 {
+  "name": "@asciidoctor/root",
   "private": true,
   "engines": {
     "node": ">=16",
@@ -22,5 +23,8 @@
     "pacote": "^12.0.2",
     "semver": "^7.3.8",
     "sinon": "17.0.1"
+  },
+  "volta": {
+    "node": "22.14.0"
   }
 }
