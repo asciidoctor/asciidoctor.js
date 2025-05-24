@@ -13,7 +13,7 @@
   "devDependencies": {
     "bestikk-log": "0.1.0",
     "downdoc": "1.0.2-stable",
-    "eslint": "^8.10.0",
+    "eslint": "^9.0.0",
     "eslint-config-standard": "^17.0.0-1",
     "libnpmpublish": "4.0.2",
     "pacote": "12.0.3",
