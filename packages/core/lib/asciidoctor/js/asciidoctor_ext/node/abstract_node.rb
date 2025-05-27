@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 module Asciidoctor
 class AbstractNode
   def generate_data_uri_from_uri image_uri, cache_uri = false

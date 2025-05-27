@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 module Asciidoctor
 class AbstractNode
   def read_contents target, opts = {}

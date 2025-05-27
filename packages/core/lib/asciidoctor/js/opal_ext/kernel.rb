@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 module Kernel
   # basic implementation of open, enough to work with reading files over XMLHttpRequest
   def open(path, *rest)

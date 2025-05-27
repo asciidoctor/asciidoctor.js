@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 module Base64
   %x{
     var encode, decode;

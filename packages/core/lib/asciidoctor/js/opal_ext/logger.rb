@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 class Logger
   class Formatter
     def call(severity, time, progname, msg)

@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 %x(
   var platform, engine, framework, ioModule;
 

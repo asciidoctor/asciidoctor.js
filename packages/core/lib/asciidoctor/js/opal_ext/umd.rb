@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 %x(
   var isNode = typeof process === 'object' && typeof process.versions === 'object' && process.browser != true,
       isElectron = typeof navigator === 'object' && typeof navigator.userAgent === 'string' && typeof navigator.userAgent.indexOf('Electron') !== -1,

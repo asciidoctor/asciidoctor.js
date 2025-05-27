@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 class File
 
   attr_reader :eof

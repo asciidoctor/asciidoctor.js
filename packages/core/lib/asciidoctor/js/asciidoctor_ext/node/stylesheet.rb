@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 module Asciidoctor
 class Stylesheets
   def primary_stylesheet_data
