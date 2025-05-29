@@ -5,16 +5,39 @@ const path = require('path')
 const bfs = require('bestikk-fs')
 const log = require('bestikk-log')
 
+const compileOpenUriCache = (skipped) => {
+  if (fs.existsSync('lib/open-uri/cached.rb')) {
+    const module = 'open-uri/cached.rb'
+    log.debug(module)
+    const target = 'build/open-uri-cached.js'
+    if (fs.existsSync(target)) {
+      skipped.push(target)
+      return
+    }
+    // Build a new instance each time, otherwise the context is shared.
+    const opalBuilder = require('opal-compiler').Builder.create()
+    opalBuilder.appendPaths('lib')
+    opalBuilder.setCompilerOptions({ requirable: true })
+    try {
+      const data = opalBuilder.build(module).toString()
+      fs.writeFileSync(target, data, 'utf8')
+    } catch (e) {
+      console.error(`Unable to compile: ${module}`, e)
+      throw e
+    }
+  }
+}
+
 const compileExt = (name, environment, skipped) => {
   if (fs.existsSync(`lib/asciidoctor/js/${name}_ext/${environment}.rb`)) {
     const module = `asciidoctor/js/${name}_ext/${environment}`
     log.debug(module)
-    // Build a new instance each time, otherwise the context is shared.
     const target = `build/${name}-ext-${environment}.js`
     if (fs.existsSync(target)) {
       skipped.push(target)
       return
     }
+    // Build a new instance each time, otherwise the context is shared.
     const opalBuilder = require('opal-compiler').Builder.create()
     opalBuilder.appendPaths('lib')
     opalBuilder.setCompilerOptions({ dynamic_require_severity: 'ignore', requirable: true })
@@ -39,6 +62,7 @@ const compileRuntimeEnvironments = (environments) => {
     compileExt('opal', environment, skipped)
     compileExt('asciidoctor', environment, skipped)
   }
+  compileOpenUriCache(skipped)
   if (skipped.length > 0) {
     log.info(`${skipped.join(', ')} files already exist, skipping "compile" task.\nTIP: Use "npm run clean:patch" to compile again from Ruby sources.`)
   }
@@ -61,6 +85,12 @@ const compileAsciidoctorCore = (asciidoctorCoreDependency) => {
     fs.writeFileSync(converterFilePath, converterSource.replace(/^(\s+autoload :TemplateConverter,.*)$/m, '$1 unless RUBY_ENGINE == \'opal\''), 'utf-8')
   }
   // end::asciidoctor#4205
+  // FIXME: remove once this change has been merged in Asciidoctor Ruby (core)
+  const readerFilePath = path.join(__dirname, '..', '..', 'build', 'asciidoctor', 'lib', 'asciidoctor', 'reader.rb')
+  if (fs.existsSync(readerFilePath)) {
+    const readerSource = fs.readFileSync(readerFilePath, 'utf8')
+    fs.writeFileSync(readerFilePath, readerSource.replace(/^(\s+Helpers\.require_library 'open-uri\/cached', 'open-uri-cached') unless defined\? ::OpenURI::Cache$/m, '$1'), 'utf-8')
+  }
   const opalBuilder = require('opal-compiler').Builder.create()
   opalBuilder.appendPaths('build/asciidoctor/lib')
   opalBuilder.appendPaths('node_modules/opal-compiler/src/stdlib')
@@ -69,7 +99,6 @@ const compileAsciidoctorCore = (asciidoctorCoreDependency) => {
   fs.writeFileSync(target, opalBuilder.build('asciidoctor').toString(), 'utf8')
 
   replaceUnsupportedFeatures(asciidoctorCoreDependency)
-  applyPatches(asciidoctorCoreDependency)
 }
 
 const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
@@ -81,26 +110,8 @@ const replaceUnsupportedFeatures = (asciidoctorCoreDependency) => {
   fs.writeFileSync(path, data, 'utf8')
 }
 
-const applyPatches = (asciidoctorCoreDependency) => {
-  log.task('apply patches')
-  const path = asciidoctorCoreDependency.target
-  let data = fs.readFileSync(path, 'utf8')
-  log.debug('preserve stack on Error (workaround: https://github.com/opal/opal/issues/1962)')
-  data = data.replace(/([\s]+)(wrapped_ex\.\$set_backtrace\(ex\.\$backtrace\(\)\);)/g, '$1$2$1wrapped_ex.stack = ex.stack;')
-  fs.writeFileSync(path, data, 'utf8')
-}
-
-const patchOpalCompiler = () => {
-  // revert https://github.com/opal/opal/commit/d46792d2160e4f524c3add711f6424dd99187d1c
-  // see: https://github.com/opal/opal/issues/2099
-  const sourceFile = path.join(__dirname, '..', '..', 'node_modules', 'opal-compiler', 'src', 'opal-builder.js')
-  const source = fs.readFileSync(sourceFile, 'utf8')
-  fs.writeFileSync(sourceFile, source.replace(/(Opal\.modules\["opal\/parser\/patch"].*?)(\s+\(function\([^)]+\) {\n\s+var self = \$klass\(\$base, \$super, 'Lexer'\);.*},\s\$Lexer_source_buffer\$eq\$1\.\$\$arity = 1\), nil\) && 'source_buffer='\n\s+}\)\(\$\$\(\$nesting, 'Parser'\), null, \$nesting\);)/gs, '$1'))
-}
-
 module.exports.compile = (asciidoctorCoreDependency, environments) => {
   bfs.mkdirsSync('build')
-  patchOpalCompiler()
   compileRuntimeEnvironments(environments)
   compileAsciidoctorCore(asciidoctorCoreDependency)
   log.task('copy resources')

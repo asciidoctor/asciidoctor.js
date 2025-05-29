@@ -1,6 +1,8 @@
 module URI
   def self.parse str
-    str.extend URI
+    # REMIND: Cannot create property '$$meta' on string in strict mode!
+    #str.extend URI
+    str
   end
 
   def path

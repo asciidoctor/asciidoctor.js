@@ -5,12 +5,19 @@ const ServerMock = require('mock-http-server')
 
 let server
 
+// ignore "possible EventEmitter memory leak detected" warning message
+process.setMaxListeners(0)
 process.on('message', (msg) => {
   if (msg.event === 'exit') {
     process.send({ event: 'exiting' })
     process.exit(0)
   } else if (msg.event === 'configure') {
     server.on(msg.data)
+  } else if (msg.event === 'resetRequests') {
+    server.resetRequests()
+    process.send({ event: 'requestsCleared' })
+  } else if (msg.event === 'getRequests') {
+    process.send({ event: 'requestsReceived', requestsReceived: server.requests() })
   }
 })
 
