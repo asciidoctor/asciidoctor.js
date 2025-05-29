@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 module Asciidoctor
 module Substitutors
   # Avoid using Kernel#sprintf for performance and bundle size reasons

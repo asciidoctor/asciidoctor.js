@@ -1,4 +1,6 @@
+# backtick_javascript: true
 # frozen_string_literal: true
+
 module Asciidoctor
 # A {Converter} implementation that uses templates composed in template languages
 # to convert {AbstractNode} objects from a parsed AsciiDoc document tree to the backend format.

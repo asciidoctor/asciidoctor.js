@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 class String
   # Safely truncate the string to the specified number of bytes.
   def limit_bytesize size

@@ -1,3 +1,5 @@
+# backtick_javascript: true
+
 module Asciidoctor
 class Parser
   if `String.prototype.repeat`
