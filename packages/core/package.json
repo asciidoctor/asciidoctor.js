@@ -36,6 +36,7 @@
     "test:node": "mocha spec/*/*.spec.cjs && npm run test:node:esm",
     "test:node:esm": "mocha --experimental-json-modules spec/node/asciidoctor.spec.js",
     "test:browser": "node spec/browser/run.cjs",
+    "test:quickjs": "qjs --unhandled-rejection spec/quickjs/run.mjs",
     "test:types": "rm -f types/tests.js && eslint types --ext .ts && tsc --build types/tsconfig.json && node --input-type=commonjs types/tests.js",
     "test": "node tasks/test/unsupported-features.cjs && npm run test:node && npm run test:browser && npm run test:types",
     "build": "node tasks/build.cjs && npm run test && npm run lint",
@@ -56,7 +57,7 @@
     "docs:build": "documentation build src/** -f html -o build/docs -g",
     "docs:serve": "documentation serve src/** -g -w",
     "docs": "npm run docs:lint && npm run docs:build",
-    "travis": "npm run lint && npm run package && npm run docs && npm run examples && npm run test:graalvm"
+    "travis": "npm run lint && npm run package && npm run docs && npm run examples && npm run test:graalvm && npm run test:quickjs"
   },
   "repository": {
     "type": "git",

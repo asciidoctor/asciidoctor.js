@@ -3,6 +3,7 @@
 :uri-spidermonkey-read: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Introduction_to_the_JavaScript_shell#Built-in_functions
 :uri-phantomjs-read: http://phantomjs.org/api/fs/method/read.html
 :uri-node-fs: https://nodejs.org/api/fs.html
+:uri-quickjs-read: https://bellard.org/quickjs/
 
 :uri-v8: https://developers.google.com/v8
 :uri-graalvm: https://www.graalvm.org
@@ -88,6 +89,9 @@ The implementation will use the {uri-spidermonkey-read}[`read` function].
 
 `phantomjs`::
 The implementation will use the {uri-phantomjs-read}[`fs.read` function].
+
+`quickjs`::
+The implementation will use the {uri-quickjs-read}[`std.loadFile` module].
 
 == Retrieve the runtime environment
 
