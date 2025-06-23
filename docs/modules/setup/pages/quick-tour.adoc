@@ -37,7 +37,7 @@ Alternatively, you can use the function `convertFile` to convert a file containi
 var doc = asciidoctor.convertFile('/path/to/file.adoc') // <1>
 ```
 <1> The command will output to the file `file.html` in the same directory. +
-The variable `doc` will contain an {uri-js-api-doc}/#document[Asciidoctor.Document] object.
+The variable `doc` will contain an {url-jsdoc-latest}/#document[Asciidoctor.Document] object.
 
 Alternatively, you can capture the HTML 5 output in a variable instead of writing it to a file:
 
@@ -60,7 +60,7 @@ var html = asciidoctor.convert(fs.readFileSync('/path/to/file.adoc')) // <1>
 
 == Load and convert
 
-To parse an AsciiDoc file into an {uri-js-api-doc}/#document[Asciidoctor.Document] object:
+To parse an AsciiDoc file into an {url-jsdoc-latest}/#document[Asciidoctor.Document] object:
 
 ```js
 var doc = asciidoctor.loadFile('file.adoc')
@@ -74,7 +74,7 @@ console.log(doc.getAttributes())
 ```
 
 More than likely, you will want to convert the document.
-To convert an {uri-js-api-doc}/#document[Asciidoctor.Document] to HTML5, use the `convert` function on a `Document`:
+To convert an {url-jsdoc-latest}/#document[Asciidoctor.Document] to HTML5, use the `convert` function on a `Document`:
 
 ```js
 var doc = asciidoctor.loadFile('file.adoc')

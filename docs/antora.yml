@@ -3,7 +3,7 @@ title: Asciidoctor.js
 version: '3.0'
 asciidoc:
   attributes:
-    url-jsdoc-latest: 'http://asciidoctor.github.io/asciidoctor.js/main'
+    url-jsdoc-latest: 'https://asciidoctor.github.io/asciidoctor.js/main/'
 nav:
 - modules/setup/nav.adoc
 - modules/processor/nav.adoc
