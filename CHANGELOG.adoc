@@ -8,6 +8,16 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* Upgrade to https://github.com/asciidoctor/asciidoctor/releases/tag/v2.0.26[Asciidoctor 2.0.26]
+
+Infrastructure::
+
+* Add backtick_javascript comments for Opal 2
+* Replace eslint by prettier
+* Replace mocha/chai by node test runner
+* Implement `Array#pack m0` (alias for `Base64.encode`)
 
 == v3.0.4 (2024-02-12)
 
@@ -24,7 +34,7 @@ Infrastructure::
 Bug Fixes::
 
 * Fix types exports in `package.json` - thanks @sinedied
-* Addd `context` and `node_name` accessor in the type definition - thanks @RayOffiah
+* Add `context` and `node_name` accessor in the type definition - thanks @RayOffiah
 
 Infrastructure::
 
