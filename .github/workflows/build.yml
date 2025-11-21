@@ -26,12 +26,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        asciidoctor-core-version: [v2.0.23, main]
+        asciidoctor-core-version: [v2.0.26, main]
         experimental: [false]
         include:
           - os: macos-latest
             experimental: true
-            asciidoctor-core-version: v2.0.23
+            asciidoctor-core-version: v2.0.26
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.experimental }}
     steps:
@@ -61,7 +61,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        asciidoctor-core-version: [v2.0.23, main]
+        asciidoctor-core-version: [v2.0.26, main]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node
