@@ -145,7 +145,7 @@ class Converter::TemplateConverter < Converter::Base
   def node_require module_name
     %x{
       try {
-        return __require__(#{module_name})
+        return __require__(/* webpackIgnore: true */ #{module_name})
       }
       catch (e) {
         throw #{IOError.new "Unable to require the module '#{module_name}', please make sure that the module is installed."}
@@ -222,7 +222,7 @@ class Converter::TemplateConverter < Converter::Base
             template = { render: pug.compileFile(file, opts), '$file': function() { return file } }
           }
         when :js, :cjs
-          template = `{ render: __require__(file), '$file': function() { return file } }`
+          template = `{ render: __require__(/* webpackIgnore: true */ file), '$file': function() { return file } }`
         else
           %x{
             var registry = Opal.Asciidoctor.TemplateEngine.registry
@@ -239,7 +239,7 @@ class Converter::TemplateConverter < Converter::Base
     end
     if helpers || ::File.file?(helpers = %(#{template_dir}/helpers.js)) || ::File.file?(helpers = %(#{template_dir}/helpers.cjs))
       %x{
-        var ctx = __require__(helpers)
+        var ctx = __require__(/* webpackIgnore: true */ helpers)
         if (typeof ctx.configure === 'function') {
           ctx.configure(enginesContext)
         }
