@@ -1,0 +1,38 @@
+{
+  "name": "@asciidoctor/native",
+  "version": "0.1.0",
+  "description": "Asciidoctor - the native library",
+  "type": "module",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test test/**.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asciidoctor/asciidoctor.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "asciidoc",
+    "asciidoctor",
+    "opal",
+    "javascript",
+    "library"
+  ],
+  "authors": [
+    "Guillaume Grossetie (https://github.com/ggrossetie)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/asciidoctor/asciidoctor.js/issues"
+  },
+  "homepage": "https://github.com/asciidoctor/asciidoctor.js",
+  "volta": {
+    "node": "24.14.1"
+  }
+}
