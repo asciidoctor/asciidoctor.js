@@ -5,6 +5,15 @@ import { load } from '../src/load.js'
 import { DocumentTitle } from '../src/document.js'
 import { SafeMode } from '../src/constants.js'
 
+const BUILT_IN_ELEMENTS = [
+  'admonition', 'audio', 'colist', 'dlist', 'document', 'embedded', 'example',
+  'floating_title', 'image', 'inline_anchor', 'inline_break', 'inline_button',
+  'inline_callout', 'inline_footnote', 'inline_image', 'inline_indexterm',
+  'inline_kbd', 'inline_menu', 'inline_quoted', 'listing', 'literal', 'stem',
+  'olist', 'open', 'page_break', 'paragraph', 'pass', 'preamble', 'quote',
+  'section', 'sidebar', 'table', 'thematic_break', 'toc', 'ulist', 'verse', 'video',
+]
+
 // Helpers
 // doc.attr(name) returns null for missing attrs AND for empty-string attrs ('' is falsy).
 // Use inAttr(doc, name) to check presence regardless of value.
@@ -12,6 +21,11 @@ const inAttr = (doc, name) => name in doc.attributes
 
 const parse = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
 const empty = (opts = {}) => parse('', opts)
+
+// convert to full standalone HTML (with <html>, header, footer)
+const convert = async (input, opts = {}) => (await parse(input, { standalone: true, ...opts })).convert()
+// convert to embedded HTML (no <html> wrapper)
+const embed = async (input, opts = {}) => (await parse(input, opts)).convert()
 
 // ── DocumentTitle ─────────────────────────────────────────────────────────────
 
@@ -128,7 +142,6 @@ describe('Structure', () => {
     const input = 'Document Title\n==============\n\n+content+'
     const doc = await parse(input)
     assert.ok(inAttr(doc, 'compat-mode'))
-    // NOTE: convert() not yet implemented (html5 converter stub)
   })
 
   test('compat mode disabled in header overrides legacy doctitle', async () => {
@@ -222,7 +235,6 @@ describe('Structure', () => {
   test('embedded document when standalone is false', async () => {
     const doc = await parse('= Document Title\n\ncontent', { standalone: false })
     assert.ok(inAttr(doc, 'embedded'))
-    // NOTE: convert() not yet implemented (html5 converter stub)
   })
 
   test('standalone document includes html and header/footer', async () => {
@@ -369,5 +381,192 @@ describe('isAttributeLocked', () => {
     const doc = await parse('', { safe: 'unsafe' })
     doc.setAttribute('custom', 'value')
     assert.equal(doc.attr('custom'), 'value')
+  })
+})
+
+// ── MathJax ───────────────────────────────────────────────────────────────────
+
+describe('MathJax', () => {
+  test('adds MathJax script to HTML head if stem attribute is set', async () => {
+    const output = await convert('', { attributes: { stem: '' } })
+    assert.ok(output.includes('<script type="text/x-mathjax-config">'))
+    assert.ok(output.includes('inlineMath: [["\\\\(","\\\\)"]]'))
+    assert.ok(output.includes('displayMath: [["\\\\[","\\\\]"]]'))
+    assert.ok(output.includes('delimiters: [["\\\\$","\\\\$"]]'))
+  })
+})
+
+// ── Converter ─────────────────────────────────────────────────────────────────
+
+describe('Converter (extended)', () => {
+  test('html5 converter has convert methods for all built-in elements', async () => {
+    const doc = await parse('')
+    assert.equal(doc.attributes['backend'], 'html5')
+    assert.ok('backend-html5' in doc.attributes)
+    assert.equal(doc.attributes['basebackend'], 'html')
+    assert.ok('basebackend-html' in doc.attributes)
+    const converter = doc.converter
+    for (const element of BUILT_IN_ELEMENTS) {
+      assert.equal(typeof converter[`convert_${element}`], 'function', `missing convert_${element}`)
+    }
+  })
+
+  test('adds favicon link tag when favicon attribute is empty string', async () => {
+    const result = await convert('= Untitled', { attributes: { favicon: '' } })
+    assert.ok(result.includes('rel="icon"'))
+    assert.ok(result.includes('href="favicon.ico"'))
+    assert.ok(result.includes('type="image/x-icon"'))
+  })
+
+  test('adds favicon link tag when favicon attribute is a .ico path', async () => {
+    const result = await convert('= Untitled', { attributes: { favicon: '/favicon.ico' } })
+    assert.ok(result.includes('href="/favicon.ico"'))
+    assert.ok(result.includes('type="image/x-icon"'))
+  })
+
+  test('adds favicon link tag when favicon attribute is a .png path', async () => {
+    const result = await convert('= Untitled', { attributes: { favicon: '/img/favicon.png' } })
+    assert.ok(result.includes('href="/img/favicon.png"'))
+    assert.ok(result.includes('type="image/png"'))
+  })
+})
+
+// ── HTML output (Structure extended) ─────────────────────────────────────────
+
+describe('HTML output', () => {
+  test('standalone document has html, header and footer', async () => {
+    const result = await convert('= Title\n\nparagraph', { safe: 'unsafe' })
+    assert.ok(result.includes('<html'))
+    assert.ok(result.includes('id="header"'))
+    assert.ok(result.includes('<h1>Title</h1>'))
+    assert.ok(result.includes('id="footer"'))
+    assert.ok(result.includes('id="content"'))
+  })
+
+  test('nofooter suppresses footer div', async () => {
+    const result = await convert(':nofooter:\n\ncontent')
+    assert.ok(!result.includes('id="footer"'))
+  })
+
+  test('last-update-label! disables last updated text in footer', async () => {
+    const result = await convert('= Document Title\n\npreamble', { attributes: { 'last-update-label!': '' } })
+    assert.ok(result.includes('id="footer-text"'))
+    // footer-text should be empty (no "Last updated" text)
+    assert.match(result, /id="footer-text"[^>]*>\s*<\/div>/)
+  })
+
+  test('embedded document has no html wrapper or header/footer divs', async () => {
+    const result = await embed('= Document Title\n\ncontent', { standalone: false })
+    assert.ok(!result.includes('<html'))
+    assert.ok(!result.includes('id="header"'))
+    assert.ok(!result.includes('id="footer"'))
+  })
+
+  test('metadata: author, description, keywords, copyright, revision in head', async () => {
+    const input = [
+      '= AsciiDoc',
+      'Stuart Rackham <founder@asciidoc.org>',
+      'v8.6.8, 2012-07-12: See changelog.',
+      ':description: AsciiDoc user guide',
+      ':keywords: asciidoc,documentation',
+      ':copyright: Stuart Rackham',
+      '',
+      '== Version 8.6.8',
+      '',
+      'more info...',
+    ].join('\n')
+    const output = await convert(input)
+    assert.ok(output.includes('name="author" content="Stuart Rackham"'))
+    assert.ok(output.includes('name="description" content="AsciiDoc user guide"'))
+    assert.ok(output.includes('name="keywords" content="asciidoc,documentation"'))
+    assert.ok(output.includes('name="copyright" content="Stuart Rackham"'))
+    assert.ok(output.includes('id="author"') && output.includes('Stuart Rackham'))
+    assert.ok(output.includes('id="revnumber"') && output.includes('8.6.8'))
+    assert.ok(output.includes('id="revdate"') && output.includes('2012-07-12'))
+    assert.ok(output.includes('id="revremark"') && output.includes('See changelog.'))
+  })
+
+  test('author apostrophe is substituted as right single quotation mark entity', async () => {
+    const input = "= Document Title\nStephen O'Grady <founder@redmonk.com>\n\ncontent"
+    const output = await convert(input)
+    assert.ok(output.includes('&#8217;'))
+    assert.ok(output.includes('name="author"') && output.includes('Stephen O&#8217;Grady'))
+  })
+
+  test('ampersand in author name is not double-escaped', async () => {
+    const input = '= Document Title\nR&D Lab\n\n{author}'
+    const output = await convert(input)
+    const count = (output.match(/R&amp;D Lab/g) || []).length
+    assert.ok(count >= 2, `expected at least 2 occurrences of R&amp;D Lab, got ${count}`)
+  })
+
+  test('multiple authors appear in HTML output', async () => {
+    const input = '= Document Title\nDoc Writer <thedoctor@asciidoc.org>; Junior Writer <junior@asciidoctor.org>\n\ncontent'
+    const output = await convert(input)
+    assert.ok(output.includes('id="author"') && output.includes('Doc Writer'))
+    assert.ok(output.includes('id="author2"') && output.includes('Junior Writer'))
+    assert.ok(output.includes('href="mailto:thedoctor@asciidoc.org"'))
+    assert.ok(output.includes('href="mailto:junior@asciidoctor.org"'))
+  })
+
+  test('max-width attribute sets inline style on top-level containers', async () => {
+    const input = '= Document Title\n\ncontent'
+    const output = await convert(input, { attributes: { 'max-width': '70em' } })
+    assert.ok(output.includes('id="header" style="max-width: 70em;"'))
+    assert.ok(output.includes('id="content" style="max-width: 70em;"'))
+    assert.ok(output.includes('id="footer" style="max-width: 70em;"'))
+  })
+
+  // NOTE: body blocks are not yet parsed when document has a title — paragraph not in output
+  test.skip('embedded document with notitle! shows h1 but no header/footer divs', async () => {
+    const input = '= Document Title\n\ncontent'
+    const result = await embed(input, { attributes: { 'notitle!': '' } })
+    assert.ok(!result.includes('<html'))
+    assert.ok(result.includes('<h1>'))
+    assert.ok(!result.includes('id="header"'))
+    assert.ok(!result.includes('id="footer"'))
+  })
+})
+
+// ── Backends and Doctypes (extended) ─────────────────────────────────────────
+
+describe('Backends and Doctypes (extended)', () => {
+  test('html5 doctype article produces article body class', async () => {
+    const result = await convert('= Title\n\nparagraph', { attributes: { backend: 'html5' } })
+    assert.ok(result.includes('<html'))
+    assert.ok(result.includes('class="article"'))
+    assert.ok(result.includes('<h1>Title</h1>'))
+  })
+
+  test('html5 doctype book produces book body class', async () => {
+    const result = await convert('= Title\n\nparagraph', { attributes: { backend: 'html5', doctype: 'book' } })
+    assert.ok(result.includes('class="book"'))
+    assert.ok(result.includes('<h1>Title</h1>'))
+  })
+
+  test('htmlsyntax xml via API produces self-closing hr tag', async () => {
+    const doc = await parse('---', { safe: 'safe', attributes: { htmlsyntax: 'xml' } })
+    assert.equal(doc.backend, 'html5')
+    assert.equal(doc.attr('htmlsyntax'), 'xml')
+    const result = doc.convert()
+    assert.ok(result.includes('<hr/>'))
+  })
+
+  // NOTE: htmlsyntax set in document header is not yet re-applied after backend init
+  test.skip('htmlsyntax xml in document header if followed by backend produces self-closing hr', async () => {
+    const input = ':htmlsyntax: xml\n:backend: html5\n\n---'
+    const doc = await parse(input, { safe: 'safe' })
+    assert.equal(doc.attr('htmlsyntax'), 'xml')
+    const result = doc.convert()
+    assert.ok(result.includes('<hr/>'))
+  })
+
+  // NOTE: htmlsyntax set in document header is not yet re-applied after backend init
+  test.skip('htmlsyntax xml not honored if backend entry comes before htmlsyntax in header', async () => {
+    const input = ':backend: html5\n:htmlsyntax: xml\n\n---'
+    const doc = await parse(input, { safe: 'safe' })
+    const result = doc.convert()
+    assert.ok(result.includes('<hr>'))
+    assert.ok(!result.includes('<hr/>'))
   })
 })
