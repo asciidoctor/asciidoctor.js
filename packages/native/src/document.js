@@ -367,6 +367,9 @@ export class Document extends AbstractBlock {
   // Public: Alias catalog as references (backwards compat).
   get references () { return this.catalog }
 
+  // Public: Returns true if this is a nested (child) document.
+  nested () { return !!this.parentDocument }
+
   // Public: Parse the AsciiDoc source.
   //
   // data - Optional replacement source data.

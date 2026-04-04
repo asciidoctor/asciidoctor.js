@@ -262,7 +262,7 @@ export class Reader {
   readLinesUntil (options = {}, filter = null) {
     const result = []
     let restoreProcessLines = false
-    if (this.processLines && options.skipProcessing) {
+    if (this.processLines && (options.skipProcessing || options.skip_processing)) {
       this.processLines = false
       restoreProcessLines = true
     }
@@ -270,20 +270,20 @@ export class Reader {
     const terminator = options.terminator ?? null
     let startCursor, breakOnBlankLines, breakOnListContinuation
     if (terminator) {
-      startCursor = options.cursor || this.cursor()
+      startCursor = options.cursor || this.cursor
       breakOnBlankLines = false
       breakOnListContinuation = false
     } else {
-      breakOnBlankLines = options.breakOnBlankLines || false
-      breakOnListContinuation = options.breakOnListContinuation || false
+      breakOnBlankLines = options.breakOnBlankLines || options.break_on_blank_lines || false
+      breakOnListContinuation = options.breakOnListContinuation || options.break_on_list_continuation || false
     }
 
-    const skipComments = options.skipLineComments || false
+    const skipComments = options.skipLineComments || options.skip_line_comments || false
     let lineRead = false
     let lineRestored = false
     let line
 
-    if (options.skipFirstLine) this._shift()
+    if (options.skipFirstLine || options.skip_first_line) this._shift()
 
     while ((line = this.readLine()) !== undefined) {
       let shouldBreak = false
@@ -293,7 +293,7 @@ export class Reader {
         if (breakOnBlankLines && line === '') {
           shouldBreak = true
         } else if (breakOnListContinuation && lineRead && line === LIST_CONTINUATION) {
-          options.preserveLastLine = true
+          options.preserveLastLine = options.preserve_last_line = true
           shouldBreak = true
         } else if (filter && filter(line)) {
           shouldBreak = true
@@ -301,8 +301,8 @@ export class Reader {
       }
 
       if (shouldBreak) {
-        if (options.readLastLine) result.push(line)
-        if (options.preserveLastLine) {
+        if (options.readLastLine || options.read_last_line) result.push(line)
+        if (options.preserveLastLine || options.preserve_last_line) {
           this._unshift(line)
           lineRestored = true
         }
@@ -334,9 +334,9 @@ export class Reader {
 
   // ── Cursor helpers ──────────────────────────────────────────────────────────
 
-  cursor () { return new Cursor(this.file, this._dir, this.path, this.lineno) }
+  get cursor () { return new Cursor(this.file, this._dir, this.path, this.lineno) }
   cursorAtLine (lineno) { return new Cursor(this.file, this._dir, this.path, lineno) }
-  cursorAtMark () { return this._mark ? new Cursor(...this._mark) : this.cursor() }
+  cursorAtMark () { return this._mark ? new Cursor(...this._mark) : this.cursor }
   cursorBeforeMark () {
     if (this._mark) {
       const [mFile, mDir, mPath, mLineno] = this._mark
@@ -482,10 +482,12 @@ export class PreprocessorReader extends Reader {
 
   get logger () { return this._document?.logger ?? console }
 
-  // Override: also drain conditional stack at EOS.
-  hasMoreLines () { return !!this.peekLine() }
-  empty () { return !this.peekLine() }
+  // Override: drain conditional stack at EOS; treat blank lines as lines (not as EOF).
+  // peekLine() returns undefined only at true EOF; '' for blank lines.
+  hasMoreLines () { return this.peekLine() !== undefined }
+  empty () { return this.peekLine() === undefined }
   eof () { return this.empty() }
+
 
   peekLine (direct = false) {
     const line = super.peekLine(direct)
@@ -709,9 +711,9 @@ export class PreprocessorReader extends Reader {
 
     if (name === 'endif') {
       if (text) {
-        this._logError(`malformed preprocessor directive - text not permitted: endif::${target}[${text}]`, { sourceLocation: this.cursor() })
+        this._logError(`malformed preprocessor directive - text not permitted: endif::${target}[${text}]`, { sourceLocation: this.cursor })
       } else if (this._conditionalStack.length === 0) {
-        this._logError(`unmatched preprocessor directive: endif::${target}[]`, { sourceLocation: this.cursor() })
+        this._logError(`unmatched preprocessor directive: endif::${target}[]`, { sourceLocation: this.cursor })
       } else {
         const top = this._conditionalStack[this._conditionalStack.length - 1]
         if (noTarget || target === top.target) {
@@ -720,7 +722,7 @@ export class PreprocessorReader extends Reader {
             ? false
             : this._conditionalStack[this._conditionalStack.length - 1].skipping
         } else {
-          this._logError(`mismatched preprocessor directive: endif::${target}[], expected endif::${top.target || ''}[]`, { sourceLocation: this.cursor() })
+          this._logError(`mismatched preprocessor directive: endif::${target}[], expected endif::${top.target || ''}[]`, { sourceLocation: this.cursor })
         }
       }
       return true
@@ -738,7 +740,7 @@ export class PreprocessorReader extends Reader {
       const attrs = this._document.attributes
       if (name === 'ifdef') {
         if (noTarget) {
-          this._logError(`malformed preprocessor directive - missing target: ifdef::[${text}]`, { sourceLocation: this.cursor() })
+          this._logError(`malformed preprocessor directive - missing target: ifdef::[${text}]`, { sourceLocation: this.cursor })
           return true
         }
         skip = delimiter === ',' ? !target.split(',').some(a => a in attrs)
@@ -746,7 +748,7 @@ export class PreprocessorReader extends Reader {
           : !(target in attrs)
       } else if (name === 'ifndef') {
         if (noTarget) {
-          this._logError(`malformed preprocessor directive - missing target: ifndef::[${text}]`, { sourceLocation: this.cursor() })
+          this._logError(`malformed preprocessor directive - missing target: ifndef::[${text}]`, { sourceLocation: this.cursor })
           return true
         }
         skip = delimiter === ',' ? target.split(',').some(a => a in attrs)
@@ -754,7 +756,7 @@ export class PreprocessorReader extends Reader {
           : (target in attrs)
       } else if (name === 'ifeval') {
         if (!noTarget) {
-          this._logError(`malformed preprocessor directive - target not permitted: ifeval::${target}[${text}]`, { sourceLocation: this.cursor() })
+          this._logError(`malformed preprocessor directive - target not permitted: ifeval::${target}[${text}]`, { sourceLocation: this.cursor })
           return true
         }
         const m = text && EvalExpressionRx.exec(text.trim())
@@ -763,7 +765,7 @@ export class PreprocessorReader extends Reader {
             skip = !this._evalOp(this._resolveExprVal(m[1]), m[2], this._resolveExprVal(m[3]))
           } catch { skip = true }
         } else {
-          this._logError(`malformed preprocessor directive - ${text ? 'invalid expression' : 'missing expression'}: ifeval::[${text}]`, { sourceLocation: this.cursor() })
+          this._logError(`malformed preprocessor directive - ${text ? 'invalid expression' : 'missing expression'}: ifeval::[${text}]`, { sourceLocation: this.cursor })
           return true
         }
       }
@@ -771,7 +773,7 @@ export class PreprocessorReader extends Reader {
 
     if (name === 'ifeval') {
       if (skip) this._skipping = true
-      this._conditionalStack.push({ name, expr: text, skip, skipping: this._skipping, sourceLocation: this._sourcemap ? this.cursor() : null })
+      this._conditionalStack.push({ name, expr: text, skip, skipping: this._skipping, sourceLocation: this._sourcemap ? this.cursor : null })
     } else if (text) {
       if (!this._skipping && !skip) {
         this.replaceNextLine(text.trimEnd())
@@ -781,7 +783,7 @@ export class PreprocessorReader extends Reader {
       }
     } else {
       if (skip) this._skipping = true
-      this._conditionalStack.push({ name, target, skip, skipping: this._skipping, sourceLocation: this._sourcemap ? this.cursor() : null })
+      this._conditionalStack.push({ name, target, skip, skipping: this._skipping, sourceLocation: this._sourcemap ? this.cursor : null })
     }
 
     return true
@@ -799,11 +801,11 @@ export class PreprocessorReader extends Reader {
       if (expandedTarget === '') {
         const parsedAttrs = attrlist ? doc.parseAttributes(attrlist, [], { subInput: true }) : {}
         if (parsedAttrs['optional-option']) {
-          this._logInfo(`optional include dropped because resolved target is blank: include::${target}[${attrlist}]`, { sourceLocation: this.cursor() })
+          this._logInfo(`optional include dropped because resolved target is blank: include::${target}[${attrlist}]`, { sourceLocation: this.cursor })
           super._shift()
           return true
         }
-        this._logWarn(`include dropped because resolved target is blank: include::${target}[${attrlist}]`, { sourceLocation: this.cursor() })
+        this._logWarn(`include dropped because resolved target is blank: include::${target}[${attrlist}]`, { sourceLocation: this.cursor })
         return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${target}[${attrlist}]`)
       }
     }
@@ -827,7 +829,7 @@ export class PreprocessorReader extends Reader {
     if (!this._maxdepth) return undefined
 
     if (this.includeStack.length >= this._maxdepth.curr) {
-      this._logError(`maximum include depth of ${this._maxdepth.rel} exceeded`, { sourceLocation: this.cursor() })
+      this._logError(`maximum include depth of ${this._maxdepth.rel} exceeded`, { sourceLocation: this.cursor })
       return undefined
     }
 
@@ -838,7 +840,7 @@ export class PreprocessorReader extends Reader {
 
     if (targetType === 'uri') {
       // TODO: URI includes require async fetch — not yet supported synchronously
-      this._logWarn(`URI includes require async fetch (not yet supported): ${incPath}`, { sourceLocation: this.cursor() })
+      this._logWarn(`URI includes require async fetch (not yet supported): ${incPath}`, { sourceLocation: this.cursor })
       return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist}]`)
     }
 
@@ -895,13 +897,13 @@ export class PreprocessorReader extends Reader {
           incContent = _fs.readFileSync(incPath, 'utf8')
           super._shift()
         } catch {
-          this._logError(`include ${targetType} not readable: ${incPath}`, { sourceLocation: this.cursor() })
+          this._logError(`include ${targetType} not readable: ${incPath}`, { sourceLocation: this.cursor })
           return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist}]`)
         }
         this.pushInclude(incContent, incPath, relpath, 1, parsedAttrs)
       }
     } catch {
-      this._logError(`include ${targetType} not readable: ${incPath}`, { sourceLocation: this.cursor() })
+      this._logError(`include ${targetType} not readable: ${incPath}`, { sourceLocation: this.cursor })
       return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist}]`)
     }
     return true
@@ -912,7 +914,7 @@ export class PreprocessorReader extends Reader {
     const doc = this._document
     if (isUriish(target) || typeof this._dir !== 'string') {
       if (!doc.attr('allow-uri-read')) {
-        this._logWarn(`cannot include contents of URI: ${target} (allow-uri-read attribute not enabled)`, { sourceLocation: this.cursor() })
+        this._logWarn(`cannot include contents of URI: ${target} (allow-uri-read attribute not enabled)`, { sourceLocation: this.cursor })
         const lt = target.includes(' ') ? `pass:c[${target}]` : target
         const la = doc.attr('compat-mode') ? attrlist : `role=include${attrlist ? ',' + attrlist : ''}`
         return this.replaceNextLine(`link:${lt}[${la}]`)
@@ -923,11 +925,11 @@ export class PreprocessorReader extends Reader {
     const incPath = doc.normalizeSystemPath(target, this._dir, null, { targetName: 'include file' })
     if (!fileExists(incPath)) {
       if (attributes['optional-option']) {
-        this._logInfo(`optional include dropped because include file not found: ${incPath}`, { sourceLocation: this.cursor() })
+        this._logInfo(`optional include dropped because include file not found: ${incPath}`, { sourceLocation: this.cursor })
         super._shift()
         return true
       }
-      this._logError(`include file not found: ${incPath}`, { sourceLocation: this.cursor() })
+      this._logError(`include file not found: ${incPath}`, { sourceLocation: this.cursor })
       return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${target}[${attrlist}]`)
     }
     const relpath = doc.pathResolver.relativePath(incPath, doc.baseDir)
@@ -1003,9 +1005,9 @@ export class PreprocessorReader extends Reader {
               const si = tagStack.findLastIndex(([k]) => k === thisTag)
               if (si >= 0) {
                 tagStack.splice(si, 1)
-                this._logWarn(`mismatched end tag (expected '${activeTag}' but found '${thisTag}') at line ${incLineno} of include ${targetType}: ${incPath}`, { sourceLocation: this.cursor(), includeLocation: ic })
+                this._logWarn(`mismatched end tag (expected '${activeTag}' but found '${thisTag}') at line ${incLineno} of include ${targetType}: ${incPath}`, { sourceLocation: this.cursor, includeLocation: ic })
               } else {
-                this._logWarn(`unexpected end tag '${thisTag}' at line ${incLineno} of include ${targetType}: ${incPath}`, { sourceLocation: this.cursor(), includeLocation: ic })
+                this._logWarn(`unexpected end tag '${thisTag}' at line ${incLineno} of include ${targetType}: ${incPath}`, { sourceLocation: this.cursor, includeLocation: ic })
               }
             }
           } else if (thisTag in tags) {
@@ -1023,12 +1025,12 @@ export class PreprocessorReader extends Reader {
 
     for (const [tagName, , tagLineno] of tagStack) {
       const ic = this.createIncludeCursor(incPath, expandedTarget, tagLineno)
-      this._logWarn(`detected unclosed tag '${tagName}' starting at line ${tagLineno} of include ${targetType}: ${incPath}`, { sourceLocation: this.cursor(), includeLocation: ic })
+      this._logWarn(`detected unclosed tag '${tagName}' starting at line ${tagLineno} of include ${targetType}: ${incPath}`, { sourceLocation: this.cursor, includeLocation: ic })
     }
 
     const missingTags = Object.entries(tags).filter(([, v]) => v).map(([k]) => k).filter(k => !tagsSelected.has(k))
     if (missingTags.length > 0) {
-      this._logWarn(`tag${missingTags.length > 1 ? 's' : ''} '${missingTags.join(', ')}' not found in include ${targetType}: ${incPath}`, { sourceLocation: this.cursor() })
+      this._logWarn(`tag${missingTags.length > 1 ? 's' : ''} '${missingTags.join(', ')}' not found in include ${targetType}: ${incPath}`, { sourceLocation: this.cursor })
     }
 
     if (!baseSelect || wildcard === false || Object.keys(tags).length > 0) {

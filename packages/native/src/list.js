@@ -18,7 +18,7 @@ export class List extends AbstractBlock {
   get content () { return this.blocks }
 
   // Public: Check whether this list has items (blocks).
-  items () { return this.blocks.length > 0 }
+  hasItems () { return this.blocks.length > 0 }
 
   // Public: Check whether this list is an outline list (unordered or ordered).
   //

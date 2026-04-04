@@ -16,7 +16,7 @@ import { List, ListItem }                  from './list.js'
 import { Table }                           from './table.js'
 import { Inline }                          from './inline.js'
 import { AttributeList }                   from './attribute_list.js'
-import { AttributeEntry, Document }        from './document.js'
+import { AttributeEntry, Document, _deps } from './document.js'
 import { Compliance }                      from './compliance.js'
 import { basename, intToRoman, romanToInt } from './helpers.js'
 import {
@@ -108,7 +108,7 @@ export class Parser {
 
   // Public: Parse the document header.
   static parseDocumentHeader (reader, document, headerOnly = false) {
-    let blockAttrs = reader.skipBlankLines() ? Parser.parseBlockMetadataLines(reader, document) : {}
+    let blockAttrs = reader.skipBlankLines() != null ? Parser.parseBlockMetadataLines(reader, document) : {}
     const docAttrs = document.attributes
 
     const implicitDoctitle = Parser.isNextLineDoctitle(reader, blockAttrs, docAttrs['leveloffset'])
@@ -418,7 +418,7 @@ export class Parser {
         }
       }
 
-      if (!reader.skipBlankLines()) break
+      if (reader.skipBlankLines() == null) break
     }
 
     if (part) {
@@ -460,7 +460,7 @@ export class Parser {
     if (parseMetadata) {
       while (Parser.parseBlockMetadataLine(reader, document, attributes, options)) {
         reader.readLine()
-        if (!reader.skipBlankLines()) return null
+        if (reader.skipBlankLines() == null) return null
       }
     }
 
@@ -1034,7 +1034,7 @@ export class Parser {
       const m = reader.peekLine().match(listRx)
       const listItem = Parser.parseListItem(reader, listBlock, m, m[1], style)
       if (listItem) listBlock.blocks.push(listItem)
-      if (!reader.skipBlankLines()) break
+      if (reader.skipBlankLines() == null) break
     }
 
     return listBlock
@@ -1291,9 +1291,10 @@ export class Parser {
     let withinNestedList = false
     let detachedContinuation = null
     const dlist = listType === 'dlist'
+    let thisLine = null
 
     while (reader.hasMoreLines()) {
-      let thisLine = reader.readLine()
+      thisLine = reader.readLine()
 
       if (Parser.isSiblingListItem(thisLine, listType, siblingTrait)) break
 
@@ -1377,7 +1378,7 @@ export class Parser {
       } else if (prevLine !== null && prevLine === '') {
         if (thisLine === '') {
           const skippedLine = reader.skipBlankLines()
-          if (!skippedLine) { thisLine = null; break }
+          if (skippedLine == null) { thisLine = null; break }
           thisLine = reader.readLine()
           if (thisLine == null) break
           if (Parser.isSiblingListItem(thisLine, listType, siblingTrait)) break
@@ -1777,7 +1778,7 @@ export class Parser {
   static parseBlockMetadataLines (reader, document, attributes = {}, options = {}) {
     while (Parser.parseBlockMetadataLine(reader, document, attributes, options)) {
       reader.readLine()
-      if (!reader.skipBlankLines()) break
+      if (reader.skipBlankLines() == null) break
     }
     return attributes
   }
@@ -2184,7 +2185,7 @@ export class Parser {
       if (parserCtx.isCellOpen()) {
         if (!tableReader.hasMoreLines()) parserCtx.closeCell(true)
       } else {
-        if (!tableReader.skipBlankLines()) break
+        if (tableReader.skipBlankLines() == null) break
       }
     }
 
@@ -2413,6 +2414,5 @@ function _uniform (str, chr, len) {
 
 // Lazy reader resolver to break circular dependency
 function _requireReader () {
-  try { return require('./reader.js') } catch {}
-  return {}
+  return _deps['reader.js'] ?? {}
 }
