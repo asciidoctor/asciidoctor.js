@@ -115,6 +115,8 @@ export async function load (input, options = {}) {
     _deps['reader.js'] = readerMod
     _deps['parser.js'] = parserMod
     let backend = String(attrs.backend || options.backend || 'html5')
+    // Strip soft-set modifier (@) and value-based soft-set (ending with @)
+    if (backend.endsWith('@')) backend = backend.slice(0, -1)
     if (backend.startsWith('xhtml')) backend = `html${backend.slice(5)}`  // xhtml5 → html5
     backend = BACKEND_ALIASES[backend] ?? backend
     await Converter.create(backend, {})

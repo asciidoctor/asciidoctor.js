@@ -22,6 +22,7 @@ import { SafeMode, DEFAULT_ATTRIBUTES, DEFAULT_BACKEND, DEFAULT_DOCTYPE,
 import { Converter, CustomFactory, deriveBackendTraits } from './converter.js'
 import { XmlSanitizeRx, AttributeEntryPassMacroRx }     from './rx.js'
 import { LF }                              from './constants.js'
+import { applyLogging }                    from './logging.js'
 
 // ── Helper structs ────────────────────────────────────────────────────────────
 
@@ -164,7 +165,7 @@ export class Document extends AbstractBlock {
       for (let [key, val] of Object.entries(options.attributes ?? {})) {
         if (key.endsWith('@')) {
           if (key.startsWith('!')) {
-            key = key.slice(1, -2)
+            key = key.slice(1, -1)
             val = false
           } else if (key.endsWith('!@')) {
             key = key.slice(0, -2)
@@ -618,7 +619,15 @@ export class Document extends AbstractBlock {
     if (this.isAttributeLocked(name)) return null
     if (value && value !== '') value = this._applyAttributeValueSubs(value)
     if (this._headerAttributes) {
-      this.attributes[name] = value
+      this._headerAttributes[name] = this.attributes[name] = value
+      switch (name) {
+        case 'backend':
+          this._updateBackendAttributes(value, this._attributesModified.delete('htmlsyntax') && value === this.backend)
+          break
+        case 'doctype':
+          this._updateDoctypeAttributes(value)
+          break
+      }
     } else {
       switch (name) {
         case 'backend':
@@ -856,8 +865,15 @@ export class Document extends AbstractBlock {
     this.id ??= attrs['css-signature'] ?? null
 
     // Handle toc / toc2
-    const toc2 = attrs['toc2']
-    const tocVal = toc2 ? (delete attrs['toc2'], 'left') : attrs['toc']
+    // NOTE: delete toc/toc2 from attrs first; only re-add specific placement/position attrs
+    let tocVal
+    if ('toc2' in attrs) {
+      delete attrs['toc2']
+      tocVal = 'left'
+    } else if ('toc' in attrs) {
+      tocVal = attrs['toc']
+      delete attrs['toc']
+    }
     if (tocVal != null) {
       const tocPlacementVal = attrs['toc-placement'] ?? 'macro'
       const tocPositionVal  = (tocPlacementVal && tocPlacementVal !== 'auto') ? tocPlacementVal : attrs['toc-position']
@@ -865,7 +881,6 @@ export class Document extends AbstractBlock {
         const defaultTocPosition = 'left'
         let defaultTocClass = 'toc2'
         const position = (!tocPositionVal) ? (tocVal || defaultTocPosition) : tocPositionVal
-        attrs['toc']           = ''
         attrs['toc-placement'] = 'auto'
         switch (position) {
           case 'left': case '<': case '&lt;':   attrs['toc-position'] = 'left';    break
@@ -1115,12 +1130,27 @@ function _formatTime (d) {
 }
 
 function _limitBytesize (str, max) {
-  // JS strings are UTF-16; approximate by encoding to UTF-8
-  let encoded = new TextEncoder().encode(str)
+  const encoded = new TextEncoder().encode(str)
   if (encoded.length <= max) return str
-  encoded = encoded.slice(0, max)
-  return new TextDecoder('utf-8', { fatal: false }).decode(encoded)
+  // Walk back from max to find the last complete UTF-8 character boundary.
+  let end = max
+  // Back up past continuation bytes (0x80–0xBF).
+  while (end > 0 && (encoded[end - 1] & 0xC0) === 0x80) end--
+  // If the byte at end-1 is a multibyte start byte, check whether its full
+  // sequence fits within max.
+  if (end > 0 && (encoded[end - 1] & 0x80) !== 0) {
+    const b = encoded[end - 1]
+    const charLen = b >= 0xF0 ? 4 : b >= 0xE0 ? 3 : b >= 0xC0 ? 2 : 1
+    if (end - 1 + charLen > max) {
+      end-- // sequence extends past max → exclude this start byte
+    } else {
+      end = max // sequence fits entirely → restore max
+    }
+  }
+  return new TextDecoder().decode(encoded.slice(0, end))
 }
+
+applyLogging(Document.prototype)
 
 // Module cache populated by load.js before constructing a Document.
 // Keys are bare filenames ('reader.js', 'parser.js').

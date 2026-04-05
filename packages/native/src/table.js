@@ -291,18 +291,22 @@ Table.Cell = class Cell extends AbstractBlock {
     }
 
     if (asciidoc) {
-      // Circular deps: lazily resolved at runtime
-      const parentDoctitle = this.document.attributes['doctitle']
-      delete this.document.attributes['doctitle']
+      const parentDoc = this.document
+      const parentDoctitle = parentDoc.attributes['doctitle']
+      delete parentDoc.attributes['doctitle']
       const innerDocumentLines = cellText.split(LF, -1)
-      // NOTE: PreprocessorReader and Document are resolved lazily via _resolveAsciidocCell
-      this._asciidocCellArgs = {
-        innerDocumentLines,
-        innerDocumentCursor: opts.cursor,
-        parentDoctitle,
-        column,
-        opts,
-      }
+      // Create and parse the inner document synchronously (Document.parse is synchronous).
+      // Access Document via parentDoc.constructor to avoid a circular import.
+      const innerDoc = new parentDoc.constructor(innerDocumentLines, {
+        safe: parentDoc.safe,
+        backend: parentDoc.backend,
+        doctype: 'article',
+        header_footer: false,
+        parent: parentDoc,
+      })
+      innerDoc.parse()
+      if (parentDoctitle) parentDoc.attributes['doctitle'] = parentDoctitle
+      this._innerDocument = innerDoc
       this._subs = null
     } else if (literal) {
       this.contentModel = 'verbatim'
@@ -621,7 +625,3 @@ Table.ParserContext = class ParserContext {
 }
 
 applyLogging(Table.ParserContext.prototype)
-
-// Make ParserContext alias available on prototype for messageWithContext
-const _pcProto = Table.ParserContext.prototype
-const _originalCC = _pcProto.closeCell

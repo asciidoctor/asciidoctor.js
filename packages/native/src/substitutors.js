@@ -1628,10 +1628,10 @@ export const Substitutors = {
   parseAttributes(attrlist, posattrs = [], opts = {}) {
     if (!attrlist || attrlist.length === 0) return {}
     if (opts.unescapeInput) attrlist = this.normalizeText(attrlist, true, true)
-    if (opts.subInput && attrlist.includes(ATTR_REF_HEAD)) {
+    if ((opts.subInput || opts.sub_input) && attrlist.includes(ATTR_REF_HEAD)) {
       attrlist = this.document.subAttributes(attrlist)
     }
-    const block = opts.subResult ? this : null
+    const block = (opts.subResult || opts.sub_result) ? this : null
     const al = new AttributeList(attrlist, block)
     if (opts.into) {
       return al.parseInto(opts.into, posattrs)

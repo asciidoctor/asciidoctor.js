@@ -116,11 +116,11 @@ export class AbstractNode {
   attr (name, defaultValue = null, fallbackName = null) {
     const key = String(name)
     const val = this.attributes[key]
-    if (val) return val
+    if (val != null) return val
     if (fallbackName && this._parent) {
       const fallbackKey = String(fallbackName === true ? name : fallbackName)
       const docVal = this.document.attributes[fallbackKey]
-      if (docVal) return docVal
+      if (docVal != null) return docVal
     }
     return defaultValue
   }

@@ -90,10 +90,10 @@ export class Block extends AbstractBlock {
       case 'compound':
         return super.content()
       case 'simple':
-        return this.applySubs(this.lines.join(LF), this._subs)
+        return this.applySubs(this.lines.join(LF), this.subs)
       case 'verbatim':
       case 'raw': {
-        const result = this.applySubs(this.lines, this._subs)
+        const result = this.applySubs(this.lines, this.subs)
         if (result.length < 2) return result[0] ?? ''
         while (result.length > 0 && result[0].trimEnd() === '') result.shift()
         while (result.length > 0 && result[result.length - 1].trimEnd() === '') result.pop()

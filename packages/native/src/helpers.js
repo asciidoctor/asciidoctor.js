@@ -224,24 +224,55 @@ export function nextval (current) {
   if (typeof current === 'number') return current + 1
   const intval = parseInt(current, 10)
   if (String(intval) === String(current)) return intval + 1
-  // Simplified String#succ: carry through rightmost alphanumeric characters
-  const chars = [...current]
+  // Mirrors Ruby's String#succ for single- and multi-character strings.
+  // Strategy: find the rightmost ASCII-alphanumeric character and increment it
+  // with carry.  If NO alphanumeric character exists, increment the rightmost
+  // character's Unicode code point instead.
+  const chars = [...current]  // split by Unicode code point (handles surrogate pairs)
+  let hasAlnum = false
   for (let i = chars.length - 1; i >= 0; i--) {
-    const code = chars[i].charCodeAt(0)
+    const code = chars[i].codePointAt(0)
     const isLower = code >= 97 && code <= 122
     const isUpper = code >= 65 && code <= 90
     const isDigit = code >= 48 && code <= 57
-    if (!isLower && !isUpper && !isDigit) break
+    if (!isLower && !isUpper && !isDigit) continue
+    hasAlnum = true
     const atEnd = (isLower && code === 122) || (isUpper && code === 90) || (isDigit && code === 57)
     if (!atEnd) {
-      chars[i] = String.fromCharCode(code + 1)
+      chars[i] = String.fromCodePoint(code + 1)
       return chars.join('')
     }
+    // Carry: wrap this char and continue to the next alphanumeric to the left.
     chars[i] = isLower ? 'a' : isUpper ? 'A' : '0'
-    if (i === 0) {
+    // Find next alphanumeric to carry into.
+    let carried = false
+    for (let j = i - 1; j >= 0; j--) {
+      const c2 = chars[j].codePointAt(0)
+      const l2 = c2 >= 97 && c2 <= 122
+      const u2 = c2 >= 65 && c2 <= 90
+      const d2 = c2 >= 48 && c2 <= 57
+      if (!l2 && !u2 && !d2) continue
+      const end2 = (l2 && c2 === 122) || (u2 && c2 === 90) || (d2 && c2 === 57)
+      if (!end2) {
+        chars[j] = String.fromCodePoint(c2 + 1)
+        carried = true
+        break
+      }
+      chars[j] = l2 ? 'a' : u2 ? 'A' : '0'
+    }
+    if (!carried) {
+      // All alphanumeric characters wrapped — prepend carry character.
       const carry = isLower ? 'a' : isUpper ? 'A' : '1'
       return carry + chars.join('')
     }
+    return chars.join('')
+  }
+  if (!hasAlnum) {
+    // No alphanumeric chars: increment the rightmost character's code point.
+    const last = chars.length - 1
+    const code = chars[last].codePointAt(0)
+    chars[last] = String.fromCodePoint(code + 1)
+    return chars.join('')
   }
   return current
 }
