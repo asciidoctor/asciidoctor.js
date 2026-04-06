@@ -173,13 +173,19 @@ export class AbstractNode {
     return val
   }
 
+  // Public: Retrieve the value of the named attribute.
+  // Alias for attr() to match the public Ruby API.
+  getAttr (name, defaultValue = null, inherit = false) {
+    return this.attr(name, defaultValue, inherit || null)
+  }
+
   // Public: Check if the specified option attribute is enabled on this node.
   //
   // name - The String or Symbol name of the option.
   //
   // Returns a Boolean indicating whether the <name>-option attribute is set.
   hasOption (name) {
-    return !!this.attributes[`${name}-option`]
+    return `${name}-option` in this.attributes
   }
 
   // Public: Set the specified option on this node by setting the <name>-option attribute.

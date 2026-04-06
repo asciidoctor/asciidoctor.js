@@ -264,10 +264,15 @@ export class AbstractBlock extends AbstractNode {
   //                 (default: this.context).
   //
   // Returns undefined.
-  assignCaption (value, captionContext = this.context) {
-    if (this.#caption || !this.#title) return
-    this.#caption = value || this.document.attributes.caption
-    if (!this.#caption) {
+  assignCaption (value = null, captionContext = this.context) {
+    // In Ruby, empty string is truthy; use != null to replicate that semantics.
+    if (this.#caption != null || !this.#title) return
+    const globalCaption = this.document.attributes.caption
+    // Explicit value (even '') or a global :caption: attribute (even empty) takes precedence and
+    // suppresses auto-numbering, matching Ruby's behaviour where any truthy assignment wins.
+    if (value != null || globalCaption != null) {
+      this.#caption = value != null ? value : globalCaption
+    } else {
       const attrName = CAPTION_ATTRIBUTE_NAMES[captionContext]
       if (attrName) {
         const prefix = this.document.attributes[attrName]

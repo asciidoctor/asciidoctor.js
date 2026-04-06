@@ -863,7 +863,7 @@ export class Parser {
           block = Parser.buildBlock(blockContext, 'verbatim', terminator, parent, reader, attributes)
           break
         case 'example':
-          if (attributes['collapsible-option']) attributes['caption'] ??= ''
+          if ('collapsible-option' in attributes) attributes['caption'] ??= ''
           block = Parser.buildBlock(blockContext, 'compound', terminator, parent, reader, attributes)
           break
         case 'quote':

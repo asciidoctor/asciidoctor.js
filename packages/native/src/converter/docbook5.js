@@ -27,6 +27,12 @@ export class DocBook5Converter extends ConverterBase {
     return `<section${id}>\n<title>${node.title}</title>\n${node.content()}\n</section>`
   }
 
+  convert_admonition (node) {
+    const name = node.attr('name')
+    const titleElement = node.hasTitle() ? `<title>${node.title}</title>\n` : ''
+    return `<${name}>\n${titleElement}<simpara>${node.content()}</simpara>\n</${name}>`
+  }
+
   convert_paragraph (node) {
     return `<para>${node.content()}</para>`
   }

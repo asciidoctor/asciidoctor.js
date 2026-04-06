@@ -51,11 +51,13 @@ export function countXpath (html, xpath) {
       .replace(/<(meta|link|br|hr|img|input|area|base|col|embed|param|source|track|wbr)([^>]*)>/gi, '<$1$2/>')
       .trim()
   } else {
-    // Fragment: wrap when multiple root elements are present (XML requires a single root).
-    // A single-root fragment is parsed as-is so that absolute XPath expressions
-    // like /*[@id="foo"] correctly target the fragment's root element.
-    const hasMultipleRoots = /<[a-zA-Z]/.test(trimmed.replace(/^<[^>]+>[\s\S]*?<\/[a-zA-Z][^>]*>/, '').trimStart())
-    xmlSrc = hasMultipleRoots ? `<root>${html}</root>` : html
+    // Fragment: always wrap in <root> so XML has a single root and XPath can address any number
+    // of top-level elements.  Absolute XPath paths (starting with / but not //) are rewritten
+    // to include the wrapper so that /*[@class="foo"] and (/*[@class="foo"])[1]/... still work.
+    xmlSrc = `<root>${html}</root>`
+    xpath = xpath
+      .replace(/^\/([^/])/, '/root/$1')
+      .replace(/\(\/([^/])/g, '(/root/$1')
   }
   const doc = new DOMParser().parseFromString(xmlSrc, 'text/xml')
   // Cast to any to bridge @xmldom/xmldom ↔ xpath type mismatch (compatible at runtime).
