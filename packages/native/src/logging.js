@@ -89,7 +89,7 @@ Logger.AutoFormattingMessage = {
 
 export class MemoryLogger {
   constructor () {
-    this.level = Severity.WARN
+    this.level = Severity.DEBUG
     this.messages = []
     this._maxSeverity = null
   }

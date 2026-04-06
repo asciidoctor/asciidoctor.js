@@ -387,7 +387,11 @@ export const Substitutors = {
       } else if (text.includes(LF)) {
         return text.split(LF).filter((line) => line !== CAN && !line.startsWith(CAN) && !line.includes(CAN)).join(LF)
       } else {
-        return ''
+        // When the caller sets returnDropSentinel, return null to signal that the line was
+        // dropped due to a *missing* attribute (as opposed to an attribute that simply has a
+        // blank value).  This lets callers distinguish the two cases without changing the
+        // general contract of subAttributes for every other call-site.
+        return opts.returnDropSentinel ? null : ''
       }
     }
 

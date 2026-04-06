@@ -718,7 +718,7 @@ ${node.content()}
       node.document.safe < SafeMode.SECURE) {
       if (node.hasOption('inline')) {
         img = this.readSvgContents(node, target) || `<span class="alt">${node.alt()}</span>`
-      } else if (node.hasOption('interactive')) {
+      } else if (node.hasOption('interactive') && node.document.safe >= SafeMode.SERVER) {
         const fallback = node.hasAttr('fallback')
           ? `<img src="${node.imageUri(node.attr('fallback'))}" alt="${this._encodeAttrValue(node.alt())}"${widthAttr}${heightAttr}${slash}>`
           : `<span class="alt">${node.alt()}</span>`
@@ -1482,7 +1482,11 @@ Your browser does not support the video tag.
   readSvgContents (node, target) {
     const resolvedPath = node.normalizeSystemPath(target, node.document.attr('imagesdir'), null, { targetName: 'SVG' })
     let svg = node.readAsset(resolvedPath, { normalize: true, warnOnFailure: true, label: 'SVG' })
-    if (!svg) return null
+    if (svg == null) return null  // file not found/readable; warning already emitted
+    if (!svg) {
+      node.logger.warn(`contents of SVG is empty: ${resolvedPath}`)
+      return null
+    }
     if (!svg.startsWith('<svg')) svg = svg.replace(SvgPreambleRx, '')
     let oldStartTag = null
     let newStartTag = null

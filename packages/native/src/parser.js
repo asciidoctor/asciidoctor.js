@@ -554,8 +554,10 @@ export class Parser {
                 }
                 delete attributes['style']
                 if (target.includes(ATTR_REF_HEAD)) {
-                  const expanded = block.subAttributes(target)
-                  if (!expanded && (docAttrs['attribute-missing'] || Compliance.attributeMissing) === 'drop-line') {
+                  const expanded = block.subAttributes(target, { returnDropSentinel: true })
+                  if (expanded === null) {
+                    // A missing attribute triggered drop-line; blank attributes (e.g. {blank})
+                    // that resolve to '' are kept (expanded !== null for those).
                     for (const k of Object.keys(attributes)) delete attributes[k]
                     return null
                   }
@@ -600,8 +602,8 @@ export class Parser {
                   let target = cbm[2]
                   const content = cbm[3]
                   if (target.includes(ATTR_REF_HEAD)) {
-                    const expanded = parent.subAttributes(target)
-                    if (!expanded && (docAttrs['attribute-missing'] || Compliance.attributeMissing) === 'drop-line') {
+                    const expanded = parent.subAttributes(target, { returnDropSentinel: true })
+                    if (expanded === null) {
                       for (const k of Object.keys(attributes)) delete attributes[k]
                       return null
                     }

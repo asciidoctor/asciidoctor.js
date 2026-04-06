@@ -1,8 +1,12 @@
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
 import { load } from '../src/load.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
 const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
@@ -95,7 +99,7 @@ image::http://example.org/tiger-svg[Tiger,100,format=svg]
 [%inline]
 image::circle.svg[Tiger,100]
 `
-      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: process.cwd() } })
+      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: __dirname } })
       assert.match(output, /<svg\s[^>]*width="100"[^>]*>/)
       assert.doesNotMatch(output, /<svg\s[^>]*width="500"[^>]*>/)
       assert.doesNotMatch(output, /<svg\s[^>]*height="500"[^>]*>/)
@@ -109,7 +113,7 @@ image::circle.svg[Tiger,100]
 [%inline]
 image::circle.svg[Tiger,100,link=self]
 `
-      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: process.cwd() } })
+      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: __dirname } })
       assert.match(output, /<svg\s[^>]*width="100"[^>]*>/)
       assert.doesNotMatch(output, /<a href=/)
     })
@@ -120,7 +124,7 @@ image::circle.svg[Tiger,100,link=self]
 
 image::circle.svg[Circle,50%,opts=inline]
 `
-      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: process.cwd() } })
+      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: __dirname } })
       assert.match(output, /<svg\s[^>]*width="50%"[^>]*>/)
     })
 
@@ -130,7 +134,7 @@ image::circle.svg[Circle,50%,opts=inline]
 
 image::circle.svg[Circle,opts=inline]
 `
-      const doc = await documentFromString(input, { safe: 'server', attributes: { docdir: process.cwd() } })
+      const doc = await documentFromString(input, { safe: 'server', attributes: { docdir: __dirname } })
       doc.blocks[0].setAttr('width', 50)
       const output = doc.convert()
       assert.match(output, /<svg\s[^>]*width="50"[^>]*>/)
@@ -144,13 +148,13 @@ image::circle.svg[Circle,opts=inline]
 [%inline]
 image::circle.svg[Tiger,100]
 `
-      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: process.cwd() } })
+      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: __dirname } })
       assert.match(output, /<svg\s[^>]*width="100">/)
     })
 
     test('should not throw exception if SVG to inline is empty', async () => {
       const input = 'image::empty.svg[nada,opts=inline]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', attributes: { docdir: process.cwd(), imagesdir: 'fixtures' } })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', attributes: { docdir: __dirname, imagesdir: 'fixtures' } })
       assertXpath(output, '//svg', 0)
       assertXpath(output, '//span[@class="alt"][text()="nada"]', 1)
       assertMessage(logger, 'warn', 'contents of SVG is empty:')
@@ -158,7 +162,7 @@ image::circle.svg[Tiger,100]
 
     test('should not throw exception if SVG to inline contains an incomplete start tag and explicit width is specified', async () => {
       const input = 'image::incomplete.svg[,200,opts=inline]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', attributes: { docdir: process.cwd(), imagesdir: 'fixtures' } })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', attributes: { docdir: __dirname, imagesdir: 'fixtures' } })
       assertXpath(output, '//svg', 1)
       assertXpath(output, '//span[@class="alt"]', 0)
     })
@@ -500,7 +504,7 @@ image::tiger.png[Tiger]
 
 image::dot.gif[Dot]
 `
-      const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: process.cwd() } })
+      const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: __dirname } })
       assert.equal(doc.attributes['imagesdir'], 'fixtures')
       const output = doc.convert()
       assertXpath(output, '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]', 1)
@@ -513,7 +517,7 @@ image::dot.gif[Dot]
 
 image::circle.svg[Tiger,100]
 `
-      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: process.cwd() } })
+      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: __dirname } })
       assertXpath(output, '//img[starts-with(@src,"data:image/svg+xml;base64,")]', 1)
     })
 
@@ -524,7 +528,7 @@ image::circle.svg[Tiger,100]
 
 image::circle.svg[Tiger,100,link=self]
 `
-      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: process.cwd() } })
+      const output = await convertStringToEmbedded(input, { safe: 'server', attributes: { docdir: __dirname } })
       assertXpath(output, '//img[starts-with(@src,"data:image/svg+xml;base64,")]', 1)
       assertXpath(output, '//a[starts-with(@href,"data:image/svg+xml;base64,")]', 1)
     })
@@ -536,7 +540,7 @@ image::circle.svg[Tiger,100,link=self]
 
 image::unreadable.gif[Dot]
 `
-      const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: process.cwd() } })
+      const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: __dirname } })
       assert.equal(doc.attributes['imagesdir'], 'fixtures')
       const output = doc.convert()
       assertXpath(output, '//img[@src="data:image/gif;base64,"]', 1)
@@ -550,7 +554,7 @@ image::unreadable.gif[Dot]
 
 image::dot[Dot]
 `
-      const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: process.cwd() } })
+      const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: __dirname } })
       assert.equal(doc.attributes['imagesdir'], 'fixtures')
       const output = doc.convert()
       assertXpath(output, '//img[starts-with(@src,"data:application/octet-stream;base64,")]', 1)
@@ -586,7 +590,7 @@ image::data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=[Do
 
 image::dot.gif[Dot]
 `
-      const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: process.cwd() } })
+      const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: __dirname } })
       assert.equal(doc.attributes['imagesdir'], '../..//fixtures/./../../fixtures')
       const output = doc.convert()
       // image target resolves to fixtures/dot.gif relative to docdir (which is explicitly set to the directory of this file)
@@ -602,7 +606,7 @@ image::dot.gif[Dot]
 
 image::../..//fixtures/./../../fixtures/dot.gif[Dot]
 `
-      const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: process.cwd() } })
+      const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: __dirname } })
       assert.equal(doc.attributes['imagesdir'], './')
       const output = doc.convert()
       // image target resolves to fixtures/dot.gif relative to docdir (which is explicitly set to the directory of this file)

@@ -27,6 +27,28 @@ export class DocBook5Converter extends ConverterBase {
     return `<section${id}>\n<title>${node.title}</title>\n${node.content()}\n</section>`
   }
 
+  convert_image (node) {
+    const target = node.attr('target')
+    const src = node.imageUri(target)
+    let imagedataAttrs = ` fileref="${src}"`
+    if (node.hasAttr('align')) imagedataAttrs += ` align="${node.attr('align')}"`
+    if (node.hasAttr('scale')) {
+      imagedataAttrs += ` scale="${node.attr('scale')}"`
+    } else if (node.hasAttr('scaledwidth')) {
+      imagedataAttrs += ` width="${node.attr('scaledwidth')}"`
+    } else {
+      if (node.hasAttr('width')) imagedataAttrs += ` contentwidth="${node.attr('width')}"`
+      if (node.hasAttr('height')) imagedataAttrs += ` contentdepth="${node.attr('height')}"`
+    }
+    const alt = node.alt()
+    return `<mediaobject>
+<imageobject>
+<imagedata${imagedataAttrs}/>
+</imageobject>
+<textobject><phrase>${alt}</phrase></textobject>
+</mediaobject>`
+  }
+
   convert_admonition (node) {
     const name = node.attr('name')
     const titleElement = node.hasTitle() ? `<title>${node.title}</title>\n` : ''
