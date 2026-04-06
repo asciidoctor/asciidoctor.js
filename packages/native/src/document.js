@@ -23,6 +23,7 @@ import { Converter, CustomFactory, deriveBackendTraits } from './converter.js'
 import { XmlSanitizeRx, AttributeEntryPassMacroRx }     from './rx.js'
 import { LF }                              from './constants.js'
 import { applyLogging }                    from './logging.js'
+import { SyntaxHighlighter } from "./syntax_highlighter.js";
 
 // ── Helper structs ────────────────────────────────────────────────────────────
 
@@ -923,6 +924,8 @@ export class Document extends AbstractBlock {
             const factory = this.options.syntax_highlighter_factory
             if (factory) {
               this.syntaxHighlighter = factory.create(syntaxHlName, this.backend, { document: this })
+            } else {
+              this.syntaxHighlighter = SyntaxHighlighter.create(syntaxHlName, this.backend, { document: this })
             }
           } catch {}
         }
