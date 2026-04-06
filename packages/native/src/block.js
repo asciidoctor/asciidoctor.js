@@ -108,7 +108,7 @@ export class Block extends AbstractBlock {
   }
 
   // Public: Returns the preprocessed source of this block as a single String.
-  source () {
+  get source () {
     return this.lines.join(LF)
   }
 

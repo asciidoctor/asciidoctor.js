@@ -55,8 +55,25 @@ export class DocBook5Converter extends ConverterBase {
     return `<${name}>\n${titleElement}<simpara>${node.content}</simpara>\n</${name}>`
   }
 
+  convert_open (node) {
+    const commonAttrs = this._commonAttributes(node)
+    if (node.contentModel === 'compound') {
+      if (node.hasTitle()) {
+        return `<formalpara${commonAttrs}>\n<title>${node.title}</title>\n<para>\n${node.content}\n</para>\n</formalpara>`
+      }
+      return `<para${commonAttrs}>\n${node.content}\n</para>`
+    } else if (node.hasTitle()) {
+      return `<formalpara${commonAttrs}>\n<title>${node.title}</title>\n<para>${node.content}</para>\n</formalpara>`
+    }
+    return `<simpara${commonAttrs}>${node.content}</simpara>`
+  }
+
   convert_paragraph (node) {
-    return `<para>${node.content}</para>`
+    const commonAttrs = this._commonAttributes(node)
+    if (node.hasTitle()) {
+      return `<formalpara${commonAttrs}>\n<title>${node.title}</title>\n<para>${node.content}</para>\n</formalpara>`
+    }
+    return `<simpara${commonAttrs}>${node.content}</simpara>`
   }
 
   convert_stem (node) {

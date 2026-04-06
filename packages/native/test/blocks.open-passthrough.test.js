@@ -92,23 +92,23 @@ TIP: An open block can have other blocks inside of it.
 
 Back to our regularly scheduled programming.`
 
-      const output = await convertString(input, { backend: 'docbook', keep_namespaces: true })
-      assertCss(output, 'article:root > para[xml|id="open"]', 1)
-      assertCss(output, 'article:root > para[xreflabel="Open Block"]', 1)
-      assertCss(output, 'article:root > simpara', 2)
-      assertCss(output, 'article:root > para', 1)
-      assertCss(output, 'article:root > para > simpara', 1)
-      assertCss(output, 'article:root > para > tip', 1)
+      const output = await convertString(input, { backend: 'docbook' })
+      assertCss(output, 'article > para[id="open"]', 1)
+      assertCss(output, 'article > para[xreflabel="Open Block"]', 1)
+      assertCss(output, 'article > simpara', 2)
+      assertCss(output, 'article > para', 1)
+      assertCss(output, 'article > para > simpara', 1)
+      assertCss(output, 'article > para > tip', 1)
     })
 
     test('should transfer id and reftext on open paragraph to DocBook output', async () => {
       const input = `[open#openpara,reftext="Open Paragraph"]
 This is an open paragraph.`
 
-      const output = await convertString(input, { backend: 'docbook', keep_namespaces: true })
-      assertCss(output, 'article:root > simpara', 1)
-      assertCss(output, 'article:root > simpara[xml|id="openpara"]', 1)
-      assertCss(output, 'article:root > simpara[xreflabel="Open Paragraph"]', 1)
+      const output = await convertString(input, { backend: 'docbook' })
+      assertCss(output, 'article > simpara', 1)
+      assertCss(output, 'article > simpara[id="openpara"]', 1)
+      assertCss(output, 'article > simpara[xreflabel="Open Paragraph"]', 1)
     })
 
     test('should transfer title on open block to DocBook output', async () => {
@@ -136,7 +136,7 @@ This is an open paragraph with a title.`
       assertCss(output, 'article > formalpara > title', 1)
       assertXpath(output, '/article/formalpara/title[text()="Behold the open"]', 1)
       assertCss(output, 'article > formalpara > para', 1)
-      assertCss(output, 'article > formalpara > para[text()="This is an open paragraph with a title."]', 1)
+      assertXpath(output, '/article/formalpara/para[text()="This is an open paragraph with a title."]', 1)
     })
 
     test('should transfer role on open block to DocBook output', async () => {

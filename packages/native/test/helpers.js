@@ -19,7 +19,12 @@ export function decodeChar (code) {
  * Ruby: assert_css '.foo', html, N
  */
 export function countCss (html, selector) {
-  const root = parse(`<body>${html}</body>`)
+  // Normalize XML namespace declarations and xml: attribute prefix so that
+  // css-select can match DocBook/XML output without namespace support.
+  const normalized = html
+    .replace(/\s+xmlns(?::\w+)?="[^"]*"/g, '')
+    .replace(/\bxml:(\w+)=/g, '$1=')
+  const root = parse(`<body>${normalized}</body>`)
   return root.querySelectorAll(selector).length
 }
 
@@ -43,7 +48,7 @@ export function assertCss (html, selector, expected) {
 export function countXpath (html, xpath) {
   const trimmed = html.trimStart()
   let xmlSrc
-  if (trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html')) {
+  if (trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html') || trimmed.startsWith('<?xml')) {
     // Full HTML document: strip DOCTYPE and self-close void elements so that
     // xmldom can parse as XML (no XHTML namespace, so XPath element names work as-is).
     xmlSrc = html
