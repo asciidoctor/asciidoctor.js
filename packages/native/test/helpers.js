@@ -60,6 +60,10 @@ export function countXpath (html, xpath) {
       .replace(/^\/([^/])/, '/root/$1')
       .replace(/\(\/([^/])/g, '(/root/$1')
   }
+  // Strip XML namespace declarations so XPath expressions like //svg match without
+  // needing a namespace resolver (elements with xmlns="..." would otherwise be in a
+  // named namespace and //svg would not find them).
+  xmlSrc = xmlSrc.replace(/\s+xmlns(?::\w+)?="[^"]*"/g, '')
   const doc = new DOMParser({ onError: () => {} }).parseFromString(xmlSrc, 'text/xml')
   // Cast to any to bridge @xmldom/xmldom ↔ xpath type mismatch (compatible at runtime).
   const nodes = select(xpath, /** @type {any} */ (doc))

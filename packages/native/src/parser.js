@@ -561,7 +561,7 @@ export class Parser {
                     for (const k of Object.keys(attributes)) delete attributes[k]
                     return null
                   }
-                  target = expanded || target
+                  target = expanded
                 }
                 if (blkCtx === 'image') {
                   document.register('images', target)
@@ -607,7 +607,7 @@ export class Parser {
                       for (const k of Object.keys(attributes)) delete attributes[k]
                       return null
                     }
-                    target = expanded || target
+                    target = expanded
                   }
                   const extConfig = extension.config
                   if (extConfig.content_model === 'attributes') {

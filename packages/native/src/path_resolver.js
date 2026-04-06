@@ -180,7 +180,7 @@ export class PathResolver {
   // Returns an absolute posix String path.
   systemPath (target, start = null, jail = null, opts = {}) {
     const recover    = opts.recover !== false
-    const targetName = opts.target_name ?? 'path'
+    const targetName = opts.targetName ?? opts.target_name ?? 'path'
 
     if (jail) {
       if (!this.root(jail)) throw new Error(`Jail is not an absolute path: ${jail}`)

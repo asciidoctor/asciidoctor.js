@@ -1480,7 +1480,7 @@ Your browser does not support the video tag.
 
   // NOTE expose readSvgContents for Bespoke converter
   readSvgContents (node, target) {
-    const resolvedPath = node.normalizeSystemPath(target, node.document.attr('imagesdir'), null, { targetName: 'SVG' })
+    const resolvedPath = node.normalizeSystemPath(target, node.document.attr('imagesdir'), null, { targetName: 'image' })
     let svg = node.readAsset(resolvedPath, { normalize: true, warnOnFailure: true, label: 'SVG' })
     if (svg == null) return null  // file not found/readable; warning already emitted
     if (!svg) {
@@ -1488,6 +1488,9 @@ Your browser does not support the video tag.
       return null
     }
     if (!svg.startsWith('<svg')) svg = svg.replace(SvgPreambleRx, '')
+    // Fix incomplete SVG start tag (missing closing >) by inserting > before the first child element.
+    // This handles cases like: <svg width="500"\n<circle .../> where the > is missing.
+    svg = svg.replace(/^(<svg\b[^<>]*?)(\s*<[^/!])/s, (_, pre, rest) => `${pre.trimEnd()}>${rest}`)
     let oldStartTag = null
     let newStartTag = null
     let startTagMatch = null
