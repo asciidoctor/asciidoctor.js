@@ -940,7 +940,7 @@ export class Parser {
     block.commitSubs()
 
     if (block.hasSub('callouts')) {
-      if (!Parser.catalogCallouts(block.source(), document)) block.removeSub('callouts')
+      if (!Parser.catalogCallouts(block.source, document)) block.removeSub('callouts')
     }
 
     return block
