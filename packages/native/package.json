@@ -34,5 +34,11 @@
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "volta": {
     "node": "24.14.1"
+  },
+  "devDependencies": {
+    "@xmldom/xmldom": "^0.9.9",
+    "linkedom": "^0.18.12",
+    "node-html-parser": "^7.1.0",
+    "xpath": "^0.0.34"
   }
 }

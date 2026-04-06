@@ -297,7 +297,7 @@ export class Parser {
 
     if (parentIsDocument && parent.blocks.length === 0 &&
         (parent.hasHeader() || ('invalid-header' in attributes && !!attributes['invalid-header'] && delete attributes['invalid-header'] !== undefined) ||
-         !Parser.isNextLineSection(reader, attributes))) {
+         typeof Parser.isNextLineSection(reader, attributes) !== 'number')) {
       // We are at the start of document processing
       document = parent
       book = document.doctype === 'book'
@@ -488,6 +488,7 @@ export class Parser {
             blockContext = style
           } else {
             // unknown style; revert to block context
+            Parser.logger.debug(Parser.messageWithContext(`unknown style for ${blockContext} block: ${style}`, { source_location: reader.cursor }))
           }
         }
       } else {

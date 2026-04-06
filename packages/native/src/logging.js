@@ -89,7 +89,7 @@ Logger.AutoFormattingMessage = {
 
 export class MemoryLogger {
   constructor () {
-    this.level = Severity.UNKNOWN
+    this.level = Severity.WARN
     this.messages = []
     this._maxSeverity = null
   }
@@ -101,6 +101,7 @@ export class MemoryLogger {
 
   add (severity, message = null, progname = null) {
     const sev = severity ?? Severity.UNKNOWN
+    if (sev < this.level) return true
     const msg = message ?? (typeof progname === 'function' ? progname() : progname)
     const severityName = Object.keys(Severity).find(k => Severity[k] === sev) ?? 'UNKNOWN'
     this.messages.push({ severity: severityName, message: msg })

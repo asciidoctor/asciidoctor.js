@@ -1,7 +1,7 @@
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { load } from '../src/load.js'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
+import { MemoryLogger, LoggerManager, Severity } from '../src/logging.js'
 import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
 
 const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
@@ -33,14 +33,13 @@ bar
       assert.equal(logger.messages.length, 0)
     })
 
-    test('should log debug message if block style is unknown and debug level is enabled', { todo: 'debug message for unknown block style not yet emitted by parser' }, async () => {
+    test('should log debug message if block style is unknown and debug level is enabled', async () => {
       const input = `\
 [foo]
 --
 bar
 --`
-      // Note: JS MemoryLogger captures all severity levels (including DEBUG) by default,
-      // so no special debug-level setup is needed (unlike Ruby's using_memory_logger).
+      logger.level = Severity.DEBUG
       await convertStringToEmbedded(input)
       assertMessage(logger, 'debug', 'unknown style for open block: foo')
     })
@@ -59,7 +58,7 @@ paragraph`
       assertXpath(output, '//*[@class="paragraph"]/p[text()="paragraph"]', 1)
     })
 
-    test('block title above document title demotes document title to a section title', { todo: 'parser infinite recursion in nextSection — bug to fix' }, async () => {
+    test('block title above document title demotes document title to a section title', async () => {
       const input = `\
 .Block title
 = Section Title
