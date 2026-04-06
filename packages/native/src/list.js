@@ -101,7 +101,7 @@ export class ListItem extends AbstractBlock {
 
   // Internal: Fold the adjacent paragraph block into the list item text.
   foldFirst () {
-    const src = this.blocks.shift().source()
+    const src = this.blocks.shift().source
     this._text = (!this._text || this._text.length === 0) ? src : `${this._text}${LF}${src}`
   }
 

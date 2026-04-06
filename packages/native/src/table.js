@@ -361,7 +361,7 @@ Table.Cell = class Cell extends AbstractBlock {
   set text (val) { this._text = val }
 
   // Public: Get the content — converted body data.
-  content () {
+  get content () {
     if (this.style === 'asciidoc') {
       return this._innerDocument ? this._innerDocument.convert() : ''
     }
