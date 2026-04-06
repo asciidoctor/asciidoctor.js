@@ -10,7 +10,7 @@
 //   - node.noheader → node.isNoheader()
 //   - node.authors → node.authors() (method call)
 //   - node.footnotes → node.footnotes (getter)
-//   - node.content → node.content() (method call)
+//   - node.content → node.content (method call)
 //   - node.text → node.text (property/getter)
 //   - node.captioned_title → node.captionedTitle()
 //   - node.content_model == :compound → node.contentModel === 'compound'
@@ -155,7 +155,7 @@ ${mannames.map(n => this.manify(n).replace(/\\-/g, '-')).join(', ')} \\- ${this.
       }
     }
 
-    result.push(node.content())
+    result.push(node.content)
 
     // QUESTION should NOTES come after AUTHOR(S)?
     this._appendFootnotes(result, node)
@@ -177,7 +177,7 @@ ${mannames.map(n => this.manify(n).replace(/\\-/g, '-')).join(', ')} \\- ${this.
 
   // NOTE embedded doesn't really make sense in the manpage backend
   convert_embedded (node) {
-    const result = [node.content()]
+    const result = [node.content]
     this._appendFootnotes(result, node)
     // QUESTION should we add an AUTHOR(S) section?
     return result.join(LF)
@@ -193,7 +193,7 @@ ${mannames.map(n => this.manify(n).replace(/\\-/g, '-')).join(', ')} \\- ${this.
       macro  = 'SH'
       stitle = this._uppercasePcdata(node.title)
     }
-    return `.${macro} "${this.manify(stitle)}"\n${node.content()}`
+    return `.${macro} "${this.manify(stitle)}"\n${node.content}`
   }
 
   convert_admonition (node) {
@@ -224,7 +224,7 @@ ${this._encloseContent(node)}
     for (const item of node.items) {
       result.push(`\\fB(${++num})\\fP\\h'-2n':T{`)
       result.push(this.manify(item.text, { whitespace: 'normalize' }))
-      if (item.hasBlocks()) result.push(item.content())
+      if (item.hasBlocks()) result.push(item.content)
       result.push('T}')
     }
     result.push('.TE')
@@ -252,7 +252,7 @@ ${this._encloseContent(node)}
           hasText = true
         }
         if (dd.hasBlocks()) {
-          let ddContent = dd.content()
+          let ddContent = dd.content
           if (!hasText && ddContent.startsWith('.sp\n')) {
             ddContent = ddContent.slice(4)
           }
@@ -291,7 +291,7 @@ ${this._encloseContent(node)}
 .if n .RS 4
 .nf
 .fam C
-${this.manify(node.content(), { whitespace: 'preserve' })}
+${this.manify(node.content, { whitespace: 'preserve' })}
 .fam
 .fi
 .if n .RE`)
@@ -307,7 +307,7 @@ ${this.manify(node.content(), { whitespace: 'preserve' })}
 .if n .RS 4
 .nf
 .fam C
-${this.manify(node.content(), { whitespace: 'preserve' })}
+${this.manify(node.content, { whitespace: 'preserve' })}
 .fam
 .fi
 .if n .RE`)
@@ -341,7 +341,7 @@ ${this.manify(node.content(), { whitespace: 'preserve' })}
 .  IP " ${numeral}." 4.2
 .\\}${listText === '' ? '' : LF + listText}`)
       if (item.hasBlocks()) {
-        let itemContent = item.content()
+        let itemContent = item.content
         if (listText === '' && itemContent.startsWith('.sp\n')) {
           itemContent = itemContent.slice(4)
         }
@@ -356,7 +356,7 @@ ${this.manify(node.content(), { whitespace: 'preserve' })}
     if (node.style === 'abstract' || node.style === 'partintro') {
       return this._encloseContent(node)
     }
-    return node.content()
+    return node.content
   }
 
   convert_page_break (_node) {
@@ -365,9 +365,9 @@ ${this.manify(node.content(), { whitespace: 'preserve' })}
 
   convert_paragraph (node) {
     if (node.hasTitle()) {
-      return `.sp\n.B ${this.manify(node.title)}\n.br\n${this.manify(node.content(), { whitespace: 'normalize' })}`
+      return `.sp\n.B ${this.manify(node.title)}\n.br\n${this.manify(node.content, { whitespace: 'normalize' })}`
     }
-    return `.sp\n${this.manify(node.content(), { whitespace: 'normalize' })}`
+    return `.sp\n${this.manify(node.content, { whitespace: 'normalize' })}`
   }
 
   convert_pass (node) {
@@ -401,7 +401,7 @@ ${this.manify(node.content(), { whitespace: 'preserve' })}
     result.push(node.hasTitle() ? `.sp\n.B ${this.manify(node.title)}\n.br` : '.sp')
     const style = node.style
     const [open, close] = BLOCK_MATH_DELIMITERS[style] ?? ['', '']
-    let equation = node.content()
+    let equation = node.content
     if (equation.startsWith(open) && equation.endsWith(close)) {
       equation = equation.slice(open.length, equation.length - close.length)
     }
@@ -454,11 +454,11 @@ ${this.manify(node.content(), { whitespace: 'preserve' })}
             }
             let cellContent
             if (cell.style === 'asciidoc') {
-              cellContent = cell.content()
+              cellContent = cell.content
             } else if (cell.style === 'literal') {
               cellContent = `.nf${LF}${this.manify(cell.text, { whitespace: 'preserve' })}${LF}.fi`
             } else {
-              cellContent = cell.content().map(p => this.manify(p, { whitespace: 'normalize' })).join(`${LF}.sp${LF}`)
+              cellContent = cell.content.map(p => this.manify(p, { whitespace: 'normalize' })).join(`${LF}.sp${LF}`)
             }
             rowText[rowIndex].push(`${cellContent}${LF}`)
           } else { // tsec === 'head' || tsec === 'foot'
@@ -542,7 +542,7 @@ ${this.manify(node.content(), { whitespace: 'preserve' })}
 .  IP \\(bu 2.3
 .\\}${listText === '' ? '' : LF + listText}`)
       if (item.hasBlocks()) {
-        let itemContent = item.content()
+        let itemContent = item.content
         if (listText === '' && itemContent.startsWith('.sp\n')) {
           itemContent = itemContent.slice(4)
         }
@@ -564,7 +564,7 @@ ${this.manify(node.content(), { whitespace: 'preserve' })}
     } else {
       attributionLine = null
     }
-    result.push(`.sp\n.nf\n${this.manify(node.content(), { whitespace: 'preserve' })}\n.fi\n.br`)
+    result.push(`.sp\n.nf\n${this.manify(node.content, { whitespace: 'preserve' })}\n.fi\n.br`)
     if (attributionLine) {
       result.push(`.in +.5i\n.ll -.5i\n${attributionLine}\n.in\n.ll`)
     }
@@ -818,8 +818,8 @@ ${this.manify(node.content(), { whitespace: 'preserve' })}
 
   _encloseContent (node) {
     return node.contentModel === 'compound'
-      ? node.content()
-      : `.sp\n${this.manify(node.content(), { whitespace: 'normalize' })}`
+      ? node.content
+      : `.sp\n${this.manify(node.content, { whitespace: 'normalize' })}`
   }
 
   _getRootDocument (node) {

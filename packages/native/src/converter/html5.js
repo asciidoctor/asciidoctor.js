@@ -11,7 +11,7 @@
 //   - node.footnotes? → node.hasFootnotes()
 //   - node.noheader/notitle/nofooter → node.isNoheader()/isNotitle()/isNofooter()
 //   - node.sections → node.sections() (method)
-//   - node.content → node.content() (method on Block/Document)
+//   - node.content → node.content (method on Block/Document)
 //   - alias convert_pass content_only → convert_pass delegates to this.contentOnly()
 //   - Stylesheets.instance.primary_stylesheet_data → not yet ported; embed yields empty <style>
 //   - read_svg_contents uses readAsset (synchronous) rather than async readContents
@@ -244,7 +244,7 @@ ${node.converter.convert(node, 'outline')}
     }
 
     result.push(`<div id="content"${maxWidthAttr}>
-${node.content()}
+${node.content}
 </div>`)
 
     if (node.hasFootnotes() && !node.hasAttr('nofootnotes')) {
@@ -353,7 +353,7 @@ ${node.converter.convert(node, 'outline')}
       }
     }
 
-    result.push(node.content())
+    result.push(node.content)
 
     if (node.hasFootnotes() && !node.hasAttr('nofootnotes')) {
       result.push(`<div id="footnotes">
@@ -487,15 +487,15 @@ ${node.converter.convert(node, 'outline')}
     const role = node.role
     if (level === 0) {
       return `<h1${idAttr} class="sect0${role ? ` ${role}` : ''}">${title}</h1>
-${node.content()}`
+${node.content}`
     }
     return `<div class="sect${level}${role ? ` ${role}` : ''}">
 <h${level + 1}${idAttr}>${title}</h${level + 1}>
 ${level === 1
       ? `<div class="sectionbody">
-${node.content()}
+${node.content}
 </div>`
-      : node.content()}
+      : node.content}
 </div>`
   }
 
@@ -520,7 +520,7 @@ ${node.content()}
 ${label}
 </td>
 <td class="content">
-${titleElement}${node.content()}
+${titleElement}${node.content}
 </td>
 </tr>
 </table>
@@ -568,7 +568,7 @@ Your browser does not support the audio tag.
         }
         result.push(`<tr>
 <td>${numLabel}</td>
-<td>${item.text}${item.hasBlocks() ? LF + item.content() : ''}</td>
+<td>${item.text}${item.hasBlocks() ? LF + item.content : ''}</td>
 </tr>`)
       }
       result.push('</table>')
@@ -576,7 +576,7 @@ Your browser does not support the audio tag.
       result.push('<ol>')
       for (const item of node.items) {
         result.push(`<li>
-<p>${item.text}</p>${item.hasBlocks() ? LF + item.content() : ''}
+<p>${item.text}</p>${item.hasBlocks() ? LF + item.content : ''}
 </li>`)
       }
       result.push('</ol>')
@@ -615,7 +615,7 @@ Your browser does not support the audio tag.
           }
           if (dd) {
             if (dd.hasText()) result.push(`<p>${dd.text}</p>`)
-            if (dd.hasBlocks()) result.push(dd.content())
+            if (dd.hasBlocks()) result.push(dd.content)
           }
           result.push('</li>')
         }
@@ -649,7 +649,7 @@ Your browser does not support the audio tag.
           result.push('<td class="hdlist2">')
           if (dd) {
             if (dd.hasText()) result.push(`<p>${dd.text}</p>`)
-            if (dd.hasBlocks()) result.push(dd.content())
+            if (dd.hasBlocks()) result.push(dd.content)
           }
           result.push('</td>')
           result.push('</tr>')
@@ -667,7 +667,7 @@ Your browser does not support the audio tag.
           if (!dd) continue
           result.push('<dd>')
           if (dd.hasText()) result.push(`<p>${dd.text}</p>`)
-          if (dd.hasBlocks()) result.push(dd.content())
+          if (dd.hasBlocks()) result.push(dd.content)
           result.push('</dd>')
         }
         result.push('</dl>')
@@ -688,7 +688,7 @@ Your browser does not support the audio tag.
       return `<details${idAttribute}${classAttribute}${node.hasOption('open') ? ' open' : ''}>
 ${summaryElement}
 <div class="content">
-${node.content()}
+${node.content}
 </div>
 </details>`
     }
@@ -696,7 +696,7 @@ ${node.content()}
     const role = node.role
     return `<div${idAttribute} class="exampleblock${role ? ` ${role}` : ''}">
 ${titleElement}<div class="content">
-${node.content()}
+${node.content}
 </div>
 </div>`
   }
@@ -785,7 +785,7 @@ ${img}
     const role = node.role
     const inner = syntaxHl
       ? syntaxHl.format(node, lang, opts)
-      : `${preOpen}${node.content()}${preClose}`
+      : `${preOpen}${node.content}${preClose}`
     return `<div${idAttribute} class="listingblock${role ? ` ${role}` : ''}">
 ${titleElement}<div class="content">
 ${inner}
@@ -800,7 +800,7 @@ ${inner}
     const role = node.role
     return `<div${idAttribute} class="literalblock${role ? ` ${role}` : ''}">
 ${titleElement}<div class="content">
-<pre${nowrap ? ' class="nowrap"' : ''}>${node.content()}</pre>
+<pre${nowrap ? ' class="nowrap"' : ''}>${node.content}</pre>
 </div>
 </div>`
   }
@@ -810,7 +810,7 @@ ${titleElement}<div class="content">
     const titleElement = node.hasTitle() ? `<div class="title">${node.title}</div>\n` : ''
     const style = node.style
     const [open, close] = BLOCK_MATH_DELIMITERS[style] ?? ['', '']
-    let equation = node.content()
+    let equation = node.content
     if (equation) {
       if (style === 'asciimath' && equation.includes(LF)) {
         const br = `${LF}<br${this._voidSlash}>`
@@ -857,7 +857,7 @@ ${equation}
         result.push('<li>')
       }
       result.push(`<p>${item.text}</p>`)
-      if (item.hasBlocks()) result.push(item.content())
+      if (item.hasBlocks()) result.push(item.content)
       result.push('</li>')
     }
 
@@ -878,7 +878,7 @@ ${equation}
       const role = node.role
       return `<div${idAttr} class="quoteblock abstract${role ? ` ${role}` : ''}">
 ${titleEl}<blockquote>
-${node.content()}
+${node.content}
 </blockquote>
 </div>`
     }
@@ -892,7 +892,7 @@ ${node.content()}
     const role = node.role
     return `<div${idAttr} class="openblock${style && style !== 'open' ? ` ${style}` : ''}${role ? ` ${role}` : ''}">
 ${titleEl}<div class="content">
-${node.content()}
+${node.content}
 </div>
 </div>`
   }
@@ -913,11 +913,11 @@ ${node.content()}
     if (node.hasTitle()) {
       return `<div${attributes}>
 <div class="title">${node.title}</div>
-<p>${node.content()}</p>
+<p>${node.content}</p>
 </div>`
     }
     return `<div${attributes}>
-<p>${node.content()}</p>
+<p>${node.content}</p>
 </div>`
   }
 
@@ -938,7 +938,7 @@ ${doc.converter.convert(doc, 'outline')}
     }
     return `<div id="preamble">
 <div class="sectionbody">
-${node.content()}
+${node.content}
 </div>${toc}
 </div>`
   }
@@ -960,7 +960,7 @@ ${node.content()}
     }
     return `<div${idAttribute}${classAttribute}>${titleElement}
 <blockquote>
-${node.content()}
+${node.content}
 </blockquote>${attributionElement}
 </div>`
   }
@@ -976,7 +976,7 @@ ${node.content()}
     const role = node.role
     return `<div${idAttribute} class="sidebarblock${role ? ` ${role}` : ''}">
 <div class="content">
-${titleElement}${node.content()}
+${titleElement}${node.content}
 </div>
 </div>`
   }
@@ -1034,13 +1034,13 @@ ${titleElement}${node.content()}
             } else {
               switch (cell.style) {
                 case 'asciidoc':
-                  cellContent = `<div class="content">${cell.content()}</div>`
+                  cellContent = `<div class="content">${cell.content}</div>`
                   break
                 case 'literal':
                   cellContent = `<div class="literal"><pre>${cell.text}</pre></div>`
                   break
                 default: {
-                  const parts = cell.content()
+                  const parts = cell.content
                   cellContent = parts.length === 0
                     ? ''
                     : `<p class="tableblock">${parts.join('</p>\n<p class="tableblock">')}</p>`
@@ -1133,7 +1133,7 @@ ${doc.converter.convert(doc, 'outline', levels != null ? { toclevels: levels } :
       } else {
         result.push(`<p>${item.text}</p>`)
       }
-      if (item.hasBlocks()) result.push(item.content())
+      if (item.hasBlocks()) result.push(item.content)
       result.push('</li>')
     }
 
@@ -1158,7 +1158,7 @@ ${doc.converter.convert(doc, 'outline', levels != null ? { toclevels: levels } :
       attributionElement = `\n<div class="attribution">\n${attributionText}${citeElement}\n</div>`
     }
     return `<div${idAttribute}${classAttribute}>${titleElement}
-<pre class="content">${node.content()}</pre>${attributionElement}
+<pre class="content">${node.content}</pre>${attributionElement}
 </div>`
   }
 
@@ -1221,7 +1221,9 @@ ${doc.converter.convert(doc, 'outline', levels != null ? { toclevels: levels } :
           listParam = `&amp;list=${list}`
         } else {
           let playlist
-          ;[target, playlist] = target.split(',', 2)
+          const videoParts = target.split(',')
+          target = videoParts[0]
+          playlist = videoParts.length > 1 ? videoParts.slice(1).join(',') : null
           playlist ||= node.attr('playlist')
           if (playlist) {
             listParam = `&amp;playlist=${target},${playlist}`

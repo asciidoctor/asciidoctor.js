@@ -689,7 +689,7 @@ export class Document extends AbstractBlock {
         if (block.contentModel === 'compound' || block.contentModel === 'empty') {
           this.logger.warn('no inline candidate; use the inline doctype to convert a single paragraph, verbatim, or raw block')
         } else {
-          output = block.content()
+          output = block.content
         }
       }
     } else {
@@ -742,9 +742,9 @@ export class Document extends AbstractBlock {
     if (this._timings) this._timings.record('write')
   }
 
-  content () {
+  get content () {
     delete this.attributes['title']
-    return super.content()
+    return super.content
   }
 
   // Public: Read the docinfo file(s) for inclusion in the document template.

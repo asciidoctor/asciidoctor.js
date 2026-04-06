@@ -262,7 +262,7 @@ export class ConverterBase {
 
   // Public: Convert using only content (no wrapping).
   contentOnly (node) {
-    return node.content()
+    return node.content
   }
 
   // Public: Skip conversion.

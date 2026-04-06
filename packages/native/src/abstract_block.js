@@ -133,7 +133,7 @@ export class AbstractBlock extends AbstractNode {
   // Public: Get the converted result of all child blocks joined with a newline.
   //
   // Returns a String.
-  content () {
+  get content () {
     return this.blocks.map(b => b.convert()).join(LF)
   }
 

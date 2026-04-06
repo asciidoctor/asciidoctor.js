@@ -979,7 +979,8 @@ export class Parser {
       const { Reader: Rdr } = _requireReader()
       blockReader = new Rdr(
         reader.readLinesUntil({ terminator, skip_processing: skipProcessing, context: blockContext, cursor: 'at_mark' }),
-        blockCursor
+        blockCursor,
+        { document: parent.document }
       )
     }
 

@@ -85,10 +85,10 @@ export class Block extends AbstractBlock {
   // Public: Get the converted result appropriate to this block's content model.
   //
   // Returns the String result.
-  content () {
+  get content () {
     switch (this.contentModel) {
       case 'compound':
-        return super.content()
+        return super.content
       case 'simple':
         return this.applySubs(this.lines.join(LF), this.subs)
       case 'verbatim':

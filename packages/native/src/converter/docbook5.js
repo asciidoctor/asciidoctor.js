@@ -18,13 +18,13 @@ export class DocBook5Converter extends ConverterBase {
   }
 
   convert_document (node) {
-    const content = node.content()
+    const content = node.content
     return `<?xml version="1.0" encoding="UTF-8"?>\n<article xmlns="http://docbook.org/ns/docbook" version="5.0">\n${content}\n</article>\n`
   }
 
   convert_section (node) {
     const id = node.id ? ` xml:id="${node.id}"` : ''
-    return `<section${id}>\n<title>${node.title}</title>\n${node.content()}\n</section>`
+    return `<section${id}>\n<title>${node.title}</title>\n${node.content}\n</section>`
   }
 
   convert_image (node) {
@@ -52,15 +52,54 @@ export class DocBook5Converter extends ConverterBase {
   convert_admonition (node) {
     const name = node.attr('name')
     const titleElement = node.hasTitle() ? `<title>${node.title}</title>\n` : ''
-    return `<${name}>\n${titleElement}<simpara>${node.content()}</simpara>\n</${name}>`
+    return `<${name}>\n${titleElement}<simpara>${node.content}</simpara>\n</${name}>`
   }
 
   convert_paragraph (node) {
-    return `<para>${node.content()}</para>`
+    return `<para>${node.content}</para>`
+  }
+
+  convert_stem (node) {
+    // Temporarily remove specialcharacters sub to get the raw (unescaped) equation source,
+    // then restore it — mirrors the Ruby implementation in docbook5.rb.
+    let equation
+    const idx = node.subs ? node.subs.indexOf('specialcharacters') : -1
+    if (idx !== -1) {
+      node.subs.splice(idx, 1)
+      equation = node.content
+      node.subs.splice(idx, 0, 'specialcharacters')
+    } else {
+      equation = node.content
+    }
+
+    let equationData
+    if (node.style === 'asciimath') {
+      // NOTE: No AsciiMath-to-MathML conversion available in JS; use CDATA fallback
+      equationData = `<mathphrase><![CDATA[${equation}]]></mathphrase>`
+    } else {
+      // unhandled math (latexmath); pass source to alt and mathphrase — dblatex will process alt as LaTeX math
+      equationData = `<alt><![CDATA[${equation}]]></alt>\n<mathphrase><![CDATA[${equation}]]></mathphrase>`
+    }
+
+    const commonAttrs = this._commonAttributes(node)
+    if (node.hasTitle()) {
+      return `<equation${commonAttrs}>\n<title>${node.title}</title>\n${equationData}\n</equation>`
+    }
+    return `<informalequation${commonAttrs}>\n${equationData}\n</informalequation>`
   }
 
   convert_embedded (node) {
-    return node.content()
+    return node.content
+  }
+
+  // Internal: Build common XML attributes string (id, role, xreflabel).
+  // Mirrors common_attributes in the Ruby DocBook5 converter.
+  _commonAttributes (node) {
+    let attrs = ''
+    if (node.id) attrs += ` xml:id="${node.id}"`
+    if (node.role) attrs += ` role="${node.role}"`
+    if (node.reftext) attrs += ` xreflabel="${node.reftext}"`
+    return attrs
   }
 }
 

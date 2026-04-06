@@ -111,6 +111,7 @@ export async function load (input, options = {}) {
       import('./parser.js'),
       import('./converter.js'),
       import('./constants.js'),
+      import('./syntaxHighlighter/highlightjs.js'),
     ])
     _deps['reader.js'] = readerMod
     _deps['parser.js'] = parserMod

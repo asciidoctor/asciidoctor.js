@@ -103,6 +103,7 @@ export class Reader {
       }
       this.lineno = cursor.lineno || 1
     }
+    if (opts.document) this._document = opts.document
     this.sourceLines = this._prepareLines(data, opts)
     this._lines = this.sourceLines.slice().reverse()
     this._mark = null
@@ -441,7 +442,7 @@ export class Reader {
 
   // ── Logging helpers ─────────────────────────────────────────────────────────
 
-  get logger () { return console }
+  get logger () { return this._document?.logger ?? console }
 
   _logWarn (msg, { sourceLocation, includeLocation } = {}) {
     let text = sourceLocation ? `${sourceLocation.lineInfo}: ${msg}` : msg
