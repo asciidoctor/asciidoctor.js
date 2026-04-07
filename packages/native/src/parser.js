@@ -1961,7 +1961,7 @@ export class Parser {
   //
   // Returns BlockMatchData object if return_match_data is true, true/false otherwise.
   static isDelimitedBlock (line, returnMatchData = false) {
-    const lineLen = line.length
+    let lineLen = line.length
     if (lineLen < 2 || !DELIMITED_BLOCK_HEADS[line.slice(0, 2)]) return null
 
     let tip, tipLen
@@ -1979,7 +1979,11 @@ export class Parser {
           if (tip === '````') return null
           tip = tip.slice(0, 3)
           if (tip !== '```') return null
-          tipLen = 3
+          // Mirror Ruby: line = tip; line_len = tip_len = 3
+          // This ensures the returned terminator is '```', not the full opener line
+          // (e.g. '```ruby'), so that readLinesUntil finds the correct closing delimiter.
+          line = tip
+          lineLen = tipLen = 3
         } else if (tip !== '```') {
           return null
         }

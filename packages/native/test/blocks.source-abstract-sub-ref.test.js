@@ -89,8 +89,8 @@ alert("Hello, World!")
       assert.equal(block.getAttr('language'), 'ruby')
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.listingblock', 2)
-      assertCss(output, '.listingblock pre code.language-ruby[data-lang=ruby]', 1)
-      assertCss(output, '.listingblock pre code.language-javascript[data-lang=javascript]', 1)
+      assertXpath(output, '//*[contains(@class,"listingblock")]//code[contains(@class,"language-ruby")][@data-lang="ruby"]', 1)
+      assertXpath(output, '//*[contains(@class,"listingblock")]//code[contains(@class,"language-javascript")][@data-lang="javascript"]', 1)
     })
 
     test('should support fenced code blocks with languages and numbering', async () => {
@@ -104,8 +104,8 @@ alert("Hello, World!")
 `
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.listingblock', 2)
-      assertCss(output, '.listingblock pre code.language-ruby[data-lang=ruby]', 1)
-      assertCss(output, '.listingblock pre code.language-javascript[data-lang=javascript]', 1)
+      assertXpath(output, '//*[contains(@class,"listingblock")]//code[contains(@class,"language-ruby")][@data-lang="ruby"]', 1)
+      assertXpath(output, '//*[contains(@class,"listingblock")]//code[contains(@class,"language-javascript")][@data-lang="javascript"]', 1)
     })
 
     test('should allow source style to be specified on literal block', async () => {
@@ -373,7 +373,7 @@ content
 `
       const output = await convertString(input, { backend: 'docbook' })
       assertCss(output, 'partintro', 1)
-      assertCss(output, 'part[xml|id="_part_1"] > partintro', 1)
+      assertCss(output, 'part[id="_part_1"] > partintro', 1)
       assertCss(output, 'partintro > simpara', 2)
     })
 
@@ -396,7 +396,7 @@ content
 `
       const output = await convertString(input, { backend: 'docbook' })
       assertCss(output, 'partintro', 1)
-      assertCss(output, 'part[xml|id="_part_1"] > partintro', 1)
+      assertCss(output, 'part[id="_part_1"] > partintro', 1)
       assertCss(output, 'partintro > title', 1)
       assertCss(output, 'partintro > title + simpara', 1)
     })

@@ -17,6 +17,11 @@ export function decodeChar (code) {
 /**
  * Count occurrences of a CSS selector in an HTML string.
  * Ruby: assert_css '.foo', html, N
+ *
+ * NOTE: node-html-parser treats <pre> as a raw-text element, so child elements
+ * such as <code> inside <pre> are not parsed into the DOM and cannot be
+ * matched by CSS selectors. Use assertXpath for any assertion that needs to
+ * reach inside a <pre> block (e.g. pre/code or pre//code patterns).
  */
 export function countCss (html, selector) {
   // Normalize XML namespace declarations and xml: attribute prefix so that
