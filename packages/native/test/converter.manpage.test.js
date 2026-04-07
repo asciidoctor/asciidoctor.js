@@ -2,7 +2,6 @@ import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { load } from '../src/load.js'
-import { LoggerManager, MemoryLogger } from '../src/logging.js'
 import ManPageConverter from '../src/converter/manpage.js'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -47,19 +46,6 @@ const convert = async (input, opts = {}) => {
 const loadManpage = async (input, opts = {}) =>
   load(input, { safe: 'safe', backend: 'manpage', doctype: 'manpage', ...opts })
 
-// Run fn with a MemoryLogger, restoring the previous logger after
-// eslint-disable-next-line no-unused-vars
-const withMemoryLogger = async (fn) => {
-  const savedLogger = LoggerManager.logger
-  const logger = new MemoryLogger()
-  LoggerManager.logger = logger
-  try {
-    return await fn(logger)
-  } finally {
-    LoggerManager.logger = savedLogger
-  }
-}
-
 // Inline manify testing via a direct converter instance
 const c = new ManPageConverter('manpage')
 
@@ -81,7 +67,7 @@ describe('ManPageConverter#manify', () => {
   test('preserves whitespace: escapes leading indent (non-line-start spaces)', () => {
     // Two or more spaces NOT at line start are escaped with \& to preserve indentation
     const result = c.manify('x  indented', { whitespace: 'preserve' })
-    assert.match(result, /\\&  indented/)
+    assert.match(result, /\\& {2}indented/)
   })
 
   test('preserves whitespace: keeps leading spaces on a line as-is', () => {
@@ -892,7 +878,7 @@ describe('ManPageConverter convert_document', () => {
 
 ls - list directory contents`
     const result = await manpage(input)
-    assert.match(result, /\.\\"     Title: ls/)
+    assert.match(result, /\.\\" {5}Title: ls/)
     assert.match(result, /\.\\" Generator: Asciidoctor/)
   })
 
@@ -924,7 +910,7 @@ ls - list directory`
 == NAME
 
 ls - list`, {})
-    assert.doesNotMatch(result, /\.\\"      Date:/)
+    assert.doesNotMatch(result, /\.\\" {6}Date:/)
   })
 })
 
@@ -1532,7 +1518,7 @@ describe('Environment', () => {
     try {
       process.env.SOURCE_DATE_EPOCH = '1234123412'
       const result = await manpage(SAMPLE_MANPAGE_HEADER)
-      assert.match(result, /Date: 2009\-02\-08/)
+      assert.match(result, /Date: 2009-02-08/)
       assert.match(result, /^\.TH "COMMAND" "1" "2009-02-08" "Command 1\.2\.3" "Command Manual"$/m)
     } finally {
       if (oldSourceDateEpoch === undefined) {
