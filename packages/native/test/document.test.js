@@ -101,7 +101,7 @@ describe('Default settings', () => {
     assert.ok(!inAttr(doc, 'safe-mode-server'))
   })
 
-  // NOTE: docbook5 converter not yet implemented in JS
+  // NOTE: docbook5 converter is implemented but PIs not yet emitted
   test.skip('toc and sectnums enabled by default in docbook backend', async () => {
     const doc = await parse('content', { backend: 'docbook5' })
     assert.ok(inAttr(doc, 'toc'))
@@ -166,8 +166,7 @@ describe('Structure', () => {
     assert.equal(title.subtitle, 'Subtitle')
   })
 
-  // NOTE: [separator=::] on document header currently causes a stack overflow in the parser
-  test.skip('subtitle with custom separator', async () => {
+  test('subtitle with custom separator', async () => {
     const input = '[separator=::]\n= Main Title:: Subtitle\nAuthor Name\n\ncontent'
     const doc = await parse(input)
     const title = doc.doctitle({ partition: true })
@@ -176,8 +175,7 @@ describe('Structure', () => {
     assert.equal(title.subtitle, 'Subtitle')
   })
 
-  // NOTE: :doctitle: attribute entry as virtual header is not yet implemented
-  test.skip('doctitle defined as attribute entry', async () => {
+  test('doctitle defined as attribute entry', async () => {
     const input = ':doctitle: Document Title\n\npreamble\n\n== First Section'
     const doc = await parse(input)
     assert.equal(doc.doctitle(), 'Document Title')
@@ -245,8 +243,7 @@ describe('Structure', () => {
     assert.ok(result.includes('id="footer"'))
   })
 
-  // NOTE: section parsing not yet fully implemented — hasSections() always returns false
-  test.skip('hasSections returns true when sections present', async () => {
+  test('hasSections returns true when sections present', async () => {
     const doc = await parse('= Title\n\n== Section 1\n\ncontent')
     assert.ok(doc.hasSections())
   })
@@ -268,8 +265,7 @@ describe('Catalog', () => {
     assert.equal(doc.catalog.refs, doc.references.refs)
   })
 
-  // NOTE: section parsing not yet fully implemented — refs catalog stays empty
-  test.skip('resolveId finds section by title', async () => {
+  test('resolveId finds section by title', async () => {
     const doc = await parse('= Title\n\n== Section A\n\nContent')
     assert.equal(doc.resolveId('Section A'), '_section_a')
   })
@@ -312,8 +308,7 @@ describe('Backends and Doctypes', () => {
     assert.ok('basebackend-html' in doc.attributes)
   })
 
-  // NOTE: docbook5 converter module not yet implemented
-  test.skip('docbook5 backend sets expected attributes', async () => {
+  test('docbook5 backend sets expected attributes', async () => {
     const doc = await parse('', { attributes: { backend: 'docbook5' } })
     assert.equal(doc.attributes['backend'], 'docbook5')
     assert.ok('backend-docbook5' in doc.attributes)
@@ -517,8 +512,7 @@ describe('HTML output', () => {
     assert.ok(output.includes('id="footer" style="max-width: 70em;"'))
   })
 
-  // NOTE: body blocks are not yet parsed when document has a title — paragraph not in output
-  test.skip('embedded document with notitle! shows h1 but no header/footer divs', async () => {
+  test('embedded document with notitle! shows h1 but no header/footer divs', async () => {
     const input = '= Document Title\n\ncontent'
     const result = await embed(input, { attributes: { 'notitle!': '' } })
     assert.ok(!result.includes('<html'))
@@ -552,8 +546,7 @@ describe('Backends and Doctypes (extended)', () => {
     assert.ok(result.includes('<hr/>'))
   })
 
-  // NOTE: htmlsyntax set in document header is not yet re-applied after backend init
-  test.skip('htmlsyntax xml in document header if followed by backend produces self-closing hr', async () => {
+  test('htmlsyntax xml in document header if followed by backend produces self-closing hr', async () => {
     const input = ':htmlsyntax: xml\n:backend: html5\n\n---'
     const doc = await parse(input, { safe: 'safe' })
     assert.equal(doc.attr('htmlsyntax'), 'xml')
@@ -561,8 +554,7 @@ describe('Backends and Doctypes (extended)', () => {
     assert.ok(result.includes('<hr/>'))
   })
 
-  // NOTE: htmlsyntax set in document header is not yet re-applied after backend init
-  test.skip('htmlsyntax xml not honored if backend entry comes before htmlsyntax in header', async () => {
+  test('htmlsyntax xml not honored if backend entry comes before htmlsyntax in header', async () => {
     const input = ':backend: html5\n:htmlsyntax: xml\n\n---'
     const doc = await parse(input, { safe: 'safe' })
     const result = doc.convert()

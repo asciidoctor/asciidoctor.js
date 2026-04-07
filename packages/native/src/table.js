@@ -366,11 +366,13 @@ Table.Cell = class Cell extends AbstractBlock {
       return this._innerDocument ? this._innerDocument.convert() : ''
     }
     if (this._text.includes(Table.Cell.DOUBLE_LF)) {
-      return this.text.split(BlankLineRx).map(para => {
+      return this.text.split(BlankLineRx).flatMap(para => {
+        para = para.trim()
+        if (!para) return []
         const cs = this.style
-        return (cs && cs !== 'header')
+        return [(cs && cs !== 'header')
           ? (new Inline(this.parent, 'quoted', para, { type: cs })).convert()
-          : para
+          : para]
       })
     }
     const subbedText = this.text

@@ -655,7 +655,8 @@ export class Parser {
 
         if (OrderedListRx.test(thisLine)) {
           reader.unshiftLine(thisLine)
-          const start = attributes['start'] ? delete attributes['start'] : null
+          const start = ('start' in attributes) ? attributes['start'] : null
+          delete attributes['start']
           block = Parser.parseList(reader, 'olist', parent, style, { start })
           if (block.style) attributes['style'] = block.style
           break
@@ -2193,7 +2194,14 @@ export class Parser {
             }
             break
           }
-        } else { break }
+        } else {
+          // null line = blank line; preserve in psv buffer so multi-paragraph cells are detected
+          if (format === 'psv' && parserCtx.buffer !== '') {
+            parserCtx.buffer += LF
+            parserCtx.keepCellOpen()
+          }
+          break
+        }
       }
 
       if (parserCtx.isCellOpen()) {

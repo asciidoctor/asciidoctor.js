@@ -609,8 +609,7 @@ This is http://asciidoc.org[AsciiDoc], which can be used to write content.`
     assert.equal(lines[len - 1], 'which can be used to write content.')
   })
 
-  // TODO: bare URLs at the start of a line (no preceding text) are not converted to URL macros
-  test.skip('does not leave blank lines between URLs on contiguous lines of input', async () => {
+  test('does not leave blank lines between URLs on contiguous lines of input', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 The corresponding implementations are
@@ -980,10 +979,7 @@ some content`)
 // ── convert_paragraph ─────────────────────────────────────────────────────────
 
 describe('ManPageConverter convert_paragraph', () => {
-  // TODO: The NAME section is consumed by parseManpageHeader (not left as a block), so its
-  // content never goes through convert_paragraph. A .sp only appears in sections beyond NAME.
-  // Revisit: add a second section (e.g. DESCRIPTION) with a paragraph to test .sp generation.
-  test.skip('generates .sp before paragraph text', async () => {
+  test('generates .sp before paragraph text', async () => {
     const result = await manpage(`${MAN_HEADER}
 
 == NAME
@@ -1080,9 +1076,7 @@ ls -la /tmp
 // ── convert_admonition ────────────────────────────────────────────────────────
 
 describe('ManPageConverter convert_admonition', () => {
-  // TODO: The converter uses node.attr('textlabel') which returns title-cased 'Note', not 'NOTE'.
-  // Revisit: either check /\.B Note/ or verify if the converter should uppercase the label.
-  test.skip('generates admonition block with label', async () => {
+  test('generates admonition block with label', async () => {
     const result = await manpage(`${MAN_HEADER}
 
 == NAME
@@ -1092,7 +1086,7 @@ ls - list
 == NOTES
 
 NOTE: This is important.`)
-    assert.match(result, /\.B NOTE/)
+    assert.match(result, /\.B Note/)
     assert.match(result, /This is important/)
   })
 })
@@ -1143,10 +1137,7 @@ This is \`code\` text.`)
 // ── convert_inline_anchor ─────────────────────────────────────────────────────
 
 describe('ManPageConverter convert_inline_anchor', () => {
-  // TODO: The manify() function encodes '@' as '\(at' in MTO macros, so the actual output is
-  // MTO "admin\(atexample.com" not MTO "admin@example.com".
-  // Revisit: verify correct troff encoding — \(at is the proper groff escape for '@'.
-  test.skip('MTO macro is generated for mailto links', async () => {
+  test('MTO macro is generated for mailto links', async () => {
     const result = await manpage(`${MAN_HEADER}
 
 == NAME
@@ -1156,7 +1147,7 @@ ls - list
 == AUTHORS
 
 Contact mailto:admin@example.com[admin].`)
-    assert.match(result, /MTO "admin@example\.com" "admin"/)
+    assert.match(result, /MTO "admin\\\(atexample\.com" "admin"/)
   })
 })
 
