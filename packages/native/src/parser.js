@@ -1049,7 +1049,7 @@ export class Parser {
     if (!text.includes('<')) return false
     let found  = false
     let autonum = 0
-    const rx = new RegExp(CalloutScanRx.source, 'g')
+    const rx = new RegExp(CalloutScanRx.source, CalloutScanRx.flags + 'g')
     let m
     while ((m = rx.exec(text)) !== null) {
       if (!m[0].startsWith('\\')) {

@@ -76,6 +76,30 @@ export class DocBook5Converter extends ConverterBase {
     return `<simpara${commonAttrs}>${node.content}</simpara>`
   }
 
+  convert_listing (node) {
+    const informal = !node.hasTitle()
+    const commonAttrs = this._commonAttributes(node)
+    let wrappedContent
+    if (node.style === 'source') {
+      const attrs = node.attributes
+      let numberingAttrs
+      if (node.hasOption('linenums')) {
+        numberingAttrs = ('start' in attrs) ? ` linenumbering="numbered" startinglinenumber="${parseInt(attrs.start, 10)}"` : ' linenumbering="numbered"'
+      } else {
+        numberingAttrs = ' linenumbering="unnumbered"'
+      }
+      if ('language' in attrs) {
+        wrappedContent = `<programlisting${informal ? commonAttrs : ''} language="${attrs.language}"${numberingAttrs}>${node.content}</programlisting>`
+      } else {
+        wrappedContent = `<screen${informal ? commonAttrs : ''}${numberingAttrs}>${node.content}</screen>`
+      }
+    } else {
+      wrappedContent = `<screen${informal ? commonAttrs : ''}>${node.content}</screen>`
+    }
+    if (informal) return wrappedContent
+    return `<formalpara${commonAttrs}>\n<title>${node.title}</title>\n<para>\n${wrappedContent}\n</para>\n</formalpara>`
+  }
+
   convert_stem (node) {
     // Temporarily remove specialcharacters sub to get the raw (unescaped) equation source,
     // then restore it — mirrors the Ruby implementation in docbook5.rb.

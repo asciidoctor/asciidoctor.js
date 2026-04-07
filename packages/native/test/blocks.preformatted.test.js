@@ -386,8 +386,8 @@ AssertionError
       const output = await convertStringToEmbedded(input)
 
       assertCss(output, '.listingblock pre', 1)
-      assertCss(output, '.listingblock pre strong', 1)
-      assertCss(output, '.listingblock pre em', 0)
+      assertXpath(output, '//*[contains(@class,"listingblock")]//pre/strong', 1)
+      assertXpath(output, '//*[contains(@class,"listingblock")]//pre/em', 0)
 
       const input2 = `\
 [subs="specialcharacters,macros"]
@@ -424,7 +424,7 @@ nums = [1, 2, 3, [.added]#4#]
 ----
 `
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '//*[@class="title"][text()=".gitignore"]')
+      assertXpath(output, '//*[@class="title"][text()=".gitignore"]', 1)
     })
 
     test('listing block without title should generate screen element in docbook', async () => {

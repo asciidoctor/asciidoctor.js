@@ -366,26 +366,28 @@ export const CalloutListRx = /^<(\d+|\.)>[ \t]+(.*)$/
 //   3 – optional XML comment delimiter (--)
 //   4 – callout number or dot
 //
-export const CalloutExtractRx = /((?:\/\/|#|--|;;) ?)?(\\)?<!?(|--)(\d+|\.)\3>(?=(?: ?\\?<!?\3(?:\d+|\.)\3>)*$)/
+export const CalloutExtractRx = /((?:\/\/|#|--|;;) ?)?(\\)?<!?(|--)(\d+|\.)\3>(?=(?: ?\\?<!?\3(?:\d+|\.)\3>)*$)/m
 
 // Template string for CalloutExtractRxMap entries.
 // Runtime value: (\\)?<()(\d+|\.)>(?=(?: ?\\?<(?:\d+|\.)>)*$)
+// Note: 'm' flag added so $ matches end-of-line (Ruby regex default behaviour).
 export const CalloutExtractRxt = '(\\\\)?<()([\\d]+|\\.)>(?=(?: ?\\\\?<(?:\\d+|\\.)>)*$)'
 
 // Lazy map: line-comment string → callout-extract regex.
 // Mirrors Ruby: Hash.new { |h,k| h[k] = /(prefix)?#{CalloutExtractRxt}/ }
 export const CalloutExtractRxMap = makeLazyRxMap((key) => {
   const prefix = key ? `(${escapeRegex(key)} ?)?` : '()?'
-  return new RegExp(`${prefix}${CalloutExtractRxt}`)
+  return new RegExp(`${prefix}${CalloutExtractRxt}`, 'm')
 })
 
 // Matches a callout reference when scanning source (special chars NOT yet replaced).
-export const CalloutScanRx = /\\?<!?(|--)(\d+|\.)\1>(?=(?: ?\\?<!?\1(?:\d+|\.)\1>)*$)/
+export const CalloutScanRx = /\\?<!?(|--)(\d+|\.)\1>(?=(?: ?\\?<!?\1(?:\d+|\.)\1>)*$)/m
 
 // Matches a callout reference in HTML output (special chars already replaced).
 //
 // Group layout mirrors CalloutExtractRx.
-export const CalloutSourceRx = /((?:\/\/|#|--|;;) ?)?(\\)?&lt;!?(|--)(\d+|\.)\3&gt;(?=(?: ?\\?&lt;!?\3(?:\d+|\.)\3&gt;)*$)/
+// Note: 'm' flag so $ matches end-of-line, matching Ruby regex semantics.
+export const CalloutSourceRx = /((?:\/\/|#|--|;;) ?)?(\\)?&lt;!?(|--)(\d+|\.)\3&gt;(?=(?: ?\\?&lt;!?\3(?:\d+|\.)\3&gt;)*$)/m
 
 // Template string for CalloutSourceRxMap entries.
 // Runtime value: (\\)?&lt;()(\d+|\.)&gt;(?=(?: ?\\?&lt;(?:\d+|\.)&gt;)*$)
@@ -394,7 +396,7 @@ export const CalloutSourceRxt = '(\\\\)?&lt;()([\\d]+|\\.)&gt;(?=(?: ?\\\\?&lt;(
 // Lazy map: line-comment string → callout-source regex.
 export const CalloutSourceRxMap = makeLazyRxMap((key) => {
   const prefix = key ? `(${escapeRegex(key)} ?)?` : '()?'
-  return new RegExp(`${prefix}${CalloutSourceRxt}`)
+  return new RegExp(`${prefix}${CalloutSourceRxt}`, 'm')
 })
 
 // Dynamic map from list context to its regex.
