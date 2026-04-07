@@ -415,9 +415,7 @@ should have known again`
     assert.ok(result.includes('Oh, here it goes again\nI should have known,\nshould have known,\nshould have known again'))
   })
 
-  // TODO: {empty} + list continuation not yet handled the same way as Ruby
-  // In Ruby, `* {empty}\n+\ntext` gives item.text='' with a block. In JS, text='\n\ntext'.
-  test.skip('drops principal text of list item in ulist if empty', async () => {
+  test('drops principal text of list item in ulist if empty', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 * {empty}
@@ -427,8 +425,7 @@ the main text`
     assert.ok(result.endsWith('.\\}\nthe main text\n.RE'))
   })
 
-  // TODO: same {empty} + list continuation issue as ulist above
-  test.skip('drops principal text of list item in olist if empty', async () => {
+  test('drops principal text of list item in olist if empty', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 . {empty}
@@ -438,8 +435,7 @@ the main text`
     assert.ok(result.endsWith('.\\}\nthe main text\n.RE'))
   })
 
-  // TODO: dlist item with no text + continuation not handled: extra .sp prefix not stripped
-  test.skip('does not add extra space before block content if dlist item has no text', async () => {
+  test('does not add extra space before block content if dlist item has no text', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 term::
@@ -449,8 +445,7 @@ description`
     assert.ok(result.endsWith('term\n.RS 4\ndescription\n.RE'))
   })
 
-  // TODO: [start=N] attribute on olist not being passed through to the node
-  test.skip('honors start attribute on ordered list', async () => {
+  test('honors start attribute on ordered list', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 [start=5]
@@ -461,8 +456,7 @@ description`
     assert.match(result, /IP " 6\."[\s\S]*six/)
   })
 
-  // TODO: `"\`text\`"` (double-quote + backtick) curly-quote notation not yet handled
-  test.skip('uppercases section titles without mangling formatting macros', async () => {
+  test('uppercases section titles without mangling formatting macros', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 does stuff
@@ -516,9 +510,7 @@ describe('Backslash', () => {
     assert.match(result, /^\.TH "COMMAND" .* "\\ \\&" "\\ \\&"$/m)
   })
 
-  // TODO: `"\`text\`"` (double-quote + backtick) curly-quote notation not yet handled;
-  // `"\`hello\`"` should produce \(lqhello\(rq but the outer double-quotes remain literal
-  test.skip('preserves backslashes in escape sequences', async () => {
+  test('preserves backslashes in escape sequences', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 "\`hello\`" '\`goodbye\`' *strong* _weak_ \`even\``
@@ -530,14 +522,11 @@ describe('Backslash', () => {
     )
   })
 
-  // TODO: AsciiDoc backslash-escape handling differs between Ruby and JS implementations
-  test.skip('preserves literal backslashes in content', async () => {
-    // Ruby source (via double-quoted heredoc): \.foo \ bar \\ baz\
-    // After AsciiDoc: one backslash before each sequence
-    // After manify: \(rs.foo \(rs bar \(rs\(rs baz\(rs
+  test('preserves literal backslashes in content', async () => {
+    // Equivalent to Ruby SAMPLE_MANPAGE_HEADER + \.foo \ bar \\ baz\
     const input = `${SAMPLE_MANPAGE_HEADER}
 
-\\\\.foo \\\\ bar \\\\\\\\ baz\\\\
+\\.foo \\ bar \\\\ baz\\
 more`
     const result = await convert(input)
     const lines = result.split('\n')
@@ -692,8 +681,7 @@ mailto:doc@example.org[Contact the doc]`
     assert.equal(lines[len - 1], '.MTO "doc\\(atexample.org" "Contact the doc" ""')
   })
 
-  // TODO: bare/implicit email addresses in paragraph text are not auto-linked as MTO macros
-  test.skip('sets text of MTO macro to blank for implicit email', async () => {
+  test('sets text of MTO macro to blank for implicit email', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 Bugs fixed daily by doc@example.org.`
     const result = await convert(input)
@@ -704,8 +692,7 @@ Bugs fixed daily by doc@example.org.`
 // ── Table ─────────────────────────────────────────────────────────────────────
 
 describe('Table', () => {
-  // TODO: [%header%footer] role not yet applied — header/footer section detection not implemented
-  test.skip('creates header, body, and footer rows in correct order', async () => {
+  test('creates header, body, and footer rows in correct order', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 [%header%footer]
@@ -752,8 +739,7 @@ describe('Table', () => {
     assert.doesNotMatch(result, /<\/?BOUNDARY>/)
   })
 
-  // TODO: table with titled header row — header detection not yielding ltB format
-  test.skip('manifies table title', async () => {
+  test('manifies table title', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 .Table of options
@@ -794,14 +780,13 @@ T}
     assert.ok(result.endsWith(expected))
   })
 
-  // TODO: literal cell style ('l|') not yet recognized — cell renders as plain text
-  test.skip('manifies and preserves whitespace in literal table cell', async () => {
+  test('manifies and preserves whitespace in literal table cell', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 |===
 |a l|b
 c    _d_
-\\.
+.
 |===`
     const result = await convert(input)
     const expected = `.TS
@@ -821,8 +806,7 @@ T}
     assert.ok(result.endsWith(expected))
   })
 
-  // TODO: multi-paragraph table cells not yet generating .sp separators between paragraphs
-  test.skip('preserves break between paragraphs in normal table cell', async () => {
+  test('preserves break between paragraphs in normal table cell', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 [cols=3*]
@@ -984,7 +968,11 @@ describe('ManPageConverter convert_paragraph', () => {
 
 == NAME
 
-ls - list`)
+ls - list
+
+== DESCRIPTION
+
+some text`)
     assert.match(result, /\.sp/)
   })
 })
@@ -1427,10 +1415,8 @@ Foo goes with bar, not baz.`
 
 // ── Footnotes ─────────────────────────────────────────────────────────────────
 
-// TODO: all footnote tests fail with "Document.Footnote is not a constructor"
-//       The Footnote class is not exported / constructed properly in substitutors.js
 describe('Footnotes', () => {
-  test.skip('generates footnotes as numbered list in NOTES section (non-standalone)', async () => {
+  test('generates footnotes as numbered list in NOTES section (non-standalone)', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 text.footnote:[first footnote]
@@ -1449,7 +1435,7 @@ second footnote`
     assert.ok(result.endsWith(expected))
   })
 
-  test.skip('generates footnotes as numbered list in NOTES section (standalone)', async () => {
+  test('generates footnotes as numbered list in NOTES section (standalone)', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 text.footnote:[first footnote]
@@ -1471,7 +1457,7 @@ Author Name`
     assert.ok(result.endsWith(expected))
   })
 
-  test.skip('numbers footnotes according to footnote index', async () => {
+  test('numbers footnotes according to footnote index', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 text.footnote:fn1[first footnote]footnote:[second footnote]
@@ -1490,7 +1476,7 @@ second footnote`
     assert.ok(result.endsWith(expected))
   })
 
-  test.skip('formats footnote with bare URL', async () => {
+  test('formats footnote with bare URL', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 text.footnote:[https://example.org]`
@@ -1501,7 +1487,7 @@ text.footnote:[https://example.org]`
     assert.ok(result.endsWith(expected))
   })
 
-  test.skip('formats footnote with text before bare URL', async () => {
+  test('formats footnote with text before bare URL', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 text.footnote:[see https://example.org]`
@@ -1513,7 +1499,7 @@ see \\c
     assert.ok(result.endsWith(expected))
   })
 
-  test.skip('formats footnote with text after bare URL', async () => {
+  test('formats footnote with text after bare URL', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 text.footnote:[https://example.org is the place]`
@@ -1525,7 +1511,7 @@ is the place`
     assert.ok(result.endsWith(expected))
   })
 
-  test.skip('formats footnote with URL macro', async () => {
+  test('formats footnote with URL macro', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 
 text.footnote:[go to https://example.org[example site].]`

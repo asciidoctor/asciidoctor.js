@@ -1276,7 +1276,7 @@ export class Parser {
       if (subsequentLine != null) {
         if (commentLines.length > 0) listItemReader.unshiftLines(commentLines)
         let contentAdjacent = false
-        if (subsequentLine !== '') {
+        if (String(subsequentLine) !== '') {
           contentAdjacent = true
           if (!dlist) hasText = null
         }
@@ -2086,9 +2086,9 @@ export class Parser {
     }
 
     const skipped = tableReader.skipBlankLines() ?? 0
-    if (attributes['header-option']) {
+    if ('header-option' in attributes) {
       table.hasHeaderOption = true
-    } else if (skipped === 0 && !attributes['noheader-option']) {
+    } else if (skipped === 0 && !('noheader-option' in attributes)) {
       table.hasHeaderOption = 'implicit'
     }
     let implicitHeader = table.hasHeaderOption === 'implicit'

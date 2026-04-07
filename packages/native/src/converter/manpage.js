@@ -503,7 +503,7 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
     }
 
     let rowTextSlice = rowText
-    if (node.rows.hasHeaderOption && rowText[0]) {
+    if (node.hasHeaderOption && rowText[0]) {
       result.push(`${LF}${rowHeader[0].join(' ')}.`)
       result.push(`${LF}${rowText[0].join('')}`)
       result.push('.T&')
@@ -591,7 +591,7 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
           macro = 'URL'
         }
         let text = node.text
-        if (text === target) {
+        if (text === resolvedTarget) {
           text = ''
         } else {
           text = text.replace(/"/g, `${ESC_BS}(dq`)

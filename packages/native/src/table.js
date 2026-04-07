@@ -144,7 +144,7 @@ export class Table extends AbstractBlock {
       }
     }
 
-    if (numBodyRows > 0 && attrs['footer-option']) {
+    if (numBodyRows > 0 && ('footer-option' in attrs)) {
       this.rows.foot = [body.pop()]
     }
   }

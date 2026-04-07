@@ -101,12 +101,11 @@ describe('Default settings', () => {
     assert.ok(!inAttr(doc, 'safe-mode-server'))
   })
 
-  // NOTE: docbook5 converter is implemented but PIs not yet emitted
-  test.skip('toc and sectnums enabled by default in docbook backend', async () => {
+  test('toc and sectnums enabled by default in docbook backend', async () => {
     const doc = await parse('content', { backend: 'docbook5' })
     assert.ok(inAttr(doc, 'toc'))
     assert.ok(inAttr(doc, 'sectnums'))
-    const result = doc.convert()
+    const result = doc.convert({ standalone: true })
     assert.ok(result.includes('<?asciidoc-toc?>'))
     assert.ok(result.includes('<?asciidoc-numbered?>'))
   })
@@ -290,9 +289,9 @@ describe('Catalog', () => {
     assert.ok(!doc.hasFootnotes())
   })
 
-  // NOTE: footnote substitution not yet cataloguing footnotes
-  test.skip('hasFootnotes returns true when footnotes present', async () => {
+  test('hasFootnotes returns true when footnotes present', async () => {
     const doc = await parse('= Title\n\ncontent.footnote:[note]')
+    doc.convert() // footnotes are registered during inline substitution at convert time
     assert.ok(doc.hasFootnotes())
   })
 })

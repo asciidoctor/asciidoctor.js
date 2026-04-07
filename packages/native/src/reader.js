@@ -205,7 +205,7 @@ export class Reader {
     let numSkipped = 0
     let nextLine
     while ((nextLine = this.peekLine()) !== undefined) {
-      if (nextLine !== '') return numSkipped
+      if (String(nextLine) !== '') return numSkipped
       this._shift()
       numSkipped++
     }

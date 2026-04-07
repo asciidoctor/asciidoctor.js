@@ -336,7 +336,7 @@ const _normalQuoteSubs = [
     ru(String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?\*(\S|\S${CC_ALL}*?\S)\*(?!${CG_WORD})`, 'm')],
   // "`double-quoted`"
   ['double', 'constrained',
-    ru(String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?${BT}"(\S|\S${CC_ALL}*?\S)${BT}"(?!${CG_WORD})`, 'm')],
+    ru(String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?"${BT}(\S|\S${CC_ALL}*?\S)${BT}"(?!${CG_WORD})`, 'm')],
   // '`single-quoted`'
   ['single', 'constrained',
     ru(String.raw`(^|[^${CC_WORD};:${BT}}])(?:${QuoteAttributeListRxt})?'${BT}(\S|\S${CC_ALL}*?\S)${BT}'(?!${CG_WORD})`, 'm')],

@@ -1155,6 +1155,8 @@ function _limitBytesize (str, max) {
 
 applyLogging(Document.prototype)
 
+Document.Footnote = Footnote
+
 // Module cache populated by load.js before constructing a Document.
 // Keys are bare filenames ('reader.js', 'parser.js').
 export const _deps = {}
