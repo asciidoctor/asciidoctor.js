@@ -58,6 +58,8 @@ export class Logger {
   fatal (msg, progname)   { return this.add(Severity.FATAL,   msg, progname) }
   unknown (msg, progname) { return this.add(Severity.UNKNOWN, msg, progname) }
 
+  isDebug () { return this.level <= Severity.DEBUG }
+
   _writeln (line) {
     // Remove trailing newline added by formatter before passing to console
     process?.stderr?.write?.(line) ?? console.error(line.replace(/\n$/, ''))
@@ -89,7 +91,10 @@ Logger.AutoFormattingMessage = {
 
 export class MemoryLogger {
   constructor () {
-    this.level = Severity.DEBUG
+    // Default level is UNKNOWN (highest) so isDebug() returns false by default,
+    // matching Ruby's MemoryLogger (level: UNKNOWN). The add() method stores all
+    // messages unconditionally — level is only used by the isDebug() guard.
+    this.level = Severity.UNKNOWN
     this.messages = []
     this._maxSeverity = null
   }
@@ -101,7 +106,6 @@ export class MemoryLogger {
 
   add (severity, message = null, progname = null) {
     const sev = severity ?? Severity.UNKNOWN
-    if (sev < this.level) return true
     const msg = message ?? (typeof progname === 'function' ? progname() : progname)
     const severityName = Object.keys(Severity).find(k => Severity[k] === sev) ?? 'UNKNOWN'
     this.messages.push({ severity: severityName, message: msg })
@@ -114,6 +118,8 @@ export class MemoryLogger {
   error (msg, pn)   { return this.add(Severity.ERROR,   msg, pn) }
   fatal (msg, pn)   { return this.add(Severity.FATAL,   msg, pn) }
   unknown (msg, pn) { return this.add(Severity.UNKNOWN, msg, pn) }
+
+  isDebug () { return this.level <= Severity.DEBUG }
 
   clear () { this.messages.length = 0 }
   empty () { return this.messages.length === 0 }

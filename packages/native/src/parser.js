@@ -488,7 +488,7 @@ export class Parser {
             blockContext = style
           } else {
             // unknown style; revert to block context
-            Parser.logger.debug(Parser.messageWithContext(`unknown style for ${blockContext} block: ${style}`, { source_location: reader.cursor }))
+            if (Parser.logger.isDebug()) Parser.logger.debug(Parser.messageWithContext(`unknown style for ${blockContext} block: ${style}`, { source_location: reader.cursor }))
           }
         }
       } else {
@@ -756,7 +756,10 @@ export class Parser {
             const { Reader: Rdr } = _requireReader()
             block = Parser.buildBlock('quote', 'compound', false, parent, new Rdr(mapped), attributes)
             if (creditLine) {
-              const [attribution, citetitle] = block.applySubs(creditLine, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements']).split(', ', 2)
+              const subsApplied = block.applySubs(creditLine, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
+              const commaIdx = subsApplied.indexOf(', ')
+              const attribution = commaIdx !== -1 ? subsApplied.slice(0, commaIdx) : subsApplied
+              const citetitle = commaIdx !== -1 ? subsApplied.slice(commaIdx + 2) : null
               if (attribution) attributes['attribution'] = attribution
               if (citetitle) attributes['citetitle'] = citetitle
             }
@@ -767,7 +770,10 @@ export class Parser {
             lines[lines.length - 1] = lines[lines.length - 1].slice(0, -1)
             attributes['style'] = 'quote'
             block = new Block(parent, 'quote', { content_model: 'simple', source: lines, attributes })
-            const [attribution, citetitle] = block.applySubs(cred, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements']).split(', ', 2)
+            const subsApplied = block.applySubs(cred, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
+            const commaIdx = subsApplied.indexOf(', ')
+            const attribution = commaIdx !== -1 ? subsApplied.slice(0, commaIdx) : subsApplied
+            const citetitle = commaIdx !== -1 ? subsApplied.slice(commaIdx + 2) : null
             if (attribution) attributes['attribution'] = attribution
             if (citetitle) attributes['citetitle'] = citetitle
           } else {
