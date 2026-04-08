@@ -313,7 +313,7 @@ export const AnyListRx = /^(?:[ \t]*(?:-|\*\**|\.\.*|\u2022|\d+\.|[a-zA-Z]\.|[IV
 //   * Foo
 //   - Foo
 //
-export const UnorderedListRx = /^[ \t]*(-|\*\**|\u2022)[ \t]+(.*)$/
+export const UnorderedListRx = /^[ \t]*(-|\*\**|\u2022)[ \t]+([\s\S]*)$/
 
 // Matches an ordered list item.
 //
@@ -321,7 +321,7 @@ export const UnorderedListRx = /^[ \t]*(-|\*\**|\u2022)[ \t]+(.*)$/
 //
 //   . Foo    1. Foo    a. Foo    I. Foo
 //
-export const OrderedListRx = /^[ \t]*(\.\.*|\d+\.|[a-zA-Z]\.|[IVXivx]+\))[ \t]+(.*)$/
+export const OrderedListRx = /^[ \t]*(\.\.*|\d+\.|[a-zA-Z]\.|[IVXivx]+\))[ \t]+([\s\S]*)$/
 
 // Ordinal pattern for each ordered list type.
 export const OrderedListMarkerRxMap = {
@@ -339,14 +339,14 @@ export const OrderedListMarkerRxMap = {
 //   foo::
 //   foo:: The metasyntactic variable …
 //
-export const DescriptionListRx = /^(?!\/\/[^\/])[ \t]*([^ \t].*?)(:::{0,2}|;;)(?:$|[ \t]+(.*)$)/
+export const DescriptionListRx = /^(?!\/\/[^\/])[ \t]*([^ \t].*?)(:::{0,2}|;;)(?:$|[ \t]+([\s\S]*)$)/
 
 // Matches a sibling description list item (excluding the delimiter given by key).
 export const DescriptionListSiblingRx = {
-  '::':   /^(?!\/\/[^\/])[ \t]*([^ \t].*?[^:]|[^ \t:])(::)(?:$|[ \t]+(.*)$)/,
-  ':::':  /^(?!\/\/[^\/])[ \t]*([^ \t].*?[^:]|[^ \t:])(:::)(?:$|[ \t]+(.*)$)/,
-  '::::': /^(?!\/\/[^\/])[ \t]*([^ \t].*?[^:]|[^ \t:])(::::)(?:$|[ \t]+(.*)$)/,
-  ';;':   /^(?!\/\/[^\/])[ \t]*([^ \t].*?)(;;)(?:$|[ \t]+(.*)$)/,
+  '::':   /^(?!\/\/[^\/])[ \t]*([^ \t].*?[^:]|[^ \t:])(::)(?:$|[ \t]+([\s\S]*)$)/,
+  ':::':  /^(?!\/\/[^\/])[ \t]*([^ \t].*?[^:]|[^ \t:])(:::)(?:$|[ \t]+([\s\S]*)$)/,
+  '::::': /^(?!\/\/[^\/])[ \t]*([^ \t].*?[^:]|[^ \t:])(::::)(?:$|[ \t]+([\s\S]*)$)/,
+  ';;':   /^(?!\/\/[^\/])[ \t]*([^ \t].*?)(;;)(?:$|[ \t]+([\s\S]*)$)/,
 }
 
 // Matches a callout list item.
@@ -356,7 +356,7 @@ export const DescriptionListSiblingRx = {
 //   <1> Explanation
 //   <.> Explanation with automatic number
 //
-export const CalloutListRx = /^<(\d+|\.)>[ \t]+(.*)$/
+export const CalloutListRx = /^<(\d+|\.)>[ \t]+([\s\S]*)$/
 
 // Matches a callout reference inside literal text (applied line-by-line).
 //

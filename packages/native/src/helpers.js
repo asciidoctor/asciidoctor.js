@@ -32,10 +32,14 @@ const BOM = '\uFEFF'
 // trimEnd - whether to strip all trailing whitespace (true) or only \n (false) (default: true)
 //
 // Returns a String Array of prepared lines.
+// Internal: Trim trailing ASCII whitespace only (not Unicode line separators U+2028/U+2029).
+// Ruby's rstrip/chop only strips ASCII whitespace, so we match that behavior.
+const rstrip = (line) => line.replace(/[ \t\r\f\v]+$/, '')
+
 export function prepareSourceArray (data, trimEnd = true) {
   if (!data.length) return []
   if (data[0].startsWith(BOM)) data[0] = data[0].slice(1)
-  return trimEnd ? data.map((line) => line.trimEnd()) : data.map((line) => line.replace(/\n$/, ''))
+  return trimEnd ? data.map(rstrip) : data.map((line) => line.replace(/\n$/, ''))
 }
 
 // Internal: Prepare the source data String for parsing.
@@ -52,7 +56,7 @@ export function prepareSourceString (data, trimEnd = true) {
   if (!data) return []
   if (data.startsWith(BOM)) data = data.slice(1)
   const lines = data.split(/\n/)
-  return trimEnd ? lines.map((line) => line.trimEnd()) : lines
+  return trimEnd ? lines.map(rstrip) : lines
 }
 
 // Internal: Efficiently check whether the specified String resembles a URI.
