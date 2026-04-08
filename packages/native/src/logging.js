@@ -59,6 +59,7 @@ export class Logger {
   unknown (msg, progname) { return this.add(Severity.UNKNOWN, msg, progname) }
 
   isDebug () { return this.level <= Severity.DEBUG }
+  isInfo ()  { return this.level <= Severity.INFO }
 
   _writeln (line) {
     // Remove trailing newline added by formatter before passing to console
@@ -120,6 +121,7 @@ export class MemoryLogger {
   unknown (msg, pn) { return this.add(Severity.UNKNOWN, msg, pn) }
 
   isDebug () { return this.level <= Severity.DEBUG }
+  isInfo ()  { return this.level <= Severity.INFO }
 
   clear () { this.messages.length = 0 }
   empty () { return this.messages.length === 0 }

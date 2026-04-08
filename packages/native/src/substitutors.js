@@ -706,7 +706,7 @@ export const Substitutors = {
     // inline URLs
     if (foundColon && text.includes('://')) {
       text = text.replace(globalRx(InlineLinkRx), (match, p1, p2, p3, p4, p5, p6, p7, p8) => {
-        if (p2 && !p5) {
+        if (p2 && p5 == null) {
           if (p1.startsWith(RS)) return match.slice(1)
           if (p3.startsWith(RS)) return p1 + match.slice(p1.length + 1)
           if (!p6) return match
@@ -720,7 +720,7 @@ export const Substitutors = {
           let target = p3 + (p4 || p7 || '')
           let suffix = ''
 
-          if (p5) {
+          if (p5 != null) {
             if (prefix === 'link:') prefix = ''
             const rawLinkText = p5
             var link_text = rawLinkText || null
@@ -985,7 +985,7 @@ export const Substitutors = {
         if (target) {
           // handles: #id
           refid = fragment
-          if (this.logger.info && !doc.catalog.refs[refid]) {
+          if (this.logger.isInfo?.() && !doc.catalog.refs[refid]) {
             this.logger.info(`possible invalid reference: ${refid}`)
           }
         } else if (path) {
@@ -994,7 +994,7 @@ export const Substitutors = {
               refid = fragment
               path = null
               target = `#${fragment}`
-              if (this.logger.info && !doc.catalog.refs[refid]) {
+              if (this.logger.isInfo?.() && !doc.catalog.refs[refid]) {
                 this.logger.info(`possible invalid reference: ${refid}`)
               }
             } else {
@@ -1020,7 +1020,7 @@ export const Substitutors = {
         } else if (doc.compatMode || !Compliance.naturalXrefs) {
           refid = fragment
           target = `#${fragment}`
-          if (this.logger.info && !doc.catalog.refs[refid]) {
+          if (this.logger.isInfo?.() && !doc.catalog.refs[refid]) {
             this.logger.info(`possible invalid reference: ${refid}`)
           }
         } else if (doc.catalog.refs[fragment]) {
@@ -1032,7 +1032,7 @@ export const Substitutors = {
         } else {
           refid = fragment
           target = `#${fragment}`
-          if (this.logger.info) this.logger.info(`possible invalid reference: ${refid}`)
+          if (this.logger.isInfo?.()) this.logger.info(`possible invalid reference: ${refid}`)
         }
 
         attrs.path = path ?? null
@@ -1649,7 +1649,7 @@ export const Substitutors = {
     const attrlist = text.includes(LF) ? text.split(LF).join(' ') : text
     const attrs = new AttributeList(attrlist, this).parse()
     const resolvedText = attrs[1]
-    if (resolvedText !== undefined) {
+    if (resolvedText != null) {
       if (resolvedText === attrlist) {
         Object.keys(attrs).forEach((k) => delete attrs[k])
         return [text, attrs]

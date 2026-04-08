@@ -1082,11 +1082,11 @@ export class Parser {
   static catalogInlineAnchors (text, block, document, reader) {
     if (!text.includes('[[') && !text.includes('anchor:')) return
 
-    const rx = new RegExp(InlineAnchorScanRx.source, 'gd' in RegExp.prototype ? 'gd' : 'g')
+    const rx = new RegExp(InlineAnchorScanRx.source, 'gd' in RegExp.prototype ? 'gdu' : 'gu')
     let m
     // Reset lastIndex for global search
     InlineAnchorScanRx.lastIndex = 0
-    const globalRx = new RegExp(InlineAnchorScanRx.source, 'g')
+    const globalRx = new RegExp(InlineAnchorScanRx.source, 'gu')
     while ((m = globalRx.exec(text)) !== null) {
       let id, reftext
       if (m[1]) {
@@ -1513,7 +1513,7 @@ export class Parser {
         section.title
       }
     } else if ('sectids' in document.attributes) {
-      section.id = id = Section.generateId(section.title, document)
+      section.id = id = Section.generateId(sectTitle, document)
     }
 
     if (id && !document.register('refs', [id, section])) {

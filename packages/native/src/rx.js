@@ -560,7 +560,7 @@ export const InlineKbdBtnMacroRx = /(\\)?(kbd|btn):\[([\s\S]*?[^\\])\]/
 //   7 – target             (bare autolink)
 //   8 – last non-terminating char of bare target
 //
-export const InlineLinkRx = /(^|link:|[ \t]|\\?&lt;(?=\\?(?:https?|file|ftp|irc)(:))|[>\(\)\[\];"'])(\\?(?:https?|file|ftp|irc):\/\/)(?:([^\s\[\]]+)\[(|[\s\S]*?[^\\])\]|(?!\2)([^\s]+?)&gt;|([^\s\[\]<]*([^\s,.?!\[\]<\)])))/m
+export const InlineLinkRx = /(^|link:|[ \t\u00a0]|\\?&lt;(?=\\?(?:https?|file|ftp|irc)(:))|[>\(\)\[\];"'])(\\?(?:https?|file|ftp|irc):\/\/)(?:([^\s\[\]]+)\[(|[\s\S]*?[^\\])\]|(?!\2)([^\s]+?)&gt;|([^\s\[\]<]*([^\s,.?!\[\]<\)])))/m
 
 // Matches a link or e-mail inline macro (may span multiple lines).
 //
