@@ -92,7 +92,7 @@ export class DocBook5Converter extends ConverterBase {
     if (footerDocinfo) result.push(footerDocinfo)
     if (manpage) result.push('</refentry>')
     // defer adding root tag in case document ID is auto-generated on demand
-    const nodeId = id ?? node.id
+    const nodeId = id ?? node.id ?? this._rootDocId
     result.splice(rootTagIdx, 0, `<${rootTagName} xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0"${langAttribute}${this._commonAttributes(nodeId)}>`)
     result.push(`</${rootTagName}>`)
     return result.join(LF)
@@ -484,7 +484,7 @@ export class DocBook5Converter extends ConverterBase {
         let linkend = node.attributes.refid
         if (!linkend) {
           const rootDoc = this._getRootDocument(node)
-          linkend = rootDoc.id ?? (rootDoc.id = this._generateDocumentId(rootDoc))
+          linkend = rootDoc.id ?? (this._rootDocId ??= this._generateDocumentId(rootDoc))
         }
         return node.text ? `<link linkend="${linkend}">${node.text}</link>` : `<xref linkend="${linkend}"/>`
       }

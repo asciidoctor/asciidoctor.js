@@ -1513,7 +1513,7 @@ export class Parser {
         section.title
       }
     } else if ('sectids' in document.attributes) {
-      section.id = id = Section.generateId(sectTitle, document)
+      section.id = id = Section.generateId(section.title, document)
     }
 
     if (id && !document.register('refs', [id, section])) {

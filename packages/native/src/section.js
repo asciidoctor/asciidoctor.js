@@ -165,7 +165,7 @@ export class Section extends AbstractBlock {
       sepSub = ' _.-'
     }
 
-    let genId = `${pre}${title.toLowerCase().replace(InvalidSectionIdCharsRx, '')}`
+    let genId = `${pre}${title.toLowerCase().replace(new RegExp(InvalidSectionIdCharsRx.source, 'gu'), '')}`
 
     if (noSep) {
       genId = genId.replace(/ /g, '')

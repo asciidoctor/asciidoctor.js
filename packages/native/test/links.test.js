@@ -970,7 +970,7 @@ describe('Links', () => {
     const input = '= Document Title\n\nSee xref:test.adoc[]'
     const doc = await documentFromString(input, { backend: 'docbook', attributes: { docname: 'test' } })
     assert.equal(doc.id, null)
-    const output = doc.convert()
+    const output = doc.convert({ standalone: true })
     assert.equal(doc.id, null)
     assert.ok(output.includes(' xml:id="__article-root__"'))
     assert.ok(output.includes('<xref linkend="__article-root__"/>'))
