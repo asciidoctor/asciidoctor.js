@@ -58,14 +58,14 @@ export function countXpath (html, xpath) {
     // xmldom can parse as XML (no XHTML namespace, so XPath element names work as-is).
     xmlSrc = html
       .replace(/<!DOCTYPE[^>]*>/i, '')
-      .replace(/<(meta|link|br|hr|img|input|area|base|col|embed|param|source|track|wbr)((?:[^>"']|"[^"]*"|'[^']*')*?)>/gi, '<$1$2/>')
+      .replace(/<(meta|link|br|hr|img|input|area|base|col|embed|param|source|track|wbr)\b((?:[^>"']|"[^"]*"|'[^']*')*?)>/gi, '<$1$2/>')
       .trim()
   } else {
     // Fragment: self-close void elements so xmldom can parse as XML, then wrap in <root>
     // so XML has a single root and XPath can address any number of top-level elements.
     // Absolute XPath paths (starting with / but not //) are rewritten to include the wrapper
     // so that /*[@class="foo"] and (/*[@class="foo"])[1]/... still work.
-    xmlSrc = `<root>${html.replace(/<(meta|link|br|hr|img|input|area|base|col|embed|param|source|track|wbr)((?:[^>"']|"[^"]*"|'[^']*')*?)>/gi, '<$1$2/>')}</root>`
+    xmlSrc = `<root>${html.replace(/<(meta|link|br|hr|img|input|area|base|col|embed|param|source|track|wbr)\b((?:[^>"']|"[^"]*"|'[^']*')*?)>/gi, '<$1$2/>')}</root>`
     xpath = xpath
       .replace(/^\/([^/])/, '/root/$1')
       .replace(/\(\/([^/])/g, '(/root/$1')

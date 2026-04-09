@@ -446,8 +446,10 @@ export class Document extends AbstractBlock {
         return ref
       }
       case 'refs': {
-        const existing = (this.catalog.refs[value[0]] ??= value[1])
-        return existing
+        const id = value[0]
+        if (id in this.catalog.refs) return false
+        this.catalog.refs[id] = value[1]
+        return true
       }
       case 'footnotes':
         this.catalog.footnotes.push(value)

@@ -649,7 +649,7 @@ export class Parser {
           if (!style && parent instanceof Section && parent.sectname === 'bibliography') {
             attributes['style'] = 'bibliography'
           }
-          block = Parser.parseList(reader, 'ulist', parent, style)
+          block = Parser.parseList(reader, 'ulist', parent, style ?? attributes['style'] ?? null)
           break
         }
 
@@ -1333,7 +1333,7 @@ export class Parser {
       if (delimMatch) {
         if (continuation !== 'active') break
         buffer.push(thisLine)
-        const blockLines = reader.readLinesUntil({ terminator: delimMatch.terminator, read_last_line: true, context: null })
+        const blockLines = reader.readLinesUntil({ terminator: delimMatch.terminator, read_last_line: true, context: delimMatch.context })
         buffer.push(...blockLines)
         continuation = 'inactive'
       } else if (dlist && continuation !== 'active' && thisLine.startsWith('[') && BlockAttributeLineRx.test(thisLine)) {
@@ -1341,7 +1341,7 @@ export class Parser {
         let interrupt = false
         while (true) {
           const nextLine = reader.peekLine()
-          if (!nextLine) break
+          if (nextLine == null) break
           if (Parser.isDelimitedBlock(nextLine)) { interrupt = true; break }
           if (nextLine === '' || (nextLine.startsWith('[') && BlockAttributeLineRx.test(nextLine))) {
             blockAttributeLines.push(reader.readLine())

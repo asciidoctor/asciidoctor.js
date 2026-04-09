@@ -60,7 +60,7 @@ export class ListItem extends AbstractBlock {
     super(parent, 'list_item')
     this._text   = text
     this.level   = parent.level
-    this._subs   = [...NORMAL_SUBS]
+    this.subs    = [...NORMAL_SUBS]
     this.marker  = null
   }
 
@@ -78,7 +78,7 @@ export class ListItem extends AbstractBlock {
   //
   // Returns the converted String text, or null.
   get text () {
-    return this._text != null ? this.applySubs(this._text, this._subs) : null
+    return this._text != null ? this.applySubs(this._text, this.subs) : null
   }
 
   // Public: Set the raw text of this list item.

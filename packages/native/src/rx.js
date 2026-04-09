@@ -650,7 +650,7 @@ export const InlinePassRx = {
     '`',
     null,
     ru(
-      String.raw`(^|[^` + '`' + String.raw`${CC_WORD}])(?:($)|(?:` + QuoteAttributeListRxt + String.raw`)(?=(\\?)))?` +
+      String.raw`(^|[^` + '`' + String.raw`${CC_WORD}])(?:($)()|(?:` + QuoteAttributeListRxt + String.raw`)(?=(\\?)))?` +
       String.raw`(\5?(` + '`' + String.raw`)([^` + '`' + String.raw`\s]|[^` + '`' + String.raw`\s]` + CC_ALL + String.raw`*?\S)\7)(?![` + '`' + String.raw`${CC_WORD}])`,
       'm'
     ),

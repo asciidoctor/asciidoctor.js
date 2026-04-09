@@ -4785,10 +4785,10 @@ main = putStrLn "Hello, World!" -- <1>
     for (const attributes of [{}, { 'source-highlighter': 'coderay' }]) {
       const output = await convertStringToEmbedded(input, { attributes })
       assertXpath(output, '//b', 4)
-      assert.ok(output.includes("puts 'Hello, world!' # (1)"), 'output should include ruby callout')
-      assert.ok(output.includes("println 'Hello, world!' // (1)"), 'output should include groovy callout')
-      assert.ok(output.includes('(def hello (fn [] "Hello, world!")) ;; (1)'), 'output should include clojure callout')
-      assert.ok(output.includes('main = putStrLn "Hello, World!" -- (1)'), 'output should include haskell callout')
+      assert.ok(output.includes('# <b class="conum">(1)</b>'), 'output should include ruby callout with guard')
+      assert.ok(output.includes('// <b class="conum">(1)</b>'), 'output should include groovy callout with guard')
+      assert.ok(output.includes(';; <b class="conum">(1)</b>'), 'output should include clojure callout with guard')
+      assert.ok(output.includes('-- <b class="conum">(1)</b>'), 'output should include haskell callout with guard')
     }
   })
 
@@ -4820,12 +4820,12 @@ main = putStrLn "Hello, World!" -- <1>
 `
     for (const attributes of [{}, { 'source-highlighter': 'coderay' }]) {
       const output = await convertStringToEmbedded(input, { attributes: { ...attributes, icons: 'font' } })
-      assertCss(output, 'pre b', 4)
-      assertCss(output, 'pre i.conum', 4)
-      assert.ok(output.includes("puts 'Hello, world!' (1)"), 'output should include ruby callout without comment chars')
-      assert.ok(output.includes("println 'Hello, world!' (1)"), 'output should include groovy callout without comment chars')
-      assert.ok(output.includes('(def hello (fn [] "Hello, world!")) (1)'), 'output should include clojure callout without comment chars')
-      assert.ok(output.includes('main = putStrLn "Hello, World!" (1)'), 'output should include haskell callout without comment chars')
+      assertXpath(output, '//code/b', 4)
+      assertXpath(output, '//code/i[@class="conum"]', 4)
+      assert.ok(!output.includes("puts 'Hello, world!' # "), 'ruby line comment guard should be removed')
+      assert.ok(!output.includes("println 'Hello, world!' // "), 'groovy line comment guard should be removed')
+      assert.ok(!output.includes('(def hello (fn [] "Hello, world!")) ;; '), 'clojure line comment guard should be removed')
+      assert.ok(!output.includes('main = putStrLn "Hello, World!" -- '), 'haskell line comment guard should be removed')
     }
   })
 
@@ -4840,8 +4840,8 @@ hello_world() -> % <1>
 `
     const output = await convertStringToEmbedded(input)
     assertXpath(output, '//b', 2)
-    assert.ok(output.includes('hello_world() -> % (1)'), 'output should include erlang callout 1')
-    assert.ok(output.includes('io:fwrite("hello, world~n"). %(2)'), 'output should include erlang callout 2')
+    assert.ok(output.includes('% <b class="conum">(1)</b>'), 'output should include erlang callout 1 with guard')
+    assert.ok(output.includes('%<b class="conum">(2)</b>'), 'output should include erlang callout 2 with guard')
   })
 
   test('should allow line comment chars preceding callout number to be configurable when source-highlighter is coderay', async () => {
@@ -4854,7 +4854,7 @@ hello_world() -> % <1>
 `
     const output = await convertStringToEmbedded(input, { attributes: { 'source-highlighter': 'coderay' } })
     assertXpath(output, '//b', 1)
-    assert.ok(output.includes('-# (1)'), 'output should include -# callout')
+    assert.ok(output.includes('-# <b class="conum">(1)</b>'), 'output should include -# callout with guard')
     assert.ok(output.includes('%p Hello'), 'output should include %p Hello')
   })
 
@@ -4901,7 +4901,7 @@ puts doc.convert # <3>
 <3> Describe the third line
 `
     const output = await convertStringToEmbedded(input, { attributes: { icons: '' } })
-    assertCss(output, '.listingblock code > img', 3)
+    assertXpath(output, '//div[@class="listingblock"]//code/img', 3)
     for (let i = 1; i <= 3; i++) {
       assertXpath(output, `(/div[@class="listingblock"]//code/img)[${i}][@src="./images/icons/callouts/${i}.png"][@alt="${i}"]`, 1)
     }
@@ -4923,7 +4923,7 @@ puts doc.convert #<3>
 <3> Describe the third line
 `
     const output = await convertStringToEmbedded(input, { attributes: { icons: 'font' } })
-    assertCss(output, '.listingblock code > i', 3)
+    assertXpath(output, '//div[@class="listingblock"]//code/i', 3)
     for (let i = 1; i <= 3; i++) {
       assertXpath(output, `(/div[@class="listingblock"]//code/i)[${i}]`, 1)
       assertXpath(output, `(/div[@class="listingblock"]//code/i)[${i}][@class="conum"][@data-value="${i}"]`, 1)
