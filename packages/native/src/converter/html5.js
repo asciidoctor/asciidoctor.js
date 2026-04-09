@@ -1346,7 +1346,7 @@ Your browser does not support the video tag.
     if (Array.isArray(guard)) {
       return `&lt;!--<b class="conum">(${node.text})</b>--&gt;`
     }
-    return `${guard}<b class="conum">(${node.text})</b>`
+    return `${guard ?? ''}<b class="conum">(${node.text})</b>`
   }
 
   convert_inline_footnote (node) {

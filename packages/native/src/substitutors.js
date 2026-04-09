@@ -1164,7 +1164,7 @@ export const Substitutors = {
    */
   subCallouts(text) {
     const calloutRx = this.hasAttr('line-comment')
-      ? CalloutSourceRxMap[this.getAttribute('line-comment')]
+      ? CalloutSourceRxMap[this.attr('line-comment')]
       : CalloutSourceRx
     let autonum = 0
     return text.replace(globalRx(calloutRx), (match, p1, p2, p3, p4) => {
@@ -1665,7 +1665,7 @@ export const Substitutors = {
     let lineno = 0
     let lastLineno = null
     const calloutRx = this.hasAttr('line-comment')
-      ? CalloutExtractRxMap[this.getAttribute('line-comment')]
+      ? CalloutExtractRxMap[this.attr('line-comment')]
       : CalloutExtractRx
 
     const lines = source.split(LF).map((line) => {

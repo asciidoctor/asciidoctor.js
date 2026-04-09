@@ -149,6 +149,16 @@ export class AbstractNode {
         String(fallbackName === true ? name : fallbackName) in this.document.attributes)
   }
 
+  // Alias for API compatibility: getAttribute(name, defaultValue, inherit)
+  getAttribute (name, defaultValue = null, inherit = false) {
+    return this.attr(name, defaultValue, inherit || null)
+  }
+
+  // Alias for API compatibility: hasAttribute(name, expectedValue, fallbackName)
+  hasAttribute (name, expectedValue = null, fallbackName = null) {
+    return this.hasAttr(name, expectedValue, fallbackName)
+  }
+
   // Public: Assign the value to the attribute name for the current node.
   //
   // name      - The String attribute name to assign.

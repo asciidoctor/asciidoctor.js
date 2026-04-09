@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict'
 import { parse } from 'node-html-parser'
 import { DOMParser } from '@xmldom/xmldom'
-import { select } from 'xpath'
+import { select, useNamespaces } from 'xpath'
 
 /**
  * Decode a Unicode character by code point.
@@ -76,7 +76,9 @@ export function countXpath (html, xpath) {
   xmlSrc = xmlSrc.replace(/\s+xmlns(?::\w+)?="[^"]*"/g, '')
   const doc = new DOMParser({ onError: () => {} }).parseFromString(xmlSrc, 'text/xml')
   // Cast to any to bridge @xmldom/xmldom ↔ xpath type mismatch (compatible at runtime).
-  const nodes = select(xpath, /** @type {any} */ (doc))
+  // Use a namespace-aware selector so that xml:id attributes (xml namespace) are resolved.
+  const selectFn = useNamespaces({ xml: 'http://www.w3.org/XML/1998/namespace' })
+  const nodes = selectFn(xpath, /** @type {any} */ (doc))
   return Array.isArray(nodes) ? nodes.length : (nodes ? 1 : 0)
 }
 

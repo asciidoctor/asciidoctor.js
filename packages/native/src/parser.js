@@ -529,7 +529,7 @@ export class Parser {
           ch0 = thisLine[0]
           const layoutBreakChars = mdSyntax ? HYBRID_LAYOUT_BREAK_CHARS : LAYOUT_BREAK_CHARS
 
-          if (layoutBreakChars[ch0]) {
+          if (!textOnly && layoutBreakChars[ch0]) {
             const ll = thisLine.length
             if (mdSyntax ? ExtLayoutBreakRx.test(thisLine) : (_uniform(thisLine, ch0, ll) && ll > 2)) {
               block = new Block(parent, layoutBreakChars[ch0], { content_model: 'empty' })
@@ -1394,7 +1394,7 @@ export class Parser {
           if (thisLine == null) break
           if (Parser.isSiblingListItem(thisLine, listType, siblingTrait)) break
         }
-        if (thisLine === LIST_CONTINUATION) {
+        if (String(thisLine) === LIST_CONTINUATION) {
           detachedContinuation = buffer.length
           buffer.push(ListContinuationString)
         } else if (hasText) {
@@ -1946,13 +1946,20 @@ export class Parser {
     opts.break_on_list_continuation = true
     opts.preserve_last_line       = true
 
+    // isPlaceholder matches only ListContinuationPlaceholder (empty boxed String), not ListContinuationString ('+').
+    // We must not fire on ListContinuationString here because it would be preserved back to the reader,
+    // and skipBlankLines would not consume it (String('+') ≠ ''), causing an infinite loop.
+    const isPlaceholder = (l) => isListContinuation(l) && String(l) === ''
+
     let breakCondition = null
     if (breakAtList) {
       breakCondition = Compliance.blockTerminatesParagraph
-        ? (l) => Parser.isDelimitedBlock(l) || (l.startsWith('[') && BlockAttributeLineRx.test(l)) || AnyListRx.test(l)
-        : (l) => AnyListRx.test(l)
+        ? (l) => isPlaceholder(l) || Parser.isDelimitedBlock(l) || (l.startsWith('[') && BlockAttributeLineRx.test(l)) || AnyListRx.test(l)
+        : (l) => isPlaceholder(l) || AnyListRx.test(l)
     } else if (Compliance.blockTerminatesParagraph) {
-      breakCondition = (l) => (l.startsWith('[') && BlockAttributeLineRx.test(l)) || Parser.isDelimitedBlock(l)
+      breakCondition = (l) => isPlaceholder(l) || (l.startsWith('[') && BlockAttributeLineRx.test(l)) || Parser.isDelimitedBlock(l)
+    } else {
+      breakCondition = (l) => isPlaceholder(l)
     }
 
     return reader.readLinesUntil(opts, breakCondition)
@@ -2069,7 +2076,9 @@ export class Parser {
   static isSiblingListItem (line, listType, siblingTrait) {
     if (siblingTrait instanceof RegExp) return siblingTrait.test(line)
     const m = line.match(ListRxMap[listType])
-    return !!(m && siblingTrait === Parser.resolveListMarker(listType, m[1]))
+    if (!m) return false
+    const resolvedSibling = Parser.resolveListMarker(listType, siblingTrait)
+    return resolvedSibling === Parser.resolveListMarker(listType, m[1])
   }
 
   // Internal: Parse a table.
@@ -2390,7 +2399,7 @@ export class Parser {
 
     let blockIndent = null
     for (const line of lines) {
-      if (line === '') continue
+      if (String(line) === '') continue
       const lineIndent = line.length - line.trimStart().length
       if (lineIndent === 0) { blockIndent = null; break }
       if (blockIndent == null || lineIndent < blockIndent) blockIndent = lineIndent
@@ -2399,13 +2408,13 @@ export class Parser {
     if (indentSize === 0) {
       if (blockIndent) {
         for (let i = 0; i < lines.length; i++) {
-          if (lines[i] !== '') lines[i] = lines[i].slice(blockIndent)
+          if (String(lines[i]) !== '' && !isListContinuation(lines[i])) lines[i] = lines[i].slice(blockIndent)
         }
       }
     } else {
       const newIndent = ' '.repeat(indentSize)
       for (let i = 0; i < lines.length; i++) {
-        if (lines[i] !== '') {
+        if (String(lines[i]) !== '' && !isListContinuation(lines[i])) {
           lines[i] = newIndent + (blockIndent ? lines[i].slice(blockIndent) : lines[i])
         }
       }
