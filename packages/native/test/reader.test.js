@@ -5,6 +5,8 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { writeFileSync, unlinkSync, mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 
 import { load } from '../src/load.js'
 import { Reader, PreprocessorReader } from '../src/reader.js'
@@ -26,6 +28,14 @@ const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...
 
 // Converts a string to embedded HTML.
 const convertStringToEmbedded = async (input, opts = {}) => (await documentFromString(input, opts)).convert()
+
+// Helper: assert that a MemoryLogger has multiple messages.
+function assertMessages (logger, expected) {
+  assert.equal(logger.messages.length, expected.length, `Expected ${expected.length} messages but got ${logger.messages.length}: ${JSON.stringify(logger.messages)}`)
+  for (const [severity, text] of expected) {
+    assertMessage(logger, severity, text)
+  }
+}
 
 // Helper: assert that a MemoryLogger has a message at the given severity containing the text.
 // If text starts with '~', it's a substring match; otherwise exact match.
@@ -494,8 +504,23 @@ describe('PreprocessorReader', () => {
       assert.equal(reader.lineno, 7)
     })
 
-    // Tests involving include directives from fixture files are skipped.
-    // TODO: include directive tests (require fixture files)
+    test('should not skip front matter in include file if skip-front-matter attribute is set', async () => {
+      const input = '....\ninclude::fixtures/with-front-matter.adoc[]\n....'
+      const doc = await load(input, { safe: 'safe', parse: false, base_dir: path.join(FIXTURES_DIR, '..') })
+      const reader = doc.reader
+      const expected = ['....', '---', 'name: value', '---', 'content', '....']
+      assert.deepEqual(reader.readlines(), expected)
+      assert.ok(!doc.attr('front-matter'))
+    })
+
+    test('should skip front matter in include file if skip-front-matter option is set on include directive', async () => {
+      const input = '....\ninclude::fixtures/with-front-matter.adoc[opts=skip-front-matter]\n....'
+      const doc = await load(input, { safe: 'safe', parse: false, base_dir: path.join(FIXTURES_DIR, '..') })
+      const reader = doc.reader
+      const expected = ['....', 'content', '....']
+      assert.deepEqual(reader.readlines(), expected)
+      assert.ok(!doc.attr('front-matter'))
+    })
   })
 
   // ── Include Stack ──────────────────────────────────────────────────────────
@@ -568,6 +593,13 @@ describe('PreprocessorReader', () => {
       assert.equal(reader.readLine(), 'link:include-file.adoc[role=include]')
     })
 
+    test('should escape spaces in target when generating link from include directive', async () => {
+      const input = 'include::foo bar baz.adoc[]'
+      const doc = await load(input, { safe: 'secure', parse: false })
+      const reader = doc.reader
+      assert.equal(reader.readLine(), 'link:pass:c[foo bar baz.adoc][role=include]')
+    })
+
     test('should not add role to link macro used to replace include directive in compat mode', async () => {
       const input = 'include::include-file.adoc[]'
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { 'compat-mode': '' } })
@@ -610,6 +642,32 @@ describe('PreprocessorReader', () => {
         const doc = await load(input, { safe: 'secure', parse: false })
         const reader = doc.reader
         assert.equal(reader.readLine(), input)
+      }
+    })
+
+    test('include directive should resolve file with spaces in name', async () => {
+      const srcFile = path.join(FIXTURES_DIR, 'include-file.adoc')
+      const spFile = path.join(FIXTURES_DIR, 'include file.adoc')
+      const { copyFileSync } = await import('node:fs')
+      try {
+        copyFileSync(srcFile, spFile)
+        const doc = await documentFromString('include::fixtures/include file.adoc[]', { safe: 'safe', standalone: false, base_dir: path.join(FIXTURES_DIR, '..') })
+        assert.match(doc.convert(), /included content/)
+      } finally {
+        try { unlinkSync(spFile) } catch { /* ignore */ }
+      }
+    })
+
+    test('include directive should resolve file with {sp} in name', async () => {
+      const srcFile = path.join(FIXTURES_DIR, 'include-file.adoc')
+      const spFile = path.join(FIXTURES_DIR, 'include file.adoc')
+      const { copyFileSync } = await import('node:fs')
+      try {
+        copyFileSync(srcFile, spFile)
+        const doc = await documentFromString('include::fixtures/include{sp}file.adoc[]', { safe: 'safe', standalone: false, base_dir: path.join(FIXTURES_DIR, '..') })
+        assert.match(doc.convert(), /included content/)
+      } finally {
+        try { unlinkSync(spFile) } catch { /* ignore */ }
       }
     })
 
@@ -834,6 +892,37 @@ describe('PreprocessorReader', () => {
       assert.equal(doc.blocks[0].source, '<snippet>content</snippet>')
     })
 
+    test('include directive supports selecting lines by tag in file that has CRLF line endings', async () => {
+      const tmpDir = mkdtempSync(path.join(tmpdir(), 'asciidoctor-'))
+      const tmpFile = path.join(tmpDir, 'include-.adoc')
+      try {
+        writeFileSync(tmpFile, 'do not include\r\ntag::include-me[]\r\nincluded line\r\nend::include-me[]\r\ndo not include\r\n')
+        const input = `include::${path.basename(tmpFile)}[tag=include-me]`
+        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: tmpDir })
+        assert.ok(output.includes('included line'))
+        assert.ok(!output.includes('do not include'))
+      } finally {
+        rmSync(tmpDir, { recursive: true, force: true })
+      }
+    })
+
+    test('include directive finds closing tag on last line of file without a trailing newline', async () => {
+      const tmpDir = mkdtempSync(path.join(tmpdir(), 'asciidoctor-'))
+      const tmpFile = path.join(tmpDir, 'include-.adoc')
+      try {
+        writeFileSync(tmpFile, 'line not included\ntag::include-me[]\nline included\nend::include-me[]')
+        const input = `include::${path.basename(tmpFile)}[tag=include-me]`
+        await usingMemoryLogger(async (logger) => {
+          const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: tmpDir })
+          assert.equal(logger.messages.length, 0)
+          assert.ok(output.includes('line included'))
+          assert.ok(!output.includes('line not included'))
+        })
+      } finally {
+        rmSync(tmpDir, { recursive: true, force: true })
+      }
+    })
+
     test('include directive does not select lines containing tag directives within selected tag region', async () => {
       const input = '++++\ninclude::fixtures/include-file.adoc[tags=snippet]\n++++'
       const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
@@ -873,6 +962,24 @@ describe('PreprocessorReader', () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=**;!bark]\n----'
       const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
       const expected = 'class Dog\n  def initialize breed\n    @breed = breed\n  end\nend'
+      assert.ok(output.includes(`<pre>${expected}</pre>`))
+    })
+
+    test('include directive selects all lines, including lines inside nested tags, except lines inside tag which is negated when value starts with double asterisk', async () => {
+      const input = '----\ninclude::fixtures/tagged-class.rb[tags=**;!init]\n----'
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const expected = [
+        'class Dog',
+        '',
+        '  def bark',
+        "    if @breed == 'beagle'",
+        "      'woof woof woof woof woof'",
+        '    else',
+        "      'woof woof'",
+        '    end',
+        '  end',
+        'end',
+      ].join('\n')
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
 
@@ -1018,6 +1125,89 @@ describe('PreprocessorReader', () => {
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
 
+    test('should recognize tag wildcard if not at start of tags list', async () => {
+      const input = '----\ninclude::fixtures/tagged-class.rb[tags=init;**;*;!bark-other]\n----'
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const expected = [
+        'class Dog',
+        '  def initialize breed',
+        '    @breed = breed',
+        '  end',
+        '',
+        '  def bark',
+        "    if @breed == 'beagle'",
+        "      'woof woof woof woof woof'",
+        '    end',
+        '  end',
+        'end',
+      ].join('\n')
+      assert.ok(output.includes(`<pre>${expected}</pre>`))
+    })
+
+    test('include directive selects all lines except for lines containing tag directive if value is double asterisk followed by nested tag names', async () => {
+      const input = '----\ninclude::fixtures/tagged-class.rb[tags=**;bark-beagle;bark-all]\n----'
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const expected = [
+        'class Dog',
+        '  def initialize breed',
+        '    @breed = breed',
+        '  end',
+        '',
+        '  def bark',
+        "    if @breed == 'beagle'",
+        "      'woof woof woof woof woof'",
+        '    else',
+        "      'woof woof'",
+        '    end',
+        '  end',
+        'end',
+      ].join('\n')
+      assert.ok(output.includes(`<pre>${expected}</pre>`))
+    })
+
+    test('include directive selects all lines except for lines containing tag directive when value is double asterisk followed by outer tag name', async () => {
+      const input = '----\ninclude::fixtures/tagged-class.rb[tags=**;bark]\n----'
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const expected = [
+        'class Dog',
+        '  def initialize breed',
+        '    @breed = breed',
+        '  end',
+        '',
+        '  def bark',
+        "    if @breed == 'beagle'",
+        "      'woof woof woof woof woof'",
+        '    else',
+        "      'woof woof'",
+        '    end',
+        '  end',
+        'end',
+      ].join('\n')
+      assert.ok(output.includes(`<pre>${expected}</pre>`))
+    })
+
+    test('include directive selects all lines inside unspecified tags when value is negated double asterisk followed by negated tags', async () => {
+      const input = '----\ninclude::fixtures/tagged-class.rb[tags=!**;!init]\n----'
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const expected = [
+        '  def bark',
+        "    if @breed == 'beagle'",
+        "      'woof woof woof woof woof'",
+        '    else',
+        "      'woof woof'",
+        '    end',
+        '  end',
+      ].join('\n')
+      assert.ok(output.includes(`<pre>${expected}</pre>`))
+    })
+
+    test('include directive selects lines inside tag except for lines inside nested tags when tag is preceded by negated double asterisk and negated wildcard', async () => {
+      const input = '----\ninclude::fixtures/tagged-class.rb[tags=!**;!*;bark]\n----'
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const expected = '  def bark\n  end'
+      assert.ok(output.includes(`<pre>${expected}</pre>`))
+    })
+
     test('should warn if specified tag is not found in include file', async () => {
       const input = 'include::fixtures/include-file.adoc[tag=no-such-tag]'
       await usingMemoryLogger(async (logger) => {
@@ -1070,7 +1260,14 @@ describe('PreprocessorReader', () => {
       })
     })
 
-    // SKIP: unexpected-end-tag.adoc does not exist in fixtures
+    test('should warn if unexpected end tag is found in included file', async () => {
+      const input = '++++\ninclude::fixtures/unexpected-end-tag.adoc[tags=a]\n++++'
+      await usingMemoryLogger(async (logger) => {
+        const result = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        assert.equal(result, 'a')
+        assertMessage(logger, 'WARN', "unexpected end tag 'a'")
+      })
+    })
 
     test('include directive ignores tags attribute when empty', async () => {
       for (const attrName of ['tag', 'tags']) {
@@ -1140,6 +1337,29 @@ describe('PreprocessorReader', () => {
       })
     })
 
+    test('include is dropped if target contains missing attribute and attribute-missing is drop-line', async () => {
+      const input = 'include::{foodir}/include-file.adoc[]'
+      await usingMemoryLogger(async (logger) => {
+        const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..'), attributes: { 'attribute-missing': 'drop-line' } })
+        const reader = new PreprocessorReader(doc, input, null, { normalize: true })
+        const line = reader.readLine()
+        assert.equal(line, undefined)
+        assertMessage(logger, 'INFO', 'include dropped due to missing attribute')
+      })
+    })
+
+    test('line following dropped include is not dropped', async () => {
+      const input = 'include::{foodir}/include-file.adoc[]\nyo'
+      await usingMemoryLogger(async (_logger) => {
+        const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..'), attributes: { 'attribute-missing': 'warn' } })
+        const reader = new PreprocessorReader(doc, input, null, { normalize: true })
+        const line1 = reader.readLine()
+        assert.equal(line1, 'Unresolved directive in <stdin> - include::{foodir}/include-file.adoc[]')
+        const line2 = reader.readLine()
+        assert.equal(line2, 'yo')
+      })
+    })
+
     test('escaped include directive is left unprocessed', async () => {
       const input = '\\include::fixtures/include-file.adoc[]\n\\escape preserved here'
       const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
@@ -1151,8 +1371,23 @@ describe('PreprocessorReader', () => {
       assert.equal(reader.readLine(), '\\escape preserved here')
     })
 
+    test('include directive not at start of line is ignored', async () => {
+      const input = ' include::include-file.adoc[]'
+      const doc = await documentFromString(input)
+      assert.equal(doc.blocks.length, 1)
+      assert.equal(doc.blocks[0].context, 'literal')
+      assert.equal(doc.blocks[0].source, 'include::include-file.adoc[]')
+    })
+
     test('include directive is disabled when max-include-depth attribute is 0', async () => {
       const input = 'include::include-file.adoc[]'
+      const doc = await documentFromString(input, { safe: 'safe', attributes: { 'max-include-depth': 0 } })
+      assert.equal(doc.blocks.length, 1)
+      assert.equal(doc.blocks[0].source, 'include::include-file.adoc[]')
+    })
+
+    test('max-include-depth cannot be set by document', async () => {
+      const input = ':max-include-depth: 1\n\ninclude::include-file.adoc[]'
       const doc = await documentFromString(input, { safe: 'safe', attributes: { 'max-include-depth': 0 } })
       assert.equal(doc.blocks.length, 1)
       assert.equal(doc.blocks[0].source, 'include::include-file.adoc[]')
@@ -1166,6 +1401,19 @@ describe('PreprocessorReader', () => {
         const reader = new PreprocessorReader(doc, input, pseudoDocfile, { normalize: true })
         const lines = reader.readLines()
         assert.ok(lines.some((l) => l.includes('grandchild-include.adoc')), 'Expected grandchild include to be unprocessed')
+        assertMessage(logger, 'ERROR', 'maximum include depth')
+      })
+    })
+
+    test('include directive should be disabled if max include depth set in nested context has been exceeded', async () => {
+      const input = 'include::fixtures/parent-include-restricted.adoc[depth=3]'
+      await usingMemoryLogger(async (logger) => {
+        const pseudoDocfile = path.join(FIXTURES_DIR, '..', 'main.adoc')
+        const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
+        const reader = new PreprocessorReader(doc, input, pseudoDocfile, { normalize: true })
+        const lines = reader.readLines()
+        assert.ok(lines.includes('first line of child'))
+        assert.ok(lines.some((l) => l.includes('grandchild-include.adoc')))
         assertMessage(logger, 'ERROR', 'maximum include depth')
       })
     })
@@ -1628,6 +1876,101 @@ describe('PreprocessorReader', () => {
       const data = ('data\n').repeat(5000)
       const input = `before\n\nifdef::attribute-not-set[]\n${data}endif::attribute-not-set[]\n\nafter`
       const doc = await load(input, { safe: 'secure' })
+      assert.equal(doc.blocks.length, 2)
+      assert.equal(doc.blocks[0].source, 'before')
+      assert.equal(doc.blocks[1].source, 'after')
+    })
+
+    test('process_line returns null if cursor advanced', async () => {
+      const input = 'ifdef::asciidoctor[]\nAsciidoctor!\nendif::asciidoctor[]'
+      const doc = await load(input, { safe: 'secure', parse: false })
+      const reader = doc.reader
+      assert.equal(reader.processLine(reader.lines()[0]), undefined)
+    })
+
+    test('process_line returns line if cursor not advanced', async () => {
+      const input = 'content\nifdef::asciidoctor[]\nAsciidoctor!\nendif::asciidoctor[]'
+      const doc = await load(input, { safe: 'secure', parse: false })
+      const reader = doc.reader
+      assert.notEqual(reader.processLine(reader.lines()[0]), undefined)
+    })
+
+    test('ifdef with defined attribute processes include directive in brackets', async () => {
+      const input = 'ifdef::asciidoctor-version[include::fixtures/include-file.adoc[tag=snippetA]]'
+      const doc = await load(input, { safe: 'safe', parse: false, base_dir: path.join(FIXTURES_DIR, '..') })
+      const reader = doc.reader
+      const lines = []
+      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      assert.equal(lines[0], 'snippetA content')
+    })
+
+    test('ifdef should permit leading, trailing, and repeat operators', async () => {
+      for (const [condition, expected] of [
+        ['asciidoctor,', 'content'],
+        [',asciidoctor', 'content'],
+        ['asciidoctor+', ''],
+        ['+asciidoctor', ''],
+        ['asciidoctor,,asciidoctor-version', 'content'],
+        ['asciidoctor++asciidoctor-version', ''],
+      ]) {
+        const input = `ifdef::${condition}[]\ncontent\nendif::[]`
+        const doc = await load(input, { safe: 'secure', parse: false })
+        assert.equal(doc.reader.read(), expected, `condition: ${condition}`)
+      }
+    })
+
+    test('should log warning if endif contains text', async () => {
+      const input = 'ifdef::on-quest[]\nOur quest is complete!\nendif::on-quest[complete!]\nfin'
+      await usingMemoryLogger(async (logger) => {
+        const result = (await load(input, { safe: 'secure', parse: false, attributes: { 'on-quest': '' }, sourcemap: true })).reader.read()
+        assert.equal(result, 'Our quest is complete!\nfin')
+        assertMessages(logger, [
+          ['ERROR', 'malformed preprocessor directive - text not permitted'],
+          ['ERROR', 'detected unterminated preprocessor conditional directive'],
+        ])
+      })
+    })
+
+    test('ifeval running invalid operation drops content', async () => {
+      const input = 'ifeval::[{asciidoctor-version} > true]\nI didn\'t make the cut!\nendif::[]'
+      const doc = await load(input, { safe: 'secure', parse: false })
+      const reader = doc.reader
+      const lines = []
+      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      assert.equal(lines.join('\n'), '')
+    })
+
+    test('should log error with start location if preprocessor conditional directive is unterminated and sourcemap is set', async () => {
+      const input = 'before\nifdef::not-set[]\nskip\nthese\nlines\nfin'
+      await usingMemoryLogger(async (logger) => {
+        const doc = await load(input, { safe: 'secure', parse: false, sourcemap: true })
+        const reader = doc.reader
+        const lines = []
+        while (reader.hasMoreLines()) lines.push(reader.readLine())
+        assert.equal(lines.join('\n'), 'before')
+        assertMessage(logger, 'ERROR', 'detected unterminated preprocessor conditional directive: ifdef::not-set[]')
+      })
+    })
+
+    test('should log error if multiple preprocessor conditional directives are unterminated', async () => {
+      const input = 'before\nifdef::not-set[]\nskip\nthese\nlines\nifeval::[1 == 2]\n{asciidoctor-version}\nfin'
+      await usingMemoryLogger(async (logger) => {
+        const doc = await load(input, { safe: 'secure', parse: false, sourcemap: true })
+        const reader = doc.reader
+        const lines = []
+        while (reader.hasMoreLines()) lines.push(reader.readLine())
+        assert.equal(lines.join('\n'), 'before')
+        assertMessages(logger, [
+          ['ERROR', 'detected unterminated preprocessor conditional directive: ifdef::not-set[]'],
+          ['ERROR', 'detected unterminated preprocessor conditional directive: ifeval::[1 == 2]'],
+        ])
+      })
+    })
+
+    test('should not fail to process lines if reader contains a null entry', async () => {
+      const input = ['before', '', '', '', 'after']
+      const doc = await load(input.join('\n'), { safe: 'secure' })
+      doc.reader.sourceLines[2] = null
       assert.equal(doc.blocks.length, 2)
       assert.equal(doc.blocks[0].source, 'before')
       assert.equal(doc.blocks[1].source, 'after')

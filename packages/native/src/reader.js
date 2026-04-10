@@ -593,7 +593,7 @@ export class PreprocessorReader extends Reader {
       include: true,
       normalize: this.processLines || 'chomp',
       indent: attributes.indent,
-      skipFrontMatter: attributes['skip-front-matter-option'],
+      skipFrontMatter: 'skip-front-matter-option' in attributes,
     })
 
     if (this._lines.length === 0) {
@@ -834,6 +834,11 @@ export class PreprocessorReader extends Reader {
         const parsedAttrs = attrlist ? doc.parseAttributes(attrlist, [], { subInput: true }) : {}
         if ('optional-option' in parsedAttrs) {
           this._logInfo(`optional include dropped because resolved target is blank: include::${target}[${attrlist ?? ''}]`, { sourceLocation: this.cursor })
+          super._shift()
+          return true
+        }
+        if (attrMissing === 'drop-line') {
+          this._logInfo(`include dropped due to missing attribute: include::${target}[${attrlist ?? ''}]`, { sourceLocation: this.cursor })
           super._shift()
           return true
         }
@@ -1117,6 +1122,8 @@ export class PreprocessorReader extends Reader {
 
   // Internal: Evaluate a binary comparison.
   _evalOp (lhs, op, rhs) {
+    // Reject comparisons that mix boolean with non-boolean (invalid in Ruby — throws TypeError).
+    if ((typeof lhs === 'boolean') !== (typeof rhs === 'boolean')) throw new TypeError('incompatible operand types')
     if (op === '==') return lhs === rhs
     if (op === '!=') return lhs !== rhs
     if (op === '<') return lhs < rhs
