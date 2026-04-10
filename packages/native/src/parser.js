@@ -710,6 +710,7 @@ export class Parser {
             break
           }
           // unknown style; fall through
+          if (style && Parser.logger.isDebug()) Parser.logger.debug(Parser.messageWithContext(`unknown style for paragraph: ${style}`, { source_location: reader.cursor }))
         }
 
         reader.unshiftLine(thisLine)

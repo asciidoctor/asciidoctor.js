@@ -1120,7 +1120,7 @@ export const Substitutors = {
    * @returns {string}
    */
   subPostReplacements(text) {
-    if (this.attributes['hardbreaks-option'] || this.document.attributes['hardbreaks-option']) {
+    if ('hardbreaks-option' in this.attributes || 'hardbreaks-option' in this.document.attributes) {
       const lines = text.split(LF)
       if (lines.length < 2) return text
       const last = lines.pop()
