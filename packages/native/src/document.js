@@ -901,6 +901,7 @@ export class Document extends AbstractBlock {
         }
         if (defaultTocClass) attrs['toc-class'] ??= defaultTocClass
       }
+      attrs['toc'] = ''
     }
 
     const iconsVal = attrs['icons']

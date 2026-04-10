@@ -393,9 +393,9 @@ export class Parser {
                 }
               } else if (newBlock.contentModel === 'simple') {
                 newBlock.contentModel = 'compound'
-                newBlock.append(new Block(newBlock, 'paragraph', { source: newBlock.lines, subs: newBlock._subs }))
+                newBlock.append(new Block(newBlock, 'paragraph', { source: newBlock.lines, subs: newBlock.subs }))
                 newBlock.lines.length = 0
-                newBlock._subs.length = 0
+                newBlock.subs.length = 0
               }
             } else if (section.blocks.length === 1) {
               const firstBlock = section.blocks[0]

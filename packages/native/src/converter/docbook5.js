@@ -724,8 +724,12 @@ export class DocBook5Converter extends ConverterBase {
 
   _extractAbstract (document, abstract) {
     let parent = abstract.parent
-    while (parent !== document && parent.blocks.length === 1) parent = parent.parent
-    parent.blocks.splice(parent.blocks.indexOf(abstract), 1)
+    let toDelete = abstract
+    while (parent !== document && parent.blocks.length === 1) {
+      toDelete = parent
+      parent = parent.parent
+    }
+    parent.blocks.splice(parent.blocks.indexOf(toDelete), 1)
     return abstract
   }
 
@@ -748,7 +752,8 @@ export class DocBook5Converter extends ConverterBase {
   }
 
   _titleTag (node, optional = true) {
-    return (!optional || node.hasTitle()) ? `<title>${node.title}</title>\n` : ''
+    if (optional && !node.hasTitle()) return ''
+    return `<title>${node.title ?? ''}</title>\n`
   }
 
   _coverTag (doc, face, usePlaceholder = false) {

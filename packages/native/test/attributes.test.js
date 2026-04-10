@@ -495,16 +495,16 @@ describe('Attributes', () => {
 
     test('verify toc attribute matrix', async () => {
       const expectedData = [
-        ['toc', null, null, 'auto', null],
-        ['toc=header', null, null, 'auto', null],
-        ['toc=beeboo', null, null, 'auto', null],
-        ['toc=left', null, 'left', 'auto', 'toc2'],
-        ['toc2', null, 'left', 'auto', 'toc2'],
-        ['toc=right', null, 'right', 'auto', 'toc2'],
-        ['toc=preamble', null, 'content', 'preamble', null],
-        ['toc=macro', null, 'content', 'macro', null],
-        ['toc toc-placement=macro toc-position=left', null, 'content', 'macro', null],
-        ['toc toc-placement!', null, 'content', 'macro', null],
+        ['toc', '', null, 'auto', null],
+        ['toc=header', '', null, 'auto', null],
+        ['toc=beeboo', '', null, 'auto', null],
+        ['toc=left', '', 'left', 'auto', 'toc2'],
+        ['toc2', '', 'left', 'auto', 'toc2'],
+        ['toc=right', '', 'right', 'auto', 'toc2'],
+        ['toc=preamble', '', 'content', 'preamble', null],
+        ['toc=macro', '', 'content', 'macro', null],
+        ['toc toc-placement=macro toc-position=left', '', 'content', 'macro', null],
+        ['toc toc-placement!', '', 'content', 'macro', null],
       ]
 
       for (const [rawAttrs, toc, tocPosition, tocPlacement, tocClass] of expectedData) {
@@ -512,8 +512,8 @@ describe('Attributes', () => {
           rawAttrs.split(' ').map((e) => e.includes('=') ? e.split('=', 2) : [e, ''])
         )
         const doc = await documentFromString('', { attributes: attrs })
-        if (toc) {
-          assert.ok(doc.hasAttr('toc', toc))
+        if (toc !== null) {
+          assert.ok(doc.hasAttr('toc'), `Expected toc attribute to be present for "${rawAttrs}"`)
         } else {
           assert.ok(!doc.hasAttr('toc'))
         }
