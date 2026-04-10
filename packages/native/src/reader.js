@@ -64,6 +64,35 @@ function fileExists (path) {
   try { _fs.accessSync(path, _fs.constants.F_OK); return true } catch { return false }
 }
 
+// ── adjustIndentation ─────────────────────────────────────────────────────────
+// Port of Parser.adjust_indentation! from Ruby.
+// Mutates `lines` in place to remove block indent, then optionally re-indent.
+function _adjustIndentation (lines, indentSize, tabSize = 0) {
+  if (lines.length === 0) return
+  // Determine block indent (minimum leading spaces of non-blank lines)
+  let blockIndent = null
+  for (const line of lines) {
+    if (line === '') continue
+    const lineIndent = line.length - line.trimStart().length
+    if (lineIndent === 0) { blockIndent = null; break }
+    if (blockIndent === null || lineIndent < blockIndent) blockIndent = lineIndent
+  }
+  if (indentSize === 0) {
+    if (blockIndent) {
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i] !== '') lines[i] = lines[i].slice(blockIndent)
+      }
+    }
+  } else {
+    const newIndent = ' '.repeat(indentSize)
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i] !== '') {
+        lines[i] = blockIndent ? newIndent + lines[i].slice(blockIndent) : newIndent + lines[i]
+      }
+    }
+  }
+}
+
 // ── Cursor ────────────────────────────────────────────────────────────────────
 
 export class Cursor {
@@ -464,9 +493,11 @@ export class Reader {
 
 export class PreprocessorReader extends Reader {
   constructor (document, data = null, cursor = null, opts = {}) {
-    if (document.attributes['skip-front-matter'] && !('skipFrontMatter' in opts)) {
+    if ('skip-front-matter' in document.attributes && !('skipFrontMatter' in opts)) {
       opts = { ...opts, skipFrontMatter: true }
     }
+    // Pass document in opts so that _prepareLines (called from super) can access it.
+    if (!opts.document) opts = { ...opts, document }
     super(data, cursor, opts)
     this._document = document
     this._sourcemap = document.sourcemap
@@ -641,7 +672,7 @@ export class PreprocessorReader extends Reader {
       if (opts.indent != null) {
         const indentVal = parseInt(opts.indent, 10) || 0
         const tabsize = parseInt(this._document.attr('tabsize') ?? 0, 10)
-        // TODO: Parser.adjustIndentation(result, indentVal, tabsize)
+        _adjustIndentation(result, indentVal, tabsize)
       }
     } else {
       while (result.length > 0 && result[result.length - 1] === '') result.pop()
@@ -801,13 +832,13 @@ export class PreprocessorReader extends Reader {
       expandedTarget = doc.subAttributes(target, { attributeMissing: attrMissing === 'warn' ? 'drop-line' : attrMissing })
       if (expandedTarget === '') {
         const parsedAttrs = attrlist ? doc.parseAttributes(attrlist, [], { subInput: true }) : {}
-        if (parsedAttrs['optional-option']) {
-          this._logInfo(`optional include dropped because resolved target is blank: include::${target}[${attrlist}]`, { sourceLocation: this.cursor })
+        if ('optional-option' in parsedAttrs) {
+          this._logInfo(`optional include dropped because resolved target is blank: include::${target}[${attrlist ?? ''}]`, { sourceLocation: this.cursor })
           super._shift()
           return true
         }
-        this._logWarn(`include dropped because resolved target is blank: include::${target}[${attrlist}]`, { sourceLocation: this.cursor })
-        return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${target}[${attrlist}]`)
+        this._logWarn(`include dropped because resolved target is blank: include::${target}[${attrlist ?? ''}]`, { sourceLocation: this.cursor })
+        return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${target}[${attrlist ?? ''}]`)
       }
     }
 
@@ -823,7 +854,7 @@ export class PreprocessorReader extends Reader {
 
     if (doc.safe >= SafeMode.SECURE) {
       const lt = expandedTarget.includes(' ') ? `pass:c[${expandedTarget}]` : expandedTarget
-      const la = doc.attr('compat-mode') ? attrlist : `role=include${attrlist ? ',' + attrlist : ''}`
+      const la = doc.hasAttr('compat-mode') ? (attrlist ?? '') : `role=include${attrlist ? ',' + attrlist : ''}`
       return this.replaceNextLine(`link:${lt}[${la}]`)
     }
 
@@ -842,13 +873,13 @@ export class PreprocessorReader extends Reader {
     if (targetType === 'uri') {
       // TODO: URI includes require async fetch — not yet supported synchronously
       this._logWarn(`URI includes require async fetch (not yet supported): ${incPath}`, { sourceLocation: this.cursor })
-      return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist}]`)
+      return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist ?? ''}]`)
     }
 
     let incLinenos = null
     let incTags = null
     if (attrlist) {
-      if ('lines' in parsedAttrs) {
+      if ('lines' in parsedAttrs && parsedAttrs.lines !== '') {
         incLinenos = []
         for (const ld of this._splitDelimitedValue(parsedAttrs.lines)) {
           if (ld.includes('..')) {
@@ -899,13 +930,13 @@ export class PreprocessorReader extends Reader {
           super._shift()
         } catch {
           this._logError(`include ${targetType} not readable: ${incPath}`, { sourceLocation: this.cursor })
-          return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist}]`)
+          return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist ?? ''}]`)
         }
         this.pushInclude(incContent, incPath, relpath, 1, parsedAttrs)
       }
     } catch {
       this._logError(`include ${targetType} not readable: ${incPath}`, { sourceLocation: this.cursor })
-      return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist}]`)
+      return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist ?? ''}]`)
     }
     return true
   }
@@ -917,7 +948,7 @@ export class PreprocessorReader extends Reader {
       if (!doc.attr('allow-uri-read')) {
         this._logWarn(`cannot include contents of URI: ${target} (allow-uri-read attribute not enabled)`, { sourceLocation: this.cursor })
         const lt = target.includes(' ') ? `pass:c[${target}]` : target
-        const la = doc.attr('compat-mode') ? attrlist : `role=include${attrlist ? ',' + attrlist : ''}`
+        const la = doc.hasAttr('compat-mode') ? (attrlist ?? '') : `role=include${attrlist ? ',' + attrlist : ''}`
         return this.replaceNextLine(`link:${lt}[${la}]`)
       }
       return [target, 'uri', target]
@@ -925,13 +956,13 @@ export class PreprocessorReader extends Reader {
 
     const incPath = doc.normalizeSystemPath(target, this._dir, null, { targetName: 'include file' })
     if (!fileExists(incPath)) {
-      if (attributes['optional-option']) {
+      if ('optional-option' in attributes) {
         this._logInfo(`optional include dropped because include file not found: ${incPath}`, { sourceLocation: this.cursor })
         super._shift()
         return true
       }
       this._logError(`include file not found: ${incPath}`, { sourceLocation: this.cursor })
-      return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${target}[${attrlist}]`)
+      return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${target}[${attrlist ?? ''}]`)
     }
     const relpath = doc.pathResolver.relativePath(incPath, doc.baseDir)
     return [incPath, 'file', relpath]

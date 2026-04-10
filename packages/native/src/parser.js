@@ -1991,7 +1991,9 @@ export class Parser {
     if (name === 'numbered') name = 'sectnums'
     else if (name === 'hardbreaks') name = 'hardbreaks-option'
     else if (name === 'showtitle') {
-      Parser.storeAttribute('notitle', value ? null : '', doc, attrs)
+      // Ruby: '' is truthy so `value ? nil : ''` unsets notitle when showtitle is set.
+      // In JS, '' is falsy, so we test value !== null instead.
+      Parser.storeAttribute('notitle', value !== null ? null : '', doc, attrs)
     }
 
     if (doc) {

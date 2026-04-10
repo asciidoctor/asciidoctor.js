@@ -33,8 +33,8 @@ const BOM = '\uFEFF'
 //
 // Returns a String Array of prepared lines.
 // Internal: Trim trailing ASCII whitespace only (not Unicode line separators U+2028/U+2029).
-// Ruby's rstrip/chop only strips ASCII whitespace, so we match that behavior.
-const rstrip = (line) => line.replace(/[ \t\r\f\v]+$/, '')
+// Ruby's rstrip strips trailing ASCII whitespace (including newlines).
+const rstrip = (line) => line.replace(/[ \t\r\n\f\v]+$/, '')
 
 export function prepareSourceArray (data, trimEnd = true) {
   if (!data.length) return []
@@ -55,7 +55,11 @@ export function prepareSourceArray (data, trimEnd = true) {
 export function prepareSourceString (data, trimEnd = true) {
   if (!data) return []
   if (data.startsWith(BOM)) data = data.slice(1)
-  const lines = data.split(/\n/)
+  // Ruby's each_line does not produce an empty trailing element when the string
+  // ends with \n, but JS split('\n') does. Remove the trailing empty element
+  // to match Ruby behaviour.
+  if (data.endsWith('\n')) data = data.slice(0, -1)
+  const lines = data.split('\n')
   return trimEnd ? lines.map(rstrip) : lines
 }
 
