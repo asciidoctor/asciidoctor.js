@@ -1646,10 +1646,15 @@ export class Parser {
     Parser.processAttributeEntries(reader, document)
 
     let implicitAuthorMetadata = {}
+    let authorcount = null
+    let implicitAuthor = null
+    let implicitAuthorinitials = null
+    let implicitAuthors = null
+
     if (reader.hasMoreLines() && !reader.isNextLineEmpty()) {
       const authorLine = reader.readLine()
       const parsed     = Parser.processAuthors(authorLine)
-      const authorcount = parsed['authorcount']
+      authorcount = parsed['authorcount']
       delete parsed['authorcount']
       implicitAuthorMetadata = parsed
       implicitAuthorMetadata['authorcount'] = authorcount
@@ -1662,6 +1667,9 @@ export class Parser {
               docAttrs[key] = document.applyHeaderSubs(val)
             }
           }
+          implicitAuthor          = docAttrs['author']
+          implicitAuthorinitials  = docAttrs['authorinitials']
+          implicitAuthors         = docAttrs['authors']
         }
       }
 
@@ -1699,7 +1707,72 @@ export class Parser {
       reader.skipBlankLines()
     }
 
-    return retrieve ? implicitAuthorMetadata : null
+    // Process author attribute entries that override (or stand in for) the implicit author line.
+    let authorMetadata = null
+    if (document) {
+      if (('author' in docAttrs) && docAttrs['author'] !== implicitAuthor) {
+        // author attribute was set or overridden; re-parse as names only (no multiple)
+        authorMetadata = Parser.processAuthors(docAttrs['author'], true, false)
+        if (docAttrs['authorinitials'] !== implicitAuthorinitials) {
+          delete authorMetadata['authorinitials']
+        }
+      } else if (('authors' in docAttrs) && docAttrs['authors'] !== implicitAuthors) {
+        // authors attribute was set or overridden; re-parse as names only (allow multiple)
+        authorMetadata = Parser.processAuthors(docAttrs['authors'], true)
+      } else {
+        // check for individual author_N overrides
+        const authors = []
+        let authorIdx = 1
+        let authorKey = 'author_1'
+        let explicit = false
+        let sparse = false
+        while (authorKey in docAttrs) {
+          const authorOverride = docAttrs[authorKey]
+          if (authorOverride === implicitAuthorMetadata[authorKey]) {
+            authors.push(null)
+            sparse = true
+          } else {
+            authors.push(authorOverride)
+            explicit = true
+          }
+          authorKey = `author_${++authorIdx}`
+        }
+        if (explicit) {
+          if (sparse) {
+            for (let idx = 0; idx < authors.length; idx++) {
+              if (authors[idx] != null) continue
+              const nameIdx = idx + 1
+              const parts = [
+                implicitAuthorMetadata[`firstname_${nameIdx}`],
+                implicitAuthorMetadata[`middlename_${nameIdx}`],
+                implicitAuthorMetadata[`lastname_${nameIdx}`],
+              ].filter(Boolean).map((n) => n.replace(/ /g, '_'))
+              authors[idx] = parts.join(' ')
+            }
+          }
+          // process as names only (no multiple — each entry is already a single author)
+          authorMetadata = Parser.processAuthors(authors, true, false)
+        } else {
+          authorMetadata = { authorcount: 0 }
+        }
+      }
+
+      if (authorMetadata['authorcount'] === 0) {
+        if (authorcount != null) {
+          authorMetadata = null
+        } else {
+          docAttrs['authorcount'] = 0
+        }
+      } else {
+        Object.assign(docAttrs, authorMetadata)
+        if (!('email' in docAttrs) && ('email_1' in docAttrs)) {
+          docAttrs['email'] = docAttrs['email_1']
+        }
+      }
+    }
+
+    if (!retrieve) return null
+    return Object.assign({}, implicitAuthorMetadata, authorMetadata ?? {})
   }
 
   // Internal: Parse the author line into a metadata Hash.
@@ -1727,9 +1800,14 @@ export class Parser {
         let cleanEntry = entry
         if (entry.includes('<')) {
           authorMetadata[keyMap['author']] = entry.replace(/_/g, ' ')
-          cleanEntry = entry.replace(XmlSanitizeRx, '')
+          cleanEntry = entry.replace(new RegExp(XmlSanitizeRx.source, 'g'), '')
         }
-        const parts = cleanEntry.split(/\s+/, 3).filter(Boolean)
+        // Ruby: split(nil, 3) — splits on whitespace, keeps remainder in 3rd element.
+        // JS split with limit drops the remainder, so we split fully then cap at 3.
+        const allParts = cleanEntry.split(/\s+/).filter(Boolean)
+        const parts = allParts.length > 3
+          ? [...allParts.slice(0, 2), allParts.slice(2).join(' ')]
+          : allParts
         if (parts.length === 3) {
           const last = parts.pop()
           parts.push(last.replace(/  +/g, ' '))
@@ -2431,7 +2509,7 @@ export class Parser {
 
   // Internal: Convert an attribute name to a legal form.
   static sanitizeAttributeName (name) {
-    return name.replace(InvalidAttributeNameCharsRx, '').toLowerCase()
+    return name.replace(new RegExp(InvalidAttributeNameCharsRx.source, 'gu'), '').toLowerCase()
   }
 }
 
