@@ -622,15 +622,8 @@ export class Document extends AbstractBlock {
     if (this.isAttributeLocked(name)) return null
     if (value && value !== '') value = this._applyAttributeValueSubs(value)
     if (this._headerAttributes) {
-      this._headerAttributes[name] = this.attributes[name] = value
-      switch (name) {
-        case 'backend':
-          this._updateBackendAttributes(value, this._attributesModified.delete('htmlsyntax') && value === this.backend)
-          break
-        case 'doctype':
-          this._updateDoctypeAttributes(value)
-          break
-      }
+      // Beyond the document header; only update live attributes, not the header snapshot.
+      this.attributes[name] = value
     } else {
       switch (name) {
         case 'backend':

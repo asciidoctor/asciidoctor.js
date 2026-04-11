@@ -673,14 +673,16 @@ export class Parser {
 
         if ((style === 'float' || style === 'discrete') &&
             (Compliance.underlineStyleSectionTitles
-              ? Parser.isSectionTitle(thisLine, reader.peekLine())
-              : !indented && Parser.atxSectionTitle(thisLine))) {
+              ? Parser.isSectionTitle(thisLine, reader.peekLine()) != null
+              : !indented && Parser.atxSectionTitle(thisLine) != null)) {
           reader.unshiftLine(thisLine)
           const [floatId, floatReftext, blockTitle, floatLevel] = Parser.parseSectionTitle(reader, document, attributes['id'])
           if (floatReftext) attributes['reftext'] = floatReftext
           block = new Block(parent, 'floating_title', { content_model: 'empty' })
           block.title = blockTitle
           delete attributes['title']
+          // Force title resolution while in scope to capture current attribute values (Ruby: parser.rb ~line 939)
+          if (blockTitle.includes(ATTR_REF_HEAD)) void block.title
           if (floatId) {
             block.id = floatId
           } else if ('sectids' in docAttrs) {
@@ -928,8 +930,11 @@ export class Parser {
 
     if (document.sourcemap) block.sourceLocation = reader.cursorAtMark()
     if (attributes['title']) {
-      block.title = attributes['title']
+      const blockTitle = attributes['title']
+      block.title = blockTitle
       delete attributes['title']
+      // Force title resolution while in scope to capture current attribute values (Ruby: parser.rb ~line 939)
+      if (blockTitle.includes(ATTR_REF_HEAD)) void block.title
       if (CAPTION_ATTRIBUTE_NAMES[block.context]) {
         block.assignCaption(attributes['caption'])
         delete attributes['caption']
@@ -1461,7 +1466,8 @@ export class Parser {
     const sourceLocation = document.sourcemap ? reader.cursor : null
     const sectStyle = attributes[1] ?? null
 
-    const [sectId, sectReftext, sectTitle, sectLevel, sectAtx] = Parser.parseSectionTitle(reader, document, attributes['id'])
+    const [sectId, sectReftext, sectTitle, rawSectLevel, sectAtx] = Parser.parseSectionTitle(reader, document, attributes['id'])
+    let sectLevel = rawSectLevel
 
     let sectName, sectSpecial = false, sectNumbered = false
     if (sectStyle) {
@@ -1473,7 +1479,7 @@ export class Parser {
       } else {
         sectName    = sectStyle
         sectSpecial = true
-        if (sectLevel === 0) { /* keep level */ }
+        if (book && sectLevel === 0) sectLevel = 1
         sectNumbered = sectName === 'appendix'
       }
     } else if (book) {
@@ -1499,9 +1505,9 @@ export class Parser {
       } else if (document.attributes['sectnums'] === 'all') {
         section.numbered = book && sectLevel === 1 ? 'chapter' : true
       }
-    } else if (document.attributes['sectnums'] && sectLevel > 0) {
+    } else if (('sectnums' in document.attributes) && sectLevel > 0) {
       section.numbered = section.special ? (parent.numbered && true) : true
-    } else if (book && sectLevel === 0 && document.attributes['partnums']) {
+    } else if (book && sectLevel === 0 && ('partnums' in document.attributes)) {
       section.numbered = true
     }
 

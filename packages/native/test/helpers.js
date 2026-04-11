@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 import { parse } from 'node-html-parser'
 import { DOMParser } from '@xmldom/xmldom'
 import { select, useNamespaces } from 'xpath'
+import { MemoryLogger, LoggerManager } from '../src/logging.js'
 
 /**
  * Decode a Unicode character by code point.
@@ -107,4 +108,34 @@ export function assertMessage (logger, severity, text) {
     return msgText.includes(text)
   })
   assert.ok(found, `Expected ${sev} message containing "${text}" but got: ${JSON.stringify(logger.messages)}`)
+}
+
+/**
+ * Assert that a logger contains exactly the given list of messages (order-independent).
+ * Ruby: assert_messages @logger, [[:WARN, 'text'], [:ERROR, 'text2']]
+ */
+export function assertMessages (logger, expected) {
+  assert.equal(
+    logger.messages.length,
+    expected.length,
+    `Expected ${expected.length} message(s) but got ${logger.messages.length}: ${JSON.stringify(logger.messages)}`
+  )
+  for (const [severity, text] of expected) {
+    assertMessage(logger, severity, text)
+  }
+}
+
+/**
+ * Run fn with a fresh MemoryLogger installed, then restore the original logger.
+ * Ruby: using_memory_logger { |logger| ... }
+ */
+export async function usingMemoryLogger (fn) {
+  const defaultLogger = LoggerManager.logger
+  const logger = new MemoryLogger()
+  LoggerManager.logger = logger
+  try {
+    await fn(logger)
+  } finally {
+    LoggerManager.logger = defaultLogger
+  }
 }

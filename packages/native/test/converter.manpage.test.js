@@ -32,8 +32,8 @@ command - does stuff
 
 // Standalone conversion (full document with .TH header)
 const manpage = async (input, opts = {}) => {
-  const doc = await load(input, { safe: 'safe', backend: 'manpage', doctype: 'manpage', ...opts })
-  return doc.convert({ standalone: true })
+  const doc = await load(input, { safe: 'safe', backend: 'manpage', doctype: 'manpage', standalone: true, ...opts })
+  return doc.convert()
 }
 
 // Non-standalone / embedded conversion (body content only, no .TH header)

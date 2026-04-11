@@ -102,10 +102,10 @@ describe('Default settings', () => {
   })
 
   test('toc and sectnums enabled by default in docbook backend', async () => {
-    const doc = await parse('content', { backend: 'docbook5' })
+    const doc = await parse('content', { backend: 'docbook5', standalone: true })
     assert.ok(inAttr(doc, 'toc'))
     assert.ok(inAttr(doc, 'sectnums'))
-    const result = doc.convert({ standalone: true })
+    const result = doc.convert()
     assert.ok(result.includes('<?asciidoc-toc?>'))
     assert.ok(result.includes('<?asciidoc-numbered?>'))
   })
