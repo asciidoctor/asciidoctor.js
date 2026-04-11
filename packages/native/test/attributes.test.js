@@ -13,7 +13,7 @@ const convertString = (input, opts = {}) => documentFromString(input, { standalo
 const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
 const convertInlineString = (input, opts = {}) => documentFromString(input, { doctype: 'inline', ...opts }).then((doc) => doc.convert())
 const blockFromString = async (input, opts = {}) => (await documentFromString(input, opts)).blocks[0]
-const emptyDocument = (opts = {}) => documentFromString('', opts)
+const emptyDocument = (opts = {}) => documentFromString('', { parse: false, ...opts })
 
 // Simple helper to assert that a logger contains a message with the given severity and text.
 function assertMessage (logger, severity, text) {

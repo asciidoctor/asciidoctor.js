@@ -467,7 +467,7 @@ ${node.converter.convert(node, 'outline')}
     if (node.id) {
       const id = node.id
       idAttr = ` id="${id}"`
-      if (docAttrs['sectlinks']) {
+      if ('sectlinks' in docAttrs) {
         let m
         if (title.startsWith('<a ') && (m = title.match(LeadingAnchorsRx))) {
           title = `${m[0]}<a class="link" href="#${id}">${title.slice(m[0].length)}</a>`
@@ -475,7 +475,7 @@ ${node.converter.convert(node, 'outline')}
           title = `<a class="link" href="#${id}">${title}</a>`
         }
       }
-      if (docAttrs['sectanchors']) {
+      if ('sectanchors' in docAttrs) {
         if (docAttrs['sectanchors'] === 'after') {
           title = `${title}<a class="anchor" href="#${id}"></a>`
         } else {

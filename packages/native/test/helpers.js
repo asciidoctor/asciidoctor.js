@@ -31,7 +31,24 @@ export function countCss (html, selector) {
     .replace(/\s+xmlns(?::\w+)?="[^"]*"/g, '')
     .replace(/\bxml:(\w+)=/g, '$1=')
   const root = parse(`<body>${normalized}</body>`)
-  return root.querySelectorAll(selector).length
+  if (!selector.includes(':root')) {
+    return root.querySelectorAll(selector).length
+  }
+  // Nokogiri treats :root in a fragment context as matching top-level elements
+  // (direct children of the fragment root). Emulate this by temporarily marking
+  // all direct children of <body> with a synthetic attribute, then replacing
+  // :root in the selector with an attribute selector for that marker.
+  const body = root.querySelector('body')
+  const topLevel = body ? body.childNodes.filter((n) => n.tagName) : []
+  for (const el of topLevel) {
+    el.setAttribute('data-asciidoc-root', '')
+  }
+  const processed = selector.replace(/:root/g, '[data-asciidoc-root]')
+  const count = root.querySelectorAll(processed).length
+  for (const el of topLevel) {
+    el.removeAttribute('data-asciidoc-root')
+  }
+  return count
 }
 
 /**

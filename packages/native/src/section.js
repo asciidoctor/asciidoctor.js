@@ -41,16 +41,14 @@ export class Section extends AbstractBlock {
   // Public: The name of this section — alias for title.
   get name () { return this.title }
 
+  // Public: Check whether this section has any child Section objects.
+  //
+  // Returns a Boolean.
+  hasSections () { return this._nextSectionIndex > 0 }
+
   // Public: Generate a String ID from the title of this section.
   generateId () {
     return Section.generateId(this.title, this.document)
-  }
-
-  // Public: Check whether this Section has any child Section objects.
-  //
-  // Returns Boolean.
-  sections () {
-    return this._nextSectionIndex > 0
   }
 
   // Public: Get the section number for the current Section as a dot-separated String.
@@ -63,9 +61,9 @@ export class Section extends AbstractBlock {
   sectnum (delimiter = '.', append = null) {
     const suffix = append !== null ? (append === false ? '' : append) : delimiter
     if (this.level > 1 && this.parent instanceof Section) {
-      return `${this.parent.sectnum(delimiter, delimiter)}${this.numeral}${suffix}`
+      return `${this.parent.sectnum(delimiter, delimiter)}${this.numeral ?? ''}${suffix}`
     }
-    return `${this.numeral}${suffix}`
+    return `${this.numeral ?? ''}${suffix}`
   }
 
   // (see AbstractBlock#xreftext)

@@ -267,8 +267,12 @@ export class Document extends AbstractBlock {
     attrOverrides['allow-uri-read']              ??= null
 
     // Remap legacy attributes
-    if ('numbered' in attrOverrides)  attrOverrides['sectnums']          = delete attrOverrides['numbered']
-    if ('hardbreaks' in attrOverrides) attrOverrides['hardbreaks-option'] = delete attrOverrides['hardbreaks']
+    if ('numbered' in attrOverrides) {
+      const _v = attrOverrides['numbered']; delete attrOverrides['numbered']; attrOverrides['sectnums'] = _v
+    }
+    if ('hardbreaks' in attrOverrides) {
+      const _v = attrOverrides['hardbreaks']; delete attrOverrides['hardbreaks']; attrOverrides['hardbreaks-option'] = _v
+    }
 
     // Resolve base_dir
     if (options.base_dir) {
@@ -936,7 +940,8 @@ export class Document extends AbstractBlock {
       this.outfilesuffix = attrs['outfilesuffix'] ?? null
 
       for (const name of FLEXIBLE_ATTRIBUTES) {
-        if ((name in this._attributeOverrides) && this._attributeOverrides[name]) {
+        const _fv = this._attributeOverrides[name]
+        if ((name in this._attributeOverrides) && _fv != null && _fv !== false) {
           delete this._attributeOverrides[name]
         }
       }
