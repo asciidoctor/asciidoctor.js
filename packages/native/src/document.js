@@ -38,7 +38,7 @@ export class ImageReference {
 export class Footnote {
   constructor (index, id, text) {
     this.index = index
-    this.id    = id
+    this.id    = id ?? null
     this.text  = text
   }
 }

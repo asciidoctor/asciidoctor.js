@@ -1380,7 +1380,7 @@ Your browser does not support the video tag.
         }
         const titleAttr = node.hasAttr('title') ? ` title="${node.attr('title')}"` : ''
         img = `<i class="${iClassAttrVal}"${titleAttr}></i>`
-      } else if (icons) {
+      } else if (icons != null) {
         let attrs = node.hasAttr('width') ? ` width="${node.attr('width')}"` : ''
         if (node.hasAttr('height')) attrs += ` height="${node.attr('height')}"`
         if (node.hasAttr('title')) attrs += ` title="${node.attr('title')}"`
@@ -1396,7 +1396,7 @@ Your browser does not support the video tag.
         node.document.safe < SafeMode.SECURE) {
         if (node.hasOption('inline')) {
           img = this.readSvgContents(node, target) || `<span class="alt">${node.alt()}</span>`
-        } else if (node.hasOption('interactive')) {
+        } else if (node.hasOption('interactive') && node.document.safe >= SafeMode.SERVER) {
           const fallback = node.hasAttr('fallback')
             ? `<img src="${node.imageUri(node.attr('fallback'))}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
             : `<span class="alt">${node.alt()}</span>`

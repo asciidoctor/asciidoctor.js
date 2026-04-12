@@ -47,26 +47,26 @@ export class Block extends AbstractBlock {
       if (subs) {
         if (subs === 'default') {
           // subs attribute is honored; falls back to opts.default_subs then built-in defaults
-          this._defaultSubs = opts.default_subs ?? null
+          this.defaultSubs = opts.default_subs ?? null
         } else if (Array.isArray(subs)) {
           // subs attribute is not honored; use provided array directly
-          this._defaultSubs = [...subs]
+          this.defaultSubs = [...subs]
           delete this.attributes.subs
         } else {
           // e.g. subs: 'normal' — subs attribute is not honored
-          this._defaultSubs = null
+          this.defaultSubs = null
           this.attributes.subs = String(subs)
         }
         // Resolve subs eagerly when subs option is specified
         this.commitSubs()
       } else {
-        // subs: null/undefined — prevent subs from being resolved
-        this._defaultSubs = []
+        // subs: null/[] — lock subs as empty; subsequent commitSubs() calls are no-ops
+        this.defaultSubs = []
         delete this.attributes.subs
       }
     } else {
       // Defer subs resolution; subs attribute will be honored later
-      this._defaultSubs = null
+      this.defaultSubs = null
     }
 
     const rawSource = opts.source

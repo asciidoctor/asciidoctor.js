@@ -137,11 +137,17 @@ function arrayUnion(a, b) {
 }
 
 /**
- * Array intersection (Ruby `arr & other`).
+ * Array intersection (Ruby `arr & other`): elements of a that appear in b, deduplicated,
+ * preserving the order from a with first occurrence winning.
  */
 function arrayIntersect(a, b) {
-  const set = new Set(b)
-  return a.filter((v) => set.has(v))
+  const allowed = new Set(b)
+  const seen = new Set()
+  return a.filter((v) => {
+    if (!allowed.has(v) || seen.has(v)) return false
+    seen.add(v)
+    return true
+  })
 }
 
 /**
@@ -1056,7 +1062,8 @@ export const Substitutors = {
               id = p3.slice(0, commaIdx)
               content = p3.slice(commaIdx + 1)
             } else {
-              return match
+              // reference only (no text), e.g. footnoteref:[id]
+              id = p3
             }
             if (!doc.compatMode) {
               this.logger.warn(`found deprecated footnoteref macro: ${match}; use footnote macro with target instead`)
@@ -1384,6 +1391,12 @@ export const Substitutors = {
           } else if (preceding === RS) {
             if (oldBehaviorForced && formatMark === '`') {
               return `${preceding}[${attrlist}]${quotedText}`
+            }
+            if (compatMode && formatMark === '`') {
+              // escaped role in compat-mode: role becomes literal text, backtick span still processed as monospaced
+              let passthruKey
+              passthrus[passthruKey = passthrus.length] = { text: content, subs: BASIC_SUBS, type: 'monospaced' }
+              return `[${attrlist}]${PASS_START}${passthruKey}${PASS_END}`
             }
             return `[${attrlist}]${quotedText}`  // preceding replaced by attrlist form
           } else if (oldBehaviorForced) {
