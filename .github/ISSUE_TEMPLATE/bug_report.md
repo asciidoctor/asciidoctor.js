@@ -28,8 +28,8 @@ If applicable, add screenshots to help explain your problem.
 
 **Versions** (please complete the following information):**
  - OS: [e.g. Ubuntu, Windows]
- - JavaScript engine [e.g. Chrome, Node 24.14.0]
- - Asciidoctor.js version [e.g. 3.2.1]
+ - JavaScript engine: [e.g. Chrome, Node 24.14.0]
+ - Asciidoctor.js version: [e.g. 3.2.1]
 
 **Additional context**
 Add any other context about the problem here.
