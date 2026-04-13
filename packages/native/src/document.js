@@ -126,11 +126,11 @@ export class Document extends AbstractBlock {
       this._attributeOverrides = { ...parentDoc._attributeOverrides, ...parentDoc.attributes }
       const attrOverrides = this._attributeOverrides
       delete attrOverrides['compat-mode']
-      const parentDoctype = delete attrOverrides['doctype']
+      const parentDoctype = attrOverrides['doctype']; delete attrOverrides['doctype']
       delete attrOverrides['notitle']
       delete attrOverrides['showtitle']
       delete attrOverrides['toc']
-      this.attributes['toc-placement'] = (delete attrOverrides['toc-placement']) ?? 'auto'
+      this.attributes['toc-placement'] = attrOverrides['toc-placement'] ?? 'auto'; delete attrOverrides['toc-placement']
       delete attrOverrides['toc-position']
 
       this.safe          = parentDoc.safe

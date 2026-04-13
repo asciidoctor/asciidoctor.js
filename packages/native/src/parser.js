@@ -2272,6 +2272,13 @@ export class Parser {
             }
             line = postMatch || null
             parserCtx.closeCell()
+            if (postMatch === '') {
+              if (format === 'csv' || format === 'dsv') {
+                parserCtx.closeCell(true)
+              } else if (format === 'psv') {
+                parserCtx.keepCellOpen()
+              }
+            }
           } else {
             parserCtx.buffer += line + LF
             if (format === 'csv') {
@@ -2291,10 +2298,12 @@ export class Parser {
             break
           }
         } else {
-          // null line = blank line; preserve in psv buffer so multi-paragraph cells are detected
+          // null line = blank line; preserve in buffer so multi-paragraph cells are detected
           if (format === 'psv' && parserCtx.buffer !== '') {
             parserCtx.buffer += LF
             parserCtx.keepCellOpen()
+          } else if (format === 'csv' && parserCtx.isCellOpen()) {
+            parserCtx.buffer += LF
           }
           break
         }
@@ -2320,6 +2329,7 @@ export class Parser {
   // Internal: Parse column specs.
   static parseColspecs (records) {
     records = records.replace(/ /g, '')
+    if (!records) return []
     if (records === String(parseInt(records, 10))) {
       return Array.from({ length: parseInt(records, 10) }, () => ({ width: 1 }))
     }
@@ -2360,6 +2370,7 @@ export class Parser {
       m = specPart.match(CellSpecStartRx)
       if (!m) return [null, line]
       if (m[0] === '') return [{}, rest]
+      if (specPart.trim() === '') return [null, line]
     } else {
       m = line.match(CellSpecEndRx)
       if (!m) return [{}, line]

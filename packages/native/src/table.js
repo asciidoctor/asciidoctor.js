@@ -59,7 +59,7 @@ export class Table extends AbstractBlock {
       this.attributes['tableabswidth'] = abswidthVal === Math.trunc(abswidthVal) ? Math.trunc(abswidthVal) : abswidthVal
     }
 
-    if (attributes['rotate-option']) this.attributes['orientation'] = 'landscape'
+    if ('rotate-option' in attributes) this.attributes['orientation'] = 'landscape'
   }
 
   // Internal: Returns the header option state if the row being processed is the header row, otherwise false.
@@ -300,7 +300,6 @@ Table.Cell = class Cell extends AbstractBlock {
       const innerDoc = new parentDoc.constructor(innerDocumentLines, {
         safe: parentDoc.safe,
         backend: parentDoc.backend,
-        doctype: 'article',
         header_footer: false,
         parent: parentDoc,
       })
@@ -413,7 +412,9 @@ Table.ParserContext = class ParserContext {
   }
 
   constructor (reader, table, attributes = {}) {
-    this._startCursorData = (this._reader = reader).mark()
+    this._reader = reader
+    this._startCursor = reader.cursor
+    reader.mark()
     this.table    = table
     this.buffer   = ''
 
@@ -479,8 +480,8 @@ Table.ParserContext = class ParserContext {
     this.buffer = `${this.buffer}${pre.slice(0, -1)}${this.delimiter}`
   }
 
-  bufferHasUnclosedQuotes (append = null, q = '"') {
-    let record = (append ? this.buffer + append : this.buffer).trim()
+  bufferHasUnclosedQuotesInText (text, q = '"') {
+    let record = text.trim()
     if (record === q) return true
     if (!record.startsWith(q)) return false
     const qq = q + q
@@ -490,6 +491,25 @@ Table.ParserContext = class ParserContext {
       return record.startsWith(q) && !record.endsWith(q)
     }
     return !trailingQuote
+  }
+
+  bufferHasUnclosedQuotes (append = null, q = '"') {
+    const record = (append ? this.buffer + append : this.buffer).trim()
+    if (!record.startsWith(q)) return false
+    // Walk the quoted field character by character (RFC 4180)
+    let i = 1 // skip the opening quote
+    while (i < record.length) {
+      if (record[i] === q) {
+        if (i + 1 < record.length && record[i + 1] === q) {
+          i += 2 // escaped quote ""
+        } else {
+          return false // closing quote found → field is closed
+        }
+      } else {
+        i++
+      }
+    }
+    return true // closing quote never found
   }
 
   takeCellspec () {
@@ -523,7 +543,7 @@ Table.ParserContext = class ParserContext {
         delete cellspec['repeatcol']
       } else {
         this.logger.error(this.messageWithContext('table missing leading separator; recovering automatically', {
-          source_location: Object.assign({}, this._startCursorData),
+          source_location: this._startCursor,
         }))
         cellspec = {}
         repeat   = 1
@@ -535,9 +555,9 @@ Table.ParserContext = class ParserContext {
       repeat      = 1
       if (this.format === 'csv' && cellText && cellText.includes('"')) {
         const q = '"'
-        if (cellText.startsWith(q) && cellText.endsWith(q)) {
-          const inner = cellText.slice(1, cellText.length - 1)
-          if (inner != null) {
+        if (cellText.startsWith(q)) {
+          if (cellText.length > 1 && cellText.endsWith(q) && !this.bufferHasUnclosedQuotesInText(cellText, q)) {
+            const inner = cellText.slice(1, cellText.length - 1)
             cellText = squeezeChar(inner.trim(), q)
           } else {
             this.logger.error(this.messageWithContext('unclosed quote in CSV data; setting cell to empty', {

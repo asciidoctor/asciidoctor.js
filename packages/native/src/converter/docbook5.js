@@ -384,8 +384,7 @@ export class DocBook5Converter extends ConverterBase {
     for (const col of node.columns) {
       result.push(`<colspec colname="col_${col.attr('colnumber')}" colwidth="${col.attr(colWidthKey)}*"/>`)
     }
-    const rows = node.rows.toHash ? node.rows.toHash() : node.rows
-    for (const [tsec, sectionRows] of Object.entries(rows)) {
+    for (const [tsec, sectionRows] of node.rows.bySection()) {
       if (!sectionRows || sectionRows.length === 0) continue
       if (tsec === 'body') hasBody = true
       result.push(`<t${tsec}>`)

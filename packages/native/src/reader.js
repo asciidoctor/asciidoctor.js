@@ -562,13 +562,13 @@ export class PreprocessorReader extends Reader {
       const fileStr = String(file)
       if ((this.processLines = Object.keys(ASCIIDOC_EXTENSIONS).some(ext => fileStr.endsWith(ext)))) {
         const key = this.path.slice(0, this.path.lastIndexOf('.'))
-        this._includes[key] ??= attributes['partial-option'] ? null : true
+        this._includes[key] ??= ('partial-option' in attributes) ? null : true
       }
     } else {
       this._dir = '.'
       this.processLines = true
       if ((this.path = path)) {
-        this._includes[rootname(this.path)] ??= attributes['partial-option'] ? null : true
+        this._includes[rootname(this.path)] ??= ('partial-option' in attributes) ? null : true
       } else {
         this.path = '<stdin>'
       }
