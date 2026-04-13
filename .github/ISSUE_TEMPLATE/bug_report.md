@@ -26,7 +26,7 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Versions** (please complete the following information):**
+**Versions** (please complete the following information):
  - OS: [e.g. Ubuntu, Windows]
  - JavaScript engine: [e.g. Chrome, Node 24.14.0]
  - Asciidoctor.js version: [e.g. 3.2.1]
