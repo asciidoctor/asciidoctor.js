@@ -335,9 +335,9 @@ export class Document extends AbstractBlock {
       if ((this.doctype = attrs['doctype'] = parentDoctype) !== DEFAULT_DOCTYPE) {
         this._updateDoctypeAttributes(DEFAULT_DOCTYPE)
       }
-      // Eagerly parse nested document
-      const { Reader } = await_require('./reader.js')
-      this.reader = new Reader(data, options.cursor)
+      // Eagerly parse nested document (use PreprocessorReader so include:: directives are processed)
+      const { PreprocessorReader } = await_require('./reader.js')
+      this.reader = new PreprocessorReader(this, data, options.cursor)
       if (this.sourcemap) this.sourceLocation = this.reader.cursor
       const { Parser } = await_require('./parser.js')
       Parser.parse(this.reader, this)
@@ -616,7 +616,14 @@ export class Document extends AbstractBlock {
   // Public: Restore attributes to the state saved at end of header parse.
   _restoreAttributes () {
     if (!this.parentDocument) this.catalog.callouts.rewind()
-    Object.assign(this.attributes, this._headerAttributes ?? {})
+    const toRestore = this._headerAttributes
+    if (toRestore) {
+      // Replicate Ruby's Hash#replace: wipe keys added after the header snapshot (e.g. counters)
+      for (const key of Object.keys(this.attributes)) {
+        if (!(key in toRestore)) delete this.attributes[key]
+      }
+      Object.assign(this.attributes, toRestore)
+    }
   }
 
   // Public: Set the specified attribute if not locked.

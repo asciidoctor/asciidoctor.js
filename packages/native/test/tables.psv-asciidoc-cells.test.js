@@ -342,7 +342,7 @@ a| paragraph
       const input = `|===
 a|include::fixtures/include-file.adoc[]
 |===`
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: fixturesDir })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: __dirname })
       assert.ok(output.includes('included content'), `Expected "included content" in output, got:\n${output}`)
     })
 

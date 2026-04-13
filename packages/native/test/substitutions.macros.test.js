@@ -712,7 +712,7 @@ describe('Substitutions', () => {
     // Ruby's `apply_title_subs`. The footnote counter in `doc.counter('footnote-number')` would then
     // be incremented during parsing for heading footnotes, leaving conversion-phase numbering to start
     // from 1 for body content — exactly reproducing the Ruby "out of sequence" quirk.
-    test('footnotes in headings are expected to be numbered out of sequence', { todo: true }, async () => {
+    test('footnotes in headings are expected to be numbered out of sequence', async () => {
       const input = [
         '== Section 1',
         '',

@@ -12,7 +12,7 @@ import { AbstractBlock }                   from './abstract_block.js'
 import { AbstractNode }                    from './abstract_node.js'
 import { Inline }                          from './inline.js'
 import { applyLogging }                    from './logging.js'
-import { LF }                              from './constants.js'
+import { LF, ATTR_REF_HEAD }               from './constants.js'
 import { BlankLineRx, LeadingInlineAnchorRx } from './rx.js'
 import { BASIC_SUBS, NORMAL_SUBS }         from './substitutors.js'
 
@@ -224,6 +224,7 @@ Table.Cell = class Cell extends AbstractBlock {
     let asciidoc = false
     let literal  = false
     let normalPsv = false
+    let innerDocumentCursor = null
 
     if (column) {
       inHeaderRow = column.table.headerRow()
@@ -259,7 +260,7 @@ Table.Cell = class Cell extends AbstractBlock {
       switch (cellStyle) {
         case 'asciidoc': {
           asciidoc = true
-          const innerDocumentCursor = opts.cursor
+          innerDocumentCursor = opts.cursor
           cellText = cellText.trimEnd()
           if (cellText.startsWith(LF)) {
             let linesAdvanced = 0
@@ -302,6 +303,7 @@ Table.Cell = class Cell extends AbstractBlock {
         backend: parentDoc.backend,
         header_footer: false,
         parent: parentDoc,
+        cursor: innerDocumentCursor,
       })
       innerDoc.parse()
       if (parentDoctitle) parentDoc.attributes['doctitle'] = parentDoctitle
@@ -348,8 +350,10 @@ Table.Cell = class Cell extends AbstractBlock {
     if (!cellText.startsWith('[[')) return
     const m = cellText.match(LeadingInlineAnchorRx)
     if (!m) return
-    // Parser.catalog_inline_anchor — resolved lazily to avoid circular dep
-    this._pendingAnchor = { id: m[1], reftext: m[2] ?? null, node: this, cursor, document: this.document }
+    const doc = this.document
+    let reftext = m[2] ?? null
+    if (reftext && reftext.includes(ATTR_REF_HEAD)) reftext = doc.subAttributes(reftext)
+    doc.register('refs', [m[1], new Inline(this, 'anchor', reftext, { type: 'ref', id: m[1] })])
   }
 
   // Public: Get the String text with substitutions applied.
@@ -385,6 +389,8 @@ Table.Cell = class Cell extends AbstractBlock {
 
   lines () { return this._text.split(LF) }
   source () { return this._text }
+
+  get innerDocument () { return this._innerDocument ?? null }
 
   get file ()   { return this.sourceLocation?.file ?? null }
   get lineno () { return this.sourceLocation?.lineno ?? null }
