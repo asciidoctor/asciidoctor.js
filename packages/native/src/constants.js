@@ -42,20 +42,35 @@ export const SafeMode = {
   SECURE: 20,
 
   // Returns the numeric value for a safe-mode name string, or undefined.
-  valueForName (name) {
+  valueForName(name) {
     const key = String(name).toUpperCase()
     const v = SafeMode[key]
     return typeof v === 'number' ? v : undefined
   },
 
+  // Alias for valueForName
+  getValueForName(name) {
+    return this.valueForName(name)
+  },
+
   // Returns the lowercase name for a numeric safe-mode value, or undefined.
-  nameForValue (value) {
+  nameForValue(value) {
     return _safeModeNamesByValue[value]
   },
 
+  // Alias for nameForValue
+  getNameForValue(value) {
+    return this.nameForValue(value)
+  },
+
   // Returns all safe-mode names in ascending value order.
-  names () {
+  names() {
     return Object.values(_safeModeNamesByValue)
+  },
+
+  // Alias for names
+  getNames() {
+    return this.names()
   },
 }
 
@@ -66,14 +81,15 @@ let LIB_DIR = ''
 let DATA_DIR = ''
 let USER_HOME = ''
 try {
-  LIB_DIR  = new URL('.', import.meta.url).pathname.replace(/\/$/, '')
-  ROOT_DIR  = new URL('../../', import.meta.url).pathname.replace(/\/$/, '')
-  DATA_DIR  = new URL('../../data', import.meta.url).pathname
+  LIB_DIR = new URL('.', import.meta.url).pathname.replace(/\/$/, '')
+  ROOT_DIR = new URL('../../', import.meta.url).pathname.replace(/\/$/, '')
+  DATA_DIR = new URL('../../data', import.meta.url).pathname
   // Prefer $HOME; fall back to $USERPROFILE (Windows) then process.cwd()
   if (typeof process !== 'undefined') {
     USER_HOME = process.env.HOME || process.env.USERPROFILE || (process.cwd ? process.cwd() : '') // eslint-disable-line n/no-process-env
   }
-} catch {}
+} catch {
+}
 export { ROOT_DIR, LIB_DIR, DATA_DIR, USER_HOME }
 
 // ── Primitive constants ───────────────────────────────────────────────────────
@@ -90,8 +106,8 @@ export const TAB = '\t'
 export const MAX_INT = 9007199254740991
 
 // ── Document defaults ─────────────────────────────────────────────────────────
-export const DEFAULT_DOCTYPE  = 'article'
-export const DEFAULT_BACKEND  = 'html5'
+export const DEFAULT_DOCTYPE = 'article'
+export const DEFAULT_BACKEND = 'html5'
 
 export const DEFAULT_STYLESHEET_KEYS = new Set(['', 'DEFAULT'])
 export const DEFAULT_STYLESHEET_NAME = 'asciidoctor.css'
@@ -151,20 +167,20 @@ export const VERBATIM_STYLES = new Set(['literal', 'listing', 'source', 'verse']
 // Maps delimiter string → [context, Set of alternative styles].
 // Ruby symbols are represented as plain strings.
 export const DELIMITED_BLOCKS = {
-  '--':   ['open',       new Set(['comment', 'example', 'literal', 'listing', 'pass', 'quote', 'sidebar', 'source', 'verse', 'admonition', 'abstract', 'partintro'])],
-  '----': ['listing',    new Set(['literal', 'source'])],
-  '....': ['literal',    new Set(['listing', 'source'])],
-  '====': ['example',    new Set(['admonition'])],
-  '****': ['sidebar',    new Set()],
-  '____': ['quote',      new Set(['verse'])],
-  '++++': ['pass',       new Set(['stem', 'latexmath', 'asciimath'])],
-  '|===': ['table',      new Set()],
-  ',===': ['table',      new Set()],
-  ':===': ['table',      new Set()],
-  '!===': ['table',      new Set()],
-  '~~~~': ['open',       new Set(['abstract', 'partintro'])],
-  '////': ['comment',    new Set()],
-  '```':  ['fenced_code', new Set()],
+  '--': ['open', new Set(['comment', 'example', 'literal', 'listing', 'pass', 'quote', 'sidebar', 'source', 'verse', 'admonition', 'abstract', 'partintro'])],
+  '----': ['listing', new Set(['literal', 'source'])],
+  '....': ['literal', new Set(['listing', 'source'])],
+  '====': ['example', new Set(['admonition'])],
+  '****': ['sidebar', new Set()],
+  '____': ['quote', new Set(['verse'])],
+  '++++': ['pass', new Set(['stem', 'latexmath', 'asciimath'])],
+  '|===': ['table', new Set()],
+  ',===': ['table', new Set()],
+  ':===': ['table', new Set()],
+  '!===': ['table', new Set()],
+  '~~~~': ['open', new Set(['abstract', 'partintro'])],
+  '////': ['comment', new Set()],
+  '```': ['fenced_code', new Set()],
 }
 
 // First 2 characters of each delimiter → true (used for fast sniff).
@@ -221,11 +237,11 @@ export const ORDERED_LIST_KEYWORDS = {
 }
 
 // ── Inline markers ────────────────────────────────────────────────────────────
-export const ATTR_REF_HEAD       = '{'
-export const LIST_CONTINUATION   = '+'
+export const ATTR_REF_HEAD = '{'
+export const LIST_CONTINUATION = '+'
 // NOTE AsciiDoc.py allows + to be preceded by TAB; Asciidoctor does not
-export const HARD_LINE_BREAK     = ' +'
-export const LINE_CONTINUATION        = ' \\'
+export const HARD_LINE_BREAK = ' +'
+export const LINE_CONTINUATION = ' \\'
 export const LINE_CONTINUATION_LEGACY = ' +'
 
 // ── Math / STEM ───────────────────────────────────────────────────────────────
@@ -249,30 +265,30 @@ export const STEM_TYPE_ALIASES = new Proxy(
 // ── Third-party library versions ──────────────────────────────────────────────
 export const FONT_AWESOME_VERSION = '4.7.0'
 export const HIGHLIGHT_JS_VERSION = '9.18.3'
-export const MATHJAX_VERSION      = '2.7.9'
+export const MATHJAX_VERSION = '2.7.9'
 
 // ── Default document attributes ───────────────────────────────────────────────
 export const DEFAULT_ATTRIBUTES = {
-  'appendix-caption':  'Appendix',
-  'appendix-refsig':   'Appendix',
-  'caution-caption':   'Caution',
-  'chapter-refsig':    'Chapter',
-  'example-caption':   'Example',
-  'figure-caption':    'Figure',
+  'appendix-caption': 'Appendix',
+  'appendix-refsig': 'Appendix',
+  'caution-caption': 'Caution',
+  'chapter-refsig': 'Chapter',
+  'example-caption': 'Example',
+  'figure-caption': 'Figure',
   'important-caption': 'Important',
   'last-update-label': 'Last updated',
-  'note-caption':      'Note',
-  'part-refsig':       'Part',
-  'prewrap':           '',
-  'sectids':           '',
-  'section-refsig':    'Section',
-  'table-caption':     'Table',
-  'tip-caption':       'Tip',
-  'toc-placement':     'auto',
-  'toc-title':         'Table of Contents',
-  'untitled-label':    'Untitled',
-  'version-label':     'Version',
-  'warning-caption':   'Warning',
+  'note-caption': 'Note',
+  'part-refsig': 'Part',
+  'prewrap': '',
+  'sectids': '',
+  'section-refsig': 'Section',
+  'table-caption': 'Table',
+  'tip-caption': 'Tip',
+  'toc-placement': 'auto',
+  'toc-title': 'Table of Contents',
+  'untitled-label': 'Untitled',
+  'version-label': 'Version',
+  'warning-caption': 'Warning',
 }
 
 // Attributes that may be changed mid-document (e.g. sectnums toggling).
@@ -280,37 +296,37 @@ export const FLEXIBLE_ATTRIBUTES = ['sectnums']
 
 // Predefined (intrinsic) attribute substitutions.
 export const INTRINSIC_ATTRIBUTES = {
-  startsb:       '[',
-  endsb:         ']',
-  vbar:          '|',
-  caret:         '^',
-  asterisk:      '*',
-  tilde:         '~',
-  plus:          '&#43;',
-  backslash:     '\\',
-  backtick:      '`',
-  blank:         '',
-  empty:         '',
-  sp:            ' ',
-  'two-colons':  '::',
+  startsb: '[',
+  endsb: ']',
+  vbar: '|',
+  caret: '^',
+  asterisk: '*',
+  tilde: '~',
+  plus: '&#43;',
+  backslash: '\\',
+  backtick: '`',
+  blank: '',
+  empty: '',
+  sp: ' ',
+  'two-colons': '::',
   'two-semicolons': ';;',
-  nbsp:          '&#160;',
-  deg:           '&#176;',
-  zwsp:          '&#8203;',
-  quot:          '&#34;',
-  apos:          '&#39;',
-  lsquo:         '&#8216;',
-  rsquo:         '&#8217;',
-  ldquo:         '&#8220;',
-  rdquo:         '&#8221;',
-  wj:            '&#8288;',
-  brvbar:        '&#166;',
-  pp:            '&#43;&#43;',
-  cpp:           'C&#43;&#43;',
-  cxx:           'C&#43;&#43;',
-  amp:           '&',
-  lt:            '<',
-  gt:            '>',
+  nbsp: '&#160;',
+  deg: '&#176;',
+  zwsp: '&#8203;',
+  quot: '&#34;',
+  apos: '&#39;',
+  lsquo: '&#8216;',
+  rsquo: '&#8217;',
+  ldquo: '&#8220;',
+  rdquo: '&#8221;',
+  wj: '&#8288;',
+  brvbar: '&#166;',
+  pp: '&#43;&#43;',
+  cpp: 'C&#43;&#43;',
+  cxx: 'C&#43;&#43;',
+  amp: '&',
+  lt: '<',
+  gt: '>',
 }
 
 // ── Quote substitutions ───────────────────────────────────────────────────────
