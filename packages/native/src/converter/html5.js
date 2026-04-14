@@ -1321,7 +1321,7 @@ Your browser does not support the video tag.
         const attrs = node.id ? [` id="${node.id}"`] : []
         if (node.role) attrs.push(` class="${node.role}"`)
         if (node.hasAttr('title')) attrs.push(` title="${node.attr('title')}"`)
-        return `<a href="${node.target}"${this._appendLinkConstraintAttrs(node, attrs).join('')}>${node.text}</a>`
+        return `<a href="${node.target}"${this._appendLinkConstraintAttrs(node, attrs).join('')}>${node.text ?? ''}</a>`
       }
       case 'bibref':
         return `<a id="${node.id}"></a>[${node.reftext || node.id}]`

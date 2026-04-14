@@ -105,16 +105,18 @@ export async function load (input, options = {}) {
   try {
     // Pre-load circular deps into the _deps cache before constructing Document.
     // Also pre-warm the converter cache so _createConverter can run synchronously.
-    const [{ Document, _deps }, readerMod, parserMod, { Converter }, { BACKEND_ALIASES }] = await Promise.all([
+    const [{ Document, _deps }, readerMod, parserMod, extensionsMod, { Converter }, { BACKEND_ALIASES }] = await Promise.all([
       import('./document.js'),
       import('./reader.js'),
       import('./parser.js'),
+      import('./extensions.js'),
       import('./converter.js'),
       import('./constants.js'),
       import('./syntaxHighlighter/highlightjs.js'),
     ])
     _deps['reader.js'] = readerMod
     _deps['parser.js'] = parserMod
+    _deps['extensions.js'] = extensionsMod
     let backend = String(attrs.backend || options.backend || 'html5')
     // Strip soft-set modifier (@) and value-based soft-set (ending with @)
     if (backend.endsWith('@')) backend = backend.slice(0, -1)

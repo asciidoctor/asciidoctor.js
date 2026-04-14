@@ -387,7 +387,28 @@ export class Reader {
 
   lineInfo () { return `${this.path}: line ${this.lineno}` }
 
-  lines () { return this._lines.slice().reverse() }
+  // Public: Returns the remaining lines in forward order (first remaining line at index 0).
+  // The returned object is a mutable proxy so that element assignments like
+  //   reader.lines[i] = newValue
+  // are reflected back into the internal reversed stack.
+  //
+  // This matches the core API where `reader.lines` is a direct, mutable reference
+  // to the remaining source lines.
+  get lines () {
+    const _l = this._lines
+    const fwd = _l.slice().reverse()
+    return new Proxy(fwd, {
+      set (target, prop, value) {
+        target[prop] = value
+        const idx = parseInt(prop, 10)
+        if (!isNaN(idx) && idx >= 0 && idx < _l.length) {
+          _l[_l.length - 1 - idx] = value
+        }
+        return true
+      },
+    })
+  }
+
   string () { return this._lines.slice().reverse().join(LF) }
   source () { return this.sourceLines.join(LF) }
 

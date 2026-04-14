@@ -64,6 +64,11 @@ export const DocumentProcessorDsl = {
   prefer () {
     this.option('position', '>>')
   },
+
+  // alias: prepend is an alternative name for prefer (matches Ruby DSL)
+  prepend () {
+    this.prefer()
+  },
 }
 
 export const SyntaxProcessorDsl = {
@@ -781,18 +786,25 @@ export class Registry {
   // Public: Checks whether any Preprocessor extensions have been registered.
   preprocessors () { return this._preprocessor_extensions }
   hasPreprocessors () { return !!this._preprocessor_extensions }
+  // Core API compatibility: expose extensions as a named property.
+  get preprocessor_extensions () { return this._preprocessor_extensions }
 
   // Public: Registers a TreeProcessor with the extension registry.
   treeProcessor (...args) {
     return this._addDocumentProcessor('tree_processor', args)
   }
 
-  // Alias deprecated method names.
+  // Aliases (deprecated names + snake_case for prefer() / Registry method dispatch).
   treeprocessor (...args) { return this.treeProcessor(...args) }
+  tree_processor (...args) { return this.treeProcessor(...args) }
 
   treeProcessors () { return this._tree_processor_extensions }
+  hasTreeProcessors () { return !!this._tree_processor_extensions }
+  // hasTeeProcessors kept for backward compatibility (was a typo).
   hasTeeProcessors () { return !!this._tree_processor_extensions }
   treeprocessors () { return this._tree_processor_extensions }
+  // Core API compatibility: expose extensions as a named property.
+  get tree_processor_extensions () { return this._tree_processor_extensions }
 
   // Public: Registers a Postprocessor with the extension registry.
   postprocessor (...args) {
@@ -801,6 +813,8 @@ export class Registry {
 
   postprocessors () { return this._postprocessor_extensions }
   hasPostprocessors () { return !!this._postprocessor_extensions }
+  // Core API compatibility: expose extensions as a named property.
+  get postprocessor_extensions () { return this._postprocessor_extensions }
 
   // Public: Registers an IncludeProcessor with the extension registry.
   includeProcessor (...args) {
@@ -809,6 +823,9 @@ export class Registry {
 
   includeProcessors () { return this._include_processor_extensions }
   hasIncludeProcessors () { return !!this._include_processor_extensions }
+  include_processor (...args) { return this.includeProcessor(...args) }
+  // Core API compatibility: expose extensions as a named property.
+  get include_processor_extensions () { return this._include_processor_extensions }
 
   // Public: Registers a DocinfoProcessor with the extension registry.
   docinfoProcessor (...args) {
@@ -840,6 +857,10 @@ export class Registry {
     }
     return this._docinfo_processor_extensions
   }
+
+  docinfo_processor (...args) { return this.docinfoProcessor(...args) }
+  // Core API compatibility: expose extensions as a named property.
+  get docinfo_processor_extensions () { return this._docinfo_processor_extensions }
 
   // Public: Registers a BlockProcessor with the extension registry.
   //
@@ -1183,5 +1204,92 @@ export const Extensions = {
   // names - One or more String or Symbol group names to unregister.
   unregister (...names) {
     for (const name of names) delete _groups[String(name)]
+  },
+
+  // ── Processor factory helpers (mirrors core API) ─────────────────────────────
+  //
+  // Each pair: create<Kind>(name?, functions) → class constructor
+  //            new<Kind>(name?, functions)    → instance of that class
+  //
+  // The `name` argument is optional; if omitted the sole argument is `functions`.
+
+  _buildProcessorClass (BaseClass, name, functions) {
+    if (arguments.length === 2) { functions = name; name = null }
+    const klass = class extends BaseClass {}
+    if (name) Object.defineProperty(klass, 'name', { value: name })
+    Object.assign(klass.prototype, functions)
+    return klass
+  },
+
+  createPreprocessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return this._buildProcessorClass(Preprocessor, name, functions)
+  },
+  newPreprocessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return new (this.createPreprocessor(name, functions))()
+  },
+
+  createTreeProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return this._buildProcessorClass(TreeProcessor, name, functions)
+  },
+  newTreeProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return new (this.createTreeProcessor(name, functions))()
+  },
+
+  createPostprocessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return this._buildProcessorClass(Postprocessor, name, functions)
+  },
+  newPostprocessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return new (this.createPostprocessor(name, functions))()
+  },
+
+  createIncludeProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return this._buildProcessorClass(IncludeProcessor, name, functions)
+  },
+  newIncludeProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return new (this.createIncludeProcessor(name, functions))()
+  },
+
+  createDocinfoProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return this._buildProcessorClass(DocinfoProcessor, name, functions)
+  },
+  newDocinfoProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return new (this.createDocinfoProcessor(name, functions))()
+  },
+
+  createBlockProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return this._buildProcessorClass(BlockProcessor, name, functions)
+  },
+  newBlockProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return new (this.createBlockProcessor(name, functions))()
+  },
+
+  createInlineMacroProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return this._buildProcessorClass(InlineMacroProcessor, name, functions)
+  },
+  newInlineMacroProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return new (this.createInlineMacroProcessor(name, functions))()
+  },
+
+  createBlockMacroProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return this._buildProcessorClass(BlockMacroProcessor, name, functions)
+  },
+  newBlockMacroProcessor (name, functions) {
+    if (arguments.length === 1) { functions = name; name = null }
+    return new (this.createBlockMacroProcessor(name, functions))()
   },
 }

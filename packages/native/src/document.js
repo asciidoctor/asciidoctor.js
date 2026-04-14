@@ -207,6 +207,17 @@ export class Document extends AbstractBlock {
       delete options.timings
       this.pathResolver    = new PathResolver()
       this.extensions      = options.extension_registry ?? null
+      // If no explicit registry but global extension groups are registered, activate them.
+      if (!this.extensions) {
+        const extsMod = await_require('./extensions.js')
+        if (extsMod.Extensions) {
+          const globalGroups = extsMod.Extensions.groups()
+          if (Object.keys(globalGroups).length > 0) {
+            this.extensions = new extsMod.Registry()
+            this.extensions.activate(this)
+          }
+        }
+      }
       this.syntaxHighlighter = null
       this._initializeExtensions = true  // set to class if available
       this._parentDoctype  = null

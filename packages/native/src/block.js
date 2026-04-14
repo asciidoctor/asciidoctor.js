@@ -111,6 +111,10 @@ export class Block extends AbstractBlock {
     }
   }
 
+  // Public: Returns the source lines for this block.
+  // Matches the core API: block.getSourceLines() → Array of String.
+  getSourceLines () { return this.lines }
+
   // Public: Returns the preprocessed source of this block as a single String.
   get source () {
     return this.lines.join(LF)

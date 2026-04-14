@@ -70,17 +70,17 @@ describe('Reader', () => {
   describe('Prepare lines', () => {
     test('should prepare lines from Array data', () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.deepEqual(reader.lines(), SAMPLE_DATA)
+      assert.deepEqual(reader.lines, SAMPLE_DATA)
     })
 
     test('should prepare lines from String data', () => {
       const reader = new Reader(SAMPLE_DATA.join('\n'))
-      assert.deepEqual(reader.lines(), SAMPLE_DATA)
+      assert.deepEqual(reader.lines, SAMPLE_DATA)
     })
 
     test('should prepare lines from String data with trailing newline', () => {
       const reader = new Reader(SAMPLE_DATA.join('\n') + '\n')
-      assert.deepEqual(reader.lines(), SAMPLE_DATA)
+      assert.deepEqual(reader.lines, SAMPLE_DATA)
     })
 
     // UTF-8/16 BOM tests are Ruby-specific (encoding concerns); skip in JS.
@@ -186,9 +186,9 @@ describe('Reader', () => {
 
     test("peekLines should not invert order of lines", () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.deepEqual(reader.lines(), SAMPLE_DATA)
+      assert.deepEqual(reader.lines, SAMPLE_DATA)
       reader.peekLines(3)
-      assert.deepEqual(reader.lines(), SAMPLE_DATA)
+      assert.deepEqual(reader.lines, SAMPLE_DATA)
     })
 
     test("readLine should return next line if there are lines remaining", () => {
@@ -251,7 +251,7 @@ describe('Reader', () => {
     test("lines should return remaining lines", () => {
       const reader = new Reader(SAMPLE_DATA)
       reader.readLine()
-      assert.deepEqual(reader.lines(), SAMPLE_DATA.slice(1))
+      assert.deepEqual(reader.lines, SAMPLE_DATA.slice(1))
     })
 
     test("sourceLines should return copy of original data Array", () => {
@@ -409,7 +409,7 @@ describe('PreprocessorReader', () => {
       // parse: false to prevent parser from consuming the reader lines
       const doc = await load(SAMPLE_DATA.join('\n'), { safe: 'safe', parse: false })
       const reader = doc.reader
-      assert.deepEqual(reader.lines(), SAMPLE_DATA)
+      assert.deepEqual(reader.lines, SAMPLE_DATA)
       assert.equal(reader.lineno, 1)
     })
   })
@@ -424,7 +424,7 @@ describe('PreprocessorReader', () => {
       // parse: false to prevent parser from consuming the reader lines
       const doc = await load(data.join('\n'), { safe: 'safe', parse: false })
       const reader = doc.reader
-      assert.deepEqual(reader.lines(), [''].concat(SAMPLE_DATA))
+      assert.deepEqual(reader.lines, [''].concat(SAMPLE_DATA))
     })
 
     test('should prepare and normalize lines from String data', async () => {
@@ -435,7 +435,7 @@ describe('PreprocessorReader', () => {
       // parse: false to prevent parser from consuming the reader lines
       const doc = await load(dataAsString, { safe: 'safe', parse: false })
       const reader = doc.reader
-      assert.deepEqual(reader.lines(), [''].concat(SAMPLE_DATA))
+      assert.deepEqual(reader.lines, [''].concat(SAMPLE_DATA))
     })
 
     test('should drop all lines if all lines are empty', async () => {
@@ -443,7 +443,7 @@ describe('PreprocessorReader', () => {
       // parse: false to check reader state
       const doc = await load(data.join('\n'), { safe: 'safe', parse: false })
       const reader = doc.reader
-      assert.equal(reader.lines().length, 0)
+      assert.equal(reader.lines.length, 0)
     })
 
     test('should clean CRLF from end of lines', async () => {
@@ -457,7 +457,7 @@ describe('PreprocessorReader', () => {
         // parse: false to check reader state
         const doc = await load(Array.isArray(lines) ? lines.join('\n') : lines, { safe: 'safe', parse: false })
         const reader = doc.reader
-        for (const line of reader.lines()) {
+        for (const line of reader.lines) {
           assert.ok(!line.endsWith('\r'), `CRLF not properly cleaned: ${JSON.stringify(line)}`)
           assert.ok(!line.endsWith('\r\n'), `CRLF not properly cleaned: ${JSON.stringify(line)}`)
           assert.ok(!line.endsWith('\n'), `CRLF not properly cleaned: ${JSON.stringify(line)}`)
@@ -1885,14 +1885,14 @@ describe('PreprocessorReader', () => {
       const input = 'ifdef::asciidoctor[]\nAsciidoctor!\nendif::asciidoctor[]'
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
-      assert.equal(reader.processLine(reader.lines()[0]), undefined)
+      assert.equal(reader.processLine(reader.lines[0]), undefined)
     })
 
     test('process_line returns line if cursor not advanced', async () => {
       const input = 'content\nifdef::asciidoctor[]\nAsciidoctor!\nendif::asciidoctor[]'
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
-      assert.notEqual(reader.processLine(reader.lines()[0]), undefined)
+      assert.notEqual(reader.processLine(reader.lines[0]), undefined)
     })
 
     test('ifdef with defined attribute processes include directive in brackets', async () => {
