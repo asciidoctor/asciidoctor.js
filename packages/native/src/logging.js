@@ -76,7 +76,8 @@ export class Logger {
     }
     if (severity < this.level) return true
     const text = message ?? (typeof progname === 'function' ? progname() : progname)
-    const line = this._formatter.call(severity, null, this.progname, text)
+    const label = SEVERITY_LABEL[severity] ?? 'ANY'
+    const line = this._formatter.call(label, null, this.progname, text)
     this._writeln(line)
     return true
   }
@@ -92,8 +93,11 @@ export class Logger {
   unknown (msg, progname) { return this.add(Severity.UNKNOWN, msg, progname) }
 
   _writeln (line) {
-    // Remove trailing newline added by formatter before passing to console
-    process?.stderr?.write?.(line) ?? console.error(line.replace(/\n$/, ''))
+    if (process?.stderr?.write) {
+      process.stderr.write(line)
+    } else {
+      console.error(line.replace(/\n$/, ''))
+    }
   }
 }
 
@@ -181,6 +185,10 @@ export class MemoryLogger {
 
   isDebug () { return this.level <= Severity.DEBUG }
   isInfo ()  { return this.level <= Severity.INFO }
+
+  // write(s) allows MemoryLogger to be used with Timings.printReport(); messages
+  // are stored at INFO level with the trailing newline stripped.
+  write (s) { return this.info(s.replace(/\n$/, '')) }
 
   clear () { this.messages.length = 0 }
   empty () { return this.messages.length === 0 }

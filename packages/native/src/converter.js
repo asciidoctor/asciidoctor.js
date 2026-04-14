@@ -69,6 +69,38 @@ export function deriveBackendTraits (backend, basebackend = null) {
   return traits
 }
 
+// ── normalizeConverter ────────────────────────────────────────────────────────
+// Bridge a user-registered converter instance into the interface expected by
+// Document._updateBackendAttributes, which requires _getBackendTraits().
+//
+// Supports three conventions used by user converters:
+//   1. converter.backendTraits = { basebackend, outfilesuffix, filetype, htmlsyntax }
+//   2. Plain properties: converter.basebackend, converter.outfilesuffix, …
+//   3. Already has _getBackendTraits() (e.g. extends ConverterBase) — returned as-is.
+
+export function normalizeConverter (converter, backend) {
+  if (!converter || typeof converter._getBackendTraits === 'function') return converter
+
+  let traits = null
+  if (converter.backendTraits && typeof converter.backendTraits === 'object') {
+    traits = { ...converter.backendTraits }
+  } else {
+    const hasPlain = converter.basebackend || converter.outfilesuffix || converter.filetype || converter.htmlsyntax
+    if (hasPlain) {
+      traits = {}
+      if (converter.basebackend)   traits.basebackend   = converter.basebackend
+      if (converter.outfilesuffix) traits.outfilesuffix = converter.outfilesuffix
+      if (converter.filetype)      traits.filetype      = converter.filetype
+      if (converter.htmlsyntax)    traits.htmlsyntax    = converter.htmlsyntax
+    }
+  }
+
+  // Apply the BackendTraits mixin so Document can call the standard accessor methods.
+  applyBackendTraits(converter)
+  if (traits) converter._backendTraits = traits
+  return converter
+}
+
 // ── CustomFactory ─────────────────────────────────────────────────────────────
 
 export class CustomFactory {
@@ -84,7 +116,9 @@ export class CustomFactory {
   }
 
   // Public: Register a converter class for one or more backend names.
+  // backends may be passed as individual strings or as a single Array.
   register (converter, ...backends) {
+    if (backends.length === 1 && Array.isArray(backends[0])) backends = backends[0]
     for (const backend of backends) {
       if (backend === '*') this._catchAll = converter
       else this._registry[backend] = converter
@@ -92,8 +126,9 @@ export class CustomFactory {
   }
 
   // Public: Retrieve the converter class registered for the given backend.
+  // Returns undefined (not null) when no match is found, mirroring the core API.
   for (backend) {
-    return this._registry[backend] ?? this._catchAll ?? null
+    return this._registry[backend] ?? this._catchAll ?? undefined
   }
 
   // Public: Create a new converter instance for the given backend (synchronous).
@@ -102,7 +137,7 @@ export class CustomFactory {
     let converter = this.for(backend)
     if (!converter) return null
     if (typeof converter === 'function' && converter.prototype) converter = new converter(backend, opts)
-    return converter
+    return normalizeConverter(converter, backend)
   }
 
   // Public: Create a new converter instance for the given backend.
@@ -168,23 +203,37 @@ class DefaultFactory extends CustomFactory {
   }
 
   register (converter, ...backends) {
-    // Registrations go into the global default map
+    // User registrations go into _registry (CustomFactory layer) so that unregisterAll()
+    // can remove them without touching the lazy-loaded built-in entries in _defaultRegistry.
+    // backends may be passed as individual strings or as a single Array.
+    if (backends.length === 1 && Array.isArray(backends[0])) backends = backends[0]
     for (const backend of backends) {
       if (backend === '*') this._catchAll = converter
-      else this._defaultRegistry[backend] = converter
+      else this._registry[backend] = converter
     }
   }
 
   for (backend) {
-    // Custom (proxy) entries first, then default registry, then lazy built-in, then catch-all
-    return this._registry[backend] ?? this._defaultRegistry[backend] ?? this._catchAll ?? null
+    // User registrations first (_registry), then lazy-loaded built-ins (_defaultRegistry),
+    // then catch-all.  Returns undefined when no match is found, mirroring the core API.
+    return this._registry[backend] ?? this._defaultRegistry[backend] ?? this._catchAll ?? undefined
+  }
+
+  // Public: Return the combined registry (built-in + user-registered entries).
+  getRegistry () {
+    return { ...this._defaultRegistry, ...this._registry }
+  }
+
+  // Public: Return this factory (mirrors the core ConverterFactory.getDefault() API).
+  getDefault () {
+    return this
   }
 
   createSync (backend, opts = {}) {
     let converter = this._registry[backend] ?? this._defaultRegistry[backend] ?? this._catchAll
     if (!converter) return null
     if (typeof converter === 'function' && converter.prototype) converter = new converter(backend, opts)
-    return converter
+    return normalizeConverter(converter, backend)
   }
 
   async create (backend, opts = {}) {

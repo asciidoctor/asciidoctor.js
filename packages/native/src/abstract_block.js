@@ -137,6 +137,9 @@ export class AbstractBlock extends AbstractNode {
     return this.blocks.map(b => b.convert()).join(LF)
   }
 
+  // Public: Alias for the content getter — mirrors the core API.
+  getContent () { return this.content }
+
   // Public: Append a content block to this block's list of blocks.
   //
   // block - The new child block.
@@ -454,4 +457,69 @@ export class AbstractBlock extends AbstractNode {
 
     return result
   }
+
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  // Public: Get the context (node type) of this block.
+  getContext () { return this.context }
+
+  // Public: Get the node name of this block.
+  getNodeName () { return this.nodeName }
+
+  // Public: Get the child blocks of this block.
+  getBlocks () { return this.blocks }
+
+  // Public: Get the child Section blocks of this block.
+  getSections () { return this.sections() }
+
+  // Public: Get the title of this block with substitutions applied.
+  getTitle () { return this.title }
+
+  // Public: Set the raw title of this block.
+  setTitle (val) { this.title = val ?? null }
+
+  // Public: Get the caption of this block.
+  getCaption () { return this.caption ?? undefined }
+
+  // Public: Set the caption of this block.
+  setCaption (val) { this.caption = val }
+
+  // Public: Get the captioned title of this block.
+  getCaptionedTitle () { return this.captionedTitle() }
+
+  // Public: Get the style of this block.
+  getStyle () { return this.style }
+
+  // Public: Set the style of this block.
+  setStyle (val) { this.style = val }
+
+  // Public: Get the level of this block.
+  getLevel () { return this.level }
+
+  // Public: Set the level of this block.
+  setLevel (val) { this.level = val }
+
+  // Public: Get the source line number where this block started.
+  //
+  // Returns an Integer line number, or undefined when sourcemap is disabled.
+  getLineNumber () { return this.sourceLocation?.lineno }
+
+  // Public: Get the source location of this block.
+  //
+  // Returns the Cursor source location object, or undefined when sourcemap is disabled.
+  getSourceLocation () { return this.sourceLocation ?? undefined }
+
+  // Public: Get the list of substitutions enabled for this block.
+  getSubstitutions () { return this.subs }
+
+  // Public: Check whether the specified substitution is enabled for this block.
+  hasSubstitution (name) { return this.hasSub(name) }
+
+  // Public: Add the specified substitution to this block's substitutions list.
+  addSubstitution (name) {
+    if (!this.subs.includes(name)) this.subs.push(name)
+  }
+
+  // Public: Remove the specified substitution from this block's substitutions list.
+  removeSubstitution (name) { this.removeSub(name) }
 }

@@ -149,14 +149,98 @@ export class AbstractNode {
         String(fallbackName === true ? name : fallbackName) in this.document.attributes)
   }
 
-  // Alias for API compatibility: getAttribute(name, defaultValue, inherit)
-  getAttribute (name, defaultValue = null, inherit = false) {
-    return this.attr(name, defaultValue, inherit || null)
+  // Public: Get the value of the specified attribute.
+  //
+  // Returns the attribute value, or undefined when not found.
+  getAttribute (name, defaultValue = undefined, inherit = false) {
+    const val = this.attr(name, null, inherit || null)
+    return val != null ? val : defaultValue
   }
 
   // Alias for API compatibility: hasAttribute(name, expectedValue, fallbackName)
   hasAttribute (name, expectedValue = null, fallbackName = null) {
     return this.hasAttr(name, expectedValue, fallbackName)
+  }
+
+  // Public: Set the value of the specified attribute on this node.
+  //
+  // name      - The String attribute name.
+  // value     - The value to assign (default: '').
+  // overwrite - Whether to overwrite an existing attribute (default: true).
+  //
+  // Returns true if set, false if blocked.
+  setAttribute (name, value = '', overwrite = true) {
+    return this.setAttr(name, value, overwrite)
+  }
+
+  // Public: Check if the specified attribute is defined with an optional value match.
+  //
+  // name          - The String attribute name.
+  // expectedValue - The expected value; when provided, also checks the value (default: null).
+  //
+  // Returns a Boolean.
+  isAttribute (name, expectedValue = null) {
+    if (expectedValue != null) return this.getAttribute(name) === expectedValue
+    return name in this.attributes
+  }
+
+  // Public: Remove the attribute from this node.
+  //
+  // name - The String attribute name to remove.
+  //
+  // Returns the previous value, or undefined if not present.
+  removeAttribute (name) {
+    return this.removeAttr(name)
+  }
+
+  // Public: Get the attributes hash for this node.
+  //
+  // Returns a plain Object of attributes.
+  getAttributes () {
+    return this.attributes
+  }
+
+  // Public: Get the document to which this node belongs.
+  //
+  // Returns the Document.
+  getDocument () {
+    return this.document
+  }
+
+  // Public: Get the parent node of this node.
+  //
+  // Returns the parent AbstractNode, or undefined for the root document.
+  getParent () {
+    return this.parent
+  }
+
+  // Public: Get the icon URI for the named icon.
+  //
+  // name - The String icon name.
+  //
+  // Returns a String URI.
+  getIconUri (name) {
+    return this.iconUri(name)
+  }
+
+  // Public: Get the media URI for the target.
+  //
+  // target     - The String target path or URL.
+  // assetDirKey - The String asset directory attribute key (default: 'imagesdir').
+  //
+  // Returns a String URI.
+  getMediaUri (target, assetDirKey = 'imagesdir') {
+    return this.mediaUri(target, assetDirKey)
+  }
+
+  // Public: Get the image URI for the target image.
+  //
+  // targetImage - The String target image path or URL.
+  // assetDirKey - The String asset directory attribute key (default: null).
+  //
+  // Returns a String URI.
+  getImageUri (targetImage, assetDirKey = null) {
+    return this.imageUri(targetImage, assetDirKey)
   }
 
   // Public: Assign the value to the attribute name for the current node.

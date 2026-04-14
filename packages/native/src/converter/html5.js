@@ -56,6 +56,11 @@ const DEFAULT_QUOTE_TAG = ['', '']
 // ── Html5Converter ────────────────────────────────────────────────────────────
 
 export default class Html5Converter extends ConverterBase {
+  // Public: Create a new Html5Converter instance.
+  static create (backend = 'html5', opts = {}) {
+    return new this(backend, opts)
+  }
+
   constructor (backend, opts = {}) {
     super(backend, opts)
     let syntax

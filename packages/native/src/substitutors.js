@@ -1041,8 +1041,8 @@ export const Substitutors = {
           if (this.logger.isInfo?.()) this.logger.info(`possible invalid reference: ${refid}`)
         }
 
-        attrs.path = path ?? null
-        attrs.fragment = fragment ?? null
+        if (path != null) attrs.path = path
+        if (fragment != null) attrs.fragment = fragment
         attrs.refid = refid
         return new Inline(this, 'anchor', linkText, { type: 'xref', target, attributes: attrs }).convert()
       })

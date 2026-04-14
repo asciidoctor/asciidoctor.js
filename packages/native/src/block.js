@@ -24,6 +24,10 @@ export const DEFAULT_CONTENT_MODEL = new Proxy(
 
 // Public: Methods for managing AsciiDoc content blocks.
 export class Block extends AbstractBlock {
+  // Public: Factory method — mirrors the core Block.create(parent, context, opts) API.
+  static create (parent, context, opts = {}) {
+    return new Block(parent, context, opts)
+  }
   // Public: Get/Set the original Array of source lines for this block.
   // lines
 

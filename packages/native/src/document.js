@@ -206,7 +206,7 @@ export class Document extends AbstractBlock {
       this._timings        = options.timings ?? null
       delete options.timings
       this.pathResolver    = new PathResolver()
-      this.extensions      = null
+      this.extensions      = options.extension_registry ?? null
       this.syntaxHighlighter = null
       this._initializeExtensions = true  // set to class if available
       this._parentDoctype  = null
@@ -515,7 +515,7 @@ export class Document extends AbstractBlock {
   hasExtensions () { return this.extensions != null }
 
   source ()      { return this.reader?.source?.() ?? null }
-  sourceLines () { return this.reader?.sourceLines?.() ?? null }
+  sourceLines () { return this.reader?.sourceLines ?? null }
 
   basebackend (base) {
     return this.attributes['basebackend'] === base
@@ -814,6 +814,94 @@ export class Document extends AbstractBlock {
     }
     this._docinfoProcessorExtensions[location] = false
     return false
+  }
+
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  // Public: Get the document title with substitutions applied.
+  getTitle () { return this.title }
+
+  // Public: Set the document title.
+  setTitle (val) { this.title = val }
+
+  // Public: Resolve the primary title for the document, optionally partitioned.
+  getDoctitle (opts = {}) { return this.doctitle(opts) }
+  getDocumentTitle (opts = {}) { return this.doctitle(opts) }
+
+  // Public: Get the captioned title of this document.
+  getCaptionedTitle () { return this.captionedTitle() }
+
+  // Public: Get the doctype of this document.
+  getDoctype () { return this.doctype }
+
+  // Public: Get the backend of this document.
+  getBackend () { return this.backend }
+
+  // Public: Get the safe mode level of this document.
+  getSafe () { return this.safe }
+
+  // Public: Get the compat mode flag of this document.
+  getCompatMode () { return this.compatMode }
+
+  // Public: Get the sourcemap flag of this document.
+  getSourcemap () { return this.sourcemap }
+
+  // Public: Set the sourcemap flag of this document.
+  setSourcemap (val) { this.sourcemap = val }
+
+  // Public: Get the outfile suffix of this document.
+  getOutfilesuffix () { return this.outfilesuffix }
+
+  // Public: Get the frozen options of this document.
+  getOptions () { return this.options }
+
+  // Public: Get the converter instance for this document.
+  getConverter () { return this.converter }
+
+  // Public: Get the source String of this document.
+  getSource () { return this.source() }
+
+  // Public: Get the source lines of this document as an Array.
+  getSourceLines () { return this.sourceLines() }
+
+  // Public: Get the reader of this document.
+  getReader () { return this.reader }
+
+  // Public: Get the footnotes registered in this document.
+  getFootnotes () { return this.footnotes }
+
+  // Public: Get the callouts registered in this document.
+  getCallouts () { return this.callouts }
+
+  // Public: Get the catalog of assets registered in this document.
+  getCatalog () { return this.catalog }
+
+  // Public: Get the counters hash for this document.
+  getCounters () { return this._counters }
+
+  // Public: Get the first author of this document.
+  getAuthor () { return this.author }
+
+  // Public: Get the extensions registry for this document.
+  getExtensions () { return this.extensions }
+
+  // Public: Get the parent document of this document, if any.
+  getParentDocument () { return this.parentDocument ?? undefined }
+
+  // Public: Get the parent node of this node.
+  //
+  // Always returns undefined for a root Document (Document is its own internal parent).
+  getParent () { return undefined }
+
+  // Public: Delete the specified attribute if not locked.
+  //
+  // name - The String attribute name to remove.
+  //
+  // Returns the previous value, or undefined if not present or locked.
+  removeAttribute (name) {
+    const prev = this.attributes[name]
+    this.deleteAttribute(name)
+    return prev
   }
 
   toString () {

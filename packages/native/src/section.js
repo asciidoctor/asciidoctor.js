@@ -124,6 +124,35 @@ export class Section extends AbstractBlock {
     return super.append(block)
   }
 
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  // Public: Get the section ID.
+  getId () { return this.id ?? undefined }
+
+  // Public: Get the section title (alias of title).
+  getName () { return this.name }
+
+  // Public: Get the section name (e.g. 'section', 'appendix').
+  getSectionName () { return this.sectname }
+
+  // Public: Get the 0-based index of this section within the parent block.
+  getIndex () { return this.index }
+
+  // Public: Get whether this section is numbered.
+  isNumbered () { return this.numbered }
+
+  // Public: Get whether this section is a special section.
+  isSpecial () { return this.special }
+
+  // Public: Get the section numeral string.
+  getNumeral () { return this.numeral }
+
+  // Public: Set the section numeral string.
+  setNumeral (val) { this.numeral = val }
+
+  // Public: Get the section number string (dot-separated).
+  getSectionNumeral () { return this.sectnum() }
+
   toString () {
     if (this._title) {
       const formalTitle = this.numbered ? `${this.sectnum()} ${this._title}` : this._title

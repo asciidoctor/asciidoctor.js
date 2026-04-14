@@ -267,7 +267,7 @@ use the source, luke!`
       assert.equal(block.context, 'listing')
       assert.equal(block.getAttribute('style'), 'source')
       assert.equal(block.getAttribute('cloaked-context'), 'paragraph')
-      assert.equal(block.getAttribute('language'), null)
+      assert.equal(block.getAttribute('language'), undefined)
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/*[@class="listingblock"]//pre[@class="highlight"]/code[text()="use the source, luke!"]', 1)
     })

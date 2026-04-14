@@ -36,6 +36,7 @@ import {
   EvalExpressionRx,
 } from './rx.js'
 import { prepareSourceArray, prepareSourceString, rootname, isUriish } from './helpers.js'
+import { LoggerManager, Logger } from './logging.js'
 
 // ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
 let _fs
@@ -106,6 +107,12 @@ export class Cursor {
   advance (num) { this.lineno += num }
   get lineInfo () { return `${this.path}: line ${this.lineno}` }
   toString () { return this.lineInfo }
+
+  // Public API (mirrors Ruby Asciidoctor::Reader::Cursor)
+  getLineNumber ()  { return this.lineno }
+  getFile ()        { return this.file ?? undefined }
+  getDirectory ()   { return this.dir }
+  getPath ()        { return this.path }
 }
 
 // ── Reader ────────────────────────────────────────────────────────────────────
@@ -467,6 +474,16 @@ export class Reader {
     if (Array.isArray(data)) return [...data]
     if (data != null) return String(data).replace(/\n$/, '').split('\n')
     return []
+  }
+
+  // ── Public API (mirrors Ruby Asciidoctor::Reader) ───────────────────────────
+
+  getCursor ()  { return this.cursor }
+  getLines ()   { return this.sourceLines }
+  getString ()  { return this.source() }
+  getLogger ()  { return LoggerManager.logger }
+  createLogMessage (text, context = {}) {
+    return Logger.AutoFormattingMessage.attach({ text, ...context })
   }
 
   // ── Logging helpers ─────────────────────────────────────────────────────────

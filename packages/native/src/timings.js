@@ -7,6 +7,8 @@
 //     Pass a { write(line) } object to customise the output destination.
 
 export class Timings {
+  static create () { return new Timings() }
+
   constructor () {
     this._log = {}
     this._timers = {}
