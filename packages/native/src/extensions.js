@@ -455,9 +455,9 @@ export class Processor {
   // Public: Parses blocks in the content and attaches them to the parent.
   //
   // Returns the parent node into which the blocks are parsed.
-  parseContent (parent, content, attributes = null) {
+  async parseContent (parent, content, attributes = null) {
     const reader = content instanceof Reader ? content : new Reader(content)
-    Parser.parseBlocks(reader, parent, attributes)
+    await Parser.parseBlocks(reader, parent, attributes)
     return parent
   }
 

@@ -25,7 +25,7 @@ describe('Tables', () => {
       const table = doc.blocks[0]
       const sum = table.columns.map((col) => col.attributes['colpcwidth']).reduce((a, b) => a + b, 0)
       assert.equal(sum, 100)
-      const output = doc.convert()
+      const output = await doc.convert()
       assertCss(output, 'table', 1)
       assertCss(output, 'table.tableblock.frame-all.grid-all.stretch', 1)
       assertCss(output, 'table > colgroup > col[width="33.3333%"]', 2)

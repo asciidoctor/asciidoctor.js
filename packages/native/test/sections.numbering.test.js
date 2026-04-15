@@ -650,7 +650,7 @@ content`
           sect.number += 1
         }
       }
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assertXpath(output, '//h2[text()="2. Somewhere in the Middle"]', 1)
       assertXpath(output, '//h2[text()="3. A Bit Later"]', 1)
       assertXpath(output, '//h2[text()="4. Nearing the End"]', 1)

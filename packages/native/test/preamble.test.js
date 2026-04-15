@@ -136,7 +136,7 @@ They couldn't believe their eyes when...
 
 The axe came swinging.`
     const doc = await documentFromString(input, { standalone: true })
-    assert.equal(doc.doctype, 'book')
+    assert.equal(await doc.doctype, 'book')
     const output = await doc.convert()
     assertXpath(output, '//h1', 3)
     assertXpath(output, `//*[@id="preamble"]//p[text() = "Back then${decodeChar(8230)}${decodeChar(8203)}"]`, 1)

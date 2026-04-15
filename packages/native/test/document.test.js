@@ -104,8 +104,8 @@ describe('Default settings', () => {
   test('toc and sectnums enabled by default in docbook backend', async () => {
     const doc = await parse('content', { backend: 'docbook5', standalone: true })
     assert.ok(inAttr(doc, 'toc'))
-    assert.ok(inAttr(doc, 'sectnums'))
-    const result = doc.convert()
+    assert.ok(inAttr(await doc, 'sectnums'))
+    const result = await doc.convert()
     assert.ok(result.includes('<?asciidoc-toc?>'))
     assert.ok(result.includes('<?asciidoc-numbered?>'))
   })
@@ -236,7 +236,7 @@ describe('Structure', () => {
 
   test('standalone document includes html and header/footer', async () => {
     const doc = await parse('= Title\n\nparagraph', { safe: 'unsafe', standalone: true })
-    const result = doc.convert()
+    const result = await doc.convert()
     assert.ok(result.includes('<html'))
     assert.ok(result.includes('id="header"'))
     assert.ok(result.includes('id="footer"'))
@@ -291,7 +291,7 @@ describe('Catalog', () => {
 
   test('hasFootnotes returns true when footnotes present', async () => {
     const doc = await parse('= Title\n\ncontent.footnote:[note]')
-    doc.convert() // footnotes are registered during inline substitution at convert time
+    await doc.convert() // footnotes are registered during inline substitution at convert time
     assert.ok(doc.hasFootnotes())
   })
 })
@@ -327,7 +327,7 @@ describe('Backends and Doctypes', () => {
   })
 
   test('book doctype produces book body class', async () => {
-    const result = (await parse('= Title\n\nparagraph', { attributes: { backend: 'html5', doctype: 'book' }, standalone: true })).convert()
+    const result = await (await parse('= Title\n\nparagraph', { attributes: { backend: 'html5', doctype: 'book' }, standalone: true })).convert()
     assert.ok(result.includes('class="book"'))
   })
 })
@@ -541,7 +541,7 @@ describe('Backends and Doctypes (extended)', () => {
     const doc = await parse('---', { safe: 'safe', attributes: { htmlsyntax: 'xml' } })
     assert.equal(doc.backend, 'html5')
     assert.equal(doc.attr('htmlsyntax'), 'xml')
-    const result = doc.convert()
+    const result = await doc.convert()
     assert.ok(result.includes('<hr/>'))
   })
 
@@ -549,14 +549,14 @@ describe('Backends and Doctypes (extended)', () => {
     const input = ':htmlsyntax: xml\n:backend: html5\n\n---'
     const doc = await parse(input, { safe: 'safe' })
     assert.equal(doc.attr('htmlsyntax'), 'xml')
-    const result = doc.convert()
+    const result = await doc.convert()
     assert.ok(result.includes('<hr/>'))
   })
 
   test('htmlsyntax xml not honored if backend entry comes before htmlsyntax in header', async () => {
     const input = ':backend: html5\n:htmlsyntax: xml\n\n---'
     const doc = await parse(input, { safe: 'safe' })
-    const result = doc.convert()
+    const result = await doc.convert()
     assert.ok(result.includes('<hr>'))
     assert.ok(!result.includes('<hr/>'))
   })

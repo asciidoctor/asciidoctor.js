@@ -123,9 +123,10 @@ export async function load (input, options = {}) {
     if (backend.startsWith('xhtml')) backend = `html${backend.slice(5)}`  // xhtml5 → html5
     backend = BACKEND_ALIASES[backend] ?? backend
     await Converter.create(backend, {})
-    doc = new Document(source, options)
     if (options.parse !== false) {
-      await doc.parse()
+      doc = await Document.create(source, options)
+    } else {
+      doc = new Document(source, options)
     }
   } catch (e) {
     const docfile = attrs.docfile || '<stdin>'

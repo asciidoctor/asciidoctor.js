@@ -136,7 +136,7 @@ image::circle.svg[Circle,opts=inline]
 `
       const doc = await documentFromString(input, { safe: 'server', attributes: { docdir: __dirname } })
       doc.blocks[0].setAttr('width', 50)
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.match(output, /<svg\s[^>]*width="50"[^>]*>/)
     })
 
@@ -346,8 +346,8 @@ image::tiger.png[Tiger, link=self]
 image::images/tiger.png[Tiger]
 `
       const doc = await documentFromString(input)
-      assert.equal(doc.blocks[0].numeral, 1)
-      const output = doc.convert()
+      assert.equal(await doc.blocks[0].numeral, 1)
+      const output = await doc.convert()
       assertXpath(output, '//*[@class="imageblock"]//img[@src="images/tiger.png"][@alt="Tiger"]', 1)
       assertXpath(output, '//*[@class="imageblock"]/*[@class="title"][text()="Figure 1. The AsciiDoc Tiger"]', 1)
       assert.equal(doc.attributes['figure-number'], 1)
@@ -360,8 +360,8 @@ image::images/tiger.png[Tiger]
 image::images/tiger.png[Tiger]
 `
       const doc = await documentFromString(input)
-      assert.equal(doc.blocks[0].numeral, null)
-      const output = doc.convert()
+      assert.equal(await doc.blocks[0].numeral, null)
+      const output = await doc.convert()
       assertXpath(output, '//*[@class="imageblock"]//img[@src="images/tiger.png"][@alt="Tiger"]', 1)
       assertXpath(output, '//*[@class="imageblock"]/*[@class="title"][text()="Voila! The AsciiDoc Tiger"]', 1)
       assert.ok(!Object.prototype.hasOwnProperty.call(doc.attributes, 'figure-number'))
@@ -505,8 +505,8 @@ image::tiger.png[Tiger]
 image::dot.gif[Dot]
 `
       const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: __dirname } })
-      assert.equal(doc.attributes['imagesdir'], 'fixtures')
-      const output = doc.convert()
+      assert.equal(await doc.attributes['imagesdir'], 'fixtures')
+      const output = await doc.convert()
       assertXpath(output, '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]', 1)
     })
 
@@ -541,8 +541,8 @@ image::circle.svg[Tiger,100,link=self]
 image::unreadable.gif[Dot]
 `
       const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: __dirname } })
-      assert.equal(doc.attributes['imagesdir'], 'fixtures')
-      const output = doc.convert()
+      assert.equal(await doc.attributes['imagesdir'], 'fixtures')
+      const output = await doc.convert()
       assertXpath(output, '//img[@src="data:image/gif;base64,"]', 1)
       assertMessage(logger, 'warn', 'image to embed not found or not readable')
     })
@@ -555,8 +555,8 @@ image::unreadable.gif[Dot]
 image::dot[Dot]
 `
       const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: __dirname } })
-      assert.equal(doc.attributes['imagesdir'], 'fixtures')
-      const output = doc.convert()
+      assert.equal(await doc.attributes['imagesdir'], 'fixtures')
+      const output = await doc.convert()
       assertXpath(output, '//img[starts-with(@src,"data:application/octet-stream;base64,")]', 1)
     })
 
@@ -591,8 +591,8 @@ image::data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=[Do
 image::dot.gif[Dot]
 `
       const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: __dirname } })
-      assert.equal(doc.attributes['imagesdir'], '../..//fixtures/./../../fixtures')
-      const output = doc.convert()
+      assert.equal(await doc.attributes['imagesdir'], '../..//fixtures/./../../fixtures')
+      const output = await doc.convert()
       // image target resolves to fixtures/dot.gif relative to docdir (which is explicitly set to the directory of this file)
       // the reference cannot fall outside of the document directory in safe mode
       assertXpath(output, '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]', 1)
@@ -607,8 +607,8 @@ image::dot.gif[Dot]
 image::../..//fixtures/./../../fixtures/dot.gif[Dot]
 `
       const doc = await documentFromString(input, { safe: 'safe', attributes: { docdir: __dirname } })
-      assert.equal(doc.attributes['imagesdir'], './')
-      const output = doc.convert()
+      assert.equal(await doc.attributes['imagesdir'], './')
+      const output = await doc.convert()
       // image target resolves to fixtures/dot.gif relative to docdir (which is explicitly set to the directory of this file)
       // the reference cannot fall outside of the document directory in safe mode
       assertXpath(output, '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]', 1)

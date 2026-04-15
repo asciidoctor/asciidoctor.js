@@ -84,7 +84,7 @@ section paragraph`
 paragraph`
       const doc = await documentFromString(input)
       // NOTE block title demotes document title to level-0 section
-      assert.ok(!doc.header)
+      assert.ok(!await doc.header)
       const output = await doc.convert()
       assertXpath(output, '//*[@class="sect1"]//*[@class="paragraph"]/*[@class="title"][text()="Block title"]', 1)
     })

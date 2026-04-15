@@ -163,7 +163,7 @@ last line
       const doc = await documentFromString(input, { standalone: false })
       const block = doc.blocks[0]
       assert.deepEqual(block.lines, ['', '', '  first line', '', 'last line', '', '{empty}', ''])
-      const result = doc.convert()
+      const result = await doc.convert()
       assertXpath(result, `//pre[text()="  first line\n\nlast line"]`, 1)
     })
 

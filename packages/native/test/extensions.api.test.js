@@ -193,8 +193,8 @@ describe('Extensions (API)', () => {
     registry.block(function () {
       this.named('attrs')
       this.onContext('open')
-      this.process(function (parent, reader) {
-        parsedAttrs = this.parseAttributes(parent, reader.readLine(), { positional_attributes: ['a', 'b'] })
+      this.process(async function (parent, reader) {
+        parsedAttrs = this.parseAttributes(parent, await reader.readLine(), { positional_attributes: ['a', 'b'] })
         Object.assign(parsedAttrs, this.parseAttributes(parent, 'foo={foo}', { sub_attributes: true }))
       })
     })
@@ -215,9 +215,9 @@ a,b,c,key=val
     registry.block(function () {
       this.named('wrap')
       this.onContext('open')
-      this.process(function (parent, reader, attrs) {
+      this.process(async function (parent, reader, attrs) {
         const wrap = this.createOpenBlock(parent, undefined, attrs)
-        return this.parseContent(wrap, reader.readLines())
+        return this.parseContent(wrap, await reader.readLines())
       })
     })
     const input = `
@@ -247,8 +247,8 @@ content
       const registry = asciidoctor.Extensions.create()
       registry.block(function () {
         this.named('test')
-        this.process((parent, reader) => {
-          this.parseContent(parent, reader.readLines(), { id: 'foo' })
+        this.process(async (parent, reader) => {
+          await this.parseContent(parent, await reader.readLines(), { id: 'foo' })
         })
       })
       const html = await asciidoctor.convert('[test]\n*Hello world*', { extension_registry: registry })
@@ -260,7 +260,7 @@ content
       const registry = asciidoctor.Extensions.create()
       registry.blockMacro(function () {
         this.named('jira')
-        this.process((parent, target, attrs) => {
+        this.process(async (parent, target, attrs) => {
           const issues = [
             {
               key: 'DOC-1234',
@@ -284,7 +284,7 @@ content
             content.push('|' + issue.fields.summary)
           }
           content.push('|====')
-          this.parseContent(parent, content.join('\n'), attrs)
+          await this.parseContent(parent, content.join('\n'), attrs)
         })
       })
       const html = await asciidoctor.convert('jira::DOC[]', { extension_registry: registry })
@@ -299,8 +299,8 @@ content
       registry.block(function () {
         this.named('csv')
         this.onContext('literal')
-        this.process((parent, reader) => {
-          this.parseContent(parent, [',==='].concat(...reader.readLines()).concat(',==='))
+        this.process(async (parent, reader) => {
+          this.parseContent(parent, [',==='].concat(...await reader.readLines()).concat(',==='))
           return undefined
         })
       })
@@ -316,7 +316,7 @@ after`, { extension_registry: registry })
       assert.equal(doc.getBlocks().length, 3)
       const table = doc.getBlocks()[1]
       assert.equal(table.getContext(), 'table')
-      assert.ok(doc.convert().includes('<td'))
+      assert.ok((await doc.convert()).includes('<td'))
     })
 
     test('should not share attributes between parsed blocks (parseContent)', async () => {
@@ -324,9 +324,9 @@ after`, { extension_registry: registry })
       registry.block(function () {
         this.named('wrap')
         this.onContext('open')
-        this.process((parent, reader, attrs) => {
+        this.process(async (parent, reader, attrs) => {
           const wrap = this.createOpenBlock(parent, undefined, attrs)
-          return this.parseContent(wrap, reader.readLines())
+          return this.parseContent(wrap, await reader.readLines())
         })
       })
       const doc = await asciidoctor.load(`

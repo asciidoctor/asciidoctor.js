@@ -210,7 +210,7 @@ That's all, folks!`
       const doc = await documentFromString(input)
       const ref = doc.catalog.refs['_section_baz']
       assert.ok(ref != null)
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assertXpath(output, '//a[@href="#_section_baz"][text()="Section baz"]', 1)
       assertXpath(output, '//h2[@id="_section_baz"][text()="Section baz"]', 1)
     })
@@ -230,7 +230,7 @@ That's all, folks!`
       const doc = await documentFromString(input)
       const ref = doc.catalog.refs['explicit']
       assert.ok(ref != null)
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assertXpath(output, '//a[@href="#explicit"][text()="Section baz"]', 1)
       assertXpath(output, '//h2[@id="explicit"][text()="Section baz"]', 1)
     })
@@ -377,7 +377,7 @@ content`
         assert.equal(ref.title, 'Do Not Repeat Yourself')
         assert.equal(doc.resolveId('Do Not Repeat Yourself'), '_do_not_repeat_yourself')
         assertMessage(logger, 'WARN', '<stdin>: line 6: id assigned to section already in use: _do_not_repeat_yourself')
-        const converted = doc.convert({ standalone: false })
+        const converted = await doc.convert({ standalone: false })
         assert.equal((converted.match(/id="_do_not_repeat_yourself"/g) || []).length, 2)
       })
     })

@@ -143,7 +143,7 @@ preamble`
         const doc = await documentFromString(input, { standalone: true })
         assert.equal(doc.id, 'reference')
         assert.equal(doc.attr('css-signature'), 'refguide')
-        const output = doc.convert()
+        const output = await doc.convert()
         assertCss(output, 'body#reference', 1)
       })
 
@@ -188,8 +188,8 @@ content`
 
 content`
         const doc = await documentFromString(input, { standalone: true })
-        assert.deepEqual(doc.blocks[0].attributes, {})
-        const output = doc.convert()
+        assert.deepEqual(await doc.blocks[0].attributes, {})
+        const output = await doc.convert()
         assertCss(output, '#idname', 1)
         assertCss(output, 'body#idname', 1)
         assertCss(output, '.rolename', 1)

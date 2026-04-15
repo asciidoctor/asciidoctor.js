@@ -89,13 +89,13 @@ export class Parser {
   }
 
   // Public: Parse AsciiDoc source from reader into document.
-  static parse (reader, document, options = {}) {
+  static async parse (reader, document, options = {}) {
     const headerOnly = options.header_only ?? false
-    let blockAttributes = Parser.parseDocumentHeader(reader, document, headerOnly)
+    let blockAttributes = await Parser.parseDocumentHeader(reader, document, headerOnly)
 
     if (!headerOnly) {
-      while (reader.hasMoreLines()) {
-        const [newSection, attrs] = Parser.nextSection(reader, document, blockAttributes)
+      while (await reader.hasMoreLines()) {
+        const [newSection, attrs] = await Parser.nextSection(reader, document, blockAttributes)
         blockAttributes = attrs
         if (newSection) {
           document.assignNumeral(newSection)
@@ -107,11 +107,11 @@ export class Parser {
   }
 
   // Public: Parse the document header.
-  static parseDocumentHeader (reader, document, headerOnly = false) {
-    let blockAttrs = reader.skipBlankLines() != null ? Parser.parseBlockMetadataLines(reader, document) : {}
+  static async parseDocumentHeader (reader, document, headerOnly = false) {
+    let blockAttrs = await reader.skipBlankLines() != null ? await Parser.parseBlockMetadataLines(reader, document) : {}
     const docAttrs = document.attributes
 
-    const implicitDoctitle = Parser.isNextLineDoctitle(reader, blockAttrs, docAttrs['leveloffset'])
+    const implicitDoctitle = await Parser.isNextLineDoctitle(reader, blockAttrs, docAttrs['leveloffset'])
     if (implicitDoctitle && (blockAttrs['title'] || blockAttrs['style'])) {
       docAttrs['authorcount'] = 0
       return document.finalizeHeader(blockAttrs, false)
@@ -125,7 +125,7 @@ export class Parser {
 
     if (implicitDoctitle) {
       const sourceLocation = document.sourcemap ? reader.cursor : null
-      const [sectId,, l0SectionTitle,, atx] = Parser.parseSectionTitle(reader, document)
+      const [sectId,, l0SectionTitle,, atx] = await Parser.parseSectionTitle(reader, document)
       let finalSectTitle = l0SectionTitle
 
       if (doctitleAttrVal) {
@@ -159,7 +159,7 @@ export class Parser {
 
       const modifiedAttrs = document._attributesModified
       modifiedAttrs.delete('doctitle')
-      Parser.parseHeaderMetadata(reader, document, null)
+      await Parser.parseHeaderMetadata(reader, document, null)
 
       if (modifiedAttrs.has('doctitle')) {
         const val = docAttrs['doctitle']
@@ -185,14 +185,14 @@ export class Parser {
     }
 
     if (document.doctype === 'manpage') {
-      Parser.parseManpageHeader(reader, document, blockAttrs, headerOnly)
+      await Parser.parseManpageHeader(reader, document, blockAttrs, headerOnly)
     }
 
     return document.finalizeHeader(blockAttrs)
   }
 
   // Public: Parse manpage header.
-  static parseManpageHeader (reader, document, blockAttributes, headerOnly = false) {
+  static async parseManpageHeader (reader, document, blockAttributes, headerOnly = false) {
     const docAttrs = document.attributes
     const doctitle  = docAttrs['doctitle'] || ''
     const m = doctitle.match(ManpageTitleVolnumRx)
@@ -219,14 +219,14 @@ export class Parser {
     } else if (headerOnly) {
       // done
     } else {
-      reader.skipBlankLines()
+      await reader.skipBlankLines()
       reader.save()
-      Object.assign(blockAttributes, Parser.parseBlockMetadataLines(reader, document))
-      const nameSectionLevel = Parser.isNextLineSection(reader, {})
+      Object.assign(blockAttributes, await Parser.parseBlockMetadataLines(reader, document))
+      const nameSectionLevel = await Parser.isNextLineSection(reader, {})
       if (nameSectionLevel !== null && nameSectionLevel !== undefined) {
         if (nameSectionLevel === 1) {
-          const nameSection = Parser.initializeSection(reader, document, {})
-          const buffer = reader.readLinesUntil({ break_on_blank_lines: true, skip_line_comments: true })
+          const nameSection = await Parser.initializeSection(reader, document, {})
+          const buffer = (await reader.readLinesUntil({ break_on_blank_lines: true, skip_line_comments: true }))
             .map(l => l.trimStart()).join(' ')
           const nm = buffer.match(ManpageNamePurposeRx)
           let errorMsg = null
@@ -288,7 +288,7 @@ export class Parser {
   // Public: Return the next section from the reader.
   //
   // Returns [section_or_null, orphaned_attributes].
-  static nextSection (reader, parent, attributes = {}) {
+  static async nextSection (reader, parent, attributes = {}) {
     let preamble = null, intro = null, part = false
 
     const parentIsDocument = parent.context === 'document'
@@ -297,7 +297,7 @@ export class Parser {
 
     if (parentIsDocument && parent.blocks.length === 0 &&
         (parent.hasHeader() || ('invalid-header' in attributes && !!attributes['invalid-header'] && delete attributes['invalid-header'] !== undefined) ||
-         typeof Parser.isNextLineSection(reader, attributes) !== 'number')) {
+         typeof await Parser.isNextLineSection(reader, attributes) !== 'number')) {
       // We are at the start of document processing
       document = parent
       book = document.doctype === 'book'
@@ -321,7 +321,7 @@ export class Parser {
     } else {
       document = parent.document
       book = document.doctype === 'book'
-      section = Parser.initializeSection(reader, parent, attributes)
+      section = await Parser.initializeSection(reader, parent, attributes)
       const title = attributes['title']
       attributes = title ? { title } : {}
       currentLevel = section.level
@@ -336,11 +336,11 @@ export class Parser {
       }
     }
 
-    reader.skipBlankLines()
+    await reader.skipBlankLines()
 
-    while (reader.hasMoreLines()) {
-      Parser.parseBlockMetadataLines(reader, document, attributes)
-      let nextLevel = Parser.isNextLineSection(reader, attributes)
+    while (await reader.hasMoreLines()) {
+      await Parser.parseBlockMetadataLines(reader, document, attributes)
+      let nextLevel = await Parser.isNextLineSection(reader, attributes)
 
       if (nextLevel !== null && nextLevel !== undefined && nextLevel !== false) {
         const leveloffset = document.attr('leveloffset')
@@ -362,7 +362,7 @@ export class Parser {
           } else {
             Parser.logger.error(Parser.messageWithContext(`${section.sectname} sections do not support nested sections`, { source_location: reader.cursor }))
           }
-          const [newSection, attrs] = Parser.nextSection(reader, section, attributes)
+          const [newSection, attrs] = await Parser.nextSection(reader, section, attributes)
           attributes = attrs
           section.assignNumeral(newSection)
           section.blocks.push(newSection)
@@ -370,7 +370,7 @@ export class Parser {
           if (!book) {
             Parser.logger.error(Parser.messageWithContext('level 0 sections can only be used when doctype is book', { source_location: reader.cursor }))
           }
-          const [newSection, attrs] = Parser.nextSection(reader, section, attributes)
+          const [newSection, attrs] = await Parser.nextSection(reader, section, attributes)
           attributes = attrs
           section.assignNumeral(newSection)
           section.blocks.push(newSection)
@@ -379,7 +379,7 @@ export class Parser {
         }
       } else {
         const blockCursor = reader.cursor
-        const newBlock = Parser.nextBlock(reader, intro ?? section, attributes, { parse_metadata: false })
+        const newBlock = await Parser.nextBlock(reader, intro ?? section, attributes, { parse_metadata: false })
         if (newBlock) {
           if (part) {
             if (!section.hasBlocks()) {
@@ -418,7 +418,7 @@ export class Parser {
         }
       }
 
-      if (reader.skipBlankLines() == null) break
+      if (await reader.skipBlankLines() == null) break
     }
 
     if (part) {
@@ -444,8 +444,8 @@ export class Parser {
   }
 
   // Public: Parse and return the next Block at the Reader's current location.
-  static nextBlock (reader, parent, attributes = {}, options = {}) {
-    const skipped = reader.skipBlankLines()
+  static async nextBlock (reader, parent, attributes = {}, options = {}) {
+    const skipped = await reader.skipBlankLines()
     if (skipped == null) return null
 
     let textOnly = options.text_only ?? null
@@ -458,9 +458,9 @@ export class Parser {
     const parseMetadata = options.parse_metadata !== false
 
     if (parseMetadata) {
-      while (Parser.parseBlockMetadataLine(reader, document, attributes, options)) {
-        reader.readLine()
-        if (reader.skipBlankLines() == null) return null
+      while (await Parser.parseBlockMetadataLine(reader, document, attributes, options)) {
+        await reader.readLine()
+        if (await reader.skipBlankLines() == null) return null
       }
     }
 
@@ -469,7 +469,8 @@ export class Parser {
     const blockMacroExtensions = extensions?.hasBlockMacros?.()
 
     reader.mark()
-    let thisLine = reader.readLine()
+    let thisLine = await reader.readLine()
+    if (thisLine === undefined) return null
     const docAttrs = document.attributes
     const style    = attributes[1] ?? null
     let block = null, blockContext = null, cloakedContext = null, terminator = null
@@ -620,7 +621,7 @@ export class Parser {
                       attributes[k] ??= v
                     }
                   }
-                  const result = extension.processMethod(parent, target, attributes)
+                  const result = await extension.processMethod(parent, target, attributes)
                   if (result && result !== parent) {
                     Object.assign(attributes, result.attributes)
                     block = result
@@ -638,7 +639,7 @@ export class Parser {
           const clm = thisLine.match(CalloutListRx)
           if (clm) {
             reader.unshiftLine(thisLine)
-            block = Parser.parseCalloutList(reader, clm, parent, document.callouts)
+            block = await Parser.parseCalloutList(reader, clm, parent, document.callouts)
             attributes['style'] = 'arabic'
             break
           }
@@ -649,7 +650,7 @@ export class Parser {
           if (!style && parent instanceof Section && parent.sectname === 'bibliography') {
             attributes['style'] = 'bibliography'
           }
-          block = Parser.parseList(reader, 'ulist', parent, style ?? attributes['style'] ?? null)
+          block = await Parser.parseList(reader, 'ulist', parent, style ?? attributes['style'] ?? null)
           break
         }
 
@@ -657,7 +658,7 @@ export class Parser {
           reader.unshiftLine(thisLine)
           const start = ('start' in attributes) ? attributes['start'] : null
           delete attributes['start']
-          block = Parser.parseList(reader, 'olist', parent, style, { start })
+          block = await Parser.parseList(reader, 'olist', parent, style, { start })
           if (block.style) attributes['style'] = block.style
           break
         }
@@ -666,17 +667,17 @@ export class Parser {
           const dlm = thisLine.match(DescriptionListRx)
           if (dlm) {
             reader.unshiftLine(thisLine)
-            block = Parser.parseDescriptionList(reader, dlm, parent)
+            block = await Parser.parseDescriptionList(reader, dlm, parent)
             break
           }
         }
 
         if ((style === 'float' || style === 'discrete') &&
             (Compliance.underlineStyleSectionTitles
-              ? Parser.isSectionTitle(thisLine, reader.peekLine()) != null
+              ? Parser.isSectionTitle(thisLine, await reader.peekLine()) != null
               : !indented && Parser.atxSectionTitle(thisLine) != null)) {
           reader.unshiftLine(thisLine)
-          const [floatId, floatReftext, blockTitle, floatLevel] = Parser.parseSectionTitle(reader, document, attributes['id'])
+          const [floatId, floatReftext, blockTitle, floatLevel] = await Parser.parseSectionTitle(reader, document, attributes['id'])
           if (floatReftext) attributes['reftext'] = floatReftext
           block = new Block(parent, 'floating_title', { content_model: 'empty' })
           block.title = blockTitle
@@ -719,7 +720,7 @@ export class Parser {
 
         if (indented && !style) {
           const contentAdjacent = skipped === 0 ? options.list_type : null
-          const lines = Parser.readParagraphLines(reader, contentAdjacent, { skip_line_comments: !!textOnly })
+          const lines = await Parser.readParagraphLines(reader, contentAdjacent, { skip_line_comments: !!textOnly })
           Parser.adjustIndentation(lines)
           if (textOnly || contentAdjacent === 'dlist') {
             block = new Block(parent, 'paragraph', { content_model: 'simple', source: lines, attributes })
@@ -727,7 +728,7 @@ export class Parser {
             block = new Block(parent, 'literal', { content_model: 'verbatim', source: lines, attributes })
           }
         } else {
-          const lines = Parser.readParagraphLines(reader, skipped === 0 && options.list_type, { skip_line_comments: true })
+          const lines = await Parser.readParagraphLines(reader, skipped === 0 && options.list_type, { skip_line_comments: true })
           if (textOnly) {
             if (indented && style === 'normal') Parser.adjustIndentation(lines)
             block = new Block(parent, 'paragraph', { content_model: 'simple', source: lines, attributes })
@@ -758,7 +759,7 @@ export class Parser {
             }
             attributes['style'] = 'quote'
             const { Reader: Rdr } = _requireReader()
-            block = Parser.buildBlock('quote', 'compound', false, parent, new Rdr(mapped), attributes)
+            block = await Parser.buildBlock('quote', 'compound', false, parent, new Rdr(mapped), attributes)
             if (creditLine) {
               const subsApplied = block.applySubs(creditLine, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
               const commaIdx = subsApplied.indexOf(', ')
@@ -812,7 +813,7 @@ export class Parser {
           if (!('indent' in attributes) && 'source-indent' in docAttrs) {
             attributes['indent'] = docAttrs['source-indent']
           }
-          block = Parser.buildBlock('listing', 'verbatim', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock('listing', 'verbatim', terminator, parent, reader, attributes)
           break
         }
         case 'fenced_code': {
@@ -840,48 +841,48 @@ export class Parser {
           }
           if (!('indent' in attributes) && 'source-indent' in docAttrs) attributes['indent'] = docAttrs['source-indent']
           terminator = terminator.slice(0, 3)
-          block = Parser.buildBlock('listing', 'verbatim', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock('listing', 'verbatim', terminator, parent, reader, attributes)
           break
         }
         case 'table': {
           const blockCursor = reader.cursor
           const { Reader: Rdr } = _requireReader()
           const blockReader = new Rdr(
-            reader.readLinesUntil({ terminator, skip_line_comments: true, context: 'table', cursor: 'at_mark' }),
+            await reader.readLinesUntil({ terminator, skip_line_comments: true, context: 'table', cursor: 'at_mark' }),
             blockCursor
           )
           if (!terminator.startsWith('|') && !terminator.startsWith('!')) {
             attributes['format'] ??= terminator.startsWith(',') ? 'csv' : 'dsv'
           }
-          block = Parser.parseTable(blockReader, parent, attributes)
+          block = await Parser.parseTable(blockReader, parent, attributes)
           break
         }
         case 'sidebar':
-          block = Parser.buildBlock(blockContext, 'compound', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(blockContext, 'compound', terminator, parent, reader, attributes)
           break
         case 'admonition': {
           const admStyle = attributes['style'] ?? blockContext
           attributes['name']      = admStyle.toLowerCase()
           attributes['textlabel'] = (attributes['caption'] && delete attributes['caption']) ?? docAttrs[`${attributes['name']}-caption`]
-          block = Parser.buildBlock(blockContext, 'compound', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(blockContext, 'compound', terminator, parent, reader, attributes)
           break
         }
         case 'open':
         case 'abstract':
         case 'partintro':
-          block = Parser.buildBlock('open', 'compound', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock('open', 'compound', terminator, parent, reader, attributes)
           break
         case 'literal':
-          block = Parser.buildBlock(blockContext, 'verbatim', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(blockContext, 'verbatim', terminator, parent, reader, attributes)
           break
         case 'example':
           if ('collapsible-option' in attributes) attributes['caption'] ??= ''
-          block = Parser.buildBlock(blockContext, 'compound', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(blockContext, 'compound', terminator, parent, reader, attributes)
           break
         case 'quote':
         case 'verse':
           AttributeList.rekey(attributes, [null, 'attribution', 'citetitle'])
-          block = Parser.buildBlock(blockContext, blockContext === 'verse' ? 'verbatim' : 'compound', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(blockContext, blockContext === 'verse' ? 'verbatim' : 'compound', terminator, parent, reader, attributes)
           break
         case 'stem':
         case 'latexmath':
@@ -889,13 +890,13 @@ export class Parser {
           if (blockContext === 'stem') {
             attributes['style'] = STEM_TYPE_ALIASES[attributes[2] ?? docAttrs['stem']]
           }
-          block = Parser.buildBlock('stem', 'raw', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock('stem', 'raw', terminator, parent, reader, attributes)
           break
         case 'pass':
-          block = Parser.buildBlock(blockContext, 'raw', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(blockContext, 'raw', terminator, parent, reader, attributes)
           break
         case 'comment':
-          Parser.buildBlock(blockContext, 'skip', terminator, parent, reader, attributes)
+          await Parser.buildBlock(blockContext, 'skip', terminator, parent, reader, attributes)
           for (const k of Object.keys(attributes)) delete attributes[k]
           return null
         default: {
@@ -917,7 +918,7 @@ export class Parser {
             }
             attributes['cloaked-context'] = cloakedContext
           }
-          block = Parser.buildBlock(blockContext, contentModel, terminator, parent, reader, attributes, { extension })
+          block = await Parser.buildBlock(blockContext, contentModel, terminator, parent, reader, attributes, { extension })
           if (!block) {
             for (const k of Object.keys(attributes)) delete attributes[k]
             return null
@@ -960,7 +961,7 @@ export class Parser {
   }
 
   // Internal: Build a block from reader lines.
-  static buildBlock (blockContext, contentModel, terminator, parent, reader, attributes, options = {}) {
+  static async buildBlock (blockContext, contentModel, terminator, parent, reader, attributes, options = {}) {
     let skipProcessing, parseAsContentModel
 
     if (contentModel === 'skip') {
@@ -978,20 +979,20 @@ export class Parser {
 
     if (terminator == null) {
       if (parseAsContentModel === 'verbatim') {
-        lines = reader.readLinesUntil({ break_on_blank_lines: true, break_on_list_continuation: true })
+        lines = await reader.readLinesUntil({ break_on_blank_lines: true, break_on_list_continuation: true })
       } else {
         if (contentModel === 'compound') contentModel = 'simple'
-        lines = Parser.readParagraphLines(reader, false, { skip_line_comments: true, skip_processing: skipProcessing })
+        lines = await Parser.readParagraphLines(reader, false, { skip_line_comments: true, skip_processing: skipProcessing })
       }
     } else if (parseAsContentModel !== 'compound') {
-      lines = reader.readLinesUntil({ terminator, skip_processing: skipProcessing, context: blockContext, cursor: 'at_mark' })
+      lines = await reader.readLinesUntil({ terminator, skip_processing: skipProcessing, context: blockContext, cursor: 'at_mark' })
     } else if (terminator === false) {
       blockReader = reader
     } else {
       const blockCursor = reader.cursor
       const { Reader: Rdr } = _requireReader()
       blockReader = new Rdr(
-        reader.readLinesUntil({ terminator, skip_processing: skipProcessing, context: blockContext, cursor: 'at_mark' }),
+        await reader.readLinesUntil({ terminator, skip_processing: skipProcessing, context: blockContext, cursor: 'at_mark' }),
         blockCursor,
         { document: parent.document }
       )
@@ -1014,7 +1015,7 @@ export class Parser {
       const extension = options.extension
       delete attributes['style']
       const { Reader: Rdr } = _requireReader()
-      const result = extension.processMethod(parent, blockReader ?? new Rdr(lines), { ...attributes })
+      const result = await extension.processMethod(parent, blockReader ?? new Rdr(lines), { ...attributes })
       if (!result || result === parent) return null
       block = result
       Object.assign(attributes, block.attributes)
@@ -1026,32 +1027,32 @@ export class Parser {
       block = new Block(parent, blockContext, { content_model: contentModel, source: lines, attributes })
     }
 
-    if (contentModel === 'compound') Parser.parseBlocks(blockReader, block)
+    if (contentModel === 'compound') await Parser.parseBlocks(blockReader, block)
 
     return block
   }
 
   // Public: Parse blocks from reader until exhausted.
-  static parseBlocks (reader, parent, attributes = null) {
+  static async parseBlocks (reader, parent, attributes = null) {
     while (true) {
-      const block = Parser.nextBlock(reader, parent, attributes ? { ...attributes } : {})
+      const block = await Parser.nextBlock(reader, parent, attributes ? { ...attributes } : {})
       if (block) parent.blocks.push(block)
-      if (!reader.hasMoreLines()) break
+      if (!await reader.hasMoreLines()) break
     }
   }
 
   // Internal: Parse an ordered or unordered list.
-  static parseList (reader, listType, parent, style = null, opts = {}) {
+  static async parseList (reader, listType, parent, style = null, opts = {}) {
     const start = opts.start != null ? parseInt(opts.start, 10) : null
     const listAttrs = (start != null && start !== 1) ? { start } : null
     const listBlock = new List(parent, listType, listAttrs ? { attributes: listAttrs } : {})
     const listRx = ListRxMap[listType]
 
-    while (reader.hasMoreLines() && listRx.test(reader.peekLine())) {
-      const m = reader.peekLine().match(listRx)
-      const listItem = Parser.parseListItem(reader, listBlock, m, m[1], style)
+    while (await reader.hasMoreLines() && listRx.test(await reader.peekLine())) {
+      const m = (await reader.peekLine()).match(listRx)
+      const listItem = await Parser.parseListItem(reader, listBlock, m, m[1], style)
       if (listItem) listBlock.blocks.push(listItem)
-      if (reader.skipBlankLines() == null) break
+      if (await reader.skipBlankLines() == null) break
     }
 
     return listBlock
@@ -1128,17 +1129,17 @@ export class Parser {
   }
 
   // Internal: Parse a description list.
-  static parseDescriptionList (reader, match, parent) {
+  static async parseDescriptionList (reader, match, parent) {
     const listBlock = new List(parent, 'dlist')
     const siblingPattern = DescriptionListSiblingRx[match[2]]
-    let currentPair = Parser.parseListItem(reader, listBlock, match, siblingPattern)
+    let currentPair = await Parser.parseListItem(reader, listBlock, match, siblingPattern)
     listBlock.blocks.push(currentPair)
 
-    while (reader.hasMoreLines()) {
-      const pLine = reader.peekLine()
+    while (await reader.hasMoreLines()) {
+      const pLine = await reader.peekLine()
       const nm = pLine.match(siblingPattern)
       if (!nm) break
-      const nextPair = Parser.parseListItem(reader, listBlock, nm, siblingPattern)
+      const nextPair = await Parser.parseListItem(reader, listBlock, nm, siblingPattern)
       if (currentPair[1]) {
         listBlock.blocks.push((currentPair = nextPair))
       } else {
@@ -1151,7 +1152,7 @@ export class Parser {
   }
 
   // Internal: Parse a callout list.
-  static parseCalloutList (reader, match, parent, callouts) {
+  static async parseCalloutList (reader, match, parent, callouts) {
     const listBlock = new List(parent, 'colist')
     let nextIndex = 1
     let autonum   = 0
@@ -1159,7 +1160,7 @@ export class Parser {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       if (!match) {
-        const pLine = reader.peekLine()
+        const pLine = await reader.peekLine()
         if (!pLine) break
         const nm = pLine.match(CalloutListRx)
         if (!nm) break
@@ -1171,7 +1172,7 @@ export class Parser {
       if (num !== String(nextIndex)) {
         Parser.logger.warn(Parser.messageWithContext(`callout list item index: expected ${nextIndex}, got ${num}`, { source_location: reader.cursorAtMark() }))
       }
-      const listItem = Parser.parseListItem(reader, listBlock, match, '<1>')
+      const listItem = await Parser.parseListItem(reader, listBlock, match, '<1>')
       if (listItem) {
         listBlock.blocks.push(listItem)
         const coids = callouts.calloutIds(listBlock.blocks.length)
@@ -1190,7 +1191,7 @@ export class Parser {
   }
 
   // Internal: Parse a list item (ordered, unordered, callout, or description list).
-  static parseListItem (reader, listBlock, match, siblingTrait, style = null) {
+  static async parseListItem (reader, listBlock, match, siblingTrait, style = null) {
     const listType = listBlock.context
     const dlist    = listType === 'dlist'
     let listTerm, listItem, hasText, sourcemapAssignmentDeferred
@@ -1269,16 +1270,16 @@ export class Parser {
       }
     }
 
-    reader.readLine()
+    await reader.readLine()
     const blockCursor = reader.cursor
     const { Reader: Rdr } = _requireReader()
-    const listItemLines = Parser.readLinesForListItem(reader, listType, siblingTrait, hasText)
+    const listItemLines = await Parser.readLinesForListItem(reader, listType, siblingTrait, hasText)
     const listItemReader = new Rdr(listItemLines, blockCursor)
 
-    if (listItemReader.hasMoreLines()) {
+    if (await listItemReader.hasMoreLines()) {
       if (sourcemapAssignmentDeferred) listItem.sourceLocation = blockCursor
-      const commentLines = listItemReader.skipLineComments()
-      const subsequentLine = listItemReader.peekLine()
+      const commentLines = await listItemReader.skipLineComments()
+      const subsequentLine = await listItemReader.peekLine()
       if (subsequentLine != null) {
         if (commentLines.length > 0) listItemReader.unshiftLines(commentLines)
         let contentAdjacent = false
@@ -1286,10 +1287,10 @@ export class Parser {
           contentAdjacent = true
           if (!dlist) hasText = null
         }
-        const block = Parser.nextBlock(listItemReader, listItem, {}, { text_only: hasText ? null : true, list_type: listType })
+        const block = await Parser.nextBlock(listItemReader, listItem, {}, { text_only: hasText ? null : true, list_type: listType })
         if (block) listItem.blocks.push(block)
-        while (listItemReader.hasMoreLines()) {
-          const b = Parser.nextBlock(listItemReader, listItem, {}, { list_type: listType })
+        while (await listItemReader.hasMoreLines()) {
+          const b = await Parser.nextBlock(listItemReader, listItem, {}, { list_type: listType })
           if (b) listItem.blocks.push(b)
         }
         if (contentAdjacent && listItem.blocks.length > 0 && listItem.blocks[0].context === 'paragraph') {
@@ -1302,7 +1303,7 @@ export class Parser {
   }
 
   // Internal: Collect lines belonging to the current list item.
-  static readLinesForListItem (reader, listType, siblingTrait = null, hasText = true) {
+  static async readLinesForListItem (reader, listType, siblingTrait = null, hasText = true) {
     const buffer = []
     let continuation = 'inactive'
     let withinNestedList = false
@@ -1310,8 +1311,8 @@ export class Parser {
     const dlist = listType === 'dlist'
     let thisLine = null
 
-    while (reader.hasMoreLines()) {
-      thisLine = reader.readLine()
+    while (await reader.hasMoreLines()) {
+      thisLine = await reader.readLine()
 
       if (Parser.isSiblingListItem(thisLine, listType, siblingTrait)) break
 
@@ -1339,18 +1340,18 @@ export class Parser {
       if (delimMatch) {
         if (continuation !== 'active') break
         buffer.push(thisLine)
-        const blockLines = reader.readLinesUntil({ terminator: delimMatch.terminator, read_last_line: true, context: delimMatch.context })
+        const blockLines = await reader.readLinesUntil({ terminator: delimMatch.terminator, read_last_line: true, context: delimMatch.context })
         buffer.push(...blockLines)
         continuation = 'inactive'
       } else if (dlist && continuation !== 'active' && thisLine.startsWith('[') && BlockAttributeLineRx.test(thisLine)) {
         const blockAttributeLines = [thisLine]
         let interrupt = false
         while (true) {
-          const nextLine = reader.peekLine()
+          const nextLine = await reader.peekLine()
           if (nextLine == null) break
           if (Parser.isDelimitedBlock(nextLine)) { interrupt = true; break }
           if (nextLine === '' || (nextLine.startsWith('[') && BlockAttributeLineRx.test(nextLine))) {
-            blockAttributeLines.push(reader.readLine())
+            blockAttributeLines.push(await reader.readLine())
           } else if (AnyListRx.test(nextLine) && !Parser.isSiblingListItem(nextLine, listType, siblingTrait)) {
             buffer.push(...blockAttributeLines)
             break
@@ -1367,11 +1368,11 @@ export class Parser {
         if (LiteralParagraphRx.test(thisLine)) {
           reader.unshiftLine(thisLine)
           if (dlist) {
-            const lns = reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true },
+            const lns = await reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true },
               (line) => Parser.isSiblingListItem(line, listType, siblingTrait))
             buffer.push(...lns)
           } else {
-            const lns = reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true })
+            const lns = await reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true })
             buffer.push(...lns)
           }
           continuation = 'inactive'
@@ -1394,9 +1395,9 @@ export class Parser {
         }
       } else if (prevLine !== null && prevLine === '') {
         if (thisLine === '') {
-          const skippedLine = reader.skipBlankLines()
+          const skippedLine = await reader.skipBlankLines()
           if (skippedLine == null) { thisLine = null; break }
-          thisLine = reader.readLine()
+          thisLine = await reader.readLine()
           if (thisLine == null) break
           if (Parser.isSiblingListItem(thisLine, listType, siblingTrait)) break
         }
@@ -1413,11 +1414,11 @@ export class Parser {
           } else if (LiteralParagraphRx.test(thisLine)) {
             reader.unshiftLine(thisLine)
             if (dlist) {
-              const lns = reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true },
+              const lns = await reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true },
                 (line) => Parser.isSiblingListItem(line, listType, siblingTrait))
               buffer.push(...lns)
             } else {
-              const lns = reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true })
+              const lns = await reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true })
               buffer.push(...lns)
             }
           } else {
@@ -1459,14 +1460,14 @@ export class Parser {
   }
 
   // Internal: Initialize a Section from the current reader position.
-  static initializeSection (reader, parent, attributes = {}) {
+  static async initializeSection (reader, parent, attributes = {}) {
     const document  = parent.document
     const doctype   = document.doctype
     const book      = doctype === 'book'
     const sourceLocation = document.sourcemap ? reader.cursor : null
     const sectStyle = attributes[1] ?? null
 
-    const [sectId, sectReftext, sectTitle, rawSectLevel, sectAtx] = Parser.parseSectionTitle(reader, document, attributes['id'])
+    const [sectId, sectReftext, sectTitle, rawSectLevel, sectAtx] = await Parser.parseSectionTitle(reader, document, attributes['id'])
     let sectLevel = rawSectLevel
 
     let sectName, sectSpecial = false, sectNumbered = false
@@ -1529,7 +1530,7 @@ export class Parser {
     }
 
     section.updateAttributes(attributes)
-    reader.skipBlankLines()
+    await reader.skipBlankLines()
 
     return section
   }
@@ -1537,20 +1538,20 @@ export class Parser {
   // Internal: Check if the next line is a section title.
   //
   // Returns the Integer section level or null.
-  static isNextLineSection (reader, attributes) {
+  static async isNextLineSection (reader, attributes) {
     const style = attributes[1]
     if (style && (style === 'discrete' || style === 'float')) return null
 
     if (Compliance.underlineStyleSectionTitles) {
-      const nextLines = reader.peekLines(2, style && style === 'comment')
+      const nextLines = await reader.peekLines(2, style && style === 'comment')
       return Parser.isSectionTitle(nextLines[0] ?? '', nextLines[1] ?? null)
     }
-    return Parser.atxSectionTitle(reader.peekLine() ?? '')
+    return Parser.atxSectionTitle(await reader.peekLine() ?? '')
   }
 
   // Internal: Check if the next line is the document title.
-  static isNextLineDoctitle (reader, attributes, leveloffset) {
-    const sectLevel = Parser.isNextLineSection(reader, attributes)
+  static async isNextLineDoctitle (reader, attributes, leveloffset) {
+    const sectLevel = await Parser.isNextLineSection(reader, attributes)
     if (sectLevel == null || sectLevel === false) return false
     if (leveloffset) {
       return sectLevel + parseInt(leveloffset, 10) === 0
@@ -1590,10 +1591,10 @@ export class Parser {
   // Public: Parse section title from reader.
   //
   // Returns [id, reftext, title, level, atx].
-  static parseSectionTitle (reader, document, sectId = null) {
+  static async parseSectionTitle (reader, document, sectId = null) {
     let sectReftext = null, sectTitle, sectLevel, atx
 
-    const line1 = reader.readLine()
+    const line1 = await reader.readLine()
     const rx = Compliance.markdownSyntax ? ExtAtxSectionTitleRx : AtxSectionTitleRx
 
     if ((Compliance.markdownSyntax ? (line1.startsWith('=') || line1.startsWith('#')) : line1.startsWith('=')) && rx.test(line1)) {
@@ -1610,7 +1611,7 @@ export class Parser {
         }
       }
     } else if (Compliance.underlineStyleSectionTitles) {
-      const line2 = reader.peekLine(true)
+      const line2 = await reader.peekLine(true)
       if (line2) {
         const ch0   = line2[0]
         const level = SETEXT_SECTION_LEVELS[ch0]
@@ -1627,7 +1628,7 @@ export class Parser {
               sectReftext = am[3] ?? null
             }
           }
-          reader.readLine()
+          await reader.readLine()
         }
       }
     }
@@ -1646,10 +1647,10 @@ export class Parser {
   }
 
   // Public: Parse header metadata (author line and revision line).
-  static parseHeaderMetadata (reader, document = null, retrieve = true) {
+  static async parseHeaderMetadata (reader, document = null, retrieve = true) {
     const docAttrs = document?.attributes
 
-    Parser.processAttributeEntries(reader, document)
+    await Parser.processAttributeEntries(reader, document)
 
     let implicitAuthorMetadata = {}
     let authorcount = null
@@ -1657,8 +1658,8 @@ export class Parser {
     let implicitAuthorinitials = null
     let implicitAuthors = null
 
-    if (reader.hasMoreLines() && !reader.isNextLineEmpty()) {
-      const authorLine = reader.readLine()
+    if (await reader.hasMoreLines() && !await reader.isNextLineEmpty()) {
+      const authorLine = await reader.readLine()
       const parsed     = Parser.processAuthors(authorLine)
       authorcount = parsed['authorcount']
       delete parsed['authorcount']
@@ -1679,10 +1680,10 @@ export class Parser {
         }
       }
 
-      Parser.processAttributeEntries(reader, document)
+      await Parser.processAttributeEntries(reader, document)
 
-      if (reader.hasMoreLines() && !reader.isNextLineEmpty()) {
-        const revLine = reader.readLine()
+      if (await reader.hasMoreLines() && !await reader.isNextLineEmpty()) {
+        const revLine = await reader.readLine()
         const rm = revLine.match(RevisionInfoLineRx)
         if (rm) {
           const revMetadata = {}
@@ -1709,8 +1710,8 @@ export class Parser {
         }
       }
 
-      Parser.processAttributeEntries(reader, document)
-      reader.skipBlankLines()
+      await Parser.processAttributeEntries(reader, document)
+      await reader.skipBlankLines()
     }
 
     // Process author attribute entries that override (or stand in for) the implicit author line.
@@ -1871,10 +1872,10 @@ export class Parser {
   }
 
   // Internal: Parse block metadata lines.
-  static parseBlockMetadataLines (reader, document, attributes = {}, options = {}) {
-    while (Parser.parseBlockMetadataLine(reader, document, attributes, options)) {
-      reader.readLine()
-      if (reader.skipBlankLines() == null) break
+  static async parseBlockMetadataLines (reader, document, attributes = {}, options = {}) {
+    while (await Parser.parseBlockMetadataLine(reader, document, attributes, options)) {
+      await reader.readLine()
+      if (await reader.skipBlankLines() == null) break
     }
     return attributes
   }
@@ -1882,8 +1883,8 @@ export class Parser {
   // Internal: Parse the next line if it contains block metadata.
   //
   // Returns true if the line is metadata, otherwise falsy.
-  static parseBlockMetadataLine (reader, document, attributes, options = {}) {
-    const nextLine = reader.peekLine()
+  static async parseBlockMetadataLine (reader, document, attributes, options = {}) {
+    const nextLine = await reader.peekLine()
     if (!nextLine) return null
 
     const textOnly = options.text_only
@@ -1926,7 +1927,7 @@ export class Parser {
       if (nextLine === '//') return true
       if (normal && nextLine.startsWith('//') && _uniform(nextLine, '/', nextLine.length)) {
         if (nextLine.length !== 3) {
-          reader.readLinesUntil({ terminator: nextLine, skip_first_line: true, preserve_last_line: true, skip_processing: true, context: 'comment' })
+          await reader.readLinesUntil({ terminator: nextLine, skip_first_line: true, preserve_last_line: true, skip_processing: true, context: 'comment' })
           return true
         }
       } else if (nextLine.startsWith('//') && !nextLine.startsWith('///')) {
@@ -1935,7 +1936,7 @@ export class Parser {
     } else if (normal && nextLine.startsWith(':')) {
       const m = nextLine.match(AttributeEntryRx)
       if (m) {
-        Parser.processAttributeEntry(reader, document, attributes, m)
+        await Parser.processAttributeEntry(reader, document, attributes, m)
         return true
       }
     }
@@ -1943,19 +1944,19 @@ export class Parser {
   }
 
   // Internal: Process consecutive attribute entries.
-  static processAttributeEntries (reader, document, attributes = null) {
-    reader.skipCommentLines()
-    while (Parser.processAttributeEntry(reader, document, attributes)) {
-      reader.readLine()
-      reader.skipCommentLines()
+  static async processAttributeEntries (reader, document, attributes = null) {
+    await reader.skipCommentLines()
+    while (await Parser.processAttributeEntry(reader, document, attributes)) {
+      await reader.readLine()
+      await reader.skipCommentLines()
     }
   }
 
   // Internal: Process a single attribute entry.
-  static processAttributeEntry (reader, document, attributes = null, match = null) {
+  static async processAttributeEntry (reader, document, attributes = null, match = null) {
     if (!match) {
-      if (!reader.hasMoreLines()) return false
-      const pLine = reader.peekLine()
+      if (!await reader.hasMoreLines()) return false
+      const pLine = await reader.peekLine()
       const m = pLine ? pLine.match(AttributeEntryRx) : null
       if (!m) return false
       match = m
@@ -1967,8 +1968,8 @@ export class Parser {
     } else if (value.endsWith(LINE_CONTINUATION) || value.endsWith(LINE_CONTINUATION_LEGACY)) {
       const conStr = value.slice(-2)
       value = value.slice(0, -2).trimEnd()
-      while (reader.advance()) {
-        const nextLine = (reader.peekLine() ?? '')
+      while (await reader.advance()) {
+        const nextLine = (await reader.peekLine() ?? '')
         if (nextLine === '') break
         let next = nextLine.trimStart()
         const keepOpen = next.endsWith(conStr)
@@ -2028,7 +2029,7 @@ export class Parser {
   }
 
   // Internal: Read paragraph lines.
-  static readParagraphLines (reader, breakAtList, opts = {}) {
+  static async readParagraphLines (reader, breakAtList, opts = {}) {
     opts.break_on_blank_lines     = true
     opts.break_on_list_continuation = true
     opts.preserve_last_line       = true
@@ -2049,7 +2050,7 @@ export class Parser {
       breakCondition = (l) => isPlaceholder(l)
     }
 
-    return reader.readLinesUntil(opts, breakCondition)
+    return await reader.readLinesUntil(opts, breakCondition)
   }
 
   // Public: Check if line is the start of a delimited block.
@@ -2169,7 +2170,7 @@ export class Parser {
   }
 
   // Internal: Parse a table.
-  static parseTable (tableReader, parent, attributes) {
+  static async parseTable (tableReader, parent, attributes) {
     const table = new Table(parent, attributes)
 
     let explicitColspecs = false
@@ -2181,7 +2182,7 @@ export class Parser {
       }
     }
 
-    const skipped = tableReader.skipBlankLines() ?? 0
+    const skipped = await tableReader.skipBlankLines() ?? 0
     if ('header-option' in attributes) {
       table.hasHeaderOption = true
     } else if (skipped === 0 && !('noheader-option' in attributes)) {
@@ -2195,7 +2196,7 @@ export class Parser {
     let implicitHeaderBoundary = null
 
     while (true) {
-      let line = tableReader.readLine()
+      let line = await tableReader.readLine()
       if (line == null) break
 
       const beyondFirst = ++loopIdx > 0
@@ -2205,12 +2206,12 @@ export class Parser {
       } else if (format === 'psv') {
         if (parserCtx.startsWith(line)) {
           line = line.slice(1)
-          parserCtx.closeOpenCell()
+          await parserCtx.closeOpenCell()
           if (implicitHeaderBoundary != null) implicitHeaderBoundary = null
         } else {
           const [nextCellspec, rest] = Parser.parseCellspec(line, 'start', parserCtx.delimiter)
           if (nextCellspec != null) {
-            parserCtx.closeOpenCell(nextCellspec)
+            await parserCtx.closeOpenCell(nextCellspec)
             if (implicitHeaderBoundary != null) implicitHeaderBoundary = null
           } else if (implicitHeaderBoundary != null && implicitHeaderBoundary === loopIdx) {
             table.hasHeaderOption = implicitHeader = implicitHeaderBoundary = null
@@ -2222,7 +2223,7 @@ export class Parser {
       if (!beyondFirst) {
         tableReader.mark()
         if (implicitHeader) {
-          if (tableReader.hasMoreLines() && tableReader.peekLine() === '') {
+          if (await tableReader.hasMoreLines() && await tableReader.peekLine() === '') {
             implicitHeaderBoundary = 1
           } else {
             table.hasHeaderOption = implicitHeader = null
@@ -2271,10 +2272,10 @@ export class Parser {
               parserCtx.buffer += cellText
             }
             line = postMatch || null
-            parserCtx.closeCell()
+            await parserCtx.closeCell()
             if (postMatch === '') {
               if (format === 'csv' || format === 'dsv') {
-                parserCtx.closeCell(true)
+                await parserCtx.closeCell(true)
               } else if (format === 'psv') {
                 parserCtx.keepCellOpen()
               }
@@ -2288,10 +2289,10 @@ export class Parser {
                 }
                 parserCtx.keepCellOpen()
               } else {
-                parserCtx.closeCell(true)
+                await parserCtx.closeCell(true)
               }
             } else if (format === 'dsv') {
-              parserCtx.closeCell(true)
+              await parserCtx.closeCell(true)
             } else {
               parserCtx.keepCellOpen()
             }
@@ -2310,18 +2311,18 @@ export class Parser {
       }
 
       if (parserCtx.isCellOpen()) {
-        if (!tableReader.hasMoreLines()) parserCtx.closeCell(true)
+        if (!await tableReader.hasMoreLines()) await parserCtx.closeCell(true)
       } else {
-        if (tableReader.skipBlankLines() == null) break
+        if (await tableReader.skipBlankLines() == null) break
       }
     }
 
-    parserCtx.closeTable()
+    await parserCtx.closeTable()
     if ((table.attributes['colcount'] ??= table.columns.length) !== 0 && !explicitColspecs) {
       table.assignColumnWidths()
     }
     if (implicitHeader) table.hasHeaderOption = true
-    table.partitionHeaderFooter(attributes)
+    await table.partitionHeaderFooter(attributes)
 
     return table
   }

@@ -163,22 +163,22 @@ export class Reader {
   }
   eof () { return this.empty() }
 
-  nextLineEmpty () { const l = this.peekLine(); return !l }
-  isNextLineEmpty () { return this.nextLineEmpty() }
+  async nextLineEmpty () { const l = await this.peekLine(); return !l }
+  async isNextLineEmpty () { return await this.nextLineEmpty() }
 
   // Public: Peek at the next line without consuming it.
   //
   // direct - When true, bypass processLine and return the raw stack top.
   //
   // Returns the String next line, or undefined if there are no more lines.
-  peekLine (direct = false) {
+  async peekLine (direct = false) {
     while (true) {
       const nextLine = this._lines[this._lines.length - 1]
       if (direct || this._lookAhead > 0) {
         return this._unescapeNextLine ? nextLine.slice(1) : nextLine
       }
       if (nextLine !== undefined) {
-        const line = this.processLine(nextLine)
+        const line = await this.processLine(nextLine)
         if (line !== null && line !== undefined) return line
       } else {
         this._lookAhead = 0
@@ -188,12 +188,12 @@ export class Reader {
   }
 
   // Public: Peek at the next num lines without consuming them.
-  peekLines (num = null, direct = false) {
+  async peekLines (num = null, direct = false) {
     const oldLookAhead = this._lookAhead
     const result = []
     const limit = num != null ? num : MAX_INT
     for (let i = 0; i < limit; i++) {
-      const line = direct ? this._shift() : this.readLine()
+      const line = direct ? this._shift() : await this.readLine()
       if (line !== undefined) {
         result.push(line)
       } else {
@@ -208,20 +208,20 @@ export class Reader {
     return result
   }
 
-  readLine () {
-    return (this._lookAhead > 0 || this.hasMoreLines()) ? this._shift() : undefined
+  async readLine () {
+    return (this._lookAhead > 0 || await this.hasMoreLines()) ? this._shift() : undefined
   }
 
-  readLines () {
+  async readLines () {
     const lines = []
-    while (this.hasMoreLines()) lines.push(this._shift())
+    while (await this.hasMoreLines()) lines.push(this._shift())
     return lines
   }
-  readlines () { return this.readLines() }
+  async readlines () { return await this.readLines() }
 
-  read () { return this.readLines().join(LF) }
+  async read () { return (await this.readLines()).join(LF) }
 
-  advance () { return this._shift() !== undefined }
+  async advance () { return this._shift() !== undefined }
 
   unshiftLine (lineToRestore) { this._unshift(lineToRestore) }
   restoreLine (lineToRestore) { this._unshift(lineToRestore) }
@@ -236,11 +236,11 @@ export class Reader {
   }
   replaceLine (replacement) { return this.replaceNextLine(replacement) }
 
-  skipBlankLines () {
-    if (this.empty()) return undefined
+  async skipBlankLines () {
+    if (await this.empty()) return undefined
     let numSkipped = 0
     let nextLine
-    while ((nextLine = this.peekLine()) !== undefined) {
+    while ((nextLine = await this.peekLine()) !== undefined) {
       if (String(nextLine) !== '') return numSkipped
       this._shift()
       numSkipped++
@@ -248,26 +248,26 @@ export class Reader {
     return undefined
   }
 
-  skipCommentLines () {
-    if (this.empty()) return
+  async skipCommentLines () {
+    if (await this.empty()) return
     let nextLine
-    while ((nextLine = this.peekLine()) !== undefined && nextLine !== '') {
+    while ((nextLine = await this.peekLine()) !== undefined && nextLine !== '') {
       if (!nextLine.startsWith('//')) break
       if (nextLine.startsWith('///')) {
         const ll = nextLine.length
         if (!(ll > 3 && nextLine === '/'.repeat(ll))) break
-        this.readLinesUntil({ terminator: nextLine, skipFirstLine: true, readLastLine: true, skipProcessing: true, context: 'comment' })
+        await this.readLinesUntil({ terminator: nextLine, skipFirstLine: true, readLastLine: true, skipProcessing: true, context: 'comment' })
       } else {
         this._shift()
       }
     }
   }
 
-  skipLineComments () {
-    if (this.empty()) return []
+  async skipLineComments () {
+    if (await this.empty()) return []
     const commentLines = []
     let nextLine
-    while ((nextLine = this.peekLine()) !== undefined && nextLine !== '') {
+    while ((nextLine = await this.peekLine()) !== undefined && nextLine !== '') {
       if (!nextLine.startsWith('//')) break
       commentLines.push(this._shift())
     }
@@ -296,7 +296,7 @@ export class Reader {
   // filter - Optional Function(line) → true to break.
   //
   // Returns a String Array.
-  readLinesUntil (options = {}, filter = null) {
+  async readLinesUntil (options = {}, filter = null) {
     const result = []
     let restoreProcessLines = false
     if (this.processLines && (options.skipProcessing || options.skip_processing)) {
@@ -322,7 +322,7 @@ export class Reader {
 
     if (options.skipFirstLine || options.skip_first_line) this._shift()
 
-    while ((line = this.readLine()) !== undefined) {
+    while ((line = await this.readLine()) !== undefined) {
       let shouldBreak = false
       if (terminator) {
         shouldBreak = line === terminator
@@ -554,13 +554,13 @@ export class PreprocessorReader extends Reader {
 
   // Override: drain conditional stack at EOS; treat blank lines as lines (not as EOF).
   // peekLine() returns undefined only at true EOF; '' for blank lines.
-  hasMoreLines () { return this.peekLine() !== undefined }
-  empty () { return this.peekLine() === undefined }
-  eof () { return this.empty() }
+  async hasMoreLines () { return await this.peekLine() !== undefined }
+  async empty () { return await this.peekLine() === undefined }
+  async eof () { return await this.empty() }
 
 
-  peekLine (direct = false) {
-    const line = super.peekLine(direct)
+  async peekLine (direct = false) {
+    const line = await super.peekLine(direct)
     if (line !== undefined) return line
     if (this.includeStack.length === 0) {
       let endCursor = null
@@ -575,7 +575,7 @@ export class PreprocessorReader extends Reader {
       return undefined
     }
     this._popInclude()
-    return this.peekLine(direct)
+    return await this.peekLine(direct)
   }
 
   // Override: strip leading backslash from escaped directives.
@@ -720,7 +720,7 @@ export class PreprocessorReader extends Reader {
   }
 
   // Override: evaluate preprocessor directives as lines are visited.
-  processLine (line) {
+  async processLine (line) {
     if (!this.processLines) return line
 
     if (line === '') {
@@ -757,7 +757,7 @@ export class PreprocessorReader extends Reader {
             this._lookAhead++
             return line.slice(1)
           }
-          if (this._preprocessIncludeDirective(target, attrlist ?? null)) return undefined
+          if (await this._preprocessIncludeDirective(target, attrlist ?? null)) return undefined
           this._lookAhead++
           return line
         }
@@ -861,7 +861,7 @@ export class PreprocessorReader extends Reader {
 
   // Internal: Evaluate a conditional include directive.
   // Returns true if the line under the cursor was consumed or changed.
-  _preprocessIncludeDirective (target, attrlist) {
+  async _preprocessIncludeDirective (target, attrlist) {
     const doc = this._document
     let expandedTarget = target
 
@@ -914,9 +914,18 @@ export class PreprocessorReader extends Reader {
     const [incPath, targetType, relpath] = resolution
 
     if (targetType === 'uri') {
-      // TODO: URI includes require async fetch — not yet supported synchronously
-      this._logWarn(`URI includes require async fetch (not yet supported): ${incPath}`, { sourceLocation: this.cursor })
-      return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist ?? ''}]`)
+      let incContent
+      try {
+        const response = await fetch(incPath)
+        if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`)
+        incContent = await response.text()
+        super._shift()
+      } catch (err) {
+        this._logError(`include URI not readable: ${incPath} (${err.message})`, { sourceLocation: this.cursor })
+        return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist ?? ''}]`)
+      }
+      this.pushInclude(incContent, incPath, incPath, 1, parsedAttrs)
+      return true
     }
 
     let incLinenos = null

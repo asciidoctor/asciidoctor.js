@@ -107,9 +107,9 @@ describe('Links', () => {
   test('qualified url with label containing square brackets using link macro', async () => {
     const str = 'http://example.com[[bracket1\\]]'
     const doc = await documentFromString(str, { standalone: false, doctype: 'inline' })
-    assert.ok(doc.convert().includes('<a href="http://example.com">[bracket1]</a>'))
+    assert.ok((await doc.convert()).includes('<a href="http://example.com">[bracket1]</a>'))
     const docDocbook = await documentFromString(str, { standalone: false, backend: 'docbook', doctype: 'inline' })
-    assert.ok(docDocbook.convert().includes('<link xl:href="http://example.com">[bracket1]</link>'))
+    assert.ok((await docDocbook.convert()).includes('<link xl:href="http://example.com">[bracket1]</link>'))
   })
 
   test('link macro with empty target', async () => {
@@ -481,7 +481,7 @@ describe('Links', () => {
     const anchors = ['[[tigers]]', 'anchor:tigers[]']
     for (const anchor of anchors) {
       const doc = await documentFromString(`Here you can read about tigers.${anchor}`)
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.ok(doc.catalog.refs['tigers'] instanceof Inline)
       assert.equal(doc.catalog.refs['tigers'].text, null)
       assertXpath(output, '//a[@id="tigers"]', 1)
@@ -493,7 +493,7 @@ describe('Links', () => {
     const anchors = ['[[tigers]]', 'anchor:tigers[]']
     for (const anchor of anchors) {
       const doc = await documentFromString(`Here you can read about tigers.\\${anchor}`)
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.ok(!doc.catalog.refs['tigers'])
       assertXpath(output, '//a[@id="tigers"]', 0)
     }
@@ -513,16 +513,16 @@ describe('Links', () => {
   test('reftext of shorthand inline ref cannot resolve to empty', async () => {
     const input = '[[no-such-id,{empty}]]text'
     const doc = await documentFromString(input)
-    assert.equal(Object.keys(doc.catalog.refs).length, 0)
-    const output = doc.convert({ standalone: false })
+    assert.equal(Object.keys(await doc.catalog.refs).length, 0)
+    const output = await doc.convert({ standalone: false })
     assert.ok(output.includes('[[no-such-id,]]'))
   })
 
   test('reftext of macro inline ref can resolve to empty', async () => {
     const input = 'anchor:id-only[{empty}]text\n\nsee <<id-only>>'
     const doc = await documentFromString(input)
-    assert.ok(doc.catalog.refs['id-only'])
-    const output = doc.convert({ standalone: false })
+    assert.ok(await doc.catalog.refs['id-only'])
+    const output = await doc.convert({ standalone: false })
     assertXpath(output, '//a[@id="id-only"]', 1)
     assertXpath(output, '//a[@href="#id-only"]', 1)
     assertXpath(output, '//a[@href="#id-only"][text()="[id-only]"]', 1)
@@ -532,7 +532,7 @@ describe('Links', () => {
     const anchors = ['[[tigers,Tigers]]', 'anchor:tigers[Tigers]']
     for (const anchor of anchors) {
       const doc = await documentFromString(`Here you can read about tigers.${anchor}`)
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.ok(doc.catalog.refs['tigers'] instanceof Inline)
       assert.equal(doc.catalog.refs['tigers'].text, 'Tigers')
       assertXpath(output, '//a[@id="tigers"]', 1)
@@ -550,7 +550,7 @@ describe('Links', () => {
     const anchors = ['[[tigers,{label-tigers}]]', 'anchor:tigers[{label-tigers}]']
     for (const anchor of anchors) {
       const doc = await documentFromString(`Here you can read about tigers.${anchor}`, { attributes: { 'label-tigers': 'Tigers' } })
-      doc.convert()
+      await doc.convert()
       assert.ok(doc.catalog.refs['tigers'] instanceof Inline)
       assert.equal(doc.catalog.refs['tigers'].text, 'Tigers')
     }
@@ -560,7 +560,7 @@ describe('Links', () => {
     const anchors = ['[[tigers,<Tigers>]]', 'anchor:tigers[<Tigers>]']
     for (const anchor of anchors) {
       const doc = await documentFromString(`Here you can read about tigers.${anchor}`, { backend: 'docbook' })
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assert.ok(doc.catalog.refs['tigers'] instanceof Inline)
       assert.equal(doc.catalog.refs['tigers'].text, '<Tigers>')
       assert.ok(output.includes('<anchor xml:id="tigers" xreflabel="&lt;Tigers&gt;"/>'))
@@ -620,13 +620,13 @@ describe('Links', () => {
   test('xref using angled bracket syntax', async () => {
     const doc = await documentFromString('<<tigers>>')
     doc.register('refs', ['tigers', new Inline(doc, 'anchor', '[tigers]', { type: 'ref', target: 'tigers' })])
-    assertXpath(doc.convert(), '//a[@href="#tigers"][text() = "[tigers]"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="#tigers"][text() = "[tigers]"]', 1)
   })
 
   test('xref using angled bracket syntax with explicit hash', async () => {
     const doc = await documentFromString('<<#tigers>>')
     doc.register('refs', ['tigers', new Inline(doc, 'anchor', 'Tigers', { type: 'ref', target: 'tigers' })])
-    assertXpath(doc.convert(), '//a[@href="#tigers"][text() = "Tigers"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="#tigers"][text() = "Tigers"]', 1)
   })
 
   test('xref using angled bracket syntax with label', async () => {
@@ -651,13 +651,13 @@ describe('Links', () => {
 
   test('should not interpret path sans extension in xref with angled bracket syntax in compat mode', async () => {
     const doc = await documentFromString('<<tigers#>>', { standalone: false, attributes: { 'compat-mode': '' } })
-    assertXpath(doc.convert(), '//a[@href="#tigers#"][text() = "[tigers#]"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="#tigers#"][text() = "[tigers#]"]', 1)
     assert.equal(logger.messages.length, 0)
   })
 
   test('xref using angled bracket syntax with path sans extension', async () => {
     const doc = await documentFromString('<<tigers#>>', { standalone: false })
-    assertXpath(doc.convert(), '//a[@href="tigers.html"][text() = "tigers.html"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="tigers.html"][text() = "tigers.html"]', 1)
   })
 
   test('inter-document xref shorthand syntax should assume AsciiDoc extension if AsciiDoc extension not present', async () => {
@@ -734,71 +734,71 @@ describe('Links', () => {
 
   test('xref using angled bracket syntax with path sans extension using docbook backend', async () => {
     const doc = await documentFromString('<<tigers#>>', { standalone: false, backend: 'docbook' })
-    assert.ok(doc.convert().includes('<link xl:href="tigers.xml">tigers.xml</link>'))
+    assert.ok((await doc.convert()).includes('<link xl:href="tigers.xml">tigers.xml</link>'))
   })
 
   test('xref using angled bracket syntax with ancestor path sans extension', async () => {
     const doc = await documentFromString('<<../tigers#,tigers>>', { standalone: false })
-    assertXpath(doc.convert(), '//a[@href="../tigers.html"][text() = "tigers"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="../tigers.html"][text() = "tigers"]', 1)
   })
 
   test('xref using angled bracket syntax with absolute path sans extension', async () => {
     const doc = await documentFromString('<</path/to/tigers#,tigers>>', { standalone: false })
-    assertXpath(doc.convert(), '//a[@href="/path/to/tigers.html"][text() = "tigers"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="/path/to/tigers.html"][text() = "tigers"]', 1)
   })
 
   test('xref using angled bracket syntax with path and extension', async () => {
     const doc = await documentFromString('<<tigers.adoc>>', { standalone: false })
-    assertXpath(doc.convert(), '//a[@href="#tigers.adoc"][text() = "[tigers.adoc]"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="#tigers.adoc"][text() = "[tigers.adoc]"]', 1)
     assert.equal(logger.messages.length, 0)
   })
 
   test('xref using angled bracket syntax with path and extension with hash', async () => {
     const doc = await documentFromString('<<tigers.adoc#>>', { standalone: false })
-    assertXpath(doc.convert(), '//a[@href="tigers.html"][text() = "tigers.html"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="tigers.html"][text() = "tigers.html"]', 1)
   })
 
   test('xref using angled bracket syntax with path and extension with fragment', async () => {
     const doc = await documentFromString('<<tigers.adoc#id>>', { standalone: false })
-    assertXpath(doc.convert(), '//a[@href="tigers.html#id"][text() = "tigers.html"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="tigers.html#id"][text() = "tigers.html"]', 1)
   })
 
   test('xref using macro syntax with path and extension in compat mode', async () => {
     const doc = await documentFromString('xref:tigers.adoc[]', { standalone: false, attributes: { 'compat-mode': '' } })
-    assertXpath(doc.convert(), '//a[@href="#tigers.adoc"][text() = "[tigers.adoc]"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="#tigers.adoc"][text() = "[tigers.adoc]"]', 1)
     assert.equal(logger.messages.length, 0)
   })
 
   test('xref using macro syntax with path and extension', async () => {
     const doc = await documentFromString('xref:tigers.adoc[]', { standalone: false })
-    assertXpath(doc.convert(), '//a[@href="tigers.html"][text() = "tigers.html"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="tigers.html"][text() = "tigers.html"]', 1)
   })
 
   test('xref using angled bracket syntax with path and fragment', async () => {
     const doc = await documentFromString('<<tigers#about>>', { standalone: false })
-    assertXpath(doc.convert(), '//a[@href="tigers.html#about"][text() = "tigers.html"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="tigers.html#about"][text() = "tigers.html"]', 1)
   })
 
   test('xref using angled bracket syntax with path, fragment and text', async () => {
     const doc = await documentFromString('<<tigers#about,About Tigers>>', { standalone: false })
-    assertXpath(doc.convert(), '//a[@href="tigers.html#about"][text() = "About Tigers"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="tigers.html#about"][text() = "About Tigers"]', 1)
   })
 
   test('xref using angled bracket syntax with path and custom relfilesuffix and outfilesuffix', async () => {
     const doc = await documentFromString('<<tigers#about,About Tigers>>', { standalone: false, attributes: { relfileprefix: '../', outfilesuffix: '/' } })
-    assertXpath(doc.convert(), '//a[@href="../tigers/#about"][text() = "About Tigers"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="../tigers/#about"][text() = "About Tigers"]', 1)
   })
 
   test('xref using angled bracket syntax with path and custom relfilesuffix', async () => {
     const doc = await documentFromString('<<tigers#about,About Tigers>>', { standalone: false, attributes: { relfilesuffix: '/' } })
-    assertXpath(doc.convert(), '//a[@href="tigers/#about"][text() = "About Tigers"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="tigers/#about"][text() = "About Tigers"]', 1)
   })
 
   test('xref using angled bracket syntax with path which has been included in this document', async () => {
     logger.level = Severity.INFO
     const doc = await documentFromString('<<tigers#about,About Tigers>>', { standalone: false })
     doc.catalog.includes['tigers'] = true
-    const output = doc.convert()
+    const output = await doc.convert()
     assertXpath(output, '//a[@href="#about"][text() = "About Tigers"]', 1)
     assertMessage(logger, 'info', 'possible invalid reference: about')
   })
@@ -807,7 +807,7 @@ describe('Links', () => {
     logger.level = Severity.INFO
     const doc = await documentFromString('<<part1/tigers#about,About Tigers>>', { standalone: false })
     doc.catalog.includes['part1/tigers'] = true
-    const output = doc.convert()
+    const output = await doc.convert()
     assertXpath(output, '//a[@href="#about"][text() = "About Tigers"]', 1)
     assertMessage(logger, 'info', 'possible invalid reference: about')
   })
@@ -839,7 +839,7 @@ describe('Links', () => {
   test('xref using macro syntax', async () => {
     const doc = await documentFromString('xref:tigers[]')
     doc.register('refs', ['tigers', new Inline(doc, 'anchor', '[tigers]', { type: 'ref', target: 'tigers' })])
-    assertXpath(doc.convert(), '//a[@href="#tigers"][text() = "[tigers]"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="#tigers"][text() = "[tigers]"]', 1)
   })
 
   test('multiple xref macros with implicit text in single line', async () => {
@@ -852,7 +852,7 @@ describe('Links', () => {
   test('xref using macro syntax with explicit hash', async () => {
     const doc = await documentFromString('xref:#tigers[]')
     doc.register('refs', ['tigers', new Inline(doc, 'anchor', 'Tigers', { type: 'ref', target: 'tigers' })])
-    assertXpath(doc.convert(), '//a[@href="#tigers"][text() = "Tigers"]', 1)
+    assertXpath(await doc.convert(), '//a[@href="#tigers"][text() = "Tigers"]', 1)
   })
 
   test('xref using macro syntax with label', async () => {
@@ -890,7 +890,7 @@ describe('Links', () => {
   test('xref using invalid macro syntax does not create link', async () => {
     const doc = await documentFromString('xref:tigers')
     doc.register('refs', ['tigers', new Inline(doc, 'anchor', 'Tigers', { type: 'ref', target: 'tigers' })])
-    assertXpath(doc.convert(), '//a', 0)
+    assertXpath(await doc.convert(), '//a', 0)
   })
 
   test('should warn and create link if verbose flag is set and reference is not found', async () => {
@@ -969,8 +969,8 @@ describe('Links', () => {
   test('should auto-generate document id to use as linkend for self xref in DocBook backend', async () => {
     const input = '= Document Title\n\nSee xref:test.adoc[]'
     const doc = await documentFromString(input, { backend: 'docbook', standalone: true, attributes: { docname: 'test' } })
-    assert.equal(doc.id, null)
-    const output = doc.convert()
+    assert.equal(await doc.id, null)
+    const output = await doc.convert()
     assert.equal(doc.id, null)
     assert.ok(output.includes(' xml:id="__article-root__"'))
     assert.ok(output.includes('<xref linkend="__article-root__"/>'))

@@ -346,14 +346,10 @@ export class Document extends AbstractBlock {
       if ((this.doctype = attrs['doctype'] = parentDoctype) !== DEFAULT_DOCTYPE) {
         this._updateDoctypeAttributes(DEFAULT_DOCTYPE)
       }
-      // Eagerly parse nested document (use PreprocessorReader so include:: directives are processed)
+      // Set up reader only — parsing is deferred to Document.create() / doc.parse().
       const { PreprocessorReader } = await_require('./reader.js')
       this.reader = new PreprocessorReader(this, data, options.cursor)
       if (this.sourcemap) this.sourceLocation = this.reader.cursor
-      const { Parser } = await_require('./parser.js')
-      Parser.parse(this.reader, this)
-      this._restoreAttributes()
-      this._parsed = true
     } else {
       this.backend = null
       let initialBackend = attrs['backend'] || DEFAULT_BACKEND
@@ -387,12 +383,24 @@ export class Document extends AbstractBlock {
   // Public: Returns true if this is a nested (child) document.
   nested () { return !!this.parentDocument }
 
+  // Public: Factory — create and fully parse a Document asynchronously.
+  //
+  // data    - the AsciiDoc source (String, Array, or null)
+  // options - plain Object of options (default: {})
+  //
+  // Returns a Promise that resolves to the parsed Document.
+  static async create (data, options = {}) {
+    const doc = new Document(data, options)
+    await doc.parse()
+    return doc
+  }
+
   // Public: Parse the AsciiDoc source.
   //
   // data - Optional replacement source data.
   //
   // Returns this Document.
-  parse (data = null) {
+  async parse (data = null) {
     if (this._parsed) return this
     const doc = this
     if (data) {
@@ -408,7 +416,7 @@ export class Document extends AbstractBlock {
     }
 
     const { Parser } = await_require('./parser.js')
-    Parser.parse(this.reader, doc, { header_only: this.options.parse_header_only })
+    await Parser.parse(this.reader, doc, { header_only: this.options.parse_header_only })
     this._restoreAttributes()
 
     if (!this.parentDocument && this.extensions?.hasTreeProcessors?.()) {
@@ -688,10 +696,35 @@ export class Document extends AbstractBlock {
     return true
   }
 
+  // Internal: Walk the block tree in document order and pre-compute the content of
+  // every AsciiDoc-style table cell. Must be called AFTER parse() has finished so
+  // that (a) callouts.rewind() has been called and (b) all cross-references from
+  // the main document are already registered in the catalog.
+  async _convertAsciiDocCells (block = this) {
+    for (const child of block.blocks ?? []) {
+      if (child.context === 'table') {
+        for (const section of ['head', 'body', 'foot']) {
+          for (const row of child.rows[section] ?? []) {
+            for (const cell of row) {
+              if (cell.style === 'asciidoc' && cell._innerDocument && cell._innerContent == null) {
+                cell._innerContent = await cell._innerDocument.convert()
+              }
+            }
+          }
+        }
+      } else {
+        await this._convertAsciiDocCells(child)
+      }
+    }
+  }
+
   // Public: Convert the AsciiDoc document.
-  convert (opts = {}) {
+  async convert (opts = {}) {
     if (this._timings) this._timings.start('convert')
-    this.parse()
+    await this.parse()
+    // Pre-compute AsciiDoc table cell content now that parse is done:
+    // callouts are rewound and all refs are registered.
+    if (!this.parentDocument) await this._convertAsciiDocCells()
     if (this.safe < SafeMode.SERVER && Object.keys(opts).length > 0) {
       if (!opts.outfile) delete this.attributes['outfile']
       else this.attributes['outfile'] = opts.outfile

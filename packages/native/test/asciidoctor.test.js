@@ -278,7 +278,7 @@ First paragraph.`)
     const doc = await asciidoctor.load(`{counter:countme}
 
 {counter:countme}`)
-    doc.convert()
+    await doc.convert()
     const counters = doc.getCounters()
     assert.equal(typeof counters, 'object')
     assert.equal(counters.countme, 2)
@@ -299,7 +299,7 @@ Blocks are amazing!`)
 
   test('should populate the catalog', async () => {
     const doc = await asciidoctor.load('link:index.html[Docs]', { safe: 'safe', catalog_assets: true })
-    doc.convert()
+    await doc.convert()
     const links = doc.getCatalog().links
     assert.deepEqual(links, ['index.html'])
   })

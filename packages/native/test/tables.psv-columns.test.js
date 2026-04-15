@@ -47,7 +47,7 @@ describe('Tables', () => {
         assert.equal(tableRow0[i].attributes['colpcwidth'], expectedPcwidths[i])
         assert.equal(tableRow0[i].attributes['autowidth-option'], '')
       }
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assertCss(output, 'table', 1)
       assertCss(output, 'table colgroup col', 4)
       assertCss(output, 'table colgroup col[width]', 1)
@@ -68,7 +68,7 @@ describe('Tables', () => {
         assert.equal(tableRow0[i].attributes['colpcwidth'], 25)
         assert.equal(tableRow0[i].attributes['autowidth-option'], '')
       }
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assertCss(output, 'table', 1)
       assertCss(output, 'table[width="50%"]', 1)
       assertCss(output, 'table colgroup col', 4)

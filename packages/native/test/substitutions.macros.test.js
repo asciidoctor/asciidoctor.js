@@ -499,7 +499,7 @@ describe('Substitutions', () => {
     test('an externalized footnote macro may contain text formatting', async () => {
       const input = ':fn-disclaimer: pass:q[footnote:[Only available with an _active_ subscription.]]\n\nYou can download patches from the production page.{fn-disclaimer}'
       const doc = await documentFromString(input)
-      doc.convert()
+      await doc.convert()
       const footnotes = doc.catalog.footnotes
       assert.equal(footnotes.length, 1)
       assert.equal(footnotes[0].text, 'Only available with an <em>active</em> subscription.')
@@ -772,14 +772,14 @@ describe('Substitutions', () => {
     test('should escape concealed index term if second bracket is preceded by a backslash', async () => {
       const input = `National Institute of Science and Technology (${BACKSLASH}((NIST)))`
       const doc = await documentFromString(input, { standalone: false })
-      const output = doc.convert()
+      const output = await doc.convert()
       assertXpath(output, '//p[text()="National Institute of Science and Technology (((NIST)))"]', 1)
     })
 
     test('should only escape enclosing brackets if concealed index term is preceded by a backslash', async () => {
       const input = `National Institute of Science and Technology ${BACKSLASH}(((NIST)))`
       const doc = await documentFromString(input, { standalone: false })
-      const output = doc.convert()
+      const output = await doc.convert()
       assertXpath(output, '//p[text()="National Institute of Science and Technology (NIST)"]', 1)
     })
 

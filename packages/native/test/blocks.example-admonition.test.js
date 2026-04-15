@@ -57,8 +57,8 @@ You futz with XML.
       assert.equal(doc.blocks[0].numeral, 1)
       assert.equal(doc.blocks[0].number, 1)
       assert.equal(doc.blocks[1].numeral, 2)
-      assert.equal(doc.blocks[1].number, 2)
-      const output = doc.convert()
+      assert.equal(await doc.blocks[1].number, 2)
+      const output = await doc.convert()
       assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Example 1. Writing Docs with AsciiDoc"]', 1)
       assertXpath(output, '(//*[@class="exampleblock"])[2]/*[@class="title"][text()="Example 2. Writing Docs with DocBook"]', 1)
       assert.equal(doc.attributes['example-number'], 2)
@@ -87,8 +87,8 @@ You futz with XML.
       assert.equal(doc.blocks[0].numeral, 'A')
       assert.equal(doc.blocks[0].number, 'A')
       assert.equal(doc.blocks[1].numeral, 'B')
-      assert.equal(doc.blocks[1].number, 'B')
-      const output = doc.convert()
+      assert.equal(await doc.blocks[1].number, 'B')
+      const output = await doc.convert()
       assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Example A. Writing Docs with AsciiDoc"]', 1)
       assertXpath(output, '(//*[@class="exampleblock"])[2]/*[@class="title"][text()="Example B. Writing Docs with DocBook"]', 1)
       assert.equal(doc.attributes['example-number'], 'B')
@@ -112,7 +112,7 @@ You futz with XML.
 `
 
       const doc = await documentFromString(input, { attributes: { 'example-number': '`' } })
-      const output = doc.convert()
+      const output = await doc.convert()
       assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Example a. Writing Docs with AsciiDoc"]', 1)
       assertXpath(output, '(//*[@class="exampleblock"])[2]/*[@class="title"][text()="Example b. Writing Docs with DocBook"]', 1)
       assert.equal(doc.attributes['example-number'], 'b')
@@ -130,8 +130,8 @@ You just write.
 `
 
       const doc = await documentFromString(input)
-      assert.equal(doc.blocks[0].numeral, null)
-      const output = doc.convert()
+      assert.equal(await doc.blocks[0].numeral, null)
+      const output = await doc.convert()
       assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Look! Writing Docs with AsciiDoc"]', 1)
       assert.ok(!('example-number' in doc.attributes))
     })
@@ -180,8 +180,8 @@ You just write.
 `
 
       const doc = await documentFromString(input)
-      assert.equal(doc.blocks[0].numeral, null)
-      const output = doc.convert()
+      assert.equal(await doc.blocks[0].numeral, null)
+      const output = await doc.convert()
       assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Look! Writing Docs with AsciiDoc"]', 1)
       assert.ok(!('example-number' in doc.attributes))
     })
@@ -200,8 +200,8 @@ You just write.
 `
 
       const doc = await documentFromString(input)
-      assert.equal(doc.blocks[0].numeral, null)
-      const output = doc.convert()
+      assert.equal(await doc.blocks[0].numeral, null)
+      const output = await doc.convert()
       assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Look! Writing Docs with AsciiDoc"]', 1)
       assert.ok(!('example-number' in doc.attributes))
     })
@@ -218,7 +218,7 @@ content
       const doc = await documentFromString(input)
       assert.equal(doc.blocks[0].caption, null)
       assert.equal(doc.blocks[0].getAttr('caption'), 'Look! ')
-      const output = doc.convert()
+      const output = await doc.convert()
       assertXpath(output, '(//*[@class="openblock"])[1]/*[@class="title"][text()="No caption here"]', 1)
     })
 

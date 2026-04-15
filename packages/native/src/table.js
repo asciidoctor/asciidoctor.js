@@ -130,17 +130,17 @@ export class Table extends AbstractBlock {
   }
 
   // Internal: Partition rows into header, footer, and body.
-  partitionHeaderFooter (attrs) {
+  async partitionHeaderFooter (attrs) {
     const body         = this.rows.body
     let numBodyRows    = this.attributes['rowcount'] = body.length
 
     if (numBodyRows > 0) {
       if (this.hasHeaderOption === true) {
-        this.rows.head = [body.shift().map(cell => cell.reinitialize(true))]
+        this.rows.head = [await Promise.all(body.shift().map(cell => cell.reinitialize(true)))]
         numBodyRows--
       } else if (this.hasHeaderOption === null) {
         this.hasHeaderOption = false
-        body.unshift(body.shift().map(cell => cell.reinitialize(false)))
+        body.unshift(await Promise.all(body.shift().map(cell => cell.reinitialize(false))))
       }
     }
 
@@ -293,21 +293,20 @@ Table.Cell = class Cell extends AbstractBlock {
 
     if (asciidoc) {
       const parentDoc = this.document
-      const parentDoctitle = parentDoc.attributes['doctitle']
+      // Store the setup data for create() to handle asynchronously.
+      this._innerDocSetup = {
+        lines: cellText.split(LF, -1),
+        parentDoc,
+        parentDoctitle: parentDoc.attributes['doctitle'],
+        options: {
+          safe: parentDoc.safe,
+          backend: parentDoc.backend,
+          header_footer: false,
+          parent: parentDoc,
+          cursor: innerDocumentCursor,
+        },
+      }
       delete parentDoc.attributes['doctitle']
-      const innerDocumentLines = cellText.split(LF, -1)
-      // Create and parse the inner document synchronously (Document.parse is synchronous).
-      // Access Document via parentDoc.constructor to avoid a circular import.
-      const innerDoc = new parentDoc.constructor(innerDocumentLines, {
-        safe: parentDoc.safe,
-        backend: parentDoc.backend,
-        header_footer: false,
-        parent: parentDoc,
-        cursor: innerDocumentCursor,
-      })
-      innerDoc.parse()
-      if (parentDoctitle) parentDoc.attributes['doctitle'] = parentDoctitle
-      this._innerDocument = innerDoc
       this._subs = null
     } else if (literal) {
       this.contentModel = 'verbatim'
@@ -330,11 +329,28 @@ Table.Cell = class Cell extends AbstractBlock {
   // Alias for parent (always a Column).
   get column () { return this.parent }
 
-  reinitialize (hasHeader) {
+  // Public: Factory — create and fully initialize a Cell asynchronously.
+  // For AsciiDoc cells, parses the nested document.
+  // NOTE: _innerContent is NOT pre-computed here. Document.convert() will call
+  // _convertAsciiDocCells() after parse completes (so callouts are rewound and
+  // all cross-references from the parent document are already registered).
+  static async create (column, cellText, attributes = {}, opts = {}) {
+    const cell = new Table.Cell(column, cellText, attributes, opts)
+    if (cell._innerDocSetup) {
+      const { lines, parentDoc, parentDoctitle, options } = cell._innerDocSetup
+      cell._innerDocSetup = null
+      const innerDoc = await parentDoc.constructor.create(lines, options)
+      if (parentDoctitle) parentDoc.attributes['doctitle'] = parentDoctitle
+      cell._innerDocument = innerDoc
+    }
+    return cell
+  }
+
+  async reinitialize (hasHeader) {
     if (hasHeader) {
       this._reinitializeArgs = null
     } else if (this._reinitializeArgs) {
-      return new Table.Cell(...this._reinitializeArgs)
+      return Table.Cell.create(...this._reinitializeArgs)
     } else {
       this.style = this.attributes['style'] ?? null
     }
@@ -364,9 +380,10 @@ Table.Cell = class Cell extends AbstractBlock {
   set text (val) { this._text = val }
 
   // Public: Get the content — converted body data.
+  // For AsciiDoc cells, returns the pre-computed content (set by Table.Cell.create()).
   get content () {
     if (this.style === 'asciidoc') {
-      return this._innerDocument ? this._innerDocument.convert() : ''
+      return this._innerContent ?? ''
     }
     if (this._text.includes(Table.Cell.DOUBLE_LF)) {
       return this.text.split(BlankLineRx).flatMap(para => {
@@ -531,13 +548,13 @@ Table.ParserContext = class ParserContext {
   isCellOpen ()    { return this._cellOpen }
   isCellClosed ()  { return !this._cellOpen }
 
-  closeOpenCell (nextCellspec = {}) {
+  async closeOpenCell (nextCellspec = {}) {
     this.pushCellspec(nextCellspec)
-    if (this.isCellOpen()) this.closeCell(true)
+    if (this.isCellOpen()) await this.closeCell(true)
     this._advance()
   }
 
-  closeCell (eol = false) {
+  async closeCell (eol = false) {
     let cellText, cellspec, repeat
 
     if (this.format === 'psv') {
@@ -596,7 +613,7 @@ Table.ParserContext = class ParserContext {
 
       const cursorBeforeMark = this._reader.cursorBeforeMark()
       this._reader.mark()
-      const cell = new Table.Cell(column, cellText, cellspec, { cursor: cursorBeforeMark })
+      const cell = await Table.Cell.create(column, cellText, cellspec, { cursor: cursorBeforeMark })
 
       if (cell.rowspan && cell.rowspan !== 1) {
         this._activateRowspan(cell.rowspan, cell.colspan ?? 1)

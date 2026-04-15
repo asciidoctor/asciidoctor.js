@@ -419,7 +419,7 @@ NOTE: This is a note.
       const colist = doc.blocks[0].items[0].blocks[doc.blocks[0].items[0].blocks.length - 1]
       assert.equal(colist.context, 'colist')
       assert.notEqual(colist.style, 'source')
-      const output = doc.convert()
+      const output = await doc.convert()
       assertCss(output, 'ul', 1)
       assertCss(output, 'ul > li', 1)
       assertCss(output, 'ul > li > p', 1)
@@ -785,7 +785,7 @@ Grays Peak rises to 14,278 feet, making it the highest summit in the Front Range
       const refs = doc.catalog.refs
       assert.ok('mount-evans' in refs, 'refs should contain mount-evans')
       assert.ok('grays-peak' in refs, 'refs should contain grays-peak')
-      const output = doc.convert()
+      const output = await doc.convert()
       assertXpath(output, '(//p)[1]/a[@href="#grays-peak"][text()="Grays Peak"]', 1)
       assertXpath(output, '(//p)[1]/a[@href="#mount-evans"][text()="Mount Evans"]', 1)
     })
@@ -803,7 +803,7 @@ This is a cross-reference to <<step-4>>.
       const refs = doc.catalog.refs
       assert.ok('step-2' in refs, 'refs should contain step-2')
       assert.ok('step-4' in refs, 'refs should contain step-4')
-      const output = doc.convert()
+      const output = await doc.convert()
       assertXpath(output, '(//p)[1]/a[@href="#step-2"][text()="Step 2"]', 1)
       assertXpath(output, '(//p)[1]/a[@href="#step-4"][text()="Step 4"]', 1)
     })
@@ -826,7 +826,7 @@ end
       const doc = await documentFromString(input)
       const refs = doc.catalog.refs
       assert.ok('url-mapping' in refs, 'refs should contain url-mapping')
-      const output = doc.convert()
+      const output = await doc.convert()
       assertXpath(output, '(//p)[1]/a[@href="#url-mapping"][text()="url mapping"]', 1)
     })
   })
@@ -2407,7 +2407,7 @@ def2
       const refs = doc.catalog.refs
       assert.ok('mount-evans' in refs, 'refs should contain mount-evans')
       assert.ok('grays-peak' in refs, 'refs should contain grays-peak')
-      const output = doc.convert()
+      const output = await doc.convert()
       assertXpath(output, '(//p)[1]/a[@href="#grays-peak"][text()="Grays Peak"]', 1)
       assertXpath(output, '(//p)[1]/a[@href="#mount-evans"][text()="Mount Evans"]', 1)
       assertXpath(output, '//dl', 1)
@@ -3329,7 +3329,7 @@ Then move on to <<Fowler_1997>>.
       const fowler_1997_ref = doc.catalog.refs['Fowler_1997']
       assert.ok(fowler_1997_ref != null, 'Fowler_1997 ref should exist')
       assert.equal(fowler_1997_ref.reftext, '[1]')
-      const result = doc.convert()
+      const result = await doc.convert()
       assertXpath(result, '//a[@href="#Fowler_1997"]', 1)
       assertXpath(result, '//a[@href="#Fowler_1997"][text()="[1]"]', 1)
       assertXpath(result, '//a[@id="Fowler_1997"]', 1)
@@ -4989,7 +4989,7 @@ describe('Checklists', () => {
     assert.ok(checklist.items[1].hasAttribute('checked'), 'item 1 should have checked attr')
     assert.ok(!checklist.items[4].hasAttribute('checkbox'), 'item 4 should not have checkbox attr')
 
-    const output = doc.convert()
+    const output = await doc.convert()
     assertCss(output, '.ulist.checklist', 1)
     assertXpath(output, `(/*[@class="ulist checklist"]/ul/li)[1]/p[text()="${cross} todo"]`, 1)
     assertXpath(output, `(/*[@class="ulist checklist"]/ul/li)[2]/p[text()="${check} done"]`, 1)
@@ -5039,7 +5039,7 @@ describe('Checklists', () => {
     assert.ok(checklist.hasOption('checklist'), 'checklist should have checklist option')
     assert.ok(checklist.hasOption('interactive'), 'checklist should have interactive option')
 
-    const output = doc.convert()
+    const output = await doc.convert()
     assertCss(output, '.ulist.checklist', 1)
     assertCss(output, '.ulist.checklist li input[type="checkbox"]', 2)
     assertCss(output, '.ulist.checklist li input[type="checkbox"][disabled]', 0)
@@ -5174,7 +5174,7 @@ listing block in list item 1
     const item_0 = doc.blocks[0].items[0]
     item_0.id = 'one'
     item_0.addRole('item')
-    const output = doc.convert()
+    const output = await doc.convert()
     assertCss(output, 'li#one.item', 1)
   })
 
@@ -5187,7 +5187,7 @@ listing block in list item 1
     const item_0 = doc.blocks[0].items[0]
     item_0.id = 'one'
     item_0.addRole('item')
-    const output = doc.convert()
+    const output = await doc.convert()
     assertCss(output, 'li#one.item', 1)
   })
 

@@ -164,7 +164,7 @@ describe('Substitutions', () => {
 
     test('should ignore enclosing square brackets when processing formatted text with attribute list', async () => {
       const doc = await documentFromString('nums = [1, 2, 3, [.blue]#4#]', { doctype: 'inline' })
-      assert.equal(doc.convert(), 'nums = [1, 2, 3, <span class="blue">4</span>]')
+      assert.equal(await doc.convert(), 'nums = [1, 2, 3, <span class="blue">4</span>]')
     })
 
     test('single-line constrained strong string', async () => {
@@ -580,7 +580,7 @@ describe('Substitutions', () => {
 
     test('should allow role to be defined using attribute reference', async () => {
       const doc = await documentFromString('[{rolename}]#phrase#', { doctype: 'inline', attributes: { rolename: 'red' } })
-      assert.equal(doc.convert(), '<span class="red">phrase</span>')
+      assert.equal(await doc.convert(), '<span class="red">phrase</span>')
     })
 
     test('should ignore attributes after comma', async () => {

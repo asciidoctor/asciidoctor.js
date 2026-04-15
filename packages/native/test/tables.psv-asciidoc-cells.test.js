@@ -310,7 +310,7 @@ output file name is used.
       assert.ok(bodyCell13.innerDocument != null)
       assert.ok(bodyCell13.innerDocument.nested)
       assert.equal(bodyCell13.lineno, 5)
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
 
       assertCss(output, 'table.tableblock > tbody > tr', 2)
       assertCss(output, 'table.tableblock > tbody > tr:nth-child(1) > td:nth-child(3) div.admonitionblock', 1)
@@ -330,7 +330,7 @@ a| paragraph
       assert.equal(tbody[0][0].lineno, 2)
       assert.equal(tbody[0][0].innerDocument.lineno, 3)
       assert.equal(tbody[1][0].lineno, 4)
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assertCss(output, 'td', 2)
       assertXpath(output, '(//td)[1]//*[@class="literalblock"]', 1)
       assertXpath(output, '(//td)[2]//*[@class="paragraph"]', 1)
@@ -377,7 +377,7 @@ Grays Peak
       const refs = doc.catalog.refs
       assert.ok(refs['mount-evans'] != null || refs.has?.('mount-evans'))
       assert.ok(refs['grays-peak'] != null || refs.has?.('grays-peak'))
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assertXpath(output, '(//p)[1]/a[@href="#grays-peak"][text()="Grays Peak"]', 1)
       assertXpath(output, '(//p)[1]/a[@href="#mount-evans"][text()="Mount Evans"]', 1)
       assertXpath(output, '(//table/tbody/tr)[1]//td//a[@id="mount-evans"]', 1)

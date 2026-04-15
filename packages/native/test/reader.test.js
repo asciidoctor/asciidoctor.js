@@ -103,29 +103,29 @@ describe('Reader', () => {
       assert.ok(new Reader().isNextLineEmpty())
     })
 
-    test("peekLine should return undefined with empty data", () => {
-      assert.ok(new Reader().peekLine() == null)
+    test("peekLine should return undefined with empty data", async () => {
+      assert.ok(await new Reader().peekLine() == null)
     })
 
-    test("peekLines should return empty Array with empty data", () => {
-      assert.deepEqual(new Reader().peekLines(1), [])
+    test("peekLines should return empty Array with empty data", async () => {
+      assert.deepEqual(await new Reader().peekLines(1), [])
     })
 
-    test("readLine should return undefined with empty data", () => {
-      assert.ok(new Reader().readLine() == null)
+    test("readLine should return undefined with empty data", async () => {
+      assert.ok(await new Reader().readLine() == null)
     })
 
-    test("readLines should return empty Array with empty data", () => {
-      assert.deepEqual(new Reader().readLines(), [])
+    test("readLines should return empty Array with empty data", async () => {
+      assert.deepEqual(await new Reader().readLines(), [])
     })
   })
 
   // ── With data ──────────────────────────────────────────────────────────────
 
   describe('With data', () => {
-    test("hasMoreLines should return true if there are lines remaining", () => {
+    test("hasMoreLines should return true if there are lines remaining", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.ok(reader.hasMoreLines())
+      assert.ok(await reader.hasMoreLines())
     })
 
     test("empty should return false if there are lines remaining", () => {
@@ -134,104 +134,104 @@ describe('Reader', () => {
       assert.ok(!reader.eof())
     })
 
-    test("isNextLineEmpty should return false if next line is not blank", () => {
+    test("isNextLineEmpty should return false if next line is not blank", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.ok(!reader.isNextLineEmpty())
+      assert.ok(!await reader.isNextLineEmpty())
     })
 
-    test("isNextLineEmpty should return true if next line is blank", () => {
+    test("isNextLineEmpty should return true if next line is blank", async () => {
       const reader = new Reader(['', 'second line'])
-      assert.ok(reader.isNextLineEmpty())
+      assert.ok(await reader.isNextLineEmpty())
     })
 
-    test("peekLine should return undefined if next entry is null/undefined", () => {
-      assert.ok((new Reader([null])).peekLine() == null)
+    test("peekLine should return undefined if next entry is null/undefined", async () => {
+      assert.ok(await (new Reader([null])).peekLine() == null)
     })
 
-    test("peekLine should return next line if there are lines remaining", () => {
+    test("peekLine should return next line if there are lines remaining", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.equal(reader.peekLine(), SAMPLE_DATA[0])
+      assert.equal(await reader.peekLine(), SAMPLE_DATA[0])
     })
 
-    test("peekLine should not consume line or increment line number", () => {
+    test("peekLine should not consume line or increment line number", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.equal(reader.peekLine(), SAMPLE_DATA[0])
-      assert.equal(reader.peekLine(), SAMPLE_DATA[0])
+      assert.equal(await reader.peekLine(), SAMPLE_DATA[0])
+      assert.equal(await reader.peekLine(), SAMPLE_DATA[0])
       assert.equal(reader.lineno, 1)
     })
 
-    test("peekLines should return next lines if there are lines remaining", () => {
+    test("peekLines should return next lines if there are lines remaining", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.deepEqual(reader.peekLines(2), SAMPLE_DATA.slice(0, 2))
+      assert.deepEqual(await reader.peekLines(2), SAMPLE_DATA.slice(0, 2))
     })
 
-    test("peekLines should not consume lines or increment line number", () => {
+    test("peekLines should not consume lines or increment line number", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.deepEqual(reader.peekLines(2), SAMPLE_DATA.slice(0, 2))
-      assert.deepEqual(reader.peekLines(2), SAMPLE_DATA.slice(0, 2))
+      assert.deepEqual(await reader.peekLines(2), SAMPLE_DATA.slice(0, 2))
+      assert.deepEqual(await reader.peekLines(2), SAMPLE_DATA.slice(0, 2))
       assert.equal(reader.lineno, 1)
     })
 
-    test("peekLines should not increment line number if reader overruns buffer", () => {
+    test("peekLines should not increment line number if reader overruns buffer", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.deepEqual(reader.peekLines(SAMPLE_DATA.length * 2), SAMPLE_DATA)
+      assert.deepEqual(await reader.peekLines(SAMPLE_DATA.length * 2), SAMPLE_DATA)
       assert.equal(reader.lineno, 1)
     })
 
-    test("peekLines should peek all lines if no arguments are given", () => {
+    test("peekLines should peek all lines if no arguments are given", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.deepEqual(reader.peekLines(), SAMPLE_DATA)
+      assert.deepEqual(await reader.peekLines(), SAMPLE_DATA)
       assert.equal(reader.lineno, 1)
     })
 
-    test("peekLines should not invert order of lines", () => {
+    test("peekLines should not invert order of lines", async () => {
       const reader = new Reader(SAMPLE_DATA)
       assert.deepEqual(reader.lines, SAMPLE_DATA)
-      reader.peekLines(3)
+      await reader.peekLines(3)
       assert.deepEqual(reader.lines, SAMPLE_DATA)
     })
 
-    test("readLine should return next line if there are lines remaining", () => {
+    test("readLine should return next line if there are lines remaining", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.equal(reader.readLine(), SAMPLE_DATA[0])
+      assert.equal(await reader.readLine(), SAMPLE_DATA[0])
     })
 
-    test("readLine should consume next line and increment line number", () => {
+    test("readLine should consume next line and increment line number", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.equal(reader.readLine(), SAMPLE_DATA[0])
-      assert.equal(reader.readLine(), SAMPLE_DATA[1])
+      assert.equal(await reader.readLine(), SAMPLE_DATA[0])
+      assert.equal(await reader.readLine(), SAMPLE_DATA[1])
       assert.equal(reader.lineno, 3)
     })
 
-    test("advance should consume next line and return a Boolean indicating if a line was consumed", () => {
+    test("advance should consume next line and return a Boolean indicating if a line was consumed", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.ok(reader.advance())
-      assert.ok(reader.advance())
-      assert.ok(reader.advance())
-      assert.ok(!reader.advance())
+      assert.ok(await reader.advance())
+      assert.ok(await reader.advance())
+      assert.ok(await reader.advance())
+      assert.ok(!await reader.advance())
     })
 
-    test("readLines should return all lines", () => {
+    test("readLines should return all lines", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.deepEqual(reader.readLines(), SAMPLE_DATA)
+      assert.deepEqual(await reader.readLines(), SAMPLE_DATA)
     })
 
-    test("read should return all lines joined as String", () => {
+    test("read should return all lines joined as String", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      assert.equal(reader.read(), SAMPLE_DATA.join('\n'))
+      assert.equal(await reader.read(), SAMPLE_DATA.join('\n'))
     })
 
-    test("hasMoreLines should return false after readLines is invoked", () => {
+    test("hasMoreLines should return false after readLines is invoked", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      reader.readLines()
-      assert.ok(!reader.hasMoreLines())
+      await reader.readLines()
+      assert.ok(!await reader.hasMoreLines())
     })
 
-    test("unshiftLine puts line onto Reader as next line to read", () => {
+    test("unshiftLine puts line onto Reader as next line to read", async () => {
       const reader = new Reader(SAMPLE_DATA, null, { normalize: true })
       reader.unshiftLine('line zero')
-      assert.equal(reader.peekLine(), 'line zero')
-      assert.equal(reader.readLine(), 'line zero')
+      assert.equal(await reader.peekLine(), 'line zero')
+      assert.equal(await reader.readLine(), 'line zero')
       assert.equal(reader.lineno, 1)
     })
 
@@ -242,27 +242,27 @@ describe('Reader', () => {
       assert.equal(reader.lineno, 4)
     })
 
-    test("skipBlankLines should skip blank lines", () => {
+    test("skipBlankLines should skip blank lines", async () => {
       const reader = new Reader(['', ''].concat(SAMPLE_DATA))
-      reader.skipBlankLines()
-      assert.equal(reader.peekLine(), SAMPLE_DATA[0])
+      await reader.skipBlankLines()
+      assert.equal(await reader.peekLine(), SAMPLE_DATA[0])
     })
 
-    test("lines should return remaining lines", () => {
+    test("lines should return remaining lines", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      reader.readLine()
+      await reader.readLine()
       assert.deepEqual(reader.lines, SAMPLE_DATA.slice(1))
     })
 
-    test("sourceLines should return copy of original data Array", () => {
+    test("sourceLines should return copy of original data Array", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      reader.readLines()
+      await reader.readLines()
       assert.deepEqual(reader.sourceLines, SAMPLE_DATA)
     })
 
-    test("source should return original data Array joined as String", () => {
+    test("source should return original data Array joined as String", async () => {
       const reader = new Reader(SAMPLE_DATA)
-      reader.readLines()
+      await reader.readLines()
       assert.equal(reader.source(), SAMPLE_DATA.join('\n'))
     })
   })
@@ -270,21 +270,21 @@ describe('Reader', () => {
   // ── Line context ───────────────────────────────────────────────────────────
 
   describe('Line context', () => {
-    test("cursor.toString should return file name and line number of current line", () => {
+    test("cursor.toString should return file name and line number of current line", async () => {
       const reader = new Reader(SAMPLE_DATA, 'sample.adoc')
-      reader.readLine()
+      await reader.readLine()
       assert.equal(reader.cursor.toString(), 'sample.adoc: line 2')
     })
 
-    test("lineInfo should return file name and line number of current line", () => {
+    test("lineInfo should return file name and line number of current line", async () => {
       const reader = new Reader(SAMPLE_DATA, 'sample.adoc')
-      reader.readLine()
+      await reader.readLine()
       assert.equal(reader.lineInfo(), 'sample.adoc: line 2')
     })
 
-    test("cursorAtPrevLine should return file name and line number of previous line read", () => {
+    test("cursorAtPrevLine should return file name and line number of previous line read", async () => {
       const reader = new Reader(SAMPLE_DATA, 'sample.adoc')
-      reader.readLine()
+      await reader.readLine()
       assert.equal(reader.cursorAtPrevLine().toString(), 'sample.adoc: line 1')
     })
   })
@@ -292,65 +292,65 @@ describe('Reader', () => {
   // ── Read lines until ───────────────────────────────────────────────────────
 
   describe('Read lines until', () => {
-    test('Read lines until end', () => {
+    test('Read lines until end', async () => {
       // Ruby: <<~'EOS'.lines => ["line\n", "\n", "line\n"] — 3 lines with trailing newlines
       // After Reader normalize: ["line", "", "line"] — 3 lines (trailing whitespace stripped)
       // JS equivalent: pass already-normalized lines (without trailing newlines)
       const lines = ['This is one paragraph.', '', 'This is another paragraph.']
       const reader = new Reader(lines, null, { normalize: true })
-      const result = reader.readLinesUntil()
+      const result = await reader.readLinesUntil()
       assert.equal(result.length, 3)
       assert.deepEqual(result, ['This is one paragraph.', '', 'This is another paragraph.'])
-      assert.ok(!reader.hasMoreLines())
+      assert.ok(!await reader.hasMoreLines())
       assert.ok(reader.eof())
     })
 
-    test('Read lines until blank line', () => {
+    test('Read lines until blank line', async () => {
       const lines = ['This is one paragraph.', '', 'This is another paragraph.']
       const reader = new Reader(lines, null, { normalize: true })
-      const result = reader.readLinesUntil({ breakOnBlankLines: true })
+      const result = await reader.readLinesUntil({ breakOnBlankLines: true })
       assert.equal(result.length, 1)
       assert.equal(result[0], 'This is one paragraph.')
-      assert.equal(reader.peekLine(), 'This is another paragraph.')
+      assert.equal(await reader.peekLine(), 'This is another paragraph.')
     })
 
-    test('Read lines until blank line preserving last line', () => {
+    test('Read lines until blank line preserving last line', async () => {
       const lines = 'This is one paragraph.\n\nThis is another paragraph.'.split('\n')
       const reader = new Reader(lines)
-      const result = reader.readLinesUntil({ breakOnBlankLines: true, preserveLastLine: true })
+      const result = await reader.readLinesUntil({ breakOnBlankLines: true, preserveLastLine: true })
       assert.equal(result.length, 1)
       assert.equal(result[0], 'This is one paragraph.')
-      assert.ok(reader.isNextLineEmpty())
+      assert.ok(await reader.isNextLineEmpty())
     })
 
-    test('Read lines until condition is true', () => {
+    test('Read lines until condition is true', async () => {
       const lines = '--\nThis is one paragraph inside the block.\n\nThis is another paragraph inside the block.\n--\n\nThis is a paragraph outside the block.'.split('\n')
       const reader = new Reader(lines)
-      reader.readLine()
-      const result = reader.readLinesUntil({}, (line) => line === '--')
+      await reader.readLine()
+      const result = await reader.readLinesUntil({}, (line) => line === '--')
       assert.equal(result.length, 3)
       assert.deepEqual(result, lines.slice(1, 4))
-      assert.ok(reader.isNextLineEmpty())
+      assert.ok(await reader.isNextLineEmpty())
     })
 
-    test('Read lines until condition is true, taking last line', () => {
+    test('Read lines until condition is true, taking last line', async () => {
       const lines = '--\nThis is one paragraph inside the block.\n\nThis is another paragraph inside the block.\n--\n\nThis is a paragraph outside the block.'.split('\n')
       const reader = new Reader(lines)
-      reader.readLine()
-      const result = reader.readLinesUntil({ readLastLine: true }, (line) => line === '--')
+      await reader.readLine()
+      const result = await reader.readLinesUntil({ readLastLine: true }, (line) => line === '--')
       assert.equal(result.length, 4)
       assert.deepEqual(result, lines.slice(1, 5))
-      assert.ok(reader.isNextLineEmpty())
+      assert.ok(await reader.isNextLineEmpty())
     })
 
-    test('Read lines until condition is true, taking and preserving last line', () => {
+    test('Read lines until condition is true, taking and preserving last line', async () => {
       const lines = '--\nThis is one paragraph inside the block.\n\nThis is another paragraph inside the block.\n--\n\nThis is a paragraph outside the block.'.split('\n')
       const reader = new Reader(lines)
-      reader.readLine()
-      const result = reader.readLinesUntil({ readLastLine: true, preserveLastLine: true }, (line) => line === '--')
+      await reader.readLine()
+      const result = await reader.readLinesUntil({ readLastLine: true, preserveLastLine: true }, (line) => line === '--')
       assert.equal(result.length, 4)
       assert.deepEqual(result, lines.slice(1, 5))
-      assert.equal(reader.peekLine(), '--')
+      assert.equal(await reader.peekLine(), '--')
     })
 
     test('read lines until terminator', async () => {
@@ -360,8 +360,8 @@ describe('Reader', () => {
 
       const doc = await emptyDocument()
       const reader = new PreprocessorReader(doc, lines, null, { normalize: true })
-      const terminator = reader.readLine()
-      const result = reader.readLinesUntil({ terminator, skipProcessing: true })
+      const terminator = await reader.readLine()
+      const result = await reader.readLinesUntil({ terminator, skipProcessing: true })
       assert.deepEqual(result, expected)
       assert.ok(!reader.unterminated)
     })
@@ -377,8 +377,8 @@ describe('Reader', () => {
       try {
         const doc = await emptyDocument()
         const reader = new PreprocessorReader(doc, lines, null, { normalize: true })
-        const terminator = reader.peekLine()
-        const result = reader.readLinesUntil({ terminator, skipFirstLine: true, skipProcessing: true })
+        const terminator = await reader.peekLine()
+        const result = await reader.readLinesUntil({ terminator, skipFirstLine: true, skipProcessing: true })
         assert.deepEqual(result, expected)
         assert.ok(reader.unterminated)
         const found = logger.messages.some((m) => {
@@ -471,7 +471,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'safe', parse: false })
       const reader = doc.reader
       assert.ok(!('front-matter' in doc.attributes))
-      assert.equal(reader.peekLine(), '---')
+      assert.equal(await reader.peekLine(), '---')
       assert.equal(reader.lineno, 1)
     })
 
@@ -479,7 +479,7 @@ describe('PreprocessorReader', () => {
       const input = `---\ntitle: Document Title\ntags: [ first, second ]\n= Document Title\nAuthor Name\n\npreamble`
       const doc = await load(input, { safe: 'safe', parse: false, attributes: { 'skip-front-matter': '' } })
       const reader = doc.reader
-      assert.equal(reader.peekLine(), '---')
+      assert.equal(await reader.peekLine(), '---')
       assert.ok(!('front-matter' in doc.attributes))
       assert.equal(reader.lineno, 1)
     })
@@ -489,7 +489,7 @@ describe('PreprocessorReader', () => {
       const input = `---\n${frontMatter}\n---\n= Document Title\nAuthor Name\n\npreamble`
       const doc = await load(input, { safe: 'safe', parse: false, attributes: { 'skip-front-matter': '' } })
       const reader = doc.reader
-      assert.equal(reader.peekLine(), '= Document Title')
+      assert.equal(await reader.peekLine(), '= Document Title')
       assert.equal(doc.attributes['front-matter'], frontMatter)
       assert.equal(reader.lineno, 7)
     })
@@ -499,7 +499,7 @@ describe('PreprocessorReader', () => {
       const input = `+++\n${frontMatter}\n+++\n= Document Title\nAuthor Name\n\npreamble`
       const doc = await load(input, { safe: 'safe', parse: false, attributes: { 'skip-front-matter': '' } })
       const reader = doc.reader
-      assert.equal(reader.peekLine(), '= Document Title')
+      assert.equal(await reader.peekLine(), '= Document Title')
       assert.equal(doc.attributes['front-matter'], frontMatter)
       assert.equal(reader.lineno, 7)
     })
@@ -509,7 +509,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'safe', parse: false, base_dir: path.join(FIXTURES_DIR, '..') })
       const reader = doc.reader
       const expected = ['....', '---', 'name: value', '---', 'content', '....']
-      assert.deepEqual(reader.readlines(), expected)
+      assert.deepEqual(await reader.readlines(), expected)
       assert.ok(!doc.attr('front-matter'))
     })
 
@@ -518,7 +518,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'safe', parse: false, base_dir: path.join(FIXTURES_DIR, '..') })
       const reader = doc.reader
       const expected = ['....', 'content', '....']
-      assert.deepEqual(reader.readlines(), expected)
+      assert.deepEqual(await reader.readlines(), expected)
       assert.ok(!doc.attr('front-matter'))
     })
   })
@@ -540,7 +540,7 @@ describe('PreprocessorReader', () => {
       const appendLines = ['one', 'two', 'three']
       reader.pushInclude(appendLines, '', '<stdin>')
       assert.equal(reader.includeStack.length, 1)
-      assert.equal(reader.readLine().trimEnd(), 'one')
+      assert.equal((await reader.readLine()).trimEnd(), 'one')
     })
 
     test('PreprocessorReader#pushInclude method should gracefully handle file and path', async () => {
@@ -549,7 +549,7 @@ describe('PreprocessorReader', () => {
       const appendLines = ['one', 'two', 'three']
       reader.pushInclude(appendLines)
       assert.equal(reader.includeStack.length, 1)
-      assert.equal(reader.readLine().trimEnd(), 'one')
+      assert.equal((await reader.readLine()).trimEnd(), 'one')
       assert.ok(reader.file == null)
       assert.equal(reader.path, '<stdin>')
     })
@@ -569,7 +569,7 @@ describe('PreprocessorReader', () => {
       const reader = doc.reader
       reader.pushInclude(null, '', '<stdin>')
       assert.equal(reader.includeStack.length, 0)
-      assert.equal(reader.readLine().trimEnd(), 'a')
+      assert.equal((await reader.readLine()).trimEnd(), 'a')
     })
 
     test('PreprocessorReader#pushInclude method should ignore dot in directory name when computing include path', async () => {
@@ -590,34 +590,34 @@ describe('PreprocessorReader', () => {
       const input = 'include::include-file.adoc[]'
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
-      assert.equal(reader.readLine(), 'link:include-file.adoc[role=include]')
+      assert.equal(await reader.readLine(), 'link:include-file.adoc[role=include]')
     })
 
     test('should escape spaces in target when generating link from include directive', async () => {
       const input = 'include::foo bar baz.adoc[]'
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
-      assert.equal(reader.readLine(), 'link:pass:c[foo bar baz.adoc][role=include]')
+      assert.equal(await reader.readLine(), 'link:pass:c[foo bar baz.adoc][role=include]')
     })
 
     test('should not add role to link macro used to replace include directive in compat mode', async () => {
       const input = 'include::include-file.adoc[]'
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { 'compat-mode': '' } })
       const reader = doc.reader
-      assert.equal(reader.readLine(), 'link:include-file.adoc[]')
+      assert.equal(await reader.readLine(), 'link:include-file.adoc[]')
     })
 
     test('should preserve attrlist when replacing include directive with link macro', async () => {
       const input = 'include::include-file.adoc[leveloffset=+1]'
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
-      assert.equal(reader.readLine(), 'link:include-file.adoc[role=include,leveloffset=+1]')
+      assert.equal(await reader.readLine(), 'link:include-file.adoc[role=include,leveloffset=+1]')
     })
 
     test('include directive is enabled when safe mode is less than SECURE', async () => {
       const input = 'include::fixtures/include-file.adoc[]'
       const doc = await documentFromString(input, { safe: 'safe', standalone: false, base_dir: path.join(FIXTURES_DIR, '..') })
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.match(output, /included content/)
       assert.ok(doc.catalog.includes['fixtures/include-file'])
     })
@@ -641,7 +641,7 @@ describe('PreprocessorReader', () => {
       for (const input of ['include::[]', 'include:: []', 'include:: not-include[]', 'include::not-include []']) {
         const doc = await load(input, { safe: 'secure', parse: false })
         const reader = doc.reader
-        assert.equal(reader.readLine(), input)
+        assert.equal(await reader.readLine(), input)
       }
     })
 
@@ -652,7 +652,7 @@ describe('PreprocessorReader', () => {
       try {
         copyFileSync(srcFile, spFile)
         const doc = await documentFromString('include::fixtures/include file.adoc[]', { safe: 'safe', standalone: false, base_dir: path.join(FIXTURES_DIR, '..') })
-        assert.match(doc.convert(), /included content/)
+        assert.match(await doc.convert(), /included content/)
       } finally {
         try { unlinkSync(spFile) } catch { /* ignore */ }
       }
@@ -665,7 +665,7 @@ describe('PreprocessorReader', () => {
       try {
         copyFileSync(srcFile, spFile)
         const doc = await documentFromString('include::fixtures/include{sp}file.adoc[]', { safe: 'safe', standalone: false, base_dir: path.join(FIXTURES_DIR, '..') })
-        assert.match(doc.convert(), /included content/)
+        assert.match(await doc.convert(), /included content/)
       } finally {
         try { unlinkSync(spFile) } catch { /* ignore */ }
       }
@@ -685,39 +685,39 @@ describe('PreprocessorReader', () => {
       assert.equal(reader.file, pseudoDocfile)
       assert.equal(reader.path, 'main.adoc')
 
-      assert.equal(reader.readLine(), 'first line of parent')
+      assert.equal(await reader.readLine(), 'first line of parent')
 
       assert.equal(reader.cursorAtPrevLine().toString(), 'fixtures/parent-include.adoc: line 1')
       assert.equal(reader.file, parentIncludeDocfile)
       assert.equal(reader.path, 'fixtures/parent-include.adoc')
 
-      reader.skipBlankLines()
+      await reader.skipBlankLines()
 
-      assert.equal(reader.readLine(), 'first line of child')
+      assert.equal(await reader.readLine(), 'first line of child')
 
       assert.equal(reader.cursorAtPrevLine().toString(), 'fixtures/child-include.adoc: line 1')
       assert.equal(reader.file, childIncludeDocfile)
       assert.equal(reader.path, 'fixtures/child-include.adoc')
 
-      reader.skipBlankLines()
+      await reader.skipBlankLines()
 
-      assert.equal(reader.readLine(), 'first line of grandchild')
+      assert.equal(await reader.readLine(), 'first line of grandchild')
 
       assert.equal(reader.cursorAtPrevLine().toString(), 'fixtures/grandchild-include.adoc: line 1')
       assert.equal(reader.file, grandchildIncludeDocfile)
       assert.equal(reader.path, 'fixtures/grandchild-include.adoc')
 
-      reader.skipBlankLines()
+      await reader.skipBlankLines()
 
-      assert.equal(reader.readLine(), 'last line of grandchild')
+      assert.equal(await reader.readLine(), 'last line of grandchild')
 
-      reader.skipBlankLines()
+      await reader.skipBlankLines()
 
-      assert.equal(reader.readLine(), 'last line of child')
+      assert.equal(await reader.readLine(), 'last line of child')
 
-      reader.skipBlankLines()
+      await reader.skipBlankLines()
 
-      assert.equal(reader.readLine(), 'last line of parent')
+      assert.equal(await reader.readLine(), 'last line of parent')
 
       assert.equal(reader.cursorAtPrevLine().toString(), 'fixtures/parent-include.adoc: line 5')
       assert.equal(reader.file, parentIncludeDocfile)
@@ -1316,13 +1316,13 @@ describe('PreprocessorReader', () => {
         ':leveloffset!:',
       ]
       const document = await load(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..'), parse: false })
-      assert.deepEqual(document.reader.readLines(), expected)
+      assert.deepEqual(await document.reader.readLines(), expected)
     })
 
     test('attributes are substituted in target of include directive', async () => {
       const input = ':fixturesdir: fixtures\n:ext: adoc\n\ninclude::{fixturesdir}/include-file.{ext}[]'
       const doc = await documentFromString(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.match(output, /included content/)
     })
 
@@ -1331,7 +1331,7 @@ describe('PreprocessorReader', () => {
       await usingMemoryLogger(async (logger) => {
         const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
         const reader = new PreprocessorReader(doc, input, null, { normalize: true })
-        const line = reader.readLine()
+        const line = await reader.readLine()
         assert.equal(line, 'Unresolved directive in <stdin> - include::{blank}[]')
         assertMessage(logger, 'WARN', 'include dropped because resolved target is blank')
       })
@@ -1342,7 +1342,7 @@ describe('PreprocessorReader', () => {
       await usingMemoryLogger(async (logger) => {
         const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..'), attributes: { 'attribute-missing': 'drop-line' } })
         const reader = new PreprocessorReader(doc, input, null, { normalize: true })
-        const line = reader.readLine()
+        const line = await reader.readLine()
         assert.equal(line, undefined)
         assertMessage(logger, 'INFO', 'include dropped due to missing attribute')
       })
@@ -1353,9 +1353,9 @@ describe('PreprocessorReader', () => {
       await usingMemoryLogger(async (_logger) => {
         const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..'), attributes: { 'attribute-missing': 'warn' } })
         const reader = new PreprocessorReader(doc, input, null, { normalize: true })
-        const line1 = reader.readLine()
+        const line1 = await reader.readLine()
         assert.equal(line1, 'Unresolved directive in <stdin> - include::{foodir}/include-file.adoc[]')
-        const line2 = reader.readLine()
+        const line2 = await reader.readLine()
         assert.equal(line2, 'yo')
       })
     })
@@ -1365,10 +1365,10 @@ describe('PreprocessorReader', () => {
       const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
       const reader = new PreprocessorReader(doc, input, null, { normalize: true })
       // peek multiple times — backslash should be preserved each time
-      assert.equal(reader.peekLine(), 'include::fixtures/include-file.adoc[]')
-      assert.equal(reader.peekLine(), 'include::fixtures/include-file.adoc[]')
-      assert.equal(reader.readLine(), 'include::fixtures/include-file.adoc[]')
-      assert.equal(reader.readLine(), '\\escape preserved here')
+      assert.equal(await reader.peekLine(), 'include::fixtures/include-file.adoc[]')
+      assert.equal(await reader.peekLine(), 'include::fixtures/include-file.adoc[]')
+      assert.equal(await reader.readLine(), 'include::fixtures/include-file.adoc[]')
+      assert.equal(await reader.readLine(), '\\escape preserved here')
     })
 
     test('include directive not at start of line is ignored', async () => {
@@ -1399,7 +1399,7 @@ describe('PreprocessorReader', () => {
         const pseudoDocfile = path.join(FIXTURES_DIR, '..', 'main.adoc')
         const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
         const reader = new PreprocessorReader(doc, input, pseudoDocfile, { normalize: true })
-        const lines = reader.readLines()
+        const lines = await reader.readLines()
         assert.ok(lines.some((l) => l.includes('grandchild-include.adoc')), 'Expected grandchild include to be unprocessed')
         assertMessage(logger, 'ERROR', 'maximum include depth')
       })
@@ -1411,7 +1411,7 @@ describe('PreprocessorReader', () => {
         const pseudoDocfile = path.join(FIXTURES_DIR, '..', 'main.adoc')
         const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
         const reader = new PreprocessorReader(doc, input, pseudoDocfile, { normalize: true })
-        const lines = reader.readLines()
+        const lines = await reader.readLines()
         assert.ok(lines.includes('first line of child'))
         assert.ok(lines.some((l) => l.includes('grandchild-include.adoc')))
         assertMessage(logger, 'ERROR', 'maximum include depth')
@@ -1422,8 +1422,8 @@ describe('PreprocessorReader', () => {
       const lines = '////\ninclude::fixtures/no-such-file.adoc[]\n////'.split('\n')
       const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
       const reader = new PreprocessorReader(doc, lines, null, { normalize: true })
-      reader.readLine()
-      const result = reader.readLinesUntil({ terminator: '////', skipProcessing: true })
+      await reader.readLine()
+      const result = await reader.readLinesUntil({ terminator: '////', skipProcessing: true })
       assert.deepEqual(result, ['include::fixtures/no-such-file.adoc[]'])
     })
 
@@ -1432,7 +1432,7 @@ describe('PreprocessorReader', () => {
       await usingMemoryLogger(async (logger) => {
         const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
         const reader = new PreprocessorReader(doc, lines, null, { normalize: true })
-        reader.skipCommentLines()
+        await reader.skipCommentLines()
         assert.ok(reader.empty())
         assert.equal(logger.messages.length, 0)
       })
@@ -1447,7 +1447,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       assert.equal(reader.lineno, 1)
-      assert.equal(reader.peekLine(), 'Asciidoctor!')
+      assert.equal(await reader.peekLine(), 'Asciidoctor!')
       assert.equal(reader.lineno, 2)
     })
 
@@ -1455,7 +1455,7 @@ describe('PreprocessorReader', () => {
       const input = 'The Asciidoctor\nifdef::asciidoctor[is in.]'
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
-      const result = reader.peekLines(2, false)
+      const result = await reader.peekLines(2, false)
       assert.deepEqual(result, ['The Asciidoctor', 'is in.'])
     })
 
@@ -1463,7 +1463,7 @@ describe('PreprocessorReader', () => {
       const input = 'The Asciidoctor\nifdef::asciidoctor[is in.]'
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
-      const result = reader.peekLines(2, true)
+      const result = await reader.peekLines(2, true)
       assert.deepEqual(result, ['The Asciidoctor', 'ifdef::asciidoctor[is in.]'])
     })
 
@@ -1471,8 +1471,8 @@ describe('PreprocessorReader', () => {
       const input = 'The Asciidoctor\nifdef::asciidoctor[is in.]'
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
-      reader.peekLines(2, true)
-      const result = reader.peekLines(2, false)
+      await reader.peekLines(2, true)
+      const result = await reader.peekLines(2, false)
       assert.deepEqual(result, ['The Asciidoctor', 'is in.'])
     })
 
@@ -1481,7 +1481,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       assert.equal(reader.lineno, 1)
-      assert.equal(reader.peekLine(), 'content')
+      assert.equal(await reader.peekLine(), 'content')
       assert.equal(reader.lineno, 1)
     })
 
@@ -1490,7 +1490,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       assert.equal(reader.lineno, 1)
-      assert.ok(reader.peekLine() == null)
+      assert.ok(await reader.peekLine() == null)
       assert.equal(reader.lineno, 4)
     })
 
@@ -1499,7 +1499,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       assert.equal(reader.lineno, 1)
-      assert.ok(reader.peekLine() == null)
+      assert.ok(await reader.peekLine() == null)
     })
 
     test('ifdef with defined attribute includes content', async () => {
@@ -1507,7 +1507,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { holygrail: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'There is a holy grail!')
     })
 
@@ -1516,14 +1516,14 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { holygrail: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'On our quest we go...\nThere is a holy grail!\nThere was much rejoicing.')
     })
 
     test('ifdef attribute name is not case sensitive', async () => {
       const input = 'ifdef::showScript[]\nThe script is shown!\nendif::showScript[]'
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { showscript: '' } })
-      const result = doc.reader.read()
+      const result = await doc.reader.read()
       assert.equal(result, 'The script is shown!')
     })
 
@@ -1532,7 +1532,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { hardships: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'On our quest we go...\nThere was no rejoicing.')
     })
 
@@ -1541,7 +1541,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { grail: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'holy\ngrail')
     })
 
@@ -1550,7 +1550,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { grail: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), '')
     })
 
@@ -1559,7 +1559,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { grail: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'holy\ngrail')
     })
 
@@ -1568,7 +1568,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { grail: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'poof\ngone')
     })
 
@@ -1577,7 +1577,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { grail: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'poof\ngone')
     })
 
@@ -1586,7 +1586,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { swallow: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'Our quest is complete!')
     })
 
@@ -1595,7 +1595,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), '')
     })
 
@@ -1604,7 +1604,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { holygrail: '', swallow: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'Our quest is complete!')
     })
 
@@ -1613,7 +1613,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { holygrail: '' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), '')
     })
 
@@ -1622,56 +1622,56 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'Our quest continues to find the holy grail!')
     })
 
     test('ifndef with one alternative attribute set does not include content', async () => {
       const input = 'ifndef::holygrail,swallow[]\nOur quest is complete!\nendif::holygrail,swallow[]'
-      const result = (await load(input, { safe: 'secure', parse: false, attributes: { swallow: '' } })).reader.read()
+      const result = await (await load(input, { safe: 'secure', parse: false, attributes: { swallow: '' } })).reader.read()
       assert.equal(result, '')
     })
 
     test('ifndef with both alternative attributes set does not include content', async () => {
       const input = 'ifndef::holygrail,swallow[]\nOur quest is complete!\nendif::holygrail,swallow[]'
-      const result = (await load(input, { safe: 'secure', parse: false, attributes: { swallow: '', holygrail: '' } })).reader.read()
+      const result = await (await load(input, { safe: 'secure', parse: false, attributes: { swallow: '', holygrail: '' } })).reader.read()
       assert.equal(result, '')
     })
 
     test('ifndef with no alternative attributes set includes content', async () => {
       const input = 'ifndef::holygrail,swallow[]\nOur quest is complete!\nendif::holygrail,swallow[]'
-      const result = (await load(input, { safe: 'secure', parse: false })).reader.read()
+      const result = await (await load(input, { safe: 'secure', parse: false })).reader.read()
       assert.equal(result, 'Our quest is complete!')
     })
 
     test('ifndef with no required attributes set includes content', async () => {
       const input = 'ifndef::holygrail+swallow[]\nOur quest is complete!\nendif::holygrail+swallow[]'
-      const result = (await load(input, { safe: 'secure', parse: false })).reader.read()
+      const result = await (await load(input, { safe: 'secure', parse: false })).reader.read()
       assert.equal(result, 'Our quest is complete!')
     })
 
     test('ifndef with all required attributes set does not include content', async () => {
       const input = 'ifndef::holygrail+swallow[]\nOur quest is complete!\nendif::holygrail+swallow[]'
-      const result = (await load(input, { safe: 'secure', parse: false, attributes: { swallow: '', holygrail: '' } })).reader.read()
+      const result = await (await load(input, { safe: 'secure', parse: false, attributes: { swallow: '', holygrail: '' } })).reader.read()
       assert.equal(result, '')
     })
 
     test('ifndef with at least one required attribute set does not include content', async () => {
       const input = 'ifndef::holygrail+swallow[]\nOur quest is complete!\nendif::holygrail+swallow[]'
-      const result = (await load(input, { safe: 'secure', parse: false, attributes: { swallow: '' } })).reader.read()
+      const result = await (await load(input, { safe: 'secure', parse: false, attributes: { swallow: '' } })).reader.read()
       assert.equal(result, 'Our quest is complete!')
     })
 
     test('ifdef around empty line does not introduce extra line', async () => {
       const input = 'before\nifdef::no-such-attribute[]\n\nendif::[]\nafter'
-      const result = (await load(input, { safe: 'secure', parse: false })).reader.read()
+      const result = await (await load(input, { safe: 'secure', parse: false })).reader.read()
       assert.equal(result, 'before\nafter')
     })
 
     test('should log warning if endif is unmatched', async () => {
       const input = 'Our quest is complete!\nendif::on-quest[]'
       await usingMemoryLogger(async (logger) => {
-        const result = (await load(input, { safe: 'secure', parse: false, attributes: { 'on-quest': '' } })).reader.read()
+        const result = await (await load(input, { safe: 'secure', parse: false, attributes: { 'on-quest': '' } })).reader.read()
         assert.equal(result, 'Our quest is complete!')
         assertMessage(logger, 'ERROR', 'unmatched preprocessor directive')
       })
@@ -1680,7 +1680,7 @@ describe('PreprocessorReader', () => {
     test('should log warning if endif is mismatched', async () => {
       const input = 'ifdef::on-quest[]\nOur quest is complete!\nendif::on-journey[]'
       await usingMemoryLogger(async (logger) => {
-        const result = (await load(input, { safe: 'secure', parse: false, attributes: { 'on-quest': '' }, sourcemap: true })).reader.read()
+        const result = await (await load(input, { safe: 'secure', parse: false, attributes: { 'on-quest': '' }, sourcemap: true })).reader.read()
         assert.equal(result, 'Our quest is complete!')
         assertMessage(logger, 'ERROR', 'mismatched preprocessor directive')
       })
@@ -1691,7 +1691,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'ifdef::holygrail[]\ncontent\nendif::holygrail[]')
     })
 
@@ -1700,7 +1700,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'No foo for you!')
     })
 
@@ -1709,7 +1709,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), '')
     })
 
@@ -1718,7 +1718,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), '')
     })
 
@@ -1727,7 +1727,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { gem: 'asciidoctor' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'Asciidoctor it is!')
     })
 
@@ -1736,7 +1736,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { gem: 'asciidoctor' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'Asciidoctor it is!')
     })
 
@@ -1745,7 +1745,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { gem: 'tilt' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), '')
     })
 
@@ -1754,7 +1754,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'That version will do!')
     })
 
@@ -1763,7 +1763,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), "Of course it's the same!")
     })
 
@@ -1772,7 +1772,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'That version will do!')
     })
 
@@ -1781,7 +1781,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { rings: '1' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'One ring to rule them all!')
     })
 
@@ -1790,7 +1790,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false, attributes: { rings: '1' } })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), 'One ring to rule them all!')
     })
 
@@ -1800,7 +1800,7 @@ describe('PreprocessorReader', () => {
         const doc = await load(input, { safe: 'secure', parse: false })
         const reader = doc.reader
         const lines = []
-        while (reader.hasMoreLines()) lines.push(reader.readLine())
+        while (await reader.hasMoreLines()) lines.push(await reader.readLine())
         assert.equal(lines.join('\n'), 'content')
         assertMessage(logger, 'ERROR', 'target not permitted')
       })
@@ -1812,7 +1812,7 @@ describe('PreprocessorReader', () => {
         const doc = await load(input, { safe: 'secure', parse: false })
         const reader = doc.reader
         const lines = []
-        while (reader.hasMoreLines()) lines.push(reader.readLine())
+        while (await reader.hasMoreLines()) lines.push(await reader.readLine())
         assert.equal(lines.join('\n'), 'content')
         assertMessage(logger, 'ERROR', 'invalid expression')
       })
@@ -1824,7 +1824,7 @@ describe('PreprocessorReader', () => {
         const doc = await load(input, { safe: 'secure', parse: false })
         const reader = doc.reader
         const lines = []
-        while (reader.hasMoreLines()) lines.push(reader.readLine())
+        while (await reader.hasMoreLines()) lines.push(await reader.readLine())
         assert.equal(lines.join('\n'), 'content')
         assertMessage(logger, 'ERROR', 'missing expression')
       })
@@ -1836,7 +1836,7 @@ describe('PreprocessorReader', () => {
         const doc = await load(input, { safe: 'secure', parse: false })
         const reader = doc.reader
         const lines = []
-        while (reader.hasMoreLines()) lines.push(reader.readLine())
+        while (await reader.hasMoreLines()) lines.push(await reader.readLine())
         assert.equal(lines.join('\n'), 'content')
         assertMessage(logger, 'ERROR', 'missing target')
       })
@@ -1845,7 +1845,7 @@ describe('PreprocessorReader', () => {
     test('should not warn about invalid ifdef preprocessor directive if already skipping', async () => {
       const input = 'ifdef::attribute-not-set[]\nfoo\nifdef::[]\nbar\nendif::[]\nbaz'
       await usingMemoryLogger(async (logger) => {
-        const result = (await load(input, { safe: 'secure', parse: false })).reader.read()
+        const result = await (await load(input, { safe: 'secure', parse: false })).reader.read()
         assert.equal(result, 'baz')
         assert.equal(logger.messages.length, 0)
       })
@@ -1854,7 +1854,7 @@ describe('PreprocessorReader', () => {
     test('should not warn about invalid ifeval preprocessor directive if already skipping', async () => {
       const input = 'ifdef::attribute-not-set[]\nfoo\nifeval::[]\nbar\nendif::[]\nbaz'
       await usingMemoryLogger(async (logger) => {
-        const result = (await load(input, { safe: 'secure', parse: false })).reader.read()
+        const result = await (await load(input, { safe: 'secure', parse: false })).reader.read()
         assert.equal(result, 'baz')
         assert.equal(logger.messages.length, 0)
       })
@@ -1866,7 +1866,7 @@ describe('PreprocessorReader', () => {
         const doc = await load(input, { safe: 'secure', parse: false })
         const reader = doc.reader
         const lines = []
-        while (reader.hasMoreLines()) lines.push(reader.readLine())
+        while (await reader.hasMoreLines()) lines.push(await reader.readLine())
         assert.equal(lines.join('\n'), 'before')
         assertMessage(logger, 'ERROR', 'detected unterminated preprocessor conditional directive')
       })
@@ -1885,14 +1885,14 @@ describe('PreprocessorReader', () => {
       const input = 'ifdef::asciidoctor[]\nAsciidoctor!\nendif::asciidoctor[]'
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
-      assert.equal(reader.processLine(reader.lines[0]), undefined)
+      assert.equal(await reader.processLine(reader.lines[0]), undefined)
     })
 
     test('process_line returns line if cursor not advanced', async () => {
       const input = 'content\nifdef::asciidoctor[]\nAsciidoctor!\nendif::asciidoctor[]'
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
-      assert.notEqual(reader.processLine(reader.lines[0]), undefined)
+      assert.notEqual(await reader.processLine(reader.lines[0]), undefined)
     })
 
     test('ifdef with defined attribute processes include directive in brackets', async () => {
@@ -1900,7 +1900,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'safe', parse: false, base_dir: path.join(FIXTURES_DIR, '..') })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines[0], 'snippetA content')
     })
 
@@ -1915,14 +1915,14 @@ describe('PreprocessorReader', () => {
       ]) {
         const input = `ifdef::${condition}[]\ncontent\nendif::[]`
         const doc = await load(input, { safe: 'secure', parse: false })
-        assert.equal(doc.reader.read(), expected, `condition: ${condition}`)
+        assert.equal(await doc.reader.read(), expected, `condition: ${condition}`)
       }
     })
 
     test('should log warning if endif contains text', async () => {
       const input = 'ifdef::on-quest[]\nOur quest is complete!\nendif::on-quest[complete!]\nfin'
       await usingMemoryLogger(async (logger) => {
-        const result = (await load(input, { safe: 'secure', parse: false, attributes: { 'on-quest': '' }, sourcemap: true })).reader.read()
+        const result = await (await load(input, { safe: 'secure', parse: false, attributes: { 'on-quest': '' }, sourcemap: true })).reader.read()
         assert.equal(result, 'Our quest is complete!\nfin')
         assertMessages(logger, [
           ['ERROR', 'malformed preprocessor directive - text not permitted'],
@@ -1936,7 +1936,7 @@ describe('PreprocessorReader', () => {
       const doc = await load(input, { safe: 'secure', parse: false })
       const reader = doc.reader
       const lines = []
-      while (reader.hasMoreLines()) lines.push(reader.readLine())
+      while (await reader.hasMoreLines()) lines.push(await reader.readLine())
       assert.equal(lines.join('\n'), '')
     })
 
@@ -1946,7 +1946,7 @@ describe('PreprocessorReader', () => {
         const doc = await load(input, { safe: 'secure', parse: false, sourcemap: true })
         const reader = doc.reader
         const lines = []
-        while (reader.hasMoreLines()) lines.push(reader.readLine())
+        while (await reader.hasMoreLines()) lines.push(await reader.readLine())
         assert.equal(lines.join('\n'), 'before')
         assertMessage(logger, 'ERROR', 'detected unterminated preprocessor conditional directive: ifdef::not-set[]')
       })
@@ -1958,7 +1958,7 @@ describe('PreprocessorReader', () => {
         const doc = await load(input, { safe: 'secure', parse: false, sourcemap: true })
         const reader = doc.reader
         const lines = []
-        while (reader.hasMoreLines()) lines.push(reader.readLine())
+        while (await reader.hasMoreLines()) lines.push(await reader.readLine())
         assert.equal(lines.join('\n'), 'before')
         assertMessages(logger, [
           ['ERROR', 'detected unterminated preprocessor conditional directive: ifdef::not-set[]'],

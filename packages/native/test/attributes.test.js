@@ -9,9 +9,9 @@ import { MemoryLogger, LoggerManager } from '../src/logging.js'
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
-const convertInlineString = (input, opts = {}) => documentFromString(input, { doctype: 'inline', ...opts }).then((doc) => doc.convert())
+const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then(async ( doc) => await doc.convert())
+const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then(async ( doc) => await doc.convert())
+const convertInlineString = (input, opts = {}) => documentFromString(input, { doctype: 'inline', ...opts }).then(async ( doc) => await doc.convert())
 const blockFromString = async (input, opts = {}) => (await documentFromString(input, opts)).blocks[0]
 const emptyDocument = (opts = {}) => documentFromString('', { parse: false, ...opts })
 
@@ -300,11 +300,11 @@ describe('Attributes', () => {
       for (const attributes of [{ 'sectids!@': '' }, { '!sectids@': '' }, { 'sectids!': '@' }, { '!sectids': '@' }, { sectids: false }]) {
         let doc = await documentFromString('== Heading', { attributes })
         assert.ok(!doc.hasAttr('sectids'))
-        let output = doc.convert({ standalone: false })
+        let output = await doc.convert({ standalone: false })
         assert.ok(!output.includes('id="_heading"'))
         doc = await documentFromString(':sectids:\n\n== Heading', { attributes })
         assert.ok(doc.hasAttr('sectids'))
-        output = doc.convert({ standalone: false })
+        output = await doc.convert({ standalone: false })
         assert.ok(output.includes('id="_heading"'))
       }
     })
@@ -464,7 +464,7 @@ describe('Attributes', () => {
       const input = ':uri: http://example.org\n\n{uri}'
       const doc = await load(input, { attributes: { uri: 'https://github.com' } })
       doc.setAttr('uri', 'https://google.com')
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.ok(output.includes('href="https://google.com"'))
     })
 
@@ -572,8 +572,8 @@ describe('Attributes', () => {
 
     test('attribute value gets interpreted when converting', async () => {
       const doc = await documentFromString(':google: http://google.com[Google]\n\n{google}')
-      assert.equal(doc.attributes['google'], 'http://google.com[Google]')
-      const output = doc.convert()
+      assert.equal(await doc.attributes['google'], 'http://google.com[Google]')
+      const output = await doc.convert()
       assert.ok(output.includes('href="http://google.com"'))
       assert.ok(output.includes('>Google<'))
     })
@@ -662,7 +662,7 @@ describe('Attributes', () => {
       assert.equal(doc.attr('revdate2'), '2010-01-01')
       assert.equal(doc.attr('a'), 'value')
       assert.equal(doc.attr('a2'), 'value')
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.ok(output.includes('value == value'))
       assert.ok(output.includes('2010-01-01 == 2010-01-01'))
     })
@@ -801,7 +801,7 @@ describe('Attributes', () => {
     test('creates counter', async () => {
       const input = '{counter:mycounter}'
       const doc = await documentFromString(input)
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.equal(doc.attributes['mycounter'], 1)
       assert.ok(output.includes('>1<'))
     })
@@ -809,7 +809,7 @@ describe('Attributes', () => {
     test('creates counter silently', async () => {
       const input = '{counter2:mycounter}'
       const doc = await documentFromString(input)
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.equal(doc.attributes['mycounter'], 1)
       assert.ok(!output.includes('>1<'))
     })
@@ -817,14 +817,14 @@ describe('Attributes', () => {
     test('creates counter with numeric seed value', async () => {
       const input = '{counter2:mycounter:10}'
       const doc = await documentFromString(input)
-      doc.convert()
+      await doc.convert()
       assert.equal(doc.attributes['mycounter'], 10)
     })
 
     test('creates counter with character seed value', async () => {
       const input = '{counter2:mycounter:A}'
       const doc = await documentFromString(input)
-      doc.convert()
+      await doc.convert()
       assert.equal(doc.attributes['mycounter'], 'A')
     })
 
@@ -843,7 +843,7 @@ describe('Attributes', () => {
     test('increments counter with positive numeric value', async () => {
       const input = '[subs=attributes]\n++++\n{counter:mycounter:1}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
       const doc = await documentFromString(input, { standalone: false })
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.equal(doc.attributes['mycounter'], 3)
       const lines = output.split('\n').map((l) => l.trimEnd()).filter((l) => l)
       assert.deepEqual(lines, ['1', '2', '3', '3'])
@@ -852,7 +852,7 @@ describe('Attributes', () => {
     test('increments counter with negative numeric value', async () => {
       const input = '[subs=attributes]\n++++\n{counter:mycounter:-2}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
       const doc = await documentFromString(input, { standalone: false })
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.equal(doc.attributes['mycounter'], 0)
       const lines = output.split('\n').map((l) => l.trimEnd()).filter((l) => l)
       assert.deepEqual(lines, ['-2', '-1', '0', '0'])
@@ -889,7 +889,7 @@ describe('Attributes', () => {
     test('counter uses 0 as seed value if seed attribute is nil', async () => {
       const input = ':mycounter:\n\n{counter:mycounter}\n\n{mycounter}'
       const doc = await documentFromString(input)
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assert.equal(doc.attributes['mycounter'], 1)
       assert.equal(countTag(output, 'p'), 2)
       assert.ok(output.includes('>1<'))
@@ -898,7 +898,7 @@ describe('Attributes', () => {
     test('counter value can be reset by attribute entry', async () => {
       const input = ':mycounter:\n\nbefore: {counter:mycounter} {counter:mycounter} {counter:mycounter}\n\n:mycounter!:\n\nafter: {counter:mycounter}'
       const doc = await documentFromString(input)
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assert.equal(doc.attributes['mycounter'], 1)
       assert.ok(output.includes('before: 1 2 3'))
       assert.ok(output.includes('after: 1'))
@@ -907,7 +907,7 @@ describe('Attributes', () => {
     test('counter value can be advanced by attribute entry', async () => {
       const input = 'before: {counter:mycounter}\n\n:mycounter: 10\n\nafter: {counter:mycounter}'
       const doc = await documentFromString(input)
-      const output = doc.convert({ standalone: false })
+      const output = await doc.convert({ standalone: false })
       assert.equal(doc.attributes['mycounter'], 11)
       assert.ok(output.includes('before: 1'))
       assert.ok(output.includes('after: 11'))
@@ -937,7 +937,7 @@ describe('Attributes', () => {
     test('should not allow counter to modify built-in locked attribute', async () => {
       const input = '{counter:max-include-depth:128} is one more than {max-include-depth}'
       const doc = await documentFromString(input, { standalone: false })
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.ok(output.includes('65 is one more than 64'))
       assert.equal(doc.attributes['max-include-depth'], 64)
     })
@@ -945,7 +945,7 @@ describe('Attributes', () => {
     test('should not allow counter2 to modify built-in locked attribute', async () => {
       const input = '{counter2:max-include-depth:128}{max-include-depth}'
       const doc = await documentFromString(input, { standalone: false })
-      const output = doc.convert()
+      const output = await doc.convert()
       assert.ok(output.includes('>64<'))
       assert.equal(doc.attributes['max-include-depth'], 64)
     })

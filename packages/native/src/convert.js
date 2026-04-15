@@ -168,9 +168,9 @@ export async function convert (input, options = {}) {
 
   let output
   if (outfile && !streamOutput) {
-    output = doc.convert({ outfile, outdir })
+    output = await doc.convert({ outfile, outdir })
   } else {
-    output = doc.convert()
+    output = await doc.convert()
   }
 
   if (outfile) {

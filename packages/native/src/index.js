@@ -77,7 +77,7 @@ class Asciidoctor {
    */
   async convert (input, options = {}) {
     const doc = await load(input, options)
-    return doc.convert()
+    return await doc.convert()
   }
 
   /**
