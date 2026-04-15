@@ -14,8 +14,8 @@
 //     and indentation adjustment (mirrors `def prepare_lines`).
 //   - The Logging mixin is implemented with inline helper methods; the logger
 //     defaults to this._document?.logger ?? console.
-//   - File I/O uses synchronous Node.js fs APIs (unavailable in browsers).
-//   - URI-based includes require async fetch and are not yet implemented.
+//   - File I/O uses node:fs/promises async APIs (unavailable in browsers).
+//   - URI-based includes use the async Fetch API.
 //   - Compliance.attribute_missing defaults to 'skip' until compliance.js exists.
 //   - Parser.adjustIndentation is referenced but forwarded as a TODO.
 //   - RUBY_ENGINE_OPAL branches are omitted.
@@ -39,8 +39,12 @@ import { prepareSourceArray, prepareSourceString, rootname, isUriish } from './h
 import { LoggerManager, Logger } from './logging.js'
 
 // ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
-let _fs
-try { _fs = await import('node:fs') } catch {}
+let _fsp            // node:fs/promises — used for all file I/O
+let _fsConstants    // node:fs constants (F_OK etc.) — not on node:fs/promises
+try {
+  _fsp = await import('node:fs/promises')
+  _fsConstants = (await import('node:fs')).constants
+} catch {}
 
 // ── Compliance fallback ───────────────────────────────────────────────────────
 // TODO: replace with real import once compliance.js is available.
@@ -60,9 +64,9 @@ function fsdirname (p) {
 function fsbasename (p) {
   return p ? p.slice(p.lastIndexOf('/') + 1) : ''
 }
-function fileExists (path) {
-  if (!_fs) return false
-  try { _fs.accessSync(path, _fs.constants.F_OK); return true } catch { return false }
+async function fileExists (path) {
+  if (!_fsp) return false
+  try { await _fsp.access(path, _fsConstants.F_OK); return true } catch { return false }
 }
 
 // ── adjustIndentation ─────────────────────────────────────────────────────────
@@ -909,7 +913,7 @@ export class PreprocessorReader extends Reader {
     }
 
     const parsedAttrs = attrlist ? doc.parseAttributes(attrlist, [], { subInput: true }) : {}
-    const resolution = this._resolveIncludePath(expandedTarget, attrlist, parsedAttrs)
+    const resolution = await this._resolveIncludePath(expandedTarget, attrlist, parsedAttrs)
     if (!Array.isArray(resolution)) return resolution
     const [incPath, targetType, relpath] = resolution
 
@@ -965,20 +969,20 @@ export class PreprocessorReader extends Reader {
 
     try {
       if (incLinenos) {
-        const { incLines, incOffset } = this._readFileByLinenos(incPath, incLinenos)
+        const { incLines, incOffset } = await this._readFileByLinenos(incPath, incLinenos)
         super._shift()
         if (incOffset !== null) {
           parsedAttrs['partial-option'] = ''
           this.pushInclude(incLines, incPath, relpath, incOffset, parsedAttrs)
         }
       } else if (incTags) {
-        const { incLines, incOffset } = this._readFileByTags(incPath, expandedTarget, targetType, incTags, parsedAttrs)
+        const { incLines, incOffset } = await this._readFileByTags(incPath, expandedTarget, targetType, incTags, parsedAttrs)
         super._shift()
         if (incOffset !== null) this.pushInclude(incLines, incPath, relpath, incOffset, parsedAttrs)
       } else {
         let incContent
         try {
-          incContent = _fs.readFileSync(incPath, 'utf8')
+          incContent = await _fsp.readFile(incPath, 'utf8')
           super._shift()
         } catch {
           this._logError(`include ${targetType} not readable: ${incPath}`, { sourceLocation: this.cursor })
@@ -994,7 +998,7 @@ export class PreprocessorReader extends Reader {
   }
 
   // Internal: Resolve the include target to [incPath, targetType, relpath] or a Boolean.
-  _resolveIncludePath (target, attrlist, attributes) {
+  async _resolveIncludePath (target, attrlist, attributes) {
     const doc = this._document
     if (isUriish(target) || typeof this._dir !== 'string') {
       if (!doc.attr('allow-uri-read')) {
@@ -1007,7 +1011,7 @@ export class PreprocessorReader extends Reader {
     }
 
     const incPath = doc.normalizeSystemPath(target, this._dir, null, { targetName: 'include file' })
-    if (!fileExists(incPath)) {
+    if (!await fileExists(incPath)) {
       if ('optional-option' in attributes) {
         this._logInfo(`optional include dropped because include file not found: ${incPath}`, { sourceLocation: this.cursor })
         super._shift()
@@ -1028,9 +1032,9 @@ export class PreprocessorReader extends Reader {
   }
 
   // Internal: Read lines filtered by line-number ranges.
-  _readFileByLinenos (incPath, incLinenos) {
+  async _readFileByLinenos (incPath, incLinenos) {
     const remaining = [...incLinenos]
-    const fileLines = _fs.readFileSync(incPath, 'utf8').split('\n')
+    const fileLines = (await _fsp.readFile(incPath, 'utf8')).split('\n')
     const incLines = []
     let incOffset = null
     let selectRemaining = false
@@ -1051,7 +1055,7 @@ export class PreprocessorReader extends Reader {
   }
 
   // Internal: Read lines filtered by tag directives.
-  _readFileByTags (incPath, expandedTarget, targetType, incTagsIn, parsedAttrs) {
+  async _readFileByTags (incPath, expandedTarget, targetType, incTagsIn, parsedAttrs) {
     const tags = { ...incTagsIn }
     let select, baseSelect, wildcard
     if ('**' in tags) {
@@ -1066,7 +1070,7 @@ export class PreprocessorReader extends Reader {
       select = baseSelect = !Object.values(tags).includes(true)
     }
 
-    const fileLines = _fs.readFileSync(incPath, 'utf8').split('\n')
+    const fileLines = (await _fsp.readFile(incPath, 'utf8')).split('\n')
     const incLines = []
     let incOffset = null
     const tagStack = []

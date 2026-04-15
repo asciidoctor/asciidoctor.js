@@ -5,7 +5,7 @@
 //     Reference: packages/core/lib/asciidoctor/js/asciidoctor_ext/node/template.rb
 //   - Static @caches → TemplateConverter._caches (class-level static property).
 //   - Ruby Dir.glob(pattern) → readdirSync(dir) filtered by extension.
-//   - Ruby File.directory?/File.file? → fs.statSync().isDirectory()/isFile() (sync).
+//   - Ruby File.directory?/File.file? → fsp.stat().isDirectory()/isFile() (async).
 //   - Ruby File.basename / File.expand_path → node:path basename / resolve.
 //   - PathResolver.system_path → pathResolver.systemPath().
 //   - template.render(node, opts) → template.render({node, opts, helpers}).
@@ -14,12 +14,13 @@
 //   - Thread safety / Mutex → not needed (single-threaded JS).
 //   - load_eruby / eRuby support → not applicable in JS environment.
 //   - require_library → _nodeRequire() with a user-friendly IOError on missing module.
+//   - Constructor is sync; use TemplateConverter.create() factory for async _scan().
 
-import { ConverterBase } from '../converter.js'
-import { PathResolver }  from '../path_resolver.js'
-import { createRequire } from 'node:module'
-import fs from 'node:fs'
-import path from 'node:path'
+import { ConverterBase }        from '../converter.js'
+import { PathResolver }         from '../path_resolver.js'
+import { createRequire }        from 'node:module'
+import { promises as fsp }      from 'node:fs'
+import path                     from 'node:path'
 
 const _require = createRequire(import.meta.url)
 
@@ -57,7 +58,9 @@ export class TemplateConverter extends ConverterBase {
     TemplateConverter._caches.templates = {}
   }
 
-  // Public: Construct a new TemplateConverter.
+  // Public: Construct a new TemplateConverter (synchronous setup only).
+  //
+  // Prefer TemplateConverter.create() which also runs the async _scan() step.
   //
   // backend      - the String backend name (e.g. 'html5')
   // templateDirs - an Array of String paths to scan for templates
@@ -80,8 +83,13 @@ export class TemplateConverter extends ConverterBase {
     } else {
       this.caches = {} // empty object effectively disables caching
     }
+  }
 
-    this._scan()
+  // Public: Async factory — create and fully initialize a TemplateConverter.
+  static async create (backend, templateDirs, opts = {}) {
+    const converter = new TemplateConverter(backend, templateDirs, opts)
+    await converter._scan()
+    return converter
   }
 
   // Public: Convert an AbstractNode to the backend format using the named template.
@@ -134,7 +142,7 @@ export class TemplateConverter extends ConverterBase {
   // ── Private ──────────────────────────────────────────────────────────────────
 
   // Internal: Scan all template directories and populate this._templates.
-  _scan () {
+  async _scan () {
     const pathResolver = new PathResolver()
     const backend = this.backend
     const engine  = this.engine
@@ -142,19 +150,19 @@ export class TemplateConverter extends ConverterBase {
     for (let templateDir of this.templateDirs) {
       // Resolve and verify the directory exists.
       templateDir = pathResolver.systemPath(templateDir)
-      if (!_isDirectory(templateDir)) continue
+      if (!await _isDirectory(templateDir)) continue
 
       // If a specific engine is requested, check for an engine subdirectory.
       let fileExtFilter = null
       if (engine) {
         fileExtFilter = engine
         const engineDir = path.join(templateDir, engine)
-        if (_isDirectory(engineDir)) templateDir = engineDir
+        if (await _isDirectory(engineDir)) templateDir = engineDir
       }
 
       // Check for a backend subdirectory.
       const backendDir = path.join(templateDir, backend)
-      if (_isDirectory(backendDir)) templateDir = backendDir
+      if (await _isDirectory(backendDir)) templateDir = backendDir
 
       const cacheKey = fileExtFilter
         ? `${templateDir}/*.${fileExtFilter}`
@@ -165,7 +173,7 @@ export class TemplateConverter extends ConverterBase {
         const templateCache = this.caches.templates
         let scanned = scanCache[cacheKey]
         if (!scanned) {
-          scanned = scanCache[cacheKey] = this._scanDir(templateDir, fileExtFilter, templateCache)
+          scanned = scanCache[cacheKey] = await this._scanDir(templateDir, fileExtFilter, templateCache)
         }
         for (const [name, template] of Object.entries(scanned)) {
           this._templates[name] = template
@@ -174,7 +182,7 @@ export class TemplateConverter extends ConverterBase {
           }
         }
       } else {
-        const scanned = this._scanDir(templateDir, fileExtFilter, this.caches.templates)
+        const scanned = await this._scanDir(templateDir, fileExtFilter, this.caches.templates)
         Object.assign(this._templates, scanned)
       }
     }
@@ -187,14 +195,14 @@ export class TemplateConverter extends ConverterBase {
   // templateCache - Object cache of file → template, or falsy if no cache
   //
   // Returns a plain object { [name]: template }.
-  _scanDir (templateDir, fileExtFilter, templateCache = null) {
+  async _scanDir (templateDir, fileExtFilter, templateCache = null) {
     const result        = {}
     let   helpersFile   = null
     const enginesCtx    = {}
 
     let entries
     try {
-      entries = fs.readdirSync(templateDir)
+      entries = await fsp.readdir(templateDir)
     } catch {
       return result
     }
@@ -203,7 +211,7 @@ export class TemplateConverter extends ConverterBase {
       const file = path.join(templateDir, basename)
 
       // Skip non-files.
-      if (!_isFile(file)) continue
+      if (!await _isFile(file)) continue
 
       // Collect helpers separately; process after all templates.
       if (basename === 'helpers.js' || basename === 'helpers.cjs') {
@@ -246,7 +254,7 @@ export class TemplateConverter extends ConverterBase {
           env = nunjucks.configure(templateDir, nunjucksOpts)
           enginesCtx.nunjucks = { environment: env }
         }
-        const compiled = nunjucks.compile(fs.readFileSync(file, 'utf8'), env)
+        const compiled = nunjucks.compile(await fsp.readFile(file, 'utf8'), env)
         template = Object.assign(compiled, { file })
 
       } else if (ext === 'handlebars' || ext === 'hbs') {
@@ -259,7 +267,7 @@ export class TemplateConverter extends ConverterBase {
           env = handlebars.create()
           enginesCtx.handlebars = { environment: env }
         }
-        const renderFn = env.compile(fs.readFileSync(file, 'utf8'), hbsOpts)
+        const renderFn = env.compile(await fsp.readFile(file, 'utf8'), hbsOpts)
         template = { render: renderFn, file }
 
       } else if (ext === 'ejs') {
@@ -268,7 +276,7 @@ export class TemplateConverter extends ConverterBase {
         // Unsupported EJS options in synchronous compile.
         delete ejsOpts.async
         delete ejsOpts.client
-        const renderFn = ejs.compile(fs.readFileSync(file, 'utf8'), ejsOpts)
+        const renderFn = ejs.compile(await fsp.readFile(file, 'utf8'), ejsOpts)
         template = { render: renderFn, file }
 
       } else if (ext === 'pug') {
@@ -297,8 +305,8 @@ export class TemplateConverter extends ConverterBase {
     // Load helpers if found (or if a helpers.js exists at the top of the dir).
     const fallbackHelpers = path.join(templateDir, 'helpers.js')
     const fallbackHelpersCjs = path.join(templateDir, 'helpers.cjs')
-    if (!helpersFile && _isFile(fallbackHelpers)) helpersFile = fallbackHelpers
-    if (!helpersFile && _isFile(fallbackHelpersCjs)) helpersFile = fallbackHelpersCjs
+    if (!helpersFile && await _isFile(fallbackHelpers)) helpersFile = fallbackHelpers
+    if (!helpersFile && await _isFile(fallbackHelpersCjs)) helpersFile = fallbackHelpersCjs
 
     if (helpersFile) {
       const ctx = _require(helpersFile)
@@ -325,12 +333,12 @@ export class TemplateConverter extends ConverterBase {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function _isDirectory (p) {
-  try { return fs.statSync(p).isDirectory() } catch { return false }
+async function _isDirectory (p) {
+  try { return (await fsp.stat(p)).isDirectory() } catch { return false }
 }
 
-function _isFile (p) {
-  try { return fs.statSync(p).isFile() } catch { return false }
+async function _isFile (p) {
+  try { return (await fsp.stat(p)).isFile() } catch { return false }
 }
 
 export default TemplateConverter

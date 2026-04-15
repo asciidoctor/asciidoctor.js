@@ -768,7 +768,7 @@ export class Document extends AbstractBlock {
   render (opts = {}) { return this.convert(opts) }
 
   // Public: Write output to the specified file or stream.
-  write (output, target) {
+  async write (output, target) {
     if (this._timings) this._timings.start('write')
     if (typeof this.converter.write === 'function') {
       this.converter.write(output, target)
@@ -780,8 +780,8 @@ export class Document extends AbstractBlock {
         }
       } else {
         try {
-          const fs = require('node:fs')
-          fs.writeFileSync(target, output ?? '', 'utf8')
+          const { writeFile } = await import('node:fs/promises')
+          await writeFile(target, output ?? '', 'utf8')
         } catch {}
       }
       if (this.backend === 'manpage' && typeof target === 'string' &&

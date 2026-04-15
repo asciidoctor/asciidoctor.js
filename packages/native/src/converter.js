@@ -151,7 +151,7 @@ export class CustomFactory {
       if (templateDirs && typeof converter.hasSupportsTemplates === 'function' && converter.hasSupportsTemplates()) {
         const { CompositeConverter } = await import('./converter/composite.js')
         const { TemplateConverter }  = await import('./converter/template.js')
-        return new CompositeConverter(backend, new TemplateConverter(backend, templateDirs, opts), converter, { backendTraitsSource: converter })
+        return new CompositeConverter(backend, await TemplateConverter.create(backend, templateDirs, opts), converter, { backendTraitsSource: converter })
       }
       return converter
     }
@@ -166,11 +166,11 @@ export class CustomFactory {
           }
           const { CompositeConverter } = await import('./converter/composite.js')
           const { TemplateConverter }  = await import('./converter/template.js')
-          return new CompositeConverter(backend, new TemplateConverter(backend, templateDirs, opts), delegateConverter, { backendTraitsSource: delegateConverter })
+          return new CompositeConverter(backend, await TemplateConverter.create(backend, templateDirs, opts), delegateConverter, { backendTraitsSource: delegateConverter })
         }
       }
       const { TemplateConverter } = await import('./converter/template.js')
-      return new TemplateConverter(backend, templateDirs, opts)
+      return await TemplateConverter.create(backend, templateDirs, opts)
     }
     return null
   }
@@ -249,7 +249,7 @@ class DefaultFactory extends CustomFactory {
       const templateDirs = opts.template_dirs
       if (templateDirs) {
         const { TemplateConverter } = await import('./converter/template.js')
-        return new TemplateConverter(backend, templateDirs, opts)
+        return await TemplateConverter.create(backend, templateDirs, opts)
       }
       return null
     }
@@ -260,7 +260,7 @@ class DefaultFactory extends CustomFactory {
     if (templateDirs && typeof converter.hasSupportsTemplates === 'function' && converter.hasSupportsTemplates()) {
       const { CompositeConverter } = await import('./converter/composite.js')
       const { TemplateConverter }  = await import('./converter/template.js')
-      return new CompositeConverter(backend, new TemplateConverter(backend, templateDirs, opts), converter, { backendTraitsSource: converter })
+      return new CompositeConverter(backend, await TemplateConverter.create(backend, templateDirs, opts), converter, { backendTraitsSource: converter })
     }
     return converter
   }

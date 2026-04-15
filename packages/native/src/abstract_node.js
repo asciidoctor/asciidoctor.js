@@ -15,8 +15,10 @@
 //     it falls back to the document's logger or the global console.
 //   - The Substitutors mixin is applied via Object.assign(AbstractNode.prototype, Substitutors)
 //     after both modules are loaded (see the bottom of substitutors.js).
-//   - File I/O in generateDataUri / readAsset uses synchronous Node.js fs APIs
-//     (unavailable in browser environments — these methods return null / empty data URI there).
+//   - File I/O in generateDataUri / readAsset uses synchronous Node.js fs APIs because
+//     these methods are called from the synchronous converter pipeline; making them async
+//     would require async converters (deferred to a future refactor).
+//     They are unavailable in browser environments — return null / empty data URI there.
 //   - generateDataUriFromUri and readContents use the Fetch API and are async;
 //     imageUri and readContents must be awaited when the data-uri + allow-uri-read
 //     combination is active.
