@@ -261,7 +261,7 @@ describe('Links', () => {
     const expectedOutputs = ['http://;', 'file://:', 'irc://,']
     for (let i = 0; i < inputSources.length; i++) {
       const block = await blockFromString(inputSources[i])
-      assert.equal(block.content, expectedOutputs[i])
+      assert.equal(await block.content(), expectedOutputs[i])
     }
   })
 
@@ -270,7 +270,7 @@ describe('Links', () => {
     const expectedOutputs = ['(https://)', '&lt;ftp://&gt;']
     for (let i = 0; i < inputSources.length; i++) {
       const block = await blockFromString(inputSources[i])
-      assert.equal(block.content, expectedOutputs[i])
+      assert.equal(await block.content(), expectedOutputs[i])
     }
   })
 

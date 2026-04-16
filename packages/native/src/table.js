@@ -373,33 +373,49 @@ Table.Cell = class Cell extends AbstractBlock {
   }
 
   // Public: Get the String text with substitutions applied.
+  // The result is pre-computed during Document.parse() via precomputeText().
+  // Falls back to the raw text if precomputeText() has not been called yet.
   get text () {
-    return this.applySubs(this._text, this._subs)
+    return this._convertedText ?? this._text ?? null
   }
 
-  set text (val) { this._text = val }
+  // Public: Pre-compute the converted text asynchronously.
+  // Called during Document.parse() so the synchronous getter works during conversion.
+  async precomputeText () {
+    if (this._subs && this._convertedText == null) {
+      this._convertedText = await this.applySubs(this._text, this._subs)
+      // Capture the cellbgcolor attribute value as set by {set:cellbgcolor:...} in cell text.
+      // Since {set:...} attribute assignments happen during applySubs, and the document attribute
+      // is shared state, we must capture it per-cell immediately after text processing.
+      this._cellbgcolor = this.document.attributes['cellbgcolor']
+    }
+  }
+
+  set text (val) { this._text = val; this._convertedText = null }
 
   // Public: Get the content — converted body data.
-  // For AsciiDoc cells, returns the pre-computed content (set by Table.Cell.create()).
-  get content () {
+  // For AsciiDoc cells, returns the pre-computed content (set by Document.convert()).
+  async content () {
     if (this.style === 'asciidoc') {
       return this._innerContent ?? ''
     }
     if (this._text.includes(Table.Cell.DOUBLE_LF)) {
-      return this.text.split(BlankLineRx).flatMap(para => {
-        para = para.trim()
-        if (!para) return []
+      const parts = []
+      for (const rawPara of this.text.split(BlankLineRx)) {
+        const para = rawPara.trim()
+        if (!para) continue
         const cs = this.style
-        return [(cs && cs !== 'header')
-          ? (new Inline(this.parent, 'quoted', para, { type: cs })).convert()
-          : para]
-      })
+        parts.push((cs && cs !== 'header')
+          ? await (new Inline(this.parent, 'quoted', para, { type: cs })).convert()
+          : para)
+      }
+      return parts
     }
     const subbedText = this.text
     if (!subbedText) return []
     const cs = this.style
     if (cs && cs !== 'header') {
-      return [(new Inline(this.parent, 'quoted', subbedText, { type: cs })).convert()]
+      return [await (new Inline(this.parent, 'quoted', subbedText, { type: cs })).convert()]
     }
     return [subbedText]
   }

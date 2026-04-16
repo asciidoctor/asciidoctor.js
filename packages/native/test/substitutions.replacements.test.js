@@ -17,12 +17,12 @@ describe('Substitutions', () => {
   describe('Replacements', () => {
     test('unescapes XML entities', async () => {
       const para = await blockFromString('< &quot; &there4; &#34; &#x22; >')
-      assert.equal(para.applySubs(para.source), '&lt; &quot; &there4; &#34; &#x22; &gt;')
+      assert.equal(await para.applySubs(para.source), '&lt; &quot; &there4; &#34; &#x22; &gt;')
     })
 
     test('replaces arrows', async () => {
       const para = await blockFromString('<- -> <= => \\<- \\-> \\<= \\=>')
-      assert.equal(para.applySubs(para.source), '&#8592; &#8594; &#8656; &#8658; &lt;- -&gt; &lt;= =&gt;')
+      assert.equal(await para.applySubs(para.source), '&#8592; &#8594; &#8656; &#8658; &lt;- -&gt; &lt;= =&gt;')
     })
 
     test('replaces dashes', async () => {

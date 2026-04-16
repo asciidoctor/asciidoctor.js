@@ -687,7 +687,7 @@ export class Parser {
           if (floatId) {
             block.id = floatId
           } else if ('sectids' in docAttrs) {
-            block.id = Section.generateId(block.title, document)
+            block.id = Section.generateId(block.attrSubstitutedTitle ?? block.title, document)
           }
           block.level = floatLevel
           break
@@ -761,7 +761,7 @@ export class Parser {
             const { Reader: Rdr } = _requireReader()
             block = await Parser.buildBlock('quote', 'compound', false, parent, new Rdr(mapped), attributes)
             if (creditLine) {
-              const subsApplied = block.applySubs(creditLine, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
+              const subsApplied = await block.applySubs(creditLine, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
               const commaIdx = subsApplied.indexOf(', ')
               const attribution = commaIdx !== -1 ? subsApplied.slice(0, commaIdx) : subsApplied
               const citetitle = commaIdx !== -1 ? subsApplied.slice(commaIdx + 2) : null
@@ -775,7 +775,7 @@ export class Parser {
             lines[lines.length - 1] = lines[lines.length - 1].slice(0, -1)
             attributes['style'] = 'quote'
             block = new Block(parent, 'quote', { content_model: 'simple', source: lines, attributes })
-            const subsApplied = block.applySubs(cred, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
+            const subsApplied = await block.applySubs(cred, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
             const commaIdx = subsApplied.indexOf(', ')
             const attribution = commaIdx !== -1 ? subsApplied.slice(0, commaIdx) : subsApplied
             const citetitle = commaIdx !== -1 ? subsApplied.slice(commaIdx + 2) : null
@@ -1521,7 +1521,7 @@ export class Parser {
         section.title
       }
     } else if ('sectids' in document.attributes) {
-      section.id = id = Section.generateId(section.title, document)
+      section.id = id = Section.generateId(section.attrSubstitutedTitle ?? section.title, document)
     }
 
     if (id && !document.register('refs', [id, section])) {
@@ -1671,7 +1671,7 @@ export class Parser {
         if (authorcount > 0) {
           for (const [key, val] of Object.entries(parsed)) {
             if (!(key in docAttrs)) {
-              docAttrs[key] = document.applyHeaderSubs(val)
+              docAttrs[key] = await document.applyHeaderSubs(val)
             }
           }
           implicitAuthor          = docAttrs['author']
@@ -1701,7 +1701,7 @@ export class Parser {
           if (rm[3]) revMetadata['revremark'] = rm[3].trimEnd()
           if (document && docAttrs && Object.keys(revMetadata).length > 0) {
             for (const [key, val] of Object.entries(revMetadata)) {
-              if (!(key in docAttrs)) docAttrs[key] = document.applyHeaderSubs(val)
+              if (!(key in docAttrs)) docAttrs[key] = await document.applyHeaderSubs(val)
             }
           }
           Object.assign(implicitAuthorMetadata, revMetadata)

@@ -11,7 +11,7 @@
 //   - node.footnotes? → node.hasFootnotes()
 //   - node.noheader/notitle/nofooter → node.isNoheader()/isNotitle()/isNofooter()
 //   - node.sections → node.sections() (method)
-//   - node.content → node.content (method on Block/Document)
+//   - await node.content() → await node.content() (method on Block/Document)
 //   - alias convert_pass content_only → convert_pass delegates to this.contentOnly()
 //   - Stylesheets.instance.primary_stylesheet_data → not yet ported; embed yields empty <style>
 //   - read_svg_contents uses readAsset (synchronous) rather than async readContents
@@ -82,7 +82,7 @@ export default class Html5Converter extends ConverterBase {
     })
   }
 
-  convert_document (node) {
+  async convert_document (node) {
     const slash = this._voidSlash
     const br = `<br${slash}>`
     let assetUriScheme = node.attr('asset-uri-scheme', 'https')
@@ -157,7 +157,7 @@ export default class Html5Converter extends ConverterBase {
         result.push(`<link rel="stylesheet" href="${node.normalizeWebPath(node.attr('stylesheet'), node.attr('stylesdir'))}"${slash}>`)
       } else {
         const cssPath = node.normalizeSystemPath(node.attr('stylesheet'), node.attr('stylesdir'))
-        const cssData = node.readAsset(cssPath, { warnOnFailure: true, label: 'stylesheet' }) ?? ''
+        const cssData = await node.readAsset(cssPath, { warnOnFailure: true, label: 'stylesheet' }) ?? ''
         result.push(`<style>\n${cssData}\n</style>`)
       }
     }
@@ -180,7 +180,7 @@ export default class Html5Converter extends ConverterBase {
       result.push('') // placeholder; replaced or spliced out below
     }
 
-    const docinfoContent = node.docinfo()
+    const docinfoContent = await node.docinfo()
     if (docinfoContent) result.push(docinfoContent)
 
     result.push('</head>')
@@ -196,7 +196,7 @@ export default class Html5Converter extends ConverterBase {
     if (node.role) classes.push(node.role)
     result.push(`<body${idAttr} class="${classes.join(' ')}">`)
 
-    const headerDocinfo = node.docinfo('header')
+    const headerDocinfo = await node.docinfo('header')
     if (headerDocinfo) result.push(headerDocinfo)
 
     if (!node.isNoheader()) {
@@ -206,7 +206,7 @@ export default class Html5Converter extends ConverterBase {
         if (sectioned && node.hasAttr('toc') && node.hasAttr('toc-placement', 'auto')) {
           result.push(`<div id="toc" class="${node.attr('toc-class', 'toc')}">
 <div id="toctitle">${node.attr('toc-title')}</div>
-${node.converter.convert(node, 'outline')}
+${await node.converter.convert(node, 'outline')}
 </div>`)
         }
         if (node.hasAttr('manpurpose')) result.push(this._generateMannameSection(node))
@@ -241,7 +241,7 @@ ${node.converter.convert(node, 'outline')}
         if (sectioned && node.hasAttr('toc') && node.hasAttr('toc-placement', 'auto')) {
           result.push(`<div id="toc" class="${node.attr('toc-class', 'toc')}">
 <div id="toctitle">${node.attr('toc-title')}</div>
-${node.converter.convert(node, 'outline')}
+${await node.converter.convert(node, 'outline')}
 </div>`)
         }
       }
@@ -249,7 +249,7 @@ ${node.converter.convert(node, 'outline')}
     }
 
     result.push(`<div id="content"${maxWidthAttr}>
-${node.content}
+${await node.content()}
 </div>`)
 
     if (node.hasFootnotes() && !node.hasAttr('nofootnotes')) {
@@ -327,7 +327,7 @@ MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
 <script src="${cdnBaseUrl}/mathjax/${MATHJAX_VERSION}/MathJax.js?config=TeX-MML-AM_CHTML"></script>`)
     }
 
-    const footerDocinfo = node.docinfo('footer')
+    const footerDocinfo = await node.docinfo('footer')
     if (footerDocinfo) result.push(footerDocinfo)
 
     result.push('</body>')
@@ -335,7 +335,7 @@ MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
     return result.join(LF)
   }
 
-  convert_embedded (node) {
+  async convert_embedded (node) {
     const result = []
     if (node.doctype === 'manpage') {
       if (!node.isNotitle()) {
@@ -353,12 +353,12 @@ MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
       if (tocP !== 'macro' && tocP !== 'preamble') {
         result.push(`<div id="toc" class="toc">
 <div id="toctitle">${node.attr('toc-title')}</div>
-${node.converter.convert(node, 'outline')}
+${await node.converter.convert(node, 'outline')}
 </div>`)
       }
     }
 
-    result.push(node.content)
+    result.push(await node.content())
 
     if (node.hasFootnotes() && !node.hasAttr('nofootnotes')) {
       result.push(`<div id="footnotes">
@@ -374,7 +374,7 @@ ${node.converter.convert(node, 'outline')}
     return result.join(LF)
   }
 
-  convert_outline (node, opts = {}) {
+  async convert_outline (node, opts = {}) {
     if (!node.hasSections()) return null
     const sections = node.sections()
     const parts = node.context === 'document' && node.isMultipart()
@@ -429,7 +429,7 @@ ${node.converter.convert(node, 'outline')}
 
       const otag = slevel === sectlevel ? '<li>' : `<li class="sectlevel${slevel}">`
       if (slevel < stoclevels) {
-        const childTocLevel = this.convert_outline(section, { toclevels: stoclevels, sectnumlevels })
+        const childTocLevel = await this.convert_outline(section, { toclevels: stoclevels, sectnumlevels })
         if (childTocLevel) {
           result.push(`${otag}<a href="#${section.id}">${stitle}</a>`)
           result.push(childTocLevel)
@@ -443,7 +443,7 @@ ${node.converter.convert(node, 'outline')}
     return result.join(LF)
   }
 
-  convert_section (node) {
+  async convert_section (node) {
     const docAttrs = node.document.attributes
     const level = node.level
     let title
@@ -492,19 +492,19 @@ ${node.converter.convert(node, 'outline')}
     const role = node.role
     if (level === 0) {
       return `<h1${idAttr} class="sect0${role ? ` ${role}` : ''}">${title}</h1>
-${node.content}`
+${await node.content()}`
     }
     return `<div class="sect${level}${role ? ` ${role}` : ''}">
 <h${level + 1}${idAttr}>${title}</h${level + 1}>
 ${level === 1
       ? `<div class="sectionbody">
-${node.content}
+${await node.content()}
 </div>`
-      : node.content}
+      : await node.content()}
 </div>`
   }
 
-  convert_admonition (node) {
+  async convert_admonition (node) {
     const idAttr = node.id ? ` id="${node.id}"` : ''
     const name = node.attr('name')
     const titleElement = node.hasTitle() ? `<div class="title">${node.title}</div>\n` : ''
@@ -513,7 +513,7 @@ ${node.content}
       if (node.document.hasAttr('icons', 'font') && !node.hasAttr('icon')) {
         label = `<i class="fa icon-${name}" title="${node.attr('textlabel')}"></i>`
       } else {
-        label = `<img src="${node.iconUri(name)}" alt="${node.attr('textlabel')}"${this._voidSlash}>`
+        label = `<img src="${await node.iconUri(name)}" alt="${node.attr('textlabel')}"${this._voidSlash}>`
       }
     } else {
       label = `<div class="title">${node.attr('textlabel')}</div>`
@@ -525,14 +525,14 @@ ${node.content}
 ${label}
 </td>
 <td class="content">
-${titleElement}${node.content}
+${titleElement}${await node.content()}
 </td>
 </tr>
 </table>
 </div>`
   }
 
-  convert_audio (node) {
+  async convert_audio (node) {
     const xml = this._xmlMode
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const classes = ['audioblock', node.role].filter(Boolean)
@@ -550,7 +550,7 @@ Your browser does not support the audio tag.
 </div>`
   }
 
-  convert_colist (node) {
+  async convert_colist (node) {
     const result = []
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const classes = ['colist', node.style, node.role].filter(Boolean)
@@ -569,11 +569,11 @@ Your browser does not support the audio tag.
         if (fontIcons) {
           numLabel = `<i class="conum" data-value="${num}"></i><b>${num}</b>`
         } else {
-          numLabel = `<img src="${node.iconUri(`callouts/${num}`)}" alt="${num}"${this._voidSlash}>`
+          numLabel = `<img src="${await node.iconUri(`callouts/${num}`)}" alt="${num}"${this._voidSlash}>`
         }
         result.push(`<tr>
 <td>${numLabel}</td>
-<td>${item.text}${item.hasBlocks() ? LF + item.content : ''}</td>
+<td>${item.text}${item.hasBlocks() ? LF + await item.content() : ''}</td>
 </tr>`)
       }
       result.push('</table>')
@@ -581,7 +581,7 @@ Your browser does not support the audio tag.
       result.push('<ol>')
       for (const item of node.items) {
         result.push(`<li>
-<p>${item.text}</p>${item.hasBlocks() ? LF + item.content : ''}
+<p>${item.text}</p>${item.hasBlocks() ? LF + await item.content() : ''}
 </li>`)
       }
       result.push('</ol>')
@@ -591,7 +591,7 @@ Your browser does not support the audio tag.
     return result.join(LF)
   }
 
-  convert_dlist (node) {
+  async convert_dlist (node) {
     const result = []
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     let classes
@@ -620,7 +620,7 @@ Your browser does not support the audio tag.
           }
           if (dd) {
             if (dd.hasText()) result.push(`<p>${dd.text}</p>`)
-            if (dd.hasBlocks()) result.push(dd.content)
+            if (dd.hasBlocks()) result.push(await dd.content())
           }
           result.push('</li>')
         }
@@ -654,7 +654,7 @@ Your browser does not support the audio tag.
           result.push('<td class="hdlist2">')
           if (dd) {
             if (dd.hasText()) result.push(`<p>${dd.text}</p>`)
-            if (dd.hasBlocks()) result.push(dd.content)
+            if (dd.hasBlocks()) result.push(await dd.content())
           }
           result.push('</td>')
           result.push('</tr>')
@@ -672,7 +672,7 @@ Your browser does not support the audio tag.
           if (!dd) continue
           result.push('<dd>')
           if (dd.hasText()) result.push(`<p>${dd.text}</p>`)
-          if (dd.hasBlocks()) result.push(dd.content)
+          if (dd.hasBlocks()) result.push(await dd.content())
           result.push('</dd>')
         }
         result.push('</dl>')
@@ -683,7 +683,7 @@ Your browser does not support the audio tag.
     return result.join(LF)
   }
 
-  convert_example (node) {
+  async convert_example (node) {
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     if (node.hasOption('collapsible')) {
       const classAttribute = node.role ? ` class="${node.role}"` : ''
@@ -693,7 +693,7 @@ Your browser does not support the audio tag.
       return `<details${idAttribute}${classAttribute}${node.hasOption('open') ? ' open' : ''}>
 ${summaryElement}
 <div class="content">
-${node.content}
+${await node.content()}
 </div>
 </details>`
     }
@@ -701,19 +701,19 @@ ${node.content}
     const role = node.role
     return `<div${idAttribute} class="exampleblock${role ? ` ${role}` : ''}">
 ${titleElement}<div class="content">
-${node.content}
+${await node.content()}
 </div>
 </div>`
   }
 
-  convert_floating_title (node) {
+  async convert_floating_title (node) {
     const tagName = `h${node.level + 1}`
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const classes = [node.style, node.role].filter(Boolean)
     return `<${tagName}${idAttribute} class="${classes.join(' ')}">${node.title}</${tagName}>`
   }
 
-  convert_image (node) {
+  async convert_image (node) {
     const target = node.attr('target')
     const widthAttr = node.hasAttr('width') ? ` width="${node.attr('width')}"` : ''
     const heightAttr = node.hasAttr('height') ? ` height="${node.attr('height')}"` : ''
@@ -722,19 +722,19 @@ ${node.content}
     if ((node.hasAttr('format', 'svg') || target.includes('.svg')) &&
       node.document.safe < SafeMode.SECURE) {
       if (node.hasOption('inline')) {
-        img = this.readSvgContents(node, target) || `<span class="alt">${node.alt()}</span>`
+        img = await this.readSvgContents(node, target) || `<span class="alt">${node.alt()}</span>`
       } else if (node.hasOption('interactive') && node.document.safe >= SafeMode.SERVER) {
         const fallback = node.hasAttr('fallback')
-          ? `<img src="${node.imageUri(node.attr('fallback'))}" alt="${this._encodeAttrValue(node.alt())}"${widthAttr}${heightAttr}${slash}>`
+          ? `<img src="${await node.imageUri(node.attr('fallback'))}" alt="${this._encodeAttrValue(node.alt())}"${widthAttr}${heightAttr}${slash}>`
           : `<span class="alt">${node.alt()}</span>`
-        src = node.imageUri(target)
+        src = await node.imageUri(target)
         img = `<object type="image/svg+xml" data="${src}"${widthAttr}${heightAttr}>${fallback}</object>`
       } else {
-        src = node.imageUri(target)
+        src = await node.imageUri(target)
         img = `<img src="${src}" alt="${this._encodeAttrValue(node.alt())}"${widthAttr}${heightAttr}${slash}>`
       }
     } else {
-      src = node.imageUri(target)
+      src = await node.imageUri(target)
       img = `<img src="${src}" alt="${this._encodeAttrValue(node.alt())}"${widthAttr}${heightAttr}${slash}>`
     }
 
@@ -760,7 +760,7 @@ ${img}
 </div>`
   }
 
-  convert_listing (node) {
+  async convert_listing (node) {
     const nowrap = node.hasOption('nowrap') || !node.document.hasAttr('prewrap')
     let preOpen, preClose, syntaxHl, lang, opts
     if (node.style === 'source') {
@@ -789,8 +789,8 @@ ${img}
     const titleElement = node.hasTitle() ? `<div class="title">${node.captionedTitle()}</div>\n` : ''
     const role = node.role
     const inner = syntaxHl
-      ? syntaxHl.format(node, lang, opts)
-      : `${preOpen}${node.content}${preClose}`
+      ? await syntaxHl.format(node, lang, opts)
+      : `${preOpen}${await node.content()}${preClose}`
     return `<div${idAttribute} class="listingblock${role ? ` ${role}` : ''}">
 ${titleElement}<div class="content">
 ${inner}
@@ -798,24 +798,24 @@ ${inner}
 </div>`
   }
 
-  convert_literal (node) {
+  async convert_literal (node) {
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const titleElement = node.hasTitle() ? `<div class="title">${node.title}</div>\n` : ''
     const nowrap = !node.document.hasAttr('prewrap') || node.hasOption('nowrap')
     const role = node.role
     return `<div${idAttribute} class="literalblock${role ? ` ${role}` : ''}">
 ${titleElement}<div class="content">
-<pre${nowrap ? ' class="nowrap"' : ''}>${node.content}</pre>
+<pre${nowrap ? ' class="nowrap"' : ''}>${await node.content()}</pre>
 </div>
 </div>`
   }
 
-  convert_stem (node) {
+  async convert_stem (node) {
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const titleElement = node.hasTitle() ? `<div class="title">${node.title}</div>\n` : ''
     const style = node.style
     const [open, close] = BLOCK_MATH_DELIMITERS[style] ?? ['', '']
-    let equation = node.content
+    let equation = await node.content()
     if (equation) {
       if (style === 'asciimath' && equation.includes(LF)) {
         const br = `${LF}<br${this._voidSlash}>`
@@ -838,7 +838,7 @@ ${equation}
 </div>`
   }
 
-  convert_olist (node) {
+  async convert_olist (node) {
     const result = []
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const classes = ['olist', node.style, node.role].filter(Boolean)
@@ -862,7 +862,7 @@ ${equation}
         result.push('<li>')
       }
       result.push(`<p>${item.text}</p>`)
-      if (item.hasBlocks()) result.push(item.content)
+      if (item.hasBlocks()) result.push(await item.content())
       result.push('</li>')
     }
 
@@ -871,7 +871,7 @@ ${equation}
     return result.join(LF)
   }
 
-  convert_open (node) {
+  async convert_open (node) {
     const style = node.style
     if (style === 'abstract') {
       if (node.parent === node.document && node.document.doctype === 'book') {
@@ -883,7 +883,7 @@ ${equation}
       const role = node.role
       return `<div${idAttr} class="quoteblock abstract${role ? ` ${role}` : ''}">
 ${titleEl}<blockquote>
-${node.content}
+${await node.content()}
 </blockquote>
 </div>`
     }
@@ -897,16 +897,16 @@ ${node.content}
     const role = node.role
     return `<div${idAttr} class="openblock${style && style !== 'open' ? ` ${style}` : ''}${role ? ` ${role}` : ''}">
 ${titleEl}<div class="content">
-${node.content}
+${await node.content()}
 </div>
 </div>`
   }
 
-  convert_page_break (_node) {
+  async convert_page_break (_node) {
     return '<div class="page-break"></div>'
   }
 
-  convert_paragraph (node) {
+  async convert_paragraph (node) {
     let attributes
     if (node.role) {
       attributes = `${node.id ? ` id="${node.id}"` : ''} class="paragraph ${node.role}"`
@@ -918,37 +918,37 @@ ${node.content}
     if (node.hasTitle()) {
       return `<div${attributes}>
 <div class="title">${node.title}</div>
-<p>${node.content}</p>
+<p>${await node.content()}</p>
 </div>`
     }
     return `<div${attributes}>
-<p>${node.content}</p>
+<p>${await node.content()}</p>
 </div>`
   }
 
   // alias convert_pass → content_only
-  convert_pass (node) {
+  async convert_pass (node) {
     return this.contentOnly(node)
   }
 
-  convert_preamble (node) {
+  async convert_preamble (node) {
     let toc = ''
     const doc = node.document
     if (doc.hasAttr('toc-placement', 'preamble') && doc.hasSections() && doc.hasAttr('toc')) {
       toc = `
 <div id="toc" class="${doc.attr('toc-class', 'toc')}">
 <div id="toctitle">${doc.attr('toc-title')}</div>
-${doc.converter.convert(doc, 'outline')}
+${await doc.converter.convert(doc, 'outline')}
 </div>`
     }
     return `<div id="preamble">
 <div class="sectionbody">
-${node.content}
+${await node.content()}
 </div>${toc}
 </div>`
   }
 
-  convert_quote (node) {
+  async convert_quote (node) {
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const classes = ['quoteblock', node.role].filter(Boolean)
     const classAttribute = ` class="${classes.join(' ')}"`
@@ -965,28 +965,28 @@ ${node.content}
     }
     return `<div${idAttribute}${classAttribute}>${titleElement}
 <blockquote>
-${node.content}
+${await node.content()}
 </blockquote>${attributionElement}
 </div>`
   }
 
-  convert_thematic_break (node) {
+  async convert_thematic_break (node) {
     const classAttribute = node.role ? ` class="${node.role}"` : ''
     return `<hr${classAttribute}${this._voidSlash}>`
   }
 
-  convert_sidebar (node) {
+  async convert_sidebar (node) {
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const titleElement = node.hasTitle() ? `<div class="title">${node.title}</div>\n` : ''
     const role = node.role
     return `<div${idAttribute} class="sidebarblock${role ? ` ${role}` : ''}">
 <div class="content">
-${titleElement}${node.content}
+${titleElement}${await node.content()}
 </div>
 </div>`
   }
 
-  convert_table (node) {
+  async convert_table (node) {
     const result = []
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     let frame = node.attr('frame', 'all', 'table-frame')
@@ -1039,13 +1039,13 @@ ${titleElement}${node.content}
             } else {
               switch (cell.style) {
                 case 'asciidoc':
-                  cellContent = `<div class="content">${cell.content}</div>`
+                  cellContent = `<div class="content">${await cell.content()}</div>`
                   break
                 case 'literal':
                   cellContent = `<div class="literal"><pre>${cell.text}</pre></div>`
                   break
                 default: {
-                  const parts = cell.content
+                  const parts = await cell.content()
                   cellContent = parts.length === 0
                     ? ''
                     : `<p class="tableblock">${parts.join('</p>\n<p class="tableblock">')}</p>`
@@ -1056,8 +1056,11 @@ ${titleElement}${node.content}
             const cellClassAttr = ` class="tableblock halign-${cell.attr('halign')} valign-${cell.attr('valign')}"`
             const cellColspanAttr = cell.colspan ? ` colspan="${cell.colspan}"` : ''
             const cellRowspanAttr = cell.rowspan ? ` rowspan="${cell.rowspan}"` : ''
-            const cellStyleAttr = node.document.hasAttr('cellbgcolor')
-              ? ` style="background-color: ${node.document.attr('cellbgcolor')};"`
+            // Use the per-cell captured cellbgcolor (set by {set:cellbgcolor:...} in cell text
+            // during precomputeText). Fall back to the current document attribute if not captured.
+            const cellbgcolor = '_cellbgcolor' in cell ? cell._cellbgcolor : node.document.attributes['cellbgcolor']
+            const cellStyleAttr = cellbgcolor
+              ? ` style="background-color: ${cellbgcolor};"`
               : ''
             result.push(`<${cellTagName}${cellClassAttr}${cellColspanAttr}${cellRowspanAttr}${cellStyleAttr}>${cellContent}</${cellTagName}>`)
           }
@@ -1070,7 +1073,7 @@ ${titleElement}${node.content}
     return result.join(LF)
   }
 
-  convert_toc (node) {
+  async convert_toc (node) {
     const doc = node.document
     if (!doc.hasAttr('toc-placement', 'macro') || !doc.hasSections() || !doc.hasAttr('toc')) {
       return '<!-- toc disabled -->'
@@ -1088,11 +1091,11 @@ ${titleElement}${node.content}
     const role = node.hasRoleAttr() ? node.role : doc.attr('toc-class', 'toc')
     return `<div${idAttr} class="${role}">
 <div${titleIdAttr} class="title">${title}</div>
-${doc.converter.convert(doc, 'outline', levels != null ? { toclevels: levels } : {})}
+${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: levels } : {})}
 </div>`
   }
 
-  convert_ulist (node) {
+  async convert_ulist (node) {
     const result = []
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const divClasses = ['ulist', node.style, node.role].filter(Boolean)
@@ -1138,7 +1141,7 @@ ${doc.converter.convert(doc, 'outline', levels != null ? { toclevels: levels } :
       } else {
         result.push(`<p>${item.text}</p>`)
       }
-      if (item.hasBlocks()) result.push(item.content)
+      if (item.hasBlocks()) result.push(await item.content())
       result.push('</li>')
     }
 
@@ -1147,7 +1150,7 @@ ${doc.converter.convert(doc, 'outline', levels != null ? { toclevels: levels } :
     return result.join(LF)
   }
 
-  convert_verse (node) {
+  async convert_verse (node) {
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const classes = ['verseblock', node.role].filter(Boolean)
     const classAttribute = ` class="${classes.join(' ')}"`
@@ -1163,11 +1166,11 @@ ${doc.converter.convert(doc, 'outline', levels != null ? { toclevels: levels } :
       attributionElement = `\n<div class="attribution">\n${attributionText}${citeElement}\n</div>`
     }
     return `<div${idAttribute}${classAttribute}>${titleElement}
-<pre class="content">${node.content}</pre>${attributionElement}
+<pre class="content">${await node.content()}</pre>${attributionElement}
 </div>`
   }
 
-  convert_video (node) {
+  async convert_video (node) {
     const xml = this._xmlMode
     const idAttribute = node.id ? ` id="${node.id}"` : ''
     const classes = ['videoblock']
@@ -1278,7 +1281,7 @@ Your browser does not support the video tag.
     }
   }
 
-  convert_inline_anchor (node) {
+  async convert_inline_anchor (node) {
     switch (node.type) {
       case 'xref': {
         let attrs, text
@@ -1296,15 +1299,16 @@ Your browser does not support the video tag.
             let top
             const ref = refs[refid] ?? (!refid ? (top = this._getRootDocument(node)) : null)
             if (ref instanceof AbstractNode) {
-              let outer
-              if ((this._resolvingXref ??= (outer = true, true)) && outer) {
-                const resolved = ref.xreftext(node.attr('xrefstyle', null, true))
+              const resolvingSet = (this._resolvingXrefs ??= new Set())
+              if (!resolvingSet.has(refid)) {
+                resolvingSet.add(refid)
+                const resolved = await ref.xreftext(node.attr('xrefstyle', null, true))
+                resolvingSet.delete(refid)
                 if (resolved) {
                   text = resolved.includes('<a') ? resolved.replace(new RegExp(DropAnchorRx.source, 'g'), '') : resolved
                 } else {
                   text = top ? '[^top]' : `[${refid}]`
                 }
-                this._resolvingXref = null
               } else {
                 text = top ? '[^top]' : `[${refid}]`
               }
@@ -1331,20 +1335,20 @@ Your browser does not support the video tag.
     }
   }
 
-  convert_inline_break (node) {
+  async convert_inline_break (node) {
     return `${node.text}<br${this._voidSlash}>`
   }
 
-  convert_inline_button (node) {
+  async convert_inline_button (node) {
     return `<b class="button">${node.text}</b>`
   }
 
-  convert_inline_callout (node) {
+  async convert_inline_callout (node) {
     if (node.document.hasAttr('icons', 'font')) {
       return `<i class="conum" data-value="${node.text}"></i><b>(${node.text})</b>`
     }
     if (node.document.hasAttr('icons')) {
-      const src = node.iconUri(`callouts/${node.text}`)
+      const src = await node.iconUri(`callouts/${node.text}`)
       return `<img src="${src}" alt="${node.text}"${this._voidSlash}>`
     }
     const guard = node.attributes.guard
@@ -1354,7 +1358,7 @@ Your browser does not support the video tag.
     return `${guard ?? ''}<b class="conum">(${node.text})</b>`
   }
 
-  convert_inline_footnote (node) {
+  async convert_inline_footnote (node) {
     const index = node.attr('index')
     if (index) {
       if (node.type === 'xref') {
@@ -1369,7 +1373,7 @@ Your browser does not support the video tag.
     return null
   }
 
-  convert_inline_image (node) {
+  async convert_inline_image (node) {
     const target = node.target
     const type = node.type || 'image'
     let img, src
@@ -1389,7 +1393,7 @@ Your browser does not support the video tag.
         let attrs = node.hasAttr('width') ? ` width="${node.attr('width')}"` : ''
         if (node.hasAttr('height')) attrs += ` height="${node.attr('height')}"`
         if (node.hasAttr('title')) attrs += ` title="${node.attr('title')}"`
-        img = `<img src="${node.iconUri(target)}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
+        img = `<img src="${await node.iconUri(target)}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
       } else {
         img = `[${node.alt()}&#93;`
       }
@@ -1400,19 +1404,19 @@ Your browser does not support the video tag.
       if ((node.hasAttr('format', 'svg') || target.includes('.svg')) &&
         node.document.safe < SafeMode.SECURE) {
         if (node.hasOption('inline')) {
-          img = this.readSvgContents(node, target) || `<span class="alt">${node.alt()}</span>`
+          img = await this.readSvgContents(node, target) || `<span class="alt">${node.alt()}</span>`
         } else if (node.hasOption('interactive') && node.document.safe >= SafeMode.SERVER) {
           const fallback = node.hasAttr('fallback')
-            ? `<img src="${node.imageUri(node.attr('fallback'))}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
+            ? `<img src="${await node.imageUri(node.attr('fallback'))}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
             : `<span class="alt">${node.alt()}</span>`
-          src = node.imageUri(target)
+          src = await node.imageUri(target)
           img = `<object type="image/svg+xml" data="${src}"${attrs}>${fallback}</object>`
         } else {
-          src = node.imageUri(target)
+          src = await node.imageUri(target)
           img = `<img src="${src}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
         }
       } else {
-        src = node.imageUri(target)
+        src = await node.imageUri(target)
         img = `<img src="${src}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
       }
     }
@@ -1438,11 +1442,11 @@ Your browser does not support the video tag.
     return `<span${idAttr} class="${classAttrVal}">${img}</span>`
   }
 
-  convert_inline_indexterm (node) {
+  async convert_inline_indexterm (node) {
     return node.type === 'visible' ? node.text : ''
   }
 
-  convert_inline_kbd (node) {
+  async convert_inline_kbd (node) {
     const keys = node.attr('keys')
     if (keys.length === 1) {
       return `<kbd>${keys[0]}</kbd>`
@@ -1450,7 +1454,7 @@ Your browser does not support the video tag.
     return `<span class="keyseq"><kbd>${keys.join('</kbd>+<kbd>')}</kbd></span>`
   }
 
-  convert_inline_menu (node) {
+  async convert_inline_menu (node) {
     const caret = node.document.hasAttr('icons', 'font')
       ? '&#160;<i class="fa fa-angle-right caret"></i> '
       : '&#160;<b class="caret">&#8250;</b> '
@@ -1467,7 +1471,7 @@ Your browser does not support the video tag.
     return `<span class="menuseq"><b class="menu">${menu}</b>${caret}<b class="submenu">${submenus.join(submenuJoiner)}</b>${caret}<b class="menuitem">${node.attr('menuitem')}</b></span>`
   }
 
-  convert_inline_quoted (node) {
+  async convert_inline_quoted (node) {
     const [open, close, tag] = QUOTE_TAGS[node.type] ?? DEFAULT_QUOTE_TAG
     if (node.id) {
       const classAttr = node.role ? ` class="${node.role}"` : ''
@@ -1486,9 +1490,9 @@ Your browser does not support the video tag.
   }
 
   // NOTE expose readSvgContents for Bespoke converter
-  readSvgContents (node, target) {
+  async readSvgContents (node, target) {
     const resolvedPath = node.normalizeSystemPath(target, node.document.attr('imagesdir'), null, { targetName: 'image' })
-    let svg = node.readAsset(resolvedPath, { normalize: true, warnOnFailure: true, label: 'SVG' })
+    let svg = await node.readAsset(resolvedPath, { normalize: true, warnOnFailure: true, label: 'SVG' })
     if (svg == null) return null  // file not found/readable; warning already emitted
     if (!svg) {
       node.logger.warn(`contents of SVG is empty: ${resolvedPath}`)

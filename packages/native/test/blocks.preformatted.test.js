@@ -64,7 +64,7 @@ eof
     test('should return content as empty string for verbatim or raw block that has no lines', async () => {
       for (const input of ['----\n----', '....\n....']) {
         const doc = await documentFromString(input)
-        assert.equal(doc.blocks[0].content, '')
+        assert.equal(await doc.blocks[0].content(), '')
       }
     })
 
@@ -354,7 +354,7 @@ Map<String, String> *attributes*; //<1>
 `
       const block = await blockFromString(input)
       assert.deepEqual(block.subs, ['specialcharacters', 'callouts', 'quotes'])
-      const output = block.convert()
+      const output = await block.convert()
       assert.ok(output.includes('Map&lt;String, String&gt; <strong>attributes</strong>;'))
       assertXpath(output, '//pre/b[text()="(1)"]', 1)
     })
@@ -368,7 +368,8 @@ No callout here <1>
 `
       const block = await blockFromString(input)
       assert.deepEqual(block.subs, ['specialcharacters'])
-      const output = block.convert()
+      const output = await
+        block.convert()
       assertXpath(output, '//pre/b[text()="(1)"]', 0)
     })
 

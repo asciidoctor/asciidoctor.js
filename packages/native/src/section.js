@@ -48,7 +48,10 @@ export class Section extends AbstractBlock {
 
   // Public: Generate a String ID from the title of this section.
   generateId () {
-    return Section.generateId(this.title, this.document)
+    // Use the attr-substituted (but not specialchars-substituted) title for ID generation.
+    // This allows {attr} references to be resolved while keeping HTML entities as raw AsciiDoc
+    // so that InvalidSectionIdCharsRx can correctly strip them.
+    return Section.generateId(this.attrSubstitutedTitle ?? this.title, this.document)
   }
 
   // Public: Get the section number for the current Section as a dot-separated String.
@@ -67,7 +70,7 @@ export class Section extends AbstractBlock {
   }
 
   // (see AbstractBlock#xreftext)
-  xreftext (xrefstyle = null) {
+  async xreftext (xrefstyle = null) {
     const val = this.reftext
     if (val && val.length > 0) return val
 
@@ -78,10 +81,10 @@ export class Section extends AbstractBlock {
           case 'full': {
             let quotedTitle
             if (type === 'chapter' || type === 'appendix') {
-              quotedTitle = this.subPlaceholder(this.subQuotes('_%s_'), this.title)
+              quotedTitle = this.subPlaceholder(await this.subQuotes('_%s_'), this.title)
             } else {
               const q = this.document.compatMode ? "``%s''" : '"`%s`"'
-              quotedTitle = this.subPlaceholder(this.subQuotes(q), this.title)
+              quotedTitle = this.subPlaceholder(await this.subQuotes(q), this.title)
             }
             const signifier = this.document.attributes[`${type}-refsig`]
             return signifier
@@ -97,7 +100,7 @@ export class Section extends AbstractBlock {
           default: { // 'basic'
             const t = this.sectname
             return (t === 'chapter' || t === 'appendix')
-              ? this.subPlaceholder(this.subQuotes('_%s_'), this.title)
+              ? this.subPlaceholder(await this.subQuotes('_%s_'), this.title)
               : this.title
           }
         }
@@ -105,7 +108,7 @@ export class Section extends AbstractBlock {
         // apply basic styling
         const t = this.sectname
         return (t === 'chapter' || t === 'appendix')
-          ? this.subPlaceholder(this.subQuotes('_%s_'), this.title)
+          ? this.subPlaceholder(await this.subQuotes('_%s_'), this.title)
           : this.title
       }
     }

@@ -24,7 +24,7 @@ export class Inline extends AbstractNode {
   // Public: Convert this inline element using the document's converter.
   //
   // Returns the String result.
-  convert () { return this.converter.convert(this) }
+  async convert () { return this.converter.convert(this) }
 
   // Deprecated: Use convert() instead.
   render () { return this.convert() }
@@ -47,11 +47,20 @@ export class Inline extends AbstractNode {
   }
 
   // Public: Get the reftext for this inline node with substitutions applied.
+  // The result is pre-computed during Document.parse() via precomputeReftext().
+  // Falls back to the raw text if precomputeReftext() has not been called yet.
   //
   // Returns the String reftext, or null.
   get reftext () {
+    if (this._convertedReftext !== undefined) return this._convertedReftext
+    return this.text ?? null
+  }
+
+  // Public: Pre-compute the reftext with substitutions applied asynchronously.
+  // Called during Document.parse() so the synchronous getter works during conversion.
+  async precomputeReftext () {
     const val = this.text
-    return val != null ? this.applyReftextSubs(val) : null
+    this._convertedReftext = val != null ? await this.applyReftextSubs(val) : null
   }
 
   // Public: Generate xreftext for this inline node.

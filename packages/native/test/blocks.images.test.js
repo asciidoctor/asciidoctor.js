@@ -287,7 +287,7 @@ image::images/tiger.png[Tiger]
       const image = await blockFromString(input)
       assert.equal(image.getAttr('alt'), 'lions and tigers')
       assert.equal(image.getAttr('default-alt'), 'lions and tigers')
-      const output = image.convert()
+      const output = await image.convert()
       assertXpath(output, '/*[@class="imageblock"]//img[@src="images/lions-and-tigers.png"][@alt="lions and tigers"]', 1)
     })
 
@@ -618,7 +618,7 @@ image::../..//fixtures/./../../fixtures/dot.gif[Dot]
     test('should use the imagesdir attribute set on the node when resolving the image path', async () => {
       const image = await blockFromString('image::rainbow.png[]', { attributes: { imagesdir: 'images' } })
       image.setAttr('imagesdir', 'chapter-1/images')
-      const imageUri = image.imageUri(image.getAttr('target'))
+      const imageUri = await image.imageUri(image.getAttr('target'))
       assert.equal(imageUri, 'chapter-1/images/rainbow.png')
     })
 

@@ -221,7 +221,7 @@ export async function convert (input, options = {}) {
           // NOTE don't warn if src can't be read and dest already exists (see #2323)
           if (stylesheetSrc !== stylesheetDest) {
             const warnOnFailure = !await _isFile(stylesheetDest)
-            const stylesheetData = doc.readAsset(stylesheetSrc, { warnOnFailure, label: 'stylesheet' })
+            const stylesheetData = await doc.readAsset(stylesheetSrc, { warnOnFailure, label: 'stylesheet' })
             if (stylesheetData) {
               const { writeFile } = await import('node:fs/promises')
               const nodePath = await _requirePath()

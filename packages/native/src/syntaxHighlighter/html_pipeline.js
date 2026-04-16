@@ -25,8 +25,8 @@ export class HtmlPipelineAdapter extends SyntaxHighlighterBase {
   // opts - A plain Object of options (unused by this adapter).
   //
   // Returns the wrapped source String.
-  format (node, lang, opts) { // eslint-disable-line no-unused-vars
-    return `<pre${lang ? ` lang="${lang}"` : ''}><code>${node.content}</code></pre>`
+  async format (node, lang, opts) { // eslint-disable-line no-unused-vars
+    return `<pre${lang ? ` lang="${lang}"` : ''}><code>${await node.content()}</code></pre>`
   }
 }
 

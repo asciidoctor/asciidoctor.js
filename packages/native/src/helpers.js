@@ -173,6 +173,34 @@ export function extname (path, fallback = '') {
 // dir - the String path of the directory to create
 //
 // Returns undefined. Throws if the path cannot be created.
+// Public: Async-aware string replacement using matchAll.
+// The replacer may return a string or a Promise<string>.
+// The regex is treated as global regardless of its flags.
+//
+// str      - The String to perform replacements on.
+// regex    - The RegExp pattern to match.
+// replacer - An async function receiving the same arguments as String#replace callbacks.
+//
+// Returns a Promise<String> with all matches replaced.
+export async function asyncReplace (str, regex, replacer) {
+  const gRegex = regex.flags.includes('g')
+    ? regex
+    : new RegExp(regex.source, regex.flags + 'g')
+  const matches = [...str.matchAll(gRegex)]
+  if (matches.length === 0) return str
+  const parts = []
+  let lastIndex = 0
+  for (const match of matches) {
+    parts.push(str.slice(lastIndex, match.index))
+    // Process replacements sequentially so state mutations (e.g. footnote registration)
+    // are visible to subsequent replacements in the same string.
+    parts.push(await replacer(...match, match.index, str))
+    lastIndex = match.index + match[0].length
+  }
+  parts.push(str.slice(lastIndex))
+  return parts.join('')
+}
+
 export async function mkdirP (dir) {
   const { mkdir } = await import('node:fs/promises')
   await mkdir(dir, { recursive: true })

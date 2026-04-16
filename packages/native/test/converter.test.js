@@ -22,8 +22,8 @@ class BlankConverter {
 class DummyConverter {
   constructor () {
     this.transforms = {
-      embedded: (node) => {
-        return `<dummy>${node.getContent()}</dummy>`
+      embedded: async (node) => {
+        return `<dummy>${await node.getContent()}</dummy>`
       },
       paragraph: (node) => {
         return node.getContent()
@@ -41,8 +41,8 @@ class DelegateConverter {
     return this[`convert_${transform || node.nodeName}`](node)
   }
 
-  convert_embedded (node) { // eslint-disable-line camelcase
-    return `<delegate>${node.getContent()}</delegate>`
+  async convert_embedded (node) { // eslint-disable-line camelcase
+    return `<delegate>${await node.getContent()}</delegate>`
   }
 
   convert_paragraph (node) { // eslint-disable-line camelcase
@@ -60,18 +60,18 @@ class TEIConverter {
       htmlsyntax: 'xml'
     }
     this.transforms = {
-      embedded: (node) => {
-        return `<tei>${node.getContent()}</tei>`
+      embedded: async (node) => {
+        return `<tei>${await node.getContent()}</tei>`
       }
     }
   }
 
-  convert (node, transform) {
+  async convert (node, transform) {
     const name = transform || node.nodeName
     if (name === 'paragraph') {
-      return this.convertParagraph(node)
+      return await this.convertParagraph(node)
     }
-    return this.transforms[name](node)
+    return await this.transforms[name](node)
   }
 
   convertParagraph (node) {
@@ -87,8 +87,8 @@ class XMLConverter {
     this.filetype = 'xml'
     this.htmlsyntax = 'xml'
     this.transforms = {
-      embedded: (node) => {
-        return `<xml>${node.getContent()}</xml>`
+      embedded: async (node) => {
+        return `<xml>${await node.getContent()}</xml>`
       }
     }
   }
@@ -116,8 +116,8 @@ class TxtConverter {
       supports_templates: true
     }
     this.transforms = {
-      embedded: (node) => {
-        return `${node.getContent()}`
+      embedded: async (node) => {
+        return `${await node.getContent()}`
       }
     }
   }
@@ -142,8 +142,8 @@ class EPUB3Converter {
     this.outfilesuffix = '.epub'
     this.htmlsyntax = 'xml'
     this.transforms = {
-      embedded: (node) => {
-        return `<epub3>${node.getContent()}</epub3>`
+      embedded: async (node) => {
+        return `<epub3>${await node.getContent()}</epub3>`
       }
     }
   }
@@ -207,7 +207,7 @@ getAttribute('fragment'): true`)
     assert.equal(result, '')
     const html5Converter = registry.html5.create()
     assert.equal(
-      html5Converter.convert(asciidoctor.Block.create(doc, 'paragraph')),
+      await html5Converter.convert(asciidoctor.Block.create(doc, 'paragraph')),
       `<div class="paragraph">\n<p></p>\n</div>`
     )
   })
@@ -272,7 +272,7 @@ getAttribute('fragment'): true`)
       constructor () {
         this.baseConverter = asciidoctor.Html5Converter.create()
         this.transforms = {
-          document: (node) => {
+          document: async (node) => {
             return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -293,7 +293,7 @@ getAttribute('fragment'): true`)
     <h1 class="blog-title">${node.getDocumentTitle()}</h1>
   </section>
   <section>
-    ${node.getContent()}
+    ${await node.getContent()}
   </section>
 </body>`
           }

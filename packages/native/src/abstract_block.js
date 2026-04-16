@@ -67,12 +67,37 @@ export class AbstractBlock extends AbstractNode {
   isInline () { return false }
 
   // Public: Get the String title of this block with title substitutions applied.
-  // The result is memoised; the cache is cleared when the title is reassigned.
+  // The result is pre-computed during Document.parse() via precomputeTitle().
+  // Falls back to applyHeaderSubs (sync) if precomputeTitle() has not been called yet
+  // (e.g. when a title is set via the API after parsing).
   //
   // Returns the converted String title, or null if the source title is falsy.
   get title () {
     if (this.#convertedTitle != null) return this.#convertedTitle
-    return this.#title ? (this.#convertedTitle = this.applyTitleSubs(this.#title)) : null
+    if (this.#title == null) return null
+    // Pre-computation hasn't run (title set after parse, or parse not yet done).
+    // Apply the synchronous header subs (specialcharacters + attributes) as a best-effort.
+    return this.applyHeaderSubs(this.#title)
+  }
+
+  // Public: Pre-compute the converted title asynchronously.
+  // Called during Document.parse() so the synchronous getter works during conversion.
+  async precomputeTitle () {
+    if (this.#title && this.#convertedTitle == null) {
+      this.#convertedTitle = await this.applyTitleSubs(this.#title)
+    }
+  }
+
+  // Internal: Get the raw (unsubstituted) title as set by the parser.
+  get rawTitle () { return this.#title }
+
+  // Internal: Get the title with only attribute substitutions applied (no specialchars).
+  // Used for section ID generation: attribute refs must be resolved, but entities must
+  // remain as raw AsciiDoc so that InvalidSectionIdCharsRx can strip them correctly.
+  get attrSubstitutedTitle () {
+    const raw = this.#title
+    if (raw == null) return null
+    return raw.includes('{') ? this.subAttributes(raw) : raw
   }
 
   // Public: Set the String block title (clears the memoised converted title).
@@ -122,7 +147,7 @@ export class AbstractBlock extends AbstractNode {
   // Public: Convert this block and return the converted String content.
   //
   // Returns the String result of the converter.
-  convert () {
+  async convert () {
     this.document.playbackAttributes(this.attributes)
     return this.converter.convert(this)
   }
@@ -132,13 +157,15 @@ export class AbstractBlock extends AbstractNode {
 
   // Public: Get the converted result of all child blocks joined with a newline.
   //
-  // Returns a String.
-  get content () {
-    return this.blocks.map(b => b.convert()).join(LF)
+  // Returns a Promise<String>.
+  async content () {
+    const results = []
+    for (const b of this.blocks) results.push(await b.convert())
+    return results.join(LF)
   }
 
-  // Public: Alias for the content getter — mirrors the core API.
-  getContent () { return this.content }
+  // Public: Alias for the content method — mirrors the core API.
+  getContent () { return this.content() }
 
   // Public: Append a content block to this block's list of blocks.
   //
@@ -226,13 +253,13 @@ export class AbstractBlock extends AbstractNode {
   // xrefstyle - Optional String style: 'full', 'short', or 'basic' (default: null).
   //
   // Returns a String xreftext, or null.
-  xreftext (xrefstyle = null) {
+  async xreftext (xrefstyle = null) {
     const val = this.reftext
     if (val && val.length > 0) return val
     if (xrefstyle && this.#title && this.#caption) {
       if (xrefstyle === 'full') {
         const quoteTemplate = this.document.compatMode ? "``%s''" : '"`%s`"'
-        const quotedTitle = this.subPlaceholder(this.subQuotes(quoteTemplate), this.title)
+        const quotedTitle = this.subPlaceholder(await this.subQuotes(quoteTemplate), this.title)
         if (this.numeral) {
           const captionAttrName = CAPTION_ATTRIBUTE_NAMES[this.context]
           if (captionAttrName) {

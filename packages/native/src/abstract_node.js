@@ -15,9 +15,7 @@
 //     it falls back to the document's logger or the global console.
 //   - The Substitutors mixin is applied via Object.assign(AbstractNode.prototype, Substitutors)
 //     after both modules are loaded (see the bottom of substitutors.js).
-//   - File I/O in generateDataUri / readAsset uses synchronous Node.js fs APIs because
-//     these methods are called from the synchronous converter pipeline; making them async
-//     would require async converters (deferred to a future refactor).
+//   - File I/O in generateDataUri / readAsset uses node:fs/promises async APIs.
 //     They are unavailable in browser environments — return null / empty data URI there.
 //   - generateDataUriFromUri and readContents use the Fetch API and are async;
 //     imageUri and readContents must be awaited when the data-uri + allow-uri-read
@@ -29,20 +27,16 @@ import { isUriish, encodeSpacesInUri, isExtname, extname, prepareSourceString } 
 
 // ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
 // Loaded once at module init in Node.js; silently absent in browser environments.
-let _fs
+let _fsp
+let _fsConstants
 try {
-  const mod = await import('node:fs')
-  _fs = mod
+  _fsp = await import('node:fs/promises')
+  _fsConstants = (await import('node:fs')).constants
 } catch {}
 
-function isReadable (path) {
-  if (!_fs) return false
-  try {
-    _fs.accessSync(path, _fs.constants.R_OK)
-    return true
-  } catch {
-    return false
-  }
+async function isReadable (path) {
+  if (!_fsp) return false
+  try { await _fsp.access(path, _fsConstants.R_OK); return true } catch { return false }
 }
 
 // Public: An abstract base class that provides state and methods for managing a
@@ -370,11 +364,21 @@ export class AbstractNode {
   }
 
   // Public: Get the value of the reftext attribute with substitutions applied.
+  // The result is pre-computed during Document.parse() via precomputeReftext().
+  // Falls back to the raw reftext attribute if precomputeReftext() has not been called yet.
   //
   // Returns the String reftext or null if not set.
   get reftext () {
+    if (this._convertedReftext !== undefined) return this._convertedReftext
     const val = this.attributes.reftext
-    return val != null ? this.applyReftextSubs(val) : null
+    return val ?? null
+  }
+
+  // Public: Pre-compute the reftext with substitutions applied asynchronously.
+  // Called during Document.parse() so the synchronous getter works during conversion.
+  async precomputeReftext () {
+    const val = this.attributes.reftext
+    this._convertedReftext = val != null ? await this.applyReftextSubs(val) : null
   }
 
   // Public: Check if the reftext attribute is defined.
@@ -393,7 +397,7 @@ export class AbstractNode {
   // name - The String name of the icon.
   //
   // Returns a String reference or data URI for the icon image.
-  iconUri (name) {
+  async iconUri (name) {
     let icon
     if (this.hasAttr('icon')) {
       icon = this.attr('icon')
@@ -418,8 +422,8 @@ export class AbstractNode {
   // targetImage - A String path to the target image.
   // assetDirKey - The String attribute key for the image directory (default: 'imagesdir').
   //
-  // Returns a String reference / data URI, or a Promise<String> in the remote data-uri case.
-  imageUri (targetImage, assetDirKey = 'imagesdir') {
+  // Returns a Promise<String> reference / data URI.
+  async imageUri (targetImage, assetDirKey = 'imagesdir') {
     const doc = this.document
     if (doc.safe < SafeMode.SECURE && doc.hasAttr('data-uri')) {
       let imagesBase
@@ -459,8 +463,8 @@ export class AbstractNode {
   // targetImage - A String path to the target image.
   // assetDirKey - The String attribute key for the image directory (default: null).
   //
-  // Returns a String data URI.
-  generateDataUri (targetImage, assetDirKey = null) {
+  // Returns a Promise<String> data URI.
+  async generateDataUri (targetImage, assetDirKey = null) {
     const ext = extname(targetImage, null)
     const mimetype = ext
       ? (ext === '.svg' ? 'image/svg+xml' : `image/${ext.slice(1)}`)
@@ -468,8 +472,8 @@ export class AbstractNode {
     const imagePath = assetDirKey
       ? this.normalizeSystemPath(targetImage, this.attr(assetDirKey, null, true), null, { targetName: 'image' })
       : this.normalizeSystemPath(targetImage)
-    if (isReadable(imagePath)) {
-      const data = _fs.readFileSync(imagePath)
+    if (await isReadable(imagePath)) {
+      const data = await _fsp.readFile(imagePath)
       return `data:${mimetype};base64,${data.toString('base64')}`
     }
     this.logger.warn(`image to embed not found or not readable: ${imagePath}`)
@@ -567,15 +571,15 @@ export class AbstractNode {
   //                          and coerced to UTF-8 (default: false).
   //        * label         - String label for the file used in warning messages.
   //
-  // Returns the String content of the file, or null if the file does not exist.
-  readAsset (path, opts = {}) {
+  // Returns a Promise<String|null> — the content of the file, or null if not readable.
+  async readAsset (path, opts = {}) {
     // remap opts for backwards compatibility (boolean shorthand)
     if (typeof opts !== 'object' || opts === null) opts = { warnOnFailure: opts !== false }
-    if (isReadable(path)) {
+    if (await isReadable(path)) {
       if (opts.normalize) {
-        return prepareSourceString(_fs.readFileSync(path, 'utf8')).join(LF)
+        return prepareSourceString(await _fsp.readFile(path, 'utf8')).join(LF)
       }
-      return _fs.readFileSync(path, 'utf8')
+      return _fsp.readFile(path, 'utf8')
     }
     if (opts.warnOnFailure) {
       const docfile = this.attr('docfile') || '<stdin>'
@@ -625,7 +629,7 @@ export class AbstractNode {
       }
     } else {
       resolvedTarget = this.normalizeSystemPath(target, opts.start, null, { targetName: label })
-      contents = this.readAsset(resolvedTarget, { normalize: opts.normalize, warnOnFailure, label })
+      contents = await this.readAsset(resolvedTarget, { normalize: opts.normalize, warnOnFailure, label })
     }
 
     if (contents && opts.warnIfEmpty && contents.length === 0) {

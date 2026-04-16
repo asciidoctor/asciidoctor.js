@@ -5069,7 +5069,7 @@ describe('Lists model', () => {
     const list = doc.blocks[0]
     const items = list.items
     assert.equal(items.length, 3)
-    assert.deepEqual(list.items, list.content)
+    assert.deepEqual(list.items, await list.content())
   })
 
   test('list item should be the parent of block attached to a list item', async () => {

@@ -35,7 +35,7 @@ describe('Blocks', () => {
     test('should return content as empty string for stem or pass block that has no lines', async () => {
       for (const input of ['++++\n++++', '[stem]\n++++\n++++']) {
         const doc = await documentFromString(input)
-        assert.equal(doc.blocks[0].content, '')
+        assert.equal(await doc.blocks[0].content(), '')
       }
     })
 

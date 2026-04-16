@@ -428,6 +428,18 @@ export class Document extends AbstractBlock {
       }
     }
 
+    // Pre-compute all async text values (titles, list item text, cell text, reftexts)
+    // so that synchronous getters work correctly during conversion.
+    await this._resolveAllTexts(this)
+    // Pre-compute reftext for all registered inline anchor nodes.
+    for (const ref of Object.values(this.catalog.refs)) {
+      if (ref && typeof ref.precomputeReftext === 'function') {
+        await ref.precomputeReftext()
+      }
+    }
+    // Build the reftext→id lookup map so that resolveId() is synchronous.
+    await this._buildReftextsMap()
+
     this._parsed = true
     return doc
   }
@@ -492,24 +504,21 @@ export class Document extends AbstractBlock {
   // Returns the String ID or null.
   resolveId (text) {
     if (this._reftexts) return this._reftexts[text] ?? null
-    if (this._parsed) {
-      this._reftexts = {}
-      for (const [id, ref] of Object.entries(this.catalog.refs)) {
-        const xreftext = ref.xreftext?.()
-        if (xreftext != null) this._reftexts[xreftext] ??= id
-      }
-      return this._reftexts[text] ?? null
-    }
-    // Pre-parsed path — scan without caching
-    this._reftexts = {}
-    let resolvedId = null
+    // Fallback: scan refs synchronously (for documents not parsed via parse()).
     for (const [id, ref] of Object.entries(this.catalog.refs)) {
-      const xreftext = ref.xreftext?.()
-      if (xreftext === text) { resolvedId = id; break }
+      const xreftext = ref.reftext ?? null
+      if (xreftext === text) return id
+    }
+    return null
+  }
+
+  // Internal: Build the reftext→id lookup map. Called at end of parse().
+  async _buildReftextsMap () {
+    this._reftexts = {}
+    for (const [id, ref] of Object.entries(this.catalog.refs)) {
+      const xreftext = ref.xreftext ? await ref.xreftext() : null
       if (xreftext != null) this._reftexts[xreftext] ??= id
     }
-    this._reftexts = null
-    return resolvedId
   }
 
   // Public: Check whether this Document has child Section objects.
@@ -739,7 +748,7 @@ export class Document extends AbstractBlock {
         if (block.contentModel === 'compound' || block.contentModel === 'empty') {
           this.logger.warn('no inline candidate; use the inline doctype to convert a single paragraph, verbatim, or raw block')
         } else {
-          output = block.content
+          output = await block.content()
         }
       }
     } else {
@@ -751,7 +760,7 @@ export class Document extends AbstractBlock {
       } else {
         transform = this.options.standalone ? 'document' : 'embedded'
       }
-      output = this.converter.convert(this, transform)
+      output = await this.converter.convert(this, transform)
     }
 
     if (!this.parentDocument && this.extensions?.hasPostprocessors?.()) {
@@ -792,13 +801,13 @@ export class Document extends AbstractBlock {
     if (this._timings) this._timings.record('write')
   }
 
-  get content () {
+  async content () {
     delete this.attributes['title']
-    return super.content
+    return super.content()
   }
 
   // Public: Read the docinfo file(s) for inclusion in the document template.
-  docinfo (location = 'head', suffix = null) {
+  async docinfo (location = 'head', suffix = null) {
     let content = null
     if (this.safe < SafeMode.SECURE) {
       const qualifier = location !== 'head' ? `-${location}` : ''
@@ -826,16 +835,16 @@ export class Document extends AbstractBlock {
         const hasShared = docinfo.includes('shared') || docinfo.includes(`shared-${location}`)
         if (hasShared) {
           const path = this.normalizeSystemPath(docinfoFile, docinfoDir)
-          const shared = this.readAsset(path, { normalize: true })
-          if (shared) content.push(this.applySubs(shared, docinfoSubs))
+          const shared = await this.readAsset(path, { normalize: true })
+          if (shared) content.push(await this.applySubs(shared, docinfoSubs))
         }
 
         const docname = this.attributes['docname']
         const hasPrivate = docname && (docinfo.includes('private') || docinfo.includes(`private-${location}`))
         if (hasPrivate) {
           const path = this.normalizeSystemPath(`${docname}-${docinfoFile}`, docinfoDir)
-          const priv = this.readAsset(path, { normalize: true })
-          if (priv) content.push(this.applySubs(priv, docinfoSubs))
+          const priv = await this.readAsset(path, { normalize: true })
+          if (priv) content.push(await this.applySubs(priv, docinfoSubs))
         }
       }
     }
@@ -959,7 +968,12 @@ export class Document extends AbstractBlock {
     const m = value.match(AttributeEntryPassMacroRx)
     if (m) {
       result = m[2]
-      if (m[1]) result = this.applySubs(result, this.resolvePassSubs(m[1]))
+      if (m[1]) {
+        // applySubs is async; if the resolved subs require async work (e.g. quotes or macros),
+        // the result will be a Promise — fall back to the raw content in that case.
+        const subResult = this.applySubs(result, this.resolvePassSubs(m[1]))
+        result = subResult instanceof Promise ? result : subResult
+      }
     } else {
       result = this.applyHeaderSubs(value)
     }
@@ -970,6 +984,39 @@ export class Document extends AbstractBlock {
     return ('docinfosubs' in this.attributes)
       ? this.resolveSubs(this.attributes['docinfosubs'], 'block', null, 'docinfo')
       : ['attributes']
+  }
+
+  // Internal: Walk the block tree and pre-compute all async text values.
+  // Handles titles (AbstractBlock), list item text, table cell text, and reftexts.
+  async _resolveAllTexts (block) {
+    await block.precomputeTitle?.()
+    await block.precomputeReftext?.()
+    const ctx = block.context
+    if (ctx === 'dlist') {
+      // dlist.blocks is an array of [[term, ...], item_or_null] pairs.
+      for (const [terms, item] of (block.blocks ?? [])) {
+        for (const term of (terms ?? [])) {
+          await term.precomputeText?.()
+          await this._resolveAllTexts(term)
+        }
+        if (item) {
+          await item.precomputeText?.()
+          await this._resolveAllTexts(item)
+        }
+      }
+    } else if (ctx === 'table') {
+      for (const row of [...(block.rows?.head ?? []), ...(block.rows?.body ?? []), ...(block.rows?.foot ?? [])]) {
+        for (const cell of row) {
+          await cell.precomputeText?.()
+          await cell.precomputeReftext?.()
+        }
+      }
+    } else {
+      for (const child of (block.blocks ?? [])) {
+        await child.precomputeText?.()
+        await this._resolveAllTexts(child)
+      }
+    }
   }
 
   _createConverter (backend, delegateBackend) {

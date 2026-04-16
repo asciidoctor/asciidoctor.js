@@ -10,7 +10,7 @@
 //   - node.noheader → node.isNoheader()
 //   - node.authors → node.authors() (method call)
 //   - node.footnotes → node.footnotes (getter)
-//   - node.content → node.content (method call)
+//   - await node.content() → await node.content() (method call)
 //   - node.text → node.text (property/getter)
 //   - node.captioned_title → node.captionedTitle()
 //   - node.content_model == :compound → node.contentModel === 'compound'
@@ -84,7 +84,7 @@ export default class ManPageConverter extends ConverterBase {
     })
   }
 
-  convert_document (node) {
+  async convert_document (node) {
     if (!node.hasAttr('mantitle')) {
       throw new Error('asciidoctor: ERROR: doctype must be set to manpage when using manpage backend')
     }
@@ -155,7 +155,7 @@ ${mannames.map(n => this.manify(n).replace(/\\-/g, '-')).join(', ')} \\- ${this.
       }
     }
 
-    result.push(node.content)
+    result.push(await node.content())
 
     // QUESTION should NOTES come after AUTHOR(S)?
     this._appendFootnotes(result, node)
@@ -176,14 +176,14 @@ ${mannames.map(n => this.manify(n).replace(/\\-/g, '-')).join(', ')} \\- ${this.
   }
 
   // NOTE embedded doesn't really make sense in the manpage backend
-  convert_embedded (node) {
-    const result = [node.content]
+  async convert_embedded (node) {
+    const result = [await node.content()]
     this._appendFootnotes(result, node)
     // QUESTION should we add an AUTHOR(S) section?
     return result.join(LF)
   }
 
-  convert_section (node) {
+  async convert_section (node) {
     let macro, stitle
     if (node.level > 1) {
       macro  = 'SS'
@@ -193,10 +193,10 @@ ${mannames.map(n => this.manify(n).replace(/\\-/g, '-')).join(', ')} \\- ${this.
       macro  = 'SH'
       stitle = this._uppercasePcdata(node.title)
     }
-    return `.${macro} "${this.manify(stitle)}"\n${node.content}`
+    return `.${macro} "${this.manify(stitle)}"\n${await node.content()}`
   }
 
-  convert_admonition (node) {
+  async convert_admonition (node) {
     const titleSuffix = node.hasTitle() ? `\\fP: ${this.manify(node.title)}` : ''
     return `.if n .sp
 .RS 4
@@ -208,12 +208,12 @@ ${mannames.map(n => this.manify(n).replace(/\\-/g, '-')).join(', ')} \\- ${this.
 .B ${node.attr('textlabel')}${titleSuffix}
 .ps -1
 .br
-${this._encloseContent(node)}
+${await this._encloseContent(node)}
 .sp .5v
 .RE`
   }
 
-  convert_colist (node) {
+  async convert_colist (node) {
     const result = []
     if (node.hasTitle()) {
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
@@ -224,7 +224,7 @@ ${this._encloseContent(node)}
     for (const item of node.items) {
       result.push(`\\fB(${++num})\\fP\\h'-2n':T{`)
       result.push(this.manify(item.text, { whitespace: 'normalize' }))
-      if (item.hasBlocks()) result.push(item.content)
+      if (item.hasBlocks()) result.push(await item.content())
       result.push('T}')
     }
     result.push('.TE')
@@ -232,7 +232,7 @@ ${this._encloseContent(node)}
   }
 
   // TODO implement horizontal (if it makes sense)
-  convert_dlist (node) {
+  async convert_dlist (node) {
     const result = []
     if (node.hasTitle()) {
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
@@ -252,7 +252,7 @@ ${this._encloseContent(node)}
           hasText = true
         }
         if (dd.hasBlocks()) {
-          let ddContent = dd.content
+          let ddContent = await dd.content()
           if (!hasText && ddContent.startsWith('.sp\n')) {
             ddContent = ddContent.slice(4)
           }
@@ -264,25 +264,25 @@ ${this._encloseContent(node)}
     return result.join(LF)
   }
 
-  convert_example (node) {
+  async convert_example (node) {
     const titleBlock = node.hasTitle()
       ? `.sp\n.B ${this.manify(node.captionedTitle())}\n.br`
       : '.sp'
-    return `${titleBlock}\n.RS 4\n${this._encloseContent(node)}\n.RE`
+    return `${titleBlock}\n.RS 4\n${await this._encloseContent(node)}\n.RE`
   }
 
-  convert_floating_title (node) {
+  async convert_floating_title (node) {
     return `.SS "${this.manify(node.title)}"`
   }
 
-  convert_image (node) {
+  async convert_image (node) {
     const titleBlock = node.hasTitle()
       ? `.sp\n.B ${this.manify(node.captionedTitle())}\n.br`
       : '.sp'
     return `${titleBlock}\n[${this.manify(node.attr('alt'))}]`
   }
 
-  convert_listing (node) {
+  async convert_listing (node) {
     const result = []
     if (node.hasTitle()) {
       result.push(`.sp\n.B ${this.manify(node.captionedTitle())}\n.br`)
@@ -291,14 +291,14 @@ ${this._encloseContent(node)}
 .if n .RS 4
 .nf
 .fam C
-${this.manify(node.content, { whitespace: 'preserve' })}
+${this.manify(await node.content(), { whitespace: 'preserve' })}
 .fam
 .fi
 .if n .RE`)
     return result.join(LF)
   }
 
-  convert_literal (node) {
+  async convert_literal (node) {
     const result = []
     if (node.hasTitle()) {
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
@@ -307,28 +307,29 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
 .if n .RS 4
 .nf
 .fam C
-${this.manify(node.content, { whitespace: 'preserve' })}
+${this.manify(await node.content(), { whitespace: 'preserve' })}
 .fam
 .fi
 .if n .RE`)
     return result.join(LF)
   }
 
-  convert_sidebar (node) {
+  async convert_sidebar (node) {
     const titleBlock = node.hasTitle()
       ? `.sp\n.B ${this.manify(node.title)}\n.br`
       : '.sp'
-    return `${titleBlock}\n.RS 4\n${this._encloseContent(node)}\n.RE`
+    return `${titleBlock}\n.RS 4\n${await this._encloseContent(node)}\n.RE`
   }
 
-  convert_olist (node) {
+  async convert_olist (node) {
     const result = []
     if (node.hasTitle()) {
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
     }
 
     const start = parseInt(node.attr('start', 1), 10)
-    node.items.forEach((item, idx) => {
+    let idx = 0
+    for (const item of node.items) {
       const numeral = idx + start
       const listText = this.manify(item.text, { whitespace: 'normalize' })
       result.push(`.sp
@@ -341,44 +342,45 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
 .  IP " ${numeral}." 4.2
 .\\}${listText === '' ? '' : LF + listText}`)
       if (item.hasBlocks()) {
-        let itemContent = item.content
+        let itemContent = await item.content()
         if (listText === '' && itemContent.startsWith('.sp\n')) {
           itemContent = itemContent.slice(4)
         }
         result.push(itemContent)
       }
       result.push('.RE')
-    })
+      idx++
+    }
     return result.join(LF)
   }
 
-  convert_open (node) {
+  async convert_open (node) {
     if (node.style === 'abstract' || node.style === 'partintro') {
       return this._encloseContent(node)
     }
-    return node.content
+    return await node.content()
   }
 
-  convert_page_break (_node) {
+  async convert_page_break (_node) {
     return '.bp'
   }
 
-  convert_paragraph (node) {
+  async convert_paragraph (node) {
     if (node.hasTitle()) {
-      return `.sp\n.B ${this.manify(node.title)}\n.br\n${this.manify(node.content, { whitespace: 'normalize' })}`
+      return `.sp\n.B ${this.manify(node.title)}\n.br\n${this.manify(await node.content(), { whitespace: 'normalize' })}`
     }
-    return `.sp\n${this.manify(node.content, { whitespace: 'normalize' })}`
+    return `.sp\n${this.manify(await node.content(), { whitespace: 'normalize' })}`
   }
 
-  convert_pass (node) {
+  async convert_pass (node) {
     return this.contentOnly(node)
   }
 
-  convert_preamble (node) {
+  async convert_preamble (node) {
     return this.contentOnly(node)
   }
 
-  convert_quote (node) {
+  async convert_quote (node) {
     const result = []
     if (node.hasTitle()) {
       result.push(`.sp\n.RS 3\n.B ${this.manify(node.title)}\n.br\n.RE`)
@@ -389,19 +391,19 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
     } else {
       attributionLine = null
     }
-    result.push(`.RS 3\n.ll -.6i\n${this._encloseContent(node)}\n.br\n.RE\n.ll`)
+    result.push(`.RS 3\n.ll -.6i\n${await this._encloseContent(node)}\n.br\n.RE\n.ll`)
     if (attributionLine) {
       result.push(`.RS 5\n.ll -.10i\n${attributionLine}\n.RE\n.ll`)
     }
     return result.join(LF)
   }
 
-  convert_stem (node) {
+  async convert_stem (node) {
     const result = []
     result.push(node.hasTitle() ? `.sp\n.B ${this.manify(node.title)}\n.br` : '.sp')
     const style = node.style
     const [open, close] = BLOCK_MATH_DELIMITERS[style] ?? ['', '']
-    let equation = node.content
+    let equation = await node.content()
     if (equation.startsWith(open) && equation.endsWith(close)) {
       equation = equation.slice(open.length, equation.length - close.length)
     }
@@ -413,7 +415,7 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
   // In order to support colspans and rowspans properly, that information must
   // be computed up front and consulted when rendering the cell as this information
   // is not available on the cell itself.
-  convert_table (node) {
+  async convert_table (node) {
     const result = []
     if (node.hasTitle()) {
       result.push(`.sp
@@ -436,7 +438,8 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
         rowHeader[rowIndex] = rowHeader[rowIndex] ?? []
         rowText[rowIndex]   = rowText[rowIndex]   ?? []
         let remainingCells  = row.length
-        row.forEach((cell, cellIndex) => {
+        let cellIndex = 0
+        for (const cell of row) {
           remainingCells--
           rowHeader[rowIndex][cellIndex] = rowHeader[rowIndex][cellIndex] ?? []
           // add an empty cell as a placeholder if this is a rowspan cell
@@ -454,11 +457,11 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
             }
             let cellContent
             if (cell.style === 'asciidoc') {
-              cellContent = cell.content
+              cellContent = await cell.content()
             } else if (cell.style === 'literal') {
               cellContent = `.nf${LF}${this.manify(cell.text, { whitespace: 'preserve' })}${LF}.fi`
             } else {
-              cellContent = cell.content.map(p => this.manify(p, { whitespace: 'normalize' })).join(`${LF}.sp${LF}`)
+              cellContent = (await cell.content()).map(p => this.manify(p, { whitespace: 'normalize' })).join(`${LF}.sp${LF}`)
             }
             rowText[rowIndex].push(`${cellContent}${LF}`)
           } else { // tsec === 'head' || tsec === 'foot'
@@ -497,7 +500,8 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
           } else {
             rowText[rowIndex].push(`T}${LF}`)
           }
-        })
+          cellIndex++
+        }
         rowIndex++
       }
     }
@@ -515,17 +519,17 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
     return result.join('')
   }
 
-  convert_thematic_break (_node) {
+  async convert_thematic_break (_node) {
     return `.sp
 .ce
 \\l'\\n(.lu*25u/100u\\(ap'`
   }
 
-  convert_toc (_node) {
+  async convert_toc (_node) {
     // skip
   }
 
-  convert_ulist (node) {
+  async convert_ulist (node) {
     const result = []
     if (node.hasTitle()) {
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
@@ -542,7 +546,7 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
 .  IP \\(bu 2.3
 .\\}${listText === '' ? '' : LF + listText}`)
       if (item.hasBlocks()) {
-        let itemContent = item.content
+        let itemContent = await item.content()
         if (listText === '' && itemContent.startsWith('.sp\n')) {
           itemContent = itemContent.slice(4)
         }
@@ -553,7 +557,7 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
     return result.join(LF)
   }
 
-  convert_verse (node) {
+  async convert_verse (node) {
     const result = []
     if (node.hasTitle()) {
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
@@ -564,21 +568,21 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
     } else {
       attributionLine = null
     }
-    result.push(`.sp\n.nf\n${this.manify(node.content, { whitespace: 'preserve' })}\n.fi\n.br`)
+    result.push(`.sp\n.nf\n${this.manify(await node.content(), { whitespace: 'preserve' })}\n.fi\n.br`)
     if (attributionLine) {
       result.push(`.in +.5i\n.ll -.5i\n${attributionLine}\n.in\n.ll`)
     }
     return result.join(LF)
   }
 
-  convert_video (node) {
+  async convert_video (node) {
     const startParam = node.hasAttr('start') ? `&start=${node.attr('start')}` : ''
     const endParam   = node.hasAttr('end')   ? `&end=${node.attr('end')}`     : ''
     const titleBlock = node.hasTitle() ? `.sp\n.B ${this.manify(node.title)}\n.br` : '.sp'
     return `${titleBlock}\n<${node.mediaUri(node.attr('target'))}${startParam}${endParam}> (video)`
   }
 
-  convert_inline_anchor (node) {
+  async convert_inline_anchor (node) {
     const target = node.target
     switch (node.type) {
       case 'link': {
@@ -609,9 +613,11 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
           let top
           const ref = refs[refid] ?? (!refid ? (top = this._getRootDocument(node)) : null)
           if (ref instanceof AbstractNode) {
-            let outer
-            if ((this._resolvingXref ??= (outer = true, true)) && outer) {
-              const resolved = ref.xreftext(node.attr('xrefstyle', null, true))
+            const resolvingSet = (this._resolvingXrefs ??= new Set())
+            if (!resolvingSet.has(refid)) {
+              resolvingSet.add(refid)
+              const resolved = await ref.xreftext(node.attr('xrefstyle', null, true))
+              resolvingSet.delete(refid)
               if (resolved) {
                 text = resolved
                 if (ref.context === 'section' && ref.level < 2 && text === ref.title) {
@@ -620,7 +626,6 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
               } else {
                 text = top ? '[^top]' : `[${refid}]`
               }
-              this._resolvingXref = null
             } else {
               text = top ? '[^top]' : `[${refid}]`
             }
@@ -640,41 +645,41 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
     }
   }
 
-  convert_inline_break (node) {
+  async convert_inline_break (node) {
     return `${node.text}${LF}${ESC_FS}br`
   }
 
-  convert_inline_button (node) {
+  async convert_inline_button (node) {
     return `<${ESC_BS}fB>[${ESC_BS}0${node.text}${ESC_BS}0]</${ESC_BS}fP>`
   }
 
-  convert_inline_callout (node) {
+  async convert_inline_callout (node) {
     return `<${ESC_BS}fB>(${node.text})<${ESC_BS}fP>`
   }
 
-  convert_inline_footnote (node) {
+  async convert_inline_footnote (node) {
     const index = node.attr('index')
     if (index) return `[${index}]`
     if (node.type === 'xref') return `[${node.text}]`
     return null
   }
 
-  convert_inline_image (node) {
+  async convert_inline_image (node) {
     return node.hasAttr('link')
       ? `[${node.attr('alt')}] <${node.attr('link')}>`
       : `[${node.attr('alt')}]`
   }
 
-  convert_inline_indexterm (node) {
+  async convert_inline_indexterm (node) {
     return node.type === 'visible' ? node.text : ''
   }
 
-  convert_inline_kbd (node) {
+  async convert_inline_kbd (node) {
     const keys = node.attr('keys')
     return `<${ESC_BS}f(CR>${keys.length === 1 ? keys[0] : keys.join(`${ESC_BS}0+${ESC_BS}0`)}</${ESC_BS}fP>`
   }
 
-  convert_inline_menu (node) {
+  async convert_inline_menu (node) {
     const caret    = `${ESC_BS}0${ESC_BS}(fc${ESC_BS}0`
     const menu     = node.attr('menu')
     const submenus = node.attr('submenus')
@@ -689,7 +694,7 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
   }
 
   // NOTE use fake XML elements to prevent creating artificial word boundaries
-  convert_inline_quoted (node) {
+  async convert_inline_quoted (node) {
     switch (node.type) {
       case 'emphasis':
         return `<${ESC_BS}fI>${node.text}</${ESC_BS}fP>`
@@ -816,10 +821,10 @@ ${this.manify(node.content, { whitespace: 'preserve' })}
     return string.replace(PCDATAFilterRx, (_m, $1, $2) => $2 ? $2.toUpperCase() : $1)
   }
 
-  _encloseContent (node) {
+  async _encloseContent (node) {
     return node.contentModel === 'compound'
-      ? node.content
-      : `.sp\n${this.manify(node.content, { whitespace: 'normalize' })}`
+      ? await node.content()
+      : `.sp\n${this.manify(await node.content(), { whitespace: 'normalize' })}`
   }
 
   _getRootDocument (node) {

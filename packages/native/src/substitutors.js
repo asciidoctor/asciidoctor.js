@@ -37,7 +37,7 @@ import {
 } from './constants.js'
 import { Compliance } from './compliance.js'
 import { Parser } from './parser.js'
-import { basename, encodeUriComponent, isExtname } from './helpers.js'
+import { asyncReplace, basename, encodeUriComponent, isExtname } from './helpers.js'
 import { Inline } from './inline.js'
 import { AttributeList } from './attribute_list.js'
 import { Document } from './document.js'
@@ -177,7 +177,7 @@ export const Substitutors = {
    * @param {string[]} [subs=NORMAL_SUBS] - The substitutions to perform.
    * @returns {string|string[]} Text with substitutions applied.
    */
-  applySubs(text, subs = NORMAL_SUBS) {
+  async applySubs(text, subs = NORMAL_SUBS) {
     const isEmpty = Array.isArray(text) ? text.length === 0 : text.length === 0
     if (isEmpty || !subs || subs.length === 0) return text
 
@@ -207,7 +207,7 @@ export const Substitutors = {
           text = this.subSpecialchars(text)
           break
         case 'quotes':
-          text = this.subQuotes(text)
+          text = await this.subQuotes(text)
           break
         case 'attributes':
           if (text.includes(ATTR_REF_HEAD)) text = this.subAttributes(text)
@@ -216,16 +216,16 @@ export const Substitutors = {
           text = this.subReplacements(text)
           break
         case 'macros':
-          text = this.subMacros(text)
+          text = await this.subMacros(text)
           break
         case 'highlight':
-          text = this.highlightSource(text, subs.includes('callouts'))
+          text = await this.highlightSource(text, subs.includes('callouts'))
           break
         case 'callouts':
-          if (!subs.includes('highlight')) text = this.subCallouts(text)
+          if (!subs.includes('highlight')) text = await this.subCallouts(text)
           break
         case 'post_replacements':
-          text = this.subPostReplacements(text)
+          text = await this.subPostReplacements(text)
           break
         default:
           this.logger.warn(`unknown substitution type ${type}`)
@@ -233,7 +233,7 @@ export const Substitutors = {
     }
 
     if (passthrus) {
-      text = this.restorePassthroughs(text)
+      text = await this.restorePassthroughs(text)
       if (clearPassthrus) {
         passthrus.length = 0
         this.passthroughsLocked = null
@@ -244,22 +244,26 @@ export const Substitutors = {
   },
 
   /** Apply normal substitutions (alias for applySubs with default args). */
-  applyNormalSubs(text) {
+  async applyNormalSubs(text) {
     return this.applySubs(text, NORMAL_SUBS)
   },
 
-  /** Apply substitutions for header metadata and attribute assignments. */
+  /** Apply substitutions for header metadata and attribute assignments.
+   * Header subs are 'specialcharacters' + 'attributes', both of which are
+   * purely synchronous operations — so this method is intentionally sync
+   * to allow it to be called from synchronous contexts such as setAttribute()
+   * and the {set:...} directive inside subAttributes(). */
   applyHeaderSubs(text) {
-    return this.applySubs(text, HEADER_SUBS)
+    return this.subAttributes(this.subSpecialchars(text))
   },
 
   /** Apply substitutions for titles (alias for applySubs). */
-  applyTitleSubs(text, subs = NORMAL_SUBS) {
+  async applyTitleSubs(text, subs = NORMAL_SUBS) {
     return this.applySubs(text, subs)
   },
 
   /** Apply substitutions for reftext. */
-  applyReftextSubs(text) {
+  async applyReftextSubs(text) {
     return this.applySubs(text, REFTEXT_SUBS)
   },
 
@@ -287,11 +291,11 @@ export const Substitutors = {
    * @param {string} text
    * @returns {string}
    */
-  subQuotes(text) {
+  async subQuotes(text) {
     const compat = this.document.compatMode
     if (QUOTED_TEXT_SNIFF_RX[compat].test(text)) {
       for (const [type, scope, pattern] of QUOTE_SUBS[compat]) {
-        text = text.replace(globalRx(pattern), (...args) => {
+        text = await asyncReplace(text, globalRx(pattern), async (...args) => {
           return this.convertQuotedText(args, type, scope)
         })
       }
@@ -427,7 +431,7 @@ export const Substitutors = {
    * @param {string} text
    * @returns {string}
    */
-  subMacros(text) {
+  async subMacros(text) {
     const foundSquareBracket = text.includes('[')
     const foundColon = text.includes(':')
     const foundMacroish = foundSquareBracket && foundColon
@@ -439,7 +443,7 @@ export const Substitutors = {
     const extensions = doc.extensions
     if (extensions && extensions.inlineMacros()) {
       for (const extension of extensions.inlineMacros()) {
-        text = text.replace(globalRx(extension.instance.regexp), (...args) => {
+        text = await asyncReplace(text, globalRx(extension.instance.regexp), async (...args) => {
           const match = args[0]
           if (match.startsWith(RS)) return match.slice(1)
 
@@ -478,7 +482,7 @@ export const Substitutors = {
             const inlineSubs = replacement.attributes.subs
             if (inlineSubs) {
               const expandedSubs = this.expandSubs(inlineSubs, 'custom inline macro')
-              if (expandedSubs) replacement.text = this.applySubs(replacement.text, expandedSubs)
+              if (expandedSubs) replacement.text = await this.applySubs(replacement.text, expandedSubs)
               delete replacement.attributes.subs
             }
             return replacement.convert()
@@ -494,7 +498,7 @@ export const Substitutors = {
     // kbd / btn macros (experimental)
     if (docAttrs.experimental !== undefined) {
       if (foundMacroishShort && (text.includes('kbd:') || text.includes('btn:'))) {
-        text = text.replace(globalRx(InlineKbdBtnMacroRx), (match, p1, p2, p3) => {
+        text = await asyncReplace(text, globalRx(InlineKbdBtnMacroRx), async (match, p1, p2, p3) => {
           if (p1) return match.slice(1)
           if (p2 === 'kbd') {
             let keys = p3.trim()
@@ -528,7 +532,7 @@ export const Substitutors = {
       }
 
       if (foundMacroish && text.includes('menu:')) {
-        text = text.replace(globalRx(InlineMenuMacroRx), (match, p1, p2) => {
+        text = await asyncReplace(text, globalRx(InlineMenuMacroRx), async (match, p1, p2) => {
           if (match.startsWith(RS)) return match.slice(1)
           const menu = p1
           let submenus, menuitem
@@ -554,7 +558,7 @@ export const Substitutors = {
       }
 
       if (text.includes('"') && text.includes('&gt;')) {
-        text = text.replace(globalRx(InlineMenuRx), (match, p1) => {
+        text = await asyncReplace(text, globalRx(InlineMenuRx), async (match, p1) => {
           if (match.startsWith(RS)) return match.slice(1)
           const parts = p1.split('&gt;').map((item) => item.trim())
           const menu = parts.shift()
@@ -567,7 +571,7 @@ export const Substitutors = {
 
     // image / icon macros
     if (foundMacroish && (text.includes('image:') || text.includes('icon:'))) {
-      text = text.replace(globalRx(InlineImageMacroRx), (match, p1, p2) => {
+      text = await asyncReplace(text, globalRx(InlineImageMacroRx), async (match, p1, p2) => {
         if (match.startsWith(RS)) return match.slice(1)
         let type, posattrs
         if (match.startsWith('icon:')) {
@@ -592,7 +596,7 @@ export const Substitutors = {
 
     // index terms
     if ((text.includes('((') && text.includes('))')) || (foundMacroishShort && text.includes('dexterm'))) {
-      text = text.replace(globalRx(InlineIndextermMacroRx), (match, p1, p2, p3) => {
+      text = await asyncReplace(text, globalRx(InlineIndextermMacroRx), async (match, p1, p2, p3) => {
         switch (p1) {
           case 'indexterm': {
             if (match.startsWith(RS)) return match.slice(1)
@@ -685,7 +689,7 @@ export const Substitutors = {
                   attrs = { 'see-also': parts }
                 }
               }
-              subbed_term = new Inline(this, 'indexterm', term, { attributes: attrs, type: 'visible' }).convert()
+              subbed_term = await new Inline(this, 'indexterm', term, { attributes: attrs, type: 'visible' }).convert()
             } else {
               const attrs = {}
               let terms = this.normalizeText(enclText, true)
@@ -701,7 +705,7 @@ export const Substitutors = {
                 }
               }
               attrs.terms = this.splitSimpleCsv(terms)
-              subbed_term = new Inline(this, 'indexterm', null, { attributes: attrs }).convert()
+              subbed_term = await new Inline(this, 'indexterm', null, { attributes: attrs }).convert()
             }
             return before !== null ? `${before}${subbed_term}${after}` : subbed_term
           }
@@ -711,7 +715,7 @@ export const Substitutors = {
 
     // inline URLs
     if (foundColon && text.includes('://')) {
-      text = text.replace(globalRx(InlineLinkRx), (match, p1, p2, p3, p4, p5, p6, p7, p8) => {
+      text = await asyncReplace(text, globalRx(InlineLinkRx), async (match, p1, p2, p3, p4, p5, p6, p7, p8) => {
         if (p2 && p5 == null) {
           if (p1.startsWith(RS)) return match.slice(1)
           if (p3.startsWith(RS)) return p1 + match.slice(p1.length + 1)
@@ -807,14 +811,14 @@ export const Substitutors = {
           linkOpts.target = target
           doc.register('links', target)
           if (attrs) linkOpts.attributes = attrs
-          return `${prefix}${new Inline(this, 'anchor', link_text, linkOpts).convert()}${suffix}`
+          return `${prefix}${await new Inline(this, 'anchor', link_text, linkOpts).convert()}${suffix}`
         }
       })
     }
 
     // link: and mailto: macros
     if (foundMacroish && (text.includes('link:') || text.includes('ilto:'))) {
-      text = text.replace(globalRx(InlineLinkMacroRx), (match, p1, p2, p3) => {
+      text = await asyncReplace(text, globalRx(InlineLinkMacroRx), async (match, p1, p2, p3) => {
         if (match.startsWith(RS)) return match.slice(1)
         let target, mailtoText
         if (p1) {
@@ -887,7 +891,7 @@ export const Substitutors = {
 
     // bare email addresses
     if (text.includes('@')) {
-      text = text.replace(globalRx(InlineEmailRx), (match, p1) => {
+      text = await asyncReplace(text, globalRx(InlineEmailRx), async (match, p1) => {
         if (p1) return p1 === RS ? match.slice(1) : match
         const address = match
         const target = 'mailto:' + address
@@ -898,14 +902,14 @@ export const Substitutors = {
 
     // bibliography anchor
     if (foundSquareBracket && this.context === 'list_item' && this.parent.style === 'bibliography') {
-      text = text.replace(InlineBiblioAnchorRx, (match, p1, p2) => {
+      text = await asyncReplace(text, InlineBiblioAnchorRx, async (match, p1, p2) => {
         return new Inline(this, 'anchor', p2, { type: 'bibref', id: p1 }).convert()
       })
     }
 
     // inline anchors
     if ((foundSquareBracket && text.includes('[[')) || (foundMacroish && text.includes('or:'))) {
-      text = text.replace(globalRx(InlineAnchorRx), (match, p1, p2, p3, p4, p5) => {
+      text = await asyncReplace(text, globalRx(InlineAnchorRx), async (match, p1, p2, p3, p4, p5) => {
         if (p1) return match.slice(1)
         let id, reftext
         if (p2) {
@@ -921,7 +925,7 @@ export const Substitutors = {
 
     // xref macros
     if ((text.includes('&') && text.includes(';&l')) || (foundMacroish && text.includes('xref:'))) {
-      text = text.replace(globalRx(InlineXrefMacroRx), (match, p1, p2, p3) => {
+      text = await asyncReplace(text, globalRx(InlineXrefMacroRx), async (match, p1, p2, p3) => {
         if (match.startsWith(RS)) return match.slice(1)
         const attrs = {}
         let refid, linkText, macro, path, fragment, target, src2src
@@ -1032,7 +1036,7 @@ export const Substitutors = {
         } else if (doc.catalog.refs[fragment]) {
           refid = fragment
           target = `#${fragment}`
-        } else if ((fragment.includes(' ') || fragment.toLowerCase() !== fragment) && (refid = doc.resolveId(fragment))) {
+        } else if ((fragment.includes(' ') || fragment.toLowerCase() !== fragment) && (refid = await doc.resolveId(fragment))) {
           fragment = refid
           target = `#${refid}`
         } else {
@@ -1050,7 +1054,7 @@ export const Substitutors = {
 
     // footnote macros
     if (foundMacroish && text.includes('tnote')) {
-      text = text.replace(globalRx(InlineFootnoteMacroRx), (match, p1, p2, p3) => {
+      text = await asyncReplace(text, globalRx(InlineFootnoteMacroRx), async (match, p1, p2, p3) => {
         if (match.startsWith(RS)) return match.slice(1)
 
         let id, content, type, target
@@ -1086,7 +1090,7 @@ export const Substitutors = {
             target = id
             id = null
           } else if (content) {
-            content = this.restorePassthroughs(this.normalizeText(content, true, true))
+            content = await this.restorePassthroughs(this.normalizeText(content, true, true))
             index = doc.counter('footnote-number')
             doc.register('footnotes', new Document.Footnote(index, id, content))
             type = 'ref'
@@ -1099,7 +1103,7 @@ export const Substitutors = {
             id = null
           }
         } else if (content) {
-          content = this.restorePassthroughs(this.normalizeText(content, true, true))
+          content = await this.restorePassthroughs(this.normalizeText(content, true, true))
           index = doc.counter('footnote-number')
           doc.register('footnotes', new Document.Footnote(index, id, content))
           type = null
@@ -1126,24 +1130,22 @@ export const Substitutors = {
    * @param {string} text
    * @returns {string}
    */
-  subPostReplacements(text) {
+  async subPostReplacements(text) {
     if ('hardbreaks-option' in this.attributes || 'hardbreaks-option' in this.document.attributes) {
       const lines = text.split(LF)
       if (lines.length < 2) return text
       const last = lines.pop()
-      return [
-        ...lines.map((line) =>
-          new Inline(
-            this,
-            'break',
-            line.endsWith(HARD_LINE_BREAK) ? line.slice(0, -2) : line,
-            { type: 'line' }
-          ).convert()
-        ),
-        last,
-      ].join(LF)
+      const converted = await Promise.all(lines.map((line) =>
+        new Inline(
+          this,
+          'break',
+          line.endsWith(HARD_LINE_BREAK) ? line.slice(0, -2) : line,
+          { type: 'line' }
+        ).convert()
+      ))
+      return [...converted, last].join(LF)
     } else if (text.includes(PLUS) && text.includes(HARD_LINE_BREAK)) {
-      return text.replace(globalRx(HardLineBreakRx), (match, p1) => {
+      return asyncReplace(text, globalRx(HardLineBreakRx), async (match, p1) => {
         return new Inline(this, 'break', p1, { type: 'line' }).convert()
       })
     }
@@ -1157,9 +1159,9 @@ export const Substitutors = {
    * @param {boolean} processCallouts
    * @returns {string}
    */
-  subSource(source, processCallouts) {
+  async subSource(source, processCallouts) {
     return processCallouts
-      ? this.subCallouts(this.subSpecialchars(source))
+      ? await this.subCallouts(this.subSpecialchars(source))
       : this.subSpecialchars(source)
   },
 
@@ -1169,12 +1171,12 @@ export const Substitutors = {
    * @param {string} text
    * @returns {string}
    */
-  subCallouts(text) {
+  async subCallouts(text) {
     const calloutRx = this.hasAttr('line-comment')
       ? CalloutSourceRxMap[this.attr('line-comment')]
       : CalloutSourceRx
     let autonum = 0
-    return text.replace(globalRx(calloutRx), (match, p1, p2, p3, p4) => {
+    return asyncReplace(text, globalRx(calloutRx), async (match, p1, p2, p3, p4) => {
       if (p2) {
         return match.replace(RS, '')
       }
@@ -1194,7 +1196,7 @@ export const Substitutors = {
    * @param {boolean} processCallouts
    * @returns {string}
    */
-  highlightSource(source, processCallouts) {
+  async highlightSource(source, processCallouts) {
     const syntaxHl = this.document.syntaxHighlighter
     if (!syntaxHl || !syntaxHl.highlight()) {
       return this.subSource(source, processCallouts)
@@ -1237,7 +1239,7 @@ export const Substitutors = {
     if (!calloutMarks || Object.keys(calloutMarks).length === 0) {
       return result
     }
-    return this.restoreCallouts(result, calloutMarks, sourceOffset)
+    return await this.restoreCallouts(result, calloutMarks, sourceOffset)
   },
 
   /**
@@ -1458,17 +1460,18 @@ export const Substitutors = {
    * @param {string} text
    * @returns {string}
    */
-  restorePassthroughs(text) {
+  async restorePassthroughs(text) {
+    if (!text.includes(PASS_START)) return text
     const passthrus = this.passthroughs
-    return text.replace(globalRx(PASS_SLOT_RX), (match, p1) => {
+    return asyncReplace(text, globalRx(PASS_SLOT_RX), async (match, p1) => {
       const pass = passthrus[parseInt(p1, 10)]
       if (pass) {
-        let subbedText = this.applySubs(pass.text, pass.subs)
+        let subbedText = await this.applySubs(pass.text, pass.subs)
         const type = pass.type
         if (type) {
           const attributes = pass.attributes
           const id = attributes?.id
-          subbedText = new Inline(this, 'quoted', subbedText, { type, id, attributes }).convert()
+          subbedText = await new Inline(this, 'quoted', subbedText, { type, id, attributes }).convert()
         }
         return subbedText.includes(PASS_START) ? this.restorePassthroughs(subbedText) : subbedText
       } else {
@@ -1704,45 +1707,46 @@ export const Substitutors = {
     return [result, calloutMarks]
   },
 
-  restoreCallouts(source, calloutMarks, sourceOffset = null) {
+  async restoreCallouts(source, calloutMarks, sourceOffset = null) {
     let preamble = ''
     if (sourceOffset !== null) {
       preamble = source.slice(0, sourceOffset)
       source = source.slice(sourceOffset)
     }
     let lineno = 0
-    const result = source.split(LF).map((line) => {
+    const result = await Promise.all(source.split(LF).map(async (line) => {
       const conums = calloutMarks[++lineno]
       if (conums) {
         delete calloutMarks[lineno]
         if (conums.length === 1) {
           const [guard, numeral] = conums[0]
-          return `${line}${new Inline(this, 'callout', numeral, {
+          return `${line}${await new Inline(this, 'callout', numeral, {
             id: this.document.callouts.readNextId(),
             attributes: { guard },
           }).convert()}`
         } else {
-          return `${line}${conums.map(([guard, numeral]) =>
+          const converted = await Promise.all(conums.map(([guard, numeral]) =>
             new Inline(this, 'callout', numeral, {
               id: this.document.callouts.readNextId(),
               attributes: { guard },
             }).convert()
-          ).join(' ')}`
+          ))
+          return `${line}${converted.join(' ')}`
         }
       }
       return line
-    })
+    }))
     return preamble + result.join(LF)
   },
 
-  convertQuotedText(args, type, scope) {
+  async convertQuotedText(args, type, scope) {
     // args: [fullMatch, group1, group2, ...]
     const fullMatch = args[0]
     if (fullMatch.startsWith(RS)) {
       if (scope === 'constrained') {
         const attrs = args[2]
         if (attrs) {
-          return `[${attrs}]${new Inline(this, 'quoted', args[3], { type }).convert()}`
+          return `[${attrs}]${await new Inline(this, 'quoted', args[3], { type }).convert()}`
         }
       }
       return fullMatch.slice(1)
@@ -1756,7 +1760,7 @@ export const Substitutors = {
         id = attributes.id
         if (type === 'mark') type = 'unquoted'
       }
-      return `${args[1] || ''}${new Inline(this, 'quoted', args[3], { type, id, attributes }).convert()}`
+      return `${args[1] || ''}${await new Inline(this, 'quoted', args[3], { type, id, attributes }).convert()}`
     } else {
       const attrlist = args[1]
       let id, attributes

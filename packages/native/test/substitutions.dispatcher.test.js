@@ -20,7 +20,7 @@ describe('Substitutions', () => {
         '[blue]_http://asciidoc.org[AsciiDoc]_ & [red]*Ruby*\n&#167; Making +++<u>documentation</u>+++ together +\nsince (C) {inception_year}.'
       )
       para.document.attributes['inception_year'] = '2012'
-      const result = para.applySubs(para.source)
+      const result = await para.applySubs(para.source)
       assert.equal(
         result,
         '<em class="blue"><a href="http://asciidoc.org">AsciiDoc</a></em> &amp; <strong class="red">Ruby</strong>\n&#167; Making <u>documentation</u> together<br>\nsince &#169; 2012.'
@@ -31,7 +31,7 @@ describe('Substitutions', () => {
       const input = '<html> -- the root of all web'
       const para = await blockFromString(input)
       const paraSource = para.source
-      const result = para.applySubs(paraSource)
+      const result = await para.applySubs(paraSource)
       assert.equal(result, '&lt;html&gt;&#8201;&#8212;&#8201;the root of all web')
       assert.equal(paraSource, input)
     })
@@ -41,9 +41,9 @@ describe('Substitutions', () => {
       para.lines.push('')
       para.lines.push('')
       para.document.attributes['program'] = 'Asciidoctor'
-      let result = para.applySubs(para.lines)
+      let result = await para.applySubs(para.lines)
       assert.deepEqual(result, ['this<br>', 'is<br>', '&#8594; Asciidoctor<br>', '<br>', ''])
-      result = para.applySubs(para.lines.join('\n'))
+      result = await para.applySubs(para.lines.join('\n'))
       assert.equal(result, 'this<br>\nis<br>\n&#8594; Asciidoctor<br>\n<br>\n')
     })
 
@@ -57,7 +57,7 @@ describe('Substitutions', () => {
 
     test('apply_subs should allow the subs argument to be null', async () => {
       const block = await blockFromString('[pass]\n*raw*')
-      const result = block.applySubs(block.source, null)
+      const result = await block.applySubs(block.source, null)
       assert.equal(result, '*raw*')
     })
   })

@@ -15,7 +15,7 @@ export class List extends AbstractBlock {
   get items () { return this.blocks }
 
   // Public: Alias for blocks — the list content.
-  get content () { return this.blocks }
+  async content () { return this.blocks }
 
   // Public: Check whether this list has items (blocks).
   hasItems () { return this.blocks.length > 0 }
@@ -30,8 +30,8 @@ export class List extends AbstractBlock {
   // Public: Convert this list, advancing the callout list pointer if a colist.
   //
   // Returns the String result.
-  convert () {
-    const result = super.convert()
+  async convert () {
+    const result = await super.convert()
     if (this.context === 'colist') this.document.callouts.nextList()
     return result
   }
@@ -75,14 +75,24 @@ export class ListItem extends AbstractBlock {
   }
 
   // Public: Get the String text with substitutions applied.
+  // The result is pre-computed during Document.parse() via precomputeText().
+  // Falls back to the raw text if precomputeText() has not been called yet.
   //
   // Returns the converted String text, or null.
   get text () {
-    return this._text != null ? this.applySubs(this._text, this.subs) : null
+    return this._convertedText ?? this._text ?? null
+  }
+
+  // Public: Pre-compute the converted text asynchronously.
+  // Called during Document.parse() so the synchronous getter works during conversion.
+  async precomputeText () {
+    if (this._text != null && this._convertedText == null) {
+      this._convertedText = await this.applySubs(this._text, this.subs)
+    }
   }
 
   // Public: Set the raw text of this list item.
-  set text (val) { this._text = val }
+  set text (val) { this._text = val; this._convertedText = null }
 
   // Public: Check whether this list item has simple content.
   //

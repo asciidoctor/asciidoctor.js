@@ -293,14 +293,20 @@ export class AttributeList {
         if (name === 'title' || name === 'reftext') {
           this.#attributes[name] = value
         } else {
-          this.#attributes[name] = this.#block.applySubs(value)
+          // applySubs is async; store the raw value as a fallback when called
+          // from a sync context (attribute values rarely contain inline macros).
+          const result = this.#block.applySubs(value)
+          this.#attributes[name] = result instanceof Promise ? value : result
         }
       } else {
         this.#attributes[name] = value
       }
     } else {
       // Positional attribute
-      if (singleQuoted && this.#block) name = this.#block.applySubs(name)
+      if (singleQuoted && this.#block) {
+        const result = this.#block.applySubs(name)
+        name = result instanceof Promise ? name : result
+      }
       const positionalAttrName = positionalAttrs[index]
       if (positionalAttrName && name != null) {
         this.#attributes[positionalAttrName] = name

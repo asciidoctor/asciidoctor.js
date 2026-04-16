@@ -295,7 +295,7 @@ export class ConverterBase {
   // opts      - Optional hints Hash.
   //
   // Returns the String result or null.
-  convert (node, transform = null, opts = null) {
+  async convert (node, transform = null, opts = null) {
     const method = `convert_${transform ?? node.nodeName}`
     if (typeof this[method] === 'function') {
       return opts ? this[method](node, opts) : this[method](node)
@@ -310,8 +310,8 @@ export class ConverterBase {
   }
 
   // Public: Convert using only content (no wrapping).
-  contentOnly (node) {
-    return node.content
+  async contentOnly (node) {
+    return node.content()
   }
 
   // Public: Skip conversion.
