@@ -78,8 +78,21 @@ export class ListItem extends AbstractBlock {
   // The result is pre-computed during Document.parse() via precomputeText().
   // Falls back to the raw text if precomputeText() has not been called yet.
   //
+  // In Ruby, text is lazy (apply_subs on first access), so API callers can modify
+  // subs before accessing text and get the result they expect.  Here we replicate
+  // that by invalidating the pre-computed value when subs have changed since it
+  // was computed: returning raw text mirrors what Ruby would produce when subs are
+  // cleared or reduced to a no-op set (since applySubs is async and cannot be
+  // re-run synchronously).
+  //
   // Returns the converted String text, or null.
   get text () {
+    if (this._convertedText != null && this._subsSnapshot != null) {
+      const cur = this.subs
+      if (cur.length !== this._subsSnapshot.length || cur.some((s, i) => s !== this._subsSnapshot[i])) {
+        return this._text ?? null
+      }
+    }
     return this._convertedText ?? this._text ?? null
   }
 
@@ -88,11 +101,12 @@ export class ListItem extends AbstractBlock {
   async precomputeText () {
     if (this._text != null && this._convertedText == null) {
       this._convertedText = await this.applySubs(this._text, this.subs)
+      this._subsSnapshot = [...this.subs]
     }
   }
 
   // Public: Set the raw text of this list item.
-  set text (val) { this._text = val; this._convertedText = null }
+  set text (val) { this._text = val; this._convertedText = null; this._subsSnapshot = null }
 
   // Public: Check whether this list item has simple content.
   //

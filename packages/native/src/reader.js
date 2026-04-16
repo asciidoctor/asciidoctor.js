@@ -873,7 +873,7 @@ export class PreprocessorReader extends Reader {
       const attrMissing = doc.attributes['attribute-missing'] || Compliance.attribute_missing
       expandedTarget = doc.subAttributes(target, { attributeMissing: attrMissing === 'warn' ? 'drop-line' : attrMissing })
       if (expandedTarget === '') {
-        const parsedAttrs = attrlist ? doc.parseAttributes(attrlist, [], { subInput: true }) : {}
+        const parsedAttrs = attrlist ? await doc.parseAttributes(attrlist, [], { subInput: true }) : {}
         if ('optional-option' in parsedAttrs) {
           this._logInfo(`optional include dropped because resolved target is blank: include::${target}[${attrlist ?? ''}]`, { sourceLocation: this.cursor })
           super._shift()
@@ -893,7 +893,7 @@ export class PreprocessorReader extends Reader {
       const ext = this._includeProcessorExtensions.find(c => c.instance.handles(doc, expandedTarget))
       if (ext) {
         super._shift()
-        const pa = attrlist ? doc.parseAttributes(attrlist, [], { subInput: true }) : {}
+        const pa = attrlist ? await doc.parseAttributes(attrlist, [], { subInput: true }) : {}
         ext.processMethod(doc, this, expandedTarget, pa)
         return true
       }
@@ -912,7 +912,7 @@ export class PreprocessorReader extends Reader {
       return undefined
     }
 
-    const parsedAttrs = attrlist ? doc.parseAttributes(attrlist, [], { subInput: true }) : {}
+    const parsedAttrs = attrlist ? await doc.parseAttributes(attrlist, [], { subInput: true }) : {}
     const resolution = await this._resolveIncludePath(expandedTarget, attrlist, parsedAttrs)
     if (!Array.isArray(resolution)) return resolution
     const [incPath, targetType, relpath] = resolution

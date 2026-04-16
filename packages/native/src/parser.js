@@ -44,6 +44,7 @@ import {
   AttributeEntryRx, MarkdownThematicBreakRx, ExtLayoutBreakRx,
   LiteralParagraphRx, InvalidAttributeNameCharsRx, TrailingDigitsRx,
   ListRxMap, OrderedListMarkerRxMap, LeadingInlineAnchorRx, XmlSanitizeRx,
+  AttributeEntryPassMacroRx,
 } from './rx.js'
 
 // ── List continuation identity marker ────────────────────────────────────────
@@ -551,7 +552,7 @@ export class Parser {
                   let posattrs = []
                   if (blkCtx === 'video') posattrs = ['poster', 'width', 'height']
                   else if (blkCtx === 'image') posattrs = ['alt', 'width', 'height']
-                  block.parseAttributes(blkAttrsStr, posattrs, { sub_input: true, into: attributes })
+                  await block.parseAttributes(blkAttrsStr, posattrs, { sub_input: true, into: attributes })
                 }
                 delete attributes['style']
                 if (target.includes(ATTR_REF_HEAD)) {
@@ -590,7 +591,7 @@ export class Parser {
               const tocm = thisLine.match(BlockTocMacroRx)
               if (tocm) {
                 block = new Block(parent, 'toc', { content_model: 'empty' })
-                if (tocm[1]) block.parseAttributes(tocm[1], [], { sub_input: true, into: attributes })
+                if (tocm[1]) await block.parseAttributes(tocm[1], [], { sub_input: true, into: attributes })
                 break
               }
             }
@@ -612,7 +613,7 @@ export class Parser {
                   }
                   const extConfig = extension.config
                   if (extConfig.content_model === 'attributes') {
-                    if (content) document.parseAttributes(content, extConfig.positional_attrs ?? extConfig.pos_attrs ?? [], { sub_input: true, into: attributes })
+                    if (content) await document.parseAttributes(content, extConfig.positional_attrs ?? extConfig.pos_attrs ?? [], { sub_input: true, into: attributes })
                   } else {
                     attributes['text'] = content ?? ''
                   }
@@ -683,11 +684,12 @@ export class Parser {
           block.title = blockTitle
           delete attributes['title']
           // Force title resolution while in scope to capture current attribute values (Ruby: parser.rb ~line 939)
-          if (blockTitle.includes(ATTR_REF_HEAD)) void block.title
+          if (blockTitle.includes(ATTR_REF_HEAD)) await block.precomputeTitle()
           if (floatId) {
             block.id = floatId
           } else if ('sectids' in docAttrs) {
-            block.id = Section.generateId(block.attrSubstitutedTitle ?? block.title, document)
+            await block.precomputeTitle()
+            block.id = Section.generateId(block.title, document)
           }
           block.level = floatLevel
           break
@@ -935,7 +937,7 @@ export class Parser {
       block.title = blockTitle
       delete attributes['title']
       // Force title resolution while in scope to capture current attribute values (Ruby: parser.rb ~line 939)
-      if (blockTitle.includes(ATTR_REF_HEAD)) void block.title
+      if (blockTitle.includes(ATTR_REF_HEAD)) await block.precomputeTitle()
       if (CAPTION_ATTRIBUTE_NAMES[block.context]) {
         block.assignCaption(attributes['caption'])
         delete attributes['caption']
@@ -1517,11 +1519,20 @@ export class Parser {
       if (id === '') {
         section.id = id = null
       } else if (sectTitle.includes(ATTR_REF_HEAD)) {
-        // Force title resolution while in scope
-        section.title
+        // Force title resolution while in scope, mirroring Ruby's lazy-memo access
+        // (`section.title` triggers `@converted_title ||= apply_title_subs(@title)`).
+        // Must happen before _restoreAttributes resets body-scoped attribute values.
+        await section.precomputeTitle()
       }
     } else if ('sectids' in document.attributes) {
-      section.id = id = Section.generateId(section.attrSubstitutedTitle ?? section.title, document)
+      // Match Ruby behaviour: section.title returns apply_title_subs(@title) (fully substituted HTML).
+      // InvalidSectionIdCharsRx then strips the HTML tags, so inline anchors, icon macros and
+      // URL macros are correctly excluded from the generated ID.
+      // precomputeTitle() is idempotent (guarded by #convertedTitle == null), so calling it here
+      // prevents a second substitution pass in _resolveAllTexts (avoids double-cataloging images,
+      // footnotes, etc.).
+      await section.precomputeTitle()
+      section.id = id = Section.generateId(section.title, document)
     }
 
     if (id && !document.register('refs', [id, section])) {
@@ -1910,7 +1921,7 @@ export class Parser {
         const m = nextLine.match(BlockAttributeListRx)
         if (m) {
           const currentStyle = attributes[1]
-          const parsed = document.parseAttributes(m[1], [], { sub_input: true, sub_result: true, into: attributes })
+          const parsed = await document.parseAttributes(m[1], [], { sub_input: true, sub_result: true, into: attributes })
           if (parsed[1]) {
             attributes[1] = Parser.parseStyleAttribute(attributes, reader) ?? currentStyle
           }
@@ -1979,12 +1990,23 @@ export class Parser {
       }
     }
 
+    // Pre-process pass macros with full async subs (e.g. quotes) before storeAttribute.
+    // The sync _applyAttributeValueSubs inside setAttribute cannot handle async subs.
+    if (document && value !== '') {
+      const passMatch = value.match(AttributeEntryPassMacroRx)
+      if (passMatch) {
+        value = await document._applyAttributeEntryValueSubs(value)
+        Parser.storeAttribute(match[1], value, document, attributes, { skipSubs: true })
+        return true
+      }
+    }
+
     Parser.storeAttribute(match[1], value, document, attributes)
     return true
   }
 
   // Public: Store the attribute in the document.
-  static storeAttribute (name, value, doc = null, attrs = null) {
+  static storeAttribute (name, value, doc = null, attrs = null, opts = {}) {
     if (name.endsWith('!')) {
       name = name.slice(0, -1)
       value = null
@@ -2013,7 +2035,7 @@ export class Parser {
           }
         }
         // value === '' means set to empty string (Ruby: '' is truthy → setAttribute path)
-        const resolvedValue = doc.setAttribute(name, value)
+        const resolvedValue = doc.setAttribute(name, value, opts.skipSubs)
         if (resolvedValue != null) {
           value = resolvedValue
           if (attrs) new AttributeEntry(name, value).saveTo(attrs)

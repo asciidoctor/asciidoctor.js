@@ -162,8 +162,8 @@ export class AttributeList {
   // positionalAttrs - An Array of String keys to assign to positional values.
   //
   // Returns the updated attributes object.
-  parseInto (attributes, positionalAttrs = []) {
-    return Object.assign(attributes, this.parse(positionalAttrs))
+  async parseInto (attributes, positionalAttrs = []) {
+    return Object.assign(attributes, await this.parse(positionalAttrs))
   }
 
   // Public: Parse the attribute list and return a plain object of key/value pairs.
@@ -173,11 +173,11 @@ export class AttributeList {
   // positionalAttrs - An Array of String keys to assign to positional values.
   //
   // Returns a plain object of parsed attributes.
-  parse (positionalAttrs = []) {
+  async parse (positionalAttrs = []) {
     if (this.#attributes) return this.#attributes
     this.#attributes = {}
     let index = 0
-    while (this.#parseAttribute(index, positionalAttrs)) {
+    while (await this.#parseAttribute(index, positionalAttrs)) {
       if (this.#scanner.eos()) break
       this.#skipDelimiter()
       index++
@@ -215,7 +215,7 @@ export class AttributeList {
   // Private: Parse the next attribute starting at the given positional index.
   //
   // Returns true to continue parsing, false to stop.
-  #parseAttribute (index, positionalAttrs) {
+  async #parseAttribute (index, positionalAttrs) {
     let shouldContinue = true
     this.#skipBlank()
     const peeked = this.#scanner.peek(1)
@@ -293,10 +293,7 @@ export class AttributeList {
         if (name === 'title' || name === 'reftext') {
           this.#attributes[name] = value
         } else {
-          // applySubs is async; store the raw value as a fallback when called
-          // from a sync context (attribute values rarely contain inline macros).
-          const result = this.#block.applySubs(value)
-          this.#attributes[name] = result instanceof Promise ? value : result
+          this.#attributes[name] = await this.#block.applySubs(value)
         }
       } else {
         this.#attributes[name] = value
@@ -304,8 +301,7 @@ export class AttributeList {
     } else {
       // Positional attribute
       if (singleQuoted && this.#block) {
-        const result = this.#block.applySubs(name)
-        name = result instanceof Promise ? name : result
+        name = await this.#block.applySubs(name)
       }
       const positionalAttrName = positionalAttrs[index]
       if (positionalAttrName && name != null) {

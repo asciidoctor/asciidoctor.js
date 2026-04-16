@@ -431,6 +431,11 @@ export class Document extends AbstractBlock {
     // Pre-compute all async text values (titles, list item text, cell text, reftexts)
     // so that synchronous getters work correctly during conversion.
     await this._resolveAllTexts(this)
+    // Reset the footnote counter so that body-content footnotes (processed during conversion)
+    // start numbering from 1, reproducing Ruby's "out of sequence" quirk: title footnotes are
+    // numbered during parsing via apply_title_subs, then the counter restarts for body content.
+    delete this.attributes['footnote-number']
+    delete this._counters['footnote-number']
     // Pre-compute reftext for all registered inline anchor nodes.
     for (const ref of Object.values(this.catalog.refs)) {
       if (ref && typeof ref.precomputeReftext === 'function') {
@@ -478,6 +483,8 @@ export class Document extends AbstractBlock {
         const id  = value[0]
         const ref = new Inline(this, 'anchor', value[1], { type: 'ref', id })
         this.catalog.refs[id] ??= ref
+        // Keep _reftexts in sync if the map was already built (post-parse registration).
+        if (this._reftexts && value[1]) this._reftexts[value[1]] ??= id
         return ref
       }
       case 'refs': {
@@ -657,9 +664,9 @@ export class Document extends AbstractBlock {
   // Public: Set the specified attribute if not locked.
   //
   // Returns the substituted value, or null if locked.
-  setAttribute (name, value = '') {
+  setAttribute (name, value = '', skipSubs = false) {
     if (this.isAttributeLocked(name)) return null
-    if (value && value !== '') value = this._applyAttributeValueSubs(value)
+    if (!skipSubs && value && value !== '') value = this._applyAttributeValueSubs(value)
     if (this._headerAttributes) {
       // Beyond the document header; only update live attributes, not the header snapshot.
       this.attributes[name] = value
@@ -963,20 +970,42 @@ export class Document extends AbstractBlock {
 
   // ── Private methods ─────────────────────────────────────────────────────────
 
+  // Sync version: applies only synchronous subs (specialcharacters, attributes, replacements).
+  // Used by setAttribute() which must remain sync for the {set:...} inline directive path.
+  // Async subs (quotes, macros, …) in pass macros are handled by _applyAttributeEntryValueSubs.
   _applyAttributeValueSubs (value) {
-    let result
     const m = value.match(AttributeEntryPassMacroRx)
     if (m) {
-      result = m[2]
+      let result = m[2] ?? ''
       if (m[1]) {
-        // applySubs is async; if the resolved subs require async work (e.g. quotes or macros),
-        // the result will be a Promise — fall back to the raw content in that case.
-        const subResult = this.applySubs(result, this.resolvePassSubs(m[1]))
-        result = subResult instanceof Promise ? result : subResult
+        const subs = this.resolvePassSubs(m[1])
+        if (subs) {
+          for (const sub of subs) {
+            if (sub === 'specialcharacters') result = this.subSpecialchars(result)
+            else if (sub === 'attributes') result = this.subAttributes(result)
+            else if (sub === 'replacements') result = this.subReplacements(result)
+          }
+        }
       }
-    } else {
-      result = this.applyHeaderSubs(value)
+      return this._maxAttributeValueSize != null ? _limitBytesize(result, this._maxAttributeValueSize) : result
     }
+    const result = this.applyHeaderSubs(value)
+    return this._maxAttributeValueSize != null ? _limitBytesize(result, this._maxAttributeValueSize) : result
+  }
+
+  // Async version: applies all subs including async ones (quotes, macros, …).
+  // Used by processAttributeEntry() which can await the result.
+  async _applyAttributeEntryValueSubs (value) {
+    const m = value.match(AttributeEntryPassMacroRx)
+    if (m) {
+      let result = m[2] ?? ''
+      if (m[1]) {
+        const subs = this.resolvePassSubs(m[1])
+        if (subs) result = await this.applySubs(result, subs)
+      }
+      return this._maxAttributeValueSize != null ? _limitBytesize(result, this._maxAttributeValueSize) : result
+    }
+    const result = this.applyHeaderSubs(value)
     return this._maxAttributeValueSize != null ? _limitBytesize(result, this._maxAttributeValueSize) : result
   }
 
@@ -989,7 +1018,13 @@ export class Document extends AbstractBlock {
   // Internal: Walk the block tree and pre-compute all async text values.
   // Handles titles (AbstractBlock), list item text, table cell text, and reftexts.
   async _resolveAllTexts (block) {
-    await block.precomputeTitle?.()
+    // Skip title pre-computation for blocks with an explicit empty id ([id=]).
+    // In Ruby, apply_title_subs is lazy: it is never called during parsing for such
+    // blocks because section.title is never accessed.  An explicit empty id is
+    // distinguished by block.attributes.id === '' (the AttributeList parser preserves it).
+    if (block.attributes?.id !== '') {
+      await block.precomputeTitle?.()
+    }
     await block.precomputeReftext?.()
     const ctx = block.context
     if (ctx === 'dlist') {

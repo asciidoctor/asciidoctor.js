@@ -82,9 +82,16 @@ export class AbstractBlock extends AbstractNode {
 
   // Public: Pre-compute the converted title asynchronously.
   // Called during Document.parse() so the synchronous getter works during conversion.
+  // Re-entrant calls (circular title references) are detected via _computingTitle and
+  // silently skipped so that Section#xreftext() can return null (→ "[refid]" fallback).
   async precomputeTitle () {
-    if (this.#title && this.#convertedTitle == null) {
-      this.#convertedTitle = await this.applyTitleSubs(this.#title)
+    if (this.#title && this.#convertedTitle == null && !this._computingTitle) {
+      this._computingTitle = true
+      try {
+        this.#convertedTitle = await this.applyTitleSubs(this.#title)
+      } finally {
+        this._computingTitle = false
+      }
     }
   }
 
@@ -92,8 +99,8 @@ export class AbstractBlock extends AbstractNode {
   get rawTitle () { return this.#title }
 
   // Internal: Get the title with only attribute substitutions applied (no specialchars).
-  // Used for section ID generation: attribute refs must be resolved, but entities must
-  // remain as raw AsciiDoc so that InvalidSectionIdCharsRx can strip them correctly.
+  // NOTE: no longer used for section ID generation (parser now calls applyTitleSubs to match
+  // Ruby's behaviour). Kept for other callers that need a lightweight sync substitution.
   get attrSubstitutedTitle () {
     const raw = this.#title
     if (raw == null) return null

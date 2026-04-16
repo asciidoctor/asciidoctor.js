@@ -470,7 +470,7 @@ export class Processor {
   //            sub_attributes        - Enables attribute substitution on attrlist.
   //
   // Returns a plain object of parsed attributes.
-  parseAttributes (block, attrlist, opts = {}) {
+  async parseAttributes (block, attrlist, opts = {}) {
     if (!attrlist || attrlist.length === 0) return {}
     if (opts.sub_attributes && attrlist.includes(ATTR_REF_HEAD)) {
       attrlist = block.subAttributes(attrlist)

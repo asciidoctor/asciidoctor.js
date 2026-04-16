@@ -218,7 +218,7 @@ ${await node.converter.convert(node, 'outline')}
           for (const author of node.authors()) {
             details.push(`<span id="author${idx > 1 ? idx : ''}" class="author">${node.subReplacements(author.name)}</span>${br}`)
             if (author.email) {
-              details.push(`<span id="email${idx > 1 ? idx : ''}" class="email">${node.subMacros(author.email)}</span>${br}`)
+              details.push(`<span id="email${idx > 1 ? idx : ''}" class="email">${await node.subMacros(author.email)}</span>${br}`)
             }
             idx++
           }

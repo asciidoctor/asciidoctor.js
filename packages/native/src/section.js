@@ -47,11 +47,11 @@ export class Section extends AbstractBlock {
   hasSections () { return this._nextSectionIndex > 0 }
 
   // Public: Generate a String ID from the title of this section.
+  // NOTE: This sync convenience method is only called outside of parsing (e.g. extensions).
+  // At that point #convertedTitle is already set, so this.title returns the fully-substituted
+  // HTML title — matching Ruby's behaviour where section.title calls apply_title_subs.
   generateId () {
-    // Use the attr-substituted (but not specialchars-substituted) title for ID generation.
-    // This allows {attr} references to be resolved while keeping HTML entities as raw AsciiDoc
-    // so that InvalidSectionIdCharsRx can correctly strip them.
-    return Section.generateId(this.attrSubstitutedTitle ?? this.title, this.document)
+    return Section.generateId(this.title, this.document)
   }
 
   // Public: Get the section number for the current Section as a dot-separated String.
@@ -73,6 +73,15 @@ export class Section extends AbstractBlock {
   async xreftext (xrefstyle = null) {
     const val = this.reftext
     if (val && val.length > 0) return val
+
+    // If the title is currently being computed (circular reference), return null so that
+    // the caller (convert_inline_anchor) falls back to the "[refid]" placeholder.
+    if (this._computingTitle) return null
+
+    // Compute the title now using the current catalog state if not already done.
+    // This ensures that forward xrefs in a section title are not resolved when the
+    // xreftext is first requested during parsing (before the target is registered).
+    await this.precomputeTitle()
 
     if (xrefstyle) {
       if (this.numbered) {

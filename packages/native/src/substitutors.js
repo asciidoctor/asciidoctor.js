@@ -469,7 +469,7 @@ export const Substitutors = {
             } else {
               content = this.normalizeText(content, true, true)
               if (extConfig.contentModel === 'attributes') {
-                this.parseAttributes(content, extConfig.positionalAttrs || extConfig.posAttrs || [], { into: attributes })
+                await this.parseAttributes(content, extConfig.positionalAttrs || extConfig.posAttrs || [], { into: attributes })
               } else {
                 attributes.text = content
               }
@@ -582,7 +582,7 @@ export const Substitutors = {
           posattrs = ['alt', 'width', 'height']
         }
         const target = p1
-        const attrs = this.parseAttributes(p2, posattrs, { unescapeInput: true })
+        const attrs = await this.parseAttributes(p2, posattrs, { unescapeInput: true })
         let id
         if (type !== 'icon') {
           id = attrs.id
@@ -603,7 +603,7 @@ export const Substitutors = {
             let attrlist = this.normalizeText(p2, true, true)
             let attrs
             if (attrlist.includes('=')) {
-              const parsed = new AttributeList(attrlist, this).parse()
+              const parsed = await new AttributeList(attrlist, this).parse()
               const primary = parsed[1]
               if (primary) {
                 const terms = [primary]
@@ -631,7 +631,7 @@ export const Substitutors = {
             let term = this.normalizeText(p2, true, true)
             let attrs = null
             if (term.includes('=')) {
-              const parsed = new AttributeList(term, this).parse()
+              const parsed = await new AttributeList(term, this).parse()
               term = parsed[1] || term
               if (parsed[1]) {
                 attrs = parsed
@@ -775,7 +775,7 @@ export const Substitutors = {
             link_text = newLinkText
 
             if (!doc.compatMode && link_text.includes('=')) {
-              const [extractedText, extractedAttrs] = this.extractAttributesFromText(link_text, '')
+              const [extractedText, extractedAttrs] = await this.extractAttributesFromText(link_text, '')
               link_text = extractedText
               newLinkText = extractedText
               attrs = extractedAttrs
@@ -836,7 +836,7 @@ export const Substitutors = {
           linkText = linkText.includes(R_SB) ? linkText.split(ESC_R_SB).join(R_SB) : linkText
           if (p1) {
             if (!doc.compatMode && linkText.includes(',')) {
-              const [extractedText, extractedAttrs] = this.extractAttributesFromText(linkText, '')
+              const [extractedText, extractedAttrs] = await this.extractAttributesFromText(linkText, '')
               linkText = extractedText
               attrs = extractedAttrs
               linkOpts.id = attrs?.id
@@ -849,7 +849,7 @@ export const Substitutors = {
               }
             }
           } else if (!doc.compatMode && linkText.includes('=')) {
-            const [extractedText, extractedAttrs] = this.extractAttributesFromText(linkText, '')
+            const [extractedText, extractedAttrs] = await this.extractAttributesFromText(linkText, '')
             linkText = extractedText
             attrs = extractedAttrs
             linkOpts.id = attrs?.id
@@ -944,7 +944,7 @@ export const Substitutors = {
           if (p3) {
             linkText = p3.includes(R_SB) ? p3.split(ESC_R_SB).join(R_SB) : p3
             if (!doc.compatMode && linkText.includes('=')) {
-              const [extractedText, extractedAttrs] = this.extractAttributesFromText(linkText)
+              const [extractedText, extractedAttrs] = await this.extractAttributesFromText(linkText)
               linkText = extractedText
               Object.assign(attrs, extractedAttrs)
             }
@@ -1645,7 +1645,7 @@ export const Substitutors = {
    * @param {Object} [opts={}]
    * @returns {Object}
    */
-  parseAttributes(attrlist, posattrs = [], opts = {}) {
+  async parseAttributes(attrlist, posattrs = [], opts = {}) {
     if (!attrlist || attrlist.length === 0) return {}
     if (opts.unescapeInput) attrlist = this.normalizeText(attrlist, true, true)
     if ((opts.subInput || opts.sub_input) && attrlist.includes(ATTR_REF_HEAD)) {
@@ -1661,9 +1661,9 @@ export const Substitutors = {
 
   // ── Private methods ────────────────────────────────────────────────────────
 
-  extractAttributesFromText(text, defaultText = null) {
+  async extractAttributesFromText(text, defaultText = null) {
     const attrlist = text.includes(LF) ? text.split(LF).join(' ') : text
-    const attrs = new AttributeList(attrlist, this).parse()
+    const attrs = await new AttributeList(attrlist, this).parse()
     const resolvedText = attrs[1]
     if (resolvedText != null) {
       if (resolvedText === attrlist) {
