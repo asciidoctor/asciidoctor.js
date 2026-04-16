@@ -16,262 +16,262 @@ function emptyDocument (opts = {}) {
 }
 
 describe('AttributeList', () => {
-  test('collect unnamed attribute', () => {
+  test('collect unnamed attribute', async () => {
     const attributes = {}
     const line = 'quote'
     const expected = { 1: 'quote' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect unnamed attribute double-quoted', () => {
+  test('collect unnamed attribute double-quoted', async () => {
     const attributes = {}
     const line = '"quote"'
     const expected = { 1: 'quote' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect empty unnamed attribute double-quoted', () => {
+  test('collect empty unnamed attribute double-quoted', async () => {
     const attributes = {}
     const line = '""'
     const expected = { 1: '' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect unnamed attribute double-quoted containing escaped quote', () => {
+  test('collect unnamed attribute double-quoted containing escaped quote', async () => {
     const attributes = {}
     const line = '"ba\\"zaar"'
     const expected = { 1: 'ba"zaar' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect unnamed attribute single-quoted', () => {
+  test('collect unnamed attribute single-quoted', async () => {
     const attributes = {}
     const line = "'quote'"
     const expected = { 1: 'quote' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect empty unnamed attribute single-quoted', () => {
+  test('collect empty unnamed attribute single-quoted', async () => {
     const attributes = {}
     const line = "''"
     const expected = { 1: '' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect isolated single quote positional attribute', () => {
+  test('collect isolated single quote positional attribute', async () => {
     const attributes = {}
     const line = "'"
     const expected = { 1: "'" }
     const doc = emptyDocument()
-    new AttributeList(line, doc).parseInto(attributes)
+    await new AttributeList(line, doc).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect isolated single quote attribute value', () => {
+  test('collect isolated single quote attribute value', async () => {
     const attributes = {}
     const line = "name='"
     const expected = { name: "'" }
     const doc = emptyDocument()
-    new AttributeList(line, doc).parseInto(attributes)
+    await new AttributeList(line, doc).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect attribute value as is if it has only leading single quote', () => {
+  test('collect attribute value as is if it has only leading single quote', async () => {
     const attributes = {}
     const line = "name='{val}"
     const expected = { name: "'{val}" }
     const doc = emptyDocument({ attributes: { val: 'val' } })
-    new AttributeList(line, doc).parseInto(attributes)
+    await new AttributeList(line, doc).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect unnamed attribute single-quoted containing escaped quote', () => {
+  test('collect unnamed attribute single-quoted containing escaped quote', async () => {
     const attributes = {}
     const line = "'ba\\'zaar'"
     const expected = { 1: "ba'zaar" }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect unnamed attribute with dangling delimiter', () => {
+  test('collect unnamed attribute with dangling delimiter', async () => {
     const attributes = {}
     const line = 'quote , '
     const expected = { 1: 'quote', 2: null }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect unnamed attribute in second position after empty attribute', () => {
+  test('collect unnamed attribute in second position after empty attribute', async () => {
     const attributes = {}
     const line = ', John Smith'
     const expected = { 1: null, 2: 'John Smith' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect unnamed attributes', () => {
+  test('collect unnamed attributes', async () => {
     const attributes = {}
     const line = 'first, second one, third'
     const expected = { 1: 'first', 2: 'second one', 3: 'third' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect blank unnamed attributes', () => {
+  test('collect blank unnamed attributes', async () => {
     const attributes = {}
     const line = 'first,,third,'
     const expected = { 1: 'first', 2: null, 3: 'third', 4: null }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect unnamed attribute enclosed in equal signs', () => {
+  test('collect unnamed attribute enclosed in equal signs', async () => {
     const attributes = {}
     const line = '=foo='
     const expected = { 1: '=foo=' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect named attribute', () => {
+  test('collect named attribute', async () => {
     const attributes = {}
     const line = 'foo=bar'
     const expected = { foo: 'bar' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect named attribute double-quoted', () => {
+  test('collect named attribute double-quoted', async () => {
     const attributes = {}
     const line = 'foo="bar"'
     const expected = { foo: 'bar' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect named attribute with double-quoted empty value', () => {
+  test('collect named attribute with double-quoted empty value', async () => {
     const attributes = {}
     const line = 'height=100,caption="",link="images/octocat.png"'
     const expected = { height: '100', caption: '', link: 'images/octocat.png' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect named attribute single-quoted', () => {
+  test('collect named attribute single-quoted', async () => {
     const attributes = {}
     const line = "foo='bar'"
     const expected = { foo: 'bar' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect named attribute with single-quoted empty value', () => {
+  test('collect named attribute with single-quoted empty value', async () => {
     const attributes = {}
     const line = "height=100,caption='',link='images/octocat.png'"
     const expected = { height: '100', caption: '', link: 'images/octocat.png' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect single named attribute with empty value', () => {
+  test('collect single named attribute with empty value', async () => {
     const attributes = {}
     const line = 'foo='
     const expected = { foo: '' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect single named attribute with empty value when followed by other attributes', () => {
+  test('collect single named attribute with empty value when followed by other attributes', async () => {
     const attributes = {}
     const line = 'foo=,bar=baz'
     const expected = { foo: '', bar: 'baz' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect named attributes unquoted', () => {
+  test('collect named attributes unquoted', async () => {
     const attributes = {}
     const line = 'first=value, second=two, third=3'
     const expected = { first: 'value', second: 'two', third: '3' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect named attributes quoted', () => {
+  test('collect named attributes quoted', async () => {
     const attributes = {}
     const line = "first='value', second=\"value two\", third=three"
     const expected = { first: 'value', second: 'value two', third: 'three' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect named attributes quoted containing non-semantic spaces', () => {
+  test('collect named attributes quoted containing non-semantic spaces', async () => {
     const attributes = {}
     const line = "     first    =     'value', second     =\"value two\"     , third=       three      "
     const expected = { first: 'value', second: 'value two', third: 'three' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect mixed named and unnamed attributes', () => {
+  test('collect mixed named and unnamed attributes', async () => {
     const attributes = {}
     const line = 'first, second="value two", third=three, Sherlock Holmes'
     const expected = { 1: 'first', second: 'value two', third: 'three', 4: 'Sherlock Holmes' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect mixed empty named and blank unnamed attributes', () => {
+  test('collect mixed empty named and blank unnamed attributes', async () => {
     const attributes = {}
     const line = 'first,,third=,,fifth=five'
     const expected = { 1: 'first', 2: null, third: '', 4: null, fifth: 'five' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect options attribute', () => {
+  test('collect options attribute', async () => {
     const attributes = {}
     const line = "quote, options='opt1,,opt2 , opt3'"
     const expected = { 1: 'quote', 'opt1-option': '', 'opt2-option': '', 'opt3-option': '' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect opts attribute as options', () => {
+  test('collect opts attribute as options', async () => {
     const attributes = {}
     const line = "quote, opts='opt1,,opt2 , opt3'"
     const expected = { 1: 'quote', 'opt1-option': '', 'opt2-option': '', 'opt3-option': '' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('should ignore options attribute if empty', () => {
+  test('should ignore options attribute if empty', async () => {
     const attributes = {}
     const line = 'quote, opts='
     const expected = { 1: 'quote' }
-    new AttributeList(line).parseInto(attributes)
+    await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
 
-  test('collect and rekey unnamed attributes', () => {
+  test('collect and rekey unnamed attributes', async () => {
     const attributes = {}
     const line = 'first, second one, third, fourth'
     const expected = { 1: 'first', 2: 'second one', 3: 'third', 4: 'fourth', a: 'first', b: 'second one', c: 'third' }
-    new AttributeList(line).parseInto(attributes, ['a', 'b', 'c'])
+    await new AttributeList(line).parseInto(attributes, ['a', 'b', 'c'])
     assert.deepEqual(attributes, expected)
   })
 
-  test('should not assign nil to attribute mapped to missing positional attribute', () => {
+  test('should not assign nil to attribute mapped to missing positional attribute', async () => {
     const attributes = {}
     const line = 'alt text,,100'
     const expected = { 1: 'alt text', 2: null, 3: '100', alt: 'alt text', height: '100' }
-    new AttributeList(line).parseInto(attributes, ['alt', 'width', 'height'])
+    await new AttributeList(line).parseInto(attributes, ['alt', 'width', 'height'])
     assert.deepEqual(attributes, expected)
   })
 

@@ -458,7 +458,7 @@ describe('Substitutions', () => {
 
     test('a footnote macro may contain an escaped backslash', async () => {
       const para = await blockFromString('footnote:[\\]]\nfootnote:[a \\] b]\nfootnote:[a \\]\\] b]')
-      para.subMacros(para.source)
+      await para.subMacros(para.source)
       assert.equal(para.document.catalog.footnotes.length, 3)
       assert.equal(para.document.catalog.footnotes[0].text, ']')
       assert.equal(para.document.catalog.footnotes[1].text, 'a ] b')
@@ -490,7 +490,7 @@ describe('Substitutions', () => {
 
     test('a footnote macro may contain text formatting', async () => {
       const para = await blockFromString('You can download patches from the product page.footnote:[Only available with an _active_ subscription.]')
-      para.convert()
+      await para.convert()
       const footnotes = para.document.catalog.footnotes
       assert.equal(footnotes.length, 1)
       assert.equal(footnotes[0].text, 'Only available with an <em>active</em> subscription.')

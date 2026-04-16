@@ -194,8 +194,8 @@ describe('Extensions (API)', () => {
       this.named('attrs')
       this.onContext('open')
       this.process(async function (parent, reader) {
-        parsedAttrs = this.parseAttributes(parent, await reader.readLine(), { positional_attributes: ['a', 'b'] })
-        Object.assign(parsedAttrs, this.parseAttributes(parent, 'foo={foo}', { sub_attributes: true }))
+        parsedAttrs = await this.parseAttributes(parent, await reader.readLine(), { positional_attributes: ['a', 'b'] })
+        Object.assign(parsedAttrs, await this.parseAttributes(parent, 'foo={foo}', { sub_attributes: true }))
       })
     })
     await asciidoctor.convert(`:foo: bar

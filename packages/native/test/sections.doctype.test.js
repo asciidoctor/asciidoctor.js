@@ -301,7 +301,7 @@ part intro--a summary
       assert.equal(partintro.style, 'partintro')
       assert.equal(partintro.blocks[0].context, 'paragraph')
       assert.deepEqual(partintro.blocks[0].lines, ['part intro--a summary'])
-      assert.ok(partintro.convert().includes('part intro&#8212;&#8203;a summary'))
+      assert.ok((await partintro.convert()).includes('part intro&#8212;&#8203;a summary'))
     })
 
     test('should preserve title on partintro defined as partintro paragraph', async () => {
