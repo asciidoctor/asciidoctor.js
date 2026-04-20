@@ -34,7 +34,7 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
   }
 
   // Public: Always returns true — highlight.js injects markup into the document.
-  docinfoFor (location) { // eslint-disable-line no-unused-vars
+  hasDocinfo (location) { // eslint-disable-line no-unused-vars
     return true
   }
 

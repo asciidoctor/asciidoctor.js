@@ -37,7 +37,7 @@ export class SyntaxHighlighterBase {
   // location - The String location slot ('head' or 'footer').
   //
   // Returns false by default; subclasses return true to enable docinfo().
-  docinfoFor (location) { // eslint-disable-line no-unused-vars
+  hasDocinfo (location) { // eslint-disable-line no-unused-vars
     return false
   }
 
@@ -58,7 +58,7 @@ export class SyntaxHighlighterBase {
   // Public: Indicates whether highlighting is handled server-side.
   //
   // Returns false by default; subclasses return true to enable highlight().
-  highlight () {
+  handlesHighlighting () {
     return false
   }
 
@@ -77,8 +77,8 @@ export class SyntaxHighlighterBase {
   //
   // Returns the highlighted source String, or a [String, Integer] tuple when the
   // source was shifted by one or more lines.
-  highlightSource (node, source, lang, opts) { // eslint-disable-line no-unused-vars
-    throw new Error(`${this.constructor.name} must implement highlightSource() since highlight() returns true`)
+  highlight (node, source, lang, opts) { // eslint-disable-line no-unused-vars
+    throw new Error(`${this.constructor.name} must implement highlight() since handlesHighlighting() returns true`)
   }
 
   // Public: Format the highlighted source for inclusion in an HTML document.
@@ -204,6 +204,10 @@ class DefaultFactory extends CustomFactory {
   // Custom registrations shadow built-ins.
   for (name) {
     return this._registry[name] ?? this._defaultRegistry[name] ?? null
+  }
+
+  get (name) {
+    return this.for(name) ?? undefined
   }
 
   create (name, backend = 'html5', opts = {}) {

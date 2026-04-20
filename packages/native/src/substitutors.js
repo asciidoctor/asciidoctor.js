@@ -1198,7 +1198,7 @@ export const Substitutors = {
    */
   async highlightSource(source, processCallouts) {
     const syntaxHl = this.document.syntaxHighlighter
-    if (!syntaxHl || !syntaxHl.highlight()) {
+    if (!syntaxHl || !syntaxHl.handlesHighlighting()) {
       return this.subSource(source, processCallouts)
     }
 
@@ -1628,7 +1628,7 @@ export const Substitutors = {
     if (
       this.context === 'listing' &&
       this.style === 'source' &&
-      this.document.syntaxHighlighter?.highlight()
+      this.document.syntaxHighlighter?.handlesHighlighting()
     ) {
       const idx = this.subs.indexOf('specialcharacters')
       if (idx !== -1) this.subs[idx] = 'highlight'

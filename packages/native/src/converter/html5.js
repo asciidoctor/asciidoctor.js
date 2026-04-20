@@ -278,7 +278,7 @@ ${await node.content()}
 
     // JavaScript (and auxiliary stylesheets) loaded at end of body for performance
     if (syntaxHl) {
-      if (syntaxHl.docinfoFor('head')) {
+      if (syntaxHl.hasDocinfo('head')) {
         result[syntaxHlDocinfoHeadIdx] = syntaxHl.docinfo('head', node, {
           cdn_base_url: cdnBaseUrl,
           linkcss,
@@ -287,7 +287,7 @@ ${await node.content()}
       } else {
         result.splice(syntaxHlDocinfoHeadIdx, 1)
       }
-      if (syntaxHl.docinfoFor('footer')) {
+      if (syntaxHl.hasDocinfo('footer')) {
         result.push(syntaxHl.docinfo('footer', node, {
           cdn_base_url: cdnBaseUrl,
           linkcss,
@@ -767,7 +767,7 @@ ${img}
       lang = node.attr('language')
       syntaxHl = node.document.syntaxHighlighter
       if (syntaxHl) {
-        if (syntaxHl.highlight()) {
+        if (syntaxHl.handlesHighlighting()) {
           const docAttrs = node.document.attributes
           opts = {
             css_mode: docAttrs[`${syntaxHl.name}-css`] || 'class',
