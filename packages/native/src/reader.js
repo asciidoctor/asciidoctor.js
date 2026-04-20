@@ -917,21 +917,6 @@ export class PreprocessorReader extends Reader {
     if (!Array.isArray(resolution)) return resolution
     const [incPath, targetType, relpath] = resolution
 
-    if (targetType === 'uri') {
-      let incContent
-      try {
-        const response = await fetch(incPath)
-        if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`)
-        incContent = await response.text()
-        super._shift()
-      } catch (err) {
-        this._logError(`include URI not readable: ${incPath} (${err.message})`, { sourceLocation: this.cursor })
-        return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist ?? ''}]`)
-      }
-      this.pushInclude(incContent, incPath, incPath, 1, parsedAttrs)
-      return true
-    }
-
     let incLinenos = null
     let incTags = null
     if (attrlist) {
@@ -967,17 +952,45 @@ export class PreprocessorReader extends Reader {
       }
     }
 
+    if (targetType === 'uri') {
+      let uriContent
+      try {
+        const response = await fetch(incPath)
+        if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`)
+        uriContent = await response.text()
+        super._shift()
+      } catch (err) {
+        this._logError(`include URI not readable: ${incPath} (${err.message})`, { sourceLocation: this.cursor })
+        return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist ?? ''}]`)
+      }
+      if (incLinenos) {
+        const { incLines, incOffset } = this._filterLinesByLinenos(uriContent.split('\n'), incLinenos)
+        if (incOffset !== null) {
+          parsedAttrs['partial-option'] = ''
+          this.pushInclude(incLines, incPath, incPath, incOffset, parsedAttrs)
+        }
+      } else if (incTags) {
+        const { incLines, incOffset } = this._filterLinesByTags(uriContent.split('\n'), incPath, expandedTarget, targetType, incTags, parsedAttrs)
+        if (incOffset !== null) this.pushInclude(incLines, incPath, incPath, incOffset, parsedAttrs)
+      } else {
+        this.pushInclude(uriContent, incPath, incPath, 1, parsedAttrs)
+      }
+      return true
+    }
+
     try {
       if (incLinenos) {
-        const { incLines, incOffset } = await this._readFileByLinenos(incPath, incLinenos)
+        const fileLines = (await _fsp.readFile(incPath, 'utf8')).split('\n')
         super._shift()
+        const { incLines, incOffset } = this._filterLinesByLinenos(fileLines, incLinenos)
         if (incOffset !== null) {
           parsedAttrs['partial-option'] = ''
           this.pushInclude(incLines, incPath, relpath, incOffset, parsedAttrs)
         }
       } else if (incTags) {
-        const { incLines, incOffset } = await this._readFileByTags(incPath, expandedTarget, targetType, incTags, parsedAttrs)
+        const fileLines = (await _fsp.readFile(incPath, 'utf8')).split('\n')
         super._shift()
+        const { incLines, incOffset } = this._filterLinesByTags(fileLines, incPath, expandedTarget, targetType, incTags, parsedAttrs)
         if (incOffset !== null) this.pushInclude(incLines, incPath, relpath, incOffset, parsedAttrs)
       } else {
         let incContent
@@ -1032,9 +1045,8 @@ export class PreprocessorReader extends Reader {
   }
 
   // Internal: Read lines filtered by line-number ranges.
-  async _readFileByLinenos (incPath, incLinenos) {
+  _filterLinesByLinenos (fileLines, incLinenos) {
     const remaining = [...incLinenos]
-    const fileLines = (await _fsp.readFile(incPath, 'utf8')).split('\n')
     const incLines = []
     let incOffset = null
     let selectRemaining = false
@@ -1054,8 +1066,8 @@ export class PreprocessorReader extends Reader {
     return { incLines, incOffset }
   }
 
-  // Internal: Read lines filtered by tag directives.
-  async _readFileByTags (incPath, expandedTarget, targetType, incTagsIn, parsedAttrs) {
+  // Internal: Filter lines by tag directives.
+  _filterLinesByTags (fileLines, incPath, expandedTarget, targetType, incTagsIn, parsedAttrs) {
     const tags = { ...incTagsIn }
     let select, baseSelect, wildcard
     if ('**' in tags) {
@@ -1070,7 +1082,6 @@ export class PreprocessorReader extends Reader {
       select = baseSelect = !Object.values(tags).includes(true)
     }
 
-    const fileLines = (await _fsp.readFile(incPath, 'utf8')).split('\n')
     const incLines = []
     let incOffset = null
     const tagStack = []
