@@ -8,6 +8,7 @@
   "types": "types/index.d.ts",
   "exports": {
     ".": {
+      "browser": "./build/browser/index.js",
       "require": "./build/node/index.cjs",
       "import": "./src/index.js",
       "types": "./types/index.d.ts"
