@@ -6,11 +6,12 @@ export class Section extends AbstractBlock {
     numbered: boolean;
     index: number;
     sectname: any;
-    get name(): any;
+    get name(): string;
     generateId(): string;
     sectnum(delimiter?: string, append?: any): any;
+    xreftext(xrefstyle?: any): Promise<any>;
     append(block: any): this;
-    getName(): any;
+    getName(): string;
     getSectionName(): any;
     getIndex(): number;
     isNumbered(): boolean;

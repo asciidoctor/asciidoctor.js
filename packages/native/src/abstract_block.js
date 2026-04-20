@@ -31,13 +31,15 @@ import { AbstractNode } from './abstract_node.js'
 import { LF, CAPTION_ATTRIBUTE_NAMES, ORDERED_LIST_KEYWORDS, ReplaceableTextRx } from './constants.js'
 import { intToRoman } from './helpers.js'
 
-// Used as a sentinel to abort findBy traversal early (mirrors Ruby StopIteration).
+/** Used as a sentinel to abort findBy traversal early (mirrors Ruby StopIteration). */
 class StopIteration extends Error {}
 
 export class AbstractBlock extends AbstractNode {
-  // Backing fields for getter/setter pairs
+  /** @type {string|null} */
   #title = null
+  /** @type {string|null} */
   #convertedTitle = null
+  /** @type {string|null} */
   #caption = null
 
   constructor (parent, context, opts = {}) {
@@ -65,12 +67,13 @@ export class AbstractBlock extends AbstractNode {
   isBlock () { return true }
   isInline () { return false }
 
-  // Public: Get the String title of this block with title substitutions applied.
-  // The result is pre-computed during Document.parse() via precomputeTitle().
-  // Falls back to applyHeaderSubs (sync) if precomputeTitle() has not been called yet
-  // (e.g. when a title is set via the API after parsing).
-  //
-  // Returns the converted String title, or null if the source title is falsy.
+  /**
+   * Get the String title of this block with title substitutions applied.
+   * The result is pre-computed during Document.parse() via precomputeTitle().
+   * Falls back to applyHeaderSubs (sync) if precomputeTitle() has not been called yet
+   * (e.g. when a title is set via the API after parsing).
+   * @returns {string|null} the converted String title, or null if the source title is falsy.
+   */
   get title () {
     if (this.#convertedTitle != null) return this.#convertedTitle
     if (this.#title == null) return null
@@ -79,10 +82,13 @@ export class AbstractBlock extends AbstractNode {
     return this.applyHeaderSubs(this.#title)
   }
 
-  // Public: Pre-compute the converted title asynchronously.
-  // Called during Document.parse() so the synchronous getter works during conversion.
-  // Re-entrant calls (circular title references) are detected via _computingTitle and
-  // silently skipped so that Section#xreftext() can return null (→ "[refid]" fallback).
+  /**
+   * Pre-compute the converted title asynchronously.
+   * Called during Document.parse() so the synchronous getter works during conversion.
+   * Re-entrant calls (circular title references) are detected via _computingTitle and
+   * silently skipped so that Section#xreftext() can return null (→ "[refid]" fallback).
+   * @returns {Promise<void>}
+   */
   async precomputeTitle () {
     if (this.#title && this.#convertedTitle == null && !this._computingTitle) {
       this._computingTitle = true
@@ -94,119 +100,155 @@ export class AbstractBlock extends AbstractNode {
     }
   }
 
-  // Internal: Get the raw (unsubstituted) title as set by the parser.
+  /**
+   * @internal Get the raw (unsubstituted) title as set by the parser.
+   * @returns {string|null}
+   */
   get rawTitle () { return this.#title }
 
-  // Internal: Get the title with only attribute substitutions applied (no specialchars).
-  // NOTE: no longer used for section ID generation (parser now calls applyTitleSubs to match
-  // Ruby's behaviour). Kept for other callers that need a lightweight sync substitution.
+  /**
+   * @internal Get the title with only attribute substitutions applied (no specialchars).
+   * @note no longer used for section ID generation (parser now calls applyTitleSubs to match
+   * Ruby's behaviour). Kept for other callers that need a lightweight sync substitution.
+   * @returns {string|null}
+   */
   get attrSubstitutedTitle () {
     const raw = this.#title
     if (raw == null) return null
     return raw.includes('{') ? this.subAttributes(raw) : raw
   }
 
-  // Public: Set the String block title (clears the memoised converted title).
+  /**
+   * Set the String block title (clears the memoised converted title).
+   * @param {string|null} val
+   */
   set title (val) {
     this.#convertedTitle = null
     this.#title = val
   }
 
-  // Public: Check whether the title of this block is defined.
-  //
-  // Returns a Boolean.
+  /**
+   * Check whether the title of this block is defined.
+   * @returns {boolean}
+   */
   hasTitle () { return !!this.#title }
 
-  // Public: Get the caption for this block.
-  // For admonition blocks, returns the 'textlabel' attribute instead.
-  //
-  // Returns the String caption, or null.
+  /**
+   * Get the caption for this block.
+   * For admonition blocks, returns the 'textlabel' attribute instead.
+   * @returns {string|null}
+   */
   get caption () {
     return this.context === 'admonition' ? this.attributes.textlabel : this.#caption
   }
 
-  // Public: Set the caption for this block.
+  /**
+   * Set the caption for this block.
+   * @param {string|null} val
+   */
   set caption (val) { this.#caption = val }
 
-  // Public: Get the source file where this block started.
+  /**
+   * Get the source file where this block started.
+   * @returns {string|null}
+   */
   get file () { return this.sourceLocation && this.sourceLocation.file }
 
-  // Public: Get the source line number where this block started.
+  /**
+   * Get the source line number where this block started.
+   * @returns {number|null}
+   */
   get lineno () { return this.sourceLocation && this.sourceLocation.lineno }
 
-  // Public: Update the context of this block, also updating the node name.
-  //
-  // context - The String context to assign to this block.
+  /**
+   * Update the context of this block, also updating the node name.
+   * @param {string} context - The String context to assign to this block.
+   */
   setContext (context) {
     this.context = context
     this.nodeName = String(context)
   }
 
-  // Deprecated: Get/set the numeral of this section as an integer when possible.
+  /**
+   * @deprecated Get/set the numeral of this section as an integer when possible.
+   * @returns {number|string}
+   */
   get number () {
     const n = parseInt(this.numeral, 10)
     return String(n) === String(this.numeral) ? n : this.numeral
   }
 
+  /**
+   * @deprecated
+   * @param {number|string} val
+   */
   set number (val) { this.numeral = String(val) }
 
-  // Public: Convert this block and return the converted String content.
-  //
-  // Returns the String result of the converter.
+  /**
+   * Convert this block and return the converted String content.
+   * @returns {Promise<string>} the result of the converter.
+   */
   async convert () {
     this.document.playbackAttributes(this.attributes)
     return this.converter.convert(this)
   }
 
-  // Deprecated: Use convert() instead.
+  /** @deprecated Use convert() instead. */
   render () { return this.convert() }
 
-  // Public: Get the converted result of all child blocks joined with a newline.
-  //
-  // Returns a Promise<String>.
+  /**
+   * Get the converted result of all child blocks joined with a newline.
+   * @returns {Promise<string>}
+   */
   async content () {
     const results = []
     for (const b of this.blocks) results.push(await b.convert())
     return results.join(LF)
   }
 
-  // Public: Alias for the content method — mirrors the core API.
+  /**
+   * Alias for the content method — mirrors the core API.
+   * @returns {Promise<string>}
+   */
   getContent () { return this.content() }
 
-  // Public: Append a content block to this block's list of blocks.
-  //
-  // block - The new child block.
-  //
-  // Returns this block (enables chaining).
+  /**
+   * Append a content block to this block's list of blocks.
+   * @param {AbstractBlock} block - The new child block.
+   * @returns {this} this block (enables chaining).
+   */
   append (block) {
     if (block.parent !== this) block.parent = this
     this.blocks.push(block)
     return this
   }
 
-  // Public: Determine whether this block contains block content.
-  //
-  // Returns a Boolean.
+  /**
+   * Determine whether this block contains block content.
+   * @returns {boolean}
+   */
   hasBlocks () { return this.blocks.length > 0 }
 
-  // Public: Check whether this block has any child Section objects.
-  // Overridden by Document and Section.
-  //
-  // Returns false.
+  /**
+   * Check whether this block has any child Section objects.
+   * Overridden by Document and Section.
+   * @returns {boolean}
+   */
   hasSections () { return false }
 
-  // Public: Get the child Section objects of this block.
-  //
-  // Only applies to Document and Section instances.
-  //
-  // Returns an Array of Section objects (may be empty).
+  /**
+   * Get the child Section objects of this block.
+   * Only applies to Document and Section instances.
+   * @returns {AbstractBlock[]} array of Section objects (may be empty).
+   */
   sections () {
     return this.blocks.filter(b => b.context === 'section')
   }
 
-  // Public: Get the converted alt text for this block image.
-  //
-  // Returns a String with XML special character and replacement substitutions applied.
+  /**
+   * Get the converted alt text for this block image.
+   * @returns {string} string with XML special character and replacement substitutions applied.
+   */
   alt () {
     const text = this.attributes.alt
     if (text) {
@@ -217,51 +259,53 @@ export class AbstractBlock extends AbstractNode {
     return ''
   }
 
-  // Public: Get the converted alt text for this block image (alias of alt).
+  /**
+   * Get the converted alt text for this block image (alias of alt).
+   * @returns {string}
+   */
   getAlt () { return this.alt() }
 
-  // Public: Get the converted title prefixed with the caption.
-  //
-  // Returns the String captioned title.
+  /**
+   * Get the converted title prefixed with the caption.
+   * @returns {string} the captioned title.
+   */
   captionedTitle () {
     return `${this.caption || ''}${this.title || ''}`
   }
 
-  // Public: Get the list marker keyword for the specified list type.
-  //
-  // listType - The String list type (default: this.style).
-  //
-  // Returns the single-character String keyword for the list marker, or undefined.
+  /**
+   * Get the list marker keyword for the specified list type.
+   * @param {string|null} [listType=null] - The String list type (default: this.style).
+   * @returns {string|undefined} the single-character String keyword for the list marker.
+   */
   listMarkerKeyword (listType = null) {
     return ORDERED_LIST_KEYWORDS[listType || this.style]
   }
 
-  // Public: Check whether the specified substitution is enabled for this block.
-  //
-  // name - The String substitution name.
-  //
-  // Returns a Boolean.
+  /**
+   * Check whether the specified substitution is enabled for this block.
+   * @param {string} name - The String substitution name.
+   * @returns {boolean}
+   */
   hasSub (name) { return this.subs.includes(name) }
 
-  // Public: Remove a substitution from this block.
-  //
-  // name - The String substitution name to remove.
-  //
-  // Returns undefined.
+  /**
+   * Remove a substitution from this block.
+   * @param {string} name - The String substitution name to remove.
+   */
   removeSub (name) {
     const idx = this.subs.indexOf(name)
     if (idx >= 0) this.subs.splice(idx, 1)
   }
 
-  // Public: Generate cross-reference text (xreftext) used to refer to this block.
-  //
-  // Uses the explicit reftext if set. For sections or captioned blocks (blocks
-  // with both a title and a caption), formats the text according to xrefstyle.
-  // Falls back to the title, or null if no title is available.
-  //
-  // xrefstyle - Optional String style: 'full', 'short', or 'basic' (default: null).
-  //
-  // Returns a String xreftext, or null.
+  /**
+   * Generate cross-reference text (xreftext) used to refer to this block.
+   * Uses the explicit reftext if set. For sections or captioned blocks (blocks
+   * with both a title and a caption), formats the text according to xrefstyle.
+   * Falls back to the title, or null if no title is available.
+   * @param {string|null} [xrefstyle=null] - Optional String style: 'full', 'short', or 'basic'.
+   * @returns {Promise<string|null>} the xreftext, or null.
+   */
   async xreftext (xrefstyle = null) {
     const val = this.reftext
     if (val && val.length > 0) return val
@@ -293,16 +337,13 @@ export class AbstractBlock extends AbstractNode {
     return this.title
   }
 
-  // Public: Generate and assign a caption to this block if not already assigned.
-  //
-  // If the block has a title and a caption prefix is available, builds a caption
-  // from the prefix and a counter, then stores it.
-  //
-  // value          - The String caption to assign, or null to derive from document attributes.
-  // captionContext - The String context used to look up caption attributes
-  //                 (default: this.context).
-  //
-  // Returns undefined.
+  /**
+   * Generate and assign a caption to this block if not already assigned.
+   * If the block has a title and a caption prefix is available, builds a caption
+   * from the prefix and a counter, then stores it.
+   * @param {string|null} [value=null] - The String caption to assign, or null to derive from document attributes.
+   * @param {string} [captionContext=this.context] - The String context used to look up caption attributes.
+   */
   assignCaption (value = null, captionContext = this.context) {
     // In Ruby, empty string is truthy; use != null to replicate that semantics.
     if (this.#caption != null || !this.#title) return
@@ -323,11 +364,10 @@ export class AbstractBlock extends AbstractNode {
     }
   }
 
-  // Internal: Assign the next index (0-based) and numeral (1-based) to the section.
-  //
-  // section - The Section to which to assign the next index and numeral.
-  //
-  // Returns undefined.
+  /**
+   * @internal Assign the next index (0-based) and numeral (1-based) to the section.
+   * @param {AbstractBlock} section - The Section to which to assign the next index and numeral.
+   */
   assignNumeral (section) {
     section.index = this._nextSectionIndex
     this._nextSectionIndex = section.index + 1
@@ -351,11 +391,10 @@ export class AbstractBlock extends AbstractNode {
     }
   }
 
-  // Internal: Reassign 0-based section indexes for all descendant sections.
-  //
-  // Must be called after removing child sections to keep internal counters correct.
-  //
-  // Returns undefined.
+  /**
+   * @internal Reassign 0-based section indexes for all descendant sections.
+   * Must be called after removing child sections to keep internal counters correct.
+   */
   reindexSections () {
     this._nextSectionIndex = 0
     this._nextSectionOrdinal = 1
@@ -367,20 +406,15 @@ export class AbstractBlock extends AbstractNode {
     }
   }
 
-  // Public: Walk the document tree and find all block-level nodes that match
-  // the selector and optional filter function.
-  //
-  // selector - A plain object with optional keys: context, style, role, id,
-  //            traverseDocuments (default: {}).
-  // filter   - An optional Function called with each candidate node.
-  //            Return values:
-  //              true / any truthy  → accept node, continue into children
-  //              'prune'            → accept node, skip children
-  //              'reject'           → skip node and its children
-  //              'stop'             → stop the entire traversal
-  //            When null, all matching nodes are accepted.
-  //
-  // Returns an Array of matching block-level nodes.
+  /**
+   * Walk the document tree and find all block-level nodes that match
+   * the selector and optional filter function.
+   * @param {Object} [selector={}] - A plain object with optional keys: context, style, role, id, traverseDocuments.
+   * @param {Function|null} [filter=null] - An optional Function called with each candidate node.
+   *   Return values: true/truthy → accept node; 'prune' → accept, skip children;
+   *   'reject' → skip node and children; 'stop' → stop traversal.
+   * @returns {AbstractBlock[]} array of matching block-level nodes.
+   */
   findBy (selector = {}, filter = null) {
     const result = []
     try {
@@ -391,14 +425,15 @@ export class AbstractBlock extends AbstractNode {
     return result
   }
 
-  // Alias for findBy (matches Ruby's `alias query find_by`).
+  /** Alias for findBy (matches Ruby's `alias query find_by`). */
   query (selector = {}, filter = null) { return this.findBy(selector, filter) }
 
-  // Public: Move to the next adjacent block in document order.
-  // If the current block is the last item in a list, returns the following
-  // sibling of the list block.
-  //
-  // Returns the next AbstractBlock, or null.
+  /**
+   * Move to the next adjacent block in document order.
+   * If the current block is the last item in a list, returns the following
+   * sibling of the list block.
+   * @returns {AbstractBlock|null} the next AbstractBlock, or null.
+   */
   nextAdjacentBlock () {
     if (this.context === 'document') return null
     const p = this.parent
@@ -412,7 +447,7 @@ export class AbstractBlock extends AbstractNode {
     return sib ? sib : p.nextAdjacentBlock()
   }
 
-  // Private: Core traversal logic for findBy. Throws StopIteration for early exit.
+  /** @private Core traversal logic for findBy. Throws StopIteration for early exit. */
   #findByInternal (selector, result, filter) {
     const contextSelector = selector.context ?? null
     const anyContext = !contextSelector
@@ -496,66 +531,120 @@ export class AbstractBlock extends AbstractNode {
 
   // ── JavaScript-style accessors ────────────────────────────────────────────────
 
-  // Public: Get the context (node type) of this block.
+  /**
+   * Get the context (node type) of this block.
+   * @returns {string}
+   */
   getContext () { return this.context }
 
-  // Public: Get the node name of this block.
+  /**
+   * Get the node name of this block.
+   * @returns {string}
+   */
   getNodeName () { return this.nodeName }
 
-  // Public: Get the child blocks of this block.
+  /**
+   * Get the child blocks of this block.
+   * @returns {AbstractBlock[]}
+   */
   getBlocks () { return this.blocks }
 
-  // Public: Get the child Section blocks of this block.
+  /**
+   * Get the child Section blocks of this block.
+   * @returns {AbstractBlock[]}
+   */
   getSections () { return this.sections() }
 
-  // Public: Get the title of this block with substitutions applied.
+  /**
+   * Get the title of this block with substitutions applied.
+   * @returns {string|null}
+   */
   getTitle () { return this.title }
 
-  // Public: Set the raw title of this block.
+  /**
+   * Set the raw title of this block.
+   * @param {string|null} val
+   */
   setTitle (val) { this.title = val ?? null }
 
-  // Public: Get the caption of this block.
+  /**
+   * Get the caption of this block.
+   * @returns {string|undefined}
+   */
   getCaption () { return this.caption ?? undefined }
 
-  // Public: Set the caption of this block.
+  /**
+   * Set the caption of this block.
+   * @param {string|null} val
+   */
   setCaption (val) { this.caption = val }
 
-  // Public: Get the captioned title of this block.
+  /**
+   * Get the captioned title of this block.
+   * @returns {string}
+   */
   getCaptionedTitle () { return this.captionedTitle() }
 
-  // Public: Get the style of this block.
+  /**
+   * Get the style of this block.
+   * @returns {string|null}
+   */
   getStyle () { return this.style }
 
-  // Public: Set the style of this block.
+  /**
+   * Set the style of this block.
+   * @param {string|null} val
+   */
   setStyle (val) { this.style = val }
 
-  // Public: Get the level of this block.
+  /**
+   * Get the level of this block.
+   * @returns {number|null}
+   */
   getLevel () { return this.level }
 
-  // Public: Set the level of this block.
+  /**
+   * Set the level of this block.
+   * @param {number|null} val
+   */
   setLevel (val) { this.level = val }
 
-  // Public: Get the source line number where this block started.
-  //
-  // Returns an Integer line number, or undefined when sourcemap is disabled.
+  /**
+   * Get the source line number where this block started.
+   * @returns {number|undefined} line number, or undefined when sourcemap is disabled.
+   */
   getLineNumber () { return this.sourceLocation?.lineno }
 
-  // Public: Get the source location of this block.
-  //
-  // Returns the Cursor source location object, or undefined when sourcemap is disabled.
+  /**
+   * Get the source location of this block.
+   * @returns {object|undefined} the Cursor source location object, or undefined when sourcemap is disabled.
+   */
   getSourceLocation () { return this.sourceLocation ?? undefined }
 
-  // Public: Get the list of substitutions enabled for this block.
+  /**
+   * Get the list of substitutions enabled for this block.
+   * @returns {string[]}
+   */
   getSubstitutions () { return this.subs }
 
-  // Public: Check whether the specified substitution is enabled for this block.
+  /**
+   * Check whether the specified substitution is enabled for this block.
+   * @param {string} name
+   * @returns {boolean}
+   */
   hasSubstitution (name) { return this.hasSub(name) }
 
-  // Public: Add the specified substitution to this block's substitutions list.
+  /**
+   * Add the specified substitution to this block's substitutions list.
+   * @param {string} name
+   */
   addSubstitution (name) {
     if (!this.subs.includes(name)) this.subs.push(name)
   }
 
-  // Public: Remove the specified substitution from this block's substitutions list.
+  /**
+   * Remove the specified substitution from this block's substitutions list.
+   * @param {string} name
+   */
   removeSubstitution (name) { this.removeSub(name) }
 }

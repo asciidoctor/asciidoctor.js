@@ -66,6 +66,7 @@ declare class Cell extends AbstractBlock {
     };
     _subs: string[];
     _text: any;
+    style: any;
     get column(): any;
     reinitialize(hasHeader: any): Promise<Cell>;
     _catalogInlineAnchor(cellText?: any, cursor?: any): void;
@@ -78,6 +79,8 @@ declare class Cell extends AbstractBlock {
     lines(): any;
     source(): any;
     get innerDocument(): any;
+    get file(): any;
+    get lineno(): any;
 }
 declare class ParserContext {
     static get FORMATS(): Set<string>;

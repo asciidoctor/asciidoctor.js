@@ -92,6 +92,8 @@ export class Document extends AbstractBlock {
     source(): any;
     sourceLines(): any;
     basebackend(base: any): boolean;
+    set title(val: any);
+    get title(): any;
     doctitle(opts?: {}): any;
     get name(): any;
     xreftext(_xrefstyle?: any): any;
@@ -118,6 +120,8 @@ export class Document extends AbstractBlock {
     write(output: any, target: any): Promise<void>;
     docinfo(location?: string, suffix?: any): Promise<string>;
     _docinfoProcessors(location: any): boolean;
+    getTitle(): any;
+    setTitle(val: any): void;
     getDoctitle(opts?: {}): any;
     getDocumentTitle(opts?: {}): any;
     getDoctype(): any;
