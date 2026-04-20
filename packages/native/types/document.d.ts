@@ -115,8 +115,8 @@ export class Document extends AbstractBlock {
     attributeLocked(name: any): boolean;
     setHeaderAttribute(name: any, value?: string, overwrite?: boolean): boolean;
     _convertAsciiDocCells(block?: this): Promise<void>;
-    convert(opts?: {}): Promise<any>;
-    render(opts?: {}): Promise<any>;
+    convert(opts?: {}): any;
+    render(opts?: {}): any;
     write(output: any, target: any): Promise<void>;
     docinfo(location?: string, suffix?: any): Promise<string>;
     _docinfoProcessors(location: any): boolean;

@@ -4,26 +4,17 @@ import { AbstractBlock } from './abstract_block.js'
 import { Compliance } from './compliance.js'
 import { InvalidSectionIdCharsRx } from './rx.js'
 
-// Public: Methods for managing sections of AsciiDoc content in a document.
+/**
+ * Methods for managing sections of AsciiDoc content in a document.
+ */
 export class Section extends AbstractBlock {
-  // Public: Get/Set the 0-based index order of this section within the parent block
-  // index
-
-  // Public: Get/Set the section name of this section
-  // sectname
-
-  // Public: Get/Set whether this is a special section or a child of one
-  // special
-
-  // Public: Get/Set whether this section should be numbered.
-  // numbered
-
-  // Public: Initialize an Asciidoctor::Section object.
-  //
-  // parent   - The parent AbstractBlock (Document or Section), or null.
-  // level    - The Integer level of this section (default: parent.level + 1 or 1).
-  // numbered - Boolean indicating whether numbering is enabled (default: false).
-  // opts     - An optional plain object of options (default: {}).
+  /**
+   * Initialize an Asciidoctor Section object.
+   * @param {AbstractBlock|null} [parent=null] - The parent AbstractBlock (Document or Section), or null.
+   * @param {number|null} [level=null] - The Integer level of this section (default: parent.level + 1 or 1).
+   * @param {boolean} [numbered=false] - Boolean indicating whether numbering is enabled.
+   * @param {Object} [opts={}] - An optional plain object of options.
+   */
   constructor (parent = null, level = null, numbered = false, opts = {}) {
     super(parent, 'section', opts)
     if (parent instanceof Section) {
@@ -38,29 +29,36 @@ export class Section extends AbstractBlock {
     this.sectname  = null
   }
 
-  // Public: The name of this section — alias for title.
+  /**
+   * The name of this section — alias for title.
+   * @returns {string|null}
+   */
   get name () { return this.title }
 
-  // Public: Check whether this section has any child Section objects.
-  //
-  // Returns a Boolean.
+  /**
+   * Check whether this section has any child Section objects.
+   * @returns {boolean}
+   */
   hasSections () { return this._nextSectionIndex > 0 }
 
-  // Public: Generate a String ID from the title of this section.
-  // NOTE: This sync convenience method is only called outside of parsing (e.g. extensions).
-  // At that point #convertedTitle is already set, so this.title returns the fully-substituted
-  // HTML title — matching Ruby's behaviour where section.title calls apply_title_subs.
+  /**
+   * Generate a String ID from the title of this section.
+   * This sync convenience method is only called outside of parsing (e.g. extensions).
+   * At that point #convertedTitle is already set, so this.title returns the fully-substituted
+   * HTML title — matching Ruby's behaviour where section.title calls apply_title_subs.
+   * @returns {string}
+   */
   generateId () {
     return Section.generateId(this.title, this.document)
   }
 
-  // Public: Get the section number for the current Section as a dot-separated String.
-  //
-  // delimiter - The separator between numerals (default: '.').
-  // append    - String appended at the end, or false to omit trailing delimiter.
-  //             (default: null → same as delimiter)
-  //
-  // Returns the section number String.
+  /**
+   * Get the section number for the current Section as a dot-separated String.
+   * @param {string} [delimiter='.'] - The separator between numerals.
+   * @param {string|false|null} [append=null] - String appended at the end, or false to omit trailing delimiter
+   *   (default: null → same as delimiter).
+   * @returns {string} the section number String.
+   */
   sectnum (delimiter = '.', append = null) {
     const suffix = append !== null ? (append === false ? '' : append) : delimiter
     if (this.level > 1 && this.parent instanceof Section) {
@@ -69,7 +67,11 @@ export class Section extends AbstractBlock {
     return `${this.numeral ?? ''}${suffix}`
   }
 
-  // (see AbstractBlock#xreftext)
+  /**
+   * @inheritdoc
+   * @param {string|null} [xrefstyle=null]
+   * @returns {Promise<string|null>}
+   */
   async xreftext (xrefstyle = null) {
     const val = this.reftext
     if (val && val.length > 0) return val
@@ -124,13 +126,12 @@ export class Section extends AbstractBlock {
     return this.title
   }
 
-  // Public: Append a content block to this block's list of blocks.
-  //
-  // If the child block is a Section, assign an index/numeral to it.
-  //
-  // block - The child Block to append.
-  //
-  // Returns this Section.
+  /**
+   * Append a content block to this block's list of blocks.
+   * If the child block is a Section, assign an index/numeral to it.
+   * @param {AbstractBlock} block - The child Block to append.
+   * @returns {this}
+   */
   append (block) {
     if (block.context === 'section') this.assignNumeral(block)
     return super.append(block)
@@ -138,31 +139,58 @@ export class Section extends AbstractBlock {
 
   // ── JavaScript-style accessors ────────────────────────────────────────────────
 
-  // Public: Get the section title (alias of title).
+  /**
+   * Get the section title (alias of title).
+   * @returns {string|null}
+   */
   getName () { return this.name }
 
-  // Public: Get the section name (e.g. 'section', 'appendix').
+  /**
+   * Get the section name (e.g. 'section', 'appendix').
+   * @returns {string|null}
+   */
   getSectionName () { return this.sectname }
 
-  // Public: Get the 0-based index of this section within the parent block.
+  /**
+   * Get the 0-based index of this section within the parent block.
+   * @returns {number}
+   */
   getIndex () { return this.index }
 
-  // Public: Get whether this section is numbered.
+  /**
+   * Get whether this section is numbered.
+   * @returns {boolean}
+   */
   isNumbered () { return this.numbered }
 
-  // Public: Get whether this section is a special section.
+  /**
+   * Get whether this section is a special section.
+   * @returns {boolean}
+   */
   isSpecial () { return this.special }
 
-  // Public: Get the section numeral string.
+  /**
+   * Get the section numeral string.
+   * @returns {string|null}
+   */
   getNumeral () { return this.numeral }
 
-  // Public: Set the section numeral string.
+  /**
+   * Set the section numeral string.
+   * @param {string|null} val
+   */
   setNumeral (val) { this.numeral = val }
 
-  // Public: Get the section number string (dot-separated).
+  /**
+   * Get the section number string (dot-separated).
+   * @returns {string}
+   */
   getSectionNumeral () { return this.sectnum() }
 
-  // Public: Get the section number string (alias of getSectionNumeral).
+  /**
+   * Get the section number string (alias of getSectionNumeral).
+   * @returns {string}
+   */
   getSectionNumber () { return this.sectnum() }
 
   toString () {
@@ -173,12 +201,12 @@ export class Section extends AbstractBlock {
     return super.toString()
   }
 
-  // Public: Generate a String ID from the given section title.
-  //
-  // title    - The String title.
-  // document - The Document.
-  //
-  // Returns the generated String ID.
+  /**
+   * Generate a String ID from the given section title.
+   * @param {string} title - The String title.
+   * @param {object} document - The Document.
+   * @returns {string} the generated String ID.
+   */
   static generateId (title, document) {
     const attrs = document.attributes
     const pre   = attrs['idprefix'] ?? '_'
@@ -230,8 +258,14 @@ export class Section extends AbstractBlock {
   }
 }
 
-// Internal: Translate every character in `fromChars` to `toChar` and squeeze
-// consecutive runs of the translated character (mirrors Ruby's String#tr_s).
+/**
+ * @internal Translate every character in `fromChars` to `toChar` and squeeze
+ * consecutive runs of the translated character (mirrors Ruby's String#tr_s).
+ * @param {string} str
+ * @param {string} fromChars
+ * @param {string} toChar
+ * @returns {string}
+ */
 function _trS (str, fromChars, toChar) {
   const set = new Set([...fromChars])
   let result = ''

@@ -2,13 +2,19 @@
 
 import { AbstractNode } from './abstract_node.js'
 
-// Public: Represents an inline element in an AsciiDoc document.
+/**
+ * Represents an inline element in an AsciiDoc document.
+ */
 export class Inline extends AbstractNode {
-  // text   - The String text of this inline element (optional).
-  // opts   - A plain object of options:
-  //          id     - The String id of this inline element.
-  //          type   - The Symbol/String type qualifier (e.g. 'ref', 'bibref').
-  //          target - The String target (e.g. a URI).
+  /**
+   * @param {AbstractNode} parent
+   * @param {string} context
+   * @param {string|null} [text=null] - The String text of this inline element.
+   * @param {Object} [opts={}] - A plain object of options:
+   *   id     - The String id of this inline element.
+   *   type   - The String type qualifier (e.g. 'ref', 'bibref').
+   *   target - The String target (e.g. a URI).
+   */
   constructor (parent, context, text = null, opts = {}) {
     super(parent, context, opts)
     this.nodeName = `inline_${context}`
@@ -21,50 +27,61 @@ export class Inline extends AbstractNode {
   isBlock ()  { return false }
   isInline () { return true }
 
-  // Public: Convert this inline element using the document's converter.
-  //
-  // Returns the String result.
+  /**
+   * Convert this inline element using the document's converter.
+   * @returns {Promise<string>}
+   */
   async convert () { return this.converter.convert(this) }
 
-  // Deprecated: Use convert() instead.
+  /** @deprecated Use convert() instead. */
   render () { return this.convert() }
 
-  // Public: Get the converted content (alias for text).
+  /**
+   * Get the converted content (alias for text).
+   * @returns {string|null}
+   */
   content () { return this.text }
 
-  // Public: Get the alt text for this inline image.
-  //
-  // Returns the String value of the alt attribute, or ''.
+  /**
+   * Get the alt text for this inline image.
+   * @returns {string} the value of the alt attribute, or ''.
+   */
   alt () { return this.attr('alt') || '' }
 
-  // Public: Check whether this inline node has reftext.
-  //
-  // For :ref and :bibref nodes the text acts as the reftext.
-  //
-  // Returns a Boolean.
+  /**
+   * Check whether this inline node has reftext.
+   * For ref and bibref nodes the text acts as the reftext.
+   * @returns {boolean}
+   */
   hasReftext () {
     return !!(this.text && (this.type === 'ref' || this.type === 'bibref'))
   }
 
-  // Public: Get the reftext for this inline node with substitutions applied.
-  // The result is pre-computed during Document.parse() via precomputeReftext().
-  // Falls back to the raw text if precomputeReftext() has not been called yet.
-  //
-  // Returns the String reftext, or null.
+  /**
+   * Get the reftext for this inline node with substitutions applied.
+   * The result is pre-computed during Document.parse() via precomputeReftext().
+   * Falls back to the raw text if precomputeReftext() has not been called yet.
+   * @returns {string|null}
+   */
   get reftext () {
     if (this._convertedReftext !== undefined) return this._convertedReftext
     return this.text ?? null
   }
 
-  // Public: Pre-compute the reftext with substitutions applied asynchronously.
-  // Called during Document.parse() so the synchronous getter works during conversion.
+  /**
+   * Pre-compute the reftext with substitutions applied asynchronously.
+   * Called during Document.parse() so the synchronous getter works during conversion.
+   * @returns {Promise<void>}
+   */
   async precomputeReftext () {
     const val = this.text
     this._convertedReftext = val != null ? await this.applyReftextSubs(val) : null
   }
 
-  // Public: Generate xreftext for this inline node.
-  //
-  // Returns the String reftext, or null.
+  /**
+   * Generate xreftext for this inline node.
+   * @param {string|null} [_xrefstyle=null]
+   * @returns {string|null}
+   */
   xreftext (_xrefstyle = null) { return this.reftext }
 }
