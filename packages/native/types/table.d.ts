@@ -1,4 +1,4 @@
-export class Table extends AbstractBlock {
+export class Table extends AbstractBlock<string> {
     constructor(parent: any, attributes: any);
     rows: {
         head: any[];
@@ -44,7 +44,7 @@ declare class Column extends AbstractNode {
     isBlock(): boolean;
     isInline(): boolean;
 }
-declare class Cell extends AbstractBlock {
+declare class Cell extends AbstractBlock<string> {
     static get DOUBLE_LF(): string;
     static create(column: any, cellText: any, attributes?: {}, opts?: {}): Promise<Cell>;
     constructor(column: any, cellText: any, attributes?: {}, opts?: {});

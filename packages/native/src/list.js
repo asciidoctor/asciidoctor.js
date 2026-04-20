@@ -5,7 +5,9 @@ import { LF } from './constants.js'
 
 const NORMAL_SUBS = Object.freeze(['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
 
-// Public: Methods for managing AsciiDoc lists (ordered, unordered and description lists).
+/**
+ * @extends {AbstractBlock<any[]>}
+ */
 export class List extends AbstractBlock {
   constructor (parent, context, opts = {}) {
     super(parent, context, opts)

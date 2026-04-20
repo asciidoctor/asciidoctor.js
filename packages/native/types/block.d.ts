@@ -10,8 +10,9 @@ export namespace DEFAULT_CONTENT_MODEL {
     let thematic_break: string;
     let video: string;
 }
-export class Block extends AbstractBlock {
+export class Block extends AbstractBlock<string> {
     static create(parent: any, context: any, opts?: {}): Block;
+    constructor(parent: any, context: any, opts?: {});
     contentModel: any;
     lines: any;
     get blockname(): any;

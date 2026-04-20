@@ -34,6 +34,9 @@ import { intToRoman } from './helpers.js'
 /** Used as a sentinel to abort findBy traversal early (mirrors Ruby StopIteration). */
 class StopIteration extends Error {}
 
+/**
+ * @template {string | any[]} [TContent=string]
+ */
 export class AbstractBlock extends AbstractNode {
   /** @type {string|null} */
   #title = null
@@ -198,7 +201,7 @@ export class AbstractBlock extends AbstractNode {
 
   /**
    * Get the converted result of all child blocks joined with a newline.
-   * @returns {Promise<string>}
+   * @returns {Promise<TContent>}
    */
   async content () {
     const results = []
@@ -208,7 +211,7 @@ export class AbstractBlock extends AbstractNode {
 
   /**
    * Alias for the content method — mirrors the core API.
-   * @returns {Promise<string>}
+   * @returns {Promise<TContent>}
    */
   getContent () { return this.content() }
 

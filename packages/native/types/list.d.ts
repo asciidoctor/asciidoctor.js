@@ -1,10 +1,13 @@
-export class List extends AbstractBlock {
+/**
+ * @extends {AbstractBlock<any[]>}
+ */
+export class List extends AbstractBlock<any[]> {
+    constructor(parent: any, context: any, opts?: {});
     get items(): any[];
-    content(): Promise<any[]>;
     hasItems(): boolean;
     outline(): boolean;
 }
-export class ListItem extends AbstractBlock {
+export class ListItem extends AbstractBlock<string> {
     constructor(parent: any, text?: any);
     _text: any;
     level: any;

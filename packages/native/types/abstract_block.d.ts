@@ -1,4 +1,8 @@
-export class AbstractBlock extends AbstractNode {
+/**
+ * @template {string | any[]} [TContent=string]
+ */
+export class AbstractBlock<TContent extends string | any[] = string> extends AbstractNode {
+    constructor(parent: any, context: any, opts?: {});
     contentModel: string;
     blocks: any[];
     subs: any[];
@@ -95,14 +99,14 @@ export class AbstractBlock extends AbstractNode {
     render(): Promise<string>;
     /**
      * Get the converted result of all child blocks joined with a newline.
-     * @returns {Promise<string>}
+     * @returns {Promise<TContent>}
      */
-    content(): Promise<string>;
+    content(): Promise<TContent>;
     /**
      * Alias for the content method — mirrors the core API.
-     * @returns {Promise<string>}
+     * @returns {Promise<TContent>}
      */
-    getContent(): Promise<string>;
+    getContent(): Promise<TContent>;
     /**
      * Append a content block to this block's list of blocks.
      * @param {AbstractBlock} block - The new child block.
@@ -196,7 +200,7 @@ export class AbstractBlock extends AbstractNode {
      */
     findBy(selector?: any, filter?: Function | null): AbstractBlock[];
     /** Alias for findBy (matches Ruby's `alias query find_by`). */
-    query(selector?: {}, filter?: any): AbstractBlock[];
+    query(selector?: {}, filter?: any): AbstractBlock<string>[];
     /**
      * Move to the next adjacent block in document order.
      * If the current block is the last item in a list, returns the following

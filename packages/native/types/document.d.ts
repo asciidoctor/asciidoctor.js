@@ -37,7 +37,7 @@ export class Author {
     initials: any;
     email: any;
 }
-export class Document extends AbstractBlock {
+export class Document extends AbstractBlock<string> {
     static create(data: any, options?: {}): Promise<Document>;
     constructor(data?: any, options?: {});
     set converter(v: any);

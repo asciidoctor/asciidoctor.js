@@ -8,7 +8,7 @@ import { Converter } from './converter.js'
 import { Block } from './block.js'
 import { Section } from './section.js'
 import Html5Converter from './converter/html5.js'
-import { SyntaxHighlighter } from './syntax_highlighter.js'
+import { SyntaxHighlighter, SyntaxHighlighterBase } from './syntax_highlighter.js'
 
 const ASCIIDOCTOR_CORE_VERSION = '2.0.26'
 
@@ -121,6 +121,8 @@ class Asciidoctor {
     return await doc.convert()
   }
 }
+
+export { SyntaxHighlighterBase }
 
 export default function () {
   return new Asciidoctor()

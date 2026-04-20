@@ -1,7 +1,7 @@
 /**
  * Methods for managing sections of AsciiDoc content in a document.
  */
-export class Section extends AbstractBlock {
+export class Section extends AbstractBlock<string> {
     /**
      * Create a new Section — mirrors the core Section.create() API.
      * @param {AbstractBlock|null} [parent=null]

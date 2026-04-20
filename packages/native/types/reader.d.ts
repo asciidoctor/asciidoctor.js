@@ -107,14 +107,14 @@ export class PreprocessorReader extends Reader {
     _preprocessIncludeDirective(target: any, attrlist: any): Promise<boolean>;
     _resolveIncludePath(target: any, attrlist: any, attributes: any): Promise<boolean | any[]>;
     _popInclude(): void;
-    _readFileByLinenos(incPath: any, incLinenos: any): Promise<{
+    _filterLinesByLinenos(fileLines: any, incLinenos: any): {
         incLines: string[];
         incOffset: number;
-    }>;
-    _readFileByTags(incPath: any, expandedTarget: any, targetType: any, incTagsIn: any, parsedAttrs: any): Promise<{
+    };
+    _filterLinesByTags(fileLines: any, incPath: any, expandedTarget: any, targetType: any, incTagsIn: any, parsedAttrs: any): {
         incLines: string[];
         incOffset: number;
-    }>;
+    };
     _skipFrontMatter(data: any, incrementLinenos?: boolean): any[];
     _resolveExprVal(val: any): any;
     _evalOp(lhs: any, op: any, rhs: any): boolean;
