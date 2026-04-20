@@ -1,0 +1,14 @@
+export function prepareSourceArray(data: any, trimEnd?: boolean): any;
+export function prepareSourceString(data: any, trimEnd?: boolean): any;
+export function isUriish(str: any): boolean;
+export function encodeUriComponent(str: any): string;
+export function encodeSpacesInUri(str: any): any;
+export function rootname(filename: any): any;
+export function basename(filename: any, dropExt?: any): any;
+export function isExtname(path: any): boolean;
+export function extname(path: any, fallback?: string): any;
+export function asyncReplace(str: any, regex: any, replacer: any): Promise<any>;
+export function mkdirP(dir: any): Promise<void>;
+export function intToRoman(val: any): string;
+export function romanToInt(val: any): number;
+export function nextval(current: any): any;

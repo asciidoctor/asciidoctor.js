@@ -4,10 +4,12 @@
   "description": "Asciidoctor - the native library",
   "type": "module",
   "main": "src/index.js",
+  "types": "types/index.d.ts",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
+    "build:types": "tsc",
     "test": "node --test test/**.test.js"
   },
   "repository": {
@@ -39,6 +41,7 @@
     "@xmldom/xmldom": "^0.9.9",
     "linkedom": "^0.18.12",
     "node-html-parser": "^7.1.0",
+    "typescript": "^6.0.3",
     "xpath": "^0.0.34"
   }
 }
