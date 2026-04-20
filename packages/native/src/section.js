@@ -138,9 +138,6 @@ export class Section extends AbstractBlock {
 
   // ── JavaScript-style accessors ────────────────────────────────────────────────
 
-  // Public: Get the section ID.
-  getId () { return this.id ?? undefined }
-
   // Public: Get the section title (alias of title).
   getName () { return this.name }
 
@@ -164,6 +161,9 @@ export class Section extends AbstractBlock {
 
   // Public: Get the section number string (dot-separated).
   getSectionNumeral () { return this.sectnum() }
+
+  // Public: Get the section number string (alias of getSectionNumeral).
+  getSectionNumber () { return this.sectnum() }
 
   toString () {
     if (this._title) {

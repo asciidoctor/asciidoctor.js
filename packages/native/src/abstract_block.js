@@ -45,7 +45,6 @@ export class AbstractBlock extends AbstractNode {
     this.contentModel = 'compound'
     this.blocks = []
     this.subs = []
-    this.id = null
     this.#title = null
     this.#caption = null
     this.numeral = null
@@ -217,6 +216,9 @@ export class AbstractBlock extends AbstractNode {
     }
     return ''
   }
+
+  // Public: Get the converted alt text for this block image (alias of alt).
+  getAlt () { return this.alt() }
 
   // Public: Get the converted title prefixed with the caption.
   //

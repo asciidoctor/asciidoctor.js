@@ -657,4 +657,70 @@ content`
       assertXpath(output, '//h2[text()="5. The End"]', 1)
     })
   })
+
+  // ── Sections › Section API ────────────────────────────────────────────────────
+
+  describe('Section API', () => {
+    test('should get sections', async () => {
+      const source = `= Title
+:sectnums!:
+
+== First section
+
+:sectnums:
+== Second section
+
+[abstract]
+== Abstract section
+
+:appendix-caption: Appx
+[appendix]
+== Copyright and License`
+      const doc = await documentFromString(source)
+      assert.equal(doc.hasSections(), true)
+      assert.equal(doc.getSections().length, 4)
+      const firstSection = doc.getSections()[0]
+      assert.equal(firstSection.getNodeName(), 'section')
+      assert.equal(firstSection.getIndex(), 0)
+      assert.equal(firstSection.getName(), 'First section')
+      assert.equal(firstSection.getTitle(), 'First section')
+      assert.equal(firstSection.title, 'First section')
+      assert.equal(firstSection.getSectionName(), 'section')
+      assert.equal(firstSection.isNumbered(), false)
+      assert.equal(firstSection.getSectionNumeral(), '.')
+      assert.equal(firstSection.isSpecial(), false)
+      assert.equal(firstSection.getCaption(), undefined)
+      const secondSection = doc.getSections()[1]
+      assert.equal(secondSection.getIndex(), 1)
+      assert.equal(secondSection.getName(), 'Second section')
+      assert.equal(secondSection.getTitle(), 'Second section')
+      assert.equal(secondSection.title, 'Second section')
+      assert.equal(secondSection.getSectionName(), 'section')
+      assert.equal(secondSection.isNumbered(), true)
+      assert.equal(secondSection.getSectionNumeral(), '1.')
+      assert.equal(secondSection.getSectionNumber(), '1.')
+      assert.equal(secondSection.isSpecial(), false)
+      assert.equal(secondSection.getCaption(), undefined)
+      const abstractSection = doc.getSections()[2]
+      assert.equal(abstractSection.getIndex(), 2)
+      assert.equal(abstractSection.getName(), 'Abstract section')
+      assert.equal(abstractSection.getTitle(), 'Abstract section')
+      assert.equal(abstractSection.title, 'Abstract section')
+      assert.equal(abstractSection.getSectionName(), 'abstract')
+      assert.equal(abstractSection.isNumbered(), false)
+      assert.equal(firstSection.getSectionNumeral(), '.')
+      assert.equal(abstractSection.isSpecial(), true)
+      assert.equal(abstractSection.getCaption(), undefined)
+      const appendixSection = doc.getSections()[3]
+      assert.equal(appendixSection.getIndex(), 3)
+      assert.equal(appendixSection.getName(), 'Copyright and License')
+      assert.equal(appendixSection.getTitle(), 'Copyright and License')
+      assert.equal(appendixSection.title, 'Copyright and License')
+      assert.equal(appendixSection.getSectionName(), 'appendix')
+      assert.equal(appendixSection.getSectionNumeral(), 'A.')
+      assert.equal(appendixSection.isNumbered(), true)
+      assert.equal(appendixSection.isSpecial(), true)
+      assert.equal(appendixSection.getCaption(), 'Appx A: ')
+    })
+  })
 })

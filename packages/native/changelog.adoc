@@ -1,0 +1,259 @@
+= API Differences between @asciidoctor/core and @asciidoctor/native
+:toc: left
+:toclevels: 3
+:icons: font
+
+This document lists the differences between the `@asciidoctor/core` package (Opal-based, synchronous) and the `@asciidoctor/native` package (native JavaScript, asynchronous).
+
+== Major architectural changes
+
+=== Execution model: synchronous → asynchronous
+
+The most fundamental difference is the shift from a synchronous to an asynchronous API.
+All operations involving I/O (file reads, network requests, full parsing) return a `Promise`.
+
+[cols="1,1,2"]
+|===
+| core (`@asciidoctor/core`) | native (`@asciidoctor/native`) | Note
+
+| `asciidoctor.load(source, opts)` → `Document`
+| `load(source, opts)` → `Promise<Document>`
+| Must be awaited
+
+| `asciidoctor.loadFile(path, opts)` → `Document`
+| `loadFile(path, opts)` → `Promise<Document>`
+| Must be awaited
+
+| `asciidoctor.convert(source, opts)` → `string`
+| `convert(source, opts)` → `Promise<string>`
+| Must be awaited
+
+| `asciidoctor.convertFile(path, opts)` → `string`
+| `convertFile(path, opts)` → `Promise<string>`
+| Must be awaited
+
+| `document.parse(data?)` → `Document`
+| `document.parse(data?)` → `Promise<Document>`
+| Must be awaited
+
+| `document.convert(opts?)` → `string`
+| `document.convert(opts?)` → `Promise<string>`
+| Must be awaited
+|===
+
+=== Removal of the Opal dependency
+
+`@asciidoctor/core` relies on Opal (a Ruby-to-JavaScript transpiler).
+`@asciidoctor/native` is pure JavaScript (ESM) with no transpilation dependency.
+
+[cols="1,1"]
+|===
+| core | native
+
+| `require('@asciidoctor/core')()` → global Asciidoctor instance
+| `import { load, convert, loadFile, convertFile } from '@asciidoctor/native'` → named exports
+
+| Global Asciidoctor singleton
+| Independent exported functions
+|===
+
+=== Strict camelCase naming
+
+In `@asciidoctor/core`, some internal properties and options retained the Ruby `snake_case` style.
+`@asciidoctor/native` uses strict camelCase for all instance properties.
+
+[cols="1,1"]
+|===
+| core (inherited `snake_case`) | native (`camelCase`)
+
+| `node_name`
+| `nodeName`
+
+| `source_location`
+| `sourceLocation`
+
+| `content_model`
+| `contentModel`
+
+| `default_subs`
+| `defaultSubs`
+|===
+
+== Changes by class
+
+=== AbstractNode
+
+==== Renamed methods
+
+[cols="1,1,2"]
+|===
+| core | native | Note
+
+| `isRole(expectedValue?)` → `boolean`
+| `hasRoleAttr(expectedValue?)` → `boolean`
+| Checks whether the `role` attribute is set
+
+| `isOption(name)` → `boolean`
+| `hasOption(name)` → `boolean`
+| Checks whether the `<name>-option` attribute is set
+
+| `isReftext()` → `boolean`
+| `hasReftext()` → `boolean`
+| Checks whether the `reftext` attribute is set
+|===
+
+==== Modified return types (asynchronous)
+
+[cols="1,1"]
+|===
+| core | native
+
+| `getIconUri(name)` → `string`
+| `getIconUri(name)` → `Promise<string>` (delegates to `iconUri`)
+
+| `getImageUri(target, key?)` → `string`
+| `getImageUri(target, key?)` → `Promise<string>` (delegates to `imageUri`)
+
+| `readAsset(path, opts)` → `string \| undefined`
+| `readAsset(path, opts)` → `Promise<string \| null>`
+
+| `readContents(target, opts)` → `void`
+| `readContents(target, opts)` → `Promise<string \| null>`
+
+| `normalizeWebPath(...)` → `void`
+| `normalizeWebPath(target, start?, preserveUri?)` → `string`
+
+| `normalizeSystemPath(...)` → `void`
+| `normalizeSystemPath(target, start?, jail?, opts?)` → `string`
+
+| `normalizeAssetPath(...)` → `void`
+| `normalizeAssetPath(assetRef, assetName?, autocorrect?)` → `string`
+|===
+
+=== AbstractBlock
+
+==== Titles: asynchronous pre-computation
+
+In `@asciidoctor/core`, `getTitle()` is synchronous and applies substitutions on demand.
+In `@asciidoctor/native`, the title is pre-computed asynchronously during parsing via `precomputeTitle()`, then exposed through a synchronous getter.
+
+[cols="1,1"]
+|===
+| core | native
+
+| `getTitle()` → `string \| undefined` (synchronous, applies subs on every call)
+| `get title` → `string \| null` (synchronous, result pre-computed by `precomputeTitle()`)
+
+| _(no equivalent)_
+| `async precomputeTitle()` → `Promise<void>`
+|===
+
+=== Document
+
+==== Asynchronous parse() and convert()
+
+[cols="1,1"]
+|===
+| core | native
+
+| `parse(data?)` → `Document` (synchronous)
+| `parse(data?)` → `Promise<Document>` (asynchronous)
+
+| `convert(opts?)` → `string` (synchronous)
+| `convert(opts?)` → `Promise<string>` (asynchronous)
+|===
+
+==== Direct properties instead of getter methods
+
+In `@asciidoctor/native`, several document values are direct instance properties,
+accessible without a method call, in addition to the getter methods inherited from the `@asciidoctor/core` API.
+
+[cols="1,1"]
+|===
+| Getter method (core) | Direct property (native)
+
+| `getSafe()` → `number`
+| `document.safe`
+
+| `getCompatMode()` → `boolean`
+| `document.compatMode`
+
+| `getSourcemap()` / `setSourcemap(v)` → `boolean`
+| `document.sourcemap`
+
+| `getBaseDir()` → `string`
+| `document.baseDir`
+
+| `getOutfilesuffix()` → `string`
+| `document.outfilesuffix`
+
+| `getBackend()` → `string`
+| `document.backend`
+
+| `getDoctype()` → `string`
+| `document.doctype`
+|===
+
+==== Restructured inner classes
+
+[cols="1,1,2"]
+|===
+| core | native | Note
+
+| `Document.Title` (inner class)
+| `DocumentTitle` (named export)
+| Renamed to avoid collision with `Document`
+
+| `Document.Author` (inner class)
+| `Author` (named export)
+| Top-level export
+
+| `Document.Footnote` (inner class)
+| `Footnote` (named export)
+| Top-level export
+
+| `Document.ImageReference` (inner class)
+| `ImageReference` (named export)
+| Top-level export
+|===
+
+=== Inline
+
+[cols="1,1"]
+|===
+| core | native
+
+| `convert()` → `string` (synchronous)
+| `convert()` → `Promise<string>` (asynchronous)
+|===
+
+== Features specific to @asciidoctor/native
+
+These features have no equivalent in `@asciidoctor/core`.
+
+=== Asynchronous pre-computation of titles and reftext
+
+* `AbstractBlock.precomputeTitle()` — asynchronously pre-computes the title with substitutions applied.
+* `AbstractNode.precomputeReftext()` — asynchronously pre-computes the reftext with substitutions applied.
+
+These methods are called automatically during `Document.parse()` to allow synchronous getters to work during conversion.
+
+=== Partial browser compatibility
+
+`@asciidoctor/native` uses the `fetch` API for `generateDataUriFromUri` and `readContents` (remote URIs), which works in both Node.js ≥ 18 and modern browsers.
+Local file reading methods (`readAsset`, `generateDataUri`) return `null` in environments without `node:fs`.
+
+== Features missing in @asciidoctor/native
+
+These features are present in `@asciidoctor/core` but not yet implemented in `@asciidoctor/native`.
+
+[cols="1,2"]
+|===
+| Feature | Note
+
+| `SafeMode.getValueForName()` / `getNameForValue()` / `getNames()`
+| `SafeMode` is a plain object constant, not a class with static methods
+
+| `AbstractNode.isUri(str)` (deprecated)
+| Present in native but marked `@deprecated` — to be removed in a future version
+|===
