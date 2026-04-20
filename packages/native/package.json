@@ -38,6 +38,7 @@
     "node": "24.14.1"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "@xmldom/xmldom": "^0.9.9",
     "linkedom": "^0.18.12",
     "node-html-parser": "^7.1.0",

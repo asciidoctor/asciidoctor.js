@@ -12,6 +12,6 @@ export class Timings {
     readParseConvert(): any;
     write(): any;
     total(): any;
-    printReport(out?: Console, subject?: any): void;
-    _now(): number;
+    printReport(out?: any, subject?: any): void;
+    _now(): any;
 }

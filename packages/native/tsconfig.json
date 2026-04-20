@@ -10,7 +10,8 @@
     "target": "ES2022",
     "rootDir": "src",
     "strict": false,
-    "noEmitOnError": false
+    "noEmitOnError": false,
+    "lib": ["ES2022"]
   },
   "include": ["src/index.js"]
 }

@@ -208,7 +208,7 @@ Table.Column = class Column extends AbstractNode {
 
 // ── Table.Cell ────────────────────────────────────────────────────────────────
 
-Table.Cell = class Cell extends AbstractBlock {
+class Cell extends AbstractBlock {
   static get DOUBLE_LF () { return LF + LF }
 
   constructor (column, cellText, attributes = {}, opts = {}) {
@@ -432,6 +432,7 @@ Table.Cell = class Cell extends AbstractBlock {
     return `${super.toString()} - [text: ${this._text}, colspan: ${this.colspan ?? 1}, rowspan: ${this.rowspan ?? 1}, attributes: ${JSON.stringify(this.attributes)}]`
   }
 }
+Table.Cell = Cell
 
 // ── Table.ParserContext ───────────────────────────────────────────────────────
 
