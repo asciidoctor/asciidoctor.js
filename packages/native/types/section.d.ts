@@ -3,6 +3,15 @@
  */
 export class Section extends AbstractBlock {
     /**
+     * Create a new Section — mirrors the core Section.create() API.
+     * @param {AbstractBlock|null} [parent=null]
+     * @param {number|null} [level=null]
+     * @param {boolean} [numbered=false]
+     * @param {Object} [opts={}]
+     * @returns {Section}
+     */
+    static create(parent?: AbstractBlock | null, level?: number | null, numbered?: boolean, opts?: any): Section;
+    /**
      * Generate a String ID from the given section title.
      * @param {string} title - The String title.
      * @param {object} document - The Document.

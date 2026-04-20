@@ -4,6 +4,7 @@ import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { load } from '../src/load.js'
+import { Section } from '../src/section.js'
 import { assertXpath, assertCss, assertMessage, usingMemoryLogger } from './helpers.js'
 
 const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
@@ -389,6 +390,28 @@ content`
           1
         )
       })
+    })
+  })
+
+  describe('API', () => {
+    test('add a new Section to the document', async () => {
+      const doc = await documentFromString(`= Title
+
+== Section A`)
+      const sectionB = Section.create(doc, 2, true, { attributes: { foo: 'bar' } })
+      sectionB.setTitle('Section B')
+      doc.append(sectionB)
+      const sections = doc.findBy({ context: 'section' })
+      const secondSection = sections[2]
+      assert.equal(secondSection.getLevel(), 2)
+      assert.equal(secondSection.getName(), 'Section B')
+      assert.equal(secondSection.getTitle(), 'Section B')
+      assert.equal(secondSection.getSectionName(), undefined)
+      assert.equal(secondSection.isNumbered(), true)
+      assert.equal(secondSection.isSpecial(), false)
+      assert.equal(secondSection.getCaption(), undefined)
+      assert.equal(secondSection.getAttribute('foo'), 'bar')
+      assert.equal(secondSection.getNumeral(), '1')
     })
   })
 })

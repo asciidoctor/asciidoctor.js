@@ -538,6 +538,18 @@ export class AbstractBlock extends AbstractNode {
   getContext () { return this.context }
 
   /**
+   * Get the content model of this block.
+   * @returns {string}
+   */
+  getContentModel () { return this.contentModel }
+
+  /**
+   * Set the content model of this block.
+   * @param {string} val
+   */
+  setContentModel (val) { this.contentModel = val }
+
+  /**
    * Get the node name of this block.
    * @returns {string}
    */

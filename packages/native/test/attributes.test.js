@@ -1316,5 +1316,26 @@ describe('Attributes', () => {
       const sectionTwo = doc.blocks[doc.blocks.length - 1]
       assert.equal(sectionTwo.attr('role'), 'classy')
     })
+
+    test('set role', async () => {
+      const doc = await documentFromString(`= Title
+
+[.foreword]
+== Foreword`)
+      const sectionWithRole = doc.getBlocks()[0]
+      assert.equal(sectionWithRole.getRole(), 'foreword')
+
+      sectionWithRole.setRole('afterword')
+      assert.equal(sectionWithRole.getRole(), 'afterword')
+
+      sectionWithRole.setRole('afterword last')
+      assert.equal(sectionWithRole.getRole(), 'afterword last')
+
+      sectionWithRole.setRole('lastword', 'closing')
+      assert.equal(sectionWithRole.getRole(), 'lastword closing')
+
+      sectionWithRole.setRole(['finalword', 'conclude'])
+      assert.equal(sectionWithRole.getRole(), 'finalword conclude')
+    })
   })
 })

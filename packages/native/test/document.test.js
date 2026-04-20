@@ -109,6 +109,15 @@ describe('Default settings', () => {
     assert.ok(result.includes('<?asciidoc-toc?>'))
     assert.ok(result.includes('<?asciidoc-numbered?>'))
   })
+
+  test('allow document-level attributes to be modified', async () => {
+    const doc = await parse('= Document Title\n:lang: fr\n\ncontent is in {lang}')
+    assert.equal(doc.getAttribute('lang'), 'fr')
+    doc.setAttribute('lang', 'us')
+    assert.equal(doc.getAttribute('lang'), 'us')
+    const html = await doc.convert()
+    assert.ok(html.includes('content is in us'))
+  })
 })
 
 // ── Structure ─────────────────────────────────────────────────────────────────

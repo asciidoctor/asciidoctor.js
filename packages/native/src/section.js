@@ -9,6 +9,18 @@ import { InvalidSectionIdCharsRx } from './rx.js'
  */
 export class Section extends AbstractBlock {
   /**
+   * Create a new Section — mirrors the core Section.create() API.
+   * @param {AbstractBlock|null} [parent=null]
+   * @param {number|null} [level=null]
+   * @param {boolean} [numbered=false]
+   * @param {Object} [opts={}]
+   * @returns {Section}
+   */
+  static create (parent = null, level = null, numbered = false, opts = {}) {
+    return new Section(parent, level, numbered, opts)
+  }
+
+  /**
    * Initialize an Asciidoctor Section object.
    * @param {AbstractBlock|null} [parent=null] - The parent AbstractBlock (Document or Section), or null.
    * @param {number|null} [level=null] - The Integer level of this section (default: parent.level + 1 or 1).
@@ -149,7 +161,7 @@ export class Section extends AbstractBlock {
    * Get the section name (e.g. 'section', 'appendix').
    * @returns {string|null}
    */
-  getSectionName () { return this.sectname }
+  getSectionName () { return this.sectname ?? undefined }
 
   /**
    * Get the 0-based index of this section within the parent block.

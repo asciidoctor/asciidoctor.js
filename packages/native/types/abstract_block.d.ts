@@ -205,6 +205,16 @@ export class AbstractBlock extends AbstractNode {
      */
     nextAdjacentBlock(): AbstractBlock | null;
     /**
+     * Get the content model of this block.
+     * @returns {string}
+     */
+    getContentModel(): string;
+    /**
+     * Set the content model of this block.
+     * @param {string} val
+     */
+    setContentModel(val: string): void;
+    /**
      * Get the child blocks of this block.
      * @returns {AbstractBlock[]}
      */

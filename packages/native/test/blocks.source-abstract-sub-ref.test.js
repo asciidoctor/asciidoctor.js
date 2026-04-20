@@ -1,6 +1,7 @@
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { load } from '../src/load.js'
+import { Block } from '../src/block.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
 
@@ -503,6 +504,14 @@ _hey now_ <1>
       const result = await doc.convert()
       assert.ok(result.includes('_hey now_ &lt;1&gt;'))
     })
+
+    test('remove substitution from block', async () => {
+      const source = '....\n<foobar>\n....'
+      const literalBlock = (await documentFromString(source)).findBy({ context: 'literal' })[0]
+      literalBlock.removeSubstitution('specialcharacters')
+      assert.equal(literalBlock.hasSubstitution('specialcharacters'), false)
+      assert.equal(await literalBlock.getContent(), '<foobar>')
+    })
   })
 
   describe('References', () => {
@@ -644,6 +653,50 @@ $ apt-get install asciidoctor
       assert.notEqual(ref, null)
       assert.equal(ref.reftext, 'Debian Install')
       assert.equal(doc.resolveId('Debian Install'), 'debian')
+    })
+  })
+
+  describe('Creating', () => {
+    test('create a new Block', async () => {
+      const doc = await documentFromString('= Title')
+      const paragraph = Block.create(doc, 'paragraph', { subs: 'normal', source: '_This_ is a <test>', attributes: { foo: 'bar' } })
+      assert.equal(await paragraph.getContent(), '<em>This</em> is a &lt;test&gt;')
+      assert.equal(paragraph.getAttribute('foo'), 'bar')
+    })
+
+    test('create a new paragraph block with verbatim content model', async () => {
+      const doc = await documentFromString('= Title')
+      const paragraph = Block.create(doc, 'paragraph', { source: '    _This_ is a <test>' })
+      paragraph.setContentModel('verbatim')
+      assert.equal(paragraph.getContentModel(), 'verbatim')
+      assert.equal(await paragraph.getContent(), '    _This_ is a <test>')
+    })
+
+    test('create a new literal block with empty content model', async () => {
+      const doc = await documentFromString('= Title')
+      const literal = Block.create(doc, 'literal', { source: '_This_ is a <test>' })
+      literal.setContentModel('empty')
+      assert.equal(literal.getContentModel(), 'empty')
+      assert.equal(await literal.getContent(), null)
+    })
+
+    test('assign a caption on a Block', async () => {
+      const doc = await documentFromString('= Title')
+      const image = Block.create(doc, 'image', { content_model: 'empty', attributes: { target: 'cat.png', format: 'png' } })
+      image.setTitle('A cat')
+      image.assignCaption(undefined, 'figure')
+      assert.equal(image.getCaptionedTitle(), 'Figure 1. A cat')
+      image.setCaption(undefined)
+      assert.equal(image.getCaption(), undefined)
+      image.assignCaption('Figure A. ')
+      assert.equal(image.getCaptionedTitle(), 'Figure A. A cat')
+      image.setCaption(undefined)
+      image.setTitle('A nice cat')
+      image.assignCaption('Figure I. ')
+      assert.equal(image.getCaptionedTitle(), 'Figure I. A nice cat')
+      image.assignCaption('Figure X. ')
+      // caption is still assigned
+      assert.equal(image.getCaptionedTitle(), 'Figure I. A nice cat')
     })
   })
 })
