@@ -190,10 +190,12 @@ export class CustomFactory {
 // ── DefaultFactory ────────────────────────────────────────────────────────────
 // Global registry of built-in + statically registered converters.
 
-const _PROVIDED = {
-  html5:    './converter/html5.js',
-  docbook5: './converter/docbook5.js',
-  manpage:  './converter/manpage.js',
+// Static per-backend imports allow bundlers (Rollup/Vite) to inline each module.
+async function _importBuiltinConverter (backend) {
+  if (backend === 'html5')    return import('./converter/html5.js')
+  if (backend === 'docbook5') return import('./converter/docbook5.js')
+  if (backend === 'manpage')  return import('./converter/manpage.js')
+  return null
 }
 
 class DefaultFactory extends CustomFactory {
@@ -238,11 +240,12 @@ class DefaultFactory extends CustomFactory {
 
   async create (backend, opts = {}) {
     let converter = this._registry[backend] ?? this._defaultRegistry[backend]
-    if (!converter && _PROVIDED[backend]) {
-      // Lazy-load the built-in converter
-      const mod = await import(_PROVIDED[backend])
-      converter = mod.default ?? Object.values(mod)[0]
-      if (converter) this._defaultRegistry[backend] = converter
+    if (!converter) {
+      const mod = await _importBuiltinConverter(backend)
+      if (mod) {
+        converter = mod.default ?? Object.values(mod)[0]
+        if (converter) this._defaultRegistry[backend] = converter
+      }
     }
     if (!converter) converter = this._catchAll
     if (!converter) {

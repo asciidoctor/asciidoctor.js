@@ -93,7 +93,7 @@ export class Logger {
   unknown (msg, progname) { return this.add(Severity.UNKNOWN, msg, progname) }
 
   _writeln (line) {
-    if (process?.stderr?.write) {
+    if (typeof process !== 'undefined' && process.stderr?.write) {
       process.stderr.write(line)
     } else {
       console.error(line.replace(/\n$/, ''))

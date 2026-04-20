@@ -20,7 +20,8 @@
   "scripts": {
     "build": "rollup -c",
     "build:types": "tsc",
-    "test": "node --test test/**.test.js"
+    "test": "node --test test/**.test.js",
+    "test:browser": "vitest run --config vitest.browser.config.js"
   },
   "repository": {
     "type": "git",
@@ -50,11 +51,16 @@
   "devDependencies": {
     "@rollup/plugin-json": "^6.1.0",
     "@types/node": "^25.6.0",
+    "@vitest/browser": "^4.1.4",
+    "@vitest/browser-playwright": "^4.1.4",
+    "@vitest/ui": "^4.1.4",
     "@xmldom/xmldom": "^0.9.9",
     "linkedom": "^0.18.12",
     "node-html-parser": "^7.1.0",
+    "playwright": "^1.59.1",
     "rollup": "^4.60.2",
     "typescript": "^6.0.3",
+    "vitest": "^4.1.4",
     "xpath": "^0.0.34"
   }
 }
