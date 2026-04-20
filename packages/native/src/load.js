@@ -28,7 +28,7 @@ import { basename, extname } from './helpers.js'
 // with { path, read() } instead; the function sets docfile/docdir/docname
 // attributes automatically.
 //
-// input   - the AsciiDoc source as a Readable, String, String Array, or
+// input   - the AsciiDoc source as a Buffer, String, String Array, or
 //           a file-like object with { path: String, read(): String, mtime? }.
 // options - a plain object of options to control processing (default: {}).
 //           See Document for the full list of recognised keys.
@@ -85,6 +85,8 @@ export async function load (input, options = {}) {
       attrs.docname = basename(inputPath, docfilesuffix)
     }
     source = await _readStream(input)
+  } else if (typeof input === 'object' && input?.constructor?.name === 'Buffer') {
+    source = input.toString('utf8')
   } else if (typeof input === 'string') {
     source = input
   } else if (Array.isArray(input)) {

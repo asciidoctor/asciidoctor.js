@@ -80,7 +80,7 @@ class Asciidoctor {
   /**
    * Parse the AsciiDoc source input into a Document.
    *
-   * @param {string|string[]} input - the AsciiDoc source as a String or String Array
+   * @param {string|string[]|Buffer} input - the AsciiDoc source as a String, String Array, or Buffer
    * @param {Object} [options={}] - a plain object of options to control processing
    * @returns {Promise<Document>} - the parsed Document
    */
@@ -91,7 +91,7 @@ class Asciidoctor {
   /**
    * Parse the AsciiDoc source input and convert it to the specified backend format.
    *
-   * @param {string|string[]} input - the AsciiDoc source as a String or String Array
+   * @param {string|string[]|Buffer} input - the AsciiDoc source as a String, String Array, or Buffer
    * @param {Object} [options={}] - a plain object of options to control processing
    * @returns {Promise<string>} - the converted output as a String
    */
