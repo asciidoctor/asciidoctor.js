@@ -13,32 +13,39 @@ export class List extends AbstractBlock {
     super(parent, context, opts)
   }
 
-  // Public: Alias for blocks — the list items.
+  /** Alias for blocks — the list items. */
   get items () { return this.blocks }
 
-  // Public: Alias for blocks — the list content.
+  /** Alias for blocks — the list content. */
   async content () { return this.blocks }
 
-  // Public: Check whether this list has items (blocks).
+  /**
+   * Check whether this list has items (blocks).
+   * @returns {boolean}
+   */
   hasItems () { return this.blocks.length > 0 }
 
-  // Public: Check whether this list is an outline list (unordered or ordered).
-  //
-  // Returns Boolean.
+  /**
+   * Check whether this list is an outline list (unordered or ordered).
+   * @returns {boolean}
+   */
   outline () {
     return this.context === 'ulist' || this.context === 'olist'
   }
 
-  // Public: Convert this list, advancing the callout list pointer if a colist.
-  //
-  // Returns the String result.
+  /**
+   * Convert this list, advancing the callout list pointer if a colist.
+   * @returns {Promise<string>}
+   */
   async convert () {
     const result = await super.convert()
     if (this.context === 'colist') this.document.callouts.nextList()
     return result
   }
 
-  // Deprecated: Use convert() instead.
+  /**
+   * @deprecated Use {@link convert} instead.
+   */
   render () { return this.convert() }
 
   toString () {
@@ -46,18 +53,23 @@ export class List extends AbstractBlock {
   }
 }
 
-// Public: Methods for managing items for AsciiDoc olists, ulists, and dlists.
-//
-// In a description list (dlist), each item is a tuple: [[term, term, ...], desc].
-// If a description is not set, the second entry is null.
+/**
+ * Methods for managing items for AsciiDoc olists, ulists, and dlists.
+ *
+ * In a description list (dlist), each item is a tuple: `[[term, term, ...], desc]`.
+ * If a description is not set, the second entry is null.
+ */
 export class ListItem extends AbstractBlock {
-  // Public: Get/Set the String marker used for this list item.
-  // marker
+  /**
+   * The string marker used for this list item.
+   * @type {string|null}
+   */
+  marker
 
-  // Public: Initialize an Asciidoctor::ListItem object.
-  //
-  // parent - The parent List block.
-  // text   - The String text of this item (default: null).
+  /**
+   * @param {List} parent - The parent List block.
+   * @param {string|null} [text=null] - The text of this item.
+   */
   constructor (parent, text = null) {
     super(parent, 'list_item')
     this._text   = text
@@ -66,28 +78,30 @@ export class ListItem extends AbstractBlock {
     this.marker  = null
   }
 
-  // Contextual alias for parent.
+  /** Contextual alias for parent. */
   get list () { return this.parent }
 
-  // Public: Check whether the text of this list item is non-blank.
-  //
-  // Returns Boolean.
+  /**
+   * Check whether the text of this list item is non-blank.
+   * @returns {boolean}
+   */
   hasText () {
     return !!(this._text && this._text.length > 0)
   }
 
-  // Public: Get the String text with substitutions applied.
-  // The result is pre-computed during Document.parse() via precomputeText().
-  // Falls back to the raw text if precomputeText() has not been called yet.
-  //
-  // In Ruby, text is lazy (apply_subs on first access), so API callers can modify
-  // subs before accessing text and get the result they expect.  Here we replicate
-  // that by invalidating the pre-computed value when subs have changed since it
-  // was computed: returning raw text mirrors what Ruby would produce when subs are
-  // cleared or reduced to a no-op set (since applySubs is async and cannot be
-  // re-run synchronously).
-  //
-  // Returns the converted String text, or null.
+  /**
+   * Get the string text with substitutions applied.
+   * The result is pre-computed during `Document.parse()` via {@link precomputeText}.
+   * Falls back to the raw text if {@link precomputeText} has not been called yet.
+   *
+   * In Ruby, text is lazy (`apply_subs` on first access), so API callers can modify
+   * subs before accessing text and get the result they expect. Here we replicate
+   * that by invalidating the pre-computed value when subs have changed since it
+   * was computed: returning raw text mirrors what Ruby would produce when subs are
+   * cleared or reduced to a no-op set (since `applySubs` is async and cannot be
+   * re-run synchronously).
+   * @returns {string|null}
+   */
   get text () {
     if (this._convertedText != null && this._subsSnapshot != null) {
       const cur = this.subs
@@ -98,8 +112,11 @@ export class ListItem extends AbstractBlock {
     return this._convertedText ?? this._text ?? null
   }
 
-  // Public: Pre-compute the converted text asynchronously.
-  // Called during Document.parse() so the synchronous getter works during conversion.
+  /**
+   * Pre-compute the converted text asynchronously.
+   * Called during `Document.parse()` so the synchronous getter works during conversion.
+   * @returns {Promise<void>}
+   */
   async precomputeText () {
     if (this._text != null && this._convertedText == null) {
       this._convertedText = await this.applySubs(this._text, this.subs)
@@ -107,25 +124,30 @@ export class ListItem extends AbstractBlock {
     }
   }
 
-  // Public: Set the raw text of this list item.
+  /**
+   * Set the raw text of this list item.
+   * @param {string|null} val
+   */
   set text (val) { this._text = val; this._convertedText = null; this._subsSnapshot = null }
 
-  // Public: Check whether this list item has simple content.
-  //
-  // Returns true if the item has no blocks or only a single nested outline list.
+  /**
+   * Check whether this list item has simple content.
+   * @returns {boolean} `true` if the item has no blocks or only a single nested outline list.
+   */
   simple () {
     return this.blocks.length === 0 ||
       (this.blocks.length === 1 && this.blocks[0] instanceof List && this.blocks[0].outline())
   }
 
-  // Public: Check whether this list item has compound content.
-  //
-  // Returns true if the item contains blocks other than a single nested outline list.
+  /**
+   * Check whether this list item has compound content.
+   * @returns {boolean} `true` if the item contains blocks other than a single nested outline list.
+   */
   compound () {
     return !this.simple()
   }
 
-  // Internal: Fold the adjacent paragraph block into the list item text.
+  /** @internal Fold the adjacent paragraph block into the list item text. */
   foldFirst () {
     const src = this.blocks.shift().source
     this._text = (!this._text || this._text.length === 0) ? src : `${this._text}${LF}${src}`
