@@ -14,83 +14,93 @@
 
 // ── SyntaxHighlighterBase ─────────────────────────────────────────────────────
 
-// Public: Base class for syntax highlighter adapters.
-//
-// Subclasses should override the methods they need. Two usage patterns:
-//   1. Server-side highlighting: override highlight?() → true and highlight().
-//   2. Client-side highlighting: override docinfo?() → true and docinfo().
-// Both patterns may also override format().
-
+/**
+ * Base class for syntax highlighter adapters.
+ *
+ * Subclasses should override the methods they need. Two usage patterns:
+ * 1. Server-side highlighting: override `handlesHighlighting()` → true and `highlight()`.
+ * 2. Client-side highlighting: override `hasDocinfo()` → true and `docinfo()`.
+ *
+ * Both patterns may also override `format()`.
+ */
 export class SyntaxHighlighterBase {
-  // Public: Construct a syntax highlighter adapter instance.
-  //
-  // name    - The String name identifying this adapter.
-  // backend - The String backend name (default: 'html5').
-  // opts    - A plain Object of options (default: {}).
-  constructor (name, backend = 'html5', opts = {}) {
+  /**
+   * @param {string} name - the name identifying this adapter
+   * @param {string} [backend='html5'] - the backend name
+   * @param {Object} [opts={}] - options
+   */
+  constructor (name, backend = 'html5', opts = {}) { // eslint-disable-line no-unused-vars
     this.name = name
     this._preClass = name
   }
 
-  // Public: Indicates whether this highlighter has docinfo markup to insert.
-  //
-  // location - The String location slot ('head' or 'footer').
-  //
-  // Returns false by default; subclasses return true to enable docinfo().
+  /**
+   * Indicates whether this highlighter has docinfo markup to insert at the specified location.
+   *
+   * @param {string} location - the location slot ('head' or 'footer')
+   * @returns {boolean} false by default; subclasses return true to enable {@link docinfo}
+   */
   hasDocinfo (location) { // eslint-disable-line no-unused-vars
     return false
   }
 
-  // Public: Generates docinfo markup for the specified location.
-  //
-  // location - The String location slot ('head' or 'footer').
-  // doc      - The Document in which this highlighter is used.
-  // opts     - A plain Object of options:
-  //            linkcss              - Boolean; link stylesheet instead of embedding.
-  //            cdn_base_url         - String base URL for CDN assets.
-  //            self_closing_tag_slash - String '/' for self-closing tags.
-  //
-  // Returns the String markup to insert.
+  /**
+   * Generates docinfo markup to insert at the specified location in the output document.
+   *
+   * @param {string} location - the location slot ('head' or 'footer')
+   * @param {Document} doc - the Document in which this highlighter is used
+   * @param {Object} opts - options
+   * @param {boolean} [opts.linkcss] - link stylesheet instead of embedding
+   * @param {string} [opts.cdn_base_url] - base URL for CDN assets
+   * @param {string} [opts.self_closing_tag_slash] - '/' for self-closing tags
+   * @returns {string} the markup to insert
+   */
   docinfo (location, doc, opts) { // eslint-disable-line no-unused-vars
-    throw new Error(`${this.constructor.name} must implement docinfo() since docinfoFor() returns true`)
+    throw new Error(`${this.constructor.name} must implement docinfo() since hasDocinfo() returns true`)
   }
 
-  // Public: Indicates whether highlighting is handled server-side.
-  //
-  // Returns false by default; subclasses return true to enable highlight().
+  /**
+   * Indicates whether highlighting is handled server-side by this highlighter.
+   *
+   * @returns {boolean} false by default; subclasses return true to enable {@link highlight}
+   */
   handlesHighlighting () {
     return false
   }
 
-  // Public: Highlights the specified source.
-  //
-  // node   - The source Block to highlight.
-  // source - The raw source String.
-  // lang   - The source language String (e.g. 'ruby').
-  // opts   - A plain Object of options:
-  //          callouts        - Object of callouts indexed by line number.
-  //          css_mode        - String CSS mode ('class' or 'inline').
-  //          highlight_lines - Array of 1-based Integer line numbers to emphasize.
-  //          number_lines    - String ('table' or 'inline') if lines should be numbered.
-  //          start_line_number - Integer starting line number (default: 1).
-  //          style           - String theme name.
-  //
-  // Returns the highlighted source String, or a [String, Integer] tuple when the
-  // source was shifted by one or more lines.
+  /**
+   * Highlights the specified source when this source block is being converted.
+   *
+   * If the source contains callout marks, the caller assumes the source remains on the same
+   * lines and no closing tags are added to the end of each line. If the source gets shifted
+   * by one or more lines, return a tuple of the highlighted source and the line offset.
+   *
+   * @param {Block} node - the source Block to highlight
+   * @param {string} source - the raw source text
+   * @param {string} lang - the source language (e.g. 'ruby')
+   * @param {Object} opts - options
+   * @param {Object} [opts.callouts] - callouts indexed by line number
+   * @param {string} [opts.css_mode] - CSS mode ('class' or 'inline')
+   * @param {number[]} [opts.highlight_lines] - 1-based line numbers to emphasize
+   * @param {string} [opts.number_lines] - 'table' or 'inline' if lines should be numbered
+   * @param {number} [opts.start_line_number] - starting line number (default: 1)
+   * @param {string} [opts.style] - theme name
+   * @returns {string|[string, number]} the highlighted source, or a tuple with a line offset
+   */
   highlight (node, source, lang, opts) { // eslint-disable-line no-unused-vars
     throw new Error(`${this.constructor.name} must implement highlight() since handlesHighlighting() returns true`)
   }
 
-  // Public: Format the highlighted source for inclusion in an HTML document.
-  //
-  // node - The source Block being processed.
-  // lang - The source language String (e.g. 'ruby').
-  // opts - A plain Object of options:
-  //        nowrap    - Boolean; disable line wrapping.
-  //        transform - Function(pre, code) called to mutate attribute objects before
-  //                    building the HTML tags.
-  //
-  // Returns the highlighted source String wrapped in <pre><code> tags.
+  /**
+   * Formats the highlighted source for inclusion in an HTML document.
+   *
+   * @param {Block} node - the source Block being processed
+   * @param {string} lang - the source language (e.g. 'ruby')
+   * @param {Object} opts - options
+   * @param {boolean} [opts.nowrap] - disable line wrapping
+   * @param {Function} [opts.transform] - called with (pre, code) attribute objects before building tags
+   * @returns {string} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags
+   */
   format (node, lang, opts) {
     const classAttrVal = opts.nowrap
       ? `${this._preClass} highlight nowrap`
@@ -111,21 +121,22 @@ export class SyntaxHighlighterBase {
     return `<pre class="${classAttrVal}"><code${lang ? ` data-lang="${lang}"` : ''}>${node.content}</code></pre>`
   }
 
-  // Public: Indicates whether this highlighter wants to write a stylesheet to disk.
-  //
-  // doc - The Document in which this highlighter is being used.
-  //
-  // Returns false by default.
+  /**
+   * Indicates whether this highlighter wants to write a stylesheet to disk.
+   *
+   * @param {Document} doc - the Document in which this highlighter is being used
+   * @returns {boolean} false by default; subclasses return true to enable {@link writeStylesheetToDisk}
+   */
   writeStylesheet (doc) { // eslint-disable-line no-unused-vars
     return false
   }
 
-  // Public: Writes the stylesheet to disk.
-  //
-  // doc   - The Document in which this highlighter is used.
-  // toDir - The absolute String path of the output directory.
-  //
-  // Returns nothing.
+  /**
+   * Writes the stylesheet to disk.
+   *
+   * @param {Document} doc - the Document in which this highlighter is used
+   * @param {string} toDir - the absolute path of the output directory
+   */
   writeStylesheetToDisk (doc, toDir) { // eslint-disable-line no-unused-vars
     throw new Error(`${this.constructor.name} must implement writeStylesheetToDisk() since writeStylesheet() returns true`)
   }
@@ -133,39 +144,47 @@ export class SyntaxHighlighterBase {
 
 // ── CustomFactory ─────────────────────────────────────────────────────────────
 
-// Public: A syntax highlighter factory backed by a caller-supplied registry.
-
+/**
+ * A syntax highlighter factory backed by a caller-supplied registry.
+ */
 export class CustomFactory {
+  /**
+   * @param {Object|null} [seedRegistry=null] - initial registry entries
+   */
   constructor (seedRegistry = null) {
     this._registry = seedRegistry ? { ...seedRegistry } : {}
   }
 
-  // Public: Associates a syntax highlighter class or instance with one or more names.
-  //
-  // syntaxHighlighter - The class (constructor) or instance to register.
-  // names             - One or more String names.
+  /**
+   * Associates a syntax highlighter class or instance with one or more names.
+   *
+   * @param {Function|SyntaxHighlighterBase} syntaxHighlighter - the class or instance to register
+   * @param {...string} names - one or more names to associate
+   */
   register (syntaxHighlighter, ...names) {
     for (const name of names) {
       this._registry[name] = syntaxHighlighter
     }
   }
 
-  // Public: Retrieves the syntax highlighter registered for the given name.
-  //
-  // name - The String name to look up.
-  //
-  // Returns the class or instance, or null if not found.
+  /**
+   * Retrieves the syntax highlighter class or instance registered for the given name.
+   *
+   * @param {string} name - the name to look up
+   * @returns {Function|SyntaxHighlighterBase|null} the registered class or instance, or null
+   */
   for (name) {
     return this._registry[name] ?? null
   }
 
-  // Public: Resolves a name to a syntax highlighter instance.
-  //
-  // name    - The String name of the syntax highlighter.
-  // backend - The String backend name (default: 'html5').
-  // opts    - A plain Object of options (default: {}).
-  //
-  // Returns a SyntaxHighlighterBase instance, or null if not registered.
+  /**
+   * Resolves a name to a syntax highlighter instance.
+   *
+   * @param {string} name - the name of the syntax highlighter
+   * @param {string} [backend='html5'] - the backend name
+   * @param {Object} [opts={}] - options passed to the constructor
+   * @returns {SyntaxHighlighterBase|null} a highlighter instance, or null if not registered
+   */
   create (name, backend = 'html5', opts = {}) {
     let syntaxHl = this.for(name)
     if (!syntaxHl) return null
@@ -206,6 +225,12 @@ class DefaultFactory extends CustomFactory {
     return this._registry[name] ?? this._defaultRegistry[name] ?? null
   }
 
+  /**
+   * Retrieves the syntax highlighter class or instance registered for the given name.
+   *
+   * @param {string} name - the name of the syntax highlighter to retrieve
+   * @returns {Function|SyntaxHighlighterBase|undefined} the registered class or instance, or undefined
+   */
   get (name) {
     return this.for(name) ?? undefined
   }
@@ -222,7 +247,9 @@ class DefaultFactory extends CustomFactory {
     return syntaxHl
   }
 
-  // Public: Clear custom (user) registrations; built-ins are preserved.
+  /**
+   * Clears all custom (user) registrations; built-in adapters are preserved.
+   */
   unregisterAll () {
     this._registry = {}
   }
