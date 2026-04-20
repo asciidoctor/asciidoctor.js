@@ -1,0 +1,7 @@
+= Smiley!
+
+You should use smiley faces!
+
+smiley:wink[]
+smiley:happy[]
+smiley:x[]

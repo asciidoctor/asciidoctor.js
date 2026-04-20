@@ -663,7 +663,7 @@ export class PreprocessorReader extends Reader {
 
   hasIncludeProcessors () {
     if (this._includeProcessorExtensions === null) {
-      const exts = this._document.extensions?.()
+      const exts = this._document.extensions
       if (exts && (this._includeProcessorExtensions = exts.includeProcessors?.())) return true
       this._includeProcessorExtensions = false
     }
