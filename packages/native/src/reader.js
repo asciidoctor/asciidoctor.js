@@ -37,6 +37,7 @@ import {
 } from './rx.js'
 import { prepareSourceArray, prepareSourceString, rootname, isUriish } from './helpers.js'
 import { LoggerManager, Logger } from './logging.js'
+import { Compliance } from './compliance.js'
 
 // ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
 let _fsp            // node:fs/promises — used for all file I/O
@@ -45,15 +46,6 @@ try {
   _fsp = await import('node:fs/promises')
   _fsConstants = (await import('node:fs')).constants
 } catch {}
-
-// ── Compliance fallback ───────────────────────────────────────────────────────
-// TODO: replace with real import once compliance.js is available.
-let Compliance
-try {
-  Compliance = (await import('./compliance.js')).Compliance
-} catch {
-  Compliance = { attribute_missing: 'skip' }
-}
 
 // ── path helpers (no node:path dependency) ───────────────────────────────────
 function fsdirname (p) {

@@ -3,12 +3,21 @@
   "version": "0.1.0",
   "description": "Asciidoctor - the native library",
   "type": "module",
-  "main": "src/index.js",
+  "main": "build/node/index.cjs",
+  "module": "src/index.js",
   "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./build/node/index.cjs",
+      "import": "./src/index.js",
+      "types": "./types/index.d.ts"
+    }
+  },
   "engines": {
     "node": ">=24"
   },
   "scripts": {
+    "build": "rollup -c",
     "build:types": "tsc",
     "test": "node --test test/**.test.js"
   },
@@ -38,10 +47,12 @@
     "node": "24.14.1"
   },
   "devDependencies": {
+    "@rollup/plugin-json": "^6.1.0",
     "@types/node": "^25.6.0",
     "@xmldom/xmldom": "^0.9.9",
     "linkedom": "^0.18.12",
     "node-html-parser": "^7.1.0",
+    "rollup": "^4.60.2",
     "typescript": "^6.0.3",
     "xpath": "^0.0.34"
   }

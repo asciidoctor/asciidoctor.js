@@ -1,4 +1,4 @@
-import { createRequire } from 'node:module'
+import packageJson from '../package.json' with { type: 'json' }
 import { load, loadFile as _loadFile } from './load.js'
 import { LoggerManager, MemoryLogger, NullLogger } from './logging.js'
 import { SafeMode } from './constants.js'
@@ -10,8 +10,6 @@ import { Section } from './section.js'
 import Html5Converter from './converter/html5.js'
 import { SyntaxHighlighter } from './syntax_highlighter.js'
 
-const require = createRequire(import.meta.url)
-const packageJson = require('../package.json')
 const ASCIIDOCTOR_CORE_VERSION = '2.0.26'
 
 class Asciidoctor {
