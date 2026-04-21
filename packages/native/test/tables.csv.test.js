@@ -10,7 +10,9 @@ import { dirname, join } from 'node:path'
 import { load } from '../src/load.js'
 import { assertCss, assertXpath, assertMessage, usingMemoryLogger, decodeChar } from './helpers.js'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
+const __dirname = import.meta.url.startsWith('http')
+  ? new URL('.', import.meta.url).href.replace(/\/$/, '')
+  : dirname(fileURLToPath(import.meta.url))
 const fixturesDir = join(__dirname, 'fixtures')
 
 const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })

@@ -16,7 +16,8 @@
 //   - The Substitutors mixin is applied via Object.assign(AbstractNode.prototype, Substitutors)
 //     after both modules are loaded (see the bottom of substitutors.js).
 //   - File I/O in generateDataUri / readAsset uses node:fs/promises async APIs.
-//     They are unavailable in browser environments — return null / empty data URI there.
+//     When the resolved path is an HTTP URI (browser: docdir is a URL), readAsset
+//     delegates to browser/asset.js (Fetch API) instead of using the filesystem.
 //   - generateDataUriFromUri and readContents use the Fetch API and are async;
 //     imageUri and readContents must be awaited when the data-uri + allow-uri-read
 //     combination is active.
@@ -32,11 +33,17 @@ let _fsConstants
 try {
   _fsp = await import('node:fs/promises')
   _fsConstants = (await import('node:fs')).constants
-} catch {}
+} catch {
+}
 
-async function isReadable (path) {
+async function isReadable(path) {
   if (!_fsp) return false
-  try { await _fsp.access(path, _fsConstants.R_OK); return true } catch { return false }
+  try {
+    await _fsp.access(path, _fsConstants.R_OK);
+    return true
+  } catch {
+    return false
+  }
 }
 
 /**
@@ -44,7 +51,7 @@ async function isReadable (path) {
  * The state and methods on this class are common to all content segments in an AsciiDoc document.
  */
 export class AbstractNode {
-  constructor (parent, context, opts = {}) {
+  constructor(parent, context, opts = {}) {
     // document is a special case – should refer to itself
     if (context === 'document') {
       this.document = this
@@ -65,8 +72,11 @@ export class AbstractNode {
    * Get/Set the parent of this node.
    * The setter also updates the document reference.
    */
-  get parent () { return this._parent }
-  set parent (parent) {
+  get parent() {
+    return this._parent
+  }
+
+  set parent(parent) {
     this._parent = parent
     this.document = parent.document
   }
@@ -75,15 +85,18 @@ export class AbstractNode {
    * Get the space-separated role string for this node.
    * Set accepts a single role name, a space-separated string, or an Array.
    */
-  get role () { return this.attributes.role }
-  set role (names) {
+  get role() {
+    return this.attributes.role
+  }
+
+  set role(names) {
     this.attributes.role = Array.isArray(names) ? names.join(' ') : names
   }
 
   /**
    * Get the role names for this node as an Array.
    */
-  get roles () {
+  get roles() {
     const val = this.attributes.role
     return val ? val.split(' ') : []
   }
@@ -93,7 +106,7 @@ export class AbstractNode {
    *
    * @returns {string|undefined} the role as a space-separated String.
    */
-  getRole () {
+  getRole() {
     return this.role
   }
 
@@ -106,7 +119,7 @@ export class AbstractNode {
    *   or multiple role names as spread arguments.
    * @returns {string} the value of the role attribute.
    */
-  setRole (...names) {
+  setRole(...names) {
     this.role = names.length === 1 ? names[0] : names
     return this.attributes.role
   }
@@ -116,7 +129,7 @@ export class AbstractNode {
    *
    * @returns {string[]} the role names as a String Array, empty if the role attribute is absent.
    */
-  getRoles () {
+  getRoles() {
     return this.roles
   }
 
@@ -124,7 +137,7 @@ export class AbstractNode {
    * @returns true if this AbstractNode is an instance of Block.
    * @throws {Error} Subclasses must override this method.
    */
-  isBlock () {
+  isBlock() {
     throw new Error('NotImplementedError')
   }
 
@@ -132,14 +145,14 @@ export class AbstractNode {
    * @returns true if this AbstractNode is an instance of Inline.
    * @throws {Error} Subclasses must override this method.
    */
-  isInline () {
+  isInline() {
     throw new Error('NotImplementedError')
   }
 
   /**
    * Get the converter instance being used to convert the current Document.
    */
-  get converter () {
+  get converter() {
     return this.document.converter
   }
 
@@ -148,7 +161,7 @@ export class AbstractNode {
    *
    * @returns {string} the node name.
    */
-  getNodeName () {
+  getNodeName() {
     return this.nodeName
   }
 
@@ -157,7 +170,7 @@ export class AbstractNode {
    *
    * @returns {string|undefined} the id, or undefined if not set.
    */
-  getId () {
+  getId() {
     return this.id ?? undefined
   }
 
@@ -166,7 +179,7 @@ export class AbstractNode {
    *
    * @param {string} id - The String id to assign.
    */
-  setId (id) {
+  setId(id) {
     this.id = id
   }
 
@@ -175,7 +188,7 @@ export class AbstractNode {
    *
    * @returns {string} the context name.
    */
-  getContext () {
+  getContext() {
     return this.context
   }
 
@@ -184,7 +197,7 @@ export class AbstractNode {
    *
    * @returns {object} the converter instance.
    */
-  getConverter () {
+  getConverter() {
     return this.converter
   }
 
@@ -201,7 +214,7 @@ export class AbstractNode {
    *   Document when the attribute is absent on this node. When true, uses name.
    * @returns {*} the attribute value or defaultValue.
    */
-  attr (name, defaultValue = null, fallbackName = null) {
+  attr(name, defaultValue = null, fallbackName = null) {
     const key = String(name)
     const val = this.attributes[key]
     if (val != null) return val
@@ -223,7 +236,7 @@ export class AbstractNode {
    *   Document when the attribute is absent on this node.
    * @returns {boolean}
    */
-  hasAttr (name, expectedValue = null, fallbackName = null) {
+  hasAttr(name, expectedValue = null, fallbackName = null) {
     const key = String(name)
     if (expectedValue) {
       const val = this.attributes[key] ??
@@ -249,7 +262,7 @@ export class AbstractNode {
    *   Document if the attribute is not found on this node (default: same as name).
    * @returns {*} the attribute value, or defaultValue if the attribute is not found.
    */
-  getAttribute (name, defaultValue = undefined, inherit = false) {
+  getAttribute(name, defaultValue = undefined, inherit = false) {
     const val = this.attr(name, null, inherit || null)
     return val != null ? val : defaultValue
   }
@@ -263,7 +276,7 @@ export class AbstractNode {
    * @param {string|boolean|null} [fallbackName=null] - The fallback attribute name on the Document.
    * @returns {boolean}
    */
-  hasAttribute (name, expectedValue = null, fallbackName = null) {
+  hasAttribute(name, expectedValue = null, fallbackName = null) {
     return this.hasAttr(name, expectedValue, fallbackName)
   }
 
@@ -275,7 +288,7 @@ export class AbstractNode {
    * @param {boolean} [overwrite=true] - Whether to overwrite an existing attribute.
    * @returns {boolean} true if set, false if blocked.
    */
-  setAttribute (name, value = '', overwrite = true) {
+  setAttribute(name, value = '', overwrite = true) {
     return this.setAttr(name, value, overwrite)
   }
 
@@ -288,7 +301,7 @@ export class AbstractNode {
    * @param {*} [expectedValue=null] - The expected value; when provided, also checks the value.
    * @returns {boolean}
    */
-  isAttribute (name, expectedValue = null) {
+  isAttribute(name, expectedValue = null) {
     if (expectedValue != null) return this.getAttribute(name) === expectedValue
     return name in this.attributes
   }
@@ -299,7 +312,7 @@ export class AbstractNode {
    * @param {string} name - The String attribute name to remove.
    * @returns {*} the previous value, or undefined if not present.
    */
-  removeAttribute (name) {
+  removeAttribute(name) {
     return this.removeAttr(name)
   }
 
@@ -308,7 +321,7 @@ export class AbstractNode {
    *
    * @returns {Object} a plain Object of attributes.
    */
-  getAttributes () {
+  getAttributes() {
     return this.attributes
   }
 
@@ -317,7 +330,7 @@ export class AbstractNode {
    *
    * @returns {Document} the Document.
    */
-  getDocument () {
+  getDocument() {
     return this.document
   }
 
@@ -326,7 +339,7 @@ export class AbstractNode {
    *
    * @returns {AbstractNode|undefined} the parent AbstractNode, or undefined for the root document.
    */
-  getParent () {
+  getParent() {
     return this.parent
   }
 
@@ -336,7 +349,7 @@ export class AbstractNode {
    * @param {string} name - The String icon name.
    * @returns {Promise<string>} a Promise resolving to a String URI.
    */
-  getIconUri (name) {
+  getIconUri(name) {
     return this.iconUri(name)
   }
 
@@ -347,7 +360,7 @@ export class AbstractNode {
    * @param {string} [assetDirKey='imagesdir'] - The String asset directory attribute key.
    * @returns {string} a String URI.
    */
-  getMediaUri (target, assetDirKey = 'imagesdir') {
+  getMediaUri(target, assetDirKey = 'imagesdir') {
     return this.mediaUri(target, assetDirKey)
   }
 
@@ -358,7 +371,7 @@ export class AbstractNode {
    * @param {string|null} [assetDirKey=null] - The String asset directory attribute key.
    * @returns {Promise<string>} a Promise resolving to a String URI.
    */
-  getImageUri (targetImage, assetDirKey = null) {
+  getImageUri(targetImage, assetDirKey = null) {
     return this.imageUri(targetImage, assetDirKey)
   }
 
@@ -370,7 +383,7 @@ export class AbstractNode {
    * @param {boolean} [overwrite=true] - Whether to overwrite an existing attribute.
    * @returns {boolean} true if set, false if blocked.
    */
-  setAttr (name, value = '', overwrite = true) {
+  setAttr(name, value = '', overwrite = true) {
     if (overwrite === false && name in this.attributes) return false
     this.attributes[name] = value
     return true
@@ -382,7 +395,7 @@ export class AbstractNode {
    * @param {string} name - The String attribute name to remove.
    * @returns {*} the previous value, or undefined if the attribute was not present.
    */
-  removeAttr (name) {
+  removeAttr(name) {
     const val = this.attributes[name]
     delete this.attributes[name]
     return val
@@ -397,7 +410,7 @@ export class AbstractNode {
    * @param {string|boolean} [inherit=false] - The fallback attribute name on the Document.
    * @returns {*} the attribute value or defaultValue.
    */
-  getAttr (name, defaultValue = null, inherit = false) {
+  getAttr(name, defaultValue = null, inherit = false) {
     return this.attr(name, defaultValue, inherit || null)
   }
 
@@ -408,7 +421,7 @@ export class AbstractNode {
    * @param {string} name - The String or Symbol name of the option.
    * @returns {boolean} true if the option is enabled, false otherwise.
    */
-  hasOption (name) {
+  hasOption(name) {
     return `${name}-option` in this.attributes
   }
 
@@ -417,7 +430,7 @@ export class AbstractNode {
    *
    * @param {string} name - The String name of the option.
    */
-  setOption (name) {
+  setOption(name) {
     this.attributes[`${name}-option`] = ''
   }
 
@@ -426,7 +439,7 @@ export class AbstractNode {
    *
    * @returns {Set<string>} a Set of option name strings.
    */
-  enabledOptions () {
+  enabledOptions() {
     const result = new Set()
     for (const k of Object.keys(this.attributes)) {
       if (k.endsWith('-option')) result.add(k.slice(0, k.length - 7))
@@ -440,7 +453,7 @@ export class AbstractNode {
    * @param {Object} newAttributes - A plain object of additional attributes to assign.
    * @returns {Object} the updated attributes object on this node.
    */
-  updateAttributes (newAttributes) {
+  updateAttributes(newAttributes) {
     return Object.assign(this.attributes, newAttributes)
   }
 
@@ -450,7 +463,7 @@ export class AbstractNode {
    * @param {string|null} [expectedValue=null] - The expected String value of the role.
    * @returns {boolean}
    */
-  hasRoleAttr (expectedValue = null) {
+  hasRoleAttr(expectedValue = null) {
     if (expectedValue != null) return expectedValue === this.attributes.role
     return 'role' in this.attributes
   }
@@ -461,7 +474,7 @@ export class AbstractNode {
    * @param {string} name - The String role name to find.
    * @returns {boolean}
    */
-  hasRole (name) {
+  hasRole(name) {
     const val = this.attributes.role
     return val ? ` ${val} `.includes(` ${name} `) : false
   }
@@ -472,7 +485,7 @@ export class AbstractNode {
    * @param {string} name - The String role name to add.
    * @returns {boolean} true if the role was added, false if it was already present.
    */
-  addRole (name) {
+  addRole(name) {
     const val = this.attributes.role
     if (val) {
       if (` ${val} `.includes(` ${name} `)) return false
@@ -489,7 +502,7 @@ export class AbstractNode {
    * @param {string} name - The String role name to remove.
    * @returns {boolean} true if the role was removed, false if it was not present.
    */
-  removeRole (name) {
+  removeRole(name) {
     const val = this.attributes.role
     if (!val) return false
     const roles = val.split(' ')
@@ -511,7 +524,7 @@ export class AbstractNode {
    *
    * @returns {string|null} the String reftext or null if not set.
    */
-  get reftext () {
+  get reftext() {
     if (this._convertedReftext !== undefined) return this._convertedReftext
     const val = this.attributes.reftext
     return val ?? null
@@ -523,7 +536,7 @@ export class AbstractNode {
    *
    * @returns {Promise<void>}
    */
-  async precomputeReftext () {
+  async precomputeReftext() {
     const val = this.attributes.reftext
     this._convertedReftext = val != null ? await this.applyReftextSubs(val) : null
   }
@@ -533,7 +546,7 @@ export class AbstractNode {
    *
    * @returns {boolean}
    */
-  hasReftext () {
+  hasReftext() {
     return 'reftext' in this.attributes
   }
 
@@ -542,7 +555,7 @@ export class AbstractNode {
    *
    * @returns {string|undefined} the reftext value, or undefined if not set.
    */
-  getReftext () {
+  getReftext() {
     return this.reftext ?? undefined
   }
 
@@ -556,7 +569,7 @@ export class AbstractNode {
    * @param {string} name - The String name of the icon.
    * @returns {Promise<string>} a Promise resolving to a String reference or data URI for the icon image.
    */
-  async iconUri (name) {
+  async iconUri(name) {
     let icon
     if (this.hasAttr('icon')) {
       icon = this.attr('icon')
@@ -610,7 +623,7 @@ export class AbstractNode {
    * @param {string} [assetDirKey='imagesdir'] - The String attribute key for the media directory.
    * @returns {string} a String reference for the target media.
    */
-  mediaUri (target, assetDirKey = 'imagesdir') {
+  mediaUri(target, assetDirKey = 'imagesdir') {
     return this.normalizeWebPath(target, assetDirKey ? this.attr(assetDirKey, null, true) : null)
   }
 
@@ -626,7 +639,7 @@ export class AbstractNode {
    * @param {string|null} [assetDirKey=null] - The String attribute key for the image directory.
    * @returns {Promise<string>} a Promise resolving to a String data URI.
    */
-  async generateDataUri (targetImage, assetDirKey = null) {
+  async generateDataUri(targetImage, assetDirKey = null) {
     const ext = extname(targetImage, null)
     const mimetype = ext
       ? (ext === '.svg' ? 'image/svg+xml' : `image/${ext.slice(1)}`)
@@ -634,6 +647,9 @@ export class AbstractNode {
     const imagePath = assetDirKey
       ? this.normalizeSystemPath(targetImage, this.attr(assetDirKey, null, true), null, { targetName: 'image' })
       : this.normalizeSystemPath(targetImage)
+    if (isUriish(imagePath)) {
+      return await this.generateDataUriFromUri(imagePath, this.document.hasAttr('cache-uri'));
+    }
     if (await isReadable(imagePath)) {
       const data = await _fsp.readFile(imagePath)
       return `data:${mimetype};base64,${data.toString('base64')}`
@@ -655,13 +671,22 @@ export class AbstractNode {
    * @param {boolean} [cacheUri=false] - A Boolean to control caching (not yet supported in JS).
    * @returns {Promise<string>} a Promise resolving to a String data URI.
    */
-  async generateDataUriFromUri (imageUri, cacheUri = false) { // eslint-disable-line no-unused-vars
+  async generateDataUriFromUri(imageUri, cacheUri = false) { // eslint-disable-line no-unused-vars
     try {
       const response = await fetch(imageUri)
-      const mimetype = (response.headers.get('content-type') || 'application/octet-stream').split(';')[0].trim()
-      const buffer = await response.arrayBuffer()
-      const base64 = Buffer.from(buffer).toString('base64')
-      return `data:${mimetype};base64,${base64}`
+      if (response.ok) {
+        const mimetype = (response.headers.get('content-type') || 'application/octet-stream').split(';')[0].trim()
+        const buffer = await response.arrayBuffer()
+        const base64 = Buffer.from(buffer).toBase64()
+        return `data:${mimetype};base64,${base64}`
+      } else {
+        const ext = extname(imageUri, null)
+        const mimetype =  ext
+          ? (ext === '.svg' ? 'image/svg+xml' : `image/${ext.slice(1)}`)
+          : 'application/octet-stream'
+        this.logger.warn(`image to embed not found or not readable: ${imageUri}`)
+        return `data:${mimetype};base64,`
+      }
     } catch {
       this.logger.warn(`could not retrieve image data from URI: ${imageUri}`)
       return imageUri
@@ -678,8 +703,11 @@ export class AbstractNode {
    * @param {boolean} [autocorrect=true] - A Boolean indicating whether to recover from an illegal path.
    * @returns {string} the normalized String path.
    */
-  normalizeAssetPath (assetRef, assetName = 'path', autocorrect = true) {
-    return this.normalizeSystemPath(assetRef, this.document.baseDir, null, { targetName: assetName, recover: autocorrect })
+  normalizeAssetPath(assetRef, assetName = 'path', autocorrect = true) {
+    return this.normalizeSystemPath(assetRef, this.document.baseDir, null, {
+      targetName: assetName,
+      recover: autocorrect
+    })
   }
 
   /**
@@ -697,7 +725,7 @@ export class AbstractNode {
    * @throws {Error} if a jail is specified and the resolved path is outside it.
    * @returns {string} the resolved String path.
    */
-  normalizeSystemPath (target, start = null, jail = null, opts = {}) {
+  normalizeSystemPath(target, start = null, jail = null, opts = {}) {
     const doc = this.document
     if (doc.safe < SafeMode.SAFE) {
       if (start) {
@@ -720,7 +748,7 @@ export class AbstractNode {
    * @param {boolean} [preserveUriTarget=true] - Whether a URI target should be preserved as-is.
    * @returns {string} the resolved String path.
    */
-  normalizeWebPath (target, start = null, preserveUriTarget = true) {
+  normalizeWebPath(target, start = null, preserveUriTarget = true) {
     if (preserveUriTarget && isUriish(target)) return encodeSpacesInUri(target)
     return this.document.pathResolver.webPath(target, start)
   }
@@ -737,9 +765,21 @@ export class AbstractNode {
    *   - `label` {string} - Label for the file used in warning messages.
    * @returns {Promise<string|null>} a Promise resolving to the file content, or null if not readable.
    */
-  async readAsset (path, opts = {}) {
+  async readAsset(path, opts = {}) {
     // remap opts for backwards compatibility (boolean shorthand)
     if (typeof opts !== 'object' || opts === null) opts = { warnOnFailure: opts !== false }
+    if (isUriish(path)) {
+      // Browser: docdir is a URL so the resolved path is an HTTP URI; use fetch instead of fs.
+      const { readBrowserAsset } = await import('./browser/asset.js')
+      const text = await readBrowserAsset(path)
+      if (text != null) return opts.normalize ? prepareSourceString(text).join(LF) : text
+      if (opts.warnOnFailure) {
+        const docfile = this.attr('docfile') || '<stdin>'
+        const label = opts.label || 'file'
+        this.logger.warn(`${docfile}: ${label} does not exist or cannot be read: ${path}`)
+      }
+      return null
+    }
     if (await isReadable(path)) {
       if (opts.normalize) {
         return prepareSourceString(await _fsp.readFile(path, 'utf8')).join(LF)
@@ -770,7 +810,7 @@ export class AbstractNode {
    *   - `warnIfEmpty` {boolean} - Whether a warning is issued when the target contents are empty (default: false).
    * @returns {Promise<string|null>} a Promise resolving to the content, or null on failure.
    */
-  async readContents (target, opts = {}) {
+  async readContents(target, opts = {}) {
     const doc = this.document
     const label = opts.label || 'asset'
     let contents
@@ -806,7 +846,7 @@ export class AbstractNode {
    * @param {string} str
    * @returns {boolean}
    */
-  isUri (str) {
+  isUri(str) {
     return isUriish(str)
   }
 
@@ -814,7 +854,7 @@ export class AbstractNode {
    * Provide a default logger.
    * The Logging mixin (logging.js) overrides this getter on the prototype.
    */
-  get logger () {
+  get logger() {
     return this.document?.logger ?? console
   }
 }

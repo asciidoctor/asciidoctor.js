@@ -16,8 +16,8 @@ export default defineConfig({
     root: 'test',
     setupFiles: ['shims/setup.js'],
     include: ['**/*.test.js'],
-    // Exclude tests that require a running Node.js HTTP server
-    exclude: ['include-http.test.js'],
+    // Exclude tests that require a running Node.js HTTP server or Node.js test infrastructure
+    exclude: ['include-http.test.js', 'browser.reader.test.js'],
   },
   resolve: {
     alias: [

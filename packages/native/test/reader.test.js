@@ -1,7 +1,7 @@
 // ESM conversion of reader_test.rb
 // Tests for the Reader and PreprocessorReader classes.
 
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -15,8 +15,16 @@ import { assertCss } from './helpers.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = import.meta.url.startsWith('http')
+  ? new URL('.', import.meta.url).href.replace(/\/$/, '')
+  : path.dirname(fileURLToPath(import.meta.url))
 const FIXTURES_DIR = path.join(__dirname, 'fixtures')
+
+// In browser (Vitest), use the server origin so includes can be fetched via URL.
+// In Node.js, use the filesystem directory (= parent of fixtures/).
+const BASE_DIR = import.meta.url.startsWith('http')
+  ? new URL('.', import.meta.url).href.replace(/\/$/, '')
+  : path.join(FIXTURES_DIR, '..')
 
 const SAMPLE_DATA = ['first line', 'second line', 'third line']
 
@@ -506,7 +514,7 @@ describe('PreprocessorReader', () => {
 
     test('should not skip front matter in include file if skip-front-matter attribute is set', async () => {
       const input = '....\ninclude::fixtures/with-front-matter.adoc[]\n....'
-      const doc = await load(input, { safe: 'safe', parse: false, base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await load(input, { safe: 'safe', parse: false, base_dir: BASE_DIR })
       const reader = doc.reader
       const expected = ['....', '---', 'name: value', '---', 'content', '....']
       assert.deepEqual(await reader.readlines(), expected)
@@ -515,7 +523,7 @@ describe('PreprocessorReader', () => {
 
     test('should skip front matter in include file if skip-front-matter option is set on include directive', async () => {
       const input = '....\ninclude::fixtures/with-front-matter.adoc[opts=skip-front-matter]\n....'
-      const doc = await load(input, { safe: 'safe', parse: false, base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await load(input, { safe: 'safe', parse: false, base_dir: BASE_DIR })
       const reader = doc.reader
       const expected = ['....', 'content', '....']
       assert.deepEqual(await reader.readlines(), expected)
@@ -616,7 +624,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive is enabled when safe mode is less than SECURE', async () => {
       const input = 'include::fixtures/include-file.adoc[]'
-      const doc = await documentFromString(input, { safe: 'safe', standalone: false, base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await documentFromString(input, { safe: 'safe', standalone: false, base_dir: BASE_DIR })
       const output = await doc.convert()
       assert.match(output, /included content/)
       assert.ok(doc.catalog.includes['fixtures/include-file'])
@@ -624,7 +632,7 @@ describe('PreprocessorReader', () => {
 
     test('should strip BOM from include file', async () => {
       const input = ':showtitle:\ninclude::fixtures/file-with-utf8-bom.adoc[]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assertCss(output, '.paragraph', 0)
       assertCss(output, 'h1', 1)
       assert.match(output, /<h1>人<\/h1>/)
@@ -632,7 +640,7 @@ describe('PreprocessorReader', () => {
 
     test('should not track include in catalog for non-AsciiDoc include files', async () => {
       const input = '----\ninclude::fixtures/include-file.xml[]\n----'
-      const doc = await documentFromString(input, { safe: 'safe', standalone: false, base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await documentFromString(input, { safe: 'safe', standalone: false, base_dir: BASE_DIR })
       // non-AsciiDoc files should not appear in catalog
       assert.ok(!doc.catalog.includes['fixtures/include-file'])
     })
@@ -651,7 +659,7 @@ describe('PreprocessorReader', () => {
       const { copyFileSync } = await import('node:fs')
       try {
         copyFileSync(srcFile, spFile)
-        const doc = await documentFromString('include::fixtures/include file.adoc[]', { safe: 'safe', standalone: false, base_dir: path.join(FIXTURES_DIR, '..') })
+        const doc = await documentFromString('include::fixtures/include file.adoc[]', { safe: 'safe', standalone: false, base_dir: BASE_DIR })
         assert.match(await doc.convert(), /included content/)
       } finally {
         try { unlinkSync(spFile) } catch { /* ignore */ }
@@ -664,7 +672,7 @@ describe('PreprocessorReader', () => {
       const { copyFileSync } = await import('node:fs')
       try {
         copyFileSync(srcFile, spFile)
-        const doc = await documentFromString('include::fixtures/include{sp}file.adoc[]', { safe: 'safe', standalone: false, base_dir: path.join(FIXTURES_DIR, '..') })
+        const doc = await documentFromString('include::fixtures/include{sp}file.adoc[]', { safe: 'safe', standalone: false, base_dir: BASE_DIR })
         assert.match(await doc.convert(), /included content/)
       } finally {
         try { unlinkSync(spFile) } catch { /* ignore */ }
@@ -679,7 +687,7 @@ describe('PreprocessorReader', () => {
       const childIncludeDocfile = path.join(fixturesDir, 'child-include.adoc')
       const grandchildIncludeDocfile = path.join(fixturesDir, 'grandchild-include.adoc')
 
-      const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await emptyDocument({ base_dir: BASE_DIR })
       const reader = new PreprocessorReader(doc, input, pseudoDocfile, { normalize: true })
 
       assert.equal(reader.file, pseudoDocfile)
@@ -726,7 +734,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive should process lines when file extension of target is .asciidoc', async () => {
       const input = 'include::fixtures/include-alt-extension.asciidoc[]'
-      const doc = await documentFromString(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await documentFromString(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.equal(doc.blocks.length, 3)
       assert.deepEqual(doc.blocks[0].lines, ['first line'])
       assert.deepEqual(doc.blocks[1].lines, ['Asciidoctor!'])
@@ -735,7 +743,7 @@ describe('PreprocessorReader', () => {
 
     test('should only strip trailing newlines, not trailing whitespace, if include file is not AsciiDoc', async () => {
       const input = '....\ninclude::fixtures/data.tsv[]\n....'
-      const doc = await documentFromString(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await documentFromString(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.equal(doc.blocks.length, 1)
       // line at index 2 should end with a tab (trailing whitespace preserved)
       assert.ok(doc.blocks[0].lines[2].endsWith('\t'))
@@ -746,7 +754,7 @@ describe('PreprocessorReader', () => {
     test('unresolved target referenced by include directive is skipped when optional option is set (attribute missing)', async () => {
       const input = 'include::fixtures/{no-such-file}[opts=optional]\n\ntrailing content'
       await usingMemoryLogger(async (logger) => {
-        const doc = await documentFromString(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const doc = await documentFromString(input, { safe: 'safe', base_dir: BASE_DIR })
         assert.equal(doc.blocks.length, 1)
         assert.deepEqual(doc.blocks[0].lines, ['trailing content'])
         assertMessage(logger, 'INFO', 'optional include dropped')
@@ -756,7 +764,7 @@ describe('PreprocessorReader', () => {
     test('should skip include directive that references missing file if optional option is set', async () => {
       const input = 'include::fixtures/no-such-file.adoc[opts=optional]\n\ntrailing content'
       await usingMemoryLogger(async (logger) => {
-        const doc = await documentFromString(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const doc = await documentFromString(input, { safe: 'safe', base_dir: BASE_DIR })
         assert.equal(doc.blocks.length, 1)
         assert.deepEqual(doc.blocks[0].lines, ['trailing content'])
         assertMessage(logger, 'INFO', 'optional include dropped')
@@ -766,7 +774,7 @@ describe('PreprocessorReader', () => {
     test('should replace include directive that references missing file with message', async () => {
       const input = 'include::fixtures/no-such-file.adoc[]\n\ntrailing content'
       await usingMemoryLogger(async (logger) => {
-        const doc = await documentFromString(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const doc = await documentFromString(input, { safe: 'safe', base_dir: BASE_DIR })
         assert.equal(doc.blocks.length, 2)
         assert.deepEqual(doc.blocks[0].lines, ['Unresolved directive in <stdin> - include::fixtures/no-such-file.adoc[]'])
         assert.deepEqual(doc.blocks[1].lines, ['trailing content'])
@@ -777,9 +785,11 @@ describe('PreprocessorReader', () => {
     // SKIP: file permissions test (FileUtils.chmod) - not applicable in Node.js test environment
 
     test('can resolve include directive with absolute path', async () => {
-      const includePath = path.join(FIXTURES_DIR, 'chapter-a.adoc')
-      const input = `include::${includePath}[]`
-      const result = await documentFromString(input, { safe: 'safe' })
+      // Node.js: absolute filesystem path; browser: absolute URL served by Vite
+      const includePath = import.meta.url.startsWith('http')
+        ? new URL('.', import.meta.url).href.replace(/\/$/, '') + '/fixtures/chapter-a.adoc'
+        : path.join(FIXTURES_DIR, 'chapter-a.adoc')
+      const result = await documentFromString(`include::${includePath}[]`, { safe: 'safe', base_dir: BASE_DIR, attributes: { 'allow-uri-read': ''} })
       assert.equal(result.attributes.doctitle, 'Chapter A')
     })
 
@@ -787,7 +797,7 @@ describe('PreprocessorReader', () => {
 
     test('nested include directives are resolved relative to current file', async () => {
       const input = '....\ninclude::fixtures/outer-include.adoc[]\n....'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = [
         'first line of outer',
         '',
@@ -806,7 +816,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive supports selecting lines by line number', async () => {
       const input = 'include::fixtures/include-file.adoc[lines=1;3..4;6..-1]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.match(output, /first line/)
       assert.ok(!output.match(/second line/))
       assert.match(output, /third line/)
@@ -820,7 +830,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive supports line ranges separated by commas in quoted attribute value', async () => {
       const input = 'include::fixtures/include-file.adoc[lines="1,3..4,6..-1"]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.match(output, /first line/)
       assert.ok(!output.match(/second line/))
       assert.match(output, /third line/)
@@ -834,7 +844,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive ignores spaces between line ranges in quoted attribute value', async () => {
       const input = 'include::fixtures/include-file.adoc[lines="1, 3..4 , 6 .. -1"]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.match(output, /first line/)
       assert.ok(!output.match(/second line/))
       assert.match(output, /third line/)
@@ -845,7 +855,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive supports implicit endless range', async () => {
       const input = 'include::fixtures/include-file.adoc[lines=6..]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.ok(!output.match(/first line/))
       assert.ok(!output.match(/second line/))
       assert.ok(!output.match(/fifth line/))
@@ -856,21 +866,21 @@ describe('PreprocessorReader', () => {
 
     test('include directive ignores lines attribute if empty', async () => {
       const input = '++++\ninclude::fixtures/include-file.adoc[lines=]\n++++'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.ok(output.includes('first line of included content'))
       assert.ok(output.includes('last line of included content'))
     })
 
     test('include directive ignores lines attribute with invalid range', async () => {
       const input = '++++\ninclude::fixtures/include-file.adoc[lines=10..5]\n++++'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.ok(output.includes('first line of included content'))
       assert.ok(output.includes('last line of included content'))
     })
 
     test('include directive supports selecting lines by tag', async () => {
       const input = 'include::fixtures/include-file.adoc[tag=snippetA]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.match(output, /snippetA content/)
       assert.ok(!output.match(/snippetB content/))
       assert.ok(!output.match(/non-tagged content/))
@@ -879,7 +889,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive supports selecting lines by tags', async () => {
       const input = 'include::fixtures/include-file.adoc[tags=snippetA;snippetB]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.match(output, /snippetA content/)
       assert.match(output, /snippetB content/)
       assert.ok(!output.match(/non-tagged content/))
@@ -888,7 +898,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive supports selecting lines by tag in language that uses circumfix comments (XML)', async () => {
       const input = '[source,xml]\n----\ninclude::fixtures/include-file.xml[tag=snippet,indent=0]\n----'
-      const doc = await documentFromString(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await documentFromString(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.equal(doc.blocks[0].source, '<snippet>content</snippet>')
     })
 
@@ -925,21 +935,21 @@ describe('PreprocessorReader', () => {
 
     test('include directive does not select lines containing tag directives within selected tag region', async () => {
       const input = '++++\ninclude::fixtures/include-file.adoc[tags=snippet]\n++++'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = 'snippetA content\n\nnon-tagged content\n\nsnippetB content'
       assert.equal(output, expected)
     })
 
     test('include directive skips lines inside tag which is negated', async () => {
       const input = '----\ninclude::fixtures/tagged-class-enclosed.rb[tags=all;!bark]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = 'class Dog\n  def initialize breed\n    @breed = breed\n  end\nend'
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
 
     test('include directive selects all lines without a tag directive when value is double asterisk', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=**]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = [
         'class Dog',
         '  def initialize breed',
@@ -960,14 +970,14 @@ describe('PreprocessorReader', () => {
 
     test('include directive selects all lines except lines inside tag which is negated when value starts with double asterisk', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=**;!bark]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = 'class Dog\n  def initialize breed\n    @breed = breed\n  end\nend'
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
 
     test('include directive selects all lines, including lines inside nested tags, except lines inside tag which is negated when value starts with double asterisk', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=**;!init]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = [
         'class Dog',
         '',
@@ -985,35 +995,35 @@ describe('PreprocessorReader', () => {
 
     test('include directive selects all lines outside of tags when value is double asterisk followed by negated wildcard', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=**;!*]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = 'class Dog\nend'
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
 
     test('include directive skips all tagged regions when value of tags attribute is negated wildcard', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=!*]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = 'class Dog\nend'
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
 
     test('include directive selects all lines except tag which is negated when value only contains negated tag', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tag=!bark]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = 'class Dog\n  def initialize breed\n    @breed = breed\n  end\nend'
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
 
     test('include directive selects all lines except tags which are negated when value only contains negated tags', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=!bark;!init]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = 'class Dog\nend'
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
 
     test('include directive selects lines between tags when value of tags attribute is wildcard', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=*]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = [
         '  def initialize breed',
         '    @breed = breed',
@@ -1032,7 +1042,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive selects lines inside tags when value of tags attribute is wildcard and tag surrounds content', async () => {
       const input = '----\ninclude::fixtures/tagged-class-enclosed.rb[tags=*]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = [
         'class Dog',
         '  def initialize breed',
@@ -1053,7 +1063,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive selects lines inside all tags except tag which is negated when value of tags attribute is wildcard followed by negated tag', async () => {
       const input = '----\ninclude::fixtures/tagged-class-enclosed.rb[tags=*;!init]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = [
         'class Dog',
         '',
@@ -1072,7 +1082,7 @@ describe('PreprocessorReader', () => {
     test('include directive skips all tagged regions except ones re-enabled when value of tags attribute is negated wildcard followed by tag name', async () => {
       for (const pattern of ['!*;init', '**;!*;init']) {
         const input = `----\ninclude::fixtures/tagged-class.rb[tags=${pattern}]\n----`
-        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
         const expected = 'class Dog\n  def initialize breed\n    @breed = breed\n  end\nend'
         assert.ok(output.includes(`<pre>${expected}</pre>`), `Pattern ${pattern} failed`)
       }
@@ -1080,7 +1090,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive includes regions outside tags and inside specified tags when value begins with negated wildcard', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=!*;bark]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = 'class Dog\n\n  def bark\n  end\nend'
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
@@ -1088,7 +1098,7 @@ describe('PreprocessorReader', () => {
     test('include directive includes lines inside tag except for lines inside nested tags when tag is followed by negated wildcard', async () => {
       for (const pattern of ['bark;!*', '!**;bark;!*', '!**;!*;bark']) {
         const input = `----\ninclude::fixtures/tagged-class.rb[tags=${pattern}]\n----`
-        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
         const expected = '  def bark\n  end'
         assert.ok(output.includes(`<pre>${expected}</pre>`), `Pattern ${pattern} failed`)
       }
@@ -1096,7 +1106,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive does not select lines inside tag that has been included then excluded', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=!*;init;!init]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = 'class Dog\nend'
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
@@ -1104,7 +1114,7 @@ describe('PreprocessorReader', () => {
     test('include directive only selects lines inside specified tag, even if preceded by negated double asterisk', async () => {
       for (const pattern of ['bark', '!**;bark']) {
         const input = `----\ninclude::fixtures/tagged-class.rb[tags=${pattern}]\n----`
-        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
         const expected = [
           '  def bark',
           "    if @breed == 'beagle'",
@@ -1120,14 +1130,14 @@ describe('PreprocessorReader', () => {
 
     test('include directive selects lines inside specified tag and ignores lines inside a negated tag', async () => {
       const input = '[indent=0]\n----\ninclude::fixtures/tagged-class.rb[tags=bark;!bark-other]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = "def bark\n  if @breed == 'beagle'\n    'woof woof woof woof woof'\n  end\nend"
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
 
     test('should recognize tag wildcard if not at start of tags list', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=init;**;*;!bark-other]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = [
         'class Dog',
         '  def initialize breed',
@@ -1146,7 +1156,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive selects all lines except for lines containing tag directive if value is double asterisk followed by nested tag names', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=**;bark-beagle;bark-all]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = [
         'class Dog',
         '  def initialize breed',
@@ -1167,7 +1177,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive selects all lines except for lines containing tag directive when value is double asterisk followed by outer tag name', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=**;bark]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = [
         'class Dog',
         '  def initialize breed',
@@ -1188,7 +1198,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive selects all lines inside unspecified tags when value is negated double asterisk followed by negated tags', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=!**;!init]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = [
         '  def bark',
         "    if @breed == 'beagle'",
@@ -1203,7 +1213,7 @@ describe('PreprocessorReader', () => {
 
     test('include directive selects lines inside tag except for lines inside nested tags when tag is preceded by negated double asterisk and negated wildcard', async () => {
       const input = '----\ninclude::fixtures/tagged-class.rb[tags=!**;!*;bark]\n----'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       const expected = '  def bark\n  end'
       assert.ok(output.includes(`<pre>${expected}</pre>`))
     })
@@ -1211,15 +1221,15 @@ describe('PreprocessorReader', () => {
     test('should warn if specified tag is not found in include file', async () => {
       const input = 'include::fixtures/include-file.adoc[tag=no-such-tag]'
       await usingMemoryLogger(async (logger) => {
-        await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
-        assertMessage(logger, 'WARN', "tag 'no-such-tag' not found in include file")
+        await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
+        assertMessage(logger, 'WARN', "tag 'no-such-tag' not found in include")
       })
     })
 
     test('should not warn if specified negated tag is not found in include file', async () => {
       const input = '----\ninclude::fixtures/tagged-class-enclosed.rb[tag=!no-such-tag]\n----'
       await usingMemoryLogger(async (logger) => {
-        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
         assert.ok(output.includes('class Dog'))
         assert.equal(logger.messages.length, 0)
       })
@@ -1228,15 +1238,15 @@ describe('PreprocessorReader', () => {
     test('should warn if specified tags are not found in include file', async () => {
       const input = '++++\ninclude::fixtures/include-file.adoc[tags=no-such-tag-b;no-such-tag-a]\n++++'
       await usingMemoryLogger(async (logger) => {
-        await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
-        assertMessage(logger, 'WARN', 'not found in include file')
+        await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
+        assertMessage(logger, 'WARN', 'not found in include')
       })
     })
 
     test('should not warn if specified negated tags are not found in include file', async () => {
       const input = '----\ninclude::fixtures/tagged-class-enclosed.rb[tags=all;!no-such-tag;!unknown-tag]\n----'
       await usingMemoryLogger(async (logger) => {
-        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
         assert.ok(output.includes('class Dog'))
         assert.equal(logger.messages.length, 0)
       })
@@ -1245,7 +1255,7 @@ describe('PreprocessorReader', () => {
     test('should warn if specified tag in include file is not closed', async () => {
       const input = '++++\ninclude::fixtures/unclosed-tag.adoc[tag=a]\n++++'
       await usingMemoryLogger(async (logger) => {
-        const result = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const result = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
         assert.equal(result, 'a')
         assertMessage(logger, 'WARN', "detected unclosed tag 'a'")
       })
@@ -1254,7 +1264,7 @@ describe('PreprocessorReader', () => {
     test('should warn if end tag in included file is mismatched', async () => {
       const input = '++++\ninclude::fixtures/mismatched-end-tag.adoc[tags=a;b]\n++++'
       await usingMemoryLogger(async (logger) => {
-        const result = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const result = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
         assert.equal(result, 'a\nb')
         assertMessage(logger, 'WARN', "mismatched end tag")
       })
@@ -1263,7 +1273,7 @@ describe('PreprocessorReader', () => {
     test('should warn if unexpected end tag is found in included file', async () => {
       const input = '++++\ninclude::fixtures/unexpected-end-tag.adoc[tags=a]\n++++'
       await usingMemoryLogger(async (logger) => {
-        const result = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const result = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
         assert.equal(result, 'a')
         assertMessage(logger, 'WARN', "unexpected end tag 'a'")
       })
@@ -1272,7 +1282,7 @@ describe('PreprocessorReader', () => {
     test('include directive ignores tags attribute when empty', async () => {
       for (const attrName of ['tag', 'tags']) {
         const input = `++++\ninclude::fixtures/include-file.xml[${attrName}=]\n++++`
-        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+        const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
         const matches = (output.match(/(?:tag|end)::/g) || []).length
         assert.ok(matches >= 2, `Expected tag:: or end:: directives in output for ${attrName}=`)
       }
@@ -1280,7 +1290,7 @@ describe('PreprocessorReader', () => {
 
     test('lines attribute takes precedence over tags attribute in include directive', async () => {
       const input = 'include::fixtures/include-file.adoc[lines=1, tags=snippetA;snippetB]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.match(output, /first line of included content/)
       assert.ok(!output.match(/snippetA content/))
       assert.ok(!output.match(/snippetB content/))
@@ -1288,13 +1298,13 @@ describe('PreprocessorReader', () => {
 
     test('indent of included file can be reset to size of indent attribute', async () => {
       const input = '[source, xml]\n----\ninclude::fixtures/basic-docinfo.xml[lines=2..3, indent=0]\n----'
-      const doc = await documentFromString(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await documentFromString(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.equal(doc.blocks[0].source, '<year>2013</year>\n<holder>Acme™, Inc.</holder>')
     })
 
     test('should substitute attribute references in attrlist', async () => {
       const input = ':name-of-tag: snippetA\ninclude::fixtures/include-file.adoc[tag={name-of-tag}]'
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: BASE_DIR })
       assert.match(output, /snippetA content/)
       assert.ok(!output.match(/snippetB content/))
       assert.ok(!output.match(/non-tagged content/))
@@ -1315,13 +1325,13 @@ describe('PreprocessorReader', () => {
         '',
         ':leveloffset!:',
       ]
-      const document = await load(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..'), parse: false })
+      const document = await load(input, { safe: 'safe', base_dir: BASE_DIR, parse: false })
       assert.deepEqual(await document.reader.readLines(), expected)
     })
 
     test('attributes are substituted in target of include directive', async () => {
       const input = ':fixturesdir: fixtures\n:ext: adoc\n\ninclude::{fixturesdir}/include-file.{ext}[]'
-      const doc = await documentFromString(input, { safe: 'safe', base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await documentFromString(input, { safe: 'safe', base_dir: BASE_DIR })
       const output = await doc.convert()
       assert.match(output, /included content/)
     })
@@ -1329,7 +1339,7 @@ describe('PreprocessorReader', () => {
     test('line is skipped by default if target of include directive resolves to empty', async () => {
       const input = 'include::{blank}[]'
       await usingMemoryLogger(async (logger) => {
-        const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
+        const doc = await emptyDocument({ base_dir: BASE_DIR })
         const reader = new PreprocessorReader(doc, input, null, { normalize: true })
         const line = await reader.readLine()
         assert.equal(line, 'Unresolved directive in <stdin> - include::{blank}[]')
@@ -1340,7 +1350,7 @@ describe('PreprocessorReader', () => {
     test('include is dropped if target contains missing attribute and attribute-missing is drop-line', async () => {
       const input = 'include::{foodir}/include-file.adoc[]'
       await usingMemoryLogger(async (logger) => {
-        const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..'), attributes: { 'attribute-missing': 'drop-line' } })
+        const doc = await emptyDocument({ base_dir: BASE_DIR, attributes: { 'attribute-missing': 'drop-line' } })
         const reader = new PreprocessorReader(doc, input, null, { normalize: true })
         const line = await reader.readLine()
         assert.equal(line, undefined)
@@ -1351,7 +1361,7 @@ describe('PreprocessorReader', () => {
     test('line following dropped include is not dropped', async () => {
       const input = 'include::{foodir}/include-file.adoc[]\nyo'
       await usingMemoryLogger(async (_logger) => {
-        const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..'), attributes: { 'attribute-missing': 'warn' } })
+        const doc = await emptyDocument({ base_dir: BASE_DIR, attributes: { 'attribute-missing': 'warn' } })
         const reader = new PreprocessorReader(doc, input, null, { normalize: true })
         const line1 = await reader.readLine()
         assert.equal(line1, 'Unresolved directive in <stdin> - include::{foodir}/include-file.adoc[]')
@@ -1362,7 +1372,7 @@ describe('PreprocessorReader', () => {
 
     test('escaped include directive is left unprocessed', async () => {
       const input = '\\include::fixtures/include-file.adoc[]\n\\escape preserved here'
-      const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await emptyDocument({ base_dir: BASE_DIR })
       const reader = new PreprocessorReader(doc, input, null, { normalize: true })
       // peek multiple times — backslash should be preserved each time
       assert.equal(await reader.peekLine(), 'include::fixtures/include-file.adoc[]')
@@ -1397,7 +1407,7 @@ describe('PreprocessorReader', () => {
       const input = 'include::fixtures/parent-include.adoc[depth=1]'
       await usingMemoryLogger(async (logger) => {
         const pseudoDocfile = path.join(FIXTURES_DIR, '..', 'main.adoc')
-        const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
+        const doc = await emptyDocument({ base_dir: BASE_DIR })
         const reader = new PreprocessorReader(doc, input, pseudoDocfile, { normalize: true })
         const lines = await reader.readLines()
         assert.ok(lines.some((l) => l.includes('grandchild-include.adoc')), 'Expected grandchild include to be unprocessed')
@@ -1409,7 +1419,7 @@ describe('PreprocessorReader', () => {
       const input = 'include::fixtures/parent-include-restricted.adoc[depth=3]'
       await usingMemoryLogger(async (logger) => {
         const pseudoDocfile = path.join(FIXTURES_DIR, '..', 'main.adoc')
-        const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
+        const doc = await emptyDocument({ base_dir: BASE_DIR })
         const reader = new PreprocessorReader(doc, input, pseudoDocfile, { normalize: true })
         const lines = await reader.readLines()
         assert.ok(lines.includes('first line of child'))
@@ -1420,7 +1430,7 @@ describe('PreprocessorReader', () => {
 
     test('readLinesUntil should not process lines if skipProcessing option is set', async () => {
       const lines = '////\ninclude::fixtures/no-such-file.adoc[]\n////'.split('\n')
-      const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await emptyDocument({ base_dir: BASE_DIR })
       const reader = new PreprocessorReader(doc, lines, null, { normalize: true })
       await reader.readLine()
       const result = await reader.readLinesUntil({ terminator: '////', skipProcessing: true })
@@ -1430,7 +1440,7 @@ describe('PreprocessorReader', () => {
     test('skipCommentLines should not process lines read', async () => {
       const lines = '////\ninclude::fixtures/no-such-file.adoc[]\n////'.split('\n')
       await usingMemoryLogger(async (logger) => {
-        const doc = await emptyDocument({ base_dir: path.join(FIXTURES_DIR, '..') })
+        const doc = await emptyDocument({ base_dir: BASE_DIR })
         const reader = new PreprocessorReader(doc, lines, null, { normalize: true })
         await reader.skipCommentLines()
         assert.ok(reader.empty())
@@ -1897,7 +1907,7 @@ describe('PreprocessorReader', () => {
 
     test('ifdef with defined attribute processes include directive in brackets', async () => {
       const input = 'ifdef::asciidoctor-version[include::fixtures/include-file.adoc[tag=snippetA]]'
-      const doc = await load(input, { safe: 'safe', parse: false, base_dir: path.join(FIXTURES_DIR, '..') })
+      const doc = await load(input, { safe: 'safe', parse: false, base_dir: BASE_DIR })
       const reader = doc.reader
       const lines = []
       while (await reader.hasMoreLines()) lines.push(await reader.readLine())

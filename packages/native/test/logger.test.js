@@ -38,7 +38,9 @@ describe('Logger', () => {
       const sourceLocation = errorMessage.getSourceLocation()
       assert.equal(sourceLocation.getLineNumber(), 8)
       assert.equal(sourceLocation.getFile(), undefined)
-      assert.equal(sourceLocation.getDirectory(), process.cwd().replace(/\\/g, '/'))
+      if (typeof process !== 'undefined' && typeof process.cwd === 'function') {
+        assert.equal(sourceLocation.getDirectory(), process.cwd().replace(/\\/g, '/'))
+      }
       assert.equal(sourceLocation.getPath(), '<stdin>')
     } finally {
       asciidoctor.LoggerManager.setLogger(defaultLogger)
@@ -70,27 +72,29 @@ describe('Logger', () => {
   test('should use the default formatter', async () => {
     const defaultLogger = asciidoctor.LoggerManager.getLogger()
     const defaultFormatter = defaultLogger.getFormatter()
-    const processStderrWriteFunction = process.stderr.write
+    const canInterceptStderr = typeof process !== 'undefined' && typeof process.stderr?.write === 'function'
+    const processStderrWriteFunction = canInterceptStderr ? process.stderr.write : null
     let stderrOutput = ''
-    process.stderr.write = function (chunk) {
-      stderrOutput += chunk
+    if (canInterceptStderr) {
+      process.stderr.write = function (chunk) { stderrOutput += chunk }
     }
     try {
       await asciidoctor.convert(PART_WITH_NO_SECTION)
-      assert.equal(stderrOutput, 'asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n')
+      if (canInterceptStderr) assert.equal(stderrOutput, 'asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n')
     } finally {
       defaultLogger.setFormatter(defaultFormatter)
-      process.stderr.write = processStderrWriteFunction
+      if (canInterceptStderr) process.stderr.write = processStderrWriteFunction
     }
   })
 
   test('should be able to use a JSON formatter', async () => {
     const defaultLogger = asciidoctor.LoggerManager.getLogger()
     const defaultFormatter = defaultLogger.getFormatter()
-    const processStderrWriteFunction = process.stderr.write
+    const canInterceptStderr = typeof process !== 'undefined' && typeof process.stderr?.write === 'function'
+    const processStderrWriteFunction = canInterceptStderr ? process.stderr.write : null
     let stderrOutput = ''
-    process.stderr.write = function (chunk) {
-      stderrOutput += chunk
+    if (canInterceptStderr) {
+      process.stderr.write = function (chunk) { stderrOutput += chunk }
     }
     try {
       defaultLogger.setFormatter(asciidoctor.LoggerManager.newFormatter('JsonFormatter', {
@@ -109,29 +113,32 @@ describe('Logger', () => {
         }
       }))
       await asciidoctor.convert(PART_WITH_NO_SECTION)
-      assert.equal(stderrOutput, '{"programName":"asciidoctor","message":"invalid part, must have at least one section (e.g., chapter, appendix, etc.)","sourceLocation":{"lineNumber":8,"path":"<stdin>"},"severity":"ERROR"}\n')
-      assert.equal(JSON.parse(stderrOutput).message, 'invalid part, must have at least one section (e.g., chapter, appendix, etc.)')
+      if (canInterceptStderr) {
+        assert.equal(stderrOutput, '{"programName":"asciidoctor","message":"invalid part, must have at least one section (e.g., chapter, appendix, etc.)","sourceLocation":{"lineNumber":8,"path":"<stdin>"},"severity":"ERROR"}\n')
+        assert.equal(JSON.parse(stderrOutput).message, 'invalid part, must have at least one section (e.g., chapter, appendix, etc.)')
+      }
     } finally {
       defaultLogger.setFormatter(defaultFormatter)
-      process.stderr.write = processStderrWriteFunction
+      if (canInterceptStderr) process.stderr.write = processStderrWriteFunction
     }
   })
 
   test('should not log anything when NullLogger is used', async () => {
     const defaultLogger = asciidoctor.LoggerManager.getLogger()
     const nullLogger = asciidoctor.NullLogger.create()
-    const stderrWriteFunction = process.stderr.write
+    const canInterceptStderr = typeof process !== 'undefined' && typeof process.stderr?.write === 'function'
+    const stderrWriteFunction = canInterceptStderr ? process.stderr.write : null
     let stderrOutput = ''
-    process.stderr.write = function (chunk) {
-      stderrOutput += chunk
+    if (canInterceptStderr) {
+      process.stderr.write = function (chunk) { stderrOutput += chunk }
     }
     try {
       asciidoctor.LoggerManager.setLogger(nullLogger)
       await asciidoctor.convert(PART_WITH_NO_SECTION)
       assert.equal(nullLogger.getMaxSeverity(), 3)
-      assert.equal(stderrOutput, '')
+      if (canInterceptStderr) assert.equal(stderrOutput, '')
     } finally {
-      process.stderr.write = stderrWriteFunction
+      if (canInterceptStderr) process.stderr.write = stderrWriteFunction
       asciidoctor.LoggerManager.setLogger(defaultLogger)
     }
   })

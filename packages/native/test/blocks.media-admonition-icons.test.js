@@ -1,13 +1,15 @@
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
-import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import path from 'node:path'
 import { load } from '../src/load.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { FONT_AWESOME_VERSION, HIGHLIGHT_JS_VERSION } from '../src/constants.js'
 import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
+const __dirname = import.meta.url.startsWith('http')
+  ? new URL('.', import.meta.url).href.replace(/\/$/, '')
+  : path.dirname(fileURLToPath(import.meta.url))
 
 const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
 const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
@@ -363,7 +365,7 @@ You can use icons for admonitions by setting the 'icons' attribute.
 [TIP,icon=tip]
 You can set a custom icon using the icon attribute on the block.
 `
-      const output = await convertString(input, { safe: 'safe', attributes: { docdir: __dirname } })
+      const output = await convertString(input, { safe: 'safe', attributes: { docdir: __dirname, 'allow-uri-read': '' } })
       assertXpath(output, '//*[@class="admonitionblock tip"]//*[@class="icon"]/img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Tip"]', 1)
     })
 
@@ -391,7 +393,7 @@ You can use icons for admonitions by setting the 'icons' attribute.
 [TIP]
 You can use icons for admonitions by setting the 'icons' attribute.
 `
-      const output = await convertString(input, { safe: 'safe', attributes: { docdir: __dirname } })
+      const output = await convertString(input, { safe: 'safe', attributes: { docdir: __dirname, 'allow-uri-read': '' } })
       assertXpath(output, '//*[@class="admonitionblock tip"]//*[@class="icon"]/img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Tip"]', 1)
       assertMessage(logger, 'warn', 'image has illegal reference to ancestor of jail; recovering automatically')
     })

@@ -727,7 +727,7 @@ describe('Attributes', () => {
 
     test('does not show docdir and shows relative docfile if safe mode is SERVER or greater', async () => {
       const input = '* docdir: {docdir}\n* docfile: {docfile}'
-      const docdir = process.cwd()
+      const docdir = (typeof process !== 'undefined' && typeof process.cwd === 'function') ? process.cwd() : '/test'
       const docfile = `${docdir}/sample.adoc`
       const output = await convertStringToEmbedded(input, {
         safe: SafeMode.SERVER,
@@ -739,7 +739,7 @@ describe('Attributes', () => {
 
     test('shows absolute docdir and docfile paths if safe mode is less than SERVER', async () => {
       const input = '* docdir: {docdir}\n* docfile: {docfile}'
-      const docdir = process.cwd()
+      const docdir = (typeof process !== 'undefined' && typeof process.cwd === 'function') ? process.cwd() : '/test'
       const docfile = `${docdir}/sample.adoc`
       const output = await convertStringToEmbedded(input, {
         safe: SafeMode.SAFE,

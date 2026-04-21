@@ -23,7 +23,7 @@ function wrapForBrowser (fn) {
   if (!fn) return fn
   return async function (ctx) {
     try {
-      await fn()
+      await fn(ctx)
     } catch (err) {
       if (isBrowserIncompatible(err)) ctx.skip()
       throw err

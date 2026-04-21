@@ -1513,7 +1513,8 @@ go to \\c
 // ── Environment ───────────────────────────────────────────────────────────────
 
 describe('Environment', () => {
-  test('uses SOURCE_DATE_EPOCH as modified time of input file', async () => {
+  test('uses SOURCE_DATE_EPOCH as modified time of input file', async (t) => {
+    if (typeof process === 'undefined' || typeof process.env === 'undefined') return t.skip()
     const oldSourceDateEpoch = process.env.SOURCE_DATE_EPOCH
     try {
       process.env.SOURCE_DATE_EPOCH = '1234123412'

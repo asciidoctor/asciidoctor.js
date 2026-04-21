@@ -41,7 +41,8 @@ export class PathResolver {
   // Returns Boolean.
   absolutePath (path) {
     return path.startsWith(SLASH) ||
-      (this.fileSeparator === BACKSLASH && WINDOWS_ROOT_RX.test(path))
+      (this.fileSeparator === BACKSLASH && WINDOWS_ROOT_RX.test(path)) ||
+      UriSniffRx.test(path)
   }
 
   // Public: Check if the specified path is an absolute root path.
@@ -145,7 +146,10 @@ export class PathResolver {
       } else if (posixPath.startsWith(URI_CLASSLOADER)) {
         root = URI_CLASSLOADER
       } else {
-        root = posixPath.slice(0, posixPath.indexOf(SLASH) + 1)
+        const extracted = this._extractUriPrefix(posixPath)
+        root = Array.isArray(extracted)
+          ? extracted[1]  // URL scheme, e.g. 'http://'
+          : posixPath.slice(0, posixPath.indexOf(SLASH) + 1)  // Windows drive, e.g. 'C:/'
       }
     } else if (posixPath.startsWith(DOT_SLASH)) {
       root = DOT_SLASH

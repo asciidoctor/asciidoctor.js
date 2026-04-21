@@ -11,8 +11,9 @@ import { assertXpath, assertCss, assertMessage, usingMemoryLogger } from './help
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const FIXTURES_DIR = path.join(__dirname, 'fixtures')
+const __dirname = import.meta.url.startsWith('http')
+  ? new URL('.', import.meta.url).href.replace(/\/$/, '')
+  : path.dirname(fileURLToPath(import.meta.url))
 const BACKSLASH = '\\'
 
 const load_ = (input, opts = {}) => load(input, { safe: 'safe', ...opts })

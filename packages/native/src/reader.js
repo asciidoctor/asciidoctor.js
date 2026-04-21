@@ -38,6 +38,7 @@ import {
 import { prepareSourceArray, prepareSourceString, rootname, isUriish } from './helpers.js'
 import { LoggerManager, Logger } from './logging.js'
 import { Compliance } from './compliance.js'
+import { resolveBrowserIncludePath } from './browser/reader.js'
 
 // ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
 let _fsp            // node:fs/promises — used for all file I/O
@@ -952,6 +953,11 @@ export class PreprocessorReader extends Reader {
         uriContent = await response.text()
         super._shift()
       } catch (err) {
+        if ('optional-option' in parsedAttrs) {
+          this._logInfo(`optional include dropped because include URI not readable: ${incPath}`, { sourceLocation: this.cursor })
+          super._shift()
+          return true
+        }
         this._logError(`include URI not readable: ${incPath} (${err.message})`, { sourceLocation: this.cursor })
         return this.replaceNextLine(`Unresolved directive in ${this.path} - include::${expandedTarget}[${attrlist ?? ''}]`)
       }
@@ -959,13 +965,13 @@ export class PreprocessorReader extends Reader {
         const { incLines, incOffset } = this._filterLinesByLinenos(uriContent.split('\n'), incLinenos)
         if (incOffset !== null) {
           parsedAttrs['partial-option'] = ''
-          this.pushInclude(incLines, incPath, incPath, incOffset, parsedAttrs)
+          this.pushInclude(incLines, incPath, relpath, incOffset, parsedAttrs)
         }
       } else if (incTags) {
         const { incLines, incOffset } = this._filterLinesByTags(uriContent.split('\n'), incPath, expandedTarget, targetType, incTags, parsedAttrs)
-        if (incOffset !== null) this.pushInclude(incLines, incPath, incPath, incOffset, parsedAttrs)
+        if (incOffset !== null) this.pushInclude(incLines, incPath, relpath, incOffset, parsedAttrs)
       } else {
-        this.pushInclude(uriContent, incPath, incPath, 1, parsedAttrs)
+        this.pushInclude(uriContent, incPath, relpath, 1, parsedAttrs)
       }
       return true
     }
@@ -1002,9 +1008,29 @@ export class PreprocessorReader extends Reader {
     return true
   }
 
+  // Internal: Check whether the current context requires browser-mode include resolution.
+  // Browser mode applies when there is no Node.js fs (true browser environment) or when
+  // the document base_dir is a URI (file:// or http(s)://), even in Node.js.
+  _isBrowserMode () {
+    if (!_fsp) return true
+    const baseDir = this._document.baseDir
+    return !!baseDir && baseDir !== '.' && (baseDir.startsWith('file://') || isUriish(baseDir))
+  }
+
   // Internal: Resolve the include target to [incPath, targetType, relpath] or a Boolean.
   async _resolveIncludePath (target, attrlist, attributes) {
     const doc = this._document
+
+    // Delegate to browser-specific resolution when in a URI-based or browserless environment.
+    // This handles file://, http(s)://, and relative targets resolved against a URI base_dir.
+    // See src/browser/reader.js for the full specification.
+    if (this._isBrowserMode()) {
+      const resolution = resolveBrowserIncludePath(this, target, attrlist)
+      if (!Array.isArray(resolution)) return resolution
+      const [incPath, relpath] = resolution
+      return [incPath, 'uri', relpath]
+    }
+
     if (isUriish(target) || typeof this._dir !== 'string') {
       if (!doc.attr('allow-uri-read')) {
         this._logWarn(`cannot include contents of URI: ${target} (allow-uri-read attribute not enabled)`, { sourceLocation: this.cursor })

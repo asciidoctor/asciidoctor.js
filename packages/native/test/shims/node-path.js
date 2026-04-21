@@ -22,7 +22,7 @@ export function extname (p) {
 }
 
 export function join (...parts) {
-  return normalize(parts.filter(Boolean).join('/'))
+  return parts.filter(Boolean).join('/')
 }
 
 export function resolve (...parts) {
