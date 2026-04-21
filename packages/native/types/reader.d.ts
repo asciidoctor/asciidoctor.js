@@ -104,8 +104,9 @@ export class PreprocessorReader extends Reader {
     createIncludeCursor(file: any, path: any, lineno: any): Cursor;
     processLine(line: any): Promise<any>;
     _preprocessConditionalDirective(name: any, target: any, delimiter: any, text: any): boolean;
-    _preprocessIncludeDirective(target: any, attrlist: any): Promise<boolean>;
-    _resolveIncludePath(target: any, attrlist: any, attributes: any): Promise<boolean | any[]>;
+    _preprocessIncludeDirective(target: any, attrlist: any): Promise<any>;
+    _isBrowserMode(): any;
+    _resolveIncludePath(target: any, attrlist: any, attributes: any): Promise<any>;
     _popInclude(): void;
     _filterLinesByLinenos(fileLines: any, incLinenos: any): {
         incLines: string[];
