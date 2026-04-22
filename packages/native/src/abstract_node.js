@@ -677,7 +677,7 @@ export class AbstractNode {
       if (response.ok) {
         const mimetype = (response.headers.get('content-type') || 'application/octet-stream').split(';')[0].trim()
         const buffer = await response.arrayBuffer()
-        const base64 = Buffer.from(buffer).toBase64()
+        const base64 = btoa(Array.from(new Uint8Array(buffer), (b) => String.fromCharCode(b)).join(''))
         return `data:${mimetype};base64,${base64}`
       } else {
         const ext = extname(imageUri, null)

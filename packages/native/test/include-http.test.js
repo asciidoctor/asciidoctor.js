@@ -1,43 +1,23 @@
 import { test, describe, before, after } from 'node:test'
 import assert from 'node:assert/strict'
-import { createServer } from 'node:http'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
 import { load } from '../src/load.js'
+import { startServer } from './http-server.js'
 
 const convert = async (input, opts = {}) => (await load(input, opts)).convert()
 
 const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'http')
 
-function startServer () {
-  return new Promise((resolve) => {
-    const routes = new Map()
-
-    const server = createServer((req, res) => {
-      const route = routes.get(req.url)
-      if (route) {
-        res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' })
-        res.end(route)
-      } else {
-        res.writeHead(404)
-        res.end('Not Found')
-      }
-    })
-
-    server.listen(0, '127.0.0.1', () => {
-      const { port } = server.address()
-      const baseUri = `http://127.0.0.1:${port}`
-
-      routes.set('/foo.adoc', readFileSync(join(FIXTURES_DIR, 'foo.adoc'), 'utf8'))
-      routes.set('/include-tag.adoc', readFileSync(join(FIXTURES_DIR, 'include-tag.adoc'), 'utf8'))
-      routes.set('/include-lines.adoc', readFileSync(join(FIXTURES_DIR, 'include-lines.adoc'), 'utf8'))
-      routes.set('/dir/bar.adoc', readFileSync(join(FIXTURES_DIR, 'dir', 'bar.adoc'), 'utf8'))
-
-      resolve({ server, baseUri })
-    })
-  })
+function buildRoutes (baseUri) {
+  const routes = new Map()
+  routes.set('/foo.adoc', { contentType: 'text/plain; charset=utf-8', body: readFileSync(join(FIXTURES_DIR, 'foo.adoc'), 'utf8') })
+  routes.set('/include-tag.adoc', { contentType: 'text/plain; charset=utf-8', body: readFileSync(join(FIXTURES_DIR, 'include-tag.adoc'), 'utf8') })
+  routes.set('/include-lines.adoc', { contentType: 'text/plain; charset=utf-8', body: readFileSync(join(FIXTURES_DIR, 'include-lines.adoc'), 'utf8') })
+  routes.set('/dir/bar.adoc', { contentType: 'text/plain; charset=utf-8', body: readFileSync(join(FIXTURES_DIR, 'dir', 'bar.adoc'), 'utf8') })
+  return routes
 }
 
 describe('Include http URI', () => {
@@ -45,7 +25,7 @@ describe('Include http URI', () => {
   let baseUri
 
   before(async () => {
-    ;({ server, baseUri } = await startServer())
+    ;({ server, baseUri } = await startServer(buildRoutes()))
   })
 
   after(() => {

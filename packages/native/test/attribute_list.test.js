@@ -4,12 +4,12 @@ import assert from 'node:assert/strict'
 import { AttributeList } from '../src/attribute_list.js'
 
 // Helper: creates a minimal document stub for tests that require apply_subs behaviour.
-// By default applySubs should not be called (override as needed in individual tests).
+// By default, applySubs should not be called (override as needed in individual tests).
 function emptyDocument (opts = {}) {
   const attributes = opts.attributes ?? {}
   return {
     attributes,
-    applySubs (value) {
+    applySubs (_) {
       throw new Error('applySubs should not be called')
     },
   }
@@ -251,7 +251,7 @@ describe('AttributeList', () => {
     assert.deepEqual(attributes, expected)
   })
 
-  test('should ignore options attribute if empty', async () => {
+  test('ignore options attribute if empty', async () => {
     const attributes = {}
     const line = 'quote, opts='
     const expected = { 1: 'quote' }
@@ -267,7 +267,7 @@ describe('AttributeList', () => {
     assert.deepEqual(attributes, expected)
   })
 
-  test('should not assign nil to attribute mapped to missing positional attribute', async () => {
+  test('do not assign nil to attribute mapped to missing positional attribute', async () => {
     const attributes = {}
     const line = 'alt text,,100'
     const expected = { 1: 'alt text', 2: null, 3: '100', alt: 'alt text', height: '100' }

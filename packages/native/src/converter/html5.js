@@ -14,7 +14,7 @@
 //   - await node.content() → await node.content() (method on Block/Document)
 //   - alias convert_pass content_only → convert_pass delegates to this.contentOnly()
 //   - Stylesheets.instance.primary_stylesheet_data → not yet ported; embed yields empty <style>
-//   - read_svg_contents uses readAsset (synchronous) rather than async readContents
+//   - read_svg_contents uses readContents (supports local and remote URIs via allow-uri-read)
 
 import { ConverterBase } from '../converter.js'
 import { AbstractNode } from '../abstract_node.js'
@@ -25,7 +25,7 @@ import {
   BLOCK_MATH_DELIMITERS, INLINE_MATH_DELIMITERS,
 } from '../constants.js'
 import { XmlSanitizeRx } from '../rx.js'
-import { extname } from '../helpers.js'
+import { extname, isUriish } from '../helpers.js'
 
 // ── Local regex constants ─────────────────────────────────────────────────────
 
@@ -1491,8 +1491,16 @@ Your browser does not support the video tag.
 
   // NOTE expose readSvgContents for Bespoke converter
   async readSvgContents (node, target) {
-    const resolvedPath = node.normalizeSystemPath(target, node.document.attr('imagesdir'), null, { targetName: 'image' })
-    let svg = await node.readAsset(resolvedPath, { normalize: true, warnOnFailure: true, label: 'SVG' })
+    const imagesdir = node.document.attr('imagesdir')
+    let resolvedPath
+    let svg
+    if (isUriish(target) || (imagesdir && isUriish(imagesdir))) {
+      svg = await node.readContents(target, { start: imagesdir, normalize: true, warnOnFailure: true, label: 'SVG' })
+      resolvedPath = target
+    } else {
+      resolvedPath = node.normalizeSystemPath(target, imagesdir, null, { targetName: 'image' })
+      svg = await node.readAsset(resolvedPath, { normalize: true, warnOnFailure: true, label: 'SVG' })
+    }
     if (svg == null) return null  // file not found/readable; warning already emitted
     if (!svg) {
       node.logger.warn(`contents of SVG is empty: ${resolvedPath}`)

@@ -108,7 +108,7 @@ image::circle.svg[Tiger,100]
       assert.doesNotMatch(output, /<svg\s[^>]*style="[^>]*>/)
     })
 
-    test('should ignore link attribute if value is self and image target is inline SVG', async () => {
+    test('ignore link attribute if value is self and image target is inline SVG', async () => {
       const input = `\
 :imagesdir: fixtures
 
@@ -120,7 +120,7 @@ image::circle.svg[Tiger,100,link=self]
       assert.doesNotMatch(output, /<a href=/)
     })
 
-    test('should honor percentage width for SVG image with inline option', async () => {
+    test('honor percentage width for SVG image with inline option', async () => {
       const input = `\
 :imagesdir: fixtures
 
@@ -130,7 +130,7 @@ image::circle.svg[Circle,50%,opts=inline]
       assert.match(output, /<svg\s[^>]*width="50%"[^>]*>/)
     })
 
-    test('should not crash if explicit width on SVG image block is an integer', async () => {
+    test('do not crash if explicit width on SVG image block is an integer', async () => {
       const input = `\
 :imagesdir: fixtures
 
@@ -154,7 +154,7 @@ image::circle.svg[Tiger,100]
       assert.match(output, /<svg\s[^>]*width="100">/)
     })
 
-    test('should not throw exception if SVG to inline is empty', async () => {
+    test('do not throw exception if SVG to inline is empty', async () => {
       const input = 'image::empty.svg[nada,opts=inline]'
       const output = await convertStringToEmbedded(input, { safe: 'safe', attributes: { docdir: __dirname, imagesdir: 'fixtures' } })
       assertXpath(output, '//svg', 0)
@@ -162,16 +162,12 @@ image::circle.svg[Tiger,100]
       assertMessage(logger, 'warn', 'contents of SVG is empty:')
     })
 
-    test('should not throw exception if SVG to inline contains an incomplete start tag and explicit width is specified', async () => {
+    test('do not throw exception if SVG to inline contains an incomplete start tag and explicit width is specified', async () => {
       const input = 'image::incomplete.svg[,200,opts=inline]'
       const output = await convertStringToEmbedded(input, { safe: 'safe', attributes: { docdir: __dirname, imagesdir: 'fixtures' } })
       assertXpath(output, '//svg', 1)
       assertXpath(output, '//span[@class="alt"]', 0)
     })
-
-    // TODO: needs web server for remote SVG tests
-    // test('embeds remote SVG to inline when inline option is set on block and allow-uri-read is set on document', ...)
-    // test('should cache remote SVG when allow-uri-read, cache-uri, and inline option are set', ...)
 
     test('converts to alt text for SVG with inline option set if SVG cannot be read', async () => {
       const input = `\
@@ -203,7 +199,7 @@ image::no-such-image.svg[Alt Text]
       assert.ok(output.includes('alt="A Big Tiger"'))
     })
 
-    test('should not recognize block image if target has leading or trailing spaces', async () => {
+    test('do not recognize block image if target has leading or trailing spaces', async () => {
       for (const target of [' tiger.png', 'tiger.png ']) {
         const input = `image::${target}[Tiger]`
         const output = await convertStringToEmbedded(input)
@@ -229,7 +225,7 @@ image::images/tiger.png[Tiger]
       assertXpath(output, '/*[@class="imageblock"]//img[@src="images/tiger.png"][@alt="Tiger"]', 1)
     })
 
-    test('should substitute attribute references in alt text defined in image block macro', async () => {
+    test('substitute attribute references in alt text defined in image block macro', async () => {
       const input = `\
 :alt-text: Tiger
 
@@ -239,7 +235,7 @@ image::images/tiger.png[{alt-text}]
       assertXpath(output, '/*[@class="imageblock"]//img[@src="images/tiger.png"][@alt="Tiger"]', 1)
     })
 
-    test('should set direction CSS class on image if float attribute is set', async () => {
+    test('set direction CSS class on image if float attribute is set', async () => {
       const input = `\
 [float=left]
 image::images/tiger.png[Tiger]
@@ -249,7 +245,7 @@ image::images/tiger.png[Tiger]
       assertCss(output, '.imageblock[style]', 0)
     })
 
-    test('should set text alignment CSS class on image if align attribute is set', async () => {
+    test('set text alignment CSS class on image if align attribute is set', async () => {
       const input = `\
 [align=center]
 image::images/tiger.png[Tiger]
@@ -270,21 +266,21 @@ image::images/tiger.png[Tiger]
       assert.equal(img.style, null)
     })
 
-    test('should apply specialcharacters and replacement substitutions to alt text', async () => {
+    test('apply specialcharacters and replacement substitutions to alt text', async () => {
       const input = 'A tiger\'s "roar" is < a bear\'s "growl"'
       const expected = 'A tiger&#8217;s &quot;roar&quot; is &lt; a bear&#8217;s &quot;growl&quot;'
       const result = await convertStringToEmbedded(`image::images/tiger-roar.png[${input}]`)
       assert.ok(result.includes(`alt="${expected}"`))
     })
 
-    test('should not encode double quotes in alt text when converting to DocBook', async () => {
+    test('do not encode double quotes in alt text when converting to DocBook', async () => {
       const input = 'Select "File > Open"'
       const expected = 'Select "File &gt; Open"'
       const result = await convertStringToEmbedded(`image::images/open.png[${input}]`, { backend: 'docbook' })
       assert.ok(result.includes(`<phrase>${expected}</phrase>`))
     })
 
-    test('should auto-generate alt text for block image if alt text is not specified', async () => {
+    test('auto-generate alt text for block image if alt text is not specified', async () => {
       const input = 'image::images/lions-and-tigers.png[]'
       const image = await blockFromString(input)
       assert.equal(image.getAttr('alt'), 'lions and tigers')
@@ -299,7 +295,7 @@ image::images/tiger.png[Tiger]
       assertXpath(output, '/*[@class="imageblock"]//img[@src="images/tiger.png"][@alt="Tiger"][@width="200"][@height="300"]', 1)
     })
 
-    test('should not output empty width attribute if positional width attribute is empty', async () => {
+    test('do not output empty width attribute if positional width attribute is empty', async () => {
       const input = 'image::images/tiger.png[Tiger,]'
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/*[@class="imageblock"]//img[@src="images/tiger.png"]', 1)
@@ -376,7 +372,7 @@ image::images/tiger.png[Tiger]
       assertXpath(output, '//imagedata[@align="right"]', 1)
     })
 
-    test('should set content width and depth in DocBook backend if no scaling', async () => {
+    test('set content width and depth in DocBook backend if no scaling', async () => {
       const input = 'image::images/sunset.jpg[Sunset,500,332]'
       const output = await convertStringToEmbedded(input, { backend: 'docbook' })
       assertXpath(output, '//imagedata', 1)
@@ -425,7 +421,7 @@ image::{bogus}[]
       assert.equal(logger.messages.length, 0)
     })
 
-    test('should not drop line if image target is missing attribute reference and attribute-missing is drop', async () => {
+    test('do not drop line if image target is missing attribute reference and attribute-missing is drop', async () => {
       const input = `\
 :attribute-missing: drop
 
@@ -447,7 +443,7 @@ image::{bogus}[]
       assertMessage(logger, 'info', 'dropping line containing reference to missing attribute: bogus')
     })
 
-    test('should not drop line if image target resolves to blank and attribute-missing is drop-line', async () => {
+    test('do not drop line if image target resolves to blank and attribute-missing is drop-line', async () => {
       const input = `\
 :attribute-missing: drop-line
 
@@ -473,7 +469,7 @@ image::{bogus}[]
       assertMessage(logger, 'info', 'dropping line containing reference to missing attribute: bogus')
     })
 
-    test('should pass through image that references uri', async () => {
+    test('pass through image that references uri', async () => {
       const input = `\
 :imagesdir: images
 
@@ -483,7 +479,7 @@ image::http://asciidoc.org/images/tiger.png[Tiger]
       assertXpath(output, '/*[@class="imageblock"]//img[@src="http://asciidoc.org/images/tiger.png"][@alt="Tiger"]', 1)
     })
 
-    test('should encode spaces in image target if value is a URI', async () => {
+    test('encode spaces in image target if value is a URI', async () => {
       const input = 'image::http://example.org/svg?digraph=digraph G { a -> b; }[diagram]'
       const output = await convertStringToEmbedded(input)
       assertXpath(output, `/*[@class="imageblock"]//img[@src="http://example.org/svg?digraph=digraph%20G%20{%20a%20-${decodeChar(62)}%20b;%20}"]`, 1)
@@ -523,7 +519,7 @@ image::circle.svg[Tiger,100]
       assertXpath(output, '//img[starts-with(@src,"data:image/svg+xml;base64,")]', 1)
     })
 
-    test('should link to data URI if value of link attribute is self and image is embedded', async () => {
+    test('link to data URI if value of link attribute is self and image is embedded', async () => {
       const input = `\
 :imagesdir: fixtures
 :data-uri:
@@ -561,13 +557,6 @@ image::dot[Dot]
       const output = await doc.convert()
       assertXpath(output, '//img[starts-with(@src,"data:application/octet-stream;base64,")]', 1)
     })
-
-    // TODO: needs web server for remote image tests
-    // test('embeds base64-encoded data uri for remote image when data-uri attribute is set', ...)
-    // test('embeds base64-encoded data uri for remote image when imagesdir is a URI and data-uri attribute is set', ...)
-    // test('should cache remote image when allow-uri-read, cache-uri, and data-uri are set', ...)
-    // test('uses remote image uri when data-uri attribute is set and image cannot be retrieved', ...)
-    // test('uses remote image uri when data-uri attribute is set and allow-uri-read is not set', ...)
 
     test('can handle embedded data uri images', async () => {
       const input = 'image::data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=[Dot]'
@@ -617,14 +606,14 @@ image::../..//fixtures/./../../fixtures/dot.gif[Dot]
       assertMessage(logger, 'warn', 'image has illegal reference to ancestor of jail; recovering automatically')
     })
 
-    test('should use the imagesdir attribute set on the node when resolving the image path', async () => {
+    test('use the imagesdir attribute set on the node when resolving the image path', async () => {
       const image = await blockFromString('image::rainbow.png[]', { attributes: { imagesdir: 'images' } })
       image.setAttr('imagesdir', 'chapter-1/images')
       const imageUri = await image.imageUri(image.getAttr('target'))
       assert.equal(imageUri, 'chapter-1/images/rainbow.png')
     })
 
-    test('should use the imagesdir attribute defined on image macro when resolving image path', async () => {
+    test('use the imagesdir attribute defined on image macro when resolving image path', async () => {
       const input = `\
 :imagesdir: images
 

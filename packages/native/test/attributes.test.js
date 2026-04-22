@@ -98,38 +98,38 @@ describe('Attributes', () => {
       assert.equal(doc.attributes['signature'], 'Linus Torvalds +\nLinux Hacker +\nlinus.torvalds@example.com')
     })
 
-    test('should allow pass macro to surround a multi-line value that contains line breaks', async () => {
+    test('allow pass macro to surround a multi-line value that contains line breaks', async () => {
       const str = ':signature: pass:a[{author} + \\\n{title} + \\\n{email}]'
       const doc = await documentFromString(str, { attributes: { author: 'Linus Torvalds', title: 'Linux Hacker', email: 'linus.torvalds@example.com' } })
       assert.equal(doc.attr('signature'), 'Linus Torvalds +\nLinux Hacker +\nlinus.torvalds@example.com')
     })
 
-    test('should delete an attribute that ends with !', async () => {
+    test('delete an attribute that ends with !', async () => {
       const doc = await documentFromString(':frog: Tanglefoot\n:frog!:')
       assert.equal(doc.attributes['frog'], undefined)
     })
 
-    test('should delete an attribute that ends with ! set via API', async () => {
+    test('delete an attribute that ends with ! set via API', async () => {
       const doc = await documentFromString(':frog: Tanglefoot', { attributes: { 'frog!': '' } })
       assert.equal(doc.attributes['frog'], undefined)
     })
 
-    test('should delete an attribute that begins with !', async () => {
+    test('delete an attribute that begins with !', async () => {
       const doc = await documentFromString(':frog: Tanglefoot\n:!frog:')
       assert.equal(doc.attributes['frog'], undefined)
     })
 
-    test('should delete an attribute that begins with ! set via API', async () => {
+    test('delete an attribute that begins with ! set via API', async () => {
       const doc = await documentFromString(':frog: Tanglefoot', { attributes: { '!frog': '' } })
       assert.equal(doc.attributes['frog'], undefined)
     })
 
-    test('should delete an attribute set via API to nil value', async () => {
+    test('delete an attribute set via API to nil value', async () => {
       const doc = await documentFromString(':frog: Tanglefoot', { attributes: { frog: null } })
       assert.equal(doc.attributes['frog'], undefined)
     })
 
-    test('should not choke when deleting a non-existing attribute', async () => {
+    test('delete a non-existing attribute', async () => {
       const doc = await documentFromString(':frog!:')
       assert.equal(doc.attributes['frog'], undefined)
     })
@@ -168,7 +168,7 @@ describe('Attributes', () => {
       assert.ok(result.includes('<em>big</em>foot'))
     })
 
-    test('should limit maximum size of attribute value if safe mode is SECURE', async () => {
+    test('limit maximum size of attribute value if safe mode is SECURE', async () => {
       const expected = 'a'.repeat(4096)
       const input = `:name: ${'a'.repeat(5000)}\n\n{name}`
       const result = await convertInlineString(input, { safe: 'secure' })
@@ -176,7 +176,7 @@ describe('Attributes', () => {
       assert.equal(Buffer.byteLength(result, 'utf8'), 4096)
     })
 
-    test('should handle multibyte characters when limiting attribute value size', async () => {
+    test('handle multibyte characters when limiting attribute value size', async () => {
       const expected = '日本'
       const input = ':name: 日本語\n\n{name}'
       const result = await convertInlineString(input, { attributes: { 'max-attribute-value-size': 6 } })
@@ -184,7 +184,7 @@ describe('Attributes', () => {
       assert.equal(Buffer.byteLength(result, 'utf8'), 6)
     })
 
-    test('should not mangle multibyte characters when limiting attribute value size', async () => {
+    test('do not mangle multibyte characters when limiting attribute value size', async () => {
       const expected = '日本'
       const input = ':name: 日本語\n\n{name}'
       const result = await convertInlineString(input, { attributes: { 'max-attribute-value-size': 8 } })
@@ -192,7 +192,7 @@ describe('Attributes', () => {
       assert.equal(Buffer.byteLength(result, 'utf8'), 6)
     })
 
-    test('should allow maximize size of attribute value to be disabled', async () => {
+    test('allow maximize size of attribute value to be disabled', async () => {
       const expected = 'a'.repeat(5000)
       const input = `:name: ${'a'.repeat(5000)}\n\n{name}`
       const result = await convertInlineString(input, { attributes: { 'max-attribute-value-size': null } })
@@ -235,7 +235,7 @@ describe('Attributes', () => {
       assert.equal(doc.attributes['xml-busters'], '<&#169;>')
     })
 
-    test('should not recognize pass macro with invalid substitution list in attribute value', async () => {
+    test('do not recognize pass macro with invalid substitution list in attribute value', async () => {
       for (const subs of [',', '42', 'a,']) {
         const doc = await documentFromString(`:pass-fail: pass:${subs}[whale]`)
         assert.equal(doc.attributes['pass-fail'], `pass:${subs}[whale]`)
@@ -397,7 +397,7 @@ describe('Attributes', () => {
       assert.equal(node.attributes['1'], 'position 1')
     })
 
-    test('attr should not retrieve attribute from document if not set on block', async () => {
+    test('attr not retrieve attribute from document if not set on block', async () => {
       const doc = await documentFromString('paragraph', { attributes: { name: 'value' } })
       const para = doc.blocks[0]
       assert.equal(para.attr('name'), null)
@@ -578,7 +578,7 @@ describe('Attributes', () => {
       assert.ok(output.includes('>Google<'))
     })
 
-    test('should drop line with reference to missing attribute if attribute-missing attribute is drop-line', async () => {
+    test('drop line with reference to missing attribute if attribute-missing attribute is drop-line', async () => {
       const input = ':attribute-missing: drop-line\n\nLine 1: This line should appear in the output.\nLine 2: Oh no, a {bogus-attribute}! This line should not appear in the output.'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Line 1'))
@@ -586,7 +586,7 @@ describe('Attributes', () => {
       assertMessage(logger, 'INFO', 'dropping line containing reference to missing attribute: bogus-attribute')
     })
 
-    test('should not drop line with reference to missing attribute by default', async () => {
+    test('do not drop line with reference to missing attribute by default', async () => {
       const input = 'Line 1: This line should appear in the output.\nLine 2: A {bogus-attribute}! This time, this line should appear in the output.'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Line 1'))
@@ -594,14 +594,14 @@ describe('Attributes', () => {
       assert.ok(output.includes('{bogus-attribute}'))
     })
 
-    test('should drop line with attribute unassignment by default', async () => {
+    test('drop line with attribute unassignment by default', async () => {
       const input = ':a:\n\nLine 1: This line should appear in the output.\nLine 2: {set:a!}This line should not appear in the output.'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Line 1'))
       assert.ok(!output.includes('Line 2'))
     })
 
-    test('should not drop line with attribute unassignment if attribute-undefined is drop', async () => {
+    test('do not drop line with attribute unassignment if attribute-undefined is drop', async () => {
       const input = ':attribute-undefined: drop\n:a:\n\nLine 1: This line should appear in the output.\nLine 2: {set:a!}This line should appear in the output.'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Line 1'))
@@ -609,7 +609,7 @@ describe('Attributes', () => {
       assert.ok(!output.includes('{set:a!}'))
     })
 
-    test('should drop line that only contains attribute assignment', async () => {
+    test('drop line that only contains attribute assignment', async () => {
       const input = 'Line 1\n{set:a}\nLine 2'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Line 1'))
@@ -618,7 +618,7 @@ describe('Attributes', () => {
       assert.equal(countTag(output, 'p'), 1)
     })
 
-    test('should drop line that only contains unresolved attribute when attribute-missing is drop', async () => {
+    test('drop line that only contains unresolved attribute when attribute-missing is drop', async () => {
       const input = 'Line 1\n{unresolved}\nLine 2'
       const output = await convertStringToEmbedded(input, { attributes: { 'attribute-missing': 'drop' } })
       assert.ok(output.includes('Line 1'))
@@ -667,7 +667,7 @@ describe('Attributes', () => {
       assert.ok(output.includes('2010-01-01 == 2010-01-01'))
     })
 
-    test('should warn if unterminated block comment is detected in document header', async () => {
+    test('warn if unterminated block comment is detected in document header', async () => {
       const input = '= Document Title\n:foo: bar\n////\n:hey: there\n\ncontent'
       const doc = await documentFromString(input)
       assert.equal(doc.attr('hey'), null)
@@ -693,7 +693,7 @@ describe('Attributes', () => {
       assert.ok(output.includes('{foo}') || !output.includes('Belly up to the bar.'))
     })
 
-    test('should allow compat-mode to be set and unset in middle of document', async () => {
+    test('allow compat-mode to be set and unset in middle of document', async () => {
       const input = ':foo: bar\n\n[[paragraph-a]]\n`{foo}`\n\n:compat-mode!:\n\n[[paragraph-b]]\n`{foo}`\n\n:compat-mode:\n\n[[paragraph-c]]\n`{foo}`'
       const result = await convertStringToEmbedded(input, { attributes: { 'compat-mode': '@' } })
       // paragraph-a: compat mode on → {foo} not replaced inside backtick
@@ -922,19 +922,19 @@ describe('Attributes', () => {
       assert.ok(output.includes('Figure 4. Title for Qux'))
     })
 
-    test('should not allow counter to modify locked attribute', async () => {
+    test('do not allow counter to modify locked attribute', async () => {
       const input = '{counter:foo:ignored} is not {foo}'
       const output = await convertStringToEmbedded(input, { attributes: { foo: 'bar' } })
       assert.ok(output.includes('bas is not bar'))
     })
 
-    test('should not allow counter2 to modify locked attribute', async () => {
+    test('do not allow counter2 to modify locked attribute', async () => {
       const input = '{counter2:foo:ignored}{foo}'
       const output = await convertStringToEmbedded(input, { attributes: { foo: 'bar' } })
       assert.ok(output.includes('>bar<'))
     })
 
-    test('should not allow counter to modify built-in locked attribute', async () => {
+    test('do not allow counter to modify built-in locked attribute', async () => {
       const input = '{counter:max-include-depth:128} is one more than {max-include-depth}'
       const doc = await documentFromString(input, { standalone: false })
       const output = await doc.convert()
@@ -942,7 +942,7 @@ describe('Attributes', () => {
       assert.equal(doc.attributes['max-include-depth'], 64)
     })
 
-    test('should not allow counter2 to modify built-in locked attribute', async () => {
+    test('do not allow counter2 to modify built-in locked attribute', async () => {
       const input = '{counter2:max-include-depth:128}{max-include-depth}'
       const doc = await documentFromString(input, { standalone: false })
       const output = await doc.convert()
