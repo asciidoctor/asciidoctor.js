@@ -1,14 +1,9 @@
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
-import { load } from '../src/load.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { Compliance } from '../src/compliance.js'
 import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
-const blockFromString = async (input, opts = {}) => (await documentFromString(input, opts)).blocks[0]
+import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
 
 describe('Blocks', () => {
   let logger
@@ -168,7 +163,6 @@ paragraph
 block comment
 ////
 
-
 `
       const output = await convertStringToEmbedded(input)
       assert.doesNotMatch(output, /block comment/)
@@ -181,7 +175,6 @@ paragraph
 ////
 block comment
 ////
-
 
 `
       const doc = await documentFromString(input)

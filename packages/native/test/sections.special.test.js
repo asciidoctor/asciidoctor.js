@@ -4,13 +4,8 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { load } from '../src/load.js'
-import { assertXpath, assertCss, assertMessage, assertMessages, usingMemoryLogger } from './helpers.js'
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
-const blockFromString = async (input, opts = {}) => (await documentFromString(input, opts)).blocks[0]
+import { assertXpath } from './helpers.js'
+import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
 
 function decodeChar (code) { return String.fromCodePoint(code) }
 

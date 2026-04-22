@@ -4,11 +4,8 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { load } from '../src/load.js'
 import { assertCss, assertXpath } from './helpers.js'
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
+import { documentFromString, convertStringToEmbedded } from './harness.js'
 
 // ── Tables › PSV › Columns ───────────────────────────────────────────────────
 

@@ -6,15 +6,11 @@ import assert from 'node:assert/strict'
 import { DOMParser } from '@xmldom/xmldom'
 import { select } from 'xpath'
 
-import { load } from '../src/load.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertXpath, assertCss } from './helpers.js'
+import { documentFromString, convertString, convertStringToEmbedded } from './harness.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
 
 function assertMessage (logger, severity, text) {
   const sev = severity.toUpperCase()
@@ -86,7 +82,6 @@ describe('Bulleted lists (ulist)', () => {
 - Foo
 
 - Boo
-
 
 - Blech
 `
@@ -577,7 +572,6 @@ para
 
 * Boo
 
-
 * Blech
 `
       const output = await convertString(input)
@@ -870,7 +864,6 @@ end
 
 * Boo
 
-
 - Blech
 `
       const output = await convertString(input)
@@ -1107,7 +1100,6 @@ end
 * Foo
 
 . Boo
-
 
 * Blech
 `
@@ -1524,7 +1516,6 @@ open block for nested list item 1
 +
 paragraph for nested list item 2
 
-
 +
 paragraph for list item 1
 
@@ -1553,10 +1544,8 @@ paragraph for list item 1
 open block
 --
 
-
 +
 bullet 1.1 paragraph
-
 
 +
 bullet 1 paragraph
@@ -1804,7 +1793,6 @@ iii) 3
 . Foo
 
 . Boo
-
 
 . Blech
 `
@@ -3371,7 +3359,6 @@ def1
 
 term1::
 
-
 def1
 `
       const output = await convertStringToEmbedded(input)
@@ -3565,7 +3552,6 @@ term1::
   def1
 
   literal
-
 
   literal
 `
@@ -4874,7 +4860,6 @@ hello_world() -> % <1>
 Roses are red <1>
 Violets are blue <2>
 ....
-
 
 <1> And so is Ruby
 <2> But violet is more like purple

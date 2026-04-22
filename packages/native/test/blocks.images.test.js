@@ -2,18 +2,13 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
-import { load } from '../src/load.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
+import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
 
 const __dirname = import.meta.url.startsWith('http')
   ? new URL('.', import.meta.url).href.replace(/\/$/, '')
   : path.dirname(fileURLToPath(import.meta.url))
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
-const blockFromString = async (input, opts = {}) => (await documentFromString(input, opts)).blocks[0]
 
 describe('Blocks', () => {
   let logger

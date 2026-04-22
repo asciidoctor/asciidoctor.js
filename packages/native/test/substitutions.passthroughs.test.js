@@ -6,14 +6,13 @@ import assert from 'node:assert/strict'
 import { load } from '../src/load.js'
 import { PASS_START, PASS_END } from '../src/substitutors.js'
 import { assertMessage, usingMemoryLogger } from './helpers.js'
+import { blockFromString } from './harness.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const BACKSLASH = '\\'
 
 const load_ = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const blockFromString = async (input, opts = {}) => (await load_(input, opts)).blocks[0]
-const convertStringToEmbedded = async (input, opts = {}) => (await load_(input, opts)).convert()
 const convertInlineString = async (input, opts = {}) => (await load_(input, { doctype: 'inline', ...opts })).convert()
 
 // ── Substitutions — Passthroughs ──────────────────────────────────────────────

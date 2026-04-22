@@ -3,13 +3,9 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { load } from '../src/load.js'
 import { Compliance } from '../src/compliance.js'
 import { assertXpath, assertMessage, usingMemoryLogger } from './helpers.js'
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const blockFromString = async (input, opts = {}) => (await documentFromString(input, opts)).blocks[0]
+import { documentFromString, blockFromString } from './harness.js'
 
 // ── Sections › Ids ────────────────────────────────────────────────────────────
 

@@ -3,15 +3,11 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { load } from '../src/load.js'
+import { documentFromString, blockFromString } from './harness.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const BACKSLASH = '\\'
-
-const load_ = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const blockFromString = async (input, opts = {}) => (await load_(input, opts)).blocks[0]
-const documentFromString = (input, opts = {}) => load_(input, opts)
 
 // ── Substitutions — Quotes ────────────────────────────────────────────────────
 

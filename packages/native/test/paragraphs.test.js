@@ -4,17 +4,10 @@
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { load } from '../src/load.js'
 import { MemoryLogger, LoggerManager, Severity } from '../src/logging.js'
 import { ADMONITION_STYLES } from '../src/constants.js'
 import { assertXpath, assertCss, assertMessage } from './helpers.js'
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
-const blockFromString = async (input, opts = {}) => (await documentFromString(input, opts)).blocks[0]
+import { convertString, convertStringToEmbedded, blockFromString } from './harness.js'
 
 // ── Paragraphs ────────────────────────────────────────────────────────────────
 

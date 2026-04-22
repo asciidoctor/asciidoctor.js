@@ -3,13 +3,7 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { load } from '../src/load.js'
-import { usingMemoryLogger } from './helpers.js'
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-const load_ = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const blockFromString = async (input, opts = {}) => (await load_(input, opts)).blocks[0]
+import { blockFromString } from './harness.js'
 
 // ── Substitutions — Dispatcher ────────────────────────────────────────────────
 

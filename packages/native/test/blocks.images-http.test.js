@@ -2,15 +2,12 @@ import { test, describe, before, after, beforeEach, afterEach } from 'node:test'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
-import { load } from '../src/load.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath, assertMessage } from './helpers.js'
+import { convertStringToEmbedded } from './harness.js'
 import { startServer } from './http-server.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
 
 describe('Blocks', () => {
   let logger

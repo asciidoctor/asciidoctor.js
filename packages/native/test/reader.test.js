@@ -12,6 +12,7 @@ import { load } from '../src/load.js'
 import { Reader, PreprocessorReader } from '../src/reader.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss } from './helpers.js'
+import { documentFromString, convertStringToEmbedded } from './harness.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -32,10 +33,8 @@ const SAMPLE_DATA = ['first line', 'second line', 'third line']
 const emptyDocument = (opts = {}) => load('', { safe: 'safe', ...opts })
 
 // Creates a document from a string.
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
 
 // Converts a string to embedded HTML.
-const convertStringToEmbedded = async (input, opts = {}) => (await documentFromString(input, opts)).convert()
 
 // Helper: assert that a MemoryLogger has multiple messages.
 function assertMessages (logger, expected) {

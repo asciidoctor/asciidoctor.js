@@ -4,12 +4,8 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { load } from '../src/load.js'
-import { assertCss, assertXpath, countCss } from './helpers.js'
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
+import { assertCss, assertXpath } from './helpers.js'
+import { convertString, convertStringToEmbedded } from './harness.js'
 
 // ── Tables › PSV › Header/Footer ─────────────────────────────────────────────
 
@@ -220,7 +216,6 @@ describe('Tables', () => {
       const input = `[cols=2*]
 |===
 |A1
-
 
 A1 continued|B1
 

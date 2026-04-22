@@ -3,20 +3,15 @@
 //         mixed records, quotes on own lines, csv/tsv shorthand, separator, AsciiDoc cell
 
 import { test, describe } from 'node:test'
-import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
-import { dirname, join } from 'node:path'
+import { dirname } from 'node:path'
 
-import { load } from '../src/load.js'
 import { assertCss, assertXpath, assertMessage, usingMemoryLogger, decodeChar } from './helpers.js'
+import { convertStringToEmbedded } from './harness.js'
 
 const __dirname = import.meta.url.startsWith('http')
   ? new URL('.', import.meta.url).href.replace(/\/$/, '')
   : dirname(fileURLToPath(import.meta.url))
-const fixturesDir = join(__dirname, 'fixtures')
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
 
 // ── Tables › CSV ──────────────────────────────────────────────────────────────
 

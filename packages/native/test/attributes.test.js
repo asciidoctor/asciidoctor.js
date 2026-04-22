@@ -5,14 +5,11 @@ import { load } from '../src/load.js'
 import { Block } from '../src/block.js'
 import { SafeMode, INTRINSIC_ATTRIBUTES, USER_HOME } from '../src/constants.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
+import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then(async ( doc) => await doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then(async ( doc) => await doc.convert())
 const convertInlineString = (input, opts = {}) => documentFromString(input, { doctype: 'inline', ...opts }).then(async ( doc) => await doc.convert())
-const blockFromString = async (input, opts = {}) => (await documentFromString(input, opts)).blocks[0]
 const emptyDocument = (opts = {}) => documentFromString('', { parse: false, ...opts })
 
 // Simple helper to assert that a logger contains a message with the given severity and text.

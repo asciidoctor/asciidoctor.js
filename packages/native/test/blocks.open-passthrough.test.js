@@ -1,13 +1,8 @@
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
-import { load } from '../src/load.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
-const blockFromString = async (input, opts = {}) => (await documentFromString(input, opts)).blocks[0]
+import { assertCss, assertXpath } from './helpers.js'
+import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
 
 describe('Blocks', () => {
   let logger
@@ -80,7 +75,7 @@ This is just an open block.
       assertCss(output, '.sidebarblock', 0)
     })
 
-    test('should transfer id and reftext on open block to DocBook output', async () => {
+    test('transfer id and reftext on open block to DocBook output', async () => {
       const input = `Check out that <<open>>!
 
 [[open,Open Block]]
@@ -101,7 +96,7 @@ Back to our regularly scheduled programming.`
       assertCss(output, 'article > para > tip', 1)
     })
 
-    test('should transfer id and reftext on open paragraph to DocBook output', async () => {
+    test('transfer id and reftext on open paragraph to DocBook output', async () => {
       const input = `[open#openpara,reftext="Open Paragraph"]
 This is an open paragraph.`
 
@@ -111,7 +106,7 @@ This is an open paragraph.`
       assertCss(output, 'article > simpara[xreflabel="Open Paragraph"]', 1)
     })
 
-    test('should transfer title on open block to DocBook output', async () => {
+    test('transfer title on open block to DocBook output', async () => {
       const input = `.Behold the open
 --
 This is an open block with a title.
@@ -126,7 +121,7 @@ This is an open block with a title.
       assertCss(output, 'article > formalpara > para > simpara', 1)
     })
 
-    test('should transfer title on open paragraph to DocBook output', async () => {
+    test('transfer title on open paragraph to DocBook output', async () => {
       const input = `.Behold the open
 This is an open paragraph with a title.`
 
@@ -139,7 +134,7 @@ This is an open paragraph with a title.`
       assertXpath(output, '/article/formalpara/para[text()="This is an open paragraph with a title."]', 1)
     })
 
-    test('should transfer role on open block to DocBook output', async () => {
+    test('transfer role on open block to DocBook output', async () => {
       const input = `[.container]
 --
 This is an open block.
@@ -151,7 +146,7 @@ It holds stuff.
       assertCss(output, 'article > para[role=container] > simpara', 1)
     })
 
-    test('should transfer role on open paragraph to DocBook output', async () => {
+    test('transfer role on open paragraph to DocBook output', async () => {
       const input = `[.container]
 This is an open block.
 It holds stuff.`
@@ -216,7 +211,7 @@ http://asciidoc.org
       assert.equal(output.trim(), expected)
     })
 
-    test('should strip leading and trailing blank lines when converting raw block', async () => {
+    test('strip leading and trailing blank lines when converting raw block', async () => {
       const input = `++++
 line above
 ++++

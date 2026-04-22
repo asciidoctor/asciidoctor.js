@@ -1,14 +1,9 @@
 // ESM conversion of sections_test.rb — context 'Table of Contents'
 
 import { test, describe } from 'node:test'
-import assert from 'node:assert/strict'
 
-import { load } from '../src/load.js'
 import { assertXpath, assertCss } from './helpers.js'
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
+import { convertString, convertStringToEmbedded } from './harness.js'
 
 // ── Sections › Table of Contents ─────────────────────────────────────────────
 

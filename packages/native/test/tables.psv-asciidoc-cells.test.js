@@ -7,16 +7,12 @@ import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
 
-import { load } from '../src/load.js'
 import { assertCss, assertXpath, assertMessage, countXpath, usingMemoryLogger } from './helpers.js'
+import { documentFromString, convertString, convertStringToEmbedded } from './harness.js'
 
 const __dirname = import.meta.url.startsWith('http')
   ? new URL('.', import.meta.url).href.replace(/\/$/, '')
   : dirname(fileURLToPath(import.meta.url))
-
-const documentFromString = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertString = (input, opts = {}) => documentFromString(input, { standalone: true, ...opts }).then((doc) => doc.convert())
-const convertStringToEmbedded = (input, opts = {}) => documentFromString(input, opts).then((doc) => doc.convert())
 
 // ── Tables › PSV › AsciiDoc Cells ────────────────────────────────────────────
 

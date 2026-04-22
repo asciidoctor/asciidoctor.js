@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { load } from '../src/load.js'
 import { Inline } from '../src/inline.js'
 import { assertXpath, assertCss, assertMessage, usingMemoryLogger } from './helpers.js'
+import { documentFromString, convertStringToEmbedded, blockFromString } from './harness.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -17,9 +18,6 @@ const __dirname = import.meta.url.startsWith('http')
 const BACKSLASH = '\\'
 
 const load_ = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const blockFromString = async (input, opts = {}) => (await load_(input, opts)).blocks[0]
-const documentFromString = (input, opts = {}) => load_(input, opts)
-const convertStringToEmbedded = async (input, opts = {}) => (await load_(input, opts)).convert()
 const convertInlineString = async (input, opts = {}) => (await load_(input, { doctype: 'inline', ...opts })).convert()
 
 // Normalize whitespace between tags
