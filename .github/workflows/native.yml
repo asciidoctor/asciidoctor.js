@@ -40,6 +40,7 @@ jobs:
         npm ci --prefix packages/native
         npx playwright install
     - name: Lint, build and test
+      shell: bash
       run: |
         npm t --prefix packages/native
         npm run test:browser --prefix packages/native
