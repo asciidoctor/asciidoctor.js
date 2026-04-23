@@ -1,0 +1,44 @@
+name: Build native
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    tags-ignore:
+      - '**'
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+
+jobs:
+  activate:
+    if: |
+      (github.event_name == 'schedule' && github.repository_owner == 'asciidoctor') ||
+      (github.event_name != 'schedule' && !endsWith(github.event.head_commit.message, '[skip ci]'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Proceed
+        run: echo ok go
+  build:
+    needs: activate
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v6
+    - name: Set up Node
+      uses: actions/setup-node@v6
+      with:
+        node-version: 24
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm ci --prefix packages/native
+    - name: Lint, build and test
+      run: |
+        npm t --prefix packages/native
+        npm run test:browser --prefix packages/native
