@@ -741,7 +741,7 @@ export const BlankLineRx = /\n{2,}/
 //
 //   three\ blind\ mice
 //
-export const EscapedSpaceRx = /\\([ \t\n])/
+export const EscapedSpaceRx = /\\([ \t\n])/g
 
 // Detects text that may contain replaceable characters.
 export const ReplaceableTextRx = /[&']|--|\.\.\.|\([CRT]M?\)/
@@ -750,7 +750,7 @@ export const ReplaceableTextRx = /[&']|--|\.\.\.|\([CRT]M?\)/
 // Replicates the parsing rules of Ruby %w strings.
 //
 // TODO: Replace with /(?<!\\)[ \t\n]+/ when lookbehind is universally available.
-export const SpaceDelimiterRx = /([^\\])[ \t\n]+/
+export const SpaceDelimiterRx = /([^\\])[ \t\n]+/g
 
 // Matches a + or - modifier in a subs list.
 export const SubModifierSniffRx = /[+-]/

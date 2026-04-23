@@ -41,12 +41,19 @@ import { Compliance } from './compliance.js'
 import { resolveBrowserIncludePath } from './browser/reader.js'
 
 // ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
-let _fsp            // node:fs/promises — used for all file I/O
+// Loaded on first use in Node.js; silently absent in browser/WebWorker environments.
+let _fsp            // undefined = not tried, null = unavailable, object = available
 let _fsConstants    // node:fs constants (F_OK etc.) — not on node:fs/promises
-try {
-  _fsp = await import('node:fs/promises')
-  _fsConstants = (await import('node:fs')).constants
-} catch {}
+
+async function _requireFsp() {
+  if (_fsp !== undefined) return
+  try {
+    _fsp = await import('node:fs/promises')
+    _fsConstants = (await import('node:fs')).constants
+  } catch {
+    _fsp = null
+  }
+}
 
 // ── path helpers (no node:path dependency) ───────────────────────────────────
 function fsdirname (p) {
@@ -58,6 +65,7 @@ function fsbasename (p) {
   return p ? p.slice(p.lastIndexOf('/') + 1) : ''
 }
 async function fileExists (path) {
+  await _requireFsp()
   if (!_fsp) return false
   try { await _fsp.access(path, _fsConstants.F_OK); return true } catch { return false }
 }
@@ -859,6 +867,7 @@ export class PreprocessorReader extends Reader {
   // Internal: Evaluate a conditional include directive.
   // Returns true if the line under the cursor was consumed or changed.
   async _preprocessIncludeDirective (target, attrlist) {
+    await _requireFsp()
     const doc = this._document
     let expandedTarget = target
 

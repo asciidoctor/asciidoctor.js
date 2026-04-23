@@ -27,19 +27,25 @@ import { SafeMode, LF } from './constants.js'
 import { isUriish, encodeSpacesInUri, isExtname, extname, prepareSourceString } from './helpers.js'
 
 // ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
-// Loaded once at module init in Node.js; silently absent in browser environments.
-let _fsp
-let _fsConstants
-try {
-  _fsp = await import('node:fs/promises')
-  _fsConstants = (await import('node:fs')).constants
-} catch {
+// Loaded on first use in Node.js; silently absent in browser/WebWorker environments.
+let _fsp          // undefined = not tried, null = unavailable, object = available
+let _fsConstants  // node:fs constants (R_OK etc.) — not on node:fs/promises
+
+async function _requireFsp() {
+  if (_fsp !== undefined) return
+  try {
+    _fsp = await import('node:fs/promises')
+    _fsConstants = (await import('node:fs')).constants
+  } catch {
+    _fsp = null
+  }
 }
 
 async function isReadable(path) {
+  await _requireFsp()
   if (!_fsp) return false
   try {
-    await _fsp.access(path, _fsConstants.R_OK);
+    await _fsp.access(path, _fsConstants.R_OK)
     return true
   } catch {
     return false

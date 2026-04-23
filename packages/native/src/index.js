@@ -122,7 +122,7 @@ class Asciidoctor {
   }
 }
 
-export { SyntaxHighlighterBase }
+export { SyntaxHighlighterBase, Extensions }
 
 export default function () {
   return new Asciidoctor()

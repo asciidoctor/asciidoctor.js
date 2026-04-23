@@ -28,6 +28,20 @@ test('load input string array', async () => {
   assert.equal(doc.doctitle(), 'Document Title')
 })
 
+test('load with attributes as space-separated string', async () => {
+  const doc = await load('text', { safe: 'safe', attributes: 'toc numbered sectanchors' })
+  assert.equal(doc.attr('toc'), '')
+  assert.equal(doc.attr('numbered'), '')
+  assert.equal(doc.attr('sectanchors'), '')
+})
+
+test('load with attributes as key=value string', async () => {
+  const doc = await load('text', { safe: 'safe', attributes: 'toc-placement=auto icons=font source-highlighter=highlight.js' })
+  assert.equal(doc.attr('toc-placement'), 'auto')
+  assert.equal(doc.attr('icons'), 'font')
+  assert.equal(doc.attr('source-highlighter'), 'highlight.js')
+})
+
 test('load input file via loadFile', async () => {
   const samplePath = join(FIXTURES_DIR, 'sample.adoc')
   const doc = await loadFile(samplePath, { safe: 'safe' })
