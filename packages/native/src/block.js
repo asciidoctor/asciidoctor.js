@@ -120,6 +120,9 @@ export class Block extends AbstractBlock {
     return this.lines.join(LF)
   }
 
+  // Public: Returns the source as a single String (method alias for the source getter).
+  getSource () { return this.source }
+
   toString () {
     const contentSummary = this.contentModel === 'compound'
       ? `blocks: ${this.blocks.length}`

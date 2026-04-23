@@ -58,6 +58,12 @@ export class TemplateConverter extends ConverterBase {
     TemplateConverter._caches.templates = {}
   }
 
+  /** Alias for clearCaches() — matches the Ruby/core API name. */
+  static clearCache () { TemplateConverter.clearCaches() }
+
+  /** Return the class-level cache object. */
+  static getCache () { return TemplateConverter._caches }
+
   // Public: Construct a new TemplateConverter (synchronous setup only).
   //
   // Prefer TemplateConverter.create() which also runs the async _scan() step.
@@ -98,8 +104,12 @@ export class TemplateConverter extends ConverterBase {
   // templateName - the String name of the template to use (default: node.nodeName)
   // opts         - optional plain object passed as locals to the template
   //
-  // Returns the String result from rendering the template.
-  convert (node, templateName = null, opts = null) {
+  // Returns a Promise that resolves to the String result from rendering the template.
+  //
+  // Note: convert() is async because getContent() / applySubs() in the native package
+  // is async throughout. We pre-resolve content here and expose it synchronously to
+  // template engines (which are all synchronous) via a Proxy wrapper.
+  async convert (node, templateName = null, opts = null) {
     const name     = templateName ?? node.nodeName
     const template = this._templates[name]
     if (!template) throw new Error(`Could not find a custom template to handle transform: ${name}`)
@@ -107,7 +117,25 @@ export class TemplateConverter extends ConverterBase {
     const helpersEntry = this._templates['helpers.js']
     const helpers      = helpersEntry ? helpersEntry.ctx : undefined
 
-    const result = template.render({ node, opts, helpers })
+    // Pre-resolve async content so synchronous template engines receive a plain string.
+    const content = typeof node.getContent === 'function' ? await node.getContent() : undefined
+
+    // Pre-resolve list items when the node exposes getItems().
+    let resolvedItems = null
+    if (typeof node.getItems === 'function') {
+      const rawItems = node.getItems()
+      if (Array.isArray(rawItems) && rawItems.length > 0) {
+        resolvedItems = await Promise.all(rawItems.map(async (item) => {
+          const itemContent = typeof item.getContent === 'function' ? await item.getContent() : undefined
+          return _makeContentProxy(item, itemContent)
+        }))
+      } else {
+        resolvedItems = rawItems ?? []
+      }
+    }
+
+    const proxyNode = _makeContentProxy(node, content, resolvedItems)
+    const result = template.render({ node: proxyNode, opts, helpers })
     return name === 'document' ? result.trim() : result.trimEnd()
   }
 
@@ -122,6 +150,13 @@ export class TemplateConverter extends ConverterBase {
   //
   // Returns a plain object keyed by template name.
   get templates () {
+    return { ...this._templates }
+  }
+
+  // Public: Method alias for the templates getter — matches the core/Ruby API.
+  //
+  // Returns a plain object keyed by template name.
+  getTemplates () {
     return { ...this._templates }
   }
 
@@ -339,6 +374,24 @@ async function _isDirectory (p) {
 
 async function _isFile (p) {
   try { return (await fsp.stat(p)).isFile() } catch { return false }
+}
+
+// Internal: Wrap an AST node in a Proxy that intercepts getContent() / content
+// (and optionally getItems() / items) to return pre-resolved synchronous values.
+//
+// This lets synchronous template engines (nunjucks, ejs, pug, handlebars, …)
+// receive plain strings even though the native applySubs() pipeline is async.
+function _makeContentProxy (node, content, resolvedItems = null) {
+  return new Proxy(node, {
+    get (target, prop) {
+      if (prop === 'getContent') return () => content
+      if (prop === 'content') return content
+      if (resolvedItems !== null && prop === 'getItems') return () => resolvedItems
+      if (resolvedItems !== null && prop === 'items') return resolvedItems
+      const val = Reflect.get(target, prop)
+      return typeof val === 'function' ? val.bind(target) : val
+    },
+  })
 }
 
 export default TemplateConverter

@@ -1,0 +1,13 @@
+<% if (node.getLevel() === 1) { %>
+<google-codelab-step
+  label="<%= node.getTitle() %>"
+  <%- helpers.attributeIfSet('duration', node.getAttribute('duration')) %>
+>
+    <%- node.getContent() %>
+</google-codelab-step>
+<% } else { %>
+  <section>
+    <h<%= node.getLevel() %>><%- node.getTitle() %></h<%= node.getLevel() %>>
+   <%- node.getContent() %>
+  </section>
+<% } %>

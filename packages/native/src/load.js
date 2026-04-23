@@ -125,6 +125,19 @@ export async function load (input, options = {}) {
     if (backend.startsWith('xhtml')) backend = `html${backend.slice(5)}`  // xhtml5 → html5
     backend = BACKEND_ALIASES[backend] ?? backend
     await Converter.create(backend, {})
+    // If template dirs are requested, pre-create the async template converter
+    // so that _createConverter() can use it synchronously during Document construction.
+    // (In Ruby, Converter.create is synchronous; in JS we bridge the gap here.)
+    if (options.template_dir || options.template_dirs) {
+      const templateDirs = [].concat(options.template_dirs ?? options.template_dir)
+      const converterOpts = {
+        template_dirs: templateDirs,
+        template_cache: options.template_cache ?? true,
+        template_engine: options.template_engine,
+        template_engine_options: options.template_engine_options,
+      }
+      options._preCreatedConverter = await Converter.create(backend, converterOpts)
+    }
     if (options.parse !== false) {
       doc = await Document.create(source, options)
     } else {

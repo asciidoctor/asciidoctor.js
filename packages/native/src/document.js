@@ -80,6 +80,9 @@ export class DocumentTitle {
 
   isSanitized ()  { return this._sanitized }
   hasSubtitle ()  { return this.subtitle != null }
+  getMain ()      { return this.main }
+  getCombined ()  { return this.combined }
+  getSubtitle ()  { return this.subtitle }
   toString ()     { return this.combined }
 }
 
@@ -93,6 +96,26 @@ export class Author {
     this.initials   = initials
     this.email      = email
   }
+
+  getName ()       { return this.name }
+  getFirstName ()  { return this.firstname }
+  getMiddleName () { return this.middlename }
+  getLastName ()   { return this.lastname }
+  getInitials ()   { return this.initials }
+  getEmail ()      { return this.email }
+}
+
+export class RevisionInfo {
+  constructor (number, date, remark) {
+    this._number = number ?? null
+    this._date   = date   ?? null
+    this._remark = remark ?? null
+  }
+
+  isEmpty ()     { return !this._number && !this._date && !this._remark }
+  getNumber ()   { return this._number }
+  getDate ()     { return this._date }
+  getRemark ()   { return this._remark }
 }
 
 // ── Document ──────────────────────────────────────────────────────────────────
@@ -942,6 +965,22 @@ export class Document extends AbstractBlock {
   // Public: Get the first author of this document.
   getAuthor () { return this.author }
 
+  // Public: Get all authors of this document.
+  getAuthors () { return this.authors() }
+
+  // Public: Get the base directory of this document.
+  getBaseDir () { return this.baseDir }
+
+  // Public: Get the revision information for this document.
+  getRevisionInfo () {
+    const attrs = this.attributes
+    return new RevisionInfo(
+      attrs['revnumber'] ?? null,
+      attrs['revdate']   ?? null,
+      attrs['revremark'] ?? null,
+    )
+  }
+
   // Public: Get the extensions registry for this document.
   getExtensions () { return this.extensions }
 
@@ -1055,8 +1094,11 @@ export class Document extends AbstractBlock {
   }
 
   _createConverter (backend, delegateBackend) {
-    const converterOpts = { document: this, htmlsyntax: this.attributes['htmlsyntax'] }
     const opts = this.options
+    if (!this.converter && opts._preCreatedConverter) {
+      return opts._preCreatedConverter
+    }
+    const converterOpts = { document: this, htmlsyntax: this.attributes['htmlsyntax'] }
     if (opts.template_dirs || opts.template_dir) {
       converterOpts.template_dirs  = [].concat(opts.template_dirs ?? opts.template_dir)
       converterOpts.template_cache = opts.template_cache ?? true

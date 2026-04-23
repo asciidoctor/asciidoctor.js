@@ -42,6 +42,15 @@ export class Inline extends AbstractNode {
    */
   content () { return this.text }
 
+  /** Return the text of this inline node. */
+  getText () { return this.text }
+
+  /** Return the type qualifier of this inline node (e.g. 'ref', 'bibref'). */
+  getType () { return this.type }
+
+  /** Return the target (e.g. URI or anchor) of this inline node. */
+  getTarget () { return this.target }
+
   /**
    * Get the alt text for this inline image.
    * @returns {string} the value of the alt attribute, or ''.

@@ -1,0 +1,16 @@
+{{#toJSON node}}
+<div{{toAttribute 'id' id}} class="{{concat 'olist' (concat style role)}}">
+  {{#if title}}
+  <div class="title">{{title}}</div>
+  {{/if}}
+  <ol class="{{style}}"{{#if attributes.start}} start="{{attributes.start}}"{{/if}}{{#if options.reversed}} reversed="true"{{/if}}>
+    {{#each items}}
+    <li{{toAttribute 'id' id}}{{toAttribute 'class' role}}><p>{{text}}</p>
+    {{#if hasBlocks}}
+    {{{content}}}
+    {{/if}}
+    </li>
+    {{/each}}
+  </ol>
+</div>
+{{/toJSON}}

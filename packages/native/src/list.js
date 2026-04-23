@@ -20,6 +20,12 @@ export class List extends AbstractBlock {
   async content () { return this.blocks }
 
   /**
+   * Return the list items (alias for items / blocks).
+   * @returns {ListItem[]}
+   */
+  getItems () { return this.items }
+
+  /**
    * Check whether this list has items (blocks).
    * @returns {boolean}
    */
@@ -80,6 +86,19 @@ export class ListItem extends AbstractBlock {
 
   /** Contextual alias for parent. */
   get list () { return this.parent }
+
+  /**
+   * Return the text of this list item with substitutions applied.
+   * Synchronous because text is pre-computed during parse().
+   * @returns {string|null}
+   */
+  getText () { return this.text }
+
+  /**
+   * Return the list marker string for this item (e.g. '.', '..', '*').
+   * @returns {string|null}
+   */
+  getMarker () { return this.marker }
 
   /**
    * Check whether the text of this list item is non-blank.

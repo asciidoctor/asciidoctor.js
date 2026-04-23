@@ -566,6 +566,16 @@ export class AbstractNode {
   }
 
   /**
+   * Check whether this node has reftext — either an explicit 'reftext' attribute
+   * or a title that can serve as the cross-reference text.
+   * Mirrors Ruby's AbstractNode#reftext?
+   * @returns {boolean}
+   */
+  isReftext() {
+    return this.hasAttr('reftext') || !!(this.title)
+  }
+
+  /**
    * Construct a reference or data URI to an icon image for the given name.
    *
    * If the 'icon' attribute is set on this node the name is ignored and the

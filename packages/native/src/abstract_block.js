@@ -420,8 +420,12 @@ export class AbstractBlock extends AbstractNode {
    */
   findBy (selector = {}, filter = null) {
     const result = []
+    // Normalise: if selector is not a plain object, treat it as an empty selector.
+    const normSelector = (selector && typeof selector === 'object' && !Array.isArray(selector)) ? selector : {}
+    // Normalise: filter must be a function; ignore string/non-function values (mirrors core API).
+    const normFilter = typeof filter === 'function' ? filter : null
     try {
-      this.#findByInternal(selector, result, filter)
+      this.#findByInternal(normSelector, result, normFilter)
     } catch (e) {
       if (!(e instanceof StopIteration)) throw e
     }

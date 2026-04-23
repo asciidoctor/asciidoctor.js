@@ -1,0 +1,8 @@
+{{#toJSON node}}
+<div{{toAttribute 'id' id}} class="{{concat 'paragraph-handlebars' role}}">
+  {{#if title}}
+  <div class="title">{{title}}</div>
+  {{/if}}
+  <p>{{content}}</p>
+</div>
+{{/toJSON}}
