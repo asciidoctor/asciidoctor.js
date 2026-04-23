@@ -39,7 +39,8 @@ const rstrip = (line) => line.replace(/[ \t\r\n\f\v]+$/, '')
 export function prepareSourceArray (data, trimEnd = true) {
   if (!data.length) return []
   if (data[0].startsWith(BOM)) data[0] = data[0].slice(1)
-  return trimEnd ? data.map(rstrip) : data.map((line) => line.replace(/\n$/, ''))
+  // Strip trailing \r to normalize Windows CRLF line endings (lines were split on \n, leaving \r).
+  return trimEnd ? data.map(rstrip) : data.map((line) => line.replace(/\r?\n$/, '').replace(/\r$/, ''))
 }
 
 // Internal: Prepare the source data String for parsing.
@@ -55,6 +56,8 @@ export function prepareSourceArray (data, trimEnd = true) {
 export function prepareSourceString (data, trimEnd = true) {
   if (!data) return []
   if (data.startsWith(BOM)) data = data.slice(1)
+  // Normalize Windows CRLF to LF so that split('\n') does not leave trailing \r on each line.
+  if (data.includes('\r')) data = data.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
   // Ruby's each_line does not produce an empty trailing element when the string
   // ends with \n, but JS split('\n') does. Remove the trailing empty element
   // to match Ruby behaviour.

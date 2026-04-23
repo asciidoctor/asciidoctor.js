@@ -498,7 +498,11 @@ export class Reader {
         : prepareSourceString(data != null ? String(data) : '', trimEnd)
     }
     if (Array.isArray(data)) return [...data]
-    if (data != null) return String(data).replace(/\n$/, '').split('\n')
+    if (data != null) {
+      let s = String(data)
+      if (s.includes('\r')) s = s.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+      return s.replace(/\n$/, '').split('\n')
+    }
     return []
   }
 
