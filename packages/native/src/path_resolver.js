@@ -80,10 +80,11 @@ export class PathResolver {
   // Returns a String relative path, or the original path if it cannot be made relative.
   relativePath (path, base) {
     if (this.root(path)) {
-      const offset = this.descendsFrom(path, base)
+      const posixBase = this.posixify(base)
+      const offset = this.descendsFrom(path, posixBase)
       if (offset !== false) return path.slice(offset)
       try {
-        return _computeRelativePath(path, base)
+        return _computeRelativePath(path, posixBase)
       } catch {
         return path
       }

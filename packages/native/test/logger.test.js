@@ -39,7 +39,7 @@ describe('Logger', () => {
       assert.equal(sourceLocation.getLineNumber(), 8)
       assert.equal(sourceLocation.getFile(), undefined)
       if (typeof process !== 'undefined' && typeof process.cwd === 'function') {
-        assert.equal(sourceLocation.getDirectory(), process.cwd().replace(/\\/g, '/'))
+        assert.equal(sourceLocation.getDirectory(), process.cwd())
       }
       assert.equal(sourceLocation.getPath(), '<stdin>')
     } finally {

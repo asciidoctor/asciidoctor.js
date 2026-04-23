@@ -12,6 +12,7 @@
 //   - String#succ (nextval) is implemented for the ASCII alphanumeric subset
 //     used by Asciidoctor list-numbering sequences.
 
+import ospath from 'node:path'
 import { UriSniffRx } from './rx.js'
 
 // ── BOM ──────────────────────────────────────────────────────────────────────
@@ -137,10 +138,11 @@ export function rootname (filename) {
 // Returns the String filename with leading directories removed and, optionally,
 // the extension removed.
 export function basename (filename, dropExt = null) {
-  const base = filename.slice(filename.lastIndexOf('/') + 1)
-  if (!dropExt) return base
-  const ext = dropExt === true ? extname(base) : dropExt
-  return (ext && base.endsWith(ext)) ? base.slice(0, -ext.length) : base
+  if (!dropExt) {
+    return ospath.basename(filename)
+  }
+  const ext = dropExt === true ? extname(filename) : dropExt
+  return ospath.basename(filename, ext)
 }
 
 // Public: Return whether this path has a file extension.

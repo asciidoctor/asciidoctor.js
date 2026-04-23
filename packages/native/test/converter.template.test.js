@@ -88,7 +88,7 @@ describe('Using a template converter', () => {
     const templatesPattern = resolve(templateDir, '*').replace(/\\/g, '/')
     assert.ok(cache.scans[templatesPattern], 'Expected scan cache entry')
     assert.ok(cache.scans[templatesPattern].paragraph, 'Expected paragraph in scan cache')
-    const templateFilePath = resolve(templateDir, 'paragraph.njk').replace(/\\/g, '/')
+    const templateFilePath = resolve(templateDir, 'paragraph.njk')
     assert.ok(cache.templates[templateFilePath], 'Expected template file in template cache')
   })
 

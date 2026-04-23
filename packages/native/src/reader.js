@@ -58,11 +58,12 @@ async function _requireFsp() {
 // ── path helpers (no node:path dependency) ───────────────────────────────────
 function fsdirname (p) {
   if (!p) return '.'
-  const idx = p.lastIndexOf('/')
+  const idx = Math.max(p.lastIndexOf('/'), p.lastIndexOf('\\'))
   return idx < 0 ? '.' : idx === 0 ? '/' : p.slice(0, idx)
 }
 function fsbasename (p) {
-  return p ? p.slice(p.lastIndexOf('/') + 1) : ''
+  const idx = Math.max(p.lastIndexOf('/'), p.lastIndexOf('\\'))
+  return p ? p.slice(idx + 1) : ''
 }
 async function fileExists (path) {
   await _requireFsp()

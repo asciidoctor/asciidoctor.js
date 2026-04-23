@@ -678,13 +678,13 @@ describe('PreprocessorReader', () => {
       }
     })
 
-    test('include directive should resolve file relative to current include', async () => {
+    test('je include directive should resolve file relative to current include', async () => {
       const input = 'include::fixtures/parent-include.adoc[]'
-      const pseudoDocfile = path.join(FIXTURES_DIR, '..', 'main.adoc')
+      const pseudoDocfile = path.join(FIXTURES_DIR, '..', 'main.adoc').replace(/\\/g, '/')
       const fixturesDir = FIXTURES_DIR
-      const parentIncludeDocfile = path.join(fixturesDir, 'parent-include.adoc')
-      const childIncludeDocfile = path.join(fixturesDir, 'child-include.adoc')
-      const grandchildIncludeDocfile = path.join(fixturesDir, 'grandchild-include.adoc')
+      const parentIncludeDocfile = path.join(fixturesDir, 'parent-include.adoc').replace(/\\/g, '/')
+      const childIncludeDocfile = path.join(fixturesDir, 'child-include.adoc').replace(/\\/g, '/')
+      const grandchildIncludeDocfile = path.join(fixturesDir, 'grandchild-include.adoc').replace(/\\/g, '/')
 
       const doc = await emptyDocument({ base_dir: BASE_DIR })
       const reader = new PreprocessorReader(doc, input, pseudoDocfile, { normalize: true })
