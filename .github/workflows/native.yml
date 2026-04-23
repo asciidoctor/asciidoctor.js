@@ -38,6 +38,7 @@ jobs:
       run: |
         npm ci
         npm ci --prefix packages/native
+        npx playwright install
     - name: Lint, build and test
       run: |
         npm t --prefix packages/native
