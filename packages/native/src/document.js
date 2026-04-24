@@ -65,7 +65,9 @@ export class AttributeEntry {
   }
 }
 
-// Public: Parsed and stores a partitioned title (title & subtitle).
+/**
+ * Parsed and stores a partitioned title (title & subtitle).
+ */
 export class DocumentTitle {
   constructor(val, opts = {}) {
     this._sanitized = !!(opts.sanitize && val.includes('<'))
@@ -109,7 +111,9 @@ export class DocumentTitle {
   }
 }
 
-// Public: Represents an Author parsed from document attributes.
+/**
+ * Represents an Author parsed from document attributes.
+ */
 export class Author {
   constructor(name, firstname, middlename, lastname, initials, email) {
     this.name = name
@@ -164,7 +168,7 @@ export class RevisionInfo {
 // ── Document ──────────────────────────────────────────────────────────────────
 
 export class Document extends AbstractBlock {
-  // Override AbstractNode's getter so Document can own its converter directly.
+  /** Override AbstractNode's getter so Document can own its converter directly. */
   get converter() {
     return this._converter
   }
@@ -176,8 +180,8 @@ export class Document extends AbstractBlock {
     // Bootstrap: call super with a temporary placeholder — we'll fix parent ref below.
     // AbstractBlock(parent, context, opts) — we pass `null` and patch afterward.
     super(null, 'document', options)
-    // Document is its own parent/document.
-    this.parent = this
+    // Document is its own parent/document (write _parent directly to avoid shadowing the accessor).
+    this._parent = this
     this.document = this
 
     const parentDoc = options.parent ?? null
@@ -461,33 +465,33 @@ export class Document extends AbstractBlock {
     }
   }
 
-  // Public: Alias catalog as references (backwards compat).
+  /** Alias catalog as references (backwards compat). */
   get references() {
     return this.catalog
   }
 
-  // Public: Returns true if this is a nested (child) document.
+  /** @returns {boolean} True if this is a nested (child) document. */
   nested() {
     return !!this.parentDocument
   }
 
-  // Public: Factory — create and fully parse a Document asynchronously.
-  //
-  // data    - the AsciiDoc source (String, Array, or null)
-  // options - plain Object of options (default: {})
-  //
-  // Returns a Promise that resolves to the parsed Document.
+  /**
+   * Factory — create and fully parse a Document asynchronously.
+   * @param {string|string[]|null} data - The AsciiDoc source.
+   * @param {Object} [options={}] - Processing options.
+   * @returns {Promise<Document>} The parsed Document.
+   */
   static async create(data, options = {}) {
     const doc = new Document(data, options)
     await doc.parse()
     return doc
   }
 
-  // Public: Parse the AsciiDoc source.
-  //
-  // data - Optional replacement source data.
-  //
-  // Returns this Document.
+  /**
+   * Parse the AsciiDoc source.
+   * @param {string|string[]|null} [data=null] - Optional replacement source data.
+   * @returns {Promise<Document>} This Document.
+   */
   async parse(data = null) {
     if (this._parsed) return this
 
@@ -548,7 +552,12 @@ export class Document extends AbstractBlock {
     return this._parsed
   }
 
-  // Public: Get the named counter and take the next number in the sequence.
+  /**
+   * Get the named counter and take the next number in the sequence.
+   * @param {string} name - Counter name.
+   * @param {string|number|null} [seed=null] - Initial value if the counter doesn't exist.
+   * @returns {string|number} The next counter value.
+   */
   counter(name, seed = null) {
     if (this.parentDocument) return this.parentDocument.counter(name, seed)
     const isLocked = this.isAttributeLocked(name)
@@ -569,19 +578,28 @@ export class Document extends AbstractBlock {
     return nextVal
   }
 
-  // Public: Increment the specified counter and store it in the block's attributes.
+  /**
+   * Increment the specified counter and store it in the block's attributes.
+   * @param {string} counterName
+   * @param {Object} block
+   * @returns {string|number} The new counter value.
+   */
   incrementAndStoreCounter(counterName, block) {
     return new AttributeEntry(counterName, this.counter(counterName)).saveTo(
       block.attributes
     ).value
   }
 
-  // Deprecated alias
+  /** @deprecated Use incrementAndStoreCounter instead. */
   counterIncrement(counterName, block) {
     return this.incrementAndStoreCounter(counterName, block)
   }
 
-  // Public: Register a reference in the document catalog.
+  /**
+   * Register a reference in the document catalog.
+   * @param {string} type - Catalog type ('ids', 'refs', 'footnotes', 'links', 'images', 'callouts').
+   * @param {*} value - The value to register.
+   */
   register(type, value) {
     switch (type) {
       case 'ids': {
@@ -613,9 +631,11 @@ export class Document extends AbstractBlock {
     }
   }
 
-  // Public: Find the first registered reference matching the given reftext.
-  //
-  // Returns the String ID or null.
+  /**
+   * Find the first registered reference matching the given reftext.
+   * @param {string} text - The reftext to look up.
+   * @returns {string|null} The matching ID, or null.
+   */
   resolveId(text) {
     if (this._reftexts) return this._reftexts[text] ?? null
     // Fallback: scan refs synchronously (for documents not parsed via parse()).
@@ -626,7 +646,10 @@ export class Document extends AbstractBlock {
     return null
   }
 
-  // Internal: Build the reftext→id lookup map. Called at end of parse().
+  /**
+   * @private
+   * Build the reftext→id lookup map. Called at end of parse().
+   */
   async _buildReftextsMap() {
     this._reftexts = {}
     for (const [id, ref] of Object.entries(this.catalog.refs)) {
@@ -635,7 +658,7 @@ export class Document extends AbstractBlock {
     }
   }
 
-  // Public: Check whether this Document has child Section objects.
+  /** @returns {boolean} True if this document has child Section objects. */
   hasSections() {
     return this._nextSectionIndex > 0
   }
@@ -681,7 +704,7 @@ export class Document extends AbstractBlock {
     return this.attributes.basebackend === base
   }
 
-  // Public: Get the doctitle as a String.
+  /** @returns {string|null} The document title. */
   get title() {
     return this.doctitle()
   }
@@ -694,7 +717,14 @@ export class Document extends AbstractBlock {
     sect.title = val
   }
 
-  // Public: Resolve the primary title for the document.
+  /**
+   * Resolve the primary title for the document.
+   * @param {Object} [opts={}]
+   * @param {boolean} [opts.use_fallback] - Use 'untitled-label' if no title found.
+   * @param {boolean|string} [opts.partition] - Return a DocumentTitle instead of a string.
+   * @param {boolean} [opts.sanitize] - Strip XML tags from the title.
+   * @returns {string|DocumentTitle|null}
+   */
   doctitle(opts = {}) {
     let val = this.attributes.title
     if (val == null) {
@@ -723,6 +753,10 @@ export class Document extends AbstractBlock {
     return this.doctitle()
   }
 
+  /**
+   * @param {string|null} [_xrefstyle=null]
+   * @returns {Promise<string|null>}
+   */
   xreftext(_xrefstyle = null) {
     const val = this.reftext
     return val && val.length > 0 ? val : this.title
@@ -784,13 +818,20 @@ export class Document extends AbstractBlock {
     return this.header != null
   }
 
-  // Public: Append a child Block, assigning index if it's a section.
+  /**
+   * Append a child Block, assigning index if it's a section.
+   * @param {Object} block
+   * @returns {Object} The appended block.
+   */
   append(block) {
     if (block.context === 'section') this.assignNumeral(block)
     return super.append(block)
   }
 
-  // Internal: Called by parser after parsing header, before parsing body.
+  /**
+   * @private
+   * Called by parser after parsing header, before parsing body.
+   */
   finalizeHeader(unrootedAttributes, headerValid = true) {
     this._clearPlaybackAttributes(unrootedAttributes)
     this._saveAttributes()
@@ -798,7 +839,10 @@ export class Document extends AbstractBlock {
     return unrootedAttributes
   }
 
-  // Public: Replay attribute assignments from block attributes.
+  /**
+   * Replay attribute assignments from block attributes.
+   * @param {Object} blockAttributes
+   */
   playbackAttributes(blockAttributes) {
     if (!('attribute_entries' in blockAttributes)) return
     for (const entry of blockAttributes.attribute_entries) {
@@ -812,7 +856,10 @@ export class Document extends AbstractBlock {
     }
   }
 
-  // Public: Restore attributes to the state saved at end of header parse.
+  /**
+   * @private
+   * Restore attributes to the state saved at end of header parse.
+   */
   _restoreAttributes() {
     if (!this.parentDocument) this.catalog.callouts.rewind()
     const toRestore = this._headerAttributes
@@ -825,9 +872,13 @@ export class Document extends AbstractBlock {
     }
   }
 
-  // Public: Set the specified attribute if not locked.
-  //
-  // Returns the substituted value, or null if locked.
+  /**
+   * Set the specified attribute if not locked.
+   * @param {string} name
+   * @param {string} [value='']
+   * @param {boolean} [skipSubs=false]
+   * @returns {string|null} The substituted value, or null if locked.
+   */
   setAttribute(name, value = '', skipSubs = false) {
     if (this.isAttributeLocked(name)) return null
     if (!skipSubs && value && value !== '')
@@ -855,9 +906,11 @@ export class Document extends AbstractBlock {
     return value
   }
 
-  // Public: Delete the specified attribute if not locked.
-  //
-  // Returns true if deleted, false if locked.
+  /**
+   * Delete the specified attribute if not locked.
+   * @param {string} name
+   * @returns {boolean} True if deleted, false if locked.
+   */
   deleteAttribute(name) {
     if (this.isAttributeLocked(name)) return false
     delete this.attributes[name]
@@ -865,17 +918,27 @@ export class Document extends AbstractBlock {
     return true
   }
 
-  // Public: Check if the attribute is locked.
+  /**
+   * Check if the attribute is locked (set via attribute overrides).
+   * @param {string} name
+   * @returns {boolean}
+   */
   isAttributeLocked(name) {
     return name in this._attributeOverrides
   }
 
-  // Deprecated alias
+  /** @deprecated Use isAttributeLocked instead. */
   attributeLocked(name) {
     return this.isAttributeLocked(name)
   }
 
-  // Public: Assign a value to the specified attribute in the document header.
+  /**
+   * Assign a value to the specified attribute in the document header.
+   * @param {string} name
+   * @param {string} [value='']
+   * @param {boolean} [overwrite=true]
+   * @returns {boolean} False if the attribute exists and overwrite is false.
+   */
   setHeaderAttribute(name, value = '', overwrite = true) {
     const target = this._headerAttributes ?? this.attributes
     if (!overwrite && name in target) return false
@@ -883,10 +946,13 @@ export class Document extends AbstractBlock {
     return true
   }
 
-  // Internal: Walk the block tree in document order and pre-compute the content of
-  // every AsciiDoc-style table cell. Must be called AFTER parse() has finished so
-  // that (a) callouts.rewind() has been called and (b) all cross-references from
-  // the main document are already registered in the catalog.
+  /**
+   * @private
+   * Walk the block tree in document order and pre-compute the content of
+   * every AsciiDoc-style table cell. Must be called AFTER parse() has finished so
+   * that (a) callouts.rewind() has been called and (b) all cross-references from
+   * the main document are already registered in the catalog.
+   */
   async _convertAsciiDocCells(block = this) {
     for (const child of block.blocks ?? []) {
       if (child.context === 'table') {
@@ -909,7 +975,11 @@ export class Document extends AbstractBlock {
     }
   }
 
-  // Public: Convert the AsciiDoc document.
+  /**
+   * Convert the AsciiDoc document.
+   * @param {Object} [opts={}]
+   * @returns {Promise<string>} The converted output.
+   */
   async convert(opts = {}) {
     if (this._timings) this._timings.start('convert')
     await this.parse()
@@ -960,12 +1030,16 @@ export class Document extends AbstractBlock {
     return output
   }
 
-  // Deprecated alias
+  /** @deprecated Use convert instead. */
   render(opts = {}) {
     return this.convert(opts)
   }
 
-  // Public: Write output to the specified file or stream.
+  /**
+   * Write output to the specified file or stream.
+   * @param {string} output - The converted output string.
+   * @param {string|Object} target - File path or writable stream.
+   */
   async write(output, target) {
     if (this._timings) this._timings.start('write')
     if (typeof this.converter.write === 'function') {
@@ -1002,7 +1076,12 @@ export class Document extends AbstractBlock {
     return super.content()
   }
 
-  // Public: Read the docinfo file(s) for inclusion in the document template.
+  /**
+   * Read the docinfo file(s) for inclusion in the document template.
+   * @param {string} [location='head'] - 'head' or 'footer'.
+   * @param {string|null} [suffix=null] - File suffix override.
+   * @returns {Promise<string>} Combined docinfo content.
+   */
   async docinfo(location = 'head', suffix = null) {
     let content = null
     if (this.safe < SafeMode.SECURE) {
@@ -1076,17 +1155,21 @@ export class Document extends AbstractBlock {
 
   // ── JavaScript-style accessors ────────────────────────────────────────────────
 
-  // Public: Get the document title with substitutions applied.
+  /** @returns {string|null} The document title. */
   getTitle() {
     return this.title
   }
 
-  // Public: Set the document title.
+  /** @param {string} val */
   setTitle(val) {
     this.title = val
   }
 
-  // Public: Resolve the primary title for the document, optionally partitioned.
+  /**
+   * Resolve the primary title for the document, optionally partitioned.
+   * @param {Object} [opts={}]
+   * @returns {string|DocumentTitle|null}
+   */
   getDoctitle(opts = {}) {
     return this.doctitle(opts)
   }
@@ -1094,107 +1177,107 @@ export class Document extends AbstractBlock {
     return this.doctitle(opts)
   }
 
-  // Public: Get the captioned title of this document.
+  /** @returns {string} The captioned title. */
   getCaptionedTitle() {
     return this.captionedTitle()
   }
 
-  // Public: Get the doctype of this document.
+  /** @returns {string} The document type (e.g. 'article', 'book'). */
   getDoctype() {
     return this.doctype
   }
 
-  // Public: Get the backend of this document.
+  /** @returns {string} The backend name (e.g. 'html5', 'docbook5'). */
   getBackend() {
     return this.backend
   }
 
-  // Public: Get the safe mode level of this document.
+  /** @returns {number} The safe mode level. */
   getSafe() {
     return this.safe
   }
 
-  // Public: Get the compat mode flag of this document.
+  /** @returns {boolean} True if compat mode is enabled. */
   getCompatMode() {
     return this.compatMode
   }
 
-  // Public: Get the sourcemap flag of this document.
+  /** @returns {boolean} True if sourcemap is enabled. */
   getSourcemap() {
     return this.sourcemap
   }
 
-  // Public: Set the sourcemap flag of this document.
+  /** @param {boolean} val */
   setSourcemap(val) {
     this.sourcemap = val
   }
 
-  // Public: Get the outfile suffix of this document.
+  /** @returns {string} The output file suffix (e.g. '.html'). */
   getOutfilesuffix() {
     return this.outfilesuffix
   }
 
-  // Public: Get the frozen options of this document.
+  /** @returns {Object} The frozen options object. */
   getOptions() {
     return this.options
   }
 
-  // Public: Get the converter instance for this document.
+  /** @returns {Object} The converter instance. */
   getConverter() {
     return this.converter
   }
 
-  // Public: Get the source String of this document.
+  /** @returns {string|null} The raw AsciiDoc source. */
   getSource() {
     return this.source()
   }
 
-  // Public: Get the source lines of this document as an Array.
+  /** @returns {string[]|null} The source lines. */
   getSourceLines() {
     return this.sourceLines()
   }
 
-  // Public: Get the reader of this document.
+  /** @returns {Object} The preprocessor reader. */
   getReader() {
     return this.reader
   }
 
-  // Public: Get the footnotes registered in this document.
+  /** @returns {Footnote[]} The registered footnotes. */
   getFootnotes() {
     return this.footnotes
   }
 
-  // Public: Get the callouts registered in this document.
+  /** @returns {Object} The callouts registry. */
   getCallouts() {
     return this.callouts
   }
 
-  // Public: Get the catalog of assets registered in this document.
+  /** @returns {Object} The asset catalog. */
   getCatalog() {
     return this.catalog
   }
 
-  // Public: Get the counters hash for this document.
+  /** @returns {Object} The counters map. */
   getCounters() {
     return this._counters
   }
 
-  // Public: Get the first author of this document.
+  /** @returns {string|null} The first author name. */
   getAuthor() {
     return this.author
   }
 
-  // Public: Get all authors of this document.
+  /** @returns {Author[]} All document authors. */
   getAuthors() {
     return this.authors()
   }
 
-  // Public: Get the base directory of this document.
+  /** @returns {string} The base directory path. */
   getBaseDir() {
     return this.baseDir
   }
 
-  // Public: Get the revision information for this document.
+  /** @returns {RevisionInfo} The revision information. */
   getRevisionInfo() {
     const attrs = this.attributes
     return new RevisionInfo(
@@ -1204,28 +1287,127 @@ export class Document extends AbstractBlock {
     )
   }
 
-  // Public: Get the extensions registry for this document.
+  /** @returns {Object|null} The extensions registry. */
   getExtensions() {
     return this.extensions
   }
 
-  // Public: Get the parent document of this document, if any.
+  /** @returns {Document|undefined} The parent document, or undefined for root documents. */
   getParentDocument() {
     return this.parentDocument ?? undefined
   }
 
-  // Public: Get the parent node of this node.
-  //
-  // Always returns undefined for a root Document (Document is its own internal parent).
+  /**
+   * Get the parent node of this node.
+   * Always returns undefined for a root Document (Document is its own internal parent).
+   * @returns {undefined}
+   */
   getParent() {
     return undefined
   }
 
-  // Public: Delete the specified attribute if not locked.
-  //
-  // name - The String attribute name to remove.
-  //
-  // Returns the previous value, or undefined if not present or locked.
+  /** @returns {Object|null} The syntax highlighter instance. */
+  getSyntaxHighlighter() {
+    return this.syntaxHighlighter
+  }
+
+  /** @returns {Object} The id→node reference map. */
+  getRefs() {
+    return this.catalog.refs
+  }
+
+  /** @returns {ImageReference[]} The registered image references. */
+  getImages() {
+    return this.catalog.images
+  }
+
+  /** @returns {string[]} The registered links. */
+  getLinks() {
+    return this.catalog.links
+  }
+
+  /** @returns {Object|null} The level-0 Section (document header). */
+  getHeader() {
+    return this.header
+  }
+
+  /** @returns {boolean} True if the basebackend attribute is set. */
+  isBasebackend() {
+    return !!this.attributes.basebackend
+  }
+
+  /** @returns {Object} The asset catalog (alias for getCatalog). */
+  getReferences() {
+    return this.catalog
+  }
+
+  /** @returns {string|undefined} The revision date. */
+  getRevisionDate() {
+    return this.attributes.revdate ?? undefined
+  }
+
+  /** @returns {string|undefined} The revision date (alias for getRevisionDate). */
+  getRevdate() {
+    return this.attributes.revdate ?? undefined
+  }
+
+  /** @returns {string|undefined} The revision number. */
+  getRevisionNumber() {
+    return this.attributes.revnumber ?? undefined
+  }
+
+  /** @returns {string|undefined} The revision remark. */
+  getRevisionRemark() {
+    return this.attributes.revremark ?? undefined
+  }
+
+  /** @returns {boolean} True if any revision info is set. */
+  hasRevisionInfo() {
+    return !this.getRevisionInfo().isEmpty()
+  }
+
+  /** @returns {boolean} True if the notitle attribute is set. */
+  getNotitle() {
+    return this.isNotitle()
+  }
+
+  /** @returns {boolean} True if the noheader attribute is set. */
+  getNoheader() {
+    return this.isNoheader()
+  }
+
+  /** @returns {boolean} True if the nofooter attribute is set. */
+  getNofooter() {
+    return this.isNofooter()
+  }
+
+  /** Restore attributes to their saved header state. */
+  restoreAttributes() {
+    this._restoreAttributes()
+  }
+
+  /**
+   * @param {string} [location='head']
+   * @param {string} [suffix]
+   * @returns {Promise<string>}
+   */
+  async getDocinfo(location = 'head', suffix = undefined) {
+    return this.docinfo(location, suffix)
+  }
+
+  /**
+   * @param {string} [location='head']
+   * @returns {boolean} True if docinfo processors are registered for the given location.
+   */
+  hasDocinfoProcessors(location = 'head') {
+    return this._docinfoProcessors(location)
+  }
+
+  /**
+   * Delete the specified attribute if not locked.
+   * @param {string} name - The attribute name to remove.
+   * @returns {string|undefined} The previous value, or undefined if not present or locked.
+   */
   removeAttribute(name) {
     const prev = this.attributes[name]
     this.deleteAttribute(name)
@@ -1238,9 +1420,12 @@ export class Document extends AbstractBlock {
 
   // ── Private methods ─────────────────────────────────────────────────────────
 
-  // Sync version: applies only synchronous subs (specialcharacters, attributes, replacements).
-  // Used by setAttribute() which must remain sync for the {set:...} inline directive path.
-  // Async subs (quotes, macros, …) in pass macros are handled by _applyAttributeEntryValueSubs.
+  /**
+   * @private
+   * Sync version: applies only synchronous subs (specialcharacters, attributes, replacements).
+   * Used by setAttribute() which must remain sync for the {set:...} inline directive path.
+   * Async subs (quotes, macros, …) in pass macros are handled by _applyAttributeEntryValueSubs.
+   */
   _applyAttributeValueSubs(value) {
     const m = value.match(AttributeEntryPassMacroRx)
     if (m) {
@@ -1267,8 +1452,11 @@ export class Document extends AbstractBlock {
       : result
   }
 
-  // Async version: applies all subs including async ones (quotes, macros, …).
-  // Used by processAttributeEntry() which can await the result.
+  /**
+   * @private
+   * Async version: applies all subs including async ones (quotes, macros, …).
+   * Used by processAttributeEntry() which can await the result.
+   */
   async _applyAttributeEntryValueSubs(value) {
     const m = value.match(AttributeEntryPassMacroRx)
     if (m) {
@@ -1293,8 +1481,11 @@ export class Document extends AbstractBlock {
       : ['attributes']
   }
 
-  // Internal: Walk the block tree and pre-compute all async text values.
-  // Handles titles (AbstractBlock), list item text, table cell text, and reftexts.
+  /**
+   * @private
+   * Walk the block tree and pre-compute all async text values.
+   * Handles titles (AbstractBlock), list item text, table cell text, and reftexts.
+   */
   async _resolveAllTexts(block) {
     // Skip title pre-computation for blocks with an explicit empty id ([id=]).
     // In Ruby, apply_title_subs is lazy: it is never called during parsing for such

@@ -4,8 +4,11 @@ import { AbstractBlock } from './abstract_block.js'
 import { prepareSourceString } from './helpers.js'
 import { LF } from './constants.js'
 
-// Maps block context strings to their default content model.
-// Any context not listed defaults to 'simple'.
+/**
+ * Maps block context strings to their default content model.
+ * Any context not listed defaults to 'simple'.
+ * @type {Object<string, string>}
+ */
 export const DEFAULT_CONTENT_MODEL = new Proxy(
   {
     audio: 'empty',
@@ -24,26 +27,32 @@ export const DEFAULT_CONTENT_MODEL = new Proxy(
   }
 )
 
-// Public: Methods for managing AsciiDoc content blocks.
+/**
+ * Methods for managing AsciiDoc content blocks.
+ */
 export class Block extends AbstractBlock {
-  // Public: Factory method — mirrors the core Block.create(parent, context, opts) API.
+  /**
+   * Factory method — mirrors the core Block.create(parent, context, opts) API.
+   * @param {AbstractBlock} parent
+   * @param {string} context
+   * @param {Object} [opts={}]
+   * @returns {Block}
+   */
   static create(parent, context, opts = {}) {
     return new Block(parent, context, opts)
   }
-  // Public: Get/Set the original Array of source lines for this block.
-  // lines
 
-  // Public: Initialize an Asciidoctor::Block object.
-  //
-  // parent  - The parent AbstractBlock.
-  // context - The String context name (e.g. 'paragraph', 'listing').
-  // opts    - A plain object of options:
-  //           content_model - 'compound', 'simple', 'verbatim', 'raw', 'empty'
-  //                           (default: looked up from DEFAULT_CONTENT_MODEL)
-  //           attributes    - Hash of attributes to merge in.
-  //           source        - String or Array of raw source lines.
-  //           subs          - :default | Array | String | null
-  //           default_subs  - override for default subs (used with subs: :default)
+  /**
+   * Initialize an Asciidoctor::Block object.
+   * @param {AbstractBlock} parent - The parent AbstractBlock.
+   * @param {string} context - The context name (e.g. 'paragraph', 'listing').
+   * @param {Object} [opts={}]
+   * @param {'compound'|'simple'|'verbatim'|'raw'|'empty'} [opts.content_model] - Defaults to lookup from DEFAULT_CONTENT_MODEL.
+   * @param {Object} [opts.attributes] - Attributes to merge in.
+   * @param {string|string[]} [opts.source] - Raw source string or lines.
+   * @param {'default'|string[]|string|null} [opts.subs]
+   * @param {string[]} [opts.default_subs] - Override for default subs (used with subs: 'default').
+   */
   constructor(parent, context, opts = {}) {
     super(parent, context, opts)
     this.contentModel = opts.content_model ?? DEFAULT_CONTENT_MODEL[context]
@@ -85,14 +94,15 @@ export class Block extends AbstractBlock {
     }
   }
 
-  // Public: Alias for context — consistent with AsciiDoc terminology.
+  /** @returns {string} Alias for context — consistent with AsciiDoc terminology. */
   get blockname() {
     return this.context
   }
 
-  // Public: Get the converted result appropriate to this block's content model.
-  //
-  // Returns a Promise<String> result.
+  /**
+   * Get the converted result appropriate to this block's content model.
+   * @returns {Promise<string|null>}
+   */
   async content() {
     switch (this.contentModel) {
       case 'compound':
@@ -118,18 +128,17 @@ export class Block extends AbstractBlock {
     }
   }
 
-  // Public: Returns the source lines for this block.
-  // Matches the core API: block.getSourceLines() → Array of String.
+  /** @returns {string[]} The source lines for this block (matches the core API). */
   getSourceLines() {
     return this.lines
   }
 
-  // Public: Returns the preprocessed source of this block as a single String.
+  /** @returns {string} The preprocessed source of this block as a single String. */
   get source() {
     return this.lines.join(LF)
   }
 
-  // Public: Returns the source as a single String (method alias for the source getter).
+  /** @returns {string} The source as a single String (alias for the source getter). */
   getSource() {
     return this.source
   }

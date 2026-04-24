@@ -307,7 +307,7 @@ export class AbstractNode {
    * @param {string} name - The String attribute name to assign.
    * @param {*} [value=''] - The value to assign to the attribute.
    * @param {boolean} [overwrite=true] - Whether to overwrite an existing attribute.
-   * @returns {boolean} true if set, false if blocked.
+   * @returns {string|boolean|null} true/false in the base class; subclasses (e.g. Document) may return the resolved value string or null.
    */
   setAttribute(name, value = '', overwrite = true) {
     return this.setAttr(name, value, overwrite)

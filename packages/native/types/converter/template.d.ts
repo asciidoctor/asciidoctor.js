@@ -8,6 +8,13 @@ export class TemplateConverter extends ConverterBase {
         register(names: any, adapter: any): void;
     };
     static clearCaches(): void;
+    /** Alias for clearCaches() — matches the Ruby/core API name. */
+    static clearCache(): void;
+    /** Return the class-level cache object. */
+    static getCache(): {
+        scans: {};
+        templates: {};
+    };
     static create(backend: any, templateDirs: any, opts?: {}): Promise<TemplateConverter>;
     constructor(backend: any, templateDirs: any, opts?: {});
     _templates: {};
@@ -15,9 +22,8 @@ export class TemplateConverter extends ConverterBase {
     engine: any;
     engineOptions: any;
     caches: any;
-    convert(node: any, templateName?: any, opts?: any): any;
-    handles(name: any): any;
     get templates(): {};
+    getTemplates(): {};
     register(name: any, template: any): any;
     _scan(): Promise<void>;
     _scanDir(templateDir: any, fileExtFilter: any, templateCache?: any): Promise<{

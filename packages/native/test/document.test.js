@@ -570,3 +570,168 @@ describe('Backends and Doctypes (extended)', () => {
     assert.ok(!result.includes('<hr/>'))
   })
 })
+
+// ── Compat get* API ───────────────────────────────────────────────────────────
+
+describe('Compat get* API', () => {
+  const STRUCTURAL_INPUT = [
+    '= Sample Document',
+    'Doc Writer <doc.writer@asciidoc.org>',
+    'v1.0, 2013-05-20: First draft',
+    ':tags: [document, example]',
+    '',
+    '== First Section',
+    '',
+    'Some content.',
+    '',
+    '== Second Section',
+    '',
+    'More content.',
+  ].join('\n')
+
+  test('getHeader returns the level-0 section with title', async () => {
+    const doc = await parse(STRUCTURAL_INPUT)
+    const header = doc.getHeader()
+    assert.equal(header.level, 0)
+    assert.equal(header.title, 'Sample Document')
+  })
+
+  test('getDocumentTitle returns the document title string', async () => {
+    const doc = await parse(STRUCTURAL_INPUT)
+    assert.equal(doc.getDocumentTitle(), 'Sample Document')
+  })
+
+  test('getRevisionDate returns revdate attribute value', async () => {
+    const doc = await parse(STRUCTURAL_INPUT)
+    assert.equal(doc.getRevisionDate(), '2013-05-20')
+  })
+
+  test('getRevdate is an alias for getRevisionDate', async () => {
+    const doc = await parse(STRUCTURAL_INPUT)
+    assert.equal(doc.getRevdate(), doc.getRevisionDate())
+  })
+
+  test('getRevisionNumber returns revnumber attribute value', async () => {
+    const doc = await parse(STRUCTURAL_INPUT)
+    assert.equal(doc.getRevisionNumber(), '1.0')
+  })
+
+  test('getRevisionRemark returns revremark attribute value', async () => {
+    const doc = await parse(STRUCTURAL_INPUT)
+    assert.equal(doc.getRevisionRemark(), 'First draft')
+  })
+
+  test('getRevisionDate/Number/Remark return undefined when not set', async () => {
+    const doc = await parse('= Title\n\ncontent')
+    assert.equal(doc.getRevisionDate(), undefined)
+    assert.equal(doc.getRevisionNumber(), undefined)
+    assert.equal(doc.getRevisionRemark(), undefined)
+  })
+
+  test('hasRevisionInfo returns true when revision info is present', async () => {
+    const doc = await parse(STRUCTURAL_INPUT)
+    assert.ok(doc.hasRevisionInfo())
+  })
+
+  test('hasRevisionInfo returns false when no revision info', async () => {
+    const doc = await parse('= Title\n\ncontent')
+    assert.ok(!doc.hasRevisionInfo())
+  })
+
+  test('getRevisionInfo exposes date, number and remark via getters', async () => {
+    const doc = await parse(STRUCTURAL_INPUT)
+    const info = doc.getRevisionInfo()
+    assert.ok(!info.isEmpty())
+    assert.equal(info.getDate(), '2013-05-20')
+    assert.equal(info.getNumber(), '1.0')
+    assert.equal(info.getRemark(), 'First draft')
+  })
+
+  test('getReferences returns the same object as getCatalog', async () => {
+    const doc = await parse(STRUCTURAL_INPUT)
+    assert.equal(doc.getReferences(), doc.getCatalog())
+  })
+
+  test('getRefs returns the refs map from the catalog', async () => {
+    const input = '= Title\n\n[#my-section]\n== My Section\n\ncontent'
+    const doc = await parse(input)
+    const refs = doc.getRefs()
+    assert.ok(refs != null)
+    assert.ok('_my_section' in refs || 'my-section' in refs || Object.values(refs).some((r) => r.id === 'my-section' || r.id === '_my_section'))
+  })
+
+  test('getImages returns images registered via catalog_assets', async () => {
+    const input = '= Title\n\nimage::sunset.jpg[Sunset,300,200]\n\nimage::ocean.jpg[Ocean]'
+    const doc = await parse(input, { catalog_assets: true })
+    const images = doc.getImages()
+    assert.equal(images.length, 2)
+    assert.equal(images[0].target, 'sunset.jpg')
+    assert.equal(images[1].target, 'ocean.jpg')
+  })
+
+  test('getImages returns empty array when catalog_assets is not enabled', async () => {
+    const input = '= Title\n\nimage::sunset.jpg[Sunset]'
+    const doc = await parse(input)
+    assert.equal(doc.getImages().length, 0)
+  })
+
+  test('getLinks returns links registered after convert when catalog_assets is enabled', async () => {
+    const input = 'https://asciidoctor.org[Asciidoctor]\n\nlink:index.html[Docs]'
+    const doc = await parse(input, { catalog_assets: true })
+    await doc.convert()
+    const links = doc.getLinks()
+    assert.ok(links.includes('https://asciidoctor.org'))
+    assert.ok(links.includes('index.html'))
+  })
+
+  test('getSyntaxHighlighter returns null when no highlighter is configured', async () => {
+    const doc = await parse('= Title\n\ncontent')
+    assert.equal(doc.getSyntaxHighlighter(), null)
+  })
+
+  test('isBasebackend returns true when basebackend attribute is set', async () => {
+    const doc = await parse('= Title\n\ncontent', { backend: 'html5' })
+    assert.ok(doc.isBasebackend())
+  })
+
+  test('getNotitle returns true when notitle attribute is set', async () => {
+    const doc = await parse(':notitle:\n\ncontent')
+    assert.ok(doc.getNotitle())
+  })
+
+  test('getNotitle returns false in standalone mode (notitle not set)', async () => {
+    const doc = await parse('= Title\n\ncontent', { standalone: true })
+    assert.ok(!doc.getNotitle())
+  })
+
+  test('getNoheader returns true when noheader attribute is set', async () => {
+    const doc = await parse(':noheader:\n\ncontent')
+    assert.ok(doc.getNoheader())
+  })
+
+  test('getNofooter returns true when nofooter attribute is set', async () => {
+    const doc = await parse(':nofooter:\n\ncontent')
+    assert.ok(doc.getNofooter())
+  })
+
+  test('restoreAttributes restores attributes to header state', async () => {
+    const doc = await parse('= Title\n:foo: original\n\ncontent')
+    doc.setAttribute('foo', 'modified')
+    assert.equal(doc.getAttribute('foo'), 'modified')
+    doc.restoreAttributes()
+    assert.equal(doc.getAttribute('foo'), 'original')
+  })
+
+  test('hasDocinfoProcessors returns false when no extensions registered', async () => {
+    const doc = await parse('= Title\n\ncontent')
+    assert.ok(!doc.hasDocinfoProcessors())
+    assert.ok(!doc.hasDocinfoProcessors('footer'))
+  })
+
+  test('getConverter returns the converter instance', async () => {
+    const doc = await parse('= Title\n\ncontent')
+    const converter = doc.getConverter()
+    assert.ok(converter != null)
+    assert.equal(typeof converter.convert, 'function')
+  })
+})

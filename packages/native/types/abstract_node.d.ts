@@ -147,9 +147,9 @@ export class AbstractNode {
      * @param {string} name - The String attribute name to assign.
      * @param {*} [value=''] - The value to assign to the attribute.
      * @param {boolean} [overwrite=true] - Whether to overwrite an existing attribute.
-     * @returns {boolean} true if set, false if blocked.
+     * @returns {string|boolean|null} true/false in the base class; subclasses (e.g. Document) may return the resolved value string or null.
      */
-    setAttribute(name: string, value?: any, overwrite?: boolean): boolean;
+    setAttribute(name: string, value?: any, overwrite?: boolean): string | boolean | null;
     /**
      * Check if the specified attribute is defined with an optional value match.
      *
@@ -317,6 +317,13 @@ export class AbstractNode {
      * @returns {string|undefined} the reftext value, or undefined if not set.
      */
     getReftext(): string | undefined;
+    /**
+     * Check whether this node has reftext — either an explicit 'reftext' attribute
+     * or a title that can serve as the cross-reference text.
+     * Mirrors Ruby's AbstractNode#reftext?
+     * @returns {boolean}
+     */
+    isReftext(): boolean;
     /**
      * Construct a reference or data URI to an icon image for the given name.
      *

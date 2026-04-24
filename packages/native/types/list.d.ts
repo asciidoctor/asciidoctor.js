@@ -6,6 +6,11 @@ export class List extends AbstractBlock<any[]> {
     /** Alias for blocks — the list items. */
     get items(): any[];
     /**
+     * Return the list items (alias for items / blocks).
+     * @returns {ListItem[]}
+     */
+    getItems(): ListItem[];
+    /**
      * Check whether this list has items (blocks).
      * @returns {boolean}
      */
@@ -37,6 +42,17 @@ export class ListItem extends AbstractBlock<string> {
     subs: string[];
     /** Contextual alias for parent. */
     get list(): any;
+    /**
+     * Return the text of this list item with substitutions applied.
+     * Synchronous because text is pre-computed during parse().
+     * @returns {string|null}
+     */
+    getText(): string | null;
+    /**
+     * Return the list marker string for this item (e.g. '.', '..', '*').
+     * @returns {string|null}
+     */
+    getMarker(): string | null;
     /**
      * Check whether the text of this list item is non-blank.
      * @returns {boolean}

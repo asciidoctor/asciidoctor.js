@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "NodeNext",
-    "strict": false
+    "strict": false,
+    "types": ["node"]
   },
   "include": ["./**/*.d.ts"]
 }

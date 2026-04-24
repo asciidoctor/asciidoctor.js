@@ -1,5 +1,4 @@
 export default function _default(): Asciidoctor;
-export { SyntaxHighlighterBase };
 declare class Asciidoctor {
     /**
      * Get the version of Asciidoctor.js.
@@ -193,9 +192,11 @@ declare class Asciidoctor {
     convertFile(filename: string, options?: any): Promise<string>;
 }
 import { SyntaxHighlighterBase } from './syntax_highlighter.js';
+import { Extensions } from './extensions.js';
 import { MemoryLogger } from './logging.js';
 import { NullLogger } from './logging.js';
 import { Timings } from './timings.js';
 import Html5Converter from './converter/html5.js';
 import { Block } from './block.js';
 import { Section } from './section.js';
+export { SyntaxHighlighterBase, Extensions };
