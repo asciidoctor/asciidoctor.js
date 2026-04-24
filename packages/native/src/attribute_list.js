@@ -47,14 +47,16 @@ const NameRx = new RegExp(`${CG_WORD}[${CC_WORD}\\-]*`, 'u')
 const BlankRx = /[ \t]+/
 
 // ── StringScanner ─────────────────────────────────────────────────────────────
-// A minimal port of Ruby's StringScanner, sufficient for AttributeList parsing.
-//
-// Differences from Ruby's StringScanner:
-//   - getByte()  returns undefined (not nil) at end of string.
-//   - scan/skip  return null/0  (not nil) on no match.
-//   - Regexes are anchored at the current position via the sticky ('y') flag.
-//     A sticky copy is created once per regex and cached for reuse.
-//   - unscan()   reverts only the most recent getByte / scan / skip advance.
+/**
+ * A minimal port of Ruby's StringScanner, sufficient for AttributeList parsing.
+ *
+ * Differences from Ruby's StringScanner:
+ * - getByte() returns undefined (not nil) at end of string.
+ * - scan/skip return null/0 (not nil) on no match.
+ * - Regexes are anchored at the current position via the sticky ('y') flag.
+ *   A sticky copy is created once per regex and cached for reuse.
+ * - unscan() reverts only the most recent getByte / scan / skip advance.
+ */
 class StringScanner {
   #source
   #pos = 0
@@ -65,22 +67,25 @@ class StringScanner {
     this.#source = source
   }
 
-  // The original source string (equivalent to Ruby scanner.string).
+  /** @returns {string} The original source string (equivalent to Ruby scanner.string). */
   get source() {
     return this.#source
   }
 
-  // Returns true when the scan pointer is at or past the end of the string.
+  /** @returns {boolean} true when the scan pointer is at or past the end of the string. */
   eos() {
     return this.#pos >= this.#source.length
   }
 
-  // Returns the next n characters without advancing the scan pointer.
+  /**
+   * @param {number} n
+   * @returns {string} The next n characters without advancing the scan pointer.
+   */
   peek(n) {
     return this.#source.slice(this.#pos, this.#pos + n)
   }
 
-  // Consumes and returns the next character, or undefined at EOS.
+  /** @returns {string|undefined} The next character, or undefined at EOS. */
   getByte() {
     if (this.#pos >= this.#source.length) {
       this.#lastMatchLen = 0
@@ -90,27 +95,35 @@ class StringScanner {
     return this.#source[this.#pos++]
   }
 
-  // Reverts the most recent getByte / scan / skip advance.
+  /** Reverts the most recent getByte / scan / skip advance. */
   unscan() {
     this.#pos -= this.#lastMatchLen
     this.#lastMatchLen = 0
   }
 
-  // Advances past rx at the current position.
-  // Returns the number of characters skipped, or 0 on no match.
+  /**
+   * Advances past rx at the current position.
+   * @param {RegExp} rx
+   * @returns {number} The number of characters skipped, or 0 on no match.
+   */
   skip(rx) {
     const m = this.#exec(rx)
     return m ? m[0].length : 0
   }
 
-  // Matches rx at the current position and returns the matched string,
-  // or null on no match.
+  /**
+   * @param {RegExp} rx
+   * @returns {string|null} The matched string at the current position, or null on no match.
+   */
   scan(rx) {
     const m = this.#exec(rx)
     return m ? m[0] : null
   }
 
-  // Internal: execute rx (as a sticky regex) at the current position.
+  /**
+   * @param {RegExp} rx
+   * @returns {RegExpExecArray|null}
+   */
   #exec(rx) {
     let sticky = this.#stickyCache.get(rx)
     if (!sticky) {
@@ -132,26 +145,27 @@ class StringScanner {
 
 // ── AttributeList ─────────────────────────────────────────────────────────────
 
-// Public: Handles parsing AsciiDoc attribute lists into a plain object of
-// key/value pairs. By default, attributes must each be separated by a comma
-// and quotes may be used around the value. If a key is not detected, the value
-// is assigned to a 1-based positional key. Positional attributes can be
-// "rekeyed" when given a positionalAttrs array either during parsing or after.
-//
-// Examples
-//
-//   const attrlist = new AttributeList('astyle')
-//   attrlist.parse()
-//   // => { 1: 'astyle' }
-//
-//   attrlist.rekey(['style'])
-//   // => { 1: 'astyle', style: 'astyle' }
-//
-//   const attrlist2 = new AttributeList('quote, Famous Person, Famous Book (2001)')
-//   attrlist2.parse(['style', 'attribution', 'citetitle'])
-//   // => { 1: 'quote', style: 'quote', 2: 'Famous Person', attribution: 'Famous Person',
-//   //      3: 'Famous Book (2001)', citetitle: 'Famous Book (2001)' }
-//
+/**
+ * Handles parsing AsciiDoc attribute lists into a plain object of key/value pairs.
+ * By default, attributes must each be separated by a comma and quotes may be used
+ * around the value. If a key is not detected, the value is assigned to a 1-based
+ * positional key. Positional attributes can be "rekeyed" when given a positionalAttrs
+ * array either during parsing or after.
+ *
+ * @example
+ * const attrlist = new AttributeList('astyle')
+ * await attrlist.parse()
+ * // => { 1: 'astyle' }
+ *
+ * attrlist.rekey(['style'])
+ * // => { 1: 'astyle', style: 'astyle' }
+ *
+ * @example
+ * const attrlist2 = new AttributeList('quote, Famous Person, Famous Book (2001)')
+ * await attrlist2.parse(['style', 'attribution', 'citetitle'])
+ * // => { 1: 'quote', style: 'quote', 2: 'Famous Person', attribution: 'Famous Person',
+ * //      3: 'Famous Book (2001)', citetitle: 'Famous Book (2001)' }
+ */
 export class AttributeList {
   #scanner
   #block
@@ -168,23 +182,22 @@ export class AttributeList {
     this.#delimiterBoundaryPattern = BoundaryRx[delimiter]
   }
 
-  // Public: Parse the attribute list and merge the result into the given object.
-  //
-  // attributes     - The target plain object to update.
-  // positionalAttrs - An Array of String keys to assign to positional values.
-  //
-  // Returns the updated attributes object.
+  /**
+   * Parse the attribute list and merge the result into the given object.
+   * @param {Object} attributes - The target plain object to update.
+   * @param {string[]} [positionalAttrs=[]] - An array of keys to assign to positional values.
+   * @returns {Promise<Object>} The updated attributes object.
+   */
   async parseInto(attributes, positionalAttrs = []) {
     return Object.assign(attributes, await this.parse(positionalAttrs))
   }
 
-  // Public: Parse the attribute list and return a plain object of key/value pairs.
-  //
-  // Subsequent calls return the already-parsed result without re-parsing.
-  //
-  // positionalAttrs - An Array of String keys to assign to positional values.
-  //
-  // Returns a plain object of parsed attributes.
+  /**
+   * Parse the attribute list and return a plain object of key/value pairs.
+   * Subsequent calls return the already-parsed result without re-parsing.
+   * @param {string[]} [positionalAttrs=[]] - An array of keys to assign to positional values.
+   * @returns {Promise<Object>} A plain object of parsed attributes.
+   */
   async parse(positionalAttrs = []) {
     if (this.#attributes) return this.#attributes
     this.#attributes = {}
@@ -197,22 +210,21 @@ export class AttributeList {
     return this.#attributes
   }
 
-  // Public: Rekey the parsed positional attributes using the given key names.
-  //
-  // positionalAttrs - An Array of String keys to assign to positional values.
-  //
-  // Returns the updated attributes object.
+  /**
+   * Rekey the parsed positional attributes using the given key names.
+   * @param {string[]} positionalAttrs - An array of keys to assign to positional values.
+   * @returns {Object} The updated attributes object.
+   */
   rekey(positionalAttrs) {
     return AttributeList.rekey(this.#attributes, positionalAttrs)
   }
 
-  // Public: Assign String keys to the positional (numeric-keyed) values of the
-  // given attributes object.
-  //
-  // attributes      - A plain object produced by parse().
-  // positionalAttrs - An Array of String keys to assign (null entries are skipped).
-  //
-  // Returns the updated attributes object.
+  /**
+   * Assign string keys to the positional (numeric-keyed) values of the given attributes object.
+   * @param {Object} attributes - A plain object produced by parse().
+   * @param {Array<string|null>} positionalAttrs - Keys to assign (null entries are skipped).
+   * @returns {Object} The updated attributes object.
+   */
   static rekey(attributes, positionalAttrs) {
     for (let i = 0; i < positionalAttrs.length; i++) {
       const key = positionalAttrs[i]
@@ -224,9 +236,11 @@ export class AttributeList {
     return attributes
   }
 
-  // Private: Parse the next attribute starting at the given positional index.
-  //
-  // Returns true to continue parsing, false to stop.
+  /**
+   * @param {number} index
+   * @param {string[]} positionalAttrs
+   * @returns {Promise<boolean>} true to continue parsing, false to stop.
+   */
   async #parseAttribute(index, positionalAttrs) {
     let shouldContinue = true
     this.#skipBlank()
@@ -327,11 +341,10 @@ export class AttributeList {
     return shouldContinue
   }
 
-  // Private: Parse a quoted attribute value starting after the opening quote.
-  //
-  // quote - The String quote character that opened this value (QUOT or APOS).
-  //
-  // Returns the parsed String value (unescaped, without surrounding quotes).
+  /**
+   * @param {string} quote - The quote character that opened this value (QUOT or APOS).
+   * @returns {string} The parsed value (unescaped, without surrounding quotes).
+   */
   #parseAttributeValue(quote) {
     // empty quoted value: "" or ''
     if (this.#scanner.peek(1) === quote) {
