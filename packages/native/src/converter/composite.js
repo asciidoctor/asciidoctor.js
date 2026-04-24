@@ -7,16 +7,21 @@
 //   - backend_traits_source keyword arg → options object { backendTraitsSource }.
 //   - init_backend_traits(source.backend_traits) → this.initBackendTraits(source.backendInfo()).
 
-import { ConverterBase, applyBackendTraits } from '../converter.js'
+import { applyBackendTraits } from '../converter.js'
 
 // ── CompositeConverter ────────────────────────────────────────────────────────
 // Delegates to the first converter in the chain that handles a given transform.
 
 export class CompositeConverter {
-  constructor (backend, ...args) {
+  constructor(backend, ...args) {
     // Last argument may be an options object { backendTraitsSource }
     let opts = {}
-    if (args.length > 0 && args[args.length - 1] !== null && typeof args[args.length - 1] === 'object' && !args[args.length - 1].convert) {
+    if (
+      args.length > 0 &&
+      args[args.length - 1] !== null &&
+      typeof args[args.length - 1] === 'object' &&
+      !args[args.length - 1].convert
+    ) {
       opts = args.pop()
     }
     this.backend = backend
@@ -38,7 +43,7 @@ export class CompositeConverter {
   // opts      - optional hints passed to the delegate's convert method
   //
   // Returns the String result from the delegate's convert method.
-  convert (node, transform = null, opts = null) {
+  convert(node, transform = null, opts = null) {
     const t = transform ?? node.nodeName
     return this.converterFor(t).convert(node, t, opts)
   }
@@ -46,8 +51,9 @@ export class CompositeConverter {
   // Public: Retrieve the converter for the specified transform (cached).
   //
   // Returns the matching Converter object.
-  converterFor (transform) {
-    if (this._converterCache.has(transform)) return this._converterCache.get(transform)
+  converterFor(transform) {
+    if (this._converterCache.has(transform))
+      return this._converterCache.get(transform)
     const converter = this._findConverter(transform)
     this._converterCache.set(transform, converter)
     return converter
@@ -57,10 +63,16 @@ export class CompositeConverter {
   // Throws an Error if no converter handles the transform.
   //
   // Returns the matching Converter object.
-  _findConverter (transform) {
+  _findConverter(transform) {
     for (const candidate of this.converters) {
-      if (typeof candidate.handles === 'function' && candidate.handles(transform)) return candidate
+      if (
+        typeof candidate.handles === 'function' &&
+        candidate.handles(transform)
+      )
+        return candidate
     }
-    throw new Error(`Could not find a converter to handle transform: ${transform}`)
+    throw new Error(
+      `Could not find a converter to handle transform: ${transform}`
+    )
   }
 }

@@ -9,41 +9,78 @@
 //   - ListContinuationMarker module → Symbol used for identity checks.
 //   - Logging mixin applied via applyLogging().
 
-import { applyLogging, Logging }           from './logging.js'
-import { Block }                           from './block.js'
-import { Section }                         from './section.js'
-import { List, ListItem }                  from './list.js'
-import { Table }                           from './table.js'
-import { Inline }                          from './inline.js'
-import { AttributeList }                   from './attribute_list.js'
-import { AttributeEntry, Document, _deps } from './document.js'
-import { Compliance }                      from './compliance.js'
+import { applyLogging } from './logging.js'
+import { Block } from './block.js'
+import { Section } from './section.js'
+import { List, ListItem } from './list.js'
+import { Table } from './table.js'
+import { Inline } from './inline.js'
+import { AttributeList } from './attribute_list.js'
+import { AttributeEntry, _deps } from './document.js'
+import { Compliance } from './compliance.js'
 import { basename, intToRoman, romanToInt } from './helpers.js'
 import {
-  ADMONITION_STYLES, ADMONITION_STYLE_HEADS,
-  PARAGRAPH_STYLES, VERBATIM_STYLES,
-  DELIMITED_BLOCKS, DELIMITED_BLOCK_HEADS, DELIMITED_BLOCK_TAILS,
+  ADMONITION_STYLES,
+  ADMONITION_STYLE_HEADS,
+  PARAGRAPH_STYLES,
+  VERBATIM_STYLES,
+  DELIMITED_BLOCKS,
+  DELIMITED_BLOCK_HEADS,
+  DELIMITED_BLOCK_TAILS,
   SETEXT_SECTION_LEVELS,
-  LAYOUT_BREAK_CHARS, HYBRID_LAYOUT_BREAK_CHARS, MARKDOWN_THEMATIC_BREAK_CHARS,
-  NESTABLE_LIST_CONTEXTS, ORDERED_LIST_STYLES,
-  CAPTION_ATTRIBUTE_NAMES, STEM_TYPE_ALIASES,
-  ATTR_REF_HEAD, LIST_CONTINUATION, HARD_LINE_BREAK,
-  LINE_CONTINUATION, LINE_CONTINUATION_LEGACY, LF,
+  LAYOUT_BREAK_CHARS,
+  HYBRID_LAYOUT_BREAK_CHARS,
+  MARKDOWN_THEMATIC_BREAK_CHARS,
+  NESTABLE_LIST_CONTEXTS,
+  ORDERED_LIST_STYLES,
+  CAPTION_ATTRIBUTE_NAMES,
+  STEM_TYPE_ALIASES,
+  ATTR_REF_HEAD,
+  LIST_CONTINUATION,
+  LINE_CONTINUATION,
+  LINE_CONTINUATION_LEGACY,
+  LF,
 } from './constants.js'
 import {
-  BlockAnchorRx, BlockAttributeLineRx, BlockAttributeListRx, BlockTitleRx,
-  AtxSectionTitleRx, ExtAtxSectionTitleRx, SetextSectionTitleRx,
-  SectionLevelStyleRx, InlineSectionAnchorRx, InlineAnchorScanRx,
-  ManpageTitleVolnumRx, ManpageNamePurposeRx,
-  AnyListRx, UnorderedListRx, OrderedListRx,
-  DescriptionListRx, DescriptionListSiblingRx,
-  CalloutListRx, CalloutScanRx, InlineBiblioAnchorRx,
-  AdmonitionParagraphRx, BlockMediaMacroRx, BlockTocMacroRx, CustomBlockMacroRx,
-  ColumnSpecRx, CellSpecStartRx, CellSpecEndRx,
-  AuthorInfoLineRx, AuthorDelimiterRx, RevisionInfoLineRx,
-  AttributeEntryRx, MarkdownThematicBreakRx, ExtLayoutBreakRx,
-  LiteralParagraphRx, InvalidAttributeNameCharsRx, TrailingDigitsRx,
-  ListRxMap, OrderedListMarkerRxMap, LeadingInlineAnchorRx, XmlSanitizeRx,
+  BlockAnchorRx,
+  BlockAttributeLineRx,
+  BlockAttributeListRx,
+  BlockTitleRx,
+  AtxSectionTitleRx,
+  ExtAtxSectionTitleRx,
+  SetextSectionTitleRx,
+  SectionLevelStyleRx,
+  InlineSectionAnchorRx,
+  InlineAnchorScanRx,
+  ManpageTitleVolnumRx,
+  ManpageNamePurposeRx,
+  AnyListRx,
+  UnorderedListRx,
+  OrderedListRx,
+  DescriptionListRx,
+  DescriptionListSiblingRx,
+  CalloutListRx,
+  CalloutScanRx,
+  InlineBiblioAnchorRx,
+  AdmonitionParagraphRx,
+  BlockMediaMacroRx,
+  BlockTocMacroRx,
+  CustomBlockMacroRx,
+  ColumnSpecRx,
+  CellSpecStartRx,
+  CellSpecEndRx,
+  AuthorInfoLineRx,
+  AuthorDelimiterRx,
+  RevisionInfoLineRx,
+  AttributeEntryRx,
+  MarkdownThematicBreakRx,
+  ExtLayoutBreakRx,
+  LiteralParagraphRx,
+  InvalidAttributeNameCharsRx,
+  ListRxMap,
+  OrderedListMarkerRxMap,
+  LeadingInlineAnchorRx,
+  XmlSanitizeRx,
   AttributeEntryPassMacroRx,
 } from './rx.js'
 
@@ -51,52 +88,72 @@ import {
 // Used to distinguish list continuation placeholders from regular strings.
 const LIST_CONTINUATION_SYM = Symbol('ListContinuation')
 
-function isListContinuation (v) {
+function isListContinuation(v) {
   return v != null && v[LIST_CONTINUATION_SYM] === true
 }
 
-function makeListContinuationPlaceholder () {
+function makeListContinuationPlaceholder() {
   const s = new String('') // eslint-disable-line no-new-wrappers
   s[LIST_CONTINUATION_SYM] = true
   return s
 }
 
-function makeListContinuationString () {
+function makeListContinuationString() {
   const s = new String(LIST_CONTINUATION) // eslint-disable-line no-new-wrappers
   s[LIST_CONTINUATION_SYM] = true
   return s
 }
 
 const ListContinuationPlaceholder = makeListContinuationPlaceholder()
-const ListContinuationString      = makeListContinuationString()
+const ListContinuationString = makeListContinuationString()
 
 // Author attribute keys
-const AuthorKeys = new Set(['author', 'authorinitials', 'firstname', 'middlename', 'lastname', 'email'])
+const AuthorKeys = new Set([
+  'author',
+  'authorinitials',
+  'firstname',
+  'middlename',
+  'lastname',
+  'email',
+])
 
 // Cell alignment and style maps
 const TableCellHorzAlignments = { '<': 'left', '>': 'right', '^': 'center' }
-const TableCellVertAlignments = { '<': 'top',  '>': 'bottom', '^': 'middle' }
+const TableCellVertAlignments = { '<': 'top', '>': 'bottom', '^': 'middle' }
 const TableCellStyles = {
-  d: 'none', s: 'strong', e: 'emphasis', m: 'monospaced',
-  h: 'header', l: 'literal', a: 'asciidoc',
+  d: 'none',
+  s: 'strong',
+  e: 'emphasis',
+  m: 'monospaced',
+  h: 'header',
+  l: 'literal',
+  a: 'asciidoc',
 }
 
 // ── Parser ────────────────────────────────────────────────────────────────────
 
 export class Parser {
   // Prevent instantiation
-  constructor () {
+  constructor() {
     throw new Error('Parser cannot be instantiated')
   }
 
   // Public: Parse AsciiDoc source from reader into document.
-  static async parse (reader, document, options = {}) {
+  static async parse(reader, document, options = {}) {
     const headerOnly = options.header_only ?? false
-    let blockAttributes = await Parser.parseDocumentHeader(reader, document, headerOnly)
+    let blockAttributes = await Parser.parseDocumentHeader(
+      reader,
+      document,
+      headerOnly
+    )
 
     if (!headerOnly) {
       while (await reader.hasMoreLines()) {
-        const [newSection, attrs] = await Parser.nextSection(reader, document, blockAttributes)
+        const [newSection, attrs] = await Parser.nextSection(
+          reader,
+          document,
+          blockAttributes
+        )
         blockAttributes = attrs
         if (newSection) {
           document.assignNumeral(newSection)
@@ -108,25 +165,35 @@ export class Parser {
   }
 
   // Public: Parse the document header.
-  static async parseDocumentHeader (reader, document, headerOnly = false) {
-    let blockAttrs = await reader.skipBlankLines() != null ? await Parser.parseBlockMetadataLines(reader, document) : {}
+  static async parseDocumentHeader(reader, document, headerOnly = false) {
+    let blockAttrs =
+      (await reader.skipBlankLines()) != null
+        ? await Parser.parseBlockMetadataLines(reader, document)
+        : {}
     const docAttrs = document.attributes
 
-    const implicitDoctitle = await Parser.isNextLineDoctitle(reader, blockAttrs, docAttrs['leveloffset'])
-    if (implicitDoctitle && (blockAttrs['title'] || blockAttrs['style'])) {
-      docAttrs['authorcount'] = 0
+    const implicitDoctitle = await Parser.isNextLineDoctitle(
+      reader,
+      blockAttrs,
+      docAttrs.leveloffset
+    )
+    if (implicitDoctitle && (blockAttrs.title || blockAttrs.style)) {
+      docAttrs.authorcount = 0
       return document.finalizeHeader(blockAttrs, false)
     }
 
     let doctitleAttrVal = null
-    const existingDoctitle = docAttrs['doctitle']
+    const existingDoctitle = docAttrs.doctitle
     if (existingDoctitle && existingDoctitle !== '') {
       document.title = doctitleAttrVal = existingDoctitle
     }
 
     if (implicitDoctitle) {
       const sourceLocation = document.sourcemap ? reader.cursor : null
-      const [sectId,, l0SectionTitle,, atx] = await Parser.parseSectionTitle(reader, document)
+      const [_sectId, , l0SectionTitle, , atx] = await Parser.parseSectionTitle(
+        reader,
+        document
+      )
       let finalSectTitle = l0SectionTitle
 
       if (doctitleAttrVal) {
@@ -135,9 +202,11 @@ export class Parser {
         document.title = finalSectTitle
         let sanitized = document.subSpecialchars(finalSectTitle)
         if (sanitized.includes(ATTR_REF_HEAD)) {
-          sanitized = document.subAttributes(sanitized, { attribute_missing: 'skip' })
+          sanitized = document.subAttributes(sanitized, {
+            attribute_missing: 'skip',
+          })
         }
-        docAttrs['doctitle'] = doctitleAttrVal = sanitized
+        docAttrs.doctitle = doctitleAttrVal = sanitized
       }
 
       if (sourceLocation && document.header) {
@@ -147,15 +216,18 @@ export class Parser {
       if (!atx && !document.isAttributeLocked('compat-mode')) {
         docAttrs['compat-mode'] = ''
       }
-      if (blockAttrs['separator'] && !document.isAttributeLocked('title-separator')) {
-        docAttrs['title-separator'] = blockAttrs['separator']
+      if (
+        blockAttrs.separator &&
+        !document.isAttributeLocked('title-separator')
+      ) {
+        docAttrs['title-separator'] = blockAttrs.separator
       }
-      const docId = blockAttrs['id']
+      const docId = blockAttrs.id
       if (docId) {
         document.id = docId
       }
-      if (blockAttrs['role']) docAttrs['role'] = blockAttrs['role']
-      if (blockAttrs['reftext']) docAttrs['reftext'] = blockAttrs['reftext']
+      if (blockAttrs.role) docAttrs.role = blockAttrs.role
+      if (blockAttrs.reftext) docAttrs.reftext = blockAttrs.reftext
       blockAttrs = {}
 
       const modifiedAttrs = document._attributesModified
@@ -163,9 +235,9 @@ export class Parser {
       await Parser.parseHeaderMetadata(reader, document, null)
 
       if (modifiedAttrs.has('doctitle')) {
-        const val = docAttrs['doctitle']
+        const val = docAttrs.doctitle
         if (!val || val === '' || val === doctitleAttrVal) {
-          docAttrs['doctitle'] = doctitleAttrVal
+          docAttrs.doctitle = doctitleAttrVal
         } else {
           document.title = val
         }
@@ -174,15 +246,15 @@ export class Parser {
       }
 
       if (docId) document.register('refs', [docId, document])
-    } else if (docAttrs['author']) {
-      const authorMeta = Parser.processAuthors(docAttrs['author'], true, false)
-      if (docAttrs['authorinitials']) delete authorMeta['authorinitials']
+    } else if (docAttrs.author) {
+      const authorMeta = Parser.processAuthors(docAttrs.author, true, false)
+      if (docAttrs.authorinitials) delete authorMeta.authorinitials
       Object.assign(docAttrs, authorMeta)
-    } else if (docAttrs['authors']) {
-      const authorMeta = Parser.processAuthors(docAttrs['authors'], true)
+    } else if (docAttrs.authors) {
+      const authorMeta = Parser.processAuthors(docAttrs.authors, true)
       Object.assign(docAttrs, authorMeta)
     } else {
-      docAttrs['authorcount'] = 0
+      docAttrs.authorcount = 0
     }
 
     if (document.doctype === 'manpage') {
@@ -193,94 +265,131 @@ export class Parser {
   }
 
   // Public: Parse manpage header.
-  static async parseManpageHeader (reader, document, blockAttributes, headerOnly = false) {
+  static async parseManpageHeader(
+    reader,
+    document,
+    blockAttributes,
+    headerOnly = false
+  ) {
     const docAttrs = document.attributes
-    const doctitle  = docAttrs['doctitle'] || ''
+    const doctitle = docAttrs.doctitle || ''
     const m = doctitle.match(ManpageTitleVolnumRx)
     let manvolnum
     if (m) {
-      manvolnum = docAttrs['manvolnum'] = m[2]
+      manvolnum = docAttrs.manvolnum = m[2]
       let mantitle = m[1]
-      if (mantitle.includes(ATTR_REF_HEAD)) mantitle = document.subAttributes(mantitle)
-      docAttrs['mantitle'] = mantitle.toLowerCase()
+      if (mantitle.includes(ATTR_REF_HEAD))
+        mantitle = document.subAttributes(mantitle)
+      docAttrs.mantitle = mantitle.toLowerCase()
     } else {
-      Parser.logger.error(Parser.messageWithContext('non-conforming manpage title', { source_location: reader.cursorAtLine(1) }))
-      docAttrs['mantitle'] = doctitle || docAttrs['docname'] || 'command'
-      manvolnum = docAttrs['manvolnum'] = '1'
+      Parser.logger.error(
+        Parser.messageWithContext('non-conforming manpage title', {
+          source_location: reader.cursorAtLine(1),
+        })
+      )
+      docAttrs.mantitle = doctitle || docAttrs.docname || 'command'
+      manvolnum = docAttrs.manvolnum = '1'
     }
 
-    let manname = docAttrs['manname']
-    if (manname && docAttrs['manpurpose']) {
+    const manname = docAttrs.manname
+    if (manname && docAttrs.manpurpose) {
       docAttrs['manname-title'] ??= 'Name'
-      docAttrs['mannames'] = [manname]
+      docAttrs.mannames = [manname]
       if (document.backend === 'manpage') {
-        docAttrs['docname'] = manname
-        docAttrs['outfilesuffix'] = `.${manvolnum}`
+        docAttrs.docname = manname
+        docAttrs.outfilesuffix = `.${manvolnum}`
       }
     } else if (headerOnly) {
       // done
     } else {
       await reader.skipBlankLines()
       reader.save()
-      Object.assign(blockAttributes, await Parser.parseBlockMetadataLines(reader, document))
+      Object.assign(
+        blockAttributes,
+        await Parser.parseBlockMetadataLines(reader, document)
+      )
       const nameSectionLevel = await Parser.isNextLineSection(reader, {})
       if (nameSectionLevel !== null && nameSectionLevel !== undefined) {
         if (nameSectionLevel === 1) {
-          const nameSection = await Parser.initializeSection(reader, document, {})
-          const buffer = (await reader.readLinesUntil({ break_on_blank_lines: true, skip_line_comments: true }))
-            .map(l => l.trimStart()).join(' ')
+          const nameSection = await Parser.initializeSection(
+            reader,
+            document,
+            {}
+          )
+          const buffer = (
+            await reader.readLinesUntil({
+              break_on_blank_lines: true,
+              skip_line_comments: true,
+            })
+          )
+            .map((l) => l.trimStart())
+            .join(' ')
           const nm = buffer.match(ManpageNamePurposeRx)
           let errorMsg = null
           if (nm) {
             let mname = nm[1]
-            if (mname.includes(ATTR_REF_HEAD)) mname = document.subAttributes(mname)
+            if (mname.includes(ATTR_REF_HEAD))
+              mname = document.subAttributes(mname)
             let mannames
             if (mname.includes(',')) {
-              mannames = mname.split(',').map(n => n.trimStart())
+              mannames = mname.split(',').map((n) => n.trimStart())
               mname = mannames[0]
             } else {
               mannames = [mname]
             }
             let manpurpose = nm[2]
-            if (manpurpose.includes(ATTR_REF_HEAD)) manpurpose = document.subAttributes(manpurpose)
+            if (manpurpose.includes(ATTR_REF_HEAD))
+              manpurpose = document.subAttributes(manpurpose)
             docAttrs['manname-title'] ??= nameSection.title
             if (nameSection.id) docAttrs['manname-id'] = nameSection.id
-            docAttrs['manname']    = mname
-            docAttrs['mannames']   = mannames
-            docAttrs['manpurpose'] = manpurpose
+            docAttrs.manname = mname
+            docAttrs.mannames = mannames
+            docAttrs.manpurpose = manpurpose
             if (document.backend === 'manpage') {
-              docAttrs['docname']       = mname
-              docAttrs['outfilesuffix'] = `.${manvolnum}`
+              docAttrs.docname = mname
+              docAttrs.outfilesuffix = `.${manvolnum}`
             }
           } else {
             errorMsg = 'non-conforming name section body'
           }
           if (errorMsg) {
             reader.restoreSave()
-            Parser.logger.error(Parser.messageWithContext(errorMsg, { source_location: reader.cursor }))
-            const mn = docAttrs['docname'] || 'command'
-            docAttrs['manname']  = mn
-            docAttrs['mannames'] = [mn]
+            Parser.logger.error(
+              Parser.messageWithContext(errorMsg, {
+                source_location: reader.cursor,
+              })
+            )
+            const mn = docAttrs.docname || 'command'
+            docAttrs.manname = mn
+            docAttrs.mannames = [mn]
             if (document.backend === 'manpage') {
-              docAttrs['docname']       = mn
-              docAttrs['outfilesuffix'] = `.${manvolnum}`
+              docAttrs.docname = mn
+              docAttrs.outfilesuffix = `.${manvolnum}`
             }
           } else {
             reader.discardSave()
           }
         } else {
           reader.restoreSave()
-          Parser.logger.error(Parser.messageWithContext('name section must be at level 1', { source_location: reader.cursor }))
+          Parser.logger.error(
+            Parser.messageWithContext('name section must be at level 1', {
+              source_location: reader.cursor,
+            })
+          )
         }
       } else {
         reader.restoreSave()
-        Parser.logger.error(Parser.messageWithContext('name section expected', { source_location: reader.cursor }))
-        const mn = docAttrs['docname'] || 'command'
-        docAttrs['manname']  = mn
-        docAttrs['mannames'] = [mn]
+        Parser.logger.error(
+          Parser.messageWithContext('name section expected', {
+            source_location: reader.cursor,
+          })
+        )
+        const mn = docAttrs.docname || 'command'
+        docAttrs.manname = mn
+        docAttrs.mannames = [mn]
         if (document.backend === 'manpage') {
-          docAttrs['docname']       = mn
-          docAttrs['outfilesuffix'] = `.${manvolnum}`
+          docAttrs.docname = mn
+          docAttrs.outfilesuffix = `.${manvolnum}`
         }
       }
     }
@@ -289,21 +398,32 @@ export class Parser {
   // Public: Return the next section from the reader.
   //
   // Returns [section_or_null, orphaned_attributes].
-  static async nextSection (reader, parent, attributes = {}) {
-    let preamble = null, intro = null, part = false
+  static async nextSection(reader, parent, attributes = {}) {
+    let preamble = null,
+      intro = null,
+      part = false
 
     const parentIsDocument = parent.context === 'document'
     let section, currentLevel, expectedNextLevel, expectedNextLevelAlt
     let book, document
 
-    if (parentIsDocument && parent.blocks.length === 0 &&
-        (parent.hasHeader() || ('invalid-header' in attributes && !!attributes['invalid-header'] && delete attributes['invalid-header'] !== undefined) ||
-         typeof await Parser.isNextLineSection(reader, attributes) !== 'number')) {
+    if (
+      parentIsDocument &&
+      parent.blocks.length === 0 &&
+      (parent.hasHeader() ||
+        ('invalid-header' in attributes &&
+          !!attributes['invalid-header'] &&
+          delete attributes['invalid-header'] !== undefined) ||
+        typeof (await Parser.isNextLineSection(reader, attributes)) !==
+          'number')
+    ) {
       // We are at the start of document processing
       document = parent
       book = document.doctype === 'book'
       if (parent.hasHeader() || (book && attributes[1] !== 'abstract')) {
-        preamble = intro = new Block(parent, 'preamble', { content_model: 'compound' })
+        preamble = intro = new Block(parent, 'preamble', {
+          content_model: 'compound',
+        })
         if (book && parent.hasAttr('preface-title')) {
           preamble.title = parent.attr('preface-title')
         }
@@ -323,7 +443,7 @@ export class Parser {
       document = parent.document
       book = document.doctype === 'book'
       section = await Parser.initializeSection(reader, parent, attributes)
-      const title = attributes['title']
+      const title = attributes.title
       attributes = title ? { title } : {}
       currentLevel = section.level
       expectedNextLevel = currentLevel + 1
@@ -343,7 +463,11 @@ export class Parser {
       await Parser.parseBlockMetadataLines(reader, document, attributes)
       let nextLevel = await Parser.isNextLineSection(reader, attributes)
 
-      if (nextLevel !== null && nextLevel !== undefined && nextLevel !== false) {
+      if (
+        nextLevel !== null &&
+        nextLevel !== undefined &&
+        nextLevel !== false
+      ) {
         const leveloffset = document.attr('leveloffset')
         if (leveloffset) {
           nextLevel += parseInt(leveloffset, 10)
@@ -352,26 +476,55 @@ export class Parser {
 
         if (nextLevel > currentLevel) {
           if (expectedNextLevel != null) {
-            if (nextLevel !== expectedNextLevel &&
-                !(expectedNextLevelAlt != null && nextLevel === expectedNextLevelAlt) &&
-                expectedNextLevel >= 0) {
-              const expectedCondition = expectedNextLevelAlt != null
-                ? `expected levels ${expectedNextLevelAlt} or ${expectedNextLevel}`
-                : `expected level ${expectedNextLevel}`
-              Parser.logger.warn(Parser.messageWithContext(`section title out of sequence: ${expectedCondition}, got level ${nextLevel}`, { source_location: reader.cursor }))
+            if (
+              nextLevel !== expectedNextLevel &&
+              !(
+                expectedNextLevelAlt != null &&
+                nextLevel === expectedNextLevelAlt
+              ) &&
+              expectedNextLevel >= 0
+            ) {
+              const expectedCondition =
+                expectedNextLevelAlt != null
+                  ? `expected levels ${expectedNextLevelAlt} or ${expectedNextLevel}`
+                  : `expected level ${expectedNextLevel}`
+              Parser.logger.warn(
+                Parser.messageWithContext(
+                  `section title out of sequence: ${expectedCondition}, got level ${nextLevel}`,
+                  { source_location: reader.cursor }
+                )
+              )
             }
           } else {
-            Parser.logger.error(Parser.messageWithContext(`${section.sectname} sections do not support nested sections`, { source_location: reader.cursor }))
+            Parser.logger.error(
+              Parser.messageWithContext(
+                `${section.sectname} sections do not support nested sections`,
+                { source_location: reader.cursor }
+              )
+            )
           }
-          const [newSection, attrs] = await Parser.nextSection(reader, section, attributes)
+          const [newSection, attrs] = await Parser.nextSection(
+            reader,
+            section,
+            attributes
+          )
           attributes = attrs
           section.assignNumeral(newSection)
           section.blocks.push(newSection)
         } else if (nextLevel === 0 && section === document) {
           if (!book) {
-            Parser.logger.error(Parser.messageWithContext('level 0 sections can only be used when doctype is book', { source_location: reader.cursor }))
+            Parser.logger.error(
+              Parser.messageWithContext(
+                'level 0 sections can only be used when doctype is book',
+                { source_location: reader.cursor }
+              )
+            )
           }
-          const [newSection, attrs] = await Parser.nextSection(reader, section, attributes)
+          const [newSection, attrs] = await Parser.nextSection(
+            reader,
+            section,
+            attributes
+          )
           attributes = attrs
           section.assignNumeral(newSection)
           section.blocks.push(newSection)
@@ -380,7 +533,12 @@ export class Parser {
         }
       } else {
         const blockCursor = reader.cursor
-        const newBlock = await Parser.nextBlock(reader, intro ?? section, attributes, { parse_metadata: false })
+        const newBlock = await Parser.nextBlock(
+          reader,
+          intro ?? section,
+          attributes,
+          { parse_metadata: false }
+        )
         if (newBlock) {
           if (part) {
             if (!section.hasBlocks()) {
@@ -388,22 +546,36 @@ export class Parser {
                 if (newBlock.style === 'open' && newBlock.context === 'open') {
                   newBlock.style = 'partintro'
                 } else {
-                  newBlock.parent = (intro = new Block(section, 'open', { content_model: 'compound' }))
+                  newBlock.parent = intro = new Block(section, 'open', {
+                    content_model: 'compound',
+                  })
                   intro.style = 'partintro'
                   section.blocks.push(intro)
                 }
               } else if (newBlock.contentModel === 'simple') {
                 newBlock.contentModel = 'compound'
-                newBlock.append(new Block(newBlock, 'paragraph', { source: newBlock.lines, subs: newBlock.subs }))
+                newBlock.append(
+                  new Block(newBlock, 'paragraph', {
+                    source: newBlock.lines,
+                    subs: newBlock.subs,
+                  })
+                )
                 newBlock.lines.length = 0
                 newBlock.subs.length = 0
               }
             } else if (section.blocks.length === 1) {
               const firstBlock = section.blocks[0]
               if (!intro && firstBlock.contentModel === 'compound') {
-                Parser.logger.error(Parser.messageWithContext('illegal block content outside of partintro block', { source_location: blockCursor }))
+                Parser.logger.error(
+                  Parser.messageWithContext(
+                    'illegal block content outside of partintro block',
+                    { source_location: blockCursor }
+                  )
+                )
               } else if (firstBlock.contentModel !== 'compound') {
-                newBlock.parent = (intro = new Block(section, 'open', { content_model: 'compound' }))
+                newBlock.parent = intro = new Block(section, 'open', {
+                  content_model: 'compound',
+                })
                 if (firstBlock.style === (intro.style = 'partintro')) {
                   firstBlock.context = 'paragraph'
                   firstBlock.style = null
@@ -419,17 +591,30 @@ export class Parser {
         }
       }
 
-      if (await reader.skipBlankLines() == null) break
+      if ((await reader.skipBlankLines()) == null) break
     }
 
     if (part) {
-      if (!section.hasBlocks() || section.blocks[section.blocks.length - 1].context !== 'section') {
-        Parser.logger.error(Parser.messageWithContext('invalid part, must have at least one section (e.g., chapter, appendix, etc.)', { source_location: reader.cursor }))
+      if (
+        !section.hasBlocks() ||
+        section.blocks[section.blocks.length - 1].context !== 'section'
+      ) {
+        Parser.logger.error(
+          Parser.messageWithContext(
+            'invalid part, must have at least one section (e.g., chapter, appendix, etc.)',
+            { source_location: reader.cursor }
+          )
+        )
       }
     } else if (preamble) {
       if (preamble.hasBlocks()) {
-        if (book || document.blocks[1] || !Compliance.unwrapStandalonePreamble) {
-          if (document.sourcemap) preamble.sourceLocation = preamble.blocks[0].sourceLocation
+        if (
+          book ||
+          document.blocks[1] ||
+          !Compliance.unwrapStandalonePreamble
+        ) {
+          if (document.sourcemap)
+            preamble.sourceLocation = preamble.blocks[0].sourceLocation
         } else {
           document.blocks.shift()
           while (preamble.blocks.length > 0) {
@@ -445,7 +630,7 @@ export class Parser {
   }
 
   // Public: Parse and return the next Block at the Reader's current location.
-  static async nextBlock (reader, parent, attributes = {}, options = {}) {
+  static async nextBlock(reader, parent, attributes = {}, options = {}) {
     const skipped = await reader.skipBlankLines()
     if (skipped == null) return null
 
@@ -455,55 +640,81 @@ export class Parser {
       textOnly = null
     }
 
-    const document  = parent.document
+    const document = parent.document
     const parseMetadata = options.parse_metadata !== false
 
     if (parseMetadata) {
-      while (await Parser.parseBlockMetadataLine(reader, document, attributes, options)) {
+      while (
+        await Parser.parseBlockMetadataLine(
+          reader,
+          document,
+          attributes,
+          options
+        )
+      ) {
         await reader.readLine()
-        if (await reader.skipBlankLines() == null) return null
+        if ((await reader.skipBlankLines()) == null) return null
       }
     }
 
     const extensions = document.extensions
-    const blockExtensions     = extensions?.hasBlocks?.()
+    const blockExtensions = extensions?.hasBlocks?.()
     const blockMacroExtensions = extensions?.hasBlockMacros?.()
 
     reader.mark()
-    let thisLine = await reader.readLine()
+    const thisLine = await reader.readLine()
     if (thisLine === undefined) return null
     const docAttrs = document.attributes
-    const style    = attributes[1] ?? null
-    let block = null, blockContext = null, cloakedContext = null, terminator = null
+    const style = attributes[1] ?? null
+    let block = null,
+      blockContext = null,
+      cloakedContext = null,
+      terminator = null
 
     const delimitedBlock = Parser.isDelimitedBlock(thisLine, true)
     if (delimitedBlock) {
-      blockContext  = cloakedContext = delimitedBlock.context
-      terminator    = delimitedBlock.terminator
+      blockContext = cloakedContext = delimitedBlock.context
+      terminator = delimitedBlock.terminator
       if (style) {
         if (style !== blockContext) {
           if (delimitedBlock.masq.has(style)) {
             blockContext = style
-          } else if (delimitedBlock.masq.has('admonition') && ADMONITION_STYLES.has(style)) {
+          } else if (
+            delimitedBlock.masq.has('admonition') &&
+            ADMONITION_STYLES.has(style)
+          ) {
             blockContext = 'admonition'
-          } else if (blockExtensions && extensions.registeredForBlock(style, blockContext)) {
+          } else if (
+            blockExtensions &&
+            extensions.registeredForBlock(style, blockContext)
+          ) {
             blockContext = style
           } else {
             // unknown style; revert to block context
-            if (Parser.logger.isDebug()) Parser.logger.debug(Parser.messageWithContext(`unknown style for ${blockContext} block: ${style}`, { source_location: reader.cursor }))
+            if (Parser.logger.isDebug())
+              Parser.logger.debug(
+                Parser.messageWithContext(
+                  `unknown style for ${blockContext} block: ${style}`,
+                  { source_location: reader.cursor }
+                )
+              )
           }
         }
       } else {
-        attributes['style'] = blockContext
+        attributes.style = blockContext
       }
     }
 
     if (!delimitedBlock) {
       // Processed once (break used for flow control)
-      outer: do {
+      do {
         // Verbatim style shortcut
-        if (style && Compliance.strictVerbatimParagraphs && VERBATIM_STYLES.has(style)) {
-          blockContext   = style
+        if (
+          style &&
+          Compliance.strictVerbatimParagraphs &&
+          VERBATIM_STYLES.has(style)
+        ) {
+          blockContext = style
           cloakedContext = 'paragraph'
           reader.unshiftLine(thisLine)
           break
@@ -518,8 +729,13 @@ export class Parser {
           if (mdSyntax) {
             const stripped = thisLine.trimStart()
             const firstChar = stripped[0]
-            if (MARKDOWN_THEMATIC_BREAK_CHARS[firstChar] && MarkdownThematicBreakRx.test(thisLine)) {
-              block = new Block(parent, 'thematic_break', { content_model: 'empty' })
+            if (
+              MARKDOWN_THEMATIC_BREAK_CHARS[firstChar] &&
+              MarkdownThematicBreakRx.test(thisLine)
+            ) {
+              block = new Block(parent, 'thematic_break', {
+                content_model: 'empty',
+              })
               break
             }
           }
@@ -529,19 +745,31 @@ export class Parser {
         } else {
           indented = false
           ch0 = thisLine[0]
-          const layoutBreakChars = mdSyntax ? HYBRID_LAYOUT_BREAK_CHARS : LAYOUT_BREAK_CHARS
+          const layoutBreakChars = mdSyntax
+            ? HYBRID_LAYOUT_BREAK_CHARS
+            : LAYOUT_BREAK_CHARS
 
           if (!textOnly && layoutBreakChars[ch0]) {
             const ll = thisLine.length
-            if (mdSyntax ? ExtLayoutBreakRx.test(thisLine) : (_uniform(thisLine, ch0, ll) && ll > 2)) {
-              block = new Block(parent, layoutBreakChars[ch0], { content_model: 'empty' })
+            if (
+              mdSyntax
+                ? ExtLayoutBreakRx.test(thisLine)
+                : _uniform(thisLine, ch0, ll) && ll > 2
+            ) {
+              block = new Block(parent, layoutBreakChars[ch0], {
+                content_model: 'empty',
+              })
               break
             }
           }
 
           if (thisLine.endsWith(']') && thisLine.includes('::')) {
             // Block macro check
-            if ((ch0 === 'i' || thisLine.startsWith('video:') || thisLine.startsWith('audio:'))) {
+            if (
+              ch0 === 'i' ||
+              thisLine.startsWith('video:') ||
+              thisLine.startsWith('audio:')
+            ) {
               const mm = thisLine.match(BlockMediaMacroRx)
               if (mm) {
                 const [, blkCtxStr, target0, blkAttrsStr] = mm
@@ -550,39 +778,52 @@ export class Parser {
                 let target = target0
                 if (blkAttrsStr) {
                   let posattrs = []
-                  if (blkCtx === 'video') posattrs = ['poster', 'width', 'height']
-                  else if (blkCtx === 'image') posattrs = ['alt', 'width', 'height']
-                  await block.parseAttributes(blkAttrsStr, posattrs, { sub_input: true, into: attributes })
+                  if (blkCtx === 'video')
+                    posattrs = ['poster', 'width', 'height']
+                  else if (blkCtx === 'image')
+                    posattrs = ['alt', 'width', 'height']
+                  await block.parseAttributes(blkAttrsStr, posattrs, {
+                    sub_input: true,
+                    into: attributes,
+                  })
                 }
-                delete attributes['style']
+                delete attributes.style
                 if (target.includes(ATTR_REF_HEAD)) {
-                  const expanded = block.subAttributes(target, { returnDropSentinel: true })
+                  const expanded = block.subAttributes(target, {
+                    returnDropSentinel: true,
+                  })
                   if (expanded === null) {
                     // A missing attribute triggered drop-line; blank attributes (e.g. {blank})
                     // that resolve to '' are kept (expanded !== null for those).
-                    for (const k of Object.keys(attributes)) delete attributes[k]
+                    for (const k of Object.keys(attributes))
+                      delete attributes[k]
                     return null
                   }
                   target = expanded
                 }
                 if (blkCtx === 'image') {
                   document.register('images', target)
-                  attributes['imagesdir'] ??= docAttrs['imagesdir']
-                  attributes['alt'] ??= style ?? (attributes['default-alt'] = basename(target, true).replace(/[_-]/g, ' '))
-                  let scaledwidth = attributes['scaledwidth']
+                  attributes.imagesdir ??= docAttrs.imagesdir
+                  attributes.alt ??=
+                    style ??
+                    (attributes['default-alt'] = basename(target, true).replace(
+                      /[_-]/g,
+                      ' '
+                    ))
+                  let scaledwidth = attributes.scaledwidth
                   if (scaledwidth) {
-                    delete attributes['scaledwidth']
+                    delete attributes.scaledwidth
                     if (!scaledwidth.match(/\D/)) scaledwidth += '%'
-                    attributes['scaledwidth'] = scaledwidth
+                    attributes.scaledwidth = scaledwidth
                   }
-                  if (attributes['title']) {
-                    block.title = attributes['title']
-                    delete attributes['title']
-                    block.assignCaption(attributes['caption'], 'figure')
-                    delete attributes['caption']
+                  if (attributes.title) {
+                    block.title = attributes.title
+                    delete attributes.title
+                    block.assignCaption(attributes.caption, 'figure')
+                    delete attributes.caption
                   }
                 }
-                attributes['target'] = target
+                attributes.target = target
                 break
               }
             }
@@ -591,7 +832,11 @@ export class Parser {
               const tocm = thisLine.match(BlockTocMacroRx)
               if (tocm) {
                 block = new Block(parent, 'toc', { content_model: 'empty' })
-                if (tocm[1]) await block.parseAttributes(tocm[1], [], { sub_input: true, into: attributes })
+                if (tocm[1])
+                  await block.parseAttributes(tocm[1], [], {
+                    sub_input: true,
+                    into: attributes,
+                  })
                 break
               }
             }
@@ -604,25 +849,39 @@ export class Parser {
                   let target = cbm[2]
                   const content = cbm[3]
                   if (target.includes(ATTR_REF_HEAD)) {
-                    const expanded = parent.subAttributes(target, { returnDropSentinel: true })
+                    const expanded = parent.subAttributes(target, {
+                      returnDropSentinel: true,
+                    })
                     if (expanded === null) {
-                      for (const k of Object.keys(attributes)) delete attributes[k]
+                      for (const k of Object.keys(attributes))
+                        delete attributes[k]
                       return null
                     }
                     target = expanded
                   }
                   const extConfig = extension.config
                   if (extConfig.content_model === 'attributes') {
-                    if (content) await document.parseAttributes(content, extConfig.positional_attrs ?? extConfig.pos_attrs ?? [], { sub_input: true, into: attributes })
+                    if (content)
+                      await document.parseAttributes(
+                        content,
+                        extConfig.positional_attrs ?? extConfig.pos_attrs ?? [],
+                        { sub_input: true, into: attributes }
+                      )
                   } else {
-                    attributes['text'] = content ?? ''
+                    attributes.text = content ?? ''
                   }
                   if (extConfig.default_attrs) {
-                    for (const [k, v] of Object.entries(extConfig.default_attrs)) {
+                    for (const [k, v] of Object.entries(
+                      extConfig.default_attrs
+                    )) {
                       attributes[k] ??= v
                     }
                   }
-                  const result = await extension.processMethod(parent, target, attributes)
+                  const result = await extension.processMethod(
+                    parent,
+                    target,
+                    attributes
+                  )
                   if (result && result !== parent) {
                     Object.assign(attributes, result.attributes)
                     block = result
@@ -640,31 +899,47 @@ export class Parser {
           const clm = thisLine.match(CalloutListRx)
           if (clm) {
             reader.unshiftLine(thisLine)
-            block = await Parser.parseCalloutList(reader, clm, parent, document.callouts)
-            attributes['style'] = 'arabic'
+            block = await Parser.parseCalloutList(
+              reader,
+              clm,
+              parent,
+              document.callouts
+            )
+            attributes.style = 'arabic'
             break
           }
         }
 
         if (UnorderedListRx.test(thisLine)) {
           reader.unshiftLine(thisLine)
-          if (!style && parent instanceof Section && parent.sectname === 'bibliography') {
-            attributes['style'] = 'bibliography'
+          if (
+            !style &&
+            parent instanceof Section &&
+            parent.sectname === 'bibliography'
+          ) {
+            attributes.style = 'bibliography'
           }
-          block = await Parser.parseList(reader, 'ulist', parent, style ?? attributes['style'] ?? null)
+          block = await Parser.parseList(
+            reader,
+            'ulist',
+            parent,
+            style ?? attributes.style ?? null
+          )
           break
         }
 
         if (OrderedListRx.test(thisLine)) {
           reader.unshiftLine(thisLine)
-          const start = ('start' in attributes) ? attributes['start'] : null
-          delete attributes['start']
-          block = await Parser.parseList(reader, 'olist', parent, style, { start })
-          if (block.style) attributes['style'] = block.style
+          const start = 'start' in attributes ? attributes.start : null
+          delete attributes.start
+          block = await Parser.parseList(reader, 'olist', parent, style, {
+            start,
+          })
+          if (block.style) attributes.style = block.style
           break
         }
 
-        if ((thisLine.includes('::') || thisLine.includes(';;'))) {
+        if (thisLine.includes('::') || thisLine.includes(';;')) {
           const dlm = thisLine.match(DescriptionListRx)
           if (dlm) {
             reader.unshiftLine(thisLine)
@@ -673,16 +948,21 @@ export class Parser {
           }
         }
 
-        if ((style === 'float' || style === 'discrete') &&
-            (Compliance.underlineStyleSectionTitles
-              ? Parser.isSectionTitle(thisLine, await reader.peekLine()) != null
-              : !indented && Parser.atxSectionTitle(thisLine) != null)) {
+        if (
+          (style === 'float' || style === 'discrete') &&
+          (Compliance.underlineStyleSectionTitles
+            ? Parser.isSectionTitle(thisLine, await reader.peekLine()) != null
+            : !indented && Parser.atxSectionTitle(thisLine) != null)
+        ) {
           reader.unshiftLine(thisLine)
-          const [floatId, floatReftext, blockTitle, floatLevel] = await Parser.parseSectionTitle(reader, document, attributes['id'])
-          if (floatReftext) attributes['reftext'] = floatReftext
-          block = new Block(parent, 'floating_title', { content_model: 'empty' })
+          const [floatId, floatReftext, blockTitle, floatLevel] =
+            await Parser.parseSectionTitle(reader, document, attributes.id)
+          if (floatReftext) attributes.reftext = floatReftext
+          block = new Block(parent, 'floating_title', {
+            content_model: 'empty',
+          })
           block.title = blockTitle
-          delete attributes['title']
+          delete attributes.title
           // Force title resolution while in scope to capture current attribute values (Ruby: parser.rb ~line 939)
           if (blockTitle.includes(ATTR_REF_HEAD)) await block.precomputeTitle()
           if (floatId) {
@@ -697,59 +977,101 @@ export class Parser {
 
         if (style && style !== 'normal') {
           if (PARAGRAPH_STYLES.has(style)) {
-            blockContext   = style
+            blockContext = style
             cloakedContext = 'paragraph'
             reader.unshiftLine(thisLine)
             break
           }
           if (ADMONITION_STYLES.has(style)) {
-            blockContext   = 'admonition'
+            blockContext = 'admonition'
             cloakedContext = 'paragraph'
             reader.unshiftLine(thisLine)
             break
           }
-          if (blockExtensions && extensions.registeredForBlock(style, 'paragraph')) {
-            blockContext   = style
+          if (
+            blockExtensions &&
+            extensions.registeredForBlock(style, 'paragraph')
+          ) {
+            blockContext = style
             cloakedContext = 'paragraph'
             reader.unshiftLine(thisLine)
             break
           }
           // unknown style; fall through
-          if (style && Parser.logger.isDebug()) Parser.logger.debug(Parser.messageWithContext(`unknown style for paragraph: ${style}`, { source_location: reader.cursor }))
+          if (style && Parser.logger.isDebug())
+            Parser.logger.debug(
+              Parser.messageWithContext(
+                `unknown style for paragraph: ${style}`,
+                { source_location: reader.cursor }
+              )
+            )
         }
 
         reader.unshiftLine(thisLine)
 
         if (indented && !style) {
           const contentAdjacent = skipped === 0 ? options.list_type : null
-          const lines = await Parser.readParagraphLines(reader, contentAdjacent, { skip_line_comments: !!textOnly })
+          const lines = await Parser.readParagraphLines(
+            reader,
+            contentAdjacent,
+            { skip_line_comments: !!textOnly }
+          )
           Parser.adjustIndentation(lines)
           if (textOnly || contentAdjacent === 'dlist') {
-            block = new Block(parent, 'paragraph', { content_model: 'simple', source: lines, attributes })
+            block = new Block(parent, 'paragraph', {
+              content_model: 'simple',
+              source: lines,
+              attributes,
+            })
           } else {
-            block = new Block(parent, 'literal', { content_model: 'verbatim', source: lines, attributes })
+            block = new Block(parent, 'literal', {
+              content_model: 'verbatim',
+              source: lines,
+              attributes,
+            })
           }
         } else {
-          const lines = await Parser.readParagraphLines(reader, skipped === 0 && options.list_type, { skip_line_comments: true })
+          const lines = await Parser.readParagraphLines(
+            reader,
+            skipped === 0 && options.list_type,
+            { skip_line_comments: true }
+          )
           if (textOnly) {
             if (indented && style === 'normal') Parser.adjustIndentation(lines)
-            block = new Block(parent, 'paragraph', { content_model: 'simple', source: lines, attributes })
-          } else if (ADMONITION_STYLE_HEADS.has(ch0) && thisLine.includes(':')) {
+            block = new Block(parent, 'paragraph', {
+              content_model: 'simple',
+              source: lines,
+              attributes,
+            })
+          } else if (
+            ADMONITION_STYLE_HEADS.has(ch0) &&
+            thisLine.includes(':')
+          ) {
             const am = thisLine.match(AdmonitionParagraphRx)
             if (am) {
               lines[0] = thisLine.slice(am[0].length)
               const admName = am[1].toLowerCase()
-              attributes['name']      = admName
-              attributes['style']     = am[1]
-              attributes['textlabel'] = attributes['caption'] ?? docAttrs[`${admName}-caption`]
-              delete attributes['caption']
-              block = new Block(parent, 'admonition', { content_model: 'simple', source: lines, attributes })
+              attributes.name = admName
+              attributes.style = am[1]
+              attributes.textlabel =
+                attributes.caption ?? docAttrs[`${admName}-caption`]
+              delete attributes.caption
+              block = new Block(parent, 'admonition', {
+                content_model: 'simple',
+                source: lines,
+                attributes,
+              })
             } else {
-              if (indented && style === 'normal') Parser.adjustIndentation(lines)
-              block = new Block(parent, 'paragraph', { content_model: 'simple', source: lines, attributes })
+              if (indented && style === 'normal')
+                Parser.adjustIndentation(lines)
+              block = new Block(parent, 'paragraph', {
+                content_model: 'simple',
+                source: lines,
+                attributes,
+              })
             }
           } else if (mdSyntax && ch0 === '>' && thisLine.startsWith('> ')) {
-            const mapped = lines.map(line => {
+            const mapped = lines.map((line) => {
               if (line === '>') return line.slice(1)
               if (line.startsWith('> ')) return line.slice(2)
               return line
@@ -757,35 +1079,75 @@ export class Parser {
             let creditLine = null
             if (mapped[mapped.length - 1]?.startsWith('-- ')) {
               creditLine = mapped.pop().slice(3)
-              while (mapped.length > 0 && mapped[mapped.length - 1] === '') mapped.pop()
+              while (mapped.length > 0 && mapped[mapped.length - 1] === '')
+                mapped.pop()
             }
-            attributes['style'] = 'quote'
+            attributes.style = 'quote'
             const { Reader: Rdr } = _requireReader()
-            block = await Parser.buildBlock('quote', 'compound', false, parent, new Rdr(mapped), attributes)
+            block = await Parser.buildBlock(
+              'quote',
+              'compound',
+              false,
+              parent,
+              new Rdr(mapped),
+              attributes
+            )
             if (creditLine) {
-              const subsApplied = await block.applySubs(creditLine, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
+              const subsApplied = await block.applySubs(creditLine, [
+                'specialcharacters',
+                'quotes',
+                'attributes',
+                'replacements',
+                'macros',
+                'post_replacements',
+              ])
               const commaIdx = subsApplied.indexOf(', ')
-              const attribution = commaIdx !== -1 ? subsApplied.slice(0, commaIdx) : subsApplied
-              const citetitle = commaIdx !== -1 ? subsApplied.slice(commaIdx + 2) : null
-              if (attribution) attributes['attribution'] = attribution
-              if (citetitle) attributes['citetitle'] = citetitle
+              const attribution =
+                commaIdx !== -1 ? subsApplied.slice(0, commaIdx) : subsApplied
+              const citetitle =
+                commaIdx !== -1 ? subsApplied.slice(commaIdx + 2) : null
+              if (attribution) attributes.attribution = attribution
+              if (citetitle) attributes.citetitle = citetitle
             }
-          } else if (ch0 === '"' && lines.length > 1 && lines[lines.length - 1].startsWith('-- ') && lines[lines.length - 2].endsWith('"')) {
+          } else if (
+            ch0 === '"' &&
+            lines.length > 1 &&
+            lines[lines.length - 1].startsWith('-- ') &&
+            lines[lines.length - 2].endsWith('"')
+          ) {
             lines[0] = thisLine.slice(1)
             const cred = lines.pop().slice(3)
-            while (lines.length > 0 && lines[lines.length - 1] === '') lines.pop()
+            while (lines.length > 0 && lines[lines.length - 1] === '')
+              lines.pop()
             lines[lines.length - 1] = lines[lines.length - 1].slice(0, -1)
-            attributes['style'] = 'quote'
-            block = new Block(parent, 'quote', { content_model: 'simple', source: lines, attributes })
-            const subsApplied = await block.applySubs(cred, ['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
+            attributes.style = 'quote'
+            block = new Block(parent, 'quote', {
+              content_model: 'simple',
+              source: lines,
+              attributes,
+            })
+            const subsApplied = await block.applySubs(cred, [
+              'specialcharacters',
+              'quotes',
+              'attributes',
+              'replacements',
+              'macros',
+              'post_replacements',
+            ])
             const commaIdx = subsApplied.indexOf(', ')
-            const attribution = commaIdx !== -1 ? subsApplied.slice(0, commaIdx) : subsApplied
-            const citetitle = commaIdx !== -1 ? subsApplied.slice(commaIdx + 2) : null
-            if (attribution) attributes['attribution'] = attribution
-            if (citetitle) attributes['citetitle'] = citetitle
+            const attribution =
+              commaIdx !== -1 ? subsApplied.slice(0, commaIdx) : subsApplied
+            const citetitle =
+              commaIdx !== -1 ? subsApplied.slice(commaIdx + 2) : null
+            if (attribution) attributes.attribution = attribution
+            if (citetitle) attributes.citetitle = citetitle
           } else {
             if (indented && style === 'normal') Parser.adjustIndentation(lines)
-            block = new Block(parent, 'paragraph', { content_model: 'simple', source: lines, attributes })
+            block = new Block(parent, 'paragraph', {
+              content_model: 'simple',
+              source: lines,
+              attributes,
+            })
           }
           Parser.catalogInlineAnchors(lines.join(LF), block, document, reader)
         }
@@ -797,116 +1159,220 @@ export class Parser {
       switch (blockContext) {
         case 'listing':
         case 'source': {
-          const lang = blockContext !== 'source' && !attributes[1] ? (attributes[2] ?? docAttrs['source-language']) : null
+          const lang =
+            blockContext !== 'source' && !attributes[1]
+              ? (attributes[2] ?? docAttrs['source-language'])
+              : null
           if (lang) {
-            attributes['style']    = 'source'
-            attributes['language'] = lang
+            attributes.style = 'source'
+            attributes.language = lang
             AttributeList.rekey(attributes, [null, null, 'linenums'])
           } else if (blockContext === 'source') {
             AttributeList.rekey(attributes, [null, 'language', 'linenums'])
             if ('source-language' in docAttrs && !('language' in attributes)) {
-              attributes['language'] = docAttrs['source-language']
+              attributes.language = docAttrs['source-language']
             }
-            if (cloakedContext !== 'listing') attributes['cloaked-context'] = cloakedContext
+            if (cloakedContext !== 'listing')
+              attributes['cloaked-context'] = cloakedContext
           }
-          if (!('linenums-option' in attributes) && ('linenums' in attributes || 'source-linenums-option' in docAttrs)) {
+          if (
+            !('linenums-option' in attributes) &&
+            ('linenums' in attributes || 'source-linenums-option' in docAttrs)
+          ) {
             attributes['linenums-option'] = ''
           }
           if (!('indent' in attributes) && 'source-indent' in docAttrs) {
-            attributes['indent'] = docAttrs['source-indent']
+            attributes.indent = docAttrs['source-indent']
           }
-          block = await Parser.buildBlock('listing', 'verbatim', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(
+            'listing',
+            'verbatim',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           break
         }
         case 'fenced_code': {
-          attributes['style'] = 'source'
+          attributes.style = 'source'
           const ll = thisLine.length
           let language = null
           if (ll > 3) {
-            let langPart = thisLine.slice(3)
+            const langPart = thisLine.slice(3)
             const commaIdx = langPart.indexOf(',')
             if (commaIdx >= 0) {
               if (commaIdx > 0) language = langPart.slice(0, commaIdx).trim()
-              if (commaIdx < ll - 4) attributes['linenums'] = ''
+              if (commaIdx < ll - 4) attributes.linenums = ''
             } else {
               language = langPart.trimStart()
             }
           }
           if (!language) {
-            if ('source-language' in docAttrs) attributes['language'] = docAttrs['source-language']
+            if ('source-language' in docAttrs)
+              attributes.language = docAttrs['source-language']
           } else {
-            attributes['language'] = language
+            attributes.language = language
           }
           attributes['cloaked-context'] = cloakedContext
-          if (!('linenums-option' in attributes) && ('linenums' in attributes || 'source-linenums-option' in docAttrs)) {
+          if (
+            !('linenums-option' in attributes) &&
+            ('linenums' in attributes || 'source-linenums-option' in docAttrs)
+          ) {
             attributes['linenums-option'] = ''
           }
-          if (!('indent' in attributes) && 'source-indent' in docAttrs) attributes['indent'] = docAttrs['source-indent']
+          if (!('indent' in attributes) && 'source-indent' in docAttrs)
+            attributes.indent = docAttrs['source-indent']
           terminator = terminator.slice(0, 3)
-          block = await Parser.buildBlock('listing', 'verbatim', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(
+            'listing',
+            'verbatim',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           break
         }
         case 'table': {
           const blockCursor = reader.cursor
           const { Reader: Rdr } = _requireReader()
           const blockReader = new Rdr(
-            await reader.readLinesUntil({ terminator, skip_line_comments: true, context: 'table', cursor: 'at_mark' }),
+            await reader.readLinesUntil({
+              terminator,
+              skip_line_comments: true,
+              context: 'table',
+              cursor: 'at_mark',
+            }),
             blockCursor
           )
           if (!terminator.startsWith('|') && !terminator.startsWith('!')) {
-            attributes['format'] ??= terminator.startsWith(',') ? 'csv' : 'dsv'
+            attributes.format ??= terminator.startsWith(',') ? 'csv' : 'dsv'
           }
           block = await Parser.parseTable(blockReader, parent, attributes)
           break
         }
         case 'sidebar':
-          block = await Parser.buildBlock(blockContext, 'compound', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(
+            blockContext,
+            'compound',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           break
         case 'admonition': {
-          const admStyle = attributes['style'] ?? blockContext
-          attributes['name']      = admStyle.toLowerCase()
-          attributes['textlabel'] = (attributes['caption'] && delete attributes['caption']) ?? docAttrs[`${attributes['name']}-caption`]
-          block = await Parser.buildBlock(blockContext, 'compound', terminator, parent, reader, attributes)
+          const admStyle = attributes.style ?? blockContext
+          attributes.name = admStyle.toLowerCase()
+          attributes.textlabel =
+            (attributes.caption && delete attributes.caption) ??
+            docAttrs[`${attributes.name}-caption`]
+          block = await Parser.buildBlock(
+            blockContext,
+            'compound',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           break
         }
         case 'open':
         case 'abstract':
         case 'partintro':
-          block = await Parser.buildBlock('open', 'compound', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(
+            'open',
+            'compound',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           break
         case 'literal':
-          block = await Parser.buildBlock(blockContext, 'verbatim', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(
+            blockContext,
+            'verbatim',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           break
         case 'example':
-          if ('collapsible-option' in attributes) attributes['caption'] ??= ''
-          block = await Parser.buildBlock(blockContext, 'compound', terminator, parent, reader, attributes)
+          if ('collapsible-option' in attributes) attributes.caption ??= ''
+          block = await Parser.buildBlock(
+            blockContext,
+            'compound',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           break
         case 'quote':
         case 'verse':
           AttributeList.rekey(attributes, [null, 'attribution', 'citetitle'])
-          block = await Parser.buildBlock(blockContext, blockContext === 'verse' ? 'verbatim' : 'compound', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(
+            blockContext,
+            blockContext === 'verse' ? 'verbatim' : 'compound',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           break
         case 'stem':
         case 'latexmath':
         case 'asciimath':
           if (blockContext === 'stem') {
-            attributes['style'] = STEM_TYPE_ALIASES[attributes[2] ?? docAttrs['stem']]
+            attributes.style = STEM_TYPE_ALIASES[attributes[2] ?? docAttrs.stem]
           }
-          block = await Parser.buildBlock('stem', 'raw', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(
+            'stem',
+            'raw',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           break
         case 'pass':
-          block = await Parser.buildBlock(blockContext, 'raw', terminator, parent, reader, attributes)
+          block = await Parser.buildBlock(
+            blockContext,
+            'raw',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           break
         case 'comment':
-          await Parser.buildBlock(blockContext, 'skip', terminator, parent, reader, attributes)
+          await Parser.buildBlock(
+            blockContext,
+            'skip',
+            terminator,
+            parent,
+            reader,
+            attributes
+          )
           for (const k of Object.keys(attributes)) delete attributes[k]
           return null
         default: {
-          if (!blockExtensions || !(extensions.registeredForBlock(blockContext, cloakedContext))) {
-            throw new Error(`Unsupported block type ${blockContext} at ${reader.cursor}`)
+          if (
+            !blockExtensions ||
+            !extensions.registeredForBlock(blockContext, cloakedContext)
+          ) {
+            throw new Error(
+              `Unsupported block type ${blockContext} at ${reader.cursor}`
+            )
           }
-          const extension  = extensions.registeredForBlock(blockContext, cloakedContext)
-          const extConfig  = extension.config
+          const extension = extensions.registeredForBlock(
+            blockContext,
+            cloakedContext
+          )
+          const extConfig = extension.config
           const contentModel = extConfig.content_model
           if (contentModel !== 'skip') {
             const posAttrs = extConfig.positional_attrs ?? extConfig.pos_attrs
@@ -920,7 +1386,15 @@ export class Parser {
             }
             attributes['cloaked-context'] = cloakedContext
           }
-          block = await Parser.buildBlock(blockContext, contentModel, terminator, parent, reader, attributes, { extension })
+          block = await Parser.buildBlock(
+            blockContext,
+            contentModel,
+            terminator,
+            parent,
+            reader,
+            attributes,
+            { extension }
+          )
           if (!block) {
             for (const k of Object.keys(attributes)) delete attributes[k]
             return null
@@ -932,23 +1406,28 @@ export class Parser {
     if (!block) return null
 
     if (document.sourcemap) block.sourceLocation = reader.cursorAtMark()
-    if (attributes['title']) {
-      const blockTitle = attributes['title']
+    if (attributes.title) {
+      const blockTitle = attributes.title
       block.title = blockTitle
-      delete attributes['title']
+      delete attributes.title
       // Force title resolution while in scope to capture current attribute values (Ruby: parser.rb ~line 939)
       if (blockTitle.includes(ATTR_REF_HEAD)) await block.precomputeTitle()
       if (CAPTION_ATTRIBUTE_NAMES[block.context]) {
-        block.assignCaption(attributes['caption'])
-        delete attributes['caption']
+        block.assignCaption(attributes.caption)
+        delete attributes.caption
       }
     }
-    block.style = attributes['style'] ?? null
+    block.style = attributes.style ?? null
 
-    const blockId = block.id ?? (block.id = attributes['id'] ?? null)
+    const blockId = block.id ?? (block.id = attributes.id ?? null)
     if (blockId) {
       if (!document.register('refs', [blockId, block])) {
-        Parser.logger.warn(Parser.messageWithContext(`id assigned to block already in use: ${blockId}`, { source_location: reader.cursorAtMark() }))
+        Parser.logger.warn(
+          Parser.messageWithContext(
+            `id assigned to block already in use: ${blockId}`,
+            { source_location: reader.cursorAtMark() }
+          )
+        )
       }
     }
 
@@ -956,53 +1435,82 @@ export class Parser {
     block.commitSubs()
 
     if (block.hasSub('callouts')) {
-      if (!Parser.catalogCallouts(block.source, document)) block.removeSub('callouts')
+      if (!Parser.catalogCallouts(block.source, document))
+        block.removeSub('callouts')
     }
 
     return block
   }
 
   // Internal: Build a block from reader lines.
-  static async buildBlock (blockContext, contentModel, terminator, parent, reader, attributes, options = {}) {
+  static async buildBlock(
+    blockContext,
+    contentModel,
+    terminator,
+    parent,
+    reader,
+    attributes,
+    options = {}
+  ) {
     let skipProcessing, parseAsContentModel
 
     if (contentModel === 'skip') {
-      skipProcessing    = true
+      skipProcessing = true
       parseAsContentModel = 'simple'
     } else if (contentModel === 'raw') {
-      skipProcessing    = false
+      skipProcessing = false
       parseAsContentModel = 'simple'
     } else {
-      skipProcessing    = false
+      skipProcessing = false
       parseAsContentModel = contentModel
     }
 
-    let lines = null, blockReader = null
+    let lines = null,
+      blockReader = null
 
     if (terminator == null) {
       if (parseAsContentModel === 'verbatim') {
-        lines = await reader.readLinesUntil({ break_on_blank_lines: true, break_on_list_continuation: true })
+        lines = await reader.readLinesUntil({
+          break_on_blank_lines: true,
+          break_on_list_continuation: true,
+        })
       } else {
         if (contentModel === 'compound') contentModel = 'simple'
-        lines = await Parser.readParagraphLines(reader, false, { skip_line_comments: true, skip_processing: skipProcessing })
+        lines = await Parser.readParagraphLines(reader, false, {
+          skip_line_comments: true,
+          skip_processing: skipProcessing,
+        })
       }
     } else if (parseAsContentModel !== 'compound') {
-      lines = await reader.readLinesUntil({ terminator, skip_processing: skipProcessing, context: blockContext, cursor: 'at_mark' })
+      lines = await reader.readLinesUntil({
+        terminator,
+        skip_processing: skipProcessing,
+        context: blockContext,
+        cursor: 'at_mark',
+      })
     } else if (terminator === false) {
       blockReader = reader
     } else {
       const blockCursor = reader.cursor
       const { Reader: Rdr } = _requireReader()
       blockReader = new Rdr(
-        await reader.readLinesUntil({ terminator, skip_processing: skipProcessing, context: blockContext, cursor: 'at_mark' }),
+        await reader.readLinesUntil({
+          terminator,
+          skip_processing: skipProcessing,
+          context: blockContext,
+          cursor: 'at_mark',
+        }),
         blockCursor,
         { document: parent.document }
       )
     }
 
     if (contentModel === 'verbatim') {
-      const tabSize    = parseInt(attributes['tabsize'] ?? parent.document.attributes['tabsize'] ?? '0', 10)
-      const indent     = attributes['indent']
+      const tabSize = parseInt(
+        attributes.tabsize ?? parent.document.attributes.tabsize ?? '0',
+        10
+      )
+      const indent = attributes.indent
       if (indent != null) {
         Parser.adjustIndentation(lines, parseInt(indent, 10), tabSize)
       } else if (tabSize > 0) {
@@ -1015,57 +1523,87 @@ export class Parser {
     let block
     if (options.extension) {
       const extension = options.extension
-      delete attributes['style']
+      delete attributes.style
       const { Reader: Rdr } = _requireReader()
-      const result = await extension.processMethod(parent, blockReader ?? new Rdr(lines), { ...attributes })
+      const result = await extension.processMethod(
+        parent,
+        blockReader ?? new Rdr(lines),
+        { ...attributes }
+      )
       if (!result || result === parent) return null
       block = result
       Object.assign(attributes, block.attributes)
-      if (block.contentModel === 'compound' && block instanceof Block && block.lines.length > 0) {
+      if (
+        block.contentModel === 'compound' &&
+        block instanceof Block &&
+        block.lines.length > 0
+      ) {
         contentModel = 'compound'
-        blockReader  = new Rdr(block.lines)
+        blockReader = new Rdr(block.lines)
       }
     } else {
-      block = new Block(parent, blockContext, { content_model: contentModel, source: lines, attributes })
+      block = new Block(parent, blockContext, {
+        content_model: contentModel,
+        source: lines,
+        attributes,
+      })
     }
 
-    if (contentModel === 'compound') await Parser.parseBlocks(blockReader, block)
+    if (contentModel === 'compound')
+      await Parser.parseBlocks(blockReader, block)
 
     return block
   }
 
   // Public: Parse blocks from reader until exhausted.
-  static async parseBlocks (reader, parent, attributes = null) {
+  static async parseBlocks(reader, parent, attributes = null) {
     while (true) {
-      const block = await Parser.nextBlock(reader, parent, attributes ? { ...attributes } : {})
+      const block = await Parser.nextBlock(
+        reader,
+        parent,
+        attributes ? { ...attributes } : {}
+      )
       if (block) parent.blocks.push(block)
-      if (!await reader.hasMoreLines()) break
+      if (!(await reader.hasMoreLines())) break
     }
   }
 
   // Internal: Parse an ordered or unordered list.
-  static async parseList (reader, listType, parent, style = null, opts = {}) {
+  static async parseList(reader, listType, parent, style = null, opts = {}) {
     const start = opts.start != null ? parseInt(opts.start, 10) : null
-    const listAttrs = (start != null && start !== 1) ? { start } : null
-    const listBlock = new List(parent, listType, listAttrs ? { attributes: listAttrs } : {})
+    const listAttrs = start != null && start !== 1 ? { start } : null
+    const listBlock = new List(
+      parent,
+      listType,
+      listAttrs ? { attributes: listAttrs } : {}
+    )
     const listRx = ListRxMap[listType]
 
-    while (await reader.hasMoreLines() && listRx.test(await reader.peekLine())) {
+    while (
+      (await reader.hasMoreLines()) &&
+      listRx.test(await reader.peekLine())
+    ) {
       const m = (await reader.peekLine()).match(listRx)
-      const listItem = await Parser.parseListItem(reader, listBlock, m, m[1], style)
+      const listItem = await Parser.parseListItem(
+        reader,
+        listBlock,
+        m,
+        m[1],
+        style
+      )
       if (listItem) listBlock.blocks.push(listItem)
-      if (await reader.skipBlankLines() == null) break
+      if ((await reader.skipBlankLines()) == null) break
     }
 
     return listBlock
   }
 
   // Internal: Catalog callouts in text.
-  static catalogCallouts (text, document) {
+  static catalogCallouts(text, document) {
     if (!text.includes('<')) return false
-    let found  = false
+    let found = false
     let autonum = 0
-    const rx = new RegExp(CalloutScanRx.source, CalloutScanRx.flags + 'g')
+    const rx = new RegExp(CalloutScanRx.source, `${CalloutScanRx.flags}g`)
     let m
     while ((m = rx.exec(text)) !== null) {
       if (!m[0].startsWith('\\')) {
@@ -1077,21 +1615,34 @@ export class Parser {
   }
 
   // Internal: Catalog a single inline anchor.
-  static catalogInlineAnchor (id, reftext, node, location, doc = node.document) {
-    if (reftext && reftext.includes(ATTR_REF_HEAD)) {
+  static catalogInlineAnchor(id, reftext, node, location, doc = node.document) {
+    if (reftext?.includes(ATTR_REF_HEAD)) {
       reftext = doc.subAttributes(reftext)
     }
     const cursor = location?.cursor ? location.cursor : location
-    if (!doc.register('refs', [id, new Inline(node, 'anchor', reftext, { type: 'ref', id })])) {
-      Parser.logger.warn(Parser.messageWithContext(`id assigned to anchor already in use: ${id}`, { source_location: cursor }))
+    if (
+      !doc.register('refs', [
+        id,
+        new Inline(node, 'anchor', reftext, { type: 'ref', id }),
+      ])
+    ) {
+      Parser.logger.warn(
+        Parser.messageWithContext(
+          `id assigned to anchor already in use: ${id}`,
+          { source_location: cursor }
+        )
+      )
     }
   }
 
   // Internal: Catalog all inline anchors in text.
-  static catalogInlineAnchors (text, block, document, reader) {
+  static catalogInlineAnchors(text, block, document, reader) {
     if (!text.includes('[[') && !text.includes('anchor:')) return
 
-    const rx = new RegExp(InlineAnchorScanRx.source, 'gd' in RegExp.prototype ? 'gdu' : 'gu')
+    const _rx = new RegExp(
+      InlineAnchorScanRx.source,
+      'gd' in RegExp.prototype ? 'gdu' : 'gu'
+    )
     let m
     // Reset lastIndex for global search
     InlineAnchorScanRx.lastIndex = 0
@@ -1101,7 +1652,7 @@ export class Parser {
       if (m[1]) {
         id = m[1]
         reftext = m[2]
-        if (reftext && reftext.includes(ATTR_REF_HEAD)) {
+        if (reftext?.includes(ATTR_REF_HEAD)) {
           reftext = document.subAttributes(reftext)
           if (!reftext) continue
         }
@@ -1116,32 +1667,62 @@ export class Parser {
           }
         }
       }
-      if (!document.register('refs', [id, new Inline(block, 'anchor', reftext, { type: 'ref', id })])) {
-        Parser.logger.warn(Parser.messageWithContext(`id assigned to anchor already in use: ${id}`, { source_location: reader.cursorAtMark() }))
+      if (
+        !document.register('refs', [
+          id,
+          new Inline(block, 'anchor', reftext, { type: 'ref', id }),
+        ])
+      ) {
+        Parser.logger.warn(
+          Parser.messageWithContext(
+            `id assigned to anchor already in use: ${id}`,
+            { source_location: reader.cursorAtMark() }
+          )
+        )
       }
     }
   }
 
   // Internal: Catalog a bibliography inline anchor.
-  static catalogInlineBiblioAnchor (id, reftext, node, reader) {
+  static catalogInlineBiblioAnchor(id, reftext, node, reader) {
     const displayReftext = reftext != null ? `[${reftext}]` : null
-    if (!node.document.register('refs', [id, new Inline(node, 'anchor', displayReftext, { type: 'bibref', id })])) {
-      Parser.logger.warn(Parser.messageWithContext(`id assigned to bibliography anchor already in use: ${id}`, { source_location: reader.cursor }))
+    if (
+      !node.document.register('refs', [
+        id,
+        new Inline(node, 'anchor', displayReftext, { type: 'bibref', id }),
+      ])
+    ) {
+      Parser.logger.warn(
+        Parser.messageWithContext(
+          `id assigned to bibliography anchor already in use: ${id}`,
+          { source_location: reader.cursor }
+        )
+      )
     }
   }
 
   // Internal: Parse a description list.
-  static async parseDescriptionList (reader, match, parent) {
+  static async parseDescriptionList(reader, match, parent) {
     const listBlock = new List(parent, 'dlist')
     const siblingPattern = DescriptionListSiblingRx[match[2]]
-    let currentPair = await Parser.parseListItem(reader, listBlock, match, siblingPattern)
+    let currentPair = await Parser.parseListItem(
+      reader,
+      listBlock,
+      match,
+      siblingPattern
+    )
     listBlock.blocks.push(currentPair)
 
     while (await reader.hasMoreLines()) {
       const pLine = await reader.peekLine()
       const nm = pLine.match(siblingPattern)
       if (!nm) break
-      const nextPair = await Parser.parseListItem(reader, listBlock, nm, siblingPattern)
+      const nextPair = await Parser.parseListItem(
+        reader,
+        listBlock,
+        nm,
+        siblingPattern
+      )
       if (currentPair[1]) {
         listBlock.blocks.push((currentPair = nextPair))
       } else {
@@ -1154,10 +1735,10 @@ export class Parser {
   }
 
   // Internal: Parse a callout list.
-  static async parseCalloutList (reader, match, parent, callouts) {
+  static async parseCalloutList(reader, match, parent, callouts) {
     const listBlock = new List(parent, 'colist')
     let nextIndex = 1
-    let autonum   = 0
+    let autonum = 0
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -1172,16 +1753,31 @@ export class Parser {
       let num = match[1]
       if (num === '.') num = String(++autonum)
       if (num !== String(nextIndex)) {
-        Parser.logger.warn(Parser.messageWithContext(`callout list item index: expected ${nextIndex}, got ${num}`, { source_location: reader.cursorAtMark() }))
+        Parser.logger.warn(
+          Parser.messageWithContext(
+            `callout list item index: expected ${nextIndex}, got ${num}`,
+            { source_location: reader.cursorAtMark() }
+          )
+        )
       }
-      const listItem = await Parser.parseListItem(reader, listBlock, match, '<1>')
+      const listItem = await Parser.parseListItem(
+        reader,
+        listBlock,
+        match,
+        '<1>'
+      )
       if (listItem) {
         listBlock.blocks.push(listItem)
         const coids = callouts.calloutIds(listBlock.blocks.length)
         if (!coids) {
-          Parser.logger.warn(Parser.messageWithContext(`no callout found for <${listBlock.blocks.length}>`, { source_location: reader.cursorAtMark() }))
+          Parser.logger.warn(
+            Parser.messageWithContext(
+              `no callout found for <${listBlock.blocks.length}>`,
+              { source_location: reader.cursorAtMark() }
+            )
+          )
         } else {
-          listItem.attributes['coids'] = coids
+          listItem.attributes.coids = coids
         }
       }
       nextIndex++
@@ -1193,9 +1789,15 @@ export class Parser {
   }
 
   // Internal: Parse a list item (ordered, unordered, callout, or description list).
-  static async parseListItem (reader, listBlock, match, siblingTrait, style = null) {
+  static async parseListItem(
+    reader,
+    listBlock,
+    match,
+    siblingTrait,
+    style = null
+  ) {
     const listType = listBlock.context
-    const dlist    = listType === 'dlist'
+    const dlist = listType === 'dlist'
     let listTerm, listItem, hasText, sourcemapAssignmentDeferred
 
     if (dlist) {
@@ -1203,10 +1805,16 @@ export class Parser {
       listTerm = new ListItem(listBlock, termText)
       if (termText.startsWith('[[')) {
         const am = termText.match(LeadingInlineAnchorRx)
-        if (am) Parser.catalogInlineAnchor(am[1], am[2] ?? termText.slice(am[0].length).trimStart(), listTerm, reader)
+        if (am)
+          Parser.catalogInlineAnchor(
+            am[1],
+            am[2] ?? termText.slice(am[0].length).trimStart(),
+            listTerm,
+            reader
+          )
       }
       const itemText = match[3] ?? null
-      hasText  = !!itemText
+      hasText = !!itemText
       listItem = new ListItem(listBlock, itemText)
       if (listBlock.document.sourcemap) {
         listTerm.sourceLocation = reader.cursor
@@ -1217,7 +1825,7 @@ export class Parser {
         }
       }
     } else {
-      hasText  = true
+      hasText = true
       const itemText = match[2]
       listItem = new ListItem(listBlock, itemText)
       if (listBlock.document.sourcemap) listItem.sourceLocation = reader.cursor
@@ -1227,14 +1835,19 @@ export class Parser {
         if (itemText.startsWith('[')) {
           if (style && style === 'bibliography') {
             const bm = itemText.match(InlineBiblioAnchorRx)
-            if (bm) Parser.catalogInlineBiblioAnchor(bm[1], bm[2], listItem, reader)
+            if (bm)
+              Parser.catalogInlineBiblioAnchor(bm[1], bm[2], listItem, reader)
           } else if (itemText.startsWith('[[')) {
             const am = itemText.match(LeadingInlineAnchorRx)
             if (am) Parser.catalogInlineAnchor(am[1], am[2], listItem, reader)
-          } else if (itemText.startsWith('[ ] ') || itemText.startsWith('[x] ') || itemText.startsWith('[*] ')) {
+          } else if (
+            itemText.startsWith('[ ] ') ||
+            itemText.startsWith('[x] ') ||
+            itemText.startsWith('[*] ')
+          ) {
             listBlock.attributes['checklist-option'] = ''
-            listItem.attributes['checkbox'] = ''
-            if (!itemText.startsWith('[ ')) listItem.attributes['checked'] = ''
+            listItem.attributes.checkbox = ''
+            if (!itemText.startsWith('[ ')) listItem.attributes.checked = ''
             listItem.text = itemText.slice(4)
           }
         }
@@ -1242,28 +1855,37 @@ export class Parser {
         const ordinal = listBlock.blocks.length
         const isFirst = ordinal === 0
         let validate = true
-        let startAttr = listBlock.attributes['start']
+        const startAttr = listBlock.attributes.start
         let effectiveOrdinal = ordinal
         if (startAttr != null) {
           effectiveOrdinal += parseInt(startAttr, 10) - 1
         } else if (isFirst) {
           const startNum = Parser.resolveOrderedListStart(siblingTrait)
           if (startNum !== 1) {
-            listBlock.attributes['start'] = startNum
+            listBlock.attributes.start = startNum
             effectiveOrdinal += startNum - 1
             validate = false
           }
         }
-        const [resolvedMarker, implicitStyle] = Parser.resolveOrderedListMarker(siblingTrait, effectiveOrdinal, validate, reader)
+        const [resolvedMarker, implicitStyle] = Parser.resolveOrderedListMarker(
+          siblingTrait,
+          effectiveOrdinal,
+          validate,
+          reader
+        )
         listItem.marker = resolvedMarker
         if (isFirst && !style) {
-          listBlock.style = implicitStyle ?? (ORDERED_LIST_STYLES[resolvedMarker.length - 1] ?? 'arabic')
+          listBlock.style =
+            implicitStyle ??
+            ORDERED_LIST_STYLES[resolvedMarker.length - 1] ??
+            'arabic'
         }
         if (itemText.startsWith('[[')) {
           const am = itemText.match(LeadingInlineAnchorRx)
           if (am) Parser.catalogInlineAnchor(am[1], am[2], listItem, reader)
         }
-      } else { // colist
+      } else {
+        // colist
         listItem.marker = siblingTrait
         if (itemText.startsWith('[[')) {
           const am = itemText.match(LeadingInlineAnchorRx)
@@ -1275,7 +1897,12 @@ export class Parser {
     await reader.readLine()
     const blockCursor = reader.cursor
     const { Reader: Rdr } = _requireReader()
-    const listItemLines = await Parser.readLinesForListItem(reader, listType, siblingTrait, hasText)
+    const listItemLines = await Parser.readLinesForListItem(
+      reader,
+      listType,
+      siblingTrait,
+      hasText
+    )
     const listItemReader = new Rdr(listItemLines, blockCursor)
 
     if (await listItemReader.hasMoreLines()) {
@@ -1289,23 +1916,47 @@ export class Parser {
           contentAdjacent = true
           if (!dlist) hasText = null
         }
-        const block = await Parser.nextBlock(listItemReader, listItem, {}, { text_only: hasText ? null : true, list_type: listType })
+        const block = await Parser.nextBlock(
+          listItemReader,
+          listItem,
+          {},
+          { text_only: hasText ? null : true, list_type: listType }
+        )
         if (block) listItem.blocks.push(block)
         while (await listItemReader.hasMoreLines()) {
-          const b = await Parser.nextBlock(listItemReader, listItem, {}, { list_type: listType })
+          const b = await Parser.nextBlock(
+            listItemReader,
+            listItem,
+            {},
+            { list_type: listType }
+          )
           if (b) listItem.blocks.push(b)
         }
-        if (contentAdjacent && listItem.blocks.length > 0 && listItem.blocks[0].context === 'paragraph') {
+        if (
+          contentAdjacent &&
+          listItem.blocks.length > 0 &&
+          listItem.blocks[0].context === 'paragraph'
+        ) {
           listItem.foldFirst()
         }
       }
     }
 
-    return dlist ? [[listTerm], (listItem.hasText() || listItem.blocks.length > 0 ? listItem : null)] : listItem
+    return dlist
+      ? [
+          [listTerm],
+          listItem.hasText() || listItem.blocks.length > 0 ? listItem : null,
+        ]
+      : listItem
   }
 
   // Internal: Collect lines belonging to the current list item.
-  static async readLinesForListItem (reader, listType, siblingTrait = null, hasText = true) {
+  static async readLinesForListItem(
+    reader,
+    listType,
+    siblingTrait = null,
+    hasText = true
+  ) {
     const buffer = []
     let continuation = 'inactive'
     let withinNestedList = false
@@ -1326,7 +1977,8 @@ export class Parser {
         if (continuation === 'inactive') {
           continuation = 'active'
           hasText = true
-          if (!withinNestedList) buffer[buffer.length - 1] = ListContinuationPlaceholder
+          if (!withinNestedList)
+            buffer[buffer.length - 1] = ListContinuationPlaceholder
         }
         if (isListContinuation(thisLine)) {
           if (continuation !== 'frozen') {
@@ -1342,23 +1994,42 @@ export class Parser {
       if (delimMatch) {
         if (continuation !== 'active') break
         buffer.push(thisLine)
-        const blockLines = await reader.readLinesUntil({ terminator: delimMatch.terminator, read_last_line: true, context: delimMatch.context })
+        const blockLines = await reader.readLinesUntil({
+          terminator: delimMatch.terminator,
+          read_last_line: true,
+          context: delimMatch.context,
+        })
         buffer.push(...blockLines)
         continuation = 'inactive'
-      } else if (dlist && continuation !== 'active' && thisLine.startsWith('[') && BlockAttributeLineRx.test(thisLine)) {
+      } else if (
+        dlist &&
+        continuation !== 'active' &&
+        thisLine.startsWith('[') &&
+        BlockAttributeLineRx.test(thisLine)
+      ) {
         const blockAttributeLines = [thisLine]
         let interrupt = false
         while (true) {
           const nextLine = await reader.peekLine()
           if (nextLine == null) break
-          if (Parser.isDelimitedBlock(nextLine)) { interrupt = true; break }
-          if (nextLine === '' || (nextLine.startsWith('[') && BlockAttributeLineRx.test(nextLine))) {
+          if (Parser.isDelimitedBlock(nextLine)) {
+            interrupt = true
+            break
+          }
+          if (
+            nextLine === '' ||
+            (nextLine.startsWith('[') && BlockAttributeLineRx.test(nextLine))
+          ) {
             blockAttributeLines.push(await reader.readLine())
-          } else if (AnyListRx.test(nextLine) && !Parser.isSiblingListItem(nextLine, listType, siblingTrait)) {
+          } else if (
+            AnyListRx.test(nextLine) &&
+            !Parser.isSiblingListItem(nextLine, listType, siblingTrait)
+          ) {
             buffer.push(...blockAttributeLines)
             break
           } else {
-            interrupt = true; break
+            interrupt = true
+            break
           }
         }
         if (interrupt) {
@@ -1370,24 +2041,41 @@ export class Parser {
         if (LiteralParagraphRx.test(thisLine)) {
           reader.unshiftLine(thisLine)
           if (dlist) {
-            const lns = await reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true },
-              (line) => Parser.isSiblingListItem(line, listType, siblingTrait))
+            const lns = await reader.readLinesUntil(
+              {
+                preserve_last_line: true,
+                break_on_blank_lines: true,
+                break_on_list_continuation: true,
+              },
+              (line) => Parser.isSiblingListItem(line, listType, siblingTrait)
+            )
             buffer.push(...lns)
           } else {
-            const lns = await reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true })
+            const lns = await reader.readLinesUntil({
+              preserve_last_line: true,
+              break_on_blank_lines: true,
+              break_on_list_continuation: true,
+            })
             buffer.push(...lns)
           }
           continuation = 'inactive'
-        } else if ((thisLine[0] === '.' && BlockTitleRx.test(thisLine)) ||
-            (thisLine[0] === '[' && BlockAttributeLineRx.test(thisLine)) ||
-            (thisLine[0] === ':' && AttributeEntryRx.test(thisLine))) {
+        } else if (
+          (thisLine[0] === '.' && BlockTitleRx.test(thisLine)) ||
+          (thisLine[0] === '[' && BlockAttributeLineRx.test(thisLine)) ||
+          (thisLine[0] === ':' && AttributeEntryRx.test(thisLine))
+        ) {
           buffer.push(thisLine)
         } else {
           if (!withinNestedList) {
-            const nestedType = NESTABLE_LIST_CONTEXTS.find(ctx => ListRxMap[ctx].test(thisLine))
+            const nestedType = NESTABLE_LIST_CONTEXTS.find((ctx) =>
+              ListRxMap[ctx].test(thisLine)
+            )
             if (nestedType) {
               withinNestedList = true
-              if (nestedType === 'dlist' && !thisLine.match(DescriptionListRx)?.[3]) {
+              if (
+                nestedType === 'dlist' &&
+                !thisLine.match(DescriptionListRx)?.[3]
+              ) {
                 hasText = false
               }
             }
@@ -1398,7 +2086,10 @@ export class Parser {
       } else if (prevLine !== null && prevLine === '') {
         if (thisLine === '') {
           const skippedLine = await reader.skipBlankLines()
-          if (skippedLine == null) { thisLine = null; break }
+          if (skippedLine == null) {
+            thisLine = null
+            break
+          }
           thisLine = await reader.readLine()
           if (thisLine == null) break
           if (Parser.isSiblingListItem(thisLine, listType, siblingTrait)) break
@@ -1408,19 +2099,35 @@ export class Parser {
           buffer.push(ListContinuationString)
         } else if (hasText) {
           if (Parser.isSiblingListItem(thisLine, listType, siblingTrait)) break
-          const nestedType = NESTABLE_LIST_CONTEXTS.find(ctx => ListRxMap[ctx].test(thisLine))
+          const nestedType = NESTABLE_LIST_CONTEXTS.find((ctx) =>
+            ListRxMap[ctx].test(thisLine)
+          )
           if (nestedType) {
             buffer.push(thisLine)
             withinNestedList = true
-            if (nestedType === 'dlist' && !thisLine.match(DescriptionListRx)?.[3]) hasText = false
+            if (
+              nestedType === 'dlist' &&
+              !thisLine.match(DescriptionListRx)?.[3]
+            )
+              hasText = false
           } else if (LiteralParagraphRx.test(thisLine)) {
             reader.unshiftLine(thisLine)
             if (dlist) {
-              const lns = await reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true },
-                (line) => Parser.isSiblingListItem(line, listType, siblingTrait))
+              const lns = await reader.readLinesUntil(
+                {
+                  preserve_last_line: true,
+                  break_on_blank_lines: true,
+                  break_on_list_continuation: true,
+                },
+                (line) => Parser.isSiblingListItem(line, listType, siblingTrait)
+              )
               buffer.push(...lns)
             } else {
-              const lns = await reader.readLinesUntil({ preserve_last_line: true, break_on_blank_lines: true, break_on_list_continuation: true })
+              const lns = await reader.readLinesUntil({
+                preserve_last_line: true,
+                break_on_blank_lines: true,
+                break_on_list_continuation: true,
+              })
               buffer.push(...lns)
             }
           } else {
@@ -1437,10 +2144,16 @@ export class Parser {
       } else {
         if (thisLine !== '') {
           hasText = true
-          const nestedType = (withinNestedList ? ['dlist'] : NESTABLE_LIST_CONTEXTS).find(ctx => ListRxMap[ctx].test(thisLine))
+          const nestedType = (
+            withinNestedList ? ['dlist'] : NESTABLE_LIST_CONTEXTS
+          ).find((ctx) => ListRxMap[ctx].test(thisLine))
           if (nestedType) {
             withinNestedList = true
-            if (nestedType === 'dlist' && !thisLine.match(DescriptionListRx)?.[3]) hasText = false
+            if (
+              nestedType === 'dlist' &&
+              !thisLine.match(DescriptionListRx)?.[3]
+            )
+              hasText = false
           }
         }
         buffer.push(thisLine)
@@ -1449,68 +2162,85 @@ export class Parser {
     }
 
     if (thisLine != null) reader.unshiftLine(thisLine)
-    if (detachedContinuation != null) buffer[detachedContinuation] = ListContinuationPlaceholder
+    if (detachedContinuation != null)
+      buffer[detachedContinuation] = ListContinuationPlaceholder
 
     while (buffer.length > 0) {
       const last = buffer[buffer.length - 1]
-      if (isListContinuation(last)) { buffer.pop(); break }
-      if (last === '') { buffer.pop() }
-      else { break }
+      if (isListContinuation(last)) {
+        buffer.pop()
+        break
+      }
+      if (last === '') {
+        buffer.pop()
+      } else {
+        break
+      }
     }
 
     return buffer
   }
 
   // Internal: Initialize a Section from the current reader position.
-  static async initializeSection (reader, parent, attributes = {}) {
-    const document  = parent.document
-    const doctype   = document.doctype
-    const book      = doctype === 'book'
+  static async initializeSection(reader, parent, attributes = {}) {
+    const document = parent.document
+    const doctype = document.doctype
+    const book = doctype === 'book'
     const sourceLocation = document.sourcemap ? reader.cursor : null
     const sectStyle = attributes[1] ?? null
 
-    const [sectId, sectReftext, sectTitle, rawSectLevel, sectAtx] = await Parser.parseSectionTitle(reader, document, attributes['id'])
+    const [sectId, sectReftext, sectTitle, rawSectLevel, sectAtx] =
+      await Parser.parseSectionTitle(reader, document, attributes.id)
     let sectLevel = rawSectLevel
 
-    let sectName, sectSpecial = false, sectNumbered = false
+    let sectName,
+      sectSpecial = false,
+      sectNumbered = false
     if (sectStyle) {
       if (book && sectStyle === 'abstract') {
-        sectName  = 'chapter'
+        sectName = 'chapter'
         // sectLevel already 1 from parseSectionTitle typically
-      } else if (sectStyle.startsWith('sect') && SectionLevelStyleRx.test(sectStyle)) {
+      } else if (
+        sectStyle.startsWith('sect') &&
+        SectionLevelStyleRx.test(sectStyle)
+      ) {
         sectName = 'section'
       } else {
-        sectName    = sectStyle
+        sectName = sectStyle
         sectSpecial = true
         if (book && sectLevel === 0) sectLevel = 1
         sectNumbered = sectName === 'appendix'
       }
     } else if (book) {
-      sectName = sectLevel === 0 ? 'part' : (sectLevel > 1 ? 'section' : 'chapter')
-    } else if (doctype === 'manpage' && sectTitle.toLowerCase() === 'synopsis') {
-      sectName    = 'synopsis'
+      sectName =
+        sectLevel === 0 ? 'part' : sectLevel > 1 ? 'section' : 'chapter'
+    } else if (
+      doctype === 'manpage' &&
+      sectTitle.toLowerCase() === 'synopsis'
+    ) {
+      sectName = 'synopsis'
       sectSpecial = true
     } else {
       sectName = 'section'
     }
 
-    if (sectReftext) attributes['reftext'] = sectReftext
+    if (sectReftext) attributes.reftext = sectReftext
     const section = new Section(parent, sectLevel)
-    section.id             = sectId ?? null
-    section.title          = sectTitle
-    section.sectname       = sectName
+    section.id = sectId ?? null
+    section.title = sectTitle
+    section.sectname = sectName
     section.sourceLocation = sourceLocation
 
     if (sectSpecial) {
       section.special = true
       if (sectNumbered) {
         section.numbered = true
-      } else if (document.attributes['sectnums'] === 'all') {
+      } else if (document.attributes.sectnums === 'all') {
         section.numbered = book && sectLevel === 1 ? 'chapter' : true
       }
-    } else if (('sectnums' in document.attributes) && sectLevel > 0) {
-      section.numbered = section.special ? (parent.numbered && true) : true
-    } else if (book && sectLevel === 0 && ('partnums' in document.attributes)) {
+    } else if ('sectnums' in document.attributes && sectLevel > 0) {
+      section.numbered = section.special ? parent.numbered && true : true
+    } else if (book && sectLevel === 0 && 'partnums' in document.attributes) {
       section.numbered = true
     }
 
@@ -1537,7 +2267,12 @@ export class Parser {
 
     if (id && !document.register('refs', [id, section])) {
       const lineNo = reader.lineno - (sectAtx ? 1 : 2)
-      Parser.logger.warn(Parser.messageWithContext(`id assigned to section already in use: ${id}`, { source_location: reader.cursorAtLine(lineNo) }))
+      Parser.logger.warn(
+        Parser.messageWithContext(
+          `id assigned to section already in use: ${id}`,
+          { source_location: reader.cursorAtLine(lineNo) }
+        )
+      )
     }
 
     section.updateAttributes(attributes)
@@ -1549,7 +2284,7 @@ export class Parser {
   // Internal: Check if the next line is a section title.
   //
   // Returns the Integer section level or null.
-  static async isNextLineSection (reader, attributes) {
+  static async isNextLineSection(reader, attributes) {
     const style = attributes[1]
     if (style && (style === 'discrete' || style === 'float')) return null
 
@@ -1557,11 +2292,11 @@ export class Parser {
       const nextLines = await reader.peekLines(2, style && style === 'comment')
       return Parser.isSectionTitle(nextLines[0] ?? '', nextLines[1] ?? null)
     }
-    return Parser.atxSectionTitle(await reader.peekLine() ?? '')
+    return Parser.atxSectionTitle((await reader.peekLine()) ?? '')
   }
 
   // Internal: Check if the next line is the document title.
-  static async isNextLineDoctitle (reader, attributes, leveloffset) {
+  static async isNextLineDoctitle(reader, attributes, leveloffset) {
     const sectLevel = await Parser.isNextLineSection(reader, attributes)
     if (sectLevel == null || sectLevel === false) return false
     if (leveloffset) {
@@ -1573,7 +2308,7 @@ export class Parser {
   // Public: Check if line1 (and optionally line2) form a section title.
   //
   // Returns Integer level or null.
-  static isSectionTitle (line1, line2 = null) {
+  static isSectionTitle(line1, line2 = null) {
     const atxLevel = Parser.atxSectionTitle(line1)
     if (atxLevel != null) return atxLevel
     if (!line2) return null
@@ -1581,16 +2316,23 @@ export class Parser {
   }
 
   // Check for ATX-style section title.
-  static atxSectionTitle (line) {
-    const rx = Compliance.markdownSyntax ? ExtAtxSectionTitleRx : AtxSectionTitleRx
-    if (!(Compliance.markdownSyntax ? (line.startsWith('=') || line.startsWith('#')) : line.startsWith('='))) return null
+  static atxSectionTitle(line) {
+    const rx = Compliance.markdownSyntax
+      ? ExtAtxSectionTitleRx
+      : AtxSectionTitleRx
+    if (
+      !(Compliance.markdownSyntax
+        ? line.startsWith('=') || line.startsWith('#')
+        : line.startsWith('='))
+    )
+      return null
     const m = line.match(rx)
     return m ? m[1].length - 1 : null
   }
 
   // Check for setext-style section title.
-  static setextSectionTitle (line1, line2) {
-    const ch0   = line2[0]
+  static setextSectionTitle(line1, line2) {
+    const ch0 = line2[0]
     const level = SETEXT_SECTION_LEVELS[ch0]
     if (level == null) return null
     if (!_uniform(line2, ch0, line2.length)) return null
@@ -1602,40 +2344,56 @@ export class Parser {
   // Public: Parse section title from reader.
   //
   // Returns [id, reftext, title, level, atx].
-  static async parseSectionTitle (reader, document, sectId = null) {
-    let sectReftext = null, sectTitle, sectLevel, atx
+  static async parseSectionTitle(reader, document, sectId = null) {
+    let sectReftext = null,
+      sectTitle,
+      sectLevel,
+      atx
 
     const line1 = await reader.readLine()
-    const rx = Compliance.markdownSyntax ? ExtAtxSectionTitleRx : AtxSectionTitleRx
+    const rx = Compliance.markdownSyntax
+      ? ExtAtxSectionTitleRx
+      : AtxSectionTitleRx
 
-    if ((Compliance.markdownSyntax ? (line1.startsWith('=') || line1.startsWith('#')) : line1.startsWith('=')) && rx.test(line1)) {
+    if (
+      (Compliance.markdownSyntax
+        ? line1.startsWith('=') || line1.startsWith('#')
+        : line1.startsWith('=')) &&
+      rx.test(line1)
+    ) {
       const m = line1.match(rx)
       sectLevel = m[1].length - 1
       sectTitle = m[2]
-      atx       = true
+      atx = true
       if (!sectId && sectTitle.endsWith(']]')) {
         const am = sectTitle.match(InlineSectionAnchorRx)
-        if (am && !am[1]) { // not escaped
-          sectTitle  = sectTitle.slice(0, sectTitle.length - am[0].length)
-          sectId     = am[2]
+        if (am && !am[1]) {
+          // not escaped
+          sectTitle = sectTitle.slice(0, sectTitle.length - am[0].length)
+          sectId = am[2]
           sectReftext = am[3] ?? null
         }
       }
     } else if (Compliance.underlineStyleSectionTitles) {
       const line2 = await reader.peekLine(true)
       if (line2) {
-        const ch0   = line2[0]
+        const ch0 = line2[0]
         const level = SETEXT_SECTION_LEVELS[ch0]
-        if (level != null && _uniform(line2, ch0, line2.length) && SetextSectionTitleRx.test(line1) && Math.abs(line1.length - line2.length) < 2) {
+        if (
+          level != null &&
+          _uniform(line2, ch0, line2.length) &&
+          SetextSectionTitleRx.test(line1) &&
+          Math.abs(line1.length - line2.length) < 2
+        ) {
           sectLevel = level
           const m = line1.match(SetextSectionTitleRx)
           sectTitle = m ? m[1] : line1
-          atx       = false
+          atx = false
           if (!sectId && sectTitle.endsWith(']]')) {
             const am = sectTitle.match(InlineSectionAnchorRx)
             if (am && !am[1]) {
-              sectTitle  = sectTitle.slice(0, sectTitle.length - am[0].length)
-              sectId     = am[2]
+              sectTitle = sectTitle.slice(0, sectTitle.length - am[0].length)
+              sectId = am[2]
               sectReftext = am[3] ?? null
             }
           }
@@ -1658,7 +2416,7 @@ export class Parser {
   }
 
   // Public: Parse header metadata (author line and revision line).
-  static async parseHeaderMetadata (reader, document = null, retrieve = true) {
+  static async parseHeaderMetadata(reader, document = null, retrieve = true) {
     const docAttrs = document?.attributes
 
     await Parser.processAttributeEntries(reader, document)
@@ -1669,50 +2427,51 @@ export class Parser {
     let implicitAuthorinitials = null
     let implicitAuthors = null
 
-    if (await reader.hasMoreLines() && !await reader.isNextLineEmpty()) {
+    if ((await reader.hasMoreLines()) && !(await reader.isNextLineEmpty())) {
       const authorLine = await reader.readLine()
-      const parsed     = Parser.processAuthors(authorLine)
-      authorcount = parsed['authorcount']
-      delete parsed['authorcount']
+      const parsed = Parser.processAuthors(authorLine)
+      authorcount = parsed.authorcount
+      delete parsed.authorcount
       implicitAuthorMetadata = parsed
-      implicitAuthorMetadata['authorcount'] = authorcount
+      implicitAuthorMetadata.authorcount = authorcount
 
       if (document && docAttrs) {
-        docAttrs['authorcount'] = authorcount
+        docAttrs.authorcount = authorcount
         if (authorcount > 0) {
           for (const [key, val] of Object.entries(parsed)) {
             if (!(key in docAttrs)) {
               docAttrs[key] = await document.applyHeaderSubs(val)
             }
           }
-          implicitAuthor          = docAttrs['author']
-          implicitAuthorinitials  = docAttrs['authorinitials']
-          implicitAuthors         = docAttrs['authors']
+          implicitAuthor = docAttrs.author
+          implicitAuthorinitials = docAttrs.authorinitials
+          implicitAuthors = docAttrs.authors
         }
       }
 
       await Parser.processAttributeEntries(reader, document)
 
-      if (await reader.hasMoreLines() && !await reader.isNextLineEmpty()) {
+      if ((await reader.hasMoreLines()) && !(await reader.isNextLineEmpty())) {
         const revLine = await reader.readLine()
         const rm = revLine.match(RevisionInfoLineRx)
         if (rm) {
           const revMetadata = {}
-          if (rm[1]) revMetadata['revnumber'] = rm[1].trimEnd()
+          if (rm[1]) revMetadata.revnumber = rm[1].trimEnd()
           if (rm[2]) {
             const component = rm[2].trim()
             if (component !== '') {
               if (!rm[1] && component.startsWith('v')) {
-                revMetadata['revnumber'] = component.slice(1)
+                revMetadata.revnumber = component.slice(1)
               } else {
-                revMetadata['revdate'] = component
+                revMetadata.revdate = component
               }
             }
           }
-          if (rm[3]) revMetadata['revremark'] = rm[3].trimEnd()
+          if (rm[3]) revMetadata.revremark = rm[3].trimEnd()
           if (document && docAttrs && Object.keys(revMetadata).length > 0) {
             for (const [key, val] of Object.entries(revMetadata)) {
-              if (!(key in docAttrs)) docAttrs[key] = await document.applyHeaderSubs(val)
+              if (!(key in docAttrs))
+                docAttrs[key] = await document.applyHeaderSubs(val)
             }
           }
           Object.assign(implicitAuthorMetadata, revMetadata)
@@ -1728,15 +2487,18 @@ export class Parser {
     // Process author attribute entries that override (or stand in for) the implicit author line.
     let authorMetadata = null
     if (document) {
-      if (('author' in docAttrs) && docAttrs['author'] !== implicitAuthor) {
+      if ('author' in docAttrs && docAttrs.author !== implicitAuthor) {
         // author attribute was set or overridden; re-parse as names only (no multiple)
-        authorMetadata = Parser.processAuthors(docAttrs['author'], true, false)
-        if (docAttrs['authorinitials'] !== implicitAuthorinitials) {
-          delete authorMetadata['authorinitials']
+        authorMetadata = Parser.processAuthors(docAttrs.author, true, false)
+        if (docAttrs.authorinitials !== implicitAuthorinitials) {
+          delete authorMetadata.authorinitials
         }
-      } else if (('authors' in docAttrs) && docAttrs['authors'] !== implicitAuthors) {
+      } else if (
+        'authors' in docAttrs &&
+        docAttrs.authors !== implicitAuthors
+      ) {
         // authors attribute was set or overridden; re-parse as names only (allow multiple)
-        authorMetadata = Parser.processAuthors(docAttrs['authors'], true)
+        authorMetadata = Parser.processAuthors(docAttrs.authors, true)
       } else {
         // check for individual author_N overrides
         const authors = []
@@ -1764,7 +2526,9 @@ export class Parser {
                 implicitAuthorMetadata[`firstname_${nameIdx}`],
                 implicitAuthorMetadata[`middlename_${nameIdx}`],
                 implicitAuthorMetadata[`lastname_${nameIdx}`],
-              ].filter(Boolean).map((n) => n.replace(/ /g, '_'))
+              ]
+                .filter(Boolean)
+                .map((n) => n.replace(/ /g, '_'))
               authors[idx] = parts.join(' ')
             }
           }
@@ -1775,16 +2539,16 @@ export class Parser {
         }
       }
 
-      if (authorMetadata['authorcount'] === 0) {
+      if (authorMetadata.authorcount === 0) {
         if (authorcount != null) {
           authorMetadata = null
         } else {
-          docAttrs['authorcount'] = 0
+          docAttrs.authorcount = 0
         }
       } else {
         Object.assign(docAttrs, authorMetadata)
-        if (!('email' in docAttrs) && ('email_1' in docAttrs)) {
-          docAttrs['email'] = docAttrs['email_1']
+        if (!('email' in docAttrs) && 'email_1' in docAttrs) {
+          docAttrs.email = docAttrs.email_1
         }
       }
     }
@@ -1794,12 +2558,13 @@ export class Parser {
   }
 
   // Internal: Parse the author line into a metadata Hash.
-  static processAuthors (authorLine, namesOnly = false, multiple = true) {
+  static processAuthors(authorLine, namesOnly = false, multiple = true) {
     const authorMetadata = {}
     let authorIdx = 0
-    const entries = (multiple && String(authorLine).includes(';'))
-      ? String(authorLine).split(AuthorDelimiterRx)
-      : [].concat(authorLine)
+    const entries =
+      multiple && String(authorLine).includes(';')
+        ? String(authorLine).split(AuthorDelimiterRx)
+        : [].concat(authorLine)
 
     for (const authorEntry of entries) {
       const entry = String(authorEntry)
@@ -1817,18 +2582,19 @@ export class Parser {
       if (namesOnly) {
         let cleanEntry = entry
         if (entry.includes('<')) {
-          authorMetadata[keyMap['author']] = entry.replace(/_/g, ' ')
+          authorMetadata[keyMap.author] = entry.replace(/_/g, ' ')
           cleanEntry = entry.replace(new RegExp(XmlSanitizeRx.source, 'g'), '')
         }
         // Ruby: split(nil, 3) — splits on whitespace, keeps remainder in 3rd element.
         // JS split with limit drops the remainder, so we split fully then cap at 3.
         const allParts = cleanEntry.split(/\s+/).filter(Boolean)
-        const parts = allParts.length > 3
-          ? [...allParts.slice(0, 2), allParts.slice(2).join(' ')]
-          : allParts
+        const parts =
+          allParts.length > 3
+            ? [...allParts.slice(0, 2), allParts.slice(2).join(' ')]
+            : allParts
         if (parts.length === 3) {
           const last = parts.pop()
-          parts.push(last.replace(/  +/g, ' '))
+          parts.push(last.replace(/ {2,}/g, ' '))
         }
         segments = parts
       } else {
@@ -1838,55 +2604,65 @@ export class Parser {
 
       if (segments) {
         const fname = segments[0].replace(/_/g, ' ')
-        authorMetadata[keyMap['firstname']]     = fname
-        authorMetadata[keyMap['authorinitials']] = fname[0]
+        authorMetadata[keyMap.firstname] = fname
+        authorMetadata[keyMap.authorinitials] = fname[0]
         let author = fname
 
         if (segments[1]) {
           if (segments[2]) {
             const mname = segments[1].replace(/_/g, ' ')
             const lname = segments[2].replace(/_/g, ' ')
-            authorMetadata[keyMap['middlename']] = mname
-            authorMetadata[keyMap['lastname']]   = lname
+            authorMetadata[keyMap.middlename] = mname
+            authorMetadata[keyMap.lastname] = lname
             author = `${fname} ${mname} ${lname}`
-            authorMetadata[keyMap['authorinitials']] = `${fname[0]}${mname[0]}${lname[0]}`
+            authorMetadata[keyMap.authorinitials] =
+              `${fname[0]}${mname[0]}${lname[0]}`
           } else {
             const lname = segments[1].replace(/_/g, ' ')
-            authorMetadata[keyMap['lastname']] = lname
+            authorMetadata[keyMap.lastname] = lname
             author = `${fname} ${lname}`
-            authorMetadata[keyMap['authorinitials']] = `${fname[0]}${lname[0]}`
+            authorMetadata[keyMap.authorinitials] = `${fname[0]}${lname[0]}`
           }
         }
-        authorMetadata[keyMap['author']] ??= author
-        if (!namesOnly && segments[3]) authorMetadata[keyMap['email']] = segments[3]
+        authorMetadata[keyMap.author] ??= author
+        if (!namesOnly && segments[3])
+          authorMetadata[keyMap.email] = segments[3]
       } else {
-        const author = entry.replace(/  +/g, ' ').trim()
-        authorMetadata[keyMap['author']]         = author
-        authorMetadata[keyMap['firstname']]      = author
-        authorMetadata[keyMap['authorinitials']] = author[0]
+        const author = entry.replace(/ {2,}/g, ' ').trim()
+        authorMetadata[keyMap.author] = author
+        authorMetadata[keyMap.firstname] = author
+        authorMetadata[keyMap.authorinitials] = author[0]
       }
 
       if (authorIdx === 1) {
-        authorMetadata['authors'] = authorMetadata[keyMap['author']]
+        authorMetadata.authors = authorMetadata[keyMap.author]
       } else {
         if (authorIdx === 2) {
           for (const key of AuthorKeys) {
-            if (key in authorMetadata) authorMetadata[`${key}_1`] = authorMetadata[key]
+            if (key in authorMetadata)
+              authorMetadata[`${key}_1`] = authorMetadata[key]
           }
         }
-        authorMetadata['authors'] = `${authorMetadata['authors']}, ${authorMetadata[keyMap['author']]}`
+        authorMetadata.authors = `${authorMetadata.authors}, ${authorMetadata[keyMap.author]}`
       }
     }
 
-    authorMetadata['authorcount'] = authorIdx
+    authorMetadata.authorcount = authorIdx
     return authorMetadata
   }
 
   // Internal: Parse block metadata lines.
-  static async parseBlockMetadataLines (reader, document, attributes = {}, options = {}) {
-    while (await Parser.parseBlockMetadataLine(reader, document, attributes, options)) {
+  static async parseBlockMetadataLines(
+    reader,
+    document,
+    attributes = {},
+    options = {}
+  ) {
+    while (
+      await Parser.parseBlockMetadataLine(reader, document, attributes, options)
+    ) {
       await reader.readLine()
-      if (await reader.skipBlankLines() == null) break
+      if ((await reader.skipBlankLines()) == null) break
     }
     return attributes
   }
@@ -1894,13 +2670,25 @@ export class Parser {
   // Internal: Parse the next line if it contains block metadata.
   //
   // Returns true if the line is metadata, otherwise falsy.
-  static async parseBlockMetadataLine (reader, document, attributes, options = {}) {
+  static async parseBlockMetadataLine(
+    reader,
+    document,
+    attributes,
+    options = {}
+  ) {
     const nextLine = await reader.peekLine()
     if (!nextLine) return null
 
     const textOnly = options.text_only
-    const normal   = !textOnly && (nextLine.startsWith('[') || nextLine.startsWith('.') || nextLine.startsWith('/') || nextLine.startsWith(':'))
-    const isAttrOrComment = textOnly ? (nextLine.startsWith('[') || nextLine.startsWith('/')) : normal
+    const normal =
+      !textOnly &&
+      (nextLine.startsWith('[') ||
+        nextLine.startsWith('.') ||
+        nextLine.startsWith('/') ||
+        nextLine.startsWith(':'))
+    const isAttrOrComment = textOnly
+      ? nextLine.startsWith('[') || nextLine.startsWith('/')
+      : normal
 
     if (!isAttrOrComment) return null
 
@@ -1909,10 +2697,12 @@ export class Parser {
         if (nextLine.endsWith(']]')) {
           const m = nextLine.match(BlockAnchorRx)
           if (m) {
-            attributes['id'] = m[1]
+            attributes.id = m[1]
             if (m[2]) {
               const reftext = m[2]
-              attributes['reftext'] = reftext.includes(ATTR_REF_HEAD) ? document.subAttributes(reftext) : reftext
+              attributes.reftext = reftext.includes(ATTR_REF_HEAD)
+                ? document.subAttributes(reftext)
+                : reftext
             }
             return true
           }
@@ -1921,9 +2711,14 @@ export class Parser {
         const m = nextLine.match(BlockAttributeListRx)
         if (m) {
           const currentStyle = attributes[1]
-          const parsed = await document.parseAttributes(m[1], [], { sub_input: true, sub_result: true, into: attributes })
+          const parsed = await document.parseAttributes(m[1], [], {
+            sub_input: true,
+            sub_result: true,
+            into: attributes,
+          })
           if (parsed[1]) {
-            attributes[1] = Parser.parseStyleAttribute(attributes, reader) ?? currentStyle
+            attributes[1] =
+              Parser.parseStyleAttribute(attributes, reader) ?? currentStyle
           }
           return true
         }
@@ -1931,14 +2726,24 @@ export class Parser {
     } else if (normal && nextLine.startsWith('.')) {
       const m = nextLine.match(BlockTitleRx)
       if (m) {
-        attributes['title'] = m[1]
+        attributes.title = m[1]
         return true
       }
     } else if (!normal || nextLine.startsWith('/')) {
       if (nextLine === '//') return true
-      if (normal && nextLine.startsWith('//') && _uniform(nextLine, '/', nextLine.length)) {
+      if (
+        normal &&
+        nextLine.startsWith('//') &&
+        _uniform(nextLine, '/', nextLine.length)
+      ) {
         if (nextLine.length !== 3) {
-          await reader.readLinesUntil({ terminator: nextLine, skip_first_line: true, preserve_last_line: true, skip_processing: true, context: 'comment' })
+          await reader.readLinesUntil({
+            terminator: nextLine,
+            skip_first_line: true,
+            preserve_last_line: true,
+            skip_processing: true,
+            context: 'comment',
+          })
           return true
         }
       } else if (nextLine.startsWith('//') && !nextLine.startsWith('///')) {
@@ -1955,7 +2760,7 @@ export class Parser {
   }
 
   // Internal: Process consecutive attribute entries.
-  static async processAttributeEntries (reader, document, attributes = null) {
+  static async processAttributeEntries(reader, document, attributes = null) {
     await reader.skipCommentLines()
     while (await Parser.processAttributeEntry(reader, document, attributes)) {
       await reader.readLine()
@@ -1964,9 +2769,14 @@ export class Parser {
   }
 
   // Internal: Process a single attribute entry.
-  static async processAttributeEntry (reader, document, attributes = null, match = null) {
+  static async processAttributeEntry(
+    reader,
+    document,
+    attributes = null,
+    match = null
+  ) {
     if (!match) {
-      if (!await reader.hasMoreLines()) return false
+      if (!(await reader.hasMoreLines())) return false
       const pLine = await reader.peekLine()
       const m = pLine ? pLine.match(AttributeEntryRx) : null
       if (!m) return false
@@ -1976,11 +2786,14 @@ export class Parser {
     let value = match[2] ?? ''
     if (value === '' || value == null) {
       value = ''
-    } else if (value.endsWith(LINE_CONTINUATION) || value.endsWith(LINE_CONTINUATION_LEGACY)) {
+    } else if (
+      value.endsWith(LINE_CONTINUATION) ||
+      value.endsWith(LINE_CONTINUATION_LEGACY)
+    ) {
       const conStr = value.slice(-2)
       value = value.slice(0, -2).trimEnd()
       while (await reader.advance()) {
-        const nextLine = (await reader.peekLine() ?? '')
+        const nextLine = (await reader.peekLine()) ?? ''
         if (nextLine === '') break
         let next = nextLine.trimStart()
         const keepOpen = next.endsWith(conStr)
@@ -1996,7 +2809,9 @@ export class Parser {
       const passMatch = value.match(AttributeEntryPassMacroRx)
       if (passMatch) {
         value = await document._applyAttributeEntryValueSubs(value)
-        Parser.storeAttribute(match[1], value, document, attributes, { skipSubs: true })
+        Parser.storeAttribute(match[1], value, document, attributes, {
+          skipSubs: true,
+        })
         return true
       }
     }
@@ -2006,7 +2821,7 @@ export class Parser {
   }
 
   // Public: Store the attribute in the document.
-  static storeAttribute (name, value, doc = null, attrs = null, opts = {}) {
+  static storeAttribute(name, value, doc = null, attrs = null, opts = {}) {
     if (name.endsWith('!')) {
       name = name.slice(0, -1)
       value = null
@@ -2030,8 +2845,10 @@ export class Parser {
         if (value !== '') {
           if (name === 'leveloffset') {
             const current = parseInt(doc.attr('leveloffset', 0), 10) || 0
-            if (value.startsWith('+')) value = String(current + parseInt(value.slice(1), 10))
-            else if (value.startsWith('-')) value = String(current - parseInt(value.slice(1), 10))
+            if (value.startsWith('+'))
+              value = String(current + parseInt(value.slice(1), 10))
+            else if (value.startsWith('-'))
+              value = String(current - parseInt(value.slice(1), 10))
           }
         }
         // value === '' means set to empty string (Ruby: '' is truthy → setAttribute path)
@@ -2051,10 +2868,10 @@ export class Parser {
   }
 
   // Internal: Read paragraph lines.
-  static async readParagraphLines (reader, breakAtList, opts = {}) {
-    opts.break_on_blank_lines     = true
+  static async readParagraphLines(reader, breakAtList, opts = {}) {
+    opts.break_on_blank_lines = true
     opts.break_on_list_continuation = true
-    opts.preserve_last_line       = true
+    opts.preserve_last_line = true
 
     // isPlaceholder matches only ListContinuationPlaceholder (empty boxed String), not ListContinuationString ('+').
     // We must not fire on ListContinuationString here because it would be preserved back to the reader,
@@ -2064,10 +2881,17 @@ export class Parser {
     let breakCondition = null
     if (breakAtList) {
       breakCondition = Compliance.blockTerminatesParagraph
-        ? (l) => isPlaceholder(l) || Parser.isDelimitedBlock(l) || (l.startsWith('[') && BlockAttributeLineRx.test(l)) || AnyListRx.test(l)
+        ? (l) =>
+            isPlaceholder(l) ||
+            Parser.isDelimitedBlock(l) ||
+            (l.startsWith('[') && BlockAttributeLineRx.test(l)) ||
+            AnyListRx.test(l)
         : (l) => isPlaceholder(l) || AnyListRx.test(l)
     } else if (Compliance.blockTerminatesParagraph) {
-      breakCondition = (l) => isPlaceholder(l) || (l.startsWith('[') && BlockAttributeLineRx.test(l)) || Parser.isDelimitedBlock(l)
+      breakCondition = (l) =>
+        isPlaceholder(l) ||
+        (l.startsWith('[') && BlockAttributeLineRx.test(l)) ||
+        Parser.isDelimitedBlock(l)
     } else {
       breakCondition = (l) => isPlaceholder(l)
     }
@@ -2078,18 +2902,18 @@ export class Parser {
   // Public: Check if line is the start of a delimited block.
   //
   // Returns BlockMatchData object if return_match_data is true, true/false otherwise.
-  static isDelimitedBlock (line, returnMatchData = false) {
+  static isDelimitedBlock(line, returnMatchData = false) {
     let lineLen = line.length
     if (lineLen < 2 || !DELIMITED_BLOCK_HEADS[line.slice(0, 2)]) return null
 
     let tip, tipLen
 
     if (lineLen === 2) {
-      tip    = line
+      tip = line
       tipLen = 2
     } else {
       tipLen = lineLen < 5 ? lineLen : 4
-      tip    = line.slice(0, tipLen)
+      tip = line.slice(0, tipLen)
 
       // Fenced code special case
       if (Compliance.markdownSyntax && tip.startsWith('`')) {
@@ -2114,45 +2938,70 @@ export class Parser {
     if (!entry) return null
     const [context, masq] = entry
 
-    const isMatch = lineLen === tipLen || (DELIMITED_BLOCK_TAILS[tip] != null && _uniform(line.slice(1), DELIMITED_BLOCK_TAILS[tip], lineLen - 1))
+    const isMatch =
+      lineLen === tipLen ||
+      (DELIMITED_BLOCK_TAILS[tip] != null &&
+        _uniform(line.slice(1), DELIMITED_BLOCK_TAILS[tip], lineLen - 1))
     if (!isMatch) return null
 
     return returnMatchData ? { context, masq, tip, terminator: line } : true
   }
 
   // Internal: Resolve the list marker for a list item.
-  static resolveListMarker (listType, marker) {
+  static resolveListMarker(listType, marker) {
     if (listType === 'ulist') return marker
     if (listType === 'olist') return Parser.resolveOrderedListMarker(marker)[0]
     return '<1>'
   }
 
   // Internal: Resolve the normalized ordered list marker.
-  static resolveOrderedListMarker (marker, ordinal = null, validate = false, reader = null) {
+  static resolveOrderedListMarker(
+    marker,
+    ordinal = null,
+    validate = false,
+    reader = null
+  ) {
     if (marker.startsWith('.')) return [marker]
 
-    const style = ORDERED_LIST_STYLES.find(s => OrderedListMarkerRxMap[s].test(marker))
+    const style = ORDERED_LIST_STYLES.find((s) =>
+      OrderedListMarkerRxMap[s].test(marker)
+    )
     let normalizedMarker, expected, actual
 
     switch (style) {
       case 'arabic':
-        if (validate) { expected = String(ordinal + 1); actual = String(parseInt(marker, 10)) }
+        if (validate) {
+          expected = String(ordinal + 1)
+          actual = String(parseInt(marker, 10))
+        }
         normalizedMarker = '1.'
         break
       case 'loweralpha':
-        if (validate) { expected = String.fromCharCode(97 + ordinal); actual = marker.slice(0, -1) }
+        if (validate) {
+          expected = String.fromCharCode(97 + ordinal)
+          actual = marker.slice(0, -1)
+        }
         normalizedMarker = 'a.'
         break
       case 'upperalpha':
-        if (validate) { expected = String.fromCharCode(65 + ordinal); actual = marker.slice(0, -1) }
+        if (validate) {
+          expected = String.fromCharCode(65 + ordinal)
+          actual = marker.slice(0, -1)
+        }
         normalizedMarker = 'A.'
         break
       case 'lowerroman':
-        if (validate) { expected = intToRoman(ordinal + 1).toLowerCase(); actual = marker.slice(0, -1) }
+        if (validate) {
+          expected = intToRoman(ordinal + 1).toLowerCase()
+          actual = marker.slice(0, -1)
+        }
         normalizedMarker = 'i)'
         break
       case 'upperroman':
-        if (validate) { expected = intToRoman(ordinal + 1); actual = marker.slice(0, -1) }
+        if (validate) {
+          expected = intToRoman(ordinal + 1)
+          actual = marker.slice(0, -1)
+        }
         normalizedMarker = 'I)'
         break
       default:
@@ -2161,7 +3010,12 @@ export class Parser {
 
     if (ordinal != null) {
       if (validate && expected !== actual) {
-        Parser.logger.warn(Parser.messageWithContext(`list item index: expected ${expected}, got ${actual}`, { source_location: reader?.cursor }))
+        Parser.logger.warn(
+          Parser.messageWithContext(
+            `list item index: expected ${expected}, got ${actual}`,
+            { source_location: reader?.cursor }
+          )
+        )
       }
       return [normalizedMarker, style]
     }
@@ -2169,21 +3023,29 @@ export class Parser {
   }
 
   // Internal: Resolve the start value for an ordered list.
-  static resolveOrderedListStart (marker) {
+  static resolveOrderedListStart(marker) {
     if (marker.startsWith('.')) return 1
-    const style = ORDERED_LIST_STYLES.find(s => OrderedListMarkerRxMap[s].test(marker))
+    const style = ORDERED_LIST_STYLES.find((s) =>
+      OrderedListMarkerRxMap[s].test(marker)
+    )
     switch (style) {
-      case 'arabic':     return parseInt(marker, 10)
-      case 'loweralpha': return marker.slice(0, -1).charCodeAt(0) - 96
-      case 'upperalpha': return marker.slice(0, -1).charCodeAt(0) - 64
-      case 'lowerroman': return romanToInt(marker.slice(0, -1).toUpperCase())
-      case 'upperroman': return romanToInt(marker.slice(0, -1))
-      default:           return 1
+      case 'arabic':
+        return parseInt(marker, 10)
+      case 'loweralpha':
+        return marker.slice(0, -1).charCodeAt(0) - 96
+      case 'upperalpha':
+        return marker.slice(0, -1).charCodeAt(0) - 64
+      case 'lowerroman':
+        return romanToInt(marker.slice(0, -1).toUpperCase())
+      case 'upperroman':
+        return romanToInt(marker.slice(0, -1))
+      default:
+        return 1
     }
   }
 
   // Internal: Check if this line is a sibling list item.
-  static isSiblingListItem (line, listType, siblingTrait) {
+  static isSiblingListItem(line, listType, siblingTrait) {
     if (siblingTrait instanceof RegExp) return siblingTrait.test(line)
     const m = line.match(ListRxMap[listType])
     if (!m) return false
@@ -2192,19 +3054,19 @@ export class Parser {
   }
 
   // Internal: Parse a table.
-  static async parseTable (tableReader, parent, attributes) {
+  static async parseTable(tableReader, parent, attributes) {
     const table = new Table(parent, attributes)
 
     let explicitColspecs = false
     if ('cols' in attributes) {
-      const colspecs = Parser.parseColspecs(attributes['cols'])
+      const colspecs = Parser.parseColspecs(attributes.cols)
       if (colspecs.length > 0) {
         table.createColumns(colspecs)
         explicitColspecs = true
       }
     }
 
-    const skipped = await tableReader.skipBlankLines() ?? 0
+    const skipped = (await tableReader.skipBlankLines()) ?? 0
     if ('header-option' in attributes) {
       table.hasHeaderOption = true
     } else if (skipped === 0 && !('noheader-option' in attributes)) {
@@ -2213,8 +3075,8 @@ export class Parser {
     let implicitHeader = table.hasHeaderOption === 'implicit'
 
     const parserCtx = new Table.ParserContext(tableReader, table, attributes)
-    const format    = parserCtx.format
-    let loopIdx     = -1
+    const format = parserCtx.format
+    let loopIdx = -1
     let implicitHeaderBoundary = null
 
     while (true) {
@@ -2231,12 +3093,22 @@ export class Parser {
           await parserCtx.closeOpenCell()
           if (implicitHeaderBoundary != null) implicitHeaderBoundary = null
         } else {
-          const [nextCellspec, rest] = Parser.parseCellspec(line, 'start', parserCtx.delimiter)
+          const [nextCellspec, rest] = Parser.parseCellspec(
+            line,
+            'start',
+            parserCtx.delimiter
+          )
           if (nextCellspec != null) {
             await parserCtx.closeOpenCell(nextCellspec)
             if (implicitHeaderBoundary != null) implicitHeaderBoundary = null
-          } else if (implicitHeaderBoundary != null && implicitHeaderBoundary === loopIdx) {
-            table.hasHeaderOption = implicitHeader = implicitHeaderBoundary = null
+          } else if (
+            implicitHeaderBoundary != null &&
+            implicitHeaderBoundary === loopIdx
+          ) {
+            table.hasHeaderOption =
+              implicitHeader =
+              implicitHeaderBoundary =
+                null
           }
           line = rest
         }
@@ -2245,7 +3117,10 @@ export class Parser {
       if (!beyondFirst) {
         tableReader.mark()
         if (implicitHeader) {
-          if (await tableReader.hasMoreLines() && await tableReader.peekLine() === '') {
+          if (
+            (await tableReader.hasMoreLines()) &&
+            (await tableReader.peekLine()) === ''
+          ) {
             implicitHeaderBoundary = 1
           } else {
             table.hasHeaderOption = implicitHeader = null
@@ -2258,7 +3133,7 @@ export class Parser {
         if (line != null) {
           const m = line.match(parserCtx.delimiterRe)
           if (m) {
-            const preMatch  = line.slice(0, m.index)
+            const preMatch = line.slice(0, m.index)
             const postMatch = line.slice(m.index + m[0].length)
             if (format === 'csv') {
               if (parserCtx.bufferHasUnclosedQuotes(preMatch)) {
@@ -2276,7 +3151,8 @@ export class Parser {
                   parserCtx.keepCellOpen()
                   break
                 }
-                line = postMatch; continue
+                line = postMatch
+                continue
               }
               parserCtx.buffer += preMatch
             } else {
@@ -2287,7 +3163,8 @@ export class Parser {
                   parserCtx.keepCellOpen()
                   break
                 }
-                line = postMatch; continue
+                line = postMatch
+                continue
               }
               const [nextSpec, cellText] = Parser.parseCellspec(preMatch)
               parserCtx.pushCellspec(nextSpec)
@@ -2307,7 +3184,10 @@ export class Parser {
             if (format === 'csv') {
               if (parserCtx.bufferHasUnclosedQuotes()) {
                 if (implicitHeaderBoundary != null && loopIdx === 0) {
-                  table.hasHeaderOption = implicitHeader = implicitHeaderBoundary = null
+                  table.hasHeaderOption =
+                    implicitHeader =
+                    implicitHeaderBoundary =
+                      null
                 }
                 parserCtx.keepCellOpen()
               } else {
@@ -2333,14 +3213,17 @@ export class Parser {
       }
 
       if (parserCtx.isCellOpen()) {
-        if (!await tableReader.hasMoreLines()) await parserCtx.closeCell(true)
+        if (!(await tableReader.hasMoreLines())) await parserCtx.closeCell(true)
       } else {
-        if (await tableReader.skipBlankLines() == null) break
+        if ((await tableReader.skipBlankLines()) == null) break
       }
     }
 
     await parserCtx.closeTable()
-    if ((table.attributes['colcount'] ??= table.columns.length) !== 0 && !explicitColspecs) {
+    if (
+      (table.attributes.colcount ??= table.columns.length) !== 0 &&
+      !explicitColspecs
+    ) {
       table.assignColumnWidths()
     }
     if (implicitHeader) table.hasHeaderOption = true
@@ -2350,14 +3233,16 @@ export class Parser {
   }
 
   // Internal: Parse column specs.
-  static parseColspecs (records) {
+  static parseColspecs(records) {
     records = records.replace(/ /g, '')
     if (!records) return []
     if (records === String(parseInt(records, 10))) {
       return Array.from({ length: parseInt(records, 10) }, () => ({ width: 1 }))
     }
     const specs = []
-    const parts = records.includes(',') ? records.split(',') : records.split(';')
+    const parts = records.includes(',')
+      ? records.split(',')
+      : records.split(';')
     for (const record of parts) {
       if (record === '') {
         specs.push({ width: 1 })
@@ -2367,11 +3252,13 @@ export class Parser {
         const spec = {}
         if (m[2]) {
           const [colspec, rowspec] = m[2].split('.')
-          if (colspec && TableCellHorzAlignments[colspec]) spec['halign'] = TableCellHorzAlignments[colspec]
-          if (rowspec && TableCellVertAlignments[rowspec]) spec['valign'] = TableCellVertAlignments[rowspec]
+          if (colspec && TableCellHorzAlignments[colspec])
+            spec.halign = TableCellHorzAlignments[colspec]
+          if (rowspec && TableCellVertAlignments[rowspec])
+            spec.valign = TableCellVertAlignments[rowspec]
         }
-        spec['width'] = m[3] ? (m[3] === '~' ? -1 : parseInt(m[3], 10)) : 1
-        if (m[4] && TableCellStyles[m[4]]) spec['style'] = TableCellStyles[m[4]]
+        spec.width = m[3] ? (m[3] === '~' ? -1 : parseInt(m[3], 10)) : 1
+        if (m[4] && TableCellStyles[m[4]]) spec.style = TableCellStyles[m[4]]
         const repeat = m[1] ? parseInt(m[1], 10) : 1
         for (let i = 0; i < repeat; i++) specs.push({ ...spec })
       }
@@ -2382,8 +3269,9 @@ export class Parser {
   // Internal: Parse cell spec from line.
   //
   // Returns [spec, rest].
-  static parseCellspec (line, pos = 'end', delimiter = null) {
-    let m, rest = ''
+  static parseCellspec(line, pos = 'end', delimiter = null) {
+    let m,
+      rest = ''
 
     if (pos === 'start') {
       if (!line.includes(delimiter)) return [null, line]
@@ -2407,46 +3295,52 @@ export class Parser {
       const cs = colspec ? parseInt(colspec, 10) : 1
       const rs = rowspec ? parseInt(rowspec, 10) : 1
       if (m[2] === '+') {
-        if (cs !== 1) spec['colspan'] = cs
-        if (rs !== 1) spec['rowspan'] = rs
+        if (cs !== 1) spec.colspan = cs
+        if (rs !== 1) spec.rowspan = rs
       } else if (m[2] === '*') {
-        if (cs !== 1) spec['repeatcol'] = cs
+        if (cs !== 1) spec.repeatcol = cs
       }
     }
     if (m[3]) {
       const [colspec, rowspec] = m[3].split('.')
-      if (colspec && TableCellHorzAlignments[colspec]) spec['halign'] = TableCellHorzAlignments[colspec]
-      if (rowspec && TableCellVertAlignments[rowspec]) spec['valign'] = TableCellVertAlignments[rowspec]
+      if (colspec && TableCellHorzAlignments[colspec])
+        spec.halign = TableCellHorzAlignments[colspec]
+      if (rowspec && TableCellVertAlignments[rowspec])
+        spec.valign = TableCellVertAlignments[rowspec]
     }
-    if (m[4] && TableCellStyles[m[4]]) spec['style'] = TableCellStyles[m[4]]
+    if (m[4] && TableCellStyles[m[4]]) spec.style = TableCellStyles[m[4]]
 
     return [spec, rest]
   }
 
   // Public: Parse the first positional attribute for style, role, id, and options.
-  static parseStyleAttribute (attributes, reader = null) {
+  static parseStyleAttribute(attributes, reader = null) {
     const rawStyle = attributes[1]
-    if (!rawStyle || rawStyle.includes(' ') || !Compliance.shorthandPropertySyntax) {
-      return (attributes['style'] = rawStyle)
+    if (
+      !rawStyle ||
+      rawStyle.includes(' ') ||
+      !Compliance.shorthandPropertySyntax
+    ) {
+      return (attributes.style = rawStyle)
     }
 
-    let name   = null
-    let accum  = ''
+    let name = null
+    let accum = ''
     const parsed = {}
 
     for (const c of rawStyle) {
       if (c === '.') {
         Parser._yieldBufferedAttribute(parsed, name, accum, reader)
         accum = ''
-        name  = 'role'
+        name = 'role'
       } else if (c === '#') {
         Parser._yieldBufferedAttribute(parsed, name, accum, reader)
         accum = ''
-        name  = 'id'
+        name = 'id'
       } else if (c === '%') {
         Parser._yieldBufferedAttribute(parsed, name, accum, reader)
         accum = ''
-        name  = 'option'
+        name = 'option'
       } else {
         accum += c
       }
@@ -2454,47 +3348,60 @@ export class Parser {
 
     if (name) {
       Parser._yieldBufferedAttribute(parsed, name, accum, reader)
-      if (parsed['style']) attributes['style'] = parsed['style']
-      if ('id' in parsed) attributes['id'] = parsed['id']
+      if (parsed.style) attributes.style = parsed.style
+      if ('id' in parsed) attributes.id = parsed.id
       if ('role' in parsed) {
-        const existing = attributes['role']
-        attributes['role'] = (!existing || existing === '') ? parsed['role'].join(' ') : `${existing} ${parsed['role'].join(' ')}`
+        const existing = attributes.role
+        attributes.role =
+          !existing || existing === ''
+            ? parsed.role.join(' ')
+            : `${existing} ${parsed.role.join(' ')}`
       }
       if ('option' in parsed) {
-        for (const opt of parsed['option']) attributes[`${opt}-option`] = ''
+        for (const opt of parsed.option) attributes[`${opt}-option`] = ''
       }
-      return parsed['style'] ?? null
+      return parsed.style ?? null
     }
-    return (attributes['style'] = rawStyle)
+    return (attributes.style = rawStyle)
   }
 
-  static _yieldBufferedAttribute (attrs, name, value, reader) {
+  static _yieldBufferedAttribute(attrs, name, value, reader) {
     if (name) {
       if (value === '') {
         const msg = `invalid empty ${name} detected in style attribute`
-        if (reader) Parser.logger.warn(Parser.messageWithContext(msg, { source_location: reader.cursorAtPrevLine() }))
+        if (reader)
+          Parser.logger.warn(
+            Parser.messageWithContext(msg, {
+              source_location: reader.cursorAtPrevLine(),
+            })
+          )
         else Parser.logger.warn(msg)
       } else if (name === 'id') {
         if ('id' in attrs) {
           const msg = 'multiple ids detected in style attribute'
-          if (reader) Parser.logger.warn(Parser.messageWithContext(msg, { source_location: reader.cursorAtPrevLine() }))
+          if (reader)
+            Parser.logger.warn(
+              Parser.messageWithContext(msg, {
+                source_location: reader.cursorAtPrevLine(),
+              })
+            )
           else Parser.logger.warn(msg)
         }
-        attrs['id'] = value
+        attrs.id = value
       } else {
-        (attrs[name] ??= []).push(value)
+        ;(attrs[name] ??= []).push(value)
       }
     } else if (value !== '') {
-      attrs['style'] = value
+      attrs.style = value
     }
   }
 
   // Internal: Remove block indentation and optionally expand tabs.
-  static adjustIndentation (lines, indentSize = 0, tabSize = 0) {
+  static adjustIndentation(lines, indentSize = 0, tabSize = 0) {
     if (!lines || lines.length === 0) return
 
-    if (tabSize > 0 && lines.some(l => l.includes('\t'))) {
-      const tabSpace = ' '.repeat(tabSize)
+    if (tabSize > 0 && lines.some((l) => l.includes('\t'))) {
+      const _tabSpace = ' '.repeat(tabSize)
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i]
         if (line === '' || !line.includes('\t')) continue
@@ -2522,36 +3429,44 @@ export class Parser {
     for (const line of lines) {
       if (String(line) === '') continue
       const lineIndent = line.length - line.trimStart().length
-      if (lineIndent === 0) { blockIndent = null; break }
-      if (blockIndent == null || lineIndent < blockIndent) blockIndent = lineIndent
+      if (lineIndent === 0) {
+        blockIndent = null
+        break
+      }
+      if (blockIndent == null || lineIndent < blockIndent)
+        blockIndent = lineIndent
     }
 
     if (indentSize === 0) {
       if (blockIndent) {
         for (let i = 0; i < lines.length; i++) {
-          if (String(lines[i]) !== '' && !isListContinuation(lines[i])) lines[i] = lines[i].slice(blockIndent)
+          if (String(lines[i]) !== '' && !isListContinuation(lines[i]))
+            lines[i] = lines[i].slice(blockIndent)
         }
       }
     } else {
       const newIndent = ' '.repeat(indentSize)
       for (let i = 0; i < lines.length; i++) {
         if (String(lines[i]) !== '' && !isListContinuation(lines[i])) {
-          lines[i] = newIndent + (blockIndent ? lines[i].slice(blockIndent) : lines[i])
+          lines[i] =
+            newIndent + (blockIndent ? lines[i].slice(blockIndent) : lines[i])
         }
       }
     }
   }
 
   // Internal: Check if string is uniform (all same character).
-  static uniform (str, chr, len) {
+  static uniform(str, chr, len) {
     if (str.length !== len) return false
     for (const c of str) if (c !== chr) return false
     return true
   }
 
   // Internal: Convert an attribute name to a legal form.
-  static sanitizeAttributeName (name) {
-    return name.replace(new RegExp(InvalidAttributeNameCharsRx.source, 'gu'), '').toLowerCase()
+  static sanitizeAttributeName(name) {
+    return name
+      .replace(new RegExp(InvalidAttributeNameCharsRx.source, 'gu'), '')
+      .toLowerCase()
   }
 }
 
@@ -2560,11 +3475,11 @@ applyLogging(Parser)
 
 // ── Module-level helpers ──────────────────────────────────────────────────────
 
-function _uniform (str, chr, len) {
+function _uniform(str, chr, len) {
   return Parser.uniform(str, chr, len)
 }
 
 // Lazy reader resolver to break circular dependency
-function _requireReader () {
+function _requireReader() {
   return _deps['reader.js'] ?? {}
 }

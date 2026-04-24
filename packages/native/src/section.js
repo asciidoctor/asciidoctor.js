@@ -16,7 +16,7 @@ export class Section extends AbstractBlock {
    * @param {Object} [opts={}]
    * @returns {Section}
    */
-  static create (parent = null, level = null, numbered = false, opts = {}) {
+  static create(parent = null, level = null, numbered = false, opts = {}) {
     return new Section(parent, level, numbered, opts)
   }
 
@@ -27,31 +27,35 @@ export class Section extends AbstractBlock {
    * @param {boolean} [numbered=false] - Boolean indicating whether numbering is enabled.
    * @param {Object} [opts={}] - An optional plain object of options.
    */
-  constructor (parent = null, level = null, numbered = false, opts = {}) {
+  constructor(parent = null, level = null, numbered = false, opts = {}) {
     super(parent, 'section', opts)
     if (parent instanceof Section) {
-      this.level   = level ?? (parent.level + 1)
+      this.level = level ?? parent.level + 1
       this.special = parent.special
     } else {
-      this.level   = level ?? 1
+      this.level = level ?? 1
       this.special = false
     }
-    this.numbered  = numbered
-    this.index     = 0
-    this.sectname  = null
+    this.numbered = numbered
+    this.index = 0
+    this.sectname = null
   }
 
   /**
    * The name of this section — alias for title.
    * @returns {string|null}
    */
-  get name () { return this.title }
+  get name() {
+    return this.title
+  }
 
   /**
    * Check whether this section has any child Section objects.
    * @returns {boolean}
    */
-  hasSections () { return this._nextSectionIndex > 0 }
+  hasSections() {
+    return this._nextSectionIndex > 0
+  }
 
   /**
    * Generate a String ID from the title of this section.
@@ -60,7 +64,7 @@ export class Section extends AbstractBlock {
    * HTML title — matching Ruby's behaviour where section.title calls apply_title_subs.
    * @returns {string}
    */
-  generateId () {
+  generateId() {
     return Section.generateId(this.title, this.document)
   }
 
@@ -71,8 +75,9 @@ export class Section extends AbstractBlock {
    *   (default: null → same as delimiter).
    * @returns {string} the section number String.
    */
-  sectnum (delimiter = '.', append = null) {
-    const suffix = append !== null ? (append === false ? '' : append) : delimiter
+  sectnum(delimiter = '.', append = null) {
+    const suffix =
+      append !== null ? (append === false ? '' : append) : delimiter
     if (this.level > 1 && this.parent instanceof Section) {
       return `${this.parent.sectnum(delimiter, delimiter)}${this.numeral ?? ''}${suffix}`
     }
@@ -84,7 +89,7 @@ export class Section extends AbstractBlock {
    * @param {string|null} [xrefstyle=null]
    * @returns {Promise<string|null>}
    */
-  async xreftext (xrefstyle = null) {
+  async xreftext(xrefstyle = null) {
     const val = this.reftext
     if (val && val.length > 0) return val
 
@@ -104,10 +109,16 @@ export class Section extends AbstractBlock {
           case 'full': {
             let quotedTitle
             if (type === 'chapter' || type === 'appendix') {
-              quotedTitle = this.subPlaceholder(await this.subQuotes('_%s_'), this.title)
+              quotedTitle = this.subPlaceholder(
+                await this.subQuotes('_%s_'),
+                this.title
+              )
             } else {
               const q = this.document.compatMode ? "``%s''" : '"`%s`"'
-              quotedTitle = this.subPlaceholder(await this.subQuotes(q), this.title)
+              quotedTitle = this.subPlaceholder(
+                await this.subQuotes(q),
+                this.title
+              )
             }
             const signifier = this.document.attributes[`${type}-refsig`]
             return signifier
@@ -115,14 +126,16 @@ export class Section extends AbstractBlock {
               : `${this.sectnum('.', ',')} ${quotedTitle}`
           }
           case 'short': {
-            const signifier = this.document.attributes[`${this.sectname}-refsig`]
+            const signifier =
+              this.document.attributes[`${this.sectname}-refsig`]
             return signifier
               ? `${signifier} ${this.sectnum('.', '')}`
               : this.sectnum('.', '')
           }
-          default: { // 'basic'
+          default: {
+            // 'basic'
             const t = this.sectname
-            return (t === 'chapter' || t === 'appendix')
+            return t === 'chapter' || t === 'appendix'
               ? this.subPlaceholder(await this.subQuotes('_%s_'), this.title)
               : this.title
           }
@@ -130,7 +143,7 @@ export class Section extends AbstractBlock {
       } else {
         // apply basic styling
         const t = this.sectname
-        return (t === 'chapter' || t === 'appendix')
+        return t === 'chapter' || t === 'appendix'
           ? this.subPlaceholder(await this.subQuotes('_%s_'), this.title)
           : this.title
       }
@@ -144,7 +157,7 @@ export class Section extends AbstractBlock {
    * @param {AbstractBlock} block - The child Block to append.
    * @returns {this}
    */
-  append (block) {
+  append(block) {
     if (block.context === 'section') this.assignNumeral(block)
     return super.append(block)
   }
@@ -155,59 +168,79 @@ export class Section extends AbstractBlock {
    * Get the section title (alias of title).
    * @returns {string|null}
    */
-  getName () { return this.name }
+  getName() {
+    return this.name
+  }
 
   /**
    * Get the section name (e.g. 'section', 'appendix').
    * @returns {string|null}
    */
-  getSectionName () { return this.sectname ?? undefined }
+  getSectionName() {
+    return this.sectname ?? undefined
+  }
 
   /**
    * Get the 0-based index of this section within the parent block.
    * @returns {number}
    */
-  getIndex () { return this.index }
+  getIndex() {
+    return this.index
+  }
 
   /**
    * Get whether this section is numbered.
    * @returns {boolean}
    */
-  isNumbered () { return this.numbered }
+  isNumbered() {
+    return this.numbered
+  }
 
   /**
    * Get whether this section is a special section.
    * @returns {boolean}
    */
-  isSpecial () { return this.special }
+  isSpecial() {
+    return this.special
+  }
 
   /**
    * Get the section numeral string.
    * @returns {string|null}
    */
-  getNumeral () { return this.numeral }
+  getNumeral() {
+    return this.numeral
+  }
 
   /**
    * Set the section numeral string.
    * @param {string|null} val
    */
-  setNumeral (val) { this.numeral = val }
+  setNumeral(val) {
+    this.numeral = val
+  }
 
   /**
    * Get the section number string (dot-separated).
    * @returns {string}
    */
-  getSectionNumeral () { return this.sectnum() }
+  getSectionNumeral() {
+    return this.sectnum()
+  }
 
   /**
    * Get the section number string (alias of getSectionNumeral).
    * @returns {string}
    */
-  getSectionNumber () { return this.sectnum() }
+  getSectionNumber() {
+    return this.sectnum()
+  }
 
-  toString () {
+  toString() {
     if (this._title) {
-      const formalTitle = this.numbered ? `${this.sectnum()} ${this._title}` : this._title
+      const formalTitle = this.numbered
+        ? `${this.sectnum()} ${this._title}`
+        : this._title
       return `#<Section {level: ${this.level}, title: ${JSON.stringify(formalTitle)}, blocks: ${this.blocks.length}}>`
     }
     return super.toString()
@@ -219,12 +252,12 @@ export class Section extends AbstractBlock {
    * @param {object} document - The Document.
    * @returns {string} the generated String ID.
    */
-  static generateId (title, document) {
+  static generateId(title, document) {
     const attrs = document.attributes
-    const pre   = attrs['idprefix'] ?? '_'
+    const pre = attrs.idprefix ?? '_'
     let sep, sepSub, noSep
 
-    const rawSep = attrs['idseparator']
+    const rawSep = attrs.idseparator
     if (rawSep !== undefined && rawSep !== null) {
       if (rawSep.length === 0) {
         noSep = true
@@ -232,7 +265,7 @@ export class Section extends AbstractBlock {
         sepSub = null
       } else {
         // Use only first character if multi-character
-        sep = rawSep.length === 1 ? rawSep : (attrs['idseparator'] = rawSep[0])
+        sep = rawSep.length === 1 ? rawSep : (attrs.idseparator = rawSep[0])
         if (sep === '-' || sep === '.') {
           sepSub = ' .-'
         } else {
@@ -240,7 +273,7 @@ export class Section extends AbstractBlock {
         }
       }
     } else {
-      sep    = '_'
+      sep = '_'
       sepSub = ' _.-'
     }
 
@@ -278,7 +311,7 @@ export class Section extends AbstractBlock {
  * @param {string} toChar
  * @returns {string}
  */
-function _trS (str, fromChars, toChar) {
+function _trS(str, fromChars, toChar) {
   const set = new Set([...fromChars])
   let result = ''
   let prevWasSep = false

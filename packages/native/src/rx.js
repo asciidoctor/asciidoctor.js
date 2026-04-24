@@ -26,25 +26,25 @@
 // These are runtime strings whose value contains real regex syntax (single
 // backslashes) so that String.raw`…${CC_WORD}…` produces correct regex source.
 
-export const CC_ALL   = '[\\s\\S]'   // any char including newlines (Ruby . with /m flag)
-export const CC_ANY   = '.'          // any char except newlines
-export const CC_EOL   = '$'          // end of line / string
+export const CC_ALL = '[\\s\\S]' // any char including newlines (Ruby . with /m flag)
+export const CC_ANY = '.' // any char except newlines
+export const CC_EOL = '$' // end of line / string
 
 // \p{Alphabetic} ≈ Ruby \p{Alpha} – all Unicode alphabetic characters
-export const CC_ALPHA  = '\\p{Alphabetic}'    // inside [...]
-export const CG_ALPHA  = '\\p{Alphabetic}'    // standalone (unary property, no brackets needed)
+export const CC_ALPHA = '\\p{Alphabetic}' // inside [...]
+export const CG_ALPHA = '\\p{Alphabetic}' // standalone (unary property, no brackets needed)
 
 // \p{Alphabetic}\p{N} ≈ Ruby \p{Alnum} – alphabetics + all Unicode numbers
-export const CC_ALNUM  = '\\p{Alphabetic}\\p{N}'    // inside [...]
-export const CG_ALNUM  = '[\\p{Alphabetic}\\p{N}]'  // standalone group
+export const CC_ALNUM = '\\p{Alphabetic}\\p{N}' // inside [...]
+export const CG_ALNUM = '[\\p{Alphabetic}\\p{N}]' // standalone group
 
 // \p{Alphabetic}\p{N}\p{Pc} ≈ Ruby \p{Word}
 // Letter + Number + Connector Punctuation (underscore, undertie, …)
-export const CC_WORD   = '\\p{Alphabetic}\\p{N}\\p{Pc}'    // inside [...]
-export const CG_WORD   = '[\\p{Alphabetic}\\p{N}\\p{Pc}]'  // standalone group
+export const CC_WORD = '\\p{Alphabetic}\\p{N}\\p{Pc}' // inside [...]
+export const CG_WORD = '[\\p{Alphabetic}\\p{N}\\p{Pc}]' // standalone group
 
 // \p{Zs}\t ≈ Ruby \p{Blank} – Unicode Space_Separator category + tab
-export const CG_BLANK  = '[\\p{Zs}\\t]'  // standalone group
+export const CG_BLANK = '[\\p{Zs}\\t]' // standalone group
 
 // Attribute list pattern fragment: \[([^\[\]]+)\]
 // Ruby: QuoteAttributeListRxt = %(\\[([^\\[\\]]+)\\])
@@ -92,7 +92,7 @@ function makeLazyRxMap(buildFn) {
 //
 export const AuthorInfoLineRx = ru(
   String.raw`^(${CG_WORD}[${CC_WORD}\-'.]*)(?: +(${CG_WORD}[${CC_WORD}\-'.]*))?` +
-  String.raw`(?: +(${CG_WORD}[${CC_WORD}\-'.]*))?(?:[ ]+<([^>]+)>)?$`
+    String.raw`(?: +(${CG_WORD}[${CC_WORD}\-'.]*))?(?:[ ]+<([^>]+)>)?$`
 )
 
 // Matches the delimiter that separates multiple authors.
@@ -111,7 +111,8 @@ export const AuthorDelimiterRx = /;(?: |$)/
 //   2013-01-01
 //   v1.0, 2013-01-01: Ring in the new year release
 //
-export const RevisionInfoLineRx = /^(?:[^\d{]*(.*?),)? *(?!:)(.*?)(?: *(?!^),?: *(.*))?$/
+export const RevisionInfoLineRx =
+  /^(?:[^\d{]*(.*?),)? *(?!:)(.*?)(?: *(?!^),?: *(.*))?$/
 
 // Matches the title and volnum in the manpage doctype.
 //
@@ -140,7 +141,8 @@ export const ManpageNamePurposeRx = /^(.+?) +- +(.+)$/
 //   ifeval::["{asciidoctor-version}" >= "0.1.0"]
 //   endif::[]
 //
-export const ConditionalDirectiveRx = /^(\\)?(ifdef|ifndef|ifeval|endif)::(\S*?(?:([,+])\S*?)?)\[(.+)?\]$/
+export const ConditionalDirectiveRx =
+  /^(\\)?(ifdef|ifndef|ifeval|endif)::(\S*?(?:([,+])\S*?)?)\[(.+)?\]$/
 
 // Matches a restricted (safe) eval expression.
 //
@@ -157,7 +159,8 @@ export const EvalExpressionRx = /^(.+?) *([=!><]=|[><]) *(.+)$/
 //   include::chapter1.ad[]
 //   include::example.txt[lines=1;2;5..10]
 //
-export const IncludeDirectiveRx = /^(\\)?include::([^\s\[](?:[^\[]*[^\s\[])?)\[(.+)?\]$/
+export const IncludeDirectiveRx =
+  /^(\\)?include::([^\s[](?:[^[]*[^\s[])?)\[(.+)?\]$/
 
 // Matches a trailing tag directive in an include file.
 //
@@ -180,7 +183,9 @@ export const TagDirectiveRx = /\b(?:tag|(e)nd)::(\S+?)\[\](?=$|[ \r])/m
 //   :First Name: Dan
 //   :sectnums!:
 //
-export const AttributeEntryRx = ru(String.raw`^:(!?${CG_WORD}[^:]*):(?:[ \t]+(.*))?$`)
+export const AttributeEntryRx = ru(
+  String.raw`^:(!?${CG_WORD}[^:]*):(?:[ \t]+(.*))?$`
+)
 
 // Matches invalid characters in an attribute name.
 export const InvalidAttributeNameCharsRx = ru(String.raw`[^${CC_WORD}\-]`)
@@ -193,7 +198,8 @@ export const InvalidAttributeNameCharsRx = ru(String.raw`[^${CC_WORD}\-]`)
 //   pass:a[{a} {b} {c}]
 //
 // NOTE: ^ / $ are string anchors here (no 'm' flag). [\s\S]* allows multi-line values.
-export const AttributeEntryPassMacroRx = /^pass:([a-z]+(?:,[a-z-]+)*)?\[([\s\S]*)\]$/
+export const AttributeEntryPassMacroRx =
+  /^pass:([a-z]+(?:,[a-z-]+)*)?\[([\s\S]*)\]$/
 
 // Matches an inline attribute reference.
 //
@@ -227,7 +233,9 @@ export const BlockAnchorRx = ru(
 //   [quote, Adam Smith, Wealth of Nations]
 //   [{lead}]
 //
-export const BlockAttributeListRx = ru(String.raw`^\[(|[${CC_WORD}.#%{,"'].*)\]$`)
+export const BlockAttributeListRx = ru(
+  String.raw`^\[(|[${CC_WORD}.#%{,"'].*)\]$`
+)
 
 // Combined pattern matching either a block anchor or a block attribute list.
 export const BlockAttributeLineRx = ru(
@@ -249,7 +257,8 @@ export const BlockTitleRx = /^\.(\.?[^ \t.].*)$/
 //   NOTE: Just a little note.
 //   TIP: Don't forget!
 //
-export const AdmonitionParagraphRx = /^(NOTE|TIP|IMPORTANT|WARNING|CAUTION):[ \t]+/
+export const AdmonitionParagraphRx =
+  /^(NOTE|TIP|IMPORTANT|WARNING|CAUTION):[ \t]+/
 
 // Matches a literal paragraph (line preceded by at least one space or tab).
 //
@@ -272,7 +281,8 @@ export const LiteralParagraphRx = /^([ \t]+.*)$/
 export const AtxSectionTitleRx = /^(=={0,5})[ \t]+(.+?)(?:[ \t]+\1)?$/
 
 // Extended Atx section title supporting the Markdown variant (#).
-export const ExtAtxSectionTitleRx = /^(=={0,5}|##{0,5})[ \t]+(.+?)(?:[ \t]+\1)?$/
+export const ExtAtxSectionTitleRx =
+  /^(=={0,5}|##{0,5})[ \t]+(.+?)(?:[ \t]+\1)?$/
 
 // Matches the first line of a Setext (two-line) section title.
 // Must not start with '.' and must contain at least one alphanumeric character.
@@ -304,7 +314,8 @@ export const SectionLevelStyleRx = /^sect\d$/
 //
 // NOTE: Check only up to the blank character since non-whitespace follows.
 // IMPORTANT: Must agree with the per-list-type regexps or the parser will hang.
-export const AnyListRx = /^(?:[ \t]*(?:-|\*\**|\.\.*|\u2022|\d+\.|[a-zA-Z]\.|[IVXivx]+\))[ \t]|(?!\/\/[^\/])[ \t]*[^ \t].*?(?::::{0,2}|;;)(?:$|[ \t])|<(?:\d+|\.)>[ \t])/
+export const AnyListRx =
+  /^(?:[ \t]*(?:-|\*\**|\.\.*|\u2022|\d+\.|[a-zA-Z]\.|[IVXivx]+\))[ \t]|(?!\/\/[^/])[ \t]*[^ \t].*?(?::::{0,2}|;;)(?:$|[ \t])|<(?:\d+|\.)>[ \t])/
 
 // Matches an unordered list item.
 //
@@ -321,11 +332,12 @@ export const UnorderedListRx = /^[ \t]*(-|\*\**|\u2022)[ \t]+([\s\S]*)$/
 //
 //   . Foo    1. Foo    a. Foo    I. Foo
 //
-export const OrderedListRx = /^[ \t]*(\.\.*|\d+\.|[a-zA-Z]\.|[IVXivx]+\))[ \t]+([\s\S]*)$/
+export const OrderedListRx =
+  /^[ \t]*(\.\.*|\d+\.|[a-zA-Z]\.|[IVXivx]+\))[ \t]+([\s\S]*)$/
 
 // Ordinal pattern for each ordered list type.
 export const OrderedListMarkerRxMap = {
-  arabic:     /\d+\./,
+  arabic: /\d+\./,
   loweralpha: /[a-z]\./,
   lowerroman: /[ivx]+\)/,
   upperalpha: /[A-Z]\./,
@@ -339,14 +351,17 @@ export const OrderedListMarkerRxMap = {
 //   foo::
 //   foo:: The metasyntactic variable …
 //
-export const DescriptionListRx = /^(?!\/\/[^\/])[ \t]*([^ \t].*?)(:::{0,2}|;;)(?:$|[ \t]+([\s\S]*)$)/
+export const DescriptionListRx =
+  /^(?!\/\/[^/])[ \t]*([^ \t].*?)(:::{0,2}|;;)(?:$|[ \t]+([\s\S]*)$)/
 
 // Matches a sibling description list item (excluding the delimiter given by key).
 export const DescriptionListSiblingRx = {
-  '::':   /^(?!\/\/[^\/])[ \t]*([^ \t].*?[^:]|[^ \t:])(::)(?:$|[ \t]+([\s\S]*)$)/,
-  ':::':  /^(?!\/\/[^\/])[ \t]*([^ \t].*?[^:]|[^ \t:])(:::)(?:$|[ \t]+([\s\S]*)$)/,
-  '::::': /^(?!\/\/[^\/])[ \t]*([^ \t].*?[^:]|[^ \t:])(::::)(?:$|[ \t]+([\s\S]*)$)/,
-  ';;':   /^(?!\/\/[^\/])[ \t]*([^ \t].*?)(;;)(?:$|[ \t]+([\s\S]*)$)/,
+  '::': /^(?!\/\/[^/])[ \t]*([^ \t].*?[^:]|[^ \t:])(::)(?:$|[ \t]+([\s\S]*)$)/,
+  ':::':
+    /^(?!\/\/[^/])[ \t]*([^ \t].*?[^:]|[^ \t:])(:::)(?:$|[ \t]+([\s\S]*)$)/,
+  '::::':
+    /^(?!\/\/[^/])[ \t]*([^ \t].*?[^:]|[^ \t:])(::::)(?:$|[ \t]+([\s\S]*)$)/,
+  ';;': /^(?!\/\/[^/])[ \t]*([^ \t].*?)(;;)(?:$|[ \t]+([\s\S]*)$)/,
 }
 
 // Matches a callout list item.
@@ -366,12 +381,14 @@ export const CalloutListRx = /^<(\d+|\.)>[ \t]+([\s\S]*)$/
 //   3 – optional XML comment delimiter (--)
 //   4 – callout number or dot
 //
-export const CalloutExtractRx = /((?:\/\/|#|--|;;) ?)?(\\)?<!?(|--)(\d+|\.)\3>(?=(?: ?\\?<!?\3(?:\d+|\.)\3>)*$)/m
+export const CalloutExtractRx =
+  /((?:\/\/|#|--|;;) ?)?(\\)?<!?(|--)(\d+|\.)\3>(?=(?: ?\\?<!?\3(?:\d+|\.)\3>)*$)/m
 
 // Template string for CalloutExtractRxMap entries.
 // Runtime value: (\\)?<()(\d+|\.)>(?=(?: ?\\?<(?:\d+|\.)>)*$)
 // Note: 'm' flag added so $ matches end-of-line (Ruby regex default behaviour).
-export const CalloutExtractRxt = '(\\\\)?<()([\\d]+|\\.)>(?=(?: ?\\\\?<(?:\\d+|\\.)>)*$)'
+export const CalloutExtractRxt =
+  '(\\\\)?<()([\\d]+|\\.)>(?=(?: ?\\\\?<(?:\\d+|\\.)>)*$)'
 
 // Lazy map: line-comment string → callout-extract regex.
 // Mirrors Ruby: Hash.new { |h,k| h[k] = /(prefix)?#{CalloutExtractRxt}/ }
@@ -381,17 +398,20 @@ export const CalloutExtractRxMap = makeLazyRxMap((key) => {
 })
 
 // Matches a callout reference when scanning source (special chars NOT yet replaced).
-export const CalloutScanRx = /\\?<!?(|--)(\d+|\.)\1>(?=(?: ?\\?<!?\1(?:\d+|\.)\1>)*$)/m
+export const CalloutScanRx =
+  /\\?<!?(|--)(\d+|\.)\1>(?=(?: ?\\?<!?\1(?:\d+|\.)\1>)*$)/m
 
 // Matches a callout reference in HTML output (special chars already replaced).
 //
 // Group layout mirrors CalloutExtractRx.
 // Note: 'm' flag so $ matches end-of-line, matching Ruby regex semantics.
-export const CalloutSourceRx = /((?:\/\/|#|--|;;) ?)?(\\)?&lt;!?(|--)(\d+|\.)\3&gt;(?=(?: ?\\?&lt;!?\3(?:\d+|\.)\3&gt;)*$)/m
+export const CalloutSourceRx =
+  /((?:\/\/|#|--|;;) ?)?(\\)?&lt;!?(|--)(\d+|\.)\3&gt;(?=(?: ?\\?&lt;!?\3(?:\d+|\.)\3&gt;)*$)/m
 
 // Template string for CalloutSourceRxMap entries.
 // Runtime value: (\\)?&lt;()(\d+|\.)&gt;(?=(?: ?\\?&lt;(?:\d+|\.)&gt;)*$)
-export const CalloutSourceRxt = '(\\\\)?&lt;()([\\d]+|\\.)&gt;(?=(?: ?\\\\?&lt;(?:\\d+|\\.)&gt;)*$)'
+export const CalloutSourceRxt =
+  '(\\\\)?&lt;()([\\d]+|\\.)&gt;(?=(?: ?\\\\?&lt;(?:\\d+|\\.)&gt;)*$)'
 
 // Lazy map: line-comment string → callout-source regex.
 export const CalloutSourceRxMap = makeLazyRxMap((key) => {
@@ -401,22 +421,25 @@ export const CalloutSourceRxMap = makeLazyRxMap((key) => {
 
 // Dynamic map from list context to its regex.
 export const ListRxMap = {
-  ulist:  UnorderedListRx,
-  olist:  OrderedListRx,
-  dlist:  DescriptionListRx,
+  ulist: UnorderedListRx,
+  olist: OrderedListRx,
+  dlist: DescriptionListRx,
   colist: CalloutListRx,
 }
 
 // ── Tables ────────────────────────────────────────────────────────────────────
 
 // Parses the column spec (colspec) for a table.  Examples: 1*h,2*,^3e
-export const ColumnSpecRx = /^(?:(\d+)\*)?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?(\d+%?|~)?([a-z])?$/
+export const ColumnSpecRx =
+  /^(?:(\d+)\*)?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?(\d+%?|~)?([a-z])?$/
 
 // Parses the start of a cell spec.  Example: 2.3+<.>m
-export const CellSpecStartRx = /^[ \t]*(?:(\d+(?:\.\d*)?|(?:\d*\.)?\d+)([*+]))?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?([a-z])?$/
+export const CellSpecStartRx =
+  /^[ \t]*(?:(\d+(?:\.\d*)?|(?:\d*\.)?\d+)([*+]))?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?([a-z])?$/
 
 // Parses the end of a cell spec.
-export const CellSpecEndRx = /[ \t]+(?:(\d+(?:\.\d*)?|(?:\d*\.)?\d+)([*+]))?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?([a-z])?$/
+export const CellSpecEndRx =
+  /[ \t]+(?:(\d+(?:\.\d*)?|(?:\d*\.)?\d+)([*+]))?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?([a-z])?$/
 
 // ── Block macros ──────────────────────────────────────────────────────────────
 
@@ -457,13 +480,13 @@ export const BlockTocMacroRx = /^toc::\[(.+)?\]$/
 //
 export const InlineAnchorRx = ru(
   String.raw`(\\)?(?:\[\[([${CC_ALPHA}_:][${CC_WORD}\-:.]*)(?:, *(.+?))? ?\]\]` +
-  String.raw`|anchor:([${CC_ALPHA}_:][${CC_WORD}\-:.]*)\[(?:\]|([\s\S]*?[^\\])\]))`
+    String.raw`|anchor:([${CC_ALPHA}_:][${CC_WORD}\-:.]*)\[(?:\]|([\s\S]*?[^\\])\]))`
 )
 
 // Scans for a non-escaped anchor in the flow of text.
 export const InlineAnchorScanRx = ru(
   String.raw`(?:^|[^\\\[])\[\[([${CC_ALPHA}_:][${CC_WORD}\-:.]*)(?:, *(.+?))? ?\]\]` +
-  String.raw`|(?:^|[^\\])anchor:([${CC_ALPHA}_:][${CC_WORD}\-:.]*)\[(?:\]|(.*?[^\\])\])`
+    String.raw`|(?:^|[^\\])anchor:([${CC_ALPHA}_:][${CC_WORD}\-:.]*)\[(?:\]|(.*?[^\\])\])`
 )
 
 // Scans for a leading, non-escaped anchor.
@@ -487,7 +510,7 @@ export const InlineBiblioAnchorRx = ru(
 //
 export const InlineEmailRx = ru(
   String.raw`([\\>:/])?${CG_WORD}(?:&amp;|[${CC_WORD}\-.%+])*` +
-  String.raw`@${CG_ALNUM}[${CC_ALNUM}_\-.]*\.[a-zA-Z]{2,5}\b`
+    String.raw`@${CG_ALNUM}[${CC_ALNUM}_\-.]*\.[a-zA-Z]{2,5}\b`
 )
 
 // Matches an inline footnote macro (may span multiple lines).
@@ -511,7 +534,8 @@ export const InlineFootnoteMacroRx = ru(
 //   image:filename.png[Alt Text]
 //   icon:github[large]
 //
-export const InlineImageMacroRx = /\\?i(?:mage|con):([^:\s\[](?:[^\n\[]*[^\s\[])?)\[(|[\s\S]*?[^\\])\]/
+export const InlineImageMacroRx =
+  /\\?i(?:mage|con):([^:\s[](?:[^\n[]*[^\s[])?)\[(|[\s\S]*?[^\\])\]/
 
 // Matches an indexterm inline macro (may span multiple lines).
 //
@@ -521,7 +545,8 @@ export const InlineImageMacroRx = /\\?i(?:mage|con):([^:\s\[](?:[^\n\[]*[^\s\[])
 //   (((Tigers,Big cats)))
 //   ((Tigers))
 //
-export const InlineIndextermMacroRx = /\\?(?:(indexterm2?):\[([\s\S]*?[^\\])\]|\(\(([\s\S]+?)\)\)(?!\)))/
+export const InlineIndextermMacroRx =
+  /\\?(?:(indexterm2?):\[([\s\S]*?[^\\])\]|\(\(([\s\S]+?)\)\)(?!\)))/
 
 // Matches either the kbd or btn inline macro (may span multiple lines).
 //
@@ -560,7 +585,8 @@ export const InlineKbdBtnMacroRx = /(\\)?(kbd|btn):\[([\s\S]*?[^\\])\]/
 //   7 – target             (bare autolink)
 //   8 – last non-terminating char of bare target
 //
-export const InlineLinkRx = /(^|link:|[ \t\u00a0]|\\?&lt;(?=\\?(?:https?|file|ftp|irc)(:))|[>\(\)\[\];"'])(\\?(?:https?|file|ftp|irc):\/\/)(?:([^\s\[\]]+)\[(|[\s\S]*?[^\\])\]|(?!\2)([^\s]+?)&gt;|([^\s\[\]<]*([^\s,.?!\[\]<\)])))/m
+export const InlineLinkRx =
+  /(^|link:|[ \t\u00a0]|\\?&lt;(?=\\?(?:https?|file|ftp|irc)(:))|[>()[\];"'])(\\?(?:https?|file|ftp|irc):\/\/)(?:([^\s[\]]+)\[(|[\s\S]*?[^\\])\]|(?!\2)([^\s]+?)&gt;|([^\s[\]<]*([^\s,.?![\]<)])))/m
 
 // Matches a link or e-mail inline macro (may span multiple lines).
 //
@@ -569,7 +595,8 @@ export const InlineLinkRx = /(^|link:|[ \t\u00a0]|\\?&lt;(?=\\?(?:https?|file|ft
 //   link:path[label]
 //   mailto:doc.writer@example.com[]
 //
-export const InlineLinkMacroRx = /\\?(?:link|(mailto)):(|[^:\s\[][^\s\[]*)\[(|[\s\S]*?[^\\])\]/
+export const InlineLinkMacroRx =
+  /\\?(?:link|(mailto)):(|[^:\s[][^\s[]*)\[(|[\s\S]*?[^\\])\]/
 
 // Matches the name of a macro.
 export const MacroNameRx = ru(String.raw`^${CG_WORD}[${CC_WORD}\-]*$`)
@@ -581,7 +608,8 @@ export const MacroNameRx = ru(String.raw`^${CG_WORD}[${CC_WORD}\-]*$`)
 //   stem:[x != 0]
 //   latexmath:[\sqrt{4} = 2]
 //
-export const InlineStemMacroRx = /\\?(stem|(?:latex|ascii)math):([a-z]+(?:,[a-z-]+)*)?\[([\s\S]*?[^\\])\]/
+export const InlineStemMacroRx =
+  /\\?(stem|(?:latex|ascii)math):([a-z]+(?:,[a-z-]+)*)?\[([\s\S]*?[^\\])\]/
 
 // Matches a menu inline macro (may span multiple lines).
 //
@@ -592,7 +620,7 @@ export const InlineStemMacroRx = /\\?(stem|(?:latex|ascii)math):([a-z]+(?:,[a-z-
 //
 export const InlineMenuMacroRx = ru(
   String.raw`\\?menu:(${CG_WORD}|[${CC_WORD}&][^\n\[]*[^\s\[])` +
-  String.raw`\[ *(?:|([\s\S]*?[^\\]))\]`
+    String.raw`\[ *(?:|([\s\S]*?[^\\]))\]`
 )
 
 // Matches an implicit menu inline macro.
@@ -601,7 +629,9 @@ export const InlineMenuMacroRx = ru(
 //
 //   "File > New..."
 //
-export const InlineMenuRx = ru(String.raw`\\?"([${CC_WORD}&][^"]*?[ \n]+&gt;[ \n]+[^"]*)"`)
+export const InlineMenuRx = ru(
+  String.raw`\\?"([${CC_WORD}&][^"]*?[ \n]+&gt;[ \n]+[^"]*)"`
+)
 
 // Matches an inline passthrough (may span multiple lines).
 //
@@ -641,8 +671,14 @@ export const InlinePassRx = {
     '-]',
     ru(
       String.raw`((?:^|[^${CC_WORD};:\\])(?=(\[)|\+)|\\(?=\[)|(?=\\\+))` +
-      String.raw`(?:\2(x-|[^\[\]]+ x-)\]|(?:` + QuoteAttributeListRxt + String.raw`)?(?=(\\)?\+))` +
-      String.raw`(\5?(\+|` + '`' + String.raw`)(\S|\S` + CC_ALL + String.raw`*?\S)\7)(?!${CG_WORD})`,
+        String.raw`(?:\2(x-|[^\[\]]+ x-)\]|(?:` +
+        QuoteAttributeListRxt +
+        String.raw`)?(?=(\\)?\+))` +
+        String.raw`(\5?(\+|` +
+        '`' +
+        String.raw`)(\S|\S` +
+        CC_ALL +
+        String.raw`*?\S)\7)(?!${CG_WORD})`,
       'm'
     ),
   ],
@@ -650,8 +686,22 @@ export const InlinePassRx = {
     '`',
     null,
     ru(
-      String.raw`(^|[^` + '`' + String.raw`${CC_WORD}])(?:($)()|(?:` + QuoteAttributeListRxt + String.raw`)(?=(\\?)))?` +
-      String.raw`(\5?(` + '`' + String.raw`)([^` + '`' + String.raw`\s]|[^` + '`' + String.raw`\s]` + CC_ALL + String.raw`*?\S)\7)(?![` + '`' + String.raw`${CC_WORD}])`,
+      String.raw`(^|[^` +
+        '`' +
+        String.raw`${CC_WORD}])(?:($)()|(?:` +
+        QuoteAttributeListRxt +
+        String.raw`)(?=(\\?)))?` +
+        String.raw`(\5?(` +
+        '`' +
+        String.raw`)([^` +
+        '`' +
+        String.raw`\s]|[^` +
+        '`' +
+        String.raw`\s]` +
+        CC_ALL +
+        String.raw`*?\S)\7)(?![` +
+        '`' +
+        String.raw`${CC_WORD}])`,
       'm'
     ),
   ],
@@ -696,8 +746,14 @@ export const InlinePassMacroRx = new RegExp(
 //   3 – link text inside xref:…[…]
 //
 export const InlineXrefMacroRx = ru(
-  String.raw`\\?(?:&lt;&lt;([${CC_WORD}#/.:{]` + CC_ALL + String.raw`*?)&gt;&gt;` +
-  String.raw`|xref:([${CC_WORD}#/.:{]` + CC_ALL + String.raw`*?)\[(?:\]|(` + CC_ALL + String.raw`*?[^\\])\]))`
+  String.raw`\\?(?:&lt;&lt;([${CC_WORD}#/.:{]` +
+    CC_ALL +
+    String.raw`*?)&gt;&gt;` +
+    String.raw`|xref:([${CC_WORD}#/.:{]` +
+    CC_ALL +
+    String.raw`*?)\[(?:\]|(` +
+    CC_ALL +
+    String.raw`*?[^\\])\]))`
 )
 
 // ── Layout ────────────────────────────────────────────────────────────────────

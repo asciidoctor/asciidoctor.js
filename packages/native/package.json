@@ -22,7 +22,10 @@
     "build:data": "node scripts/generate-stylesheet-data.js",
     "build:types": "tsc",
     "test": "node --test test/**.test.js",
-    "test:browser": "vitest run --config vitest.browser.config.js"
+    "test:browser": "vitest run --config vitest.browser.config.js",
+    "lint": "biome lint src",
+    "format": "biome format --write src",
+    "check": "biome check src"
   },
   "repository": {
     "type": "git",
@@ -50,6 +53,7 @@
     "node": "24.14.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.13",
     "@rollup/plugin-json": "^6.1.0",
     "@types/node": "^25.6.0",
     "@vitest/browser": "^4.1.4",

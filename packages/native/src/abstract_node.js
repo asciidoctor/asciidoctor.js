@@ -24,12 +24,18 @@
 //   - Ruby's Set is represented as a JavaScript Set.
 
 import { SafeMode, LF } from './constants.js'
-import { isUriish, encodeSpacesInUri, isExtname, extname, prepareSourceString } from './helpers.js'
+import {
+  isUriish,
+  encodeSpacesInUri,
+  isExtname,
+  extname,
+  prepareSourceString,
+} from './helpers.js'
 
 // ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
 // Loaded on first use in Node.js; silently absent in browser/WebWorker environments.
-let _fsp          // undefined = not tried, null = unavailable, object = available
-let _fsConstants  // node:fs constants (R_OK etc.) — not on node:fs/promises
+let _fsp // undefined = not tried, null = unavailable, object = available
+let _fsConstants // node:fs constants (R_OK etc.) — not on node:fs/promises
 
 async function _requireFsp() {
   if (_fsp !== undefined) return
@@ -245,15 +251,24 @@ export class AbstractNode {
   hasAttr(name, expectedValue = null, fallbackName = null) {
     const key = String(name)
     if (expectedValue) {
-      const val = this.attributes[key] ??
+      const val =
+        this.attributes[key] ??
         (fallbackName && this._parent
-          ? this.document.attributes[String(fallbackName === true ? name : fallbackName)]
+          ? this.document.attributes[
+              String(fallbackName === true ? name : fallbackName)
+            ]
           : null)
       return expectedValue === val
     }
-    return key in this.attributes ||
-      !!(fallbackName && this._parent &&
-        String(fallbackName === true ? name : fallbackName) in this.document.attributes)
+    return (
+      key in this.attributes ||
+      !!(
+        fallbackName &&
+        this._parent &&
+        String(fallbackName === true ? name : fallbackName) in
+          this.document.attributes
+      )
+    )
   }
 
   /**
@@ -544,7 +559,8 @@ export class AbstractNode {
    */
   async precomputeReftext() {
     const val = this.attributes.reftext
-    this._convertedReftext = val != null ? await this.applyReftextSubs(val) : null
+    this._convertedReftext =
+      val != null ? await this.applyReftextSubs(val) : null
   }
 
   /**
@@ -572,7 +588,7 @@ export class AbstractNode {
    * @returns {boolean}
    */
   isReftext() {
-    return this.hasAttr('reftext') || !!(this.title)
+    return this.hasAttr('reftext') || !!this.title
   }
 
   /**
@@ -589,7 +605,8 @@ export class AbstractNode {
     let icon
     if (this.hasAttr('icon')) {
       icon = this.attr('icon')
-      if (!isExtname(icon)) icon = `${icon}.${this.document.attr('icontype', 'png')}`
+      if (!isExtname(icon))
+        icon = `${icon}.${this.document.attr('icontype', 'png')}`
     } else {
       icon = `${name}.${this.document.attr('icontype', 'png')}`
     }
@@ -612,12 +629,13 @@ export class AbstractNode {
    * @param {string} [assetDirKey='imagesdir'] - The String attribute key for the image directory.
    * @returns {Promise<string>} a Promise resolving to a String reference or data URI.
    */
-  async imageUri (targetImage, assetDirKey = 'imagesdir') {
+  async imageUri(targetImage, assetDirKey = 'imagesdir') {
     const doc = this.document
     if (doc.safe < SafeMode.SECURE && doc.hasAttr('data-uri')) {
       let imagesBase
       if (
-        (isUriish(targetImage) && (targetImage = encodeSpacesInUri(targetImage))) ||
+        (isUriish(targetImage) &&
+          (targetImage = encodeSpacesInUri(targetImage))) ||
         (assetDirKey &&
           (imagesBase = this.attr(assetDirKey, null, true)) &&
           isUriish(imagesBase) &&
@@ -629,7 +647,10 @@ export class AbstractNode {
       }
       return this.generateDataUri(targetImage, assetDirKey)
     }
-    return this.normalizeWebPath(targetImage, assetDirKey ? this.attr(assetDirKey, null, true) : null)
+    return this.normalizeWebPath(
+      targetImage,
+      assetDirKey ? this.attr(assetDirKey, null, true) : null
+    )
   }
 
   /**
@@ -640,7 +661,10 @@ export class AbstractNode {
    * @returns {string} a String reference for the target media.
    */
   mediaUri(target, assetDirKey = 'imagesdir') {
-    return this.normalizeWebPath(target, assetDirKey ? this.attr(assetDirKey, null, true) : null)
+    return this.normalizeWebPath(
+      target,
+      assetDirKey ? this.attr(assetDirKey, null, true) : null
+    )
   }
 
   /**
@@ -658,13 +682,23 @@ export class AbstractNode {
   async generateDataUri(targetImage, assetDirKey = null) {
     const ext = extname(targetImage, null)
     const mimetype = ext
-      ? (ext === '.svg' ? 'image/svg+xml' : `image/${ext.slice(1)}`)
+      ? ext === '.svg'
+        ? 'image/svg+xml'
+        : `image/${ext.slice(1)}`
       : 'application/octet-stream'
     const imagePath = assetDirKey
-      ? this.normalizeSystemPath(targetImage, this.attr(assetDirKey, null, true), null, { targetName: 'image' })
+      ? this.normalizeSystemPath(
+          targetImage,
+          this.attr(assetDirKey, null, true),
+          null,
+          { targetName: 'image' }
+        )
       : this.normalizeSystemPath(targetImage)
     if (isUriish(imagePath)) {
-      return await this.generateDataUriFromUri(imagePath, this.document.hasAttr('cache-uri'));
+      return await this.generateDataUriFromUri(
+        imagePath,
+        this.document.hasAttr('cache-uri')
+      )
     }
     if (await isReadable(imagePath)) {
       const data = await _fsp.readFile(imagePath)
@@ -687,20 +721,33 @@ export class AbstractNode {
    * @param {boolean} [cacheUri=false] - A Boolean to control caching (not yet supported in JS).
    * @returns {Promise<string>} a Promise resolving to a String data URI.
    */
-  async generateDataUriFromUri(imageUri, cacheUri = false) { // eslint-disable-line no-unused-vars
+  async generateDataUriFromUri(imageUri, cacheUri = false) {
+    // eslint-disable-line no-unused-vars
     try {
       const response = await fetch(imageUri)
       if (response.ok) {
-        const mimetype = (response.headers.get('content-type') || 'application/octet-stream').split(';')[0].trim()
+        const mimetype = (
+          response.headers.get('content-type') || 'application/octet-stream'
+        )
+          .split(';')[0]
+          .trim()
         const buffer = await response.arrayBuffer()
-        const base64 = btoa(Array.from(new Uint8Array(buffer), (b) => String.fromCharCode(b)).join(''))
+        const base64 = btoa(
+          Array.from(new Uint8Array(buffer), (b) =>
+            String.fromCharCode(b)
+          ).join('')
+        )
         return `data:${mimetype};base64,${base64}`
       } else {
         const ext = extname(imageUri, null)
-        const mimetype =  ext
-          ? (ext === '.svg' ? 'image/svg+xml' : `image/${ext.slice(1)}`)
+        const mimetype = ext
+          ? ext === '.svg'
+            ? 'image/svg+xml'
+            : `image/${ext.slice(1)}`
           : 'application/octet-stream'
-        this.logger.warn(`image to embed not found or not readable: ${imageUri}`)
+        this.logger.warn(
+          `image to embed not found or not readable: ${imageUri}`
+        )
         return `data:${mimetype};base64,`
       }
     } catch {
@@ -722,7 +769,7 @@ export class AbstractNode {
   normalizeAssetPath(assetRef, assetName = 'path', autocorrect = true) {
     return this.normalizeSystemPath(assetRef, this.document.baseDir, null, {
       targetName: assetName,
-      recover: autocorrect
+      recover: autocorrect,
     })
   }
 
@@ -783,16 +830,20 @@ export class AbstractNode {
    */
   async readAsset(path, opts = {}) {
     // remap opts for backwards compatibility (boolean shorthand)
-    if (typeof opts !== 'object' || opts === null) opts = { warnOnFailure: opts !== false }
+    if (typeof opts !== 'object' || opts === null)
+      opts = { warnOnFailure: opts !== false }
     if (isUriish(path)) {
       // Browser: docdir is a URL so the resolved path is an HTTP URI; use fetch instead of fs.
       const { readBrowserAsset } = await import('./browser/asset.js')
       const text = await readBrowserAsset(path)
-      if (text != null) return opts.normalize ? prepareSourceString(text).join(LF) : text
+      if (text != null)
+        return opts.normalize ? prepareSourceString(text).join(LF) : text
       if (opts.warnOnFailure) {
         const docfile = this.attr('docfile') || '<stdin>'
         const label = opts.label || 'file'
-        this.logger.warn(`${docfile}: ${label} does not exist or cannot be read: ${path}`)
+        this.logger.warn(
+          `${docfile}: ${label} does not exist or cannot be read: ${path}`
+        )
       }
       return null
     }
@@ -805,7 +856,9 @@ export class AbstractNode {
     if (opts.warnOnFailure) {
       const docfile = this.attr('docfile') || '<stdin>'
       const label = opts.label || 'file'
-      this.logger.warn(`${docfile}: ${label} does not exist or cannot be read: ${path}`)
+      this.logger.warn(
+        `${docfile}: ${label} does not exist or cannot be read: ${path}`
+      )
     }
     return null
   }
@@ -834,21 +887,37 @@ export class AbstractNode {
     const start = opts.start
     const warnOnFailure = opts.warnOnFailure !== false
 
-    if (isUriish(target) || (start && isUriish(start) && (resolvedTarget = doc.pathResolver.webPath(target, start)))) {
+    if (
+      isUriish(target) ||
+      (start &&
+        isUriish(start) &&
+        (resolvedTarget = doc.pathResolver.webPath(target, start)))
+    ) {
       if (doc.hasAttr('allow-uri-read')) {
         try {
           const response = await fetch(resolvedTarget)
           const text = await response.text()
           contents = opts.normalize ? prepareSourceString(text).join(LF) : text
         } catch {
-          if (warnOnFailure) this.logger.warn(`could not retrieve contents of ${label} at URI: ${resolvedTarget}`)
+          if (warnOnFailure)
+            this.logger.warn(
+              `could not retrieve contents of ${label} at URI: ${resolvedTarget}`
+            )
         }
       } else if (warnOnFailure) {
-        this.logger.warn(`cannot retrieve contents of ${label} at URI: ${resolvedTarget} (allow-uri-read attribute not enabled)`)
+        this.logger.warn(
+          `cannot retrieve contents of ${label} at URI: ${resolvedTarget} (allow-uri-read attribute not enabled)`
+        )
       }
     } else {
-      resolvedTarget = this.normalizeSystemPath(target, opts.start, null, { targetName: label })
-      contents = await this.readAsset(resolvedTarget, { normalize: opts.normalize, warnOnFailure, label })
+      resolvedTarget = this.normalizeSystemPath(target, opts.start, null, {
+        targetName: label,
+      })
+      contents = await this.readAsset(resolvedTarget, {
+        normalize: opts.normalize,
+        warnOnFailure,
+        label,
+      })
     }
 
     if (contents && opts.warnIfEmpty && contents.length === 0) {

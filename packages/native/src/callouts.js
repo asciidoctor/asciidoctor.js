@@ -2,7 +2,7 @@
 
 // Public: Maintains a catalog of callouts and their associations.
 export class Callouts {
-  constructor () {
+  constructor() {
     this._lists = []
     this._listIndex = 0
     this.nextList()
@@ -13,7 +13,7 @@ export class Callouts {
   // liOrdinal - The 1-based Integer ordinal of the list item.
   //
   // Returns the unique String id of this callout (e.g. 'CO1-1').
-  register (liOrdinal) {
+  register(liOrdinal) {
     const id = this._generateNextCalloutId()
     this.currentList().push({ ordinal: parseInt(liOrdinal, 10), id })
     this._coIndex++
@@ -23,7 +23,7 @@ export class Callouts {
   // Public: Get the next callout id in document order (used during conversion).
   //
   // Returns the unique String id of the next callout, or null.
-  readNextId () {
+  readNextId() {
     const list = this.currentList()
     const id = this._coIndex <= list.length ? list[this._coIndex - 1].id : null
     this._coIndex++
@@ -35,35 +35,35 @@ export class Callouts {
   // liOrdinal - The 1-based Integer ordinal of the list item.
   //
   // Returns a String of space-separated callout ids.
-  calloutIds (liOrdinal) {
+  calloutIds(liOrdinal) {
     const list = this.currentList()
     return list
-      .filter(item => item.ordinal === liOrdinal)
-      .map(item => item.id)
+      .filter((item) => item.ordinal === liOrdinal)
+      .map((item) => item.id)
       .join(' ')
   }
 
   // Public: The current list being collected.
   //
   // Returns the Array of callout objects at the current list index.
-  currentList () {
+  currentList() {
     return this._lists[this._listIndex - 1]
   }
 
   // Public: Advance to the next callout list in the document.
-  nextList () {
+  nextList() {
     this._listIndex++
     if (this._lists.length < this._listIndex) this._lists.push([])
     this._coIndex = 1
   }
 
   // Public: Rewind the list pointer to the beginning (switching parse → convert).
-  rewind () {
+  rewind() {
     this._listIndex = 1
     this._coIndex = 1
   }
 
-  _generateNextCalloutId () {
+  _generateNextCalloutId() {
     return `CO${this._listIndex}-${this._coIndex}`
   }
 }

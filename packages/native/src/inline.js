@@ -15,7 +15,7 @@ export class Inline extends AbstractNode {
    *   type   - The String type qualifier (e.g. 'ref', 'bibref').
    *   target - The String target (e.g. a URI).
    */
-  constructor (parent, context, text = null, opts = {}) {
+  constructor(parent, context, text = null, opts = {}) {
     super(parent, context, opts)
     this.nodeName = `inline_${context}`
     this.text = text
@@ -24,45 +24,63 @@ export class Inline extends AbstractNode {
     this.target = opts.target ?? null
   }
 
-  isBlock ()  { return false }
-  isInline () { return true }
+  isBlock() {
+    return false
+  }
+  isInline() {
+    return true
+  }
 
   /**
    * Convert this inline element using the document's converter.
    * @returns {Promise<string>}
    */
-  async convert () { return this.converter.convert(this) }
+  async convert() {
+    return this.converter.convert(this)
+  }
 
   /** @deprecated Use convert() instead. */
-  render () { return this.convert() }
+  render() {
+    return this.convert()
+  }
 
   /**
    * Get the converted content (alias for text).
    * @returns {string|null}
    */
-  content () { return this.text }
+  content() {
+    return this.text
+  }
 
   /** Return the text of this inline node. */
-  getText () { return this.text }
+  getText() {
+    return this.text
+  }
 
   /** Return the type qualifier of this inline node (e.g. 'ref', 'bibref'). */
-  getType () { return this.type }
+  getType() {
+    return this.type
+  }
 
   /** Return the target (e.g. URI or anchor) of this inline node. */
-  getTarget () { return this.target }
+  getTarget() {
+    return this.target
+  }
 
   /**
    * Get the alt text for this inline image.
    * @returns {string} the value of the alt attribute, or ''.
    */
-  alt () { return this.attr('alt') || '' }
+  alt() {
+    return this.attr('alt') || ''
+  }
 
   /**
    * Check whether this inline node has reftext.
    * For ref and bibref nodes the text acts as the reftext.
    * @returns {boolean}
    */
-  hasReftext () {
+  hasReftext() {
     return !!(this.text && (this.type === 'ref' || this.type === 'bibref'))
   }
 
@@ -72,7 +90,7 @@ export class Inline extends AbstractNode {
    * Falls back to the raw text if precomputeReftext() has not been called yet.
    * @returns {string|null}
    */
-  get reftext () {
+  get reftext() {
     if (this._convertedReftext !== undefined) return this._convertedReftext
     return this.text ?? null
   }
@@ -82,9 +100,10 @@ export class Inline extends AbstractNode {
    * Called during Document.parse() so the synchronous getter works during conversion.
    * @returns {Promise<void>}
    */
-  async precomputeReftext () {
+  async precomputeReftext() {
     const val = this.text
-    this._convertedReftext = val != null ? await this.applyReftextSubs(val) : null
+    this._convertedReftext =
+      val != null ? await this.applyReftextSubs(val) : null
   }
 
   /**
@@ -92,5 +111,7 @@ export class Inline extends AbstractNode {
    * @param {string|null} [_xrefstyle=null]
    * @returns {string|null}
    */
-  xreftext (_xrefstyle = null) { return this.reftext }
+  xreftext(_xrefstyle = null) {
+    return this.reftext
+  }
 }

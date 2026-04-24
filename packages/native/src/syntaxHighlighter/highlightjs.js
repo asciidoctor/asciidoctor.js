@@ -9,11 +9,14 @@
 //   - Ruby string interpolation / multiline heredocs → template literals.
 //   - Ruby :head / :footer symbols → plain strings 'head' / 'footer'.
 
-import { SyntaxHighlighterBase, SyntaxHighlighter } from '../syntax_highlighter.js'
+import {
+  SyntaxHighlighterBase,
+  SyntaxHighlighter,
+} from '../syntax_highlighter.js'
 import { HIGHLIGHT_JS_VERSION } from '../constants.js'
 
 export class HighlightJsAdapter extends SyntaxHighlighterBase {
-  constructor (...args) {
+  constructor(...args) {
     super(...args)
     this.name = 'highlightjs'
     this._preClass = 'highlightjs'
@@ -23,7 +26,7 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
   //
   // Adds `language-<lang>` and `hljs` to the <code> class attribute, and strips
   // the `highlight` class from <pre> when the `nohighlight-option` attribute is set.
-  format (node, lang, opts) {
+  format(node, lang, opts) {
     const transform = (pre, code) => {
       if (node.hasAttr('nohighlight-option')) {
         pre.class = pre.class.replace(' highlight', '')
@@ -34,7 +37,8 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
   }
 
   // Public: Always returns true — highlight.js injects markup into the document.
-  hasDocinfo (location) { // eslint-disable-line no-unused-vars
+  hasDocinfo(location) {
+    // eslint-disable-line no-unused-vars
     return true
   }
 
@@ -43,9 +47,10 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
   // location - String 'head' or 'footer'.
   // doc      - The Document being converted.
   // opts     - Plain Object with cdn_base_url and self_closing_tag_slash.
-  docinfo (location, doc, opts) {
-    const baseUrl = doc.attr('highlightjsdir')
-      ?? `${opts.cdn_base_url}/highlight.js/${HIGHLIGHT_JS_VERSION}`
+  docinfo(location, doc, opts) {
+    const baseUrl =
+      doc.attr('highlightjsdir') ??
+      `${opts.cdn_base_url}/highlight.js/${HIGHLIGHT_JS_VERSION}`
 
     if (location === 'head') {
       const theme = doc.attr('highlightjs-theme') ?? 'github'
@@ -54,9 +59,13 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
 
     // footer
     const langScripts = doc.attr('highlightjs-languages')
-      ? doc.attr('highlightjs-languages')
+      ? doc
+          .attr('highlightjs-languages')
           .split(',')
-          .map(lang => `<script src="${baseUrl}/languages/${lang.trimStart()}.min.js"></script>\n`)
+          .map(
+            (lang) =>
+              `<script src="${baseUrl}/languages/${lang.trimStart()}.min.js"></script>\n`
+          )
           .join('')
       : ''
 

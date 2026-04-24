@@ -39,7 +39,7 @@ import { basename, extname } from './helpers.js'
 //             :timings    - Timings object with start()/record() interface
 //
 // Returns a Promise that resolves to the Document.
-export async function load (input, options = {}) {
+export async function load(input, options = {}) {
   // Shallow-copy options so we don't mutate the caller's object.
   options = Object.assign({}, options)
 
@@ -79,13 +79,16 @@ export async function load (input, options = {}) {
       const inputPath = nodePath.resolve(input.path)
       if (input.mtime) options.input_mtime = input.mtime
       attrs.docfile = inputPath
-      attrs.docdir  = nodePath.dirname(inputPath)
+      attrs.docdir = nodePath.dirname(inputPath)
       const docfilesuffix = extname(inputPath)
       attrs.docfilesuffix = docfilesuffix
       attrs.docname = basename(inputPath, docfilesuffix)
     }
     source = await _readStream(input)
-  } else if (typeof input === 'object' && input?.constructor?.name === 'Buffer') {
+  } else if (
+    typeof input === 'object' &&
+    input?.constructor?.name === 'Buffer'
+  ) {
     source = input.toString('utf8')
   } else if (typeof input === 'string') {
     source = input
@@ -107,7 +110,14 @@ export async function load (input, options = {}) {
   try {
     // Pre-load circular deps into the _deps cache before constructing Document.
     // Also pre-warm the converter cache so _createConverter can run synchronously.
-    const [{ Document, _deps }, readerMod, parserMod, extensionsMod, { Converter }, { BACKEND_ALIASES }] = await Promise.all([
+    const [
+      { Document, _deps },
+      readerMod,
+      parserMod,
+      extensionsMod,
+      { Converter },
+      { BACKEND_ALIASES },
+    ] = await Promise.all([
       import('./document.js'),
       import('./reader.js'),
       import('./parser.js'),
@@ -122,21 +132,26 @@ export async function load (input, options = {}) {
     let backend = String(attrs.backend || options.backend || 'html5')
     // Strip soft-set modifier (@) and value-based soft-set (ending with @)
     if (backend.endsWith('@')) backend = backend.slice(0, -1)
-    if (backend.startsWith('xhtml')) backend = `html${backend.slice(5)}`  // xhtml5 → html5
+    if (backend.startsWith('xhtml')) backend = `html${backend.slice(5)}` // xhtml5 → html5
     backend = BACKEND_ALIASES[backend] ?? backend
     await Converter.create(backend, {})
     // If template dirs are requested, pre-create the async template converter
     // so that _createConverter() can use it synchronously during Document construction.
     // (In Ruby, Converter.create is synchronous; in JS we bridge the gap here.)
     if (options.template_dir || options.template_dirs) {
-      const templateDirs = [].concat(options.template_dirs ?? options.template_dir)
+      const templateDirs = [].concat(
+        options.template_dirs ?? options.template_dir
+      )
       const converterOpts = {
         template_dirs: templateDirs,
         template_cache: options.template_cache ?? true,
         template_engine: options.template_engine,
         template_engine_options: options.template_engine_options,
       }
-      options._preCreatedConverter = await Converter.create(backend, converterOpts)
+      options._preCreatedConverter = await Converter.create(
+        backend,
+        converterOpts
+      )
     }
     if (options.parse !== false) {
       doc = await Document.create(source, options)
@@ -169,22 +184,26 @@ export async function load (input, options = {}) {
 // options  - a plain object of options (default: {})
 //
 // Returns a Promise that resolves to the Document.
-export async function loadFile (filename, options = {}) {
+export async function loadFile(filename, options = {}) {
   const { readFile } = await import('node:fs/promises')
   const nodePath = await _requirePath()
-  const absPath  = nodePath.resolve(filename)
-  const content  = await readFile(absPath, 'utf8')
+  const absPath = nodePath.resolve(filename)
+  const content = await readFile(absPath, 'utf8')
   // Build a file-like object so load() can set docfile/docdir/docname.
   const { stat } = await import('node:fs/promises')
   let mtime
   try {
     const s = await stat(absPath)
     mtime = s.mtime
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   const fileObj = {
     path: absPath,
     mtime,
-    read () { return content },
+    read() {
+      return content
+    },
   }
   return load(fileObj, options)
 }
@@ -197,9 +216,9 @@ export async function loadFile (filename, options = {}) {
 //   attrs.gsub(SpaceDelimiterRx, '\1' + NULL).gsub(EscapedSpaceRx, '\1').split(NULL)
 //
 // Returns a plain object { key => value }.
-function _parseAttributeString (str) {
+function _parseAttributeString(str) {
   const condensed = str
-    .replace(SpaceDelimiterRx, '$1' + NULL)
+    .replace(SpaceDelimiterRx, `$1${NULL}`)
     .replace(EscapedSpaceRx, '$1')
   const result = {}
   for (const entry of condensed.split(NULL)) {
@@ -217,7 +236,7 @@ function _parseAttributeString (str) {
 // Internal: Parse an array of "key=value" entries into a plain object.
 //
 // Returns a plain object { key => value }.
-function _parseAttributeArray (arr) {
+function _parseAttributeArray(arr) {
   const result = {}
   for (const entry of arr) {
     const eqIdx = entry.indexOf('=')
@@ -234,14 +253,14 @@ function _parseAttributeArray (arr) {
 // Supports both synchronous (returns string) and async (returns Promise) variants.
 //
 // Returns a Promise that resolves to a String.
-async function _readStream (readable) {
+async function _readStream(readable) {
   const data = readable.read()
-  return (data instanceof Promise) ? data : Promise.resolve(data ?? '')
+  return data instanceof Promise ? data : Promise.resolve(data ?? '')
 }
 
 // Internal: Lazily import node:path to avoid issues in browser / Opal environments.
 //
 // Returns a Promise that resolves to the node:path module.
-async function _requirePath () {
+async function _requirePath() {
   return import('node:path')
 }

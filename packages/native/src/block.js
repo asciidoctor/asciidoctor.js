@@ -8,24 +8,26 @@ import { LF } from './constants.js'
 // Any context not listed defaults to 'simple'.
 export const DEFAULT_CONTENT_MODEL = new Proxy(
   {
-    audio:          'empty',
-    image:          'empty',
-    listing:        'verbatim',
-    literal:        'verbatim',
-    stem:           'raw',
-    open:           'compound',
-    page_break:     'empty',
-    pass:           'raw',
+    audio: 'empty',
+    image: 'empty',
+    listing: 'verbatim',
+    literal: 'verbatim',
+    stem: 'raw',
+    open: 'compound',
+    page_break: 'empty',
+    pass: 'raw',
     thematic_break: 'empty',
-    video:          'empty',
+    video: 'empty',
   },
-  { get: (target, key) => Object.prototype.hasOwnProperty.call(target, key) ? target[key] : 'simple' }
+  {
+    get: (target, key) => (Object.hasOwn(target, key) ? target[key] : 'simple'),
+  }
 )
 
 // Public: Methods for managing AsciiDoc content blocks.
 export class Block extends AbstractBlock {
   // Public: Factory method — mirrors the core Block.create(parent, context, opts) API.
-  static create (parent, context, opts = {}) {
+  static create(parent, context, opts = {}) {
     return new Block(parent, context, opts)
   }
   // Public: Get/Set the original Array of source lines for this block.
@@ -42,7 +44,7 @@ export class Block extends AbstractBlock {
   //           source        - String or Array of raw source lines.
   //           subs          - :default | Array | String | null
   //           default_subs  - override for default subs (used with subs: :default)
-  constructor (parent, context, opts = {}) {
+  constructor(parent, context, opts = {}) {
     super(parent, context, opts)
     this.contentModel = opts.content_model ?? DEFAULT_CONTENT_MODEL[context]
 
@@ -84,12 +86,14 @@ export class Block extends AbstractBlock {
   }
 
   // Public: Alias for context — consistent with AsciiDoc terminology.
-  get blockname () { return this.context }
+  get blockname() {
+    return this.context
+  }
 
   // Public: Get the converted result appropriate to this block's content model.
   //
   // Returns a Promise<String> result.
-  async content () {
+  async content() {
     switch (this.contentModel) {
       case 'compound':
         return super.content()
@@ -100,12 +104,15 @@ export class Block extends AbstractBlock {
         const result = await this.applySubs(this.lines, this.subs)
         if (result.length < 2) return result[0] ?? ''
         while (result.length > 0 && result[0].trimEnd() === '') result.shift()
-        while (result.length > 0 && result[result.length - 1].trimEnd() === '') result.pop()
+        while (result.length > 0 && result[result.length - 1].trimEnd() === '')
+          result.pop()
         return result.join(LF)
       }
       default:
         if (this.contentModel !== 'empty') {
-          this.logger.warn(`unknown content model '${this.contentModel}' for block: ${this}`)
+          this.logger.warn(
+            `unknown content model '${this.contentModel}' for block: ${this}`
+          )
         }
         return null
     }
@@ -113,20 +120,25 @@ export class Block extends AbstractBlock {
 
   // Public: Returns the source lines for this block.
   // Matches the core API: block.getSourceLines() → Array of String.
-  getSourceLines () { return this.lines }
+  getSourceLines() {
+    return this.lines
+  }
 
   // Public: Returns the preprocessed source of this block as a single String.
-  get source () {
+  get source() {
     return this.lines.join(LF)
   }
 
   // Public: Returns the source as a single String (method alias for the source getter).
-  getSource () { return this.source }
+  getSource() {
+    return this.source
+  }
 
-  toString () {
-    const contentSummary = this.contentModel === 'compound'
-      ? `blocks: ${this.blocks.length}`
-      : `lines: ${this.lines.length}`
+  toString() {
+    const contentSummary =
+      this.contentModel === 'compound'
+        ? `blocks: ${this.blocks.length}`
+        : `lines: ${this.lines.length}`
     return `#<Block {context: '${this.context}', content_model: '${this.contentModel}', style: ${JSON.stringify(this.style ?? null)}, ${contentSummary}}>`
   }
 }

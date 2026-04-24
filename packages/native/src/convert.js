@@ -54,16 +54,19 @@ import { SafeMode, DEFAULT_STYLESHEET_KEYS } from './constants.js'
 //
 // Returns a Promise that resolves to the Document if output was written to a
 // file, otherwise the converted String.
-export async function convert (input, options = {}) {
+export async function convert(input, options = {}) {
   options = Object.assign({}, options)
   delete options.parse
-  const toDir  = options.to_dir;  delete options.to_dir
-  const mkdirs = options.mkdirs;  delete options.mkdirs
+  const toDir = options.to_dir
+  delete options.to_dir
+  const mkdirs = options.mkdirs
+  delete options.mkdirs
 
-  let toFile      = options.to_file; delete options.to_file
+  let toFile = options.to_file
+  delete options.to_file
   let siblingPath = null
   let writeToTarget = null
-  let streamOutput  = false
+  let streamOutput = false
 
   if (toFile === true || toFile == null) {
     writeToTarget = toDir || null
@@ -88,7 +91,8 @@ export async function convert (input, options = {}) {
   // Normalise :header_footer → :standalone when writing to a target.
   if (!('standalone' in options)) {
     if (siblingPath || writeToTarget) {
-      options.standalone = 'header_footer' in options ? options.header_footer : true
+      options.standalone =
+        'header_footer' in options ? options.header_footer : true
     } else if ('header_footer' in options) {
       options.standalone = options.header_footer
     }
@@ -119,28 +123,47 @@ export async function convert (input, options = {}) {
 
   if (siblingPath) {
     const nodePath = await _requirePath()
-    outdir  = nodePath.dirname(siblingPath)
-    outfile = nodePath.join(outdir, `${doc.attributes['docname']}${doc.outfilesuffix}`)
+    outdir = nodePath.dirname(siblingPath)
+    outfile = nodePath.join(
+      outdir,
+      `${doc.attributes.docname}${doc.outfilesuffix}`
+    )
     if (outfile === siblingPath) {
-      throw new Error(`input file and output file cannot be the same: ${outfile}`)
+      throw new Error(
+        `input file and output file cannot be the same: ${outfile}`
+      )
     }
   } else if (writeToTarget) {
     const nodePath = await _requirePath()
-    const workingDir = options.base_dir ? nodePath.resolve(options.base_dir) : process.cwd()
+    const workingDir = options.base_dir
+      ? nodePath.resolve(options.base_dir)
+      : process.cwd()
     // QUESTION should the jail be workingDir or doc.baseDir?
     const jail = doc.safe >= SafeMode.SAFE ? workingDir : null
 
     if (toDir) {
-      outdir = doc.normalizeSystemPath(toDir, workingDir, jail, { targetName: 'to_dir', recover: false })
+      outdir = doc.normalizeSystemPath(toDir, workingDir, jail, {
+        targetName: 'to_dir',
+        recover: false,
+      })
       if (toFile) {
-        outfile = doc.normalizeSystemPath(toFile, outdir, null, { targetName: 'to_dir', recover: false })
+        outfile = doc.normalizeSystemPath(toFile, outdir, null, {
+          targetName: 'to_dir',
+          recover: false,
+        })
         // reestablish outdir as the final target directory (in case to_file had directory segments)
         outdir = nodePath.dirname(outfile)
       } else {
-        outfile = nodePath.join(outdir, `${doc.attributes['docname']}${doc.outfilesuffix}`)
+        outfile = nodePath.join(
+          outdir,
+          `${doc.attributes.docname}${doc.outfilesuffix}`
+        )
       }
     } else if (toFile) {
-      outfile = doc.normalizeSystemPath(toFile, workingDir, jail, { targetName: 'to_dir', recover: false })
+      outfile = doc.normalizeSystemPath(toFile, workingDir, jail, {
+        targetName: 'to_dir',
+        recover: false,
+      })
       // establish outdir as the final target directory (in case to_file had directory segments)
       outdir = nodePath.dirname(outfile)
     }
@@ -148,22 +171,26 @@ export async function convert (input, options = {}) {
     if (input && typeof input === 'object' && input.path) {
       const absInputPath = nodePath.resolve(input.path)
       if (outfile === absInputPath) {
-        throw new Error(`input file and output file cannot be the same: ${outfile}`)
+        throw new Error(
+          `input file and output file cannot be the same: ${outfile}`
+        )
       }
     }
 
     if (mkdirs) {
       await mkdirP(outdir)
     } else {
-      if (!await _isDirectory(outdir)) {
+      if (!(await _isDirectory(outdir))) {
         // NOTE we intentionally refer to the directory as it was passed to the API
-        throw new Error(`target directory does not exist: ${toDir} (hint: set mkdirs option)`)
+        throw new Error(
+          `target directory does not exist: ${toDir} (hint: set mkdirs option)`
+        )
       }
     }
   } else {
     // write to stream
     outfile = streamOutput ? toFile : null
-    outdir  = null
+    outdir = null
   }
 
   let output
@@ -178,10 +205,14 @@ export async function convert (input, options = {}) {
 
     // NOTE document cannot control this behavior if safe >= SafeMode.SERVER
     // NOTE skip if stylesdir is a URI
-    if (!streamOutput && doc.safe < SafeMode.SECURE &&
-      doc.hasAttr('linkcss') && doc.hasAttr('copycss') &&
+    if (
+      !streamOutput &&
+      doc.safe < SafeMode.SECURE &&
+      doc.hasAttr('linkcss') &&
+      doc.hasAttr('copycss') &&
       doc.basebackend('html') &&
-      !((doc.attr('stylesdir')) && isUriish(doc.attr('stylesdir')))) {
+      !(doc.attr('stylesdir') && isUriish(doc.attr('stylesdir')))
+    ) {
       let copyAsciidoctorStylesheet = false
       let copyUserStylesheet = false
       const stylesheet = doc.attr('stylesheet')
@@ -193,16 +224,26 @@ export async function convert (input, options = {}) {
         }
       }
       const syntaxHl = doc.syntaxHighlighter
-      const copySyntaxHlStylesheet = syntaxHl && syntaxHl.writeStylesheet(doc)
+      const copySyntaxHlStylesheet = syntaxHl?.writeStylesheet(doc)
 
-      if (copyAsciidoctorStylesheet || copyUserStylesheet || copySyntaxHlStylesheet) {
+      if (
+        copyAsciidoctorStylesheet ||
+        copyUserStylesheet ||
+        copySyntaxHlStylesheet
+      ) {
         const stylesdir = doc.attr('stylesdir')
-        const stylesoutdir = doc.normalizeSystemPath(stylesdir, outdir, doc.safe >= SafeMode.SAFE ? outdir : null)
+        const stylesoutdir = doc.normalizeSystemPath(
+          stylesdir,
+          outdir,
+          doc.safe >= SafeMode.SAFE ? outdir : null
+        )
         if (mkdirs) {
           await mkdirP(stylesoutdir)
         } else {
-          if (!await _isDirectory(stylesoutdir)) {
-            throw new Error(`target stylesheet directory does not exist: ${stylesoutdir} (hint: set mkdirs option)`)
+          if (!(await _isDirectory(stylesoutdir))) {
+            throw new Error(
+              `target stylesheet directory does not exist: ${stylesoutdir} (hint: set mkdirs option)`
+            )
           }
         }
 
@@ -216,19 +257,30 @@ export async function convert (input, options = {}) {
             // NOTE in this case, copycss is a source location (but cannot be a URI)
             stylesheetSrc = doc.normalizeSystemPath(String(stylesheetSrc))
           }
-          const stylesheetDest = doc.normalizeSystemPath(stylesheet, stylesoutdir,
-            doc.safe >= SafeMode.SAFE ? outdir : null)
+          const stylesheetDest = doc.normalizeSystemPath(
+            stylesheet,
+            stylesoutdir,
+            doc.safe >= SafeMode.SAFE ? outdir : null
+          )
           // NOTE don't warn if src can't be read and dest already exists (see #2323)
           if (stylesheetSrc !== stylesheetDest) {
-            const warnOnFailure = !await _isFile(stylesheetDest)
-            const stylesheetData = await doc.readAsset(stylesheetSrc, { warnOnFailure, label: 'stylesheet' })
+            const warnOnFailure = !(await _isFile(stylesheetDest))
+            const stylesheetData = await doc.readAsset(stylesheetSrc, {
+              warnOnFailure,
+              label: 'stylesheet',
+            })
             if (stylesheetData) {
               const { writeFile } = await import('node:fs/promises')
               const nodePath = await _requirePath()
               const stylesheetOutdir = nodePath.dirname(stylesheetDest)
-              if (stylesheetOutdir !== stylesoutdir && !await _isDirectory(stylesheetOutdir)) {
+              if (
+                stylesheetOutdir !== stylesoutdir &&
+                !(await _isDirectory(stylesheetOutdir))
+              ) {
                 if (!mkdirs) {
-                  throw new Error(`target stylesheet directory does not exist: ${stylesheetOutdir} (hint: set mkdirs option)`)
+                  throw new Error(
+                    `target stylesheet directory does not exist: ${stylesheetOutdir} (hint: set mkdirs option)`
+                  )
                 }
                 await mkdirP(stylesheetOutdir)
               }
@@ -257,7 +309,7 @@ export async function convert (input, options = {}) {
 //
 // Returns a Promise that resolves to the Document if output was written to a
 // file, otherwise the converted String.
-export async function convertFile (filename, options = {}) {
+export async function convertFile(filename, options = {}) {
   const { readFile, stat } = await import('node:fs/promises')
   const nodePath = await _requirePath()
   const absPath = nodePath.resolve(filename)
@@ -265,11 +317,15 @@ export async function convertFile (filename, options = {}) {
   let mtime
   try {
     mtime = (await stat(absPath)).mtime
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   const fileObj = {
     path: absPath,
     mtime,
-    read () { return content },
+    read() {
+      return content
+    },
   }
   return convert(fileObj, options)
 }
@@ -280,12 +336,12 @@ export { convert as render, convertFile as renderFile }
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 // Internal: Lazily import node:path to avoid issues in browser / Opal environments.
-async function _requirePath () {
+async function _requirePath() {
   return import('node:path')
 }
 
 // Internal: Return true if the given path is an existing directory.
-async function _isDirectory (dir) {
+async function _isDirectory(dir) {
   try {
     const { stat } = await import('node:fs/promises')
     return (await stat(dir)).isDirectory()
@@ -295,7 +351,7 @@ async function _isDirectory (dir) {
 }
 
 // Internal: Return true if the given path is an existing file.
-async function _isFile (path) {
+async function _isFile(path) {
   try {
     const { stat } = await import('node:fs/promises')
     return (await stat(path)).isFile()

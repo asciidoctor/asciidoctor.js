@@ -20,8 +20,6 @@ export * from './rx.js'
 import {
   CC_ALL,
   CC_WORD,
-  CC_ALNUM,
-  CC_ALPHA,
   CG_WORD,
   CG_ALNUM,
   CG_ALPHA,
@@ -33,7 +31,12 @@ const ru = (src, flags = '') => new RegExp(src, `u${flags}`)
 
 // ── SafeMode ─────────────────────────────────────────────────────────────────
 // Mirrors the Asciidoctor::SafeMode Ruby module.
-const _safeModeNamesByValue = { 0: 'unsafe', 1: 'safe', 10: 'server', 20: 'secure' }
+const _safeModeNamesByValue = {
+  0: 'unsafe',
+  1: 'safe',
+  10: 'server',
+  20: 'secure',
+}
 
 export const SafeMode = {
   UNSAFE: 0,
@@ -86,10 +89,12 @@ try {
   DATA_DIR = new URL('../../data', import.meta.url).pathname
   // Prefer $HOME; fall back to $USERPROFILE (Windows) then process.cwd()
   if (typeof process !== 'undefined') {
-    USER_HOME = process.env.HOME || process.env.USERPROFILE || (process.cwd ? process.cwd() : '') // eslint-disable-line n/no-process-env
+    USER_HOME =
+      process.env.HOME ||
+      process.env.USERPROFILE ||
+      (process.cwd ? process.cwd() : '') // eslint-disable-line n/no-process-env
   }
-} catch {
-}
+} catch {}
 export { ROOT_DIR, LIB_DIR, DATA_DIR, USER_HOME }
 
 // ── Primitive constants ───────────────────────────────────────────────────────
@@ -152,27 +157,67 @@ export const SETEXT_SECTION_LEVELS = {
 }
 
 // ── Admonition ───────────────────────────────────────────────────────────────
-export const ADMONITION_STYLES = new Set(['NOTE', 'TIP', 'IMPORTANT', 'WARNING', 'CAUTION'])
-export const ADMONITION_STYLE_HEADS = new Set([...ADMONITION_STYLES].map((s) => s[0]))
+export const ADMONITION_STYLES = new Set([
+  'NOTE',
+  'TIP',
+  'IMPORTANT',
+  'WARNING',
+  'CAUTION',
+])
+export const ADMONITION_STYLE_HEADS = new Set(
+  [...ADMONITION_STYLES].map((s) => s[0])
+)
 
 // ── Block styles ──────────────────────────────────────────────────────────────
 export const PARAGRAPH_STYLES = new Set([
-  'comment', 'example', 'literal', 'listing', 'normal', 'open', 'pass', 'quote',
-  'sidebar', 'source', 'verse', 'abstract', 'partintro',
+  'comment',
+  'example',
+  'literal',
+  'listing',
+  'normal',
+  'open',
+  'pass',
+  'quote',
+  'sidebar',
+  'source',
+  'verse',
+  'abstract',
+  'partintro',
 ])
 
-export const VERBATIM_STYLES = new Set(['literal', 'listing', 'source', 'verse'])
+export const VERBATIM_STYLES = new Set([
+  'literal',
+  'listing',
+  'source',
+  'verse',
+])
 
 // ── Delimited blocks ──────────────────────────────────────────────────────────
 // Maps delimiter string → [context, Set of alternative styles].
 // Ruby symbols are represented as plain strings.
 export const DELIMITED_BLOCKS = {
-  '--': ['open', new Set(['comment', 'example', 'literal', 'listing', 'pass', 'quote', 'sidebar', 'source', 'verse', 'admonition', 'abstract', 'partintro'])],
+  '--': [
+    'open',
+    new Set([
+      'comment',
+      'example',
+      'literal',
+      'listing',
+      'pass',
+      'quote',
+      'sidebar',
+      'source',
+      'verse',
+      'admonition',
+      'abstract',
+      'partintro',
+    ]),
+  ],
   '----': ['listing', new Set(['literal', 'source'])],
   '....': ['literal', new Set(['listing', 'source'])],
   '====': ['example', new Set(['admonition'])],
   '****': ['sidebar', new Set()],
-  '____': ['quote', new Set(['verse'])],
+  ____: ['quote', new Set(['verse'])],
   '++++': ['pass', new Set(['stem', 'latexmath', 'asciimath'])],
   '|===': ['table', new Set()],
   ',===': ['table', new Set()],
@@ -214,7 +259,7 @@ export const LAYOUT_BREAK_CHARS = {
 export const MARKDOWN_THEMATIC_BREAK_CHARS = {
   '-': 'thematic_break',
   '*': 'thematic_break',
-  '_': 'thematic_break',
+  _: 'thematic_break',
 }
 
 export const HYBRID_LAYOUT_BREAK_CHARS = {
@@ -226,7 +271,13 @@ export const HYBRID_LAYOUT_BREAK_CHARS = {
 export const NESTABLE_LIST_CONTEXTS = ['ulist', 'olist', 'dlist']
 
 // Ordered list style names, in selection priority order.
-export const ORDERED_LIST_STYLES = ['arabic', 'loweralpha', 'lowerroman', 'upperalpha', 'upperroman']
+export const ORDERED_LIST_STYLES = [
+  'arabic',
+  'loweralpha',
+  'lowerroman',
+  'upperalpha',
+  'upperroman',
+]
 
 // Maps an ordered list style name to its CSS list-style-type keyword.
 export const ORDERED_LIST_KEYWORDS = {
@@ -259,7 +310,10 @@ export const INLINE_MATH_DELIMITERS = {
 // Accessing an unknown key returns 'asciimath' (mirrors Ruby Hash#default).
 export const STEM_TYPE_ALIASES = new Proxy(
   { latexmath: 'latexmath', latex: 'latexmath', tex: 'latexmath' },
-  { get: (target, key) => Object.prototype.hasOwnProperty.call(target, key) ? target[key] : 'asciimath' }
+  {
+    get: (target, key) =>
+      Object.hasOwn(target, key) ? target[key] : 'asciimath',
+  }
 )
 
 // ── Third-party library versions ──────────────────────────────────────────────
@@ -279,8 +333,8 @@ export const DEFAULT_ATTRIBUTES = {
   'last-update-label': 'Last updated',
   'note-caption': 'Note',
   'part-refsig': 'Part',
-  'prewrap': '',
-  'sectids': '',
+  prewrap: '',
+  sectids: '',
   'section-refsig': 'Section',
   'table-caption': 'Table',
   'tip-caption': 'Tip',
@@ -345,60 +399,143 @@ const BT = '\x60' // U+0060 GRAVE ACCENT / backtick
 
 const _normalQuoteSubs = [
   // **strong**
-  ['strong', 'unconstrained',
-    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?\*\*(${CC_ALL}+?)\*\*`)],
+  [
+    'strong',
+    'unconstrained',
+    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?\*\*(${CC_ALL}+?)\*\*`),
+  ],
   // *strong*
-  ['strong', 'constrained',
-    ru(String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?\*(\S|\S${CC_ALL}*?\S)\*(?!${CG_WORD})`, 'm')],
+  [
+    'strong',
+    'constrained',
+    ru(
+      String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?\*(\S|\S${CC_ALL}*?\S)\*(?!${CG_WORD})`,
+      'm'
+    ),
+  ],
   // "`double-quoted`"
-  ['double', 'constrained',
-    ru(String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?"${BT}(\S|\S${CC_ALL}*?\S)${BT}"(?!${CG_WORD})`, 'm')],
+  [
+    'double',
+    'constrained',
+    ru(
+      String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?"${BT}(\S|\S${CC_ALL}*?\S)${BT}"(?!${CG_WORD})`,
+      'm'
+    ),
+  ],
   // '`single-quoted`'
-  ['single', 'constrained',
-    ru(String.raw`(^|[^${CC_WORD};:${BT}}])(?:${QuoteAttributeListRxt})?'${BT}(\S|\S${CC_ALL}*?\S)${BT}'(?!${CG_WORD})`, 'm')],
+  [
+    'single',
+    'constrained',
+    ru(
+      String.raw`(^|[^${CC_WORD};:${BT}}])(?:${QuoteAttributeListRxt})?'${BT}(\S|\S${CC_ALL}*?\S)${BT}'(?!${CG_WORD})`,
+      'm'
+    ),
+  ],
   // ``monospaced``
-  ['monospaced', 'unconstrained',
-    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?${BT}${BT}(${CC_ALL}+?)${BT}${BT}`)],
+  [
+    'monospaced',
+    'unconstrained',
+    ru(
+      String.raw`\\?(?:${QuoteAttributeListRxt})?${BT}${BT}(${CC_ALL}+?)${BT}${BT}`
+    ),
+  ],
   // `monospaced`
-  ['monospaced', 'constrained',
-    ru(String.raw`(^|[^${CC_WORD};:"'${BT}}])(?:${QuoteAttributeListRxt})?${BT}(\S|\S${CC_ALL}*?\S)${BT}(?![${CC_WORD}"'${BT}])`, 'm')],
+  [
+    'monospaced',
+    'constrained',
+    ru(
+      String.raw`(^|[^${CC_WORD};:"'${BT}}])(?:${QuoteAttributeListRxt})?${BT}(\S|\S${CC_ALL}*?\S)${BT}(?![${CC_WORD}"'${BT}])`,
+      'm'
+    ),
+  ],
   // __emphasis__
-  ['emphasis', 'unconstrained',
-    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?__(${CC_ALL}+?)__`)],
+  [
+    'emphasis',
+    'unconstrained',
+    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?__(${CC_ALL}+?)__`),
+  ],
   // _emphasis_
-  ['emphasis', 'constrained',
-    ru(String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?_(\S|\S${CC_ALL}*?\S)_(?!${CG_WORD})`, 'm')],
+  [
+    'emphasis',
+    'constrained',
+    ru(
+      String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?_(\S|\S${CC_ALL}*?\S)_(?!${CG_WORD})`,
+      'm'
+    ),
+  ],
   // ##mark##
-  ['mark', 'unconstrained',
-    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?##(${CC_ALL}+?)##`)],
+  [
+    'mark',
+    'unconstrained',
+    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?##(${CC_ALL}+?)##`),
+  ],
   // #mark#
-  ['mark', 'constrained',
-    ru(String.raw`(^|[^${CC_WORD}&;:}])(?:${QuoteAttributeListRxt})?#(\S|\S${CC_ALL}*?\S)#(?!${CG_WORD})`, 'm')],
+  [
+    'mark',
+    'constrained',
+    ru(
+      String.raw`(^|[^${CC_WORD}&;:}])(?:${QuoteAttributeListRxt})?#(\S|\S${CC_ALL}*?\S)#(?!${CG_WORD})`,
+      'm'
+    ),
+  ],
   // ^superscript^
-  ['superscript', 'unconstrained',
-    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?\^(\S+?)\^`)],
+  [
+    'superscript',
+    'unconstrained',
+    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?\^(\S+?)\^`),
+  ],
   // ~subscript~
-  ['subscript', 'unconstrained',
-    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?~(\S+?)~`)],
+  [
+    'subscript',
+    'unconstrained',
+    ru(String.raw`\\?(?:${QuoteAttributeListRxt})?~(\S+?)~`),
+  ],
 ]
 
 // Compatibility mode overrides (entries replaced / inserted relative to normal).
 const _compatQuoteSubs = [..._normalQuoteSubs]
 // ``quoted''
-_compatQuoteSubs[2] = ['double', 'constrained',
-  ru(String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?${BT}${BT}(\S|\S${CC_ALL}*?\S)''(?!${CG_WORD})`, 'm')]
+_compatQuoteSubs[2] = [
+  'double',
+  'constrained',
+  ru(
+    String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?${BT}${BT}(\S|\S${CC_ALL}*?\S)''(?!${CG_WORD})`,
+    'm'
+  ),
+]
 // `quoted'
-_compatQuoteSubs[3] = ['single', 'constrained',
-  ru(String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?${BT}(\S|\S${CC_ALL}*?\S)'(?!${CG_WORD})`, 'm')]
+_compatQuoteSubs[3] = [
+  'single',
+  'constrained',
+  ru(
+    String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?${BT}(\S|\S${CC_ALL}*?\S)'(?!${CG_WORD})`,
+    'm'
+  ),
+]
 // ++monospaced++
-_compatQuoteSubs[4] = ['monospaced', 'unconstrained',
-  ru(String.raw`\\?(?:${QuoteAttributeListRxt})?\+\+(${CC_ALL}+?)\+\+`)]
+_compatQuoteSubs[4] = [
+  'monospaced',
+  'unconstrained',
+  ru(String.raw`\\?(?:${QuoteAttributeListRxt})?\+\+(${CC_ALL}+?)\+\+`),
+]
 // +monospaced+
-_compatQuoteSubs[5] = ['monospaced', 'constrained',
-  ru(String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?\+(\S|\S${CC_ALL}*?\S)\+(?!${CG_WORD})`, 'm')]
+_compatQuoteSubs[5] = [
+  'monospaced',
+  'constrained',
+  ru(
+    String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?\+(\S|\S${CC_ALL}*?\S)\+(?!${CG_WORD})`,
+    'm'
+  ),
+]
 // 'emphasis'  – inserted before original index 3 (single-quoted)
-_compatQuoteSubs.splice(3, 0, ['emphasis', 'constrained',
-  ru(String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?'(\S|\S${CC_ALL}*?\S)'(?!${CG_WORD})`, 'm')])
+_compatQuoteSubs.splice(3, 0, [
+  'emphasis',
+  'constrained',
+  ru(
+    String.raw`(^|[^${CC_WORD};:}])(?:${QuoteAttributeListRxt})?'(\S|\S${CC_ALL}*?\S)'(?!${CG_WORD})`,
+    'm'
+  ),
+])
 
 // Keyed by boolean compat mode (false = normal, true = compat).
 // JS object keys are always strings, so QUOTE_SUBS[false] coerces to QUOTE_SUBS['false'].
@@ -419,7 +556,11 @@ export const REPLACEMENTS = [
   // foo -- bar  (either space may be a newline; ^ / $ are line anchors → 'm' flag)
   [/(?: |\n|^|\\)--(?: |\n|$)/m, '&#8201;&#8212;&#8201;', 'none'],
   // foo--bar
-  [ru(String.raw`(${CG_WORD})\\?--(?=${CG_WORD})`), '&#8212;&#8203;', 'leading'],
+  [
+    ru(String.raw`(${CG_WORD})\\?--(?=${CG_WORD})`),
+    '&#8212;&#8203;',
+    'leading',
+  ],
   // ellipsis
   [/\\?\.\.\./, '&#8230;&#8203;', 'none'],
   // right single quote
@@ -435,5 +576,9 @@ export const REPLACEMENTS = [
   // left double arrow <=
   [/\\?&lt;=/, '&#8656;', 'none'],
   // restore entities
-  [/\\?(&)amp;((?:[a-zA-Z][a-zA-Z]+\d{0,2}|#\d\d\d{0,4}|#x[\da-fA-F][\da-fA-F][\da-fA-F]{0,3});)/, '', 'bounding'],
+  [
+    /\\?(&)amp;((?:[a-zA-Z][a-zA-Z]+\d{0,2}|#\d\d\d{0,4}|#x[\da-fA-F][\da-fA-F][\da-fA-F]{0,3});)/,
+    '',
+    'bounding',
+  ],
 ]

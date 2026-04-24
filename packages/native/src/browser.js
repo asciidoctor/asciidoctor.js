@@ -8,7 +8,10 @@ import { Converter } from './converter.js'
 import { Block } from './block.js'
 import { Section } from './section.js'
 import Html5Converter from './converter/html5.js'
-import { SyntaxHighlighter, SyntaxHighlighterBase } from './syntax_highlighter.js'
+import {
+  SyntaxHighlighter,
+  SyntaxHighlighterBase,
+} from './syntax_highlighter.js'
 
 const ASCIIDOCTOR_CORE_VERSION = '2.0.26'
 
@@ -18,7 +21,7 @@ class Asciidoctor {
    *
    * @returns {string} - the version of Asciidoctor.js
    */
-  getVersion () {
+  getVersion() {
     return packageJson.version
   }
 
@@ -27,51 +30,51 @@ class Asciidoctor {
    *
    * @returns {string} - the version of Asciidoctor core (Ruby)
    */
-  getCoreVersion () {
+  getCoreVersion() {
     return ASCIIDOCTOR_CORE_VERSION
   }
 
-  get LoggerManager () {
+  get LoggerManager() {
     return LoggerManager
   }
 
-  get MemoryLogger () {
+  get MemoryLogger() {
     return MemoryLogger
   }
 
-  get NullLogger () {
+  get NullLogger() {
     return NullLogger
   }
 
-  get SafeMode () {
+  get SafeMode() {
     return SafeMode
   }
 
-  get Timings () {
+  get Timings() {
     return Timings
   }
 
-  get Extensions () {
+  get Extensions() {
     return Extensions
   }
 
-  get ConverterFactory () {
+  get ConverterFactory() {
     return Converter
   }
 
-  get Html5Converter () {
+  get Html5Converter() {
     return Html5Converter
   }
 
-  get Block () {
+  get Block() {
     return Block
   }
 
-  get Section () {
+  get Section() {
     return Section
   }
 
-  get SyntaxHighlighter () {
+  get SyntaxHighlighter() {
     return SyntaxHighlighter
   }
 
@@ -82,7 +85,7 @@ class Asciidoctor {
    * @param {Object} [options={}] - a plain object of options to control processing
    * @returns {Promise<Document>} - the parsed Document
    */
-  async load (input, options = {}) {
+  async load(input, options = {}) {
     return load(input, options)
   }
 
@@ -93,7 +96,7 @@ class Asciidoctor {
    * @param {Object} [options={}] - a plain object of options to control processing
    * @returns {Promise<string>} - the converted output as a String
    */
-  async convert (input, options = {}) {
+  async convert(input, options = {}) {
     const doc = await load(input, options)
     return await doc.convert()
   }

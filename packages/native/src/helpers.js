@@ -37,11 +37,13 @@ const BOM = '\uFEFF'
 // Ruby's rstrip strips trailing ASCII whitespace (including newlines).
 const rstrip = (line) => line.replace(/[ \t\r\n\f\v]+$/, '')
 
-export function prepareSourceArray (data, trimEnd = true) {
+export function prepareSourceArray(data, trimEnd = true) {
   if (!data.length) return []
   if (data[0].startsWith(BOM)) data[0] = data[0].slice(1)
   // Strip trailing \r to normalize Windows CRLF line endings (lines were split on \n, leaving \r).
-  return trimEnd ? data.map(rstrip) : data.map((line) => line.replace(/\r?\n$/, '').replace(/\r$/, ''))
+  return trimEnd
+    ? data.map(rstrip)
+    : data.map((line) => line.replace(/\r?\n$/, '').replace(/\r$/, ''))
 }
 
 // Internal: Prepare the source data String for parsing.
@@ -54,11 +56,12 @@ export function prepareSourceArray (data, trimEnd = true) {
 // trimEnd - whether to strip all trailing whitespace (true) or only \n (false) (default: true)
 //
 // Returns a String Array of prepared lines.
-export function prepareSourceString (data, trimEnd = true) {
+export function prepareSourceString(data, trimEnd = true) {
   if (!data) return []
   if (data.startsWith(BOM)) data = data.slice(1)
   // Normalize Windows CRLF to LF so that split('\n') does not leave trailing \r on each line.
-  if (data.includes('\r')) data = data.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+  if (data.includes('\r'))
+    data = data.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
   // Ruby's each_line does not produce an empty trailing element when the string
   // ends with \n, but JS split('\n') does. Remove the trailing empty element
   // to match Ruby behaviour.
@@ -75,7 +78,7 @@ export function prepareSourceString (data, trimEnd = true) {
 // str - the String to check
 //
 // Returns true if the String is a URI, false if it is not.
-export function isUriish (str) {
+export function isUriish(str) {
   return str.includes(':') && UriSniffRx.test(str)
 }
 
@@ -89,8 +92,11 @@ export function isUriish (str) {
 // str - the URI component String to encode
 //
 // Returns the encoded String.
-export function encodeUriComponent (str) {
-  return encodeURIComponent(str).replace(/[!'()*]/g, (m) => '%' + m.charCodeAt(0).toString(16))
+export function encodeUriComponent(str) {
+  return encodeURIComponent(str).replace(
+    /[!'()*]/g,
+    (m) => `%${m.charCodeAt(0).toString(16)}`
+  )
 }
 
 // Internal: Replace spaces with %20 in a URI path.
@@ -98,7 +104,7 @@ export function encodeUriComponent (str) {
 // str - the String to encode
 //
 // Returns the String with all spaces replaced with %20.
-export function encodeSpacesInUri (str) {
+export function encodeSpacesInUri(str) {
   return str.includes(' ') ? str.replaceAll(' ', '%20') : str
 }
 
@@ -116,10 +122,12 @@ export function encodeSpacesInUri (str) {
 //   // => "part1/chapter1"
 //
 // Returns the String filename with the file extension removed.
-export function rootname (filename) {
+export function rootname(filename) {
   const lastDotIdx = filename.lastIndexOf('.')
   if (lastDotIdx < 0) return filename
-  return filename.indexOf('/', lastDotIdx) >= 0 ? filename : filename.slice(0, lastDotIdx)
+  return filename.indexOf('/', lastDotIdx) >= 0
+    ? filename
+    : filename.slice(0, lastDotIdx)
 }
 
 // Public: Retrieve the basename of a filename, optionally removing the extension.
@@ -137,7 +145,7 @@ export function rootname (filename) {
 //
 // Returns the String filename with leading directories removed and, optionally,
 // the extension removed.
-export function basename (filename, dropExt = null) {
+export function basename(filename, dropExt = null) {
   if (!dropExt) {
     return ospath.basename(filename)
   }
@@ -150,7 +158,7 @@ export function basename (filename, dropExt = null) {
 // path - the path String to check (expects a POSIX path)
 //
 // Returns true if the path has a file extension, false otherwise.
-export function isExtname (path) {
+export function isExtname(path) {
   const lastDotIdx = path.lastIndexOf('.')
   return lastDotIdx >= 0 && path.indexOf('/', lastDotIdx) < 0
 }
@@ -165,11 +173,12 @@ export function isExtname (path) {
 // fallback - the fallback String to return if no file extension is present (default: '')
 //
 // Returns the String file extension (with the leading dot) or fallback.
-export function extname (path, fallback = '') {
+export function extname(path, fallback = '') {
   const lastDotIdx = path.lastIndexOf('.')
   if (lastDotIdx < 0) return fallback
   // treat both '/' and '\\' as path separators (Windows support)
-  if (path.indexOf('/', lastDotIdx) >= 0 || path.indexOf('\\', lastDotIdx) >= 0) return fallback
+  if (path.indexOf('/', lastDotIdx) >= 0 || path.indexOf('\\', lastDotIdx) >= 0)
+    return fallback
   return path.slice(lastDotIdx)
 }
 
@@ -187,10 +196,10 @@ export function extname (path, fallback = '') {
 // replacer - An async function receiving the same arguments as String#replace callbacks.
 //
 // Returns a Promise<String> with all matches replaced.
-export async function asyncReplace (str, regex, replacer) {
+export async function asyncReplace(str, regex, replacer) {
   const gRegex = regex.flags.includes('g')
     ? regex
-    : new RegExp(regex.source, regex.flags + 'g')
+    : new RegExp(regex.source, `${regex.flags}g`)
   const matches = [...str.matchAll(gRegex)]
   if (matches.length === 0) return str
   const parts = []
@@ -206,7 +215,7 @@ export async function asyncReplace (str, regex, replacer) {
   return parts.join('')
 }
 
-export async function mkdirP (dir) {
+export async function mkdirP(dir) {
   const { mkdir } = await import('node:fs/promises')
   await mkdir(dir, { recursive: true })
 }
@@ -214,9 +223,19 @@ export async function mkdirP (dir) {
 // ── Roman numeral helpers ─────────────────────────────────────────────────────
 
 const ROMAN_NUMERALS_WITH_REDUCERS = [
-  ['M', 1000], ['CM', 900], ['D', 500], ['CD', 400],
-  ['C', 100], ['XC', 90], ['L', 50], ['XL', 40],
-  ['X', 10], ['IX', 9], ['V', 5], ['IV', 4], ['I', 1],
+  ['M', 1000],
+  ['CM', 900],
+  ['D', 500],
+  ['CD', 400],
+  ['C', 100],
+  ['XC', 90],
+  ['L', 50],
+  ['XL', 40],
+  ['X', 10],
+  ['IX', 9],
+  ['V', 5],
+  ['IV', 4],
+  ['I', 1],
 ]
 
 const ROMAN_NUMERALS = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 }
@@ -226,7 +245,7 @@ const ROMAN_NUMERALS = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 }
 // val - the integer value to convert
 //
 // Returns the String Roman numeral.
-export function intToRoman (val) {
+export function intToRoman(val) {
   let result = ''
   for (const [l, i] of ROMAN_NUMERALS_WITH_REDUCERS) {
     const repeat = Math.floor(val / i)
@@ -241,13 +260,13 @@ export function intToRoman (val) {
 // val - the String Roman numeral in uppercase to convert
 //
 // Returns the integer value.
-export function romanToInt (val) {
+export function romanToInt(val) {
   const valmap = [...val].map((c) => ROMAN_NUMERALS[c])
   let result = 0
   for (let idx = 0; idx < valmap.length; idx++) {
     const v = valmap[idx]
     const succ = valmap[idx + 1]
-    result += (succ && succ > v) ? -v : v
+    result += succ && succ > v ? -v : v
   }
   return result
 }
@@ -261,7 +280,7 @@ export function romanToInt (val) {
 // current - the value to increment as a String or Number
 //
 // Returns the next value in the sequence.
-export function nextval (current) {
+export function nextval(current) {
   if (typeof current === 'number') return current + 1
   const intval = parseInt(current, 10)
   if (String(intval) === String(current)) return intval + 1
@@ -269,7 +288,7 @@ export function nextval (current) {
   // Strategy: find the rightmost ASCII-alphanumeric character and increment it
   // with carry.  If NO alphanumeric character exists, increment the rightmost
   // character's Unicode code point instead.
-  const chars = [...current]  // split by Unicode code point (handles surrogate pairs)
+  const chars = [...current] // split by Unicode code point (handles surrogate pairs)
   let hasAlnum = false
   for (let i = chars.length - 1; i >= 0; i--) {
     const code = chars[i].codePointAt(0)
@@ -278,7 +297,10 @@ export function nextval (current) {
     const isDigit = code >= 48 && code <= 57
     if (!isLower && !isUpper && !isDigit) continue
     hasAlnum = true
-    const atEnd = (isLower && code === 122) || (isUpper && code === 90) || (isDigit && code === 57)
+    const atEnd =
+      (isLower && code === 122) ||
+      (isUpper && code === 90) ||
+      (isDigit && code === 57)
     if (!atEnd) {
       chars[i] = String.fromCodePoint(code + 1)
       return chars.join('')

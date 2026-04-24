@@ -3,39 +3,54 @@
 import { AbstractBlock } from './abstract_block.js'
 import { LF } from './constants.js'
 
-const NORMAL_SUBS = Object.freeze(['specialcharacters', 'quotes', 'attributes', 'replacements', 'macros', 'post_replacements'])
+const NORMAL_SUBS = Object.freeze([
+  'specialcharacters',
+  'quotes',
+  'attributes',
+  'replacements',
+  'macros',
+  'post_replacements',
+])
 
 /**
  * @extends {AbstractBlock<any[]>}
  */
 export class List extends AbstractBlock {
-  constructor (parent, context, opts = {}) {
+  constructor(parent, context, opts = {}) {
     super(parent, context, opts)
   }
 
   /** Alias for blocks — the list items. */
-  get items () { return this.blocks }
+  get items() {
+    return this.blocks
+  }
 
   /** Alias for blocks — the list content. */
-  async content () { return this.blocks }
+  async content() {
+    return this.blocks
+  }
 
   /**
    * Return the list items (alias for items / blocks).
    * @returns {ListItem[]}
    */
-  getItems () { return this.items }
+  getItems() {
+    return this.items
+  }
 
   /**
    * Check whether this list has items (blocks).
    * @returns {boolean}
    */
-  hasItems () { return this.blocks.length > 0 }
+  hasItems() {
+    return this.blocks.length > 0
+  }
 
   /**
    * Check whether this list is an outline list (unordered or ordered).
    * @returns {boolean}
    */
-  outline () {
+  outline() {
     return this.context === 'ulist' || this.context === 'olist'
   }
 
@@ -43,7 +58,7 @@ export class List extends AbstractBlock {
    * Convert this list, advancing the callout list pointer if a colist.
    * @returns {Promise<string>}
    */
-  async convert () {
+  async convert() {
     const result = await super.convert()
     if (this.context === 'colist') this.document.callouts.nextList()
     return result
@@ -52,9 +67,11 @@ export class List extends AbstractBlock {
   /**
    * @deprecated Use {@link convert} instead.
    */
-  render () { return this.convert() }
+  render() {
+    return this.convert()
+  }
 
-  toString () {
+  toString() {
     return `#<List {context: '${this.context}', style: ${JSON.stringify(this.style ?? null)}, items: ${this.blocks.length}}>`
   }
 }
@@ -76,35 +93,41 @@ export class ListItem extends AbstractBlock {
    * @param {List} parent - The parent List block.
    * @param {string|null} [text=null] - The text of this item.
    */
-  constructor (parent, text = null) {
+  constructor(parent, text = null) {
     super(parent, 'list_item')
-    this._text   = text
-    this.level   = parent.level
-    this.subs    = [...NORMAL_SUBS]
-    this.marker  = null
+    this._text = text
+    this.level = parent.level
+    this.subs = [...NORMAL_SUBS]
+    this.marker = null
   }
 
   /** Contextual alias for parent. */
-  get list () { return this.parent }
+  get list() {
+    return this.parent
+  }
 
   /**
    * Return the text of this list item with substitutions applied.
    * Synchronous because text is pre-computed during parse().
    * @returns {string|null}
    */
-  getText () { return this.text }
+  getText() {
+    return this.text
+  }
 
   /**
    * Return the list marker string for this item (e.g. '.', '..', '*').
    * @returns {string|null}
    */
-  getMarker () { return this.marker }
+  getMarker() {
+    return this.marker
+  }
 
   /**
    * Check whether the text of this list item is non-blank.
    * @returns {boolean}
    */
-  hasText () {
+  hasText() {
     return !!(this._text && this._text.length > 0)
   }
 
@@ -121,10 +144,13 @@ export class ListItem extends AbstractBlock {
    * re-run synchronously).
    * @returns {string|null}
    */
-  get text () {
+  get text() {
     if (this._convertedText != null && this._subsSnapshot != null) {
       const cur = this.subs
-      if (cur.length !== this._subsSnapshot.length || cur.some((s, i) => s !== this._subsSnapshot[i])) {
+      if (
+        cur.length !== this._subsSnapshot.length ||
+        cur.some((s, i) => s !== this._subsSnapshot[i])
+      ) {
         return this._text ?? null
       }
     }
@@ -136,7 +162,7 @@ export class ListItem extends AbstractBlock {
    * Called during `Document.parse()` so the synchronous getter works during conversion.
    * @returns {Promise<void>}
    */
-  async precomputeText () {
+  async precomputeText() {
     if (this._text != null && this._convertedText == null) {
       this._convertedText = await this.applySubs(this._text, this.subs)
       this._subsSnapshot = [...this.subs]
@@ -147,32 +173,41 @@ export class ListItem extends AbstractBlock {
    * Set the raw text of this list item.
    * @param {string|null} val
    */
-  set text (val) { this._text = val; this._convertedText = null; this._subsSnapshot = null }
+  set text(val) {
+    this._text = val
+    this._convertedText = null
+    this._subsSnapshot = null
+  }
 
   /**
    * Check whether this list item has simple content.
    * @returns {boolean} `true` if the item has no blocks or only a single nested outline list.
    */
-  simple () {
-    return this.blocks.length === 0 ||
-      (this.blocks.length === 1 && this.blocks[0] instanceof List && this.blocks[0].outline())
+  simple() {
+    return (
+      this.blocks.length === 0 ||
+      (this.blocks.length === 1 &&
+        this.blocks[0] instanceof List &&
+        this.blocks[0].outline())
+    )
   }
 
   /**
    * Check whether this list item has compound content.
    * @returns {boolean} `true` if the item contains blocks other than a single nested outline list.
    */
-  compound () {
+  compound() {
     return !this.simple()
   }
 
   /** @internal Fold the adjacent paragraph block into the list item text. */
-  foldFirst () {
+  foldFirst() {
     const src = this.blocks.shift().source
-    this._text = (!this._text || this._text.length === 0) ? src : `${this._text}${LF}${src}`
+    this._text =
+      !this._text || this._text.length === 0 ? src : `${this._text}${LF}${src}`
   }
 
-  toString () {
+  toString() {
     return `#<ListItem {list_context: '${this.parent.context}', text: ${JSON.stringify(this._text)}, blocks: ${(this.blocks ?? []).length}}>`
   }
 }

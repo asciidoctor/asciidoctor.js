@@ -7,10 +7,13 @@
 //     highlight CSS classes — the html-pipeline gem processes the markup downstream.
 //   - Ruby string interpolation → template literals.
 
-import { SyntaxHighlighterBase, SyntaxHighlighter } from '../syntax_highlighter.js'
+import {
+  SyntaxHighlighterBase,
+  SyntaxHighlighter,
+} from '../syntax_highlighter.js'
 
 export class HtmlPipelineAdapter extends SyntaxHighlighterBase {
-  constructor (...args) {
+  constructor(...args) {
     super(...args)
     this.name = 'html-pipeline'
   }
@@ -25,7 +28,8 @@ export class HtmlPipelineAdapter extends SyntaxHighlighterBase {
   // opts - A plain Object of options (unused by this adapter).
   //
   // Returns the wrapped source String.
-  async format (node, lang, opts) { // eslint-disable-line no-unused-vars
+  async format(node, lang, opts) {
+    // eslint-disable-line no-unused-vars
     return `<pre${lang ? ` lang="${lang}"` : ''}><code>${await node.content()}</code></pre>`
   }
 }

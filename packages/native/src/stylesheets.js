@@ -12,15 +12,15 @@ import defaultStylesheetData from './data/stylesheet-data.js'
 class StylesheetsClass {
   static DEFAULT_STYLESHEET_NAME = 'asciidoctor.css'
 
-  get primaryStylesheetName () {
+  get primaryStylesheetName() {
     return StylesheetsClass.DEFAULT_STYLESHEET_NAME
   }
 
-  async primaryStylesheetData () {
+  async primaryStylesheetData() {
     return defaultStylesheetData
   }
 
-  async embedPrimaryStylesheet () {
+  async embedPrimaryStylesheet() {
     return `<style>\n${defaultStylesheetData}\n</style>`
   }
 }

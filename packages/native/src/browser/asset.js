@@ -11,7 +11,7 @@
  * @param {string} uri - The URI to fetch.
  * @returns {Promise<string|null>} the response text, or null on failure.
  */
-export async function readBrowserAsset (uri) {
+export async function readBrowserAsset(uri) {
   try {
     const response = await fetch(uri)
     if (!response.ok) return null

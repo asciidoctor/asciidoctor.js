@@ -8,14 +8,14 @@
 //   - Logging mixin is applied via applyLogging() after class definition.
 
 import { applyLogging } from './logging.js'
-import { UriSniffRx }   from './rx.js'
+import { UriSniffRx } from './rx.js'
 
-const DOT            = '.'
-const DOT_DOT        = '..'
-const DOT_SLASH      = './'
-const SLASH          = '/'
-const BACKSLASH      = '\\'
-const DOUBLE_SLASH   = '//'
+const DOT = '.'
+const DOT_DOT = '..'
+const DOT_SLASH = './'
+const SLASH = '/'
+const BACKSLASH = '\\'
+const DOUBLE_SLASH = '//'
 const URI_CLASSLOADER = 'uri:classloader:'
 const WINDOWS_ROOT_RX = /^(?:[a-zA-Z]:)?[\\/]/
 
@@ -25,10 +25,12 @@ export class PathResolver {
   //
   // fileSeparator - The String file separator (default: '/' or '\\' on Windows).
   // workingDir    - The String working directory (default: process.cwd()).
-  constructor (fileSeparator = null, workingDir = null) {
+  constructor(fileSeparator = null, workingDir = null) {
     this.fileSeparator = fileSeparator ?? _platformSeparator()
     if (workingDir) {
-      this.workingDir = this.root(workingDir) ? this.posixify(workingDir) : _expandPath(workingDir)
+      this.workingDir = this.root(workingDir)
+        ? this.posixify(workingDir)
+        : _expandPath(workingDir)
     } else {
       this.workingDir = typeof process !== 'undefined' ? process.cwd() : '/'
     }
@@ -39,37 +41,39 @@ export class PathResolver {
   // Public: Check whether the specified path is an absolute path.
   //
   // Returns Boolean.
-  absolutePath (path) {
-    return path.startsWith(SLASH) ||
+  absolutePath(path) {
+    return (
+      path.startsWith(SLASH) ||
       (this.fileSeparator === BACKSLASH && WINDOWS_ROOT_RX.test(path)) ||
       UriSniffRx.test(path)
+    )
   }
 
   // Public: Check if the specified path is an absolute root path.
   //
   // Returns Boolean.
-  root (path) {
+  root(path) {
     return this.absolutePath(path)
   }
 
   // Public: Determine if the path is a UNC (root) path.
   //
   // Returns Boolean.
-  unc (path) {
+  unc(path) {
     return path.startsWith(DOUBLE_SLASH)
   }
 
   // Public: Determine if the path is an absolute (root) web path.
   //
   // Returns Boolean.
-  webRoot (path) {
+  webRoot(path) {
     return path.startsWith(SLASH)
   }
 
   // Public: Determine whether path descends from base.
   //
   // Returns Integer offset if path descends from base, false otherwise.
-  descendsFrom (path, base) {
+  descendsFrom(path, base) {
     if (base === path) return 0
     if (base === SLASH) return path.startsWith(SLASH) ? 1 : false
     return path.startsWith(base + SLASH) ? base.length + 1 : false
@@ -78,7 +82,7 @@ export class PathResolver {
   // Public: Calculate the relative path to this absolute path from the specified base directory.
   //
   // Returns a String relative path, or the original path if it cannot be made relative.
-  relativePath (path, base) {
+  relativePath(path, base) {
     if (this.root(path)) {
       const posixBase = this.posixify(base)
       const offset = this.descendsFrom(path, posixBase)
@@ -95,7 +99,7 @@ export class PathResolver {
   // Public: Normalize path by converting backslashes to forward slashes.
   //
   // Returns the posixified String path.
-  posixify (path) {
+  posixify(path) {
     if (!path) return ''
     return this.fileSeparator === BACKSLASH && path.includes(BACKSLASH)
       ? path.replace(/\\/g, SLASH)
@@ -103,12 +107,14 @@ export class PathResolver {
   }
 
   // Alias
-  posixfy (path) { return this.posixify(path) }
+  posixfy(path) {
+    return this.posixify(path)
+  }
 
   // Public: Expand the path by resolving parent references (..) and removing self references (.).
   //
   // Returns the expanded String path.
-  expandPath (path) {
+  expandPath(path) {
     const [pathSegments, pathRoot] = this.partitionPath(path)
     if (path.includes(DOT_DOT)) {
       const resolved = []
@@ -126,7 +132,7 @@ export class PathResolver {
   // web  - Boolean: treat as web path (optional, default: false)
   //
   // Returns a 2-item Array [segments, root] where root may be null.
-  partitionPath (path, web = false) {
+  partitionPath(path, web = false) {
     const cache = web ? this._partitionPathWeb : this._partitionPathSys
     if (cache[path]) return cache[path]
 
@@ -149,19 +155,19 @@ export class PathResolver {
       } else {
         const extracted = this._extractUriPrefix(posixPath)
         root = Array.isArray(extracted)
-          ? extracted[1]  // URL scheme, e.g. 'http://'
-          : posixPath.slice(0, posixPath.indexOf(SLASH) + 1)  // Windows drive, e.g. 'C:/'
+          ? extracted[1] // URL scheme, e.g. 'http://'
+          : posixPath.slice(0, posixPath.indexOf(SLASH) + 1) // Windows drive, e.g. 'C:/'
       }
     } else if (posixPath.startsWith(DOT_SLASH)) {
       root = DOT_SLASH
     }
 
-    let relative = root ? posixPath.slice(root.length) : posixPath
-    let segments = relative.split(SLASH).filter(s => s !== DOT && s !== '')
+    const relative = root ? posixPath.slice(root.length) : posixPath
+    let segments = relative.split(SLASH).filter((s) => s !== DOT && s !== '')
     // Re-add non-empty-string DOT segments removal is as above; preserve empty for UNC
-    segments = relative.split(SLASH).filter(s => s !== DOT)
+    segments = relative.split(SLASH).filter((s) => s !== DOT)
     // Remove any empty segments (trailing slash artifacts) except retain intent
-    segments = segments.filter(s => s !== '')
+    segments = segments.filter((s) => s !== '')
 
     const result = [segments, root]
     cache[path] = result
@@ -171,7 +177,7 @@ export class PathResolver {
   // Public: Join segments with posix separator, prepending root if provided.
   //
   // Returns the joined String path.
-  joinPath (segments, root = null) {
+  joinPath(segments, root = null) {
     return root ? `${root}${segments.join(SLASH)}` : segments.join(SLASH)
   }
 
@@ -183,12 +189,13 @@ export class PathResolver {
   // opts   - options: recover (Boolean, default: true), target_name (String)
   //
   // Returns an absolute posix String path.
-  systemPath (target, start = null, jail = null, opts = {}) {
-    const recover    = opts.recover !== false
+  systemPath(target, start = null, jail = null, opts = {}) {
+    const recover = opts.recover !== false
     const targetName = opts.targetName ?? opts.target_name ?? 'path'
 
     if (jail) {
-      if (!this.root(jail)) throw new Error(`Jail is not an absolute path: ${jail}`)
+      if (!this.root(jail))
+        throw new Error(`Jail is not an absolute path: ${jail}`)
       jail = this.posixify(jail)
     }
 
@@ -197,10 +204,15 @@ export class PathResolver {
       if (this.root(target)) {
         const targetPath = this.expandPath(target)
         if (jail && this.descendsFrom(targetPath, jail) === false) {
-          if (!recover) throw new SecurityError(`${targetName} ${target} is outside of jail: ${jail} (disallowed in safe mode)`)
-          this.logger.warn(`${targetName} is outside of jail; recovering automatically`)
-          const [ts]          = this.partitionPath(targetPath)
-          const [js, jr]      = this.partitionPath(jail)
+          if (!recover)
+            throw new SecurityError(
+              `${targetName} ${target} is outside of jail: ${jail} (disallowed in safe mode)`
+            )
+          this.logger.warn(
+            `${targetName} is outside of jail; recovering automatically`
+          )
+          const [ts] = this.partitionPath(targetPath)
+          const [js, jr] = this.partitionPath(jail)
           return this.joinPath(js.concat(ts), jr)
         }
         return targetPath
@@ -231,15 +243,24 @@ export class PathResolver {
     }
 
     // Check if start is within jail
-    if (jail && (recheck = this.descendsFrom(start, jail) === false) && this.fileSeparator === BACKSLASH) {
+    if (
+      jail &&
+      (recheck = this.descendsFrom(start, jail) === false) &&
+      this.fileSeparator === BACKSLASH
+    ) {
       const [ss, sr] = this.partitionPath(start)
       const [js, jr] = this.partitionPath(jail)
       if (sr !== jr) {
-        if (!recover) throw new SecurityError(`start path for ${targetName} ${start} refers to location outside jail root: ${jail} (disallowed in safe mode)`)
-        this.logger.warn(`start path for ${targetName} is outside of jail root; recovering automatically`)
+        if (!recover)
+          throw new SecurityError(
+            `start path for ${targetName} ${start} refers to location outside jail root: ${jail} (disallowed in safe mode)`
+          )
+        this.logger.warn(
+          `start path for ${targetName} is outside of jail root; recovering automatically`
+        )
         startSegments = js
-        jailRoot      = jr
-        recheck       = false
+        jailRoot = jr
+        recheck = false
       } else {
         ;[startSegments, jailRoot] = [ss, sr]
       }
@@ -263,11 +284,15 @@ export class PathResolver {
               resolvedSegments.pop()
             } else if (recover) {
               if (!warned) {
-                this.logger.warn(`${targetName} has illegal reference to ancestor of jail; recovering automatically`)
+                this.logger.warn(
+                  `${targetName} has illegal reference to ancestor of jail; recovering automatically`
+                )
                 warned = true
               }
             } else {
-              throw new SecurityError(`${targetName} ${target} refers to location outside jail: ${jail} (disallowed in safe mode)`)
+              throw new SecurityError(
+                `${targetName} ${target} refers to location outside jail: ${jail} (disallowed in safe mode)`
+              )
             }
           } else {
             resolvedSegments.push(seg)
@@ -285,12 +310,15 @@ export class PathResolver {
       if (this.descendsFrom(targetPath, jail) !== false) {
         return targetPath
       } else if (recover) {
-        this.logger.warn(`${targetName} is outside of jail; recovering automatically`)
-        let jailSegments
-        ;[jailSegments] = this.partitionPath(jail)
+        this.logger.warn(
+          `${targetName} is outside of jail; recovering automatically`
+        )
+        const [jailSegments] = this.partitionPath(jail)
         return this.joinPath(jailSegments.concat(targetSegments), jailRoot)
       } else {
-        throw new SecurityError(`${targetName} ${target} is outside of jail: ${jail} (disallowed in safe mode)`)
+        throw new SecurityError(
+          `${targetName} ${target} is outside of jail: ${jail} (disallowed in safe mode)`
+        )
       }
     }
 
@@ -303,9 +331,9 @@ export class PathResolver {
   // start  - the String start (parent) path (default: null)
   //
   // Returns a String path with parent references resolved and self references removed.
-  webPath (target, start = null) {
+  webPath(target, start = null) {
     target = this.posixify(target)
-    start  = this.posixify(start)
+    start = this.posixify(start)
 
     let uriPrefix = null
     if (start && !this.webRoot(target)) {
@@ -335,7 +363,8 @@ export class PathResolver {
     }
 
     let resolvedPath = this.joinPath(resolved, targetRoot)
-    if (resolvedPath.includes(' ')) resolvedPath = resolvedPath.replace(/ /g, '%20')
+    if (resolvedPath.includes(' '))
+      resolvedPath = resolvedPath.replace(/ /g, '%20')
 
     return uriPrefix ? `${uriPrefix}${resolvedPath}` : resolvedPath
   }
@@ -343,7 +372,7 @@ export class PathResolver {
   // Internal: Extract the URI prefix from a string if it is a URI.
   //
   // Returns [string_without_prefix, prefix] Array if URI, or the original string.
-  _extractUriPrefix (str) {
+  _extractUriPrefix(str) {
     if (str.includes(':')) {
       const m = str.match(UriSniffRx)
       if (m) return [str.slice(m[0].length), m[0]]
@@ -356,13 +385,14 @@ applyLogging(PathResolver.prototype)
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function _platformSeparator () {
-  if (typeof process !== 'undefined' && process.platform === 'win32') return '\\'
+function _platformSeparator() {
+  if (typeof process !== 'undefined' && process.platform === 'win32')
+    return '\\'
   return '/'
 }
 
 // Minimal expand_path for Node.js (absolute → posix string).
-function _expandPath (p) {
+function _expandPath(p) {
   if (typeof process !== 'undefined') {
     // Lazy import to avoid top-level await
     try {
@@ -375,21 +405,25 @@ function _expandPath (p) {
 }
 
 // Compute relative path from `base` to `target` (both absolute POSIX strings).
-function _computeRelativePath (target, base) {
+function _computeRelativePath(target, base) {
   const targetParts = target.split('/').filter(Boolean)
-  const baseParts   = base.split('/').filter(Boolean)
+  const baseParts = base.split('/').filter(Boolean)
   let common = 0
-  while (common < targetParts.length && common < baseParts.length && targetParts[common] === baseParts[common]) {
+  while (
+    common < targetParts.length &&
+    common < baseParts.length &&
+    targetParts[common] === baseParts[common]
+  ) {
     common++
   }
-  const up   = baseParts.length - common
+  const up = baseParts.length - common
   const down = targetParts.slice(common)
   return [...Array(up).fill('..'), ...down].join('/') || '.'
 }
 
 // Simple SecurityError class (Ruby raises SecurityError).
 class SecurityError extends Error {
-  constructor (msg) {
+  constructor(msg) {
     super(msg)
     this.name = 'SecurityError'
   }

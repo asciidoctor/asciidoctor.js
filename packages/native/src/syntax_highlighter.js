@@ -29,7 +29,8 @@ export class SyntaxHighlighterBase {
    * @param {string} [backend='html5'] - the backend name
    * @param {Object} [opts={}] - options
    */
-  constructor (name, backend = 'html5', opts = {}) { // eslint-disable-line no-unused-vars
+  constructor(name, backend = 'html5', opts = {}) {
+    // eslint-disable-line no-unused-vars
     this.name = name
     this._preClass = name
   }
@@ -40,7 +41,8 @@ export class SyntaxHighlighterBase {
    * @param {string} location - the location slot ('head' or 'footer')
    * @returns {boolean} false by default; subclasses return true to enable {@link docinfo}
    */
-  hasDocinfo (location) { // eslint-disable-line no-unused-vars
+  hasDocinfo(location) {
+    // eslint-disable-line no-unused-vars
     return false
   }
 
@@ -55,8 +57,11 @@ export class SyntaxHighlighterBase {
    * @param {string} [opts.self_closing_tag_slash] - '/' for self-closing tags
    * @returns {string} the markup to insert
    */
-  docinfo (location, doc, opts) { // eslint-disable-line no-unused-vars
-    throw new Error(`${this.constructor.name} must implement docinfo() since hasDocinfo() returns true`)
+  docinfo(location, doc, opts) {
+    // eslint-disable-line no-unused-vars
+    throw new Error(
+      `${this.constructor.name} must implement docinfo() since hasDocinfo() returns true`
+    )
   }
 
   /**
@@ -64,7 +69,7 @@ export class SyntaxHighlighterBase {
    *
    * @returns {boolean} false by default; subclasses return true to enable {@link highlight}
    */
-  handlesHighlighting () {
+  handlesHighlighting() {
     return false
   }
 
@@ -87,8 +92,11 @@ export class SyntaxHighlighterBase {
    * @param {string} [opts.style] - theme name
    * @returns {string|[string, number]} the highlighted source, or a tuple with a line offset
    */
-  highlight (node, source, lang, opts) { // eslint-disable-line no-unused-vars
-    throw new Error(`${this.constructor.name} must implement highlight() since handlesHighlighting() returns true`)
+  highlight(node, source, lang, opts) {
+    // eslint-disable-line no-unused-vars
+    throw new Error(
+      `${this.constructor.name} must implement highlight() since handlesHighlighting() returns true`
+    )
   }
 
   /**
@@ -101,21 +109,25 @@ export class SyntaxHighlighterBase {
    * @param {Function} [opts.transform] - called with (pre, code) attribute objects before building tags
    * @returns {string} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags
    */
-  format (node, lang, opts) {
+  format(node, lang, opts) {
     const classAttrVal = opts.nowrap
       ? `${this._preClass} highlight nowrap`
       : `${this._preClass} highlight`
     const transform = opts.transform
     if (transform) {
-      const pre  = { class: classAttrVal }
+      const pre = { class: classAttrVal }
       const code = lang ? { 'data-lang': lang } : {}
       transform(pre, code)
       // NOTE keep data-lang as the last attribute on <code> to match Ruby 1.5.x behaviour
       const dataLang = code['data-lang']
       delete code['data-lang']
       if (dataLang) code['data-lang'] = dataLang
-      const preAttrs  = Object.entries(pre).map(([k, v]) => ` ${k}="${v}"`).join('')
-      const codeAttrs = Object.entries(code).map(([k, v]) => ` ${k}="${v}"`).join('')
+      const preAttrs = Object.entries(pre)
+        .map(([k, v]) => ` ${k}="${v}"`)
+        .join('')
+      const codeAttrs = Object.entries(code)
+        .map(([k, v]) => ` ${k}="${v}"`)
+        .join('')
       return `<pre${preAttrs}><code${codeAttrs}>${node.content}</code></pre>`
     }
     return `<pre class="${classAttrVal}"><code${lang ? ` data-lang="${lang}"` : ''}>${node.content}</code></pre>`
@@ -127,7 +139,8 @@ export class SyntaxHighlighterBase {
    * @param {Document} doc - the Document in which this highlighter is being used
    * @returns {boolean} false by default; subclasses return true to enable {@link writeStylesheetToDisk}
    */
-  writeStylesheet (doc) { // eslint-disable-line no-unused-vars
+  writeStylesheet(doc) {
+    // eslint-disable-line no-unused-vars
     return false
   }
 
@@ -137,8 +150,11 @@ export class SyntaxHighlighterBase {
    * @param {Document} doc - the Document in which this highlighter is used
    * @param {string} toDir - the absolute path of the output directory
    */
-  writeStylesheetToDisk (doc, toDir) { // eslint-disable-line no-unused-vars
-    throw new Error(`${this.constructor.name} must implement writeStylesheetToDisk() since writeStylesheet() returns true`)
+  writeStylesheetToDisk(doc, toDir) {
+    // eslint-disable-line no-unused-vars
+    throw new Error(
+      `${this.constructor.name} must implement writeStylesheetToDisk() since writeStylesheet() returns true`
+    )
   }
 }
 
@@ -151,7 +167,7 @@ export class CustomFactory {
   /**
    * @param {Object|null} [seedRegistry=null] - initial registry entries
    */
-  constructor (seedRegistry = null) {
+  constructor(seedRegistry = null) {
     this._registry = seedRegistry ? { ...seedRegistry } : {}
   }
 
@@ -161,7 +177,7 @@ export class CustomFactory {
    * @param {Function|SyntaxHighlighterBase} syntaxHighlighter - the class or instance to register
    * @param {...string} names - one or more names to associate
    */
-  register (syntaxHighlighter, ...names) {
+  register(syntaxHighlighter, ...names) {
     for (const name of names) {
       this._registry[name] = syntaxHighlighter
     }
@@ -173,7 +189,7 @@ export class CustomFactory {
    * @param {string} name - the name to look up
    * @returns {Function|SyntaxHighlighterBase|null} the registered class or instance, or null
    */
-  for (name) {
+  for(name) {
     return this._registry[name] ?? null
   }
 
@@ -185,14 +201,16 @@ export class CustomFactory {
    * @param {Object} [opts={}] - options passed to the constructor
    * @returns {SyntaxHighlighterBase|null} a highlighter instance, or null if not registered
    */
-  create (name, backend = 'html5', opts = {}) {
+  create(name, backend = 'html5', opts = {}) {
     let syntaxHl = this.for(name)
     if (!syntaxHl) return null
     if (typeof syntaxHl === 'function' && syntaxHl.prototype) {
       syntaxHl = new syntaxHl(name, backend, opts)
     }
     if (!syntaxHl.name) {
-      throw new Error(`${syntaxHl.constructor.name} must specify a value for 'name'`)
+      throw new Error(
+        `${syntaxHl.constructor.name} must specify a value for 'name'`
+      )
     }
     return syntaxHl
   }
@@ -206,7 +224,7 @@ export class CustomFactory {
 // remain available after a reset, mirroring Ruby's DefaultFactory behaviour.
 
 class DefaultFactory extends CustomFactory {
-  constructor () {
+  constructor() {
     super()
     // _registry (inherited) → custom registrations
     // _defaultRegistry      → built-in registrations (populated by adapters)
@@ -214,14 +232,14 @@ class DefaultFactory extends CustomFactory {
   }
 
   // Register into the built-in layer (called by built-in adapters).
-  register (syntaxHighlighter, ...names) {
+  register(syntaxHighlighter, ...names) {
     for (const name of names) {
       this._defaultRegistry[name] = syntaxHighlighter
     }
   }
 
   // Custom registrations shadow built-ins.
-  for (name) {
+  for(name) {
     return this._registry[name] ?? this._defaultRegistry[name] ?? null
   }
 
@@ -231,18 +249,20 @@ class DefaultFactory extends CustomFactory {
    * @param {string} name - the name of the syntax highlighter to retrieve
    * @returns {Function|SyntaxHighlighterBase|undefined} the registered class or instance, or undefined
    */
-  get (name) {
+  get(name) {
     return this.for(name) ?? undefined
   }
 
-  create (name, backend = 'html5', opts = {}) {
+  create(name, backend = 'html5', opts = {}) {
     let syntaxHl = this.for(name)
     if (!syntaxHl) return null
     if (typeof syntaxHl === 'function' && syntaxHl.prototype) {
       syntaxHl = new syntaxHl(name, backend, opts)
     }
     if (!syntaxHl.name) {
-      throw new Error(`${syntaxHl.constructor.name} must specify a value for 'name'`)
+      throw new Error(
+        `${syntaxHl.constructor.name} must specify a value for 'name'`
+      )
     }
     return syntaxHl
   }
@@ -250,7 +270,7 @@ class DefaultFactory extends CustomFactory {
   /**
    * Clears all custom (user) registrations; built-in adapters are preserved.
    */
-  unregisterAll () {
+  unregisterAll() {
     this._registry = {}
   }
 }

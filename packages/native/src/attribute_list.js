@@ -25,7 +25,7 @@ const QUOT = '"'
 const BoundaryRx = {
   [QUOT]: /.*?[^\\](?=")/,
   [APOS]: /.*?[^\\](?=')/,
-  ',':    /.*?(?=[ \t]*(,|$))/,
+  ',': /.*?(?=[ \t]*(,|$))/,
 }
 
 // Regular expressions for unescaping quoted characters.
@@ -61,48 +61,57 @@ class StringScanner {
   #lastMatchLen = 0
   #stickyCache = new Map()
 
-  constructor (source) {
+  constructor(source) {
     this.#source = source
   }
 
   // The original source string (equivalent to Ruby scanner.string).
-  get source () { return this.#source }
+  get source() {
+    return this.#source
+  }
 
   // Returns true when the scan pointer is at or past the end of the string.
-  eos () { return this.#pos >= this.#source.length }
+  eos() {
+    return this.#pos >= this.#source.length
+  }
 
   // Returns the next n characters without advancing the scan pointer.
-  peek (n) { return this.#source.slice(this.#pos, this.#pos + n) }
+  peek(n) {
+    return this.#source.slice(this.#pos, this.#pos + n)
+  }
 
   // Consumes and returns the next character, or undefined at EOS.
-  getByte () {
-    if (this.#pos >= this.#source.length) { this.#lastMatchLen = 0; return undefined }
+  getByte() {
+    if (this.#pos >= this.#source.length) {
+      this.#lastMatchLen = 0
+      return undefined
+    }
     this.#lastMatchLen = 1
     return this.#source[this.#pos++]
   }
 
   // Reverts the most recent getByte / scan / skip advance.
-  unscan () {
+  unscan() {
     this.#pos -= this.#lastMatchLen
     this.#lastMatchLen = 0
   }
 
   // Advances past rx at the current position.
   // Returns the number of characters skipped, or 0 on no match.
-  skip (rx) {
+  skip(rx) {
     const m = this.#exec(rx)
     return m ? m[0].length : 0
   }
 
   // Matches rx at the current position and returns the matched string,
   // or null on no match.
-  scan (rx) {
+  scan(rx) {
     const m = this.#exec(rx)
     return m ? m[0] : null
   }
 
   // Internal: execute rx (as a sticky regex) at the current position.
-  #exec (rx) {
+  #exec(rx) {
     let sticky = this.#stickyCache.get(rx)
     if (!sticky) {
       const flags = rx.flags.includes('y') ? rx.flags : `${rx.flags}y`
@@ -111,7 +120,10 @@ class StringScanner {
     }
     sticky.lastIndex = this.#pos
     const m = sticky.exec(this.#source)
-    if (!m) { this.#lastMatchLen = 0; return null }
+    if (!m) {
+      this.#lastMatchLen = 0
+      return null
+    }
     this.#lastMatchLen = m[0].length
     this.#pos += m[0].length
     return m
@@ -148,7 +160,7 @@ export class AttributeList {
   #delimiterBoundaryPattern
   #attributes = null
 
-  constructor (source, block = null, delimiter = ',') {
+  constructor(source, block = null, delimiter = ',') {
     this.#scanner = new StringScanner(source)
     this.#block = block
     this.#delimiter = delimiter
@@ -162,7 +174,7 @@ export class AttributeList {
   // positionalAttrs - An Array of String keys to assign to positional values.
   //
   // Returns the updated attributes object.
-  async parseInto (attributes, positionalAttrs = []) {
+  async parseInto(attributes, positionalAttrs = []) {
     return Object.assign(attributes, await this.parse(positionalAttrs))
   }
 
@@ -173,7 +185,7 @@ export class AttributeList {
   // positionalAttrs - An Array of String keys to assign to positional values.
   //
   // Returns a plain object of parsed attributes.
-  async parse (positionalAttrs = []) {
+  async parse(positionalAttrs = []) {
     if (this.#attributes) return this.#attributes
     this.#attributes = {}
     let index = 0
@@ -190,7 +202,7 @@ export class AttributeList {
   // positionalAttrs - An Array of String keys to assign to positional values.
   //
   // Returns the updated attributes object.
-  rekey (positionalAttrs) {
+  rekey(positionalAttrs) {
     return AttributeList.rekey(this.#attributes, positionalAttrs)
   }
 
@@ -201,7 +213,7 @@ export class AttributeList {
   // positionalAttrs - An Array of String keys to assign (null entries are skipped).
   //
   // Returns the updated attributes object.
-  static rekey (attributes, positionalAttrs) {
+  static rekey(attributes, positionalAttrs) {
     for (let i = 0; i < positionalAttrs.length; i++) {
       const key = positionalAttrs[i]
       if (key) {
@@ -215,7 +227,7 @@ export class AttributeList {
   // Private: Parse the next attribute starting at the given positional index.
   //
   // Returns true to continue parsing, false to stop.
-  async #parseAttribute (index, positionalAttrs) {
+  async #parseAttribute(index, positionalAttrs) {
     let shouldContinue = true
     this.#skipBlank()
     const peeked = this.#scanner.peek(1)
@@ -234,7 +246,8 @@ export class AttributeList {
 
       if (this.#scanner.eos()) {
         // Stop unless we have a name or the source ends with the delimiter
-        if (!name && !this.#scanner.source.trimEnd().endsWith(this.#delimiter)) return false
+        if (!name && !this.#scanner.source.trimEnd().endsWith(this.#delimiter))
+          return false
         // example: quote (at eos)
         shouldContinue = false
       } else {
@@ -319,7 +332,7 @@ export class AttributeList {
   // quote - The String quote character that opened this value (QUOT or APOS).
   //
   // Returns the parsed String value (unescaped, without surrounding quotes).
-  #parseAttributeValue (quote) {
+  #parseAttributeValue(quote) {
     // empty quoted value: "" or ''
     if (this.#scanner.peek(1) === quote) {
       this.#scanner.getByte()
@@ -328,15 +341,27 @@ export class AttributeList {
     const value = this.#scanToQuote(quote)
     if (value !== null) {
       this.#scanner.getByte() // consume closing quote
-      return value.includes(BACKSLASH) ? value.replaceAll(EscapedQuotes[quote], quote) : value
+      return value.includes(BACKSLASH)
+        ? value.replaceAll(EscapedQuotes[quote], quote)
+        : value
     }
     // no closing quote found – treat opening quote as part of the value
     return `${quote}${this.#scanToDelimiter() ?? ''}`
   }
 
-  #skipBlank ()        { return this.#scanner.skip(BlankRx) }
-  #skipDelimiter ()    { return this.#scanner.skip(this.#delimiterSkipPattern) }
-  #scanName ()         { return this.#scanner.scan(NameRx) }
-  #scanToDelimiter ()  { return this.#scanner.scan(this.#delimiterBoundaryPattern) }
-  #scanToQuote (quote) { return this.#scanner.scan(BoundaryRx[quote]) }
+  #skipBlank() {
+    return this.#scanner.skip(BlankRx)
+  }
+  #skipDelimiter() {
+    return this.#scanner.skip(this.#delimiterSkipPattern)
+  }
+  #scanName() {
+    return this.#scanner.scan(NameRx)
+  }
+  #scanToDelimiter() {
+    return this.#scanner.scan(this.#delimiterBoundaryPattern)
+  }
+  #scanToQuote(quote) {
+    return this.#scanner.scan(BoundaryRx[quote])
+  }
 }

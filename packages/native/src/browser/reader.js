@@ -30,10 +30,12 @@
 import { isUriish } from '../helpers.js'
 
 // Internal: Build the `link:...[...]` replacement text for a disallowed include.
-function _linkReplacement (reader, target, attrlist) {
+function _linkReplacement(reader, target, attrlist) {
   const doc = reader._document
   const lt = target.includes(' ') ? `pass:c[${target}]` : target
-  const la = doc.hasAttr('compat-mode') ? (attrlist ?? '') : `role=include${attrlist ? ',' + attrlist : ''}`
+  const la = doc.hasAttr('compat-mode')
+    ? (attrlist ?? '')
+    : `role=include${attrlist ? `,${attrlist}` : ''}`
   return `link:${lt}[${la}]`
 }
 
@@ -63,7 +65,7 @@ function _linkReplacement (reader, target, attrlist) {
 //      → relpath = path difference if parentDir descends from baseDir, else target
 //
 // Returns [incPath, relpath] or Boolean (replaceNextLine result).
-export function resolveBrowserIncludePath (reader, target, attrlist) {
+export function resolveBrowserIncludePath(reader, target, attrlist) {
   const doc = reader._document
   const pathResolver = doc.pathResolver
   // Normalise backslashes (Ruby: PathResolver.new('\\').posixify target)
@@ -78,7 +80,7 @@ export function resolveBrowserIncludePath (reader, target, attrlist) {
   if (pTarget.startsWith('file://')) {
     incPath = relpath = pTarget
 
-  // ── Rule 2: target is an absolute URL (http:// / https:// / …) ───────────
+    // ── Rule 2: target is an absolute URL (http:// / https:// / …) ───────────
   } else if (isUriish(pTarget)) {
     const descends = pathResolver.descendsFrom(pTarget, baseDir)
     if (descends === false && !doc.attr('allow-uri-read')) {
@@ -86,16 +88,16 @@ export function resolveBrowserIncludePath (reader, target, attrlist) {
     }
     incPath = relpath = pTarget
 
-  // ── Rule 3: target is an absolute OS path ─────────────────────────────────
+    // ── Rule 3: target is an absolute OS path ─────────────────────────────────
   } else if (pathResolver.absolutePath(pTarget)) {
     incPath = relpath = `file://${pTarget.startsWith('/') ? '' : '/'}${pTarget}`
 
-  // ── Rule 4: context dir is '.' ────────────────────────────────────────────
-  // Relative path resolved by fetch relative to window.location / request origin.
+    // ── Rule 4: context dir is '.' ────────────────────────────────────────────
+    // Relative path resolved by fetch relative to window.location / request origin.
   } else if (ctxDir === '.') {
     incPath = relpath = pTarget
 
-  // ── Rule 5: context dir is file:// OR a non-URI (regular OS path) ─────────
+    // ── Rule 5: context dir is file:// OR a non-URI (regular OS path) ─────────
   } else if (ctxDir.startsWith('file://') || !isUriish(ctxDir)) {
     incPath = `${ctxDir}/${pTarget}`
     if (topLevel) {
@@ -109,10 +111,9 @@ export function resolveBrowserIncludePath (reader, target, attrlist) {
       }
     }
 
-  // ── Rule 6: context dir is an absolute URL ────────────────────────────────
+    // ── Rule 6: context dir is an absolute URL ────────────────────────────────
   } else if (topLevel) {
-    incPath = `${ctxDir}/${relpath = pTarget}`
-
+    incPath = `${ctxDir}/${(relpath = pTarget)}`
   } else {
     // Nested include: context dir is an absolute URL.
     const ctxDescends = pathResolver.descendsFrom(ctxDir, baseDir)
