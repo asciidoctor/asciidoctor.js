@@ -13,7 +13,7 @@
 //   - node.sections → node.sections() (method)
 //   - await node.content() → await node.content() (method on Block/Document)
 //   - alias convert_pass content_only → convert_pass delegates to this.contentOnly()
-//   - Stylesheets.instance.primary_stylesheet_data → not yet ported; embed yields empty <style>
+//   - Stylesheets.instance.primary_stylesheet_data → Stylesheets.instance.primaryStylesheetData() (camelCase, async)
 //   - read_svg_contents uses readContents (supports local and remote URIs via allow-uri-read)
 
 import { ConverterBase } from '../converter.js'
@@ -26,6 +26,7 @@ import {
 } from '../constants.js'
 import { XmlSanitizeRx } from '../rx.js'
 import { extname, isUriish } from '../helpers.js'
+import { Stylesheets } from '../stylesheets.js'
 
 // ── Local regex constants ─────────────────────────────────────────────────────
 
@@ -149,8 +150,7 @@ export default class Html5Converter extends ConverterBase {
       if (linkcss) {
         result.push(`<link rel="stylesheet" href="${node.normalizeWebPath(DEFAULT_STYLESHEET_NAME, node.attr('stylesdir'), false)}"${slash}>`)
       } else {
-        // NOTE Stylesheets.instance.primary_stylesheet_data is not yet ported to JS
-        result.push('<style>\n</style>')
+        result.push(`<style>\n${await Stylesheets.instance.primaryStylesheetData()}\n</style>`)
       }
     } else if (node.hasAttr('stylesheet')) {
       if (linkcss) {
