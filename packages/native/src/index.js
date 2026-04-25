@@ -1,3 +1,6 @@
+/** @import { Document } from './document.js' */
+/** @import { Registry, Preprocessor, TreeProcessor, Postprocessor, IncludeProcessor, DocinfoProcessor, BlockProcessor, InlineMacroProcessor, BlockMacroProcessor } from './extensions.js' */
+
 import packageJson from '../package.json' with { type: 'json' }
 import { load, loadFile as _loadFile } from './load.js'
 import { LoggerManager, MemoryLogger, NullLogger } from './logging.js'

@@ -40,11 +40,11 @@ declare class Asciidoctor {
     get Extensions(): {
         generateName(): string;
         nextAutoId(): number;
-        groups(): any;
-        create(name?: any, block?: any): import("./extensions.js").Registry;
-        register(...args: any[]): any;
+        groups(): object;
+        create(name?: string | null, block?: Function | null): Registry;
+        register(...args: any[]): Function | object;
         unregisterAll(): void;
-        unregister(...names: any[]): void;
+        unregister(...names: string[]): void;
         _buildProcessorClass(BaseClass: any, name: any, functions: any, ...args: any[]): {
             new (): {
                 [x: string]: any;
@@ -52,86 +52,22 @@ declare class Asciidoctor {
             [x: string]: any;
             readonly name: any;
         };
-        createPreprocessor(name: any, functions: any, ...args: any[]): {
-            new (): {
-                [x: string]: any;
-            };
-            [x: string]: any;
-            readonly name: any;
-        };
-        newPreprocessor(name: any, functions: any, ...args: any[]): {
-            [x: string]: any;
-        };
-        createTreeProcessor(name: any, functions: any, ...args: any[]): {
-            new (): {
-                [x: string]: any;
-            };
-            [x: string]: any;
-            readonly name: any;
-        };
-        newTreeProcessor(name: any, functions: any, ...args: any[]): {
-            [x: string]: any;
-        };
-        createPostprocessor(name: any, functions: any, ...args: any[]): {
-            new (): {
-                [x: string]: any;
-            };
-            [x: string]: any;
-            readonly name: any;
-        };
-        newPostprocessor(name: any, functions: any, ...args: any[]): {
-            [x: string]: any;
-        };
-        createIncludeProcessor(name: any, functions: any, ...args: any[]): {
-            new (): {
-                [x: string]: any;
-            };
-            [x: string]: any;
-            readonly name: any;
-        };
-        newIncludeProcessor(name: any, functions: any, ...args: any[]): {
-            [x: string]: any;
-        };
-        createDocinfoProcessor(name: any, functions: any, ...args: any[]): {
-            new (): {
-                [x: string]: any;
-            };
-            [x: string]: any;
-            readonly name: any;
-        };
-        newDocinfoProcessor(name: any, functions: any, ...args: any[]): {
-            [x: string]: any;
-        };
-        createBlockProcessor(name: any, functions: any, ...args: any[]): {
-            new (): {
-                [x: string]: any;
-            };
-            [x: string]: any;
-            readonly name: any;
-        };
-        newBlockProcessor(name: any, functions: any, ...args: any[]): {
-            [x: string]: any;
-        };
-        createInlineMacroProcessor(name: any, functions: any, ...args: any[]): {
-            new (): {
-                [x: string]: any;
-            };
-            [x: string]: any;
-            readonly name: any;
-        };
-        newInlineMacroProcessor(name: any, functions: any, ...args: any[]): {
-            [x: string]: any;
-        };
-        createBlockMacroProcessor(name: any, functions: any, ...args: any[]): {
-            new (): {
-                [x: string]: any;
-            };
-            [x: string]: any;
-            readonly name: any;
-        };
-        newBlockMacroProcessor(name: any, functions: any, ...args: any[]): {
-            [x: string]: any;
-        };
+        createPreprocessor(name?: string, functions?: object, ...args: any[]): typeof Preprocessor;
+        newPreprocessor(name?: string, functions?: object, ...args: any[]): Preprocessor;
+        createTreeProcessor(name?: string, functions?: object, ...args: any[]): typeof TreeProcessor;
+        newTreeProcessor(name?: string, functions?: object, ...args: any[]): TreeProcessor;
+        createPostprocessor(name?: string, functions?: object, ...args: any[]): typeof Postprocessor;
+        newPostprocessor(name?: string, functions?: object, ...args: any[]): Postprocessor;
+        createIncludeProcessor(name?: string, functions?: object, ...args: any[]): typeof IncludeProcessor;
+        newIncludeProcessor(name?: string, functions?: object, ...args: any[]): IncludeProcessor;
+        createDocinfoProcessor(name?: string, functions?: object, ...args: any[]): typeof DocinfoProcessor;
+        newDocinfoProcessor(name?: string, functions?: object, ...args: any[]): DocinfoProcessor;
+        createBlockProcessor(name?: string, functions?: object, ...args: any[]): typeof BlockProcessor;
+        newBlockProcessor(name?: string, functions?: object, ...args: any[]): BlockProcessor;
+        createInlineMacroProcessor(name?: string, functions?: object, ...args: any[]): typeof InlineMacroProcessor;
+        newInlineMacroProcessor(name?: string, functions?: object, ...args: any[]): InlineMacroProcessor;
+        createBlockMacroProcessor(name?: string, functions?: object, ...args: any[]): typeof BlockMacroProcessor;
+        newBlockMacroProcessor(name?: string, functions?: object, ...args: any[]): BlockMacroProcessor;
     };
     get ConverterFactory(): {
         _defaultRegistry: {};
@@ -196,7 +132,17 @@ import { Extensions } from './extensions.js';
 import { MemoryLogger } from './logging.js';
 import { NullLogger } from './logging.js';
 import { Timings } from './timings.js';
+import type { Registry } from './extensions.js';
+import type { Preprocessor } from './extensions.js';
+import type { TreeProcessor } from './extensions.js';
+import type { Postprocessor } from './extensions.js';
+import type { IncludeProcessor } from './extensions.js';
+import type { DocinfoProcessor } from './extensions.js';
+import type { BlockProcessor } from './extensions.js';
+import type { InlineMacroProcessor } from './extensions.js';
+import type { BlockMacroProcessor } from './extensions.js';
 import Html5Converter from './converter/html5.js';
 import { Block } from './block.js';
 import { Section } from './section.js';
+import type { Document } from './document.js';
 export { SyntaxHighlighterBase, Extensions };

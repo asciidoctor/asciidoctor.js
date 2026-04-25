@@ -29,15 +29,17 @@ import { MacroNameRx, CC_ANY } from './rx.js'
 
 // ── DSL Mixins ────────────────────────────────────────────────────────────────
 
-// Internal: Overlays a builder DSL for configuring a Processor instance.
-// Applied to a processor instance via Object.assign(instance, DslMixin).
-//
-// The process() method has dual behaviour (mirrors Ruby's block / no-block):
-//   - Called with a single Function argument → stores it as the process block.
-//   - Called with non-Function arguments   → invokes the stored process block.
-//
-// The this context inside a stored process function is bound to the processor
-// instance at definition time.
+/**
+ * @internal Builder DSL mixin for configuring a Processor instance.
+ * Applied to a processor instance via Object.assign(instance, DslMixin).
+ *
+ * The process() method has dual behaviour (mirrors Ruby's block / no-block):
+ *   - Called with a single Function argument → stores it as the process block.
+ *   - Called with non-Function arguments   → invokes the stored process block.
+ *
+ * The this context inside a stored process function is bound to the processor
+ * instance at definition time.
+ */
 export const ProcessorDsl = {
   option(key, value) {
     this.config[key] = value
@@ -67,7 +69,7 @@ export const DocumentProcessorDsl = {
     this.option('position', '>>')
   },
 
-  // alias: prepend is an alternative name for prefer (matches Ruby DSL)
+  /** Alias for {@link prefer}. */
   prepend() {
     this.prefer()
   },
@@ -90,7 +92,7 @@ export const SyntaxProcessorDsl = {
     this.option('content_model', value)
   },
 
-  // alias: parse_content_as
+  /** Alias for {@link contentModel}. */
   parseContentAs(value) {
     this.option('content_model', value)
   },
@@ -99,7 +101,7 @@ export const SyntaxProcessorDsl = {
     this.option('positional_attrs', value.flat().map(String))
   },
 
-  // alias: name_positional_attributes / positional_attrs
+  /** Alias for {@link positionalAttributes}. */
   namePositionalAttributes(...value) {
     this.option('positional_attrs', value.flat().map(String))
   },
@@ -112,20 +114,24 @@ export const SyntaxProcessorDsl = {
     this.option('default_attrs', value)
   },
 
-  // alias: default_attrs (deprecated)
+  /** @deprecated Alias for {@link defaultAttributes}. */
   defaultAttrs(value) {
     this.option('default_attrs', value)
   },
 
-  // Public: Resolve and register positional attribute names and default values.
-  //
-  // Accepts any of:
-  //   resolve_attributes()             → positional_attrs: [], default_attrs: {}
-  //   resolve_attributes('foo', 'bar') → positional maps (Array-style)
-  //   resolve_attributes({...})        → positional maps (Object-style)
-  //
-  // Array-style tokens understand positional-index notation (e.g. '1:name',
-  // '@:name') and default-value notation (e.g. 'name=value', '1:name=value').
+  /**
+   * Resolve and register positional attribute names and default values.
+   *
+   * Accepts any of:
+   *   resolveAttributes()             → positional_attrs: [], default_attrs: {}
+   *   resolveAttributes('foo', 'bar') → positional maps (Array-style)
+   *   resolveAttributes({...})        → positional maps (Object-style)
+   *
+   * Array-style tokens understand positional-index notation (e.g. '1:name',
+   * '@:name') and default-value notation (e.g. 'name=value', '1:name=value').
+   *
+   * @param {...*} args - Positional attribute specifications.
+   */
   resolveAttributes(...args) {
     // Normalise: if 0 or 1 argument given, unwrap into a single value.
     if (args.length <= 1) {
@@ -196,7 +202,7 @@ export const SyntaxProcessorDsl = {
     }
   },
 
-  // alias: resolves_attributes (deprecated)
+  /** @deprecated Alias for {@link resolveAttributes}. */
   resolvesAttributes(...args) {
     this.resolveAttributes(...args)
   },
@@ -249,8 +255,12 @@ export const BlockProcessorDsl = {
 export const MacroProcessorDsl = {
   ...SyntaxProcessorDsl,
 
-  // Override: passing a falsy value sets content_model to :text instead of
-  // configuring positional attributes.
+  /**
+   * Override: passing a falsy value sets content_model to :text instead of
+   * configuring positional attributes.
+   *
+   * @param {...*} args - Positional attribute specifications.
+   */
   resolveAttributes(...args) {
     if (args.length === 1 && !args[0]) {
       this.option('content_model', 'text')
@@ -260,6 +270,7 @@ export const MacroProcessorDsl = {
     }
   },
 
+  /** @deprecated Alias for {@link resolveAttributes}. */
   resolvesAttributes(...args) {
     this.resolveAttributes(...args)
   },
@@ -272,11 +283,11 @@ export const InlineMacroProcessorDsl = {
     this.option('format', value)
   },
 
-  // alias: match_format
+  /** Alias for {@link format}. */
   matchFormat(value) {
     this.option('format', value)
   },
-  // alias: using_format (deprecated)
+  /** @deprecated Alias for {@link format}. */
   usingFormat(value) {
     this.option('format', value)
   },
@@ -288,35 +299,46 @@ export const InlineMacroProcessorDsl = {
 
 // ── Processor ────────────────────────────────────────────────────────────────
 
-// Public: An abstract base class for document and syntax processors.
-//
-// Provides a class-level config map (via static config / static option) and a
-// set of convenience factory methods for creating AST nodes.
+/**
+ * Abstract base class for document and syntax processors.
+ *
+ * Provides a class-level config map (via static config / static option) and a
+ * set of convenience factory methods for creating AST nodes.
+ */
 export class Processor {
-  // Public: Get the static configuration map for this processor class.
-  // Uses hasOwnProperty to avoid inheriting a parent class's config object
-  // through the prototype chain when a subclass first accesses config.
+  /**
+   * Get the static configuration map for this processor class.
+   * Uses hasOwnProperty to avoid inheriting a parent class's config object
+   * through the prototype chain when a subclass first accesses config.
+   *
+   * @returns {object}
+   */
   static get config() {
     if (!Object.hasOwn(this, '_config')) this._config = {}
     return this._config
   }
 
-  // Public: Set a default option value for all instances of this processor class.
+  /**
+   * Set a default option value for all instances of this processor class.
+   *
+   * @param {string} key - The option key.
+   * @param {*} value - The option value.
+   */
   static option(key, value) {
     this.config[key] = value
   }
 
-  // Public: Mix the DSL object for this processor class into its prototype.
+  /**
+   * Mix the DSL object for this processor class into its prototype.
+   */
   static enableDsl() {
     const DSL = this.DSL
     if (DSL) Object.assign(this.prototype, DSL)
   }
+  /** Alias for {@link enableDsl}. */
   static useDsl() {
     this.enableDsl()
   }
-
-  // Public: Get the configuration Object for this processor instance.
-  // config
 
   constructor(config = {}) {
     this.config = { ...this.constructor.config, ...config }
@@ -332,21 +354,20 @@ export class Processor {
     )
   }
 
-  // Public: Creates a new Section node.
-  //
-  // Creates a Section node in the same manner as the parser.
-  //
-  // parent - The parent Section (or Document) of this new Section.
-  // title  - The String title of the new Section.
-  // attrs  - A plain object of attributes to control how the section is built.
-  //          Use the style attribute to set the name of a special section (e.g. appendix).
-  //          Use the id attribute to assign an explicit ID, or set it to false to
-  //          disable automatic ID generation (when sectids document attribute is set).
-  // opts   - An optional plain object of options (default: {}):
-  //          level    - The Integer level to assign; defaults to parent.level + 1.
-  //          numbered - Boolean flag to force numbering.
-  //
-  // Returns a Section node with all properties properly initialized.
+  /**
+   * Create a Section node in the same manner as the parser.
+   *
+   * @param {Section|Document} parent - The parent Section or Document of this new Section.
+   * @param {string} title - The String title of the new Section.
+   * @param {object} attrs - A plain object of attributes to control how the section is built.
+   *   Use the style attribute to set the name of a special section (e.g. appendix).
+   *   Use the id attribute to assign an explicit ID, or set it to false to
+   *   disable automatic ID generation (when sectids document attribute is set).
+   * @param {object} [opts={}] - An optional plain object of options:
+   *   - level {number} - The Integer level to assign; defaults to parent.level + 1.
+   *   - numbered {boolean} - Flag to force numbering.
+   * @returns {Section} a Section node with all properties properly initialized.
+   */
   createSection(parent, title, attrs, opts = {}) {
     const doc = parent.document
     const doctype = doc.doctype
@@ -418,41 +439,54 @@ export class Processor {
     return sect
   }
 
+  /**
+   * Create a generic block node and link it to the specified parent.
+   *
+   * @param {Block|Section} parent - The parent node.
+   * @param {string} context - The block context (e.g. 'paragraph', 'listing').
+   * @param {string|string[]|null} source - The source content.
+   * @param {object} attrs - A plain object of attributes.
+   * @param {object} [opts={}] - An optional plain object of options.
+   * @returns {Block} a Block node with all properties properly initialized.
+   */
   createBlock(parent, context, source, attrs, opts = {}) {
     return new Block(parent, context, { source, attributes: attrs, ...opts })
   }
 
-  // Public: Creates a list node and links it to the specified parent.
-  //
-  // parent  - The parent Block (Block, Section, or Document) of this new list.
-  // context - The list context ('ulist', 'olist', 'colist', 'dlist').
-  // attrs   - A plain object of attributes to set on this list block.
-  //
-  // Returns a List node with all properties properly initialized.
+  /**
+   * Create a list node and link it to the specified parent.
+   *
+   * @param {Block|Section|Document} parent - The parent of this new list.
+   * @param {string} context - The list context ('ulist', 'olist', 'colist', 'dlist').
+   * @param {object|null} [attrs=null] - A plain object of attributes to set on this list block.
+   * @returns {List} a List node with all properties properly initialized.
+   */
   createList(parent, context, attrs = null) {
     const list = new List(parent, context)
     if (attrs) list.updateAttributes(attrs)
     return list
   }
 
-  // Public: Creates a list item node and links it to the specified parent.
-  //
-  // parent - The parent List of this new list item block.
-  // text   - The text of the list item.
-  //
-  // Returns a ListItem node with all properties properly initialized.
+  /**
+   * Create a list item node and link it to the specified parent.
+   *
+   * @param {List} parent - The parent List of this new list item.
+   * @param {string|null} [text=null] - The text of the list item.
+   * @returns {ListItem} a ListItem node with all properties properly initialized.
+   */
   createListItem(parent, text = null) {
     return new ListItem(parent, text)
   }
 
-  // Public: Creates an image block node and links it to the specified parent.
-  //
-  // parent - The parent Block (Block, Section, or Document) of this new image block.
-  // attrs  - A plain object of attributes to control how the image block is built.
-  //          The target attribute sets the image source; alt sets the alt text.
-  // opts   - An optional plain object of options (default: {}).
-  //
-  // Returns a Block node with all properties properly initialized.
+  /**
+   * Create an image block node and link it to the specified parent.
+   *
+   * @param {Block|Section|Document} parent - The parent of this new image block.
+   * @param {object} attrs - A plain object of attributes to control how the image block is built.
+   *   The target attribute sets the image source; alt sets the alt text.
+   * @param {object} [opts={}] - An optional plain object of options.
+   * @returns {Block} a Block node with all properties properly initialized.
+   */
   createImageBlock(parent, attrs, opts = {}) {
     const target = attrs.target
     if (!target)
@@ -476,39 +510,46 @@ export class Processor {
     return block
   }
 
-  // Public: Creates an inline node and binds it to the specified parent.
-  //
-  // parent  - The parent Block of this new inline node.
-  // context - The context of the inline node ('quoted', 'anchor', etc.).
-  // text    - The text of the inline node.
-  // opts    - An optional plain object of options (default: {}):
-  //           type       - The subtype of the inline node context.
-  //           attributes - Attributes to set on the inline node.
-  //
-  // Returns an Inline node with all properties properly initialized.
+  /**
+   * Create an inline node and bind it to the specified parent.
+   *
+   * @param {Block} parent - The parent Block of this new inline node.
+   * @param {string} context - The context of the inline node ('quoted', 'anchor', etc.).
+   * @param {string} text - The text of the inline node.
+   * @param {object} [opts={}] - An optional plain object of options:
+   *   - type {string} - The subtype of the inline node context.
+   *   - attributes {object} - Attributes to set on the inline node.
+   * @returns {Inline} an Inline node with all properties properly initialized.
+   */
   createInline(parent, context, text, opts = {}) {
     const options = context === 'quoted' ? { type: 'unquoted', ...opts } : opts
     return new Inline(parent, context, text, options)
   }
 
-  // Public: Parses blocks in the content and attaches them to the parent.
-  //
-  // Returns the parent node into which the blocks are parsed.
+  /**
+   * Parse blocks in the content and attach them to the parent.
+   *
+   * @param {Block|Section} parent - The parent node.
+   * @param {string[]|Reader} content - Lines or a Reader.
+   * @param {object|null} [attributes=null] - Attributes to pass to the parser.
+   * @returns {Promise<Block|Section>} the parent node into which the blocks are parsed.
+   */
   async parseContent(parent, content, attributes = null) {
     const reader = content instanceof Reader ? content : new Reader(content)
     await Parser.parseBlocks(reader, parent, attributes)
     return parent
   }
 
-  // Public: Parses the attrlist String into a plain object of attributes.
-  //
-  // block    - The current AbstractBlock (used for applying subs).
-  // attrlist - The list of attributes as a String.
-  // opts     - An optional plain object of options:
-  //            positional_attributes - Array of attribute names to map positional args to.
-  //            sub_attributes        - Enables attribute substitution on attrlist.
-  //
-  // Returns a plain object of parsed attributes.
+  /**
+   * Parse the attrlist String into a plain object of attributes.
+   *
+   * @param {Block|Section} block - The current block (used for applying subs).
+   * @param {string} attrlist - The list of attributes as a String.
+   * @param {object} [opts={}] - An optional plain object of options:
+   *   - positional_attributes {string[]} - Array of attribute names to map positional args to.
+   *   - sub_attributes {boolean} - Enables attribute substitution on attrlist.
+   * @returns {Promise<object>} a plain object of parsed attributes.
+   */
   async parseAttributes(block, attrlist, opts = {}) {
     if (!attrlist || attrlist.length === 0) return {}
     if (opts.sub_attributes && attrlist.includes(ATTR_REF_HEAD)) {
@@ -517,29 +558,42 @@ export class Processor {
     return new AttributeList(attrlist).parse(opts.positional_attributes || [])
   }
 
-  // Convenience factory methods that delegate to createBlock / createInline
-  // with a fixed context.
+  /** Shorthand for {@link createBlock} with context 'paragraph'. */
   createParagraph(parent, ...rest) {
     return this.createBlock(parent, 'paragraph', ...rest)
   }
+
+  /** Shorthand for {@link createBlock} with context 'open'. */
   createOpenBlock(parent, ...rest) {
     return this.createBlock(parent, 'open', ...rest)
   }
+
+  /** Shorthand for {@link createBlock} with context 'example'. */
   createExampleBlock(parent, ...rest) {
     return this.createBlock(parent, 'example', ...rest)
   }
+
+  /** Shorthand for {@link createBlock} with context 'pass'. */
   createPassBlock(parent, ...rest) {
     return this.createBlock(parent, 'pass', ...rest)
   }
+
+  /** Shorthand for {@link createBlock} with context 'listing'. */
   createListingBlock(parent, ...rest) {
     return this.createBlock(parent, 'listing', ...rest)
   }
+
+  /** Shorthand for {@link createBlock} with context 'literal'. */
   createLiteralBlock(parent, ...rest) {
     return this.createBlock(parent, 'literal', ...rest)
   }
+
+  /** Shorthand for {@link createInline} with context 'anchor'. */
   createAnchor(parent, ...rest) {
     return this.createInline(parent, 'anchor', ...rest)
   }
+
+  /** Shorthand for {@link createInline} with context 'quoted'. */
   createInlinePass(parent, ...rest) {
     return this.createInline(parent, 'quoted', ...rest)
   }
@@ -547,14 +601,16 @@ export class Processor {
 
 // ── Document processors ───────────────────────────────────────────────────────
 
-// Public: Preprocessors are run after the source text is split into lines and
-// normalised, but before parsing begins.
-//
-// Asciidoctor passes the document and the document's Reader to the process
-// method of the Preprocessor instance. The Preprocessor can modify the Reader
-// as necessary and either return the same Reader (or falsy) or a substitute Reader.
-//
-// Preprocessor implementations must extend Preprocessor.
+/**
+ * Preprocessors are run after the source text is split into lines and
+ * normalised, but before parsing begins.
+ *
+ * Asciidoctor passes the document and the document's Reader to the process
+ * method of the Preprocessor instance. The Preprocessor can modify the Reader
+ * as necessary and either return the same Reader (or falsy) or a substitute Reader.
+ *
+ * Implementations must extend Preprocessor.
+ */
 export class Preprocessor extends Processor {
   process(_document, _reader) {
     throw new Error(
@@ -564,10 +620,12 @@ export class Preprocessor extends Processor {
 }
 Preprocessor.DSL = DocumentProcessorDsl
 
-// Public: TreeProcessors are run on the Document after the source has been
-// parsed into an abstract syntax tree (AST).
-//
-// TreeProcessor implementations must extend TreeProcessor.
+/**
+ * TreeProcessors are run on the Document after the source has been
+ * parsed into an abstract syntax tree (AST).
+ *
+ * Implementations must extend TreeProcessor.
+ */
 export class TreeProcessor extends Processor {
   process(_document) {
     throw new Error(
@@ -577,13 +635,15 @@ export class TreeProcessor extends Processor {
 }
 TreeProcessor.DSL = DocumentProcessorDsl
 
-// Alias deprecated class name for backwards compatibility.
+/** @deprecated Alias for {@link TreeProcessor} kept for backwards compatibility. */
 export const Treeprocessor = TreeProcessor
 
-// Public: Postprocessors are run after the document is converted, but before
-// it is written to the output stream.
-//
-// Postprocessor implementations must extend Postprocessor.
+/**
+ * Postprocessors are run after the document is converted, but before
+ * it is written to the output stream.
+ *
+ * Implementations must extend Postprocessor.
+ */
 export class Postprocessor extends Processor {
   process(_document, _output) {
     throw new Error(
@@ -593,9 +653,11 @@ export class Postprocessor extends Processor {
 }
 Postprocessor.DSL = DocumentProcessorDsl
 
-// Public: IncludeProcessors handle include::<target>[] directives.
-//
-// IncludeProcessor implementations must extend IncludeProcessor.
+/**
+ * IncludeProcessors handle include::<target>[] directives.
+ *
+ * Implementations must extend IncludeProcessor.
+ */
 export class IncludeProcessor extends Processor {
   process(_document, _reader, _target, _attributes) {
     throw new Error(
@@ -609,10 +671,12 @@ export class IncludeProcessor extends Processor {
 }
 IncludeProcessor.DSL = IncludeProcessorDsl
 
-// Public: DocinfoProcessors add additional content to the header and/or footer
-// of the generated document.
-//
-// DocinfoProcessor implementations must extend DocinfoProcessor.
+/**
+ * DocinfoProcessors add additional content to the header and/or footer
+ * of the generated document.
+ *
+ * Implementations must extend DocinfoProcessor.
+ */
 export class DocinfoProcessor extends Processor {
   constructor(config = {}) {
     super(config)
@@ -629,13 +693,12 @@ DocinfoProcessor.DSL = DocinfoProcessorDsl
 
 // ── Syntax processors ─────────────────────────────────────────────────────────
 
-// Public: BlockProcessors handle delimited blocks and paragraphs with a custom name.
-//
-// BlockProcessor implementations must extend BlockProcessor.
+/**
+ * BlockProcessors handle delimited blocks and paragraphs with a custom name.
+ *
+ * Implementations must extend BlockProcessor.
+ */
 export class BlockProcessor extends Processor {
-  // Public: Get/Set the name of the block handled by this processor.
-  // name
-
   constructor(name = null, config = {}) {
     super(config)
     this.name = name || this.config.name || null
@@ -661,11 +724,10 @@ export class BlockProcessor extends Processor {
 }
 BlockProcessor.DSL = BlockProcessorDsl
 
-// Internal: Base class shared by BlockMacroProcessor and InlineMacroProcessor.
+/**
+ * @internal Base class shared by BlockMacroProcessor and InlineMacroProcessor.
+ */
 export class MacroProcessor extends Processor {
-  // Public: Get/Set the name of the macro handled by this processor.
-  // name
-
   constructor(name = null, config = {}) {
     super(config)
     this.name = name || this.config.name || null
@@ -679,11 +741,16 @@ export class MacroProcessor extends Processor {
   }
 }
 
-// Public: BlockMacroProcessors handle block macros with a custom name.
-//
-// BlockMacroProcessor implementations must extend BlockMacroProcessor.
+/**
+ * BlockMacroProcessors handle block macros with a custom name.
+ *
+ * Implementations must extend BlockMacroProcessor.
+ */
 export class BlockMacroProcessor extends MacroProcessor {
-  // Getter validates the name; setter just stores it so construction never throws.
+  /**
+   * Get the name, validating the format.
+   * The setter stores without validation to avoid throwing during construction.
+   */
   get name() {
     if (this._name != null && !MacroNameRx.test(String(this._name))) {
       throw new Error(`invalid name for block macro: ${this._name}`)
@@ -697,13 +764,19 @@ export class BlockMacroProcessor extends MacroProcessor {
 }
 BlockMacroProcessor.DSL = MacroProcessorDsl
 
-// Public: InlineMacroProcessors handle inline macros with a custom name.
-//
-// InlineMacroProcessor implementations must extend InlineMacroProcessor.
+/**
+ * InlineMacroProcessors handle inline macros with a custom name.
+ *
+ * Implementations must extend InlineMacroProcessor.
+ */
 export class InlineMacroProcessor extends MacroProcessor {
   static rxCache = new Map()
 
-  // Lookup (and memoize) the regexp for this inline macro processor.
+  /**
+   * Look up (and memoize) the regexp for this inline macro processor.
+   *
+   * @returns {RegExp}
+   */
   get regexp() {
     return (this.config.regexp ??= this.resolveRegexp(
       String(this.name),
@@ -732,8 +805,10 @@ InlineMacroProcessor.DSL = InlineMacroProcessorDsl
 
 // ── Extension proxy objects ───────────────────────────────────────────────────
 
-// Public: A proxy that encapsulates the extension kind, config, and instance.
-// This is what gets stored in the extension registry when activated.
+/**
+ * Proxy that encapsulates the extension kind, config, and instance.
+ * This is what gets stored in the extension registry when activated.
+ */
 export class Extension {
   constructor(kind, instance, config) {
     this.kind = kind
@@ -742,8 +817,10 @@ export class Extension {
   }
 }
 
-// Public: A specialisation of Extension that additionally stores a reference
-// to the process method, accommodating both class-based processors and function blocks.
+/**
+ * Specialisation of Extension that additionally stores a reference
+ * to the process method, accommodating both class-based processors and function blocks.
+ */
 export class ProcessorExtension extends Extension {
   constructor(kind, instance, processMethod = null) {
     super(kind, instance, instance.config)
@@ -754,10 +831,12 @@ export class ProcessorExtension extends Extension {
 
 // ── Group ─────────────────────────────────────────────────────────────────────
 
-// Public: A Group registers one or more extensions with a Registry.
-//
-// Subclass Group and pass the subclass to Extensions.register(), or call
-// the static register() method directly.
+/**
+ * A Group registers one or more extensions with a Registry.
+ *
+ * Subclass Group and pass the subclass to Extensions.register(), or call
+ * the static register() method directly.
+ */
 export class Group {
   static register(name = null) {
     Extensions.register(name, this)
@@ -772,7 +851,7 @@ export class Group {
 
 // ── Registry ──────────────────────────────────────────────────────────────────
 
-// Internal: Maps kind name → document-processor class.
+/** @internal Maps kind name → document-processor class. */
 const DOCUMENT_PROCESSOR_CLASSES = {
   preprocessor: Preprocessor,
   tree_processor: TreeProcessor,
@@ -781,37 +860,32 @@ const DOCUMENT_PROCESSOR_CLASSES = {
   docinfo_processor: DocinfoProcessor,
 }
 
-// Internal: Maps kind name → syntax-processor class.
+/** @internal Maps kind name → syntax-processor class. */
 const SYNTAX_PROCESSOR_CLASSES = {
   block: BlockProcessor,
   block_macro: BlockMacroProcessor,
   inline_macro: InlineMacroProcessor,
 }
 
-// Public: The primary entry point into the extension system.
-//
-// Registry holds the extensions which have been registered and activated, has
-// methods for registering or defining a processor and looks up extensions
-// stored in the registry during parsing.
+/**
+ * The primary entry point into the extension system.
+ *
+ * Registry holds the extensions which have been registered and activated, has
+ * methods for registering or defining a processor and looks up extensions
+ * stored in the registry during parsing.
+ */
 export class Registry {
-  // Public: Returns the Document on which extensions in this registry are used.
-  // document
-
-  // Public: Returns the plain Object of Group classes, instances, and/or
-  // Functions that have been registered with this registry.
-  // groups
-
   constructor(groups = {}) {
     this.groups = groups
     this._reset()
   }
 
-  // Public: Activates all global extension Groups and the Groups associated
-  // with this registry.
-  //
-  // document - The Document on which the extensions are to be used.
-  //
-  // Returns this Registry.
+  /**
+   * Activate all global extension Groups and the Groups associated with this registry.
+   *
+   * @param {Document} document - The Document on which the extensions are to be used.
+   * @returns {Registry} this Registry.
+   */
   activate(document) {
     if (this.document) this._reset()
     this.document = document
@@ -835,119 +909,194 @@ export class Registry {
     return this
   }
 
-  // Public: Registers a Preprocessor with the extension registry.
-  //
-  // The processor may be:
-  //   - A Preprocessor subclass (constructor function)
-  //   - An instance of a Preprocessor subclass
-  //   - A Function that configures the processor via the DSL (block style)
-  //
-  // Examples
-  //
-  //   // class style
-  //   preprocessor(FrontMatterPreprocessor)
-  //
-  //   // instance style
-  //   preprocessor(new FrontMatterPreprocessor())
-  //
-  //   // block style
-  //   preprocessor(function () {
-  //     this.process(function (doc, reader) { ... })
-  //   })
-  //
-  // Returns the Extension stored in the registry that proxies this Preprocessor.
+  /**
+   * Register a Preprocessor with the extension registry.
+   *
+   * The processor may be:
+   *   - A Preprocessor subclass (constructor function)
+   *   - An instance of a Preprocessor subclass
+   *   - A Function that configures the processor via the DSL (block style)
+   *
+   * @example
+   * // class style
+   * preprocessor(FrontMatterPreprocessor)
+   * // instance style
+   * preprocessor(new FrontMatterPreprocessor())
+   * // block style
+   * preprocessor(function () {
+   *   this.process(function (doc, reader) { ... })
+   * })
+   *
+   * @param {...*} args - Class constructor, instance, or block function.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   */
   preprocessor(...args) {
     return this._addDocumentProcessor('preprocessor', args)
   }
 
-  // Public: Checks whether any Preprocessor extensions have been registered.
+  /**
+   * Return the registered Preprocessor extensions, or null if none.
+   *
+   * @returns {ProcessorExtension[]|null}
+   */
   preprocessors() {
     return this._preprocessor_extensions
   }
+
+  /**
+   * Check whether any Preprocessor extensions have been registered.
+   *
+   * @returns {boolean}
+   */
   hasPreprocessors() {
     return !!this._preprocessor_extensions
   }
-  // Core API compatibility: expose extensions as a named property.
+
+  /** @internal Core API compatibility alias for preprocessors(). */
   get preprocessor_extensions() {
     return this._preprocessor_extensions
   }
 
-  // Public: Registers a TreeProcessor with the extension registry.
+  /**
+   * Register a TreeProcessor with the extension registry.
+   *
+   * @param {...*} args - Class constructor, instance, or block function.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   */
   treeProcessor(...args) {
     return this._addDocumentProcessor('tree_processor', args)
   }
 
-  // Aliases (deprecated names + snake_case for prefer() / Registry method dispatch).
+  /** @deprecated Alias for {@link treeProcessor}. */
   treeprocessor(...args) {
     return this.treeProcessor(...args)
   }
+
+  /** Alias for {@link treeProcessor} (snake_case for prefer() / Registry method dispatch). */
   tree_processor(...args) {
     return this.treeProcessor(...args)
   }
 
+  /**
+   * Return the registered TreeProcessor extensions, or null if none.
+   *
+   * @returns {ProcessorExtension[]|null}
+   */
   treeProcessors() {
     return this._tree_processor_extensions
   }
+
+  /**
+   * Check whether any TreeProcessor extensions have been registered.
+   *
+   * @returns {boolean}
+   */
   hasTreeProcessors() {
     return !!this._tree_processor_extensions
   }
-  // hasTeeProcessors kept for backward compatibility (was a typo).
+
+  /** @deprecated Typo alias kept for backward compatibility. Use {@link hasTreeProcessors}. */
   hasTeeProcessors() {
     return !!this._tree_processor_extensions
   }
+
+  /** @deprecated Alias for {@link treeProcessors}. */
   treeprocessors() {
     return this._tree_processor_extensions
   }
-  // Core API compatibility: expose extensions as a named property.
+
+  /** @internal Core API compatibility alias for treeProcessors(). */
   get tree_processor_extensions() {
     return this._tree_processor_extensions
   }
 
-  // Public: Registers a Postprocessor with the extension registry.
+  /**
+   * Register a Postprocessor with the extension registry.
+   *
+   * @param {...*} args - Class constructor, instance, or block function.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   */
   postprocessor(...args) {
     return this._addDocumentProcessor('postprocessor', args)
   }
 
+  /**
+   * Return the registered Postprocessor extensions, or null if none.
+   *
+   * @returns {ProcessorExtension[]|null}
+   */
   postprocessors() {
     return this._postprocessor_extensions
   }
+
+  /**
+   * Check whether any Postprocessor extensions have been registered.
+   *
+   * @returns {boolean}
+   */
   hasPostprocessors() {
     return !!this._postprocessor_extensions
   }
-  // Core API compatibility: expose extensions as a named property.
+
+  /** @internal Core API compatibility alias for postprocessors(). */
   get postprocessor_extensions() {
     return this._postprocessor_extensions
   }
 
-  // Public: Registers an IncludeProcessor with the extension registry.
+  /**
+   * Register an IncludeProcessor with the extension registry.
+   *
+   * @param {...*} args - Class constructor, instance, or block function.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   */
   includeProcessor(...args) {
     return this._addDocumentProcessor('include_processor', args)
   }
 
+  /**
+   * Return the registered IncludeProcessor extensions, or null if none.
+   *
+   * @returns {ProcessorExtension[]|null}
+   */
   includeProcessors() {
     return this._include_processor_extensions
   }
+
+  /**
+   * Check whether any IncludeProcessor extensions have been registered.
+   *
+   * @returns {boolean}
+   */
   hasIncludeProcessors() {
     return !!this._include_processor_extensions
   }
+
+  /** Alias for {@link includeProcessor} (snake_case for prefer() / Registry method dispatch). */
   include_processor(...args) {
     return this.includeProcessor(...args)
   }
-  // Core API compatibility: expose extensions as a named property.
+
+  /** @internal Core API compatibility alias for includeProcessors(). */
   get include_processor_extensions() {
     return this._include_processor_extensions
   }
 
-  // Public: Registers a DocinfoProcessor with the extension registry.
+  /**
+   * Register a DocinfoProcessor with the extension registry.
+   *
+   * @param {...*} args - Class constructor, instance, or block function.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   */
   docinfoProcessor(...args) {
     return this._addDocumentProcessor('docinfo_processor', args)
   }
 
-  // Public: Checks whether any DocinfoProcessor extensions have been registered.
-  //
-  // location - Optional String ('head' or 'footer') to filter by location.
-  //
-  // Returns a Boolean.
+  /**
+   * Check whether any DocinfoProcessor extensions have been registered.
+   *
+   * @param {string|null} [location=null] - Optional location ('head' or 'footer') to filter by.
+   * @returns {boolean}
+   */
   hasDocinfoProcessors(location = null) {
     if (!this._docinfo_processor_extensions) return false
     if (location) {
@@ -958,11 +1107,12 @@ export class Registry {
     return true
   }
 
-  // Public: Retrieves Extension proxy objects for DocinfoProcessor instances.
-  //
-  // location - Optional String ('head' or 'footer') to filter by location.
-  //
-  // Returns an Array of Extension proxy objects.
+  /**
+   * Retrieve Extension proxy objects for DocinfoProcessor instances.
+   *
+   * @param {string|null} [location=null] - Optional location ('head' or 'footer') to filter by.
+   * @returns {ProcessorExtension[]} array of Extension proxy objects.
+   */
   docinfoProcessors(location = null) {
     if (!this._docinfo_processor_extensions) return []
     if (location) {
@@ -973,121 +1123,182 @@ export class Registry {
     return this._docinfo_processor_extensions
   }
 
+  /** Alias for {@link docinfoProcessor} (snake_case for prefer() / Registry method dispatch). */
   docinfo_processor(...args) {
     return this.docinfoProcessor(...args)
   }
-  // Core API compatibility: expose extensions as a named property.
+
+  /** @internal Core API compatibility alias for docinfoProcessors(). */
   get docinfo_processor_extensions() {
     return this._docinfo_processor_extensions
   }
 
-  // Public: Registers a BlockProcessor with the extension registry.
-  //
-  // Examples
-  //
-  //   // class style
-  //   block(ShoutBlock)
-  //
-  //   // class style with explicit name
-  //   block(ShoutBlock, 'shout')
-  //
-  //   // block style
-  //   block(function () {
-  //     this.named('shout')
-  //     this.process(function (parent, reader, attrs) { ... })
-  //   })
-  //
-  //   // block style with explicit name
-  //   block('shout', function () {
-  //     this.process(function (parent, reader, attrs) { ... })
-  //   })
-  //
-  // Returns an Extension proxy object.
+  /**
+   * Register a BlockProcessor with the extension registry.
+   *
+   * @example
+   * // class style
+   * block(ShoutBlock)
+   * // class style with explicit name
+   * block(ShoutBlock, 'shout')
+   * // block style
+   * block(function () {
+   *   this.named('shout')
+   *   this.process(function (parent, reader, attrs) { ... })
+   * })
+   * // block style with explicit name
+   * block('shout', function () {
+   *   this.process(function (parent, reader, attrs) { ... })
+   * })
+   *
+   * @param {...*} args - Class constructor, instance, block function, or name + one of those.
+   * @returns {ProcessorExtension} an Extension proxy object.
+   */
   block(...args) {
     return this._addSyntaxProcessor('block', args)
   }
 
-  // Public: Checks whether any BlockProcessor extensions have been registered.
+  /**
+   * Check whether any BlockProcessor extensions have been registered.
+   *
+   * @returns {boolean}
+   */
   hasBlocks() {
     return !!this._block_extensions
   }
 
-  // Public: Checks whether a BlockProcessor is registered for the given name and context.
-  //
-  // Returns the Extension proxy or false.
+  /**
+   * Check whether a BlockProcessor is registered for the given name and context.
+   *
+   * @param {string} name - The block name.
+   * @param {string} context - The block context.
+   * @returns {ProcessorExtension|false} the Extension proxy or false.
+   */
   registeredForBlock(name, context) {
     const ext = this._block_extensions?.[String(name)]
     return ext ? ext.config.contexts.has(context) && ext : false
   }
 
-  // Public: Retrieves the Extension proxy for the BlockProcessor registered with name.
+  /**
+   * Retrieve the Extension proxy for the BlockProcessor registered with the given name.
+   *
+   * @param {string} name - The block name.
+   * @returns {ProcessorExtension|null}
+   */
   findBlockExtension(name) {
     return this._block_extensions?.[String(name)] ?? null
   }
 
-  // Public: Registers a BlockMacroProcessor with the extension registry.
+  /**
+   * Register a BlockMacroProcessor with the extension registry.
+   *
+   * @param {...*} args - Class constructor, instance, or block function.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   */
   blockMacro(...args) {
     return this._addSyntaxProcessor('block_macro', args)
   }
 
-  // Alias deprecated method name.
+  /** @deprecated Alias for {@link blockMacro}. */
   block_macro(...args) {
     return this.blockMacro(...args)
   }
 
+  /**
+   * Check whether any BlockMacroProcessor extensions have been registered.
+   *
+   * @returns {boolean}
+   */
   hasBlockMacros() {
     return !!this._block_macro_extensions
   }
 
-  // Public: Checks whether a BlockMacroProcessor is registered for the given name.
+  /**
+   * Check whether a BlockMacroProcessor is registered for the given name.
+   *
+   * @param {string} name - The macro name.
+   * @returns {ProcessorExtension|false}
+   */
   registeredForBlockMacro(name) {
     return this._block_macro_extensions?.[String(name)] || false
   }
 
+  /**
+   * Retrieve the Extension proxy for the BlockMacroProcessor registered with the given name.
+   *
+   * @param {string} name - The macro name.
+   * @returns {ProcessorExtension|null}
+   */
   findBlockMacroExtension(name) {
     return this._block_macro_extensions?.[String(name)] ?? null
   }
 
-  // Public: Registers an InlineMacroProcessor with the extension registry.
+  /**
+   * Register an InlineMacroProcessor with the extension registry.
+   *
+   * @param {...*} args - Class constructor, instance, or block function.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   */
   inlineMacro(...args) {
     return this._addSyntaxProcessor('inline_macro', args)
   }
 
-  // Alias deprecated method name.
+  /** @deprecated Alias for {@link inlineMacro}. */
   inline_macro(...args) {
     return this.inlineMacro(...args)
   }
 
+  /**
+   * Check whether any InlineMacroProcessor extensions have been registered.
+   *
+   * @returns {boolean}
+   */
   hasInlineMacros() {
     return !!this._inline_macro_extensions
   }
 
-  // Public: Checks whether an InlineMacroProcessor is registered for the given name.
+  /**
+   * Check whether an InlineMacroProcessor is registered for the given name.
+   *
+   * @param {string} name - The macro name.
+   * @returns {ProcessorExtension|false}
+   */
   registeredForInlineMacro(name) {
     return this._inline_macro_extensions?.[String(name)] || false
   }
 
+  /**
+   * Retrieve the Extension proxy for the InlineMacroProcessor registered with the given name.
+   *
+   * @param {string} name - The macro name.
+   * @returns {ProcessorExtension|null}
+   */
   findInlineMacroExtension(name) {
     return this._inline_macro_extensions?.[String(name)] ?? null
   }
 
-  // Public: Retrieves all InlineMacroProcessor Extension proxy objects.
+  /**
+   * Retrieve all InlineMacroProcessor Extension proxy objects.
+   *
+   * @returns {ProcessorExtension[]}
+   */
   inlineMacros() {
     return this._inline_macro_extensions
       ? Object.values(this._inline_macro_extensions)
       : []
   }
 
-  // Public: Inserts the document-processor Extension as the first of its kind
-  // in the extension registry.
-  //
-  // Examples
-  //
-  //   registry.prefer('includeProcessor', function () {
-  //     this.process(function (document, reader, target, attrs) { ... })
-  //   })
-  //
-  // Returns the Extension stored in the registry.
+  /**
+   * Insert the document-processor Extension as the first of its kind in the extension registry.
+   *
+   * @example
+   * registry.prefer('includeProcessor', function () {
+   *   this.process(function (document, reader, target, attrs) { ... })
+   * })
+   *
+   * @param {...*} args - A ProcessorExtension, or a method name followed by processor args.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   */
   prefer(...args) {
     const arg0 = args.shift()
     let extension
@@ -1254,11 +1465,13 @@ export class Registry {
     this.document = null
   }
 
-  // Internal: Normalise an args array to the expected number of values.
-  //
-  // Pops a trailing plain-object as options (or uses {}), then pads / trims
-  // the remaining args to (expect - 1) elements, then appends the options object.
-  // If expect === 1, returns just the options object.
+  /**
+   * @internal Normalise an args array to the expected number of values.
+   *
+   * Pops a trailing plain-object as options (or uses {}), then pads / trims
+   * the remaining args to (expect - 1) elements, then appends the options object.
+   * If expect === 1, returns just the options object.
+   */
   _resolveArgs(args, expect) {
     const last = args[args.length - 1]
     const opts =
@@ -1293,30 +1506,38 @@ export class Registry {
 let _autoId = -1
 const _groups = Object.create(null)
 
-// Public: The primary entry point for registering extensions globally.
-//
-// Mirrors the class-level methods on the Ruby Asciidoctor::Extensions module.
+/**
+ * The primary entry point for registering extensions globally.
+ *
+ * Mirrors the class-level methods on the Ruby Asciidoctor::Extensions module.
+ */
 export const Extensions = {
-  // Internal: Generate a unique name for an anonymous extension group.
+  /** @internal Generate a unique name for an anonymous extension group. */
   generateName() {
     return `extgrp${this.nextAutoId()}`
   },
 
+  /** @internal Increment and return the global auto-id counter. */
   nextAutoId() {
     return ++_autoId
   },
 
-  // Public: Returns the plain Object that maps names to registered groups.
+  /**
+   * Return the plain Object that maps names to registered groups.
+   *
+   * @returns {object}
+   */
   groups() {
     return _groups
   },
 
-  // Public: Creates a new Registry, optionally pre-populated with a named block.
-  //
-  // name  - Optional String name for the group (default: auto-generated).
-  // block - Optional Function to register as the group.
-  //
-  // Returns a Registry.
+  /**
+   * Create a new Registry, optionally pre-populated with a named block.
+   *
+   * @param {string|null} [name=null] - Optional name for the group; auto-generated if omitted.
+   * @param {Function|null} [block=null] - Optional function to register as the group.
+   * @returns {Registry}
+   */
   create(name = null, block = null) {
     if (block) {
       return new Registry({ [name || this.generateName()]: block })
@@ -1324,20 +1545,18 @@ export const Extensions = {
     return new Registry()
   },
 
-  // Public: Registers an extension Group that subsequently registers extensions.
-  //
-  // name  - Optional String or Symbol name under which to register (default: auto-generated).
-  // group - A Function (proc-style), a class constructor with an activate() method,
-  //         or an instance with an activate() method.
-  //
-  // Examples
-  //
-  //   Extensions.register(UmlExtensions)
-  //   Extensions.register('uml', UmlExtensions)
-  //   Extensions.register(function () { this.blockMacro('plantuml', PlantUmlBlock) })
-  //   Extensions.register('uml', function () { this.blockMacro('plantuml', PlantUmlBlock) })
-  //
-  // Returns the registered group.
+  /**
+   * Register an extension Group that subsequently registers extensions.
+   *
+   * @example
+   * Extensions.register(UmlExtensions)
+   * Extensions.register('uml', UmlExtensions)
+   * Extensions.register(function () { this.blockMacro('plantuml', PlantUmlBlock) })
+   * Extensions.register('uml', function () { this.blockMacro('plantuml', PlantUmlBlock) })
+   *
+   * @param {...*} args - Optional name followed by a Group class, instance, or function.
+   * @returns {Function|object} the registered group.
+   */
   register(...args) {
     const argc = args.length
     if (argc === 0) throw new Error('Extension group to register not specified')
@@ -1350,25 +1569,28 @@ export const Extensions = {
     return group
   },
 
-  // Public: Unregister all statically-registered extension groups.
+  /**
+   * Unregister all statically-registered extension groups.
+   */
   unregisterAll() {
     for (const key of Object.keys(_groups)) delete _groups[key]
   },
 
-  // Public: Unregister statically-registered extension groups by name.
-  //
-  // names - One or more String or Symbol group names to unregister.
+  /**
+   * Unregister statically-registered extension groups by name.
+   *
+   * @param {...string} names - One or more group names to unregister.
+   */
   unregister(...names) {
     for (const name of names) delete _groups[String(name)]
   },
 
   // ── Processor factory helpers (mirrors core API) ─────────────────────────────
-  //
   // Each pair: create<Kind>(name?, functions) → class constructor
   //            new<Kind>(name?, functions)    → instance of that class
-  //
   // The `name` argument is optional; if omitted the sole argument is `functions`.
 
+  /** @internal Build a subclass of BaseClass with the given prototype functions. */
   _buildProcessorClass(BaseClass, name, functions) {
     if (arguments.length === 2) {
       functions = name
@@ -1380,6 +1602,13 @@ export const Extensions = {
     return klass
   },
 
+  /**
+   * Create a Preprocessor subclass with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {typeof Preprocessor}
+   */
   createPreprocessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1387,6 +1616,14 @@ export const Extensions = {
     }
     return this._buildProcessorClass(Preprocessor, name, functions)
   },
+
+  /**
+   * Create and return a new Preprocessor instance with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {Preprocessor}
+   */
   newPreprocessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1395,6 +1632,13 @@ export const Extensions = {
     return new (this.createPreprocessor(name, functions))()
   },
 
+  /**
+   * Create a TreeProcessor subclass with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {typeof TreeProcessor}
+   */
   createTreeProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1402,6 +1646,14 @@ export const Extensions = {
     }
     return this._buildProcessorClass(TreeProcessor, name, functions)
   },
+
+  /**
+   * Create and return a new TreeProcessor instance with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {TreeProcessor}
+   */
   newTreeProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1410,6 +1662,13 @@ export const Extensions = {
     return new (this.createTreeProcessor(name, functions))()
   },
 
+  /**
+   * Create a Postprocessor subclass with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {typeof Postprocessor}
+   */
   createPostprocessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1417,6 +1676,14 @@ export const Extensions = {
     }
     return this._buildProcessorClass(Postprocessor, name, functions)
   },
+
+  /**
+   * Create and return a new Postprocessor instance with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {Postprocessor}
+   */
   newPostprocessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1425,6 +1692,13 @@ export const Extensions = {
     return new (this.createPostprocessor(name, functions))()
   },
 
+  /**
+   * Create an IncludeProcessor subclass with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {typeof IncludeProcessor}
+   */
   createIncludeProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1432,6 +1706,14 @@ export const Extensions = {
     }
     return this._buildProcessorClass(IncludeProcessor, name, functions)
   },
+
+  /**
+   * Create and return a new IncludeProcessor instance with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {IncludeProcessor}
+   */
   newIncludeProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1440,6 +1722,13 @@ export const Extensions = {
     return new (this.createIncludeProcessor(name, functions))()
   },
 
+  /**
+   * Create a DocinfoProcessor subclass with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {typeof DocinfoProcessor}
+   */
   createDocinfoProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1447,6 +1736,14 @@ export const Extensions = {
     }
     return this._buildProcessorClass(DocinfoProcessor, name, functions)
   },
+
+  /**
+   * Create and return a new DocinfoProcessor instance with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {DocinfoProcessor}
+   */
   newDocinfoProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1455,6 +1752,13 @@ export const Extensions = {
     return new (this.createDocinfoProcessor(name, functions))()
   },
 
+  /**
+   * Create a BlockProcessor subclass with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {typeof BlockProcessor}
+   */
   createBlockProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1462,6 +1766,14 @@ export const Extensions = {
     }
     return this._buildProcessorClass(BlockProcessor, name, functions)
   },
+
+  /**
+   * Create and return a new BlockProcessor instance with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {BlockProcessor}
+   */
   newBlockProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1470,6 +1782,13 @@ export const Extensions = {
     return new (this.createBlockProcessor(name, functions))()
   },
 
+  /**
+   * Create an InlineMacroProcessor subclass with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {typeof InlineMacroProcessor}
+   */
   createInlineMacroProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1477,6 +1796,14 @@ export const Extensions = {
     }
     return this._buildProcessorClass(InlineMacroProcessor, name, functions)
   },
+
+  /**
+   * Create and return a new InlineMacroProcessor instance with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {InlineMacroProcessor}
+   */
   newInlineMacroProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1485,6 +1812,13 @@ export const Extensions = {
     return new (this.createInlineMacroProcessor(name, functions))()
   },
 
+  /**
+   * Create a BlockMacroProcessor subclass with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {typeof BlockMacroProcessor}
+   */
   createBlockMacroProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
@@ -1492,6 +1826,14 @@ export const Extensions = {
     }
     return this._buildProcessorClass(BlockMacroProcessor, name, functions)
   },
+
+  /**
+   * Create and return a new BlockMacroProcessor instance with the given prototype functions.
+   *
+   * @param {string} [name] - Optional class name.
+   * @param {object} [functions] - Methods to mix into the prototype.
+   * @returns {BlockMacroProcessor}
+   */
   newBlockMacroProcessor(name, functions) {
     if (arguments.length === 1) {
       functions = name
