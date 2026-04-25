@@ -1,8 +1,8 @@
-module.exports = function (registry) {
+export default function (registry) {
   registry.inlineMacro('emoticon', function () {
-    var self = this
+    const self = this
     self.process(function (parent, target) {
-      var text
+      let text
       if (target === 'grin') {
         text = ':D'
       } else if (target === 'wink') {
@@ -10,7 +10,7 @@ module.exports = function (registry) {
       } else {
         text = ':)'
       }
-      return self.createInline(parent, 'quoted', text, { 'type': 'strong' })
+      return self.createInline(parent, 'quoted', text, { type: 'strong' })
     })
   })
 }

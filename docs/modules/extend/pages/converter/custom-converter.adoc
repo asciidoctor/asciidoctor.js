@@ -49,17 +49,19 @@ class CustomConverter {
 The value will be equals to `embedded` if we convert to an embeddable document,
 or `document` if we convert to a standalone document (ie. `standalone` is equals to `true`).
 
-To register a custom converter we can use the function `register` on the `ConverterFactory`:
+To register a custom converter, use the `register` function on `ConverterFactory`:
 
 [source,js]
 ----
-asciidoctor.ConverterFactory.register(new CustomConverter(), ['html5']) // <1>
+import { ConverterFactory } from '@asciidoctor/core'
+
+ConverterFactory.register(new CustomConverter(), ['html5']) // <1>
 ----
 <1> Instantiate the `CustomConverter` and register it for the `html5` backend
 
 [NOTE]
 ====
-The `html5` is the default backend, so the above code will effectively replace the built-in HTML5 converter provided by Asciidoctor.js
+`html5` is the default backend, so the above code will effectively replace the built-in HTML5 converter provided by Asciidoctor.js.
 ====
 
 Before we continue, let's create a little more advanced custom converter:
@@ -89,17 +91,21 @@ ${node.getContent()}
 <3> If the node is a `section` we return the section's title
 <4> Otherwise we return an empty string
 
-Once the custom registered we can convert our document:
+Once the custom converter is registered we can convert our document:
 
 [source,js]
 ----
-const doc = asciidoctor.load(`= Title
+import { ConverterFactory, load } from '@asciidoctor/core'
+
+ConverterFactory.register(new CustomConverter(), ['html5'])
+
+const doc = await load(`= Title
 
 == Section 1
 
 == Section 2`)
 
-console.log(doc.convert())
+console.log(await doc.convert())
 // Prints:
 // <embedded>
 // Section 1
@@ -114,17 +120,17 @@ include::partial$node-name-list.adoc[]
 == Composition pattern
 
 In the previous section, we saw how to create and register a standalone custom converter.
-But you might want to use your custom converter only on some nodes and delegate the rest to an another converter (for instance the built-in converter).
+But you might want to use your custom converter only on some nodes and delegate the rest to another converter (for instance the built-in converter).
 
 In the example below we will use a custom converter to convert `paragraph` but the other nodes will be converted using the built-in HTML5 converter:
 
 [source,js]
 ----
-const asciidoctor = require('asciidoctor')()
+import { ConverterFactory, Html5Converter } from '@asciidoctor/core'
 
 class SemanticParagraphConverter {
   constructor () {
-    this.baseConverter = asciidoctor.Html5Converter.$new() // <1>
+    this.baseConverter = new Html5Converter() // <1>
   }
 
   convert (node, transform) {

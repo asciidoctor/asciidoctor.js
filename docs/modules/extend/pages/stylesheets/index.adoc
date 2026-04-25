@@ -13,12 +13,15 @@ Like the default stylesheet, you can have the output document link to your custo
 
 If the stylesheet is in the same directory as your document, you can apply it when converting your document to HTML from the API.
 
-```js
-asciidoctor.convertFile('file.adoc', { 'attributes': { 'stylesheet': 'styles.css' } })
-```
+[source,js]
+----
+import { convertFile } from '@asciidoctor/core'
+
+await convertFile('file.adoc', { attributes: { stylesheet: 'styles.css' } })
+----
 
 . Save your custom stylesheet in the same directory as `file.adoc`
-. Call the `asciidoctor` processor
+. Call the `convertFile` function
 . Set the attribute `stylesheet`
 . Assign the stylesheet file's name to the `stylesheet` attribute
 . Enter your document file's name.
@@ -42,9 +45,10 @@ After processing `file.adoc`, its HTML output (`file.html`), which includes the 
 
 You can also set `stylesdir` in the API.
 
-```js
-asciidoctor.convertFile('file.adoc', { 'attributes': { 'stylesdir': 'stylesheets/', 'stylesheet': 'styles.css' } })
-```
+[source,js]
+----
+await convertFile('file.adoc', { attributes: { stylesdir: 'stylesheets/', stylesheet: 'styles.css' } })
+----
 
 If you don't want to embed the `styles.css` stylesheet into your HTML output, make sure to set `linkcss`.
 
@@ -58,4 +62,3 @@ Unlike when you link to the default Asciidoctor stylesheet, any custom styleshee
 //== Creating a theme
 // TODO: Explain how to create a new theme using https://github.com/mogztter/asciidoctor-stylesheets
 // TIP: If you are not familiar with https://sass-lang.com/[Sass], it might be easier to adapt an existing theme rather than creating a new one from scratch.
-

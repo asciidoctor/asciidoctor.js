@@ -5,28 +5,33 @@ Add the sentence "Made with <3" in the footer.
 
 == sample-love-doc.adoc
 
-```adoc
+[source,adoc]
+----
 = Title
 
 == First section
 
 This is a paragraph.
-```
+----
 
 == LoveFooterDocinfoProcessor
 
 .love-footer-docinfo-processor.js
-```js
+[source,js]
+----
 include::example$extensions/love-footer-docinfo-processor.js[]
-```
+----
 
 == Usage
 
-```js
-const asciidoctor = require('asciidoctor')()
-const registry = asciidoctor.Extensions.create()
-require('./love-footer-docinfo-processor.js')(registry)
+[source,js]
+----
+import { Extensions, convertFile } from '@asciidoctor/core'
+import registerLoveFooterDocinfoProcessor from './love-footer-docinfo-processor.js'
 
-const html = asciidoctor.convertFile('sample-love-doc.adoc', { 'to_file': false, 'extension_registry': registry })
+const registry = Extensions.create()
+registerLoveFooterDocinfoProcessor(registry)
+
+const html = await convertFile('sample-love-doc.adoc', { to_file: false, extension_registry: registry })
 console.log(html)
-```
+----

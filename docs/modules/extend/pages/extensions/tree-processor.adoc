@@ -5,26 +5,31 @@ Make the document GDPR compliant by replacing the first block (paragraph) with t
 
 == sample-gdpr-doc.adoc
 
-```adoc
+[source,adoc]
+----
 = Privacy agreement
 
 We track you for your own safety!
-```
+----
 
 == GDPRTreeProcessor
 
 .gdpr-tree-processor.js
-```js
+[source,js]
+----
 include::example$extensions/gdpr-tree-processor.js[]
-```
+----
 
 == Usage
 
-```js
-const asciidoctor = require('asciidoctor')()
-const registry = asciidoctor.Extensions.create()
-require('./gdpr-tree-processor.js')(registry)
+[source,js]
+----
+import { Extensions, convertFile } from '@asciidoctor/core'
+import registerGdprTreeProcessor from './gdpr-tree-processor.js'
 
-const doc = asciidoctor.convertFile('sample-gdpr-doc.adoc', { 'extension_registry': registry })
+const registry = Extensions.create()
+registerGdprTreeProcessor(registry)
+
+const doc = await convertFile('sample-gdpr-doc.adoc', { extension_registry: registry })
 console.log(doc.getBlocks()[0].getSource()) // 'GDPR compliant :)'
-```
+----

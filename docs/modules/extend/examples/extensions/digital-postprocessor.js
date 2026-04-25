@@ -1,6 +1,6 @@
-module.exports = function (registry) {
+export default function (registry) {
   registry.postprocessor(function () {
-    var self = this
+    const self = this
     self.process(function (doc, output) {
       return output.replace(/digitale?/g, 'numérique')
     })

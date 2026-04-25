@@ -1,4 +1,0 @@
-[TIP]
-====
-We recommend to use version 1.2.3
-====

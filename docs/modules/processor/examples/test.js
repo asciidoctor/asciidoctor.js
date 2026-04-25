@@ -1,7 +1,7 @@
-const asciidoctor = require('asciidoctor')()
+import { loadFile } from '@asciidoctor/core'
 
 // tag::load-file[]
-var doc = asciidoctor.loadFile('sample.adoc')
+const doc = await loadFile('sample.adoc')
 // end::load-file[]
 
 // tag::document-title[]
@@ -9,7 +9,7 @@ console.log(doc.getDocumentTitle()) // The Documentation Chronicles: Based on Tr
 // end::document-title[]
 
 // tag::doctitle-partition[]
-var doctitle = doc.getDocumentTitle({ partition: true })
+const doctitle = doc.getDocumentTitle({ partition: true })
 console.log(doctitle.getMain())     // The Documentation Chronicles
 console.log(doctitle.getSubtitle()) // Based on True Events
 console.log(doctitle.getCombined()) // The Documentation Chronicles: Based on True Events
@@ -36,7 +36,7 @@ console.log(doc.getRevisionRemark()) // First incarnation
 // end::revision[]
 
 // tag::revision-info[]
-var revisionInfo = doc.getRevisionInfo()
+const revisionInfo = doc.getRevisionInfo()
 console.log(revisionInfo.getDate())   // October 2, 2018
 console.log(revisionInfo.getNumber()) // 1.0
 console.log(revisionInfo.getRemark()) // First incarnation

@@ -8,6 +8,23 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Breaking Changes::
+
+* `@asciidoctor/core` is now a native JavaScript implementation — no more Opal transpilation
+* API is now fully asynchronous (`convert`, `load`, etc. return a `Promise`)
+* No factory call required, object is exported directly as default export
++
+[source,js]
+----
+import { convert } from '@asciidoctor/core'
+
+await convert('Hello _world_')
+----
+
+Improvements::
+
+* Complete rewrite from the Ruby source using Claude Code (claude-sonnet-4-6), reviewed by a human
+* Pure ESM library with no external runtime dependencies
 
 == v3.0.4 (2024-02-12)
 

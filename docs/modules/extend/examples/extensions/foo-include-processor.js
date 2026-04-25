@@ -1,11 +1,11 @@
-module.exports = function (registry) {
+export default function (registry) {
   registry.includeProcessor(function () {
-    var self = this
+    const self = this
     self.handles(function (target) {
       return target.endsWith('.foo')
     })
     self.process(function (doc, reader, target, attrs) {
-      var content = ['foo']
+      const content = ['foo']
       return reader.pushInclude(content, target, target, 1, attrs)
     })
   })

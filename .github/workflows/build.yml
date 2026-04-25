@@ -1,6 +1,7 @@
-name: Build
+name: Build core
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'main'
@@ -25,75 +26,21 @@ jobs:
     needs: activate
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        asciidoctor-core-version: [v2.0.23, main]
-        experimental: [false]
-        include:
-          - os: macos-latest
-            experimental: true
-            asciidoctor-core-version: v2.0.23
+        os: [ubuntu-latest, windows-latest, macos-15]
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-    # libgbm-dev is required by Puppeteer 3+
-    - name: Install system dependencies
-      run: |
-        sudo apt-get install -y libgbm-dev
-      if: ${{ runner.os == 'Linux' }}
-    - name: Install dependencies
-      run: |
-        npm ci
-        npm ci --prefix packages/core
-    - name: Lint, build and test
-      env:
-        ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
-      run: |
-        npm run lint
-        npm run test
-        npm run travis --prefix packages/core
-  build-windows:
-    needs: activate
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        asciidoctor-core-version: [v2.0.23, main]
-    steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
       - name: Install dependencies
         run: |
           npm ci
           npm ci --prefix packages/core
-      - name: Build
-        env:
-          ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
-        working-directory: ./packages/core
-        run: node tasks/build.cjs
-      - name: Test Build
-        env:
-          ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
-        working-directory: ./packages/core
-        run: node tasks/test/unsupported-features.cjs
-      - name: Test Node
-        env:
-          ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
-        working-directory: ./packages/core
-        run: npm run test:node
-      - name: Test Browser
-        env:
-          ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
-        working-directory: ./packages/core
-        run: npm run test:browser
-      - name: Examples Node
-        env:
-          ASCIIDOCTOR_CORE_VERSION: ${{ matrix.asciidoctor-core-version }}
-        working-directory: ./packages/core
-        run: npm run examples
+          npx playwright install
+      - name: Lint, build and test
+        shell: bash
+        run: |
+          npm t --prefix packages/core
+          npm run test:browser --prefix packages/core

@@ -1,7 +1,18 @@
 = Asciidoctor.js Documentation
-:uri-opal: https://opalrb.com
 
 Asciidoctor.js brings AsciiDoc to the JavaScript world!
 
-This project uses {uri-opal}[Opal] to transpile https://asciidoctor.org[Asciidoctor], a modern implementation of AsciiDoc, from Ruby to JavaScript to produce _asciidoctor.js_.
-The _asciidoctor.js_ script can be run on any JavaScript platform, including Node.js, GraalVM and, of course, a web browser.
+This project is a *native JavaScript implementation* of https://asciidoctor.org[Asciidoctor], the modern AsciiDoc processor.
+Unlike previous versions, it is no longer compiled from Ruby via Opal — the library is written in idiomatic, modern JavaScript (ESM), generated and maintained with the help of https://claude.ai/code[Claude Code].
+
+The result is a fast, lightweight library that runs on Node.js and in the browser, with no transpilation step and no legacy bundle to ship.
+
+Key highlights:
+
+* *Pure ESM* — import only what you need, with full tree-shaking support
+* *Async API* — all entry points (`convert`, `load`, `loadFile`, `convertFile`) return Promises
+* *No runtime dependencies* — no Opal, no Ruby, no generated bundle
+* *Fast* — native JavaScript execution with no interpreter overhead
+* *Browser and Node.js* — one library, two environments
+
+Head to the xref:setup:install.adoc[Install guide] to get started.

@@ -36,13 +36,13 @@ See xref:extensions/include-processor.adoc[Include Processor Example].
 
 == Register one or more extensions
 
-
 You can register an extension globally as follows:
 
-[source,javascript]
+[source,js]
 ----
-const asciidoctor = require('asciidoctor')()
-asciidoctor.Extensions.register(function () {
+import { Extensions, convert } from '@asciidoctor/core'
+
+Extensions.register(function () {
   this.block(function () {
     const self = this
     self.named('shout')
@@ -54,11 +54,11 @@ asciidoctor.Extensions.register(function () {
   })
 })
 
-const text = `[shout]\
-\nSay it loud.\
-\nSay it proud.`
+const text = `[shout]
+Say it loud.
+Say it proud.`
 
-const html = asciidoctor.convert(text)
+const html = await convert(text)
 console.log(html)
 
 // <div class="paragraph">
@@ -76,12 +76,12 @@ Look for that feature in a future Asciidoctor release.
 You can also create one or more registries.
 It can be useful when you want to convert the same text with different extensions enabled.
 
-[source,javascript]
+[source,js]
 ----
-const asciidoctor = require('asciidoctor')()
+import { Extensions, convert } from '@asciidoctor/core'
 
-const registryA = asciidoctor.Extensions.create()
-const registryB = asciidoctor.Extensions.create()
+const registryA = Extensions.create()
+const registryB = Extensions.create()
 
 registryA.block(function () {
   const self = this
@@ -99,19 +99,19 @@ registryB.block(function () {
   self.named('shout')
   self.onContext('paragraph')
   self.process(function (parent, reader) {
-    // Replace period at end of line with three three exclamation marks
+    // Replace period at end of line with three exclamation marks
     const lines = reader.getLines().map(l => l.replace(/\.$/g, ' !!!'))
     return self.createBlock(parent, 'paragraph', lines)
   })
 })
 
-const text = `[shout]\
-\nSay it loud.\
-\nSay it proud.`
+const text = `[shout]
+Say it loud.
+Say it proud.`
 
-console.log(asciidoctor.convert(text, { 'extension_registry': registryA }))
+console.log(await convert(text, { extension_registry: registryA }))
 console.log('')
-console.log(asciidoctor.convert(text, { 'extension_registry': registryB }))
+console.log(await convert(text, { extension_registry: registryB }))
 
 // <div class="paragraph">
 // <p>SAY IT LOUD.
@@ -129,7 +129,7 @@ In the example above, we've created two registries:
 * `registryA`
 * `registryB`
 
-Both registry have a `[shout]` block extension registered with a specific implementation.
+Both registries have a `[shout]` block extension registered with a specific implementation.
 
-The first block extension is registered in the `registryA` and will transform the text to uppercase.
-The other one is registered in the `registryB` and will replace `.` by `{nbsp}!!!`.
+The first block extension is registered in `registryA` and transforms the text to uppercase.
+The other is registered in `registryB` and replaces `.` with `{nbsp}!!!`.
