@@ -138,7 +138,13 @@ export class Parser {
     throw new Error('Parser cannot be instantiated')
   }
 
-  // Public: Parse AsciiDoc source from reader into document.
+  /**
+   * Parse AsciiDoc source from reader into document.
+   * @param {Reader} reader
+   * @param {Document} document
+   * @param {{header_only?: boolean}} [options={}]
+   * @returns {Promise<Document>}
+   */
   static async parse(reader, document, options = {}) {
     const headerOnly = options.header_only ?? false
     let blockAttributes = await Parser.parseDocumentHeader(
@@ -164,7 +170,13 @@ export class Parser {
     return document
   }
 
-  // Public: Parse the document header.
+  /**
+   * Parse the document header.
+   * @param {Reader} reader
+   * @param {Document} document
+   * @param {boolean} [headerOnly=false]
+   * @returns {Promise<Object>} Block attributes after the header.
+   */
   static async parseDocumentHeader(reader, document, headerOnly = false) {
     let blockAttrs =
       (await reader.skipBlankLines()) != null
@@ -264,7 +276,14 @@ export class Parser {
     return document.finalizeHeader(blockAttrs)
   }
 
-  // Public: Parse manpage header.
+  /**
+   * Parse manpage header.
+   * @param {Reader} reader
+   * @param {Document} document
+   * @param {Object} blockAttributes
+   * @param {boolean} [headerOnly=false]
+   * @returns {Promise<void>}
+   */
   static async parseManpageHeader(
     reader,
     document,
@@ -395,9 +414,13 @@ export class Parser {
     }
   }
 
-  // Public: Return the next section from the reader.
-  //
-  // Returns [section_or_null, orphaned_attributes].
+  /**
+   * Return the next section from the reader.
+   * @param {Reader} reader
+   * @param {Document|Section} parent
+   * @param {Object} [attributes={}]
+   * @returns {Promise<[Section|null, Object]>} Tuple of the new section (or null) and orphaned attributes.
+   */
   static async nextSection(reader, parent, attributes = {}) {
     let preamble = null,
       intro = null,
@@ -629,7 +652,14 @@ export class Parser {
     return [section === parent ? null : section, { ...attributes }]
   }
 
-  // Public: Parse and return the next Block at the Reader's current location.
+  /**
+   * Parse and return the next Block at the Reader's current location.
+   * @param {Reader} reader
+   * @param {AbstractBlock} parent
+   * @param {Object} [attributes={}]
+   * @param {Object} [options={}]
+   * @returns {Promise<Block|null>}
+   */
   static async nextBlock(reader, parent, attributes = {}, options = {}) {
     const skipped = await reader.skipBlankLines()
     if (skipped == null) return null
@@ -1442,7 +1472,11 @@ export class Parser {
     return block
   }
 
-  // Internal: Build a block from reader lines.
+  /**
+   * Build a block from reader lines.
+   * @returns {Promise<Block|null>}
+   * @internal
+   */
   static async buildBlock(
     blockContext,
     contentModel,
@@ -1555,7 +1589,13 @@ export class Parser {
     return block
   }
 
-  // Public: Parse blocks from reader until exhausted.
+  /**
+   * Parse blocks from reader until exhausted.
+   * @param {Reader} reader
+   * @param {AbstractBlock} parent
+   * @param {Object|null} [attributes=null]
+   * @returns {Promise<void>}
+   */
   static async parseBlocks(reader, parent, attributes = null) {
     while (true) {
       const block = await Parser.nextBlock(
@@ -1568,7 +1608,11 @@ export class Parser {
     }
   }
 
-  // Internal: Parse an ordered or unordered list.
+  /**
+   * Parse an ordered or unordered list.
+   * @returns {Promise<List>}
+   * @internal
+   */
   static async parseList(reader, listType, parent, style = null, opts = {}) {
     const start = opts.start != null ? parseInt(opts.start, 10) : null
     const listAttrs = start != null && start !== 1 ? { start } : null
@@ -1598,7 +1642,13 @@ export class Parser {
     return listBlock
   }
 
-  // Internal: Catalog callouts in text.
+  /**
+   * Catalog callouts in text.
+   * @param {string} text
+   * @param {Document} document
+   * @returns {boolean} Whether any callouts were found.
+   * @internal
+   */
   static catalogCallouts(text, document) {
     if (!text.includes('<')) return false
     let found = false
@@ -1614,7 +1664,10 @@ export class Parser {
     return found
   }
 
-  // Internal: Catalog a single inline anchor.
+  /**
+   * Catalog a single inline anchor.
+   * @internal
+   */
   static catalogInlineAnchor(id, reftext, node, location, doc = node.document) {
     if (reftext?.includes(ATTR_REF_HEAD)) {
       reftext = doc.subAttributes(reftext)
@@ -1635,7 +1688,10 @@ export class Parser {
     }
   }
 
-  // Internal: Catalog all inline anchors in text.
+  /**
+   * Catalog all inline anchors in text.
+   * @internal
+   */
   static catalogInlineAnchors(text, block, document, reader) {
     if (!text.includes('[[') && !text.includes('anchor:')) return
 
@@ -1683,7 +1739,10 @@ export class Parser {
     }
   }
 
-  // Internal: Catalog a bibliography inline anchor.
+  /**
+   * Catalog a bibliography inline anchor.
+   * @internal
+   */
   static catalogInlineBiblioAnchor(id, reftext, node, reader) {
     const displayReftext = reftext != null ? `[${reftext}]` : null
     if (
@@ -1701,7 +1760,11 @@ export class Parser {
     }
   }
 
-  // Internal: Parse a description list.
+  /**
+   * Parse a description list.
+   * @returns {Promise<List>}
+   * @internal
+   */
   static async parseDescriptionList(reader, match, parent) {
     const listBlock = new List(parent, 'dlist')
     const siblingPattern = DescriptionListSiblingRx[match[2]]
@@ -1734,7 +1797,11 @@ export class Parser {
     return listBlock
   }
 
-  // Internal: Parse a callout list.
+  /**
+   * Parse a callout list.
+   * @returns {Promise<List>}
+   * @internal
+   */
   static async parseCalloutList(reader, match, parent, callouts) {
     const listBlock = new List(parent, 'colist')
     let nextIndex = 1
@@ -1788,7 +1855,11 @@ export class Parser {
     return listBlock
   }
 
-  // Internal: Parse a list item (ordered, unordered, callout, or description list).
+  /**
+   * Parse a list item (ordered, unordered, callout, or description list).
+   * @returns {Promise<ListItem|[ListItem[], ListItem|null]>}
+   * @internal
+   */
   static async parseListItem(
     reader,
     listBlock,
@@ -1950,7 +2021,11 @@ export class Parser {
       : listItem
   }
 
-  // Internal: Collect lines belonging to the current list item.
+  /**
+   * Collect lines belonging to the current list item.
+   * @returns {Promise<string[]>}
+   * @internal
+   */
   static async readLinesForListItem(
     reader,
     listType,
@@ -2181,7 +2256,11 @@ export class Parser {
     return buffer
   }
 
-  // Internal: Initialize a Section from the current reader position.
+  /**
+   * Initialize a Section from the current reader position.
+   * @returns {Promise<Section>}
+   * @internal
+   */
   static async initializeSection(reader, parent, attributes = {}) {
     const document = parent.document
     const doctype = document.doctype
@@ -2281,9 +2360,11 @@ export class Parser {
     return section
   }
 
-  // Internal: Check if the next line is a section title.
-  //
-  // Returns the Integer section level or null.
+  /**
+   * Check if the next line is a section title.
+   * @returns {Promise<number|null>} The section level, or null.
+   * @internal
+   */
   static async isNextLineSection(reader, attributes) {
     const style = attributes[1]
     if (style && (style === 'discrete' || style === 'float')) return null
@@ -2295,7 +2376,11 @@ export class Parser {
     return Parser.atxSectionTitle((await reader.peekLine()) ?? '')
   }
 
-  // Internal: Check if the next line is the document title.
+  /**
+   * Check if the next line is the document title.
+   * @returns {Promise<boolean>}
+   * @internal
+   */
   static async isNextLineDoctitle(reader, attributes, leveloffset) {
     const sectLevel = await Parser.isNextLineSection(reader, attributes)
     if (sectLevel == null || sectLevel === false) return false
@@ -2305,9 +2390,12 @@ export class Parser {
     return sectLevel === 0
   }
 
-  // Public: Check if line1 (and optionally line2) form a section title.
-  //
-  // Returns Integer level or null.
+  /**
+   * Check if line1 (and optionally line2) form a section title.
+   * @param {string} line1
+   * @param {string|null} [line2=null]
+   * @returns {number|null} The section level, or null.
+   */
   static isSectionTitle(line1, line2 = null) {
     const atxLevel = Parser.atxSectionTitle(line1)
     if (atxLevel != null) return atxLevel
@@ -2315,7 +2403,12 @@ export class Parser {
     return Parser.setextSectionTitle(line1, line2)
   }
 
-  // Check for ATX-style section title.
+  /**
+   * Check for ATX-style section title.
+   * @param {string} line
+   * @returns {number|null} The section level, or null.
+   * @internal
+   */
   static atxSectionTitle(line) {
     const rx = Compliance.markdownSyntax
       ? ExtAtxSectionTitleRx
@@ -2330,7 +2423,13 @@ export class Parser {
     return m ? m[1].length - 1 : null
   }
 
-  // Check for setext-style section title.
+  /**
+   * Check for setext-style section title.
+   * @param {string} line1
+   * @param {string} line2
+   * @returns {number|null} The section level, or null.
+   * @internal
+   */
   static setextSectionTitle(line1, line2) {
     const ch0 = line2[0]
     const level = SETEXT_SECTION_LEVELS[ch0]
@@ -2341,9 +2440,13 @@ export class Parser {
     return level
   }
 
-  // Public: Parse section title from reader.
-  //
-  // Returns [id, reftext, title, level, atx].
+  /**
+   * Parse section title from reader.
+   * @param {Reader} reader
+   * @param {Document} document
+   * @param {string|null} [sectId=null]
+   * @returns {Promise<[string|null, string|null, string, number, boolean]>} Tuple of [id, reftext, title, level, atx].
+   */
   static async parseSectionTitle(reader, document, sectId = null) {
     let sectReftext = null,
       sectTitle,
@@ -2415,7 +2518,13 @@ export class Parser {
     return [sectId, sectReftext, sectTitle, sectLevel, atx]
   }
 
-  // Public: Parse header metadata (author line and revision line).
+  /**
+   * Parse header metadata (author line and revision line).
+   * @param {Reader} reader
+   * @param {Document|null} [document=null]
+   * @param {boolean} [retrieve=true]
+   * @returns {Promise<Object|null>}
+   */
   static async parseHeaderMetadata(reader, document = null, retrieve = true) {
     const docAttrs = document?.attributes
 
@@ -2557,7 +2666,11 @@ export class Parser {
     return Object.assign({}, implicitAuthorMetadata, authorMetadata ?? {})
   }
 
-  // Internal: Parse the author line into a metadata Hash.
+  /**
+   * Parse the author line into a metadata object.
+   * @returns {Object}
+   * @internal
+   */
   static processAuthors(authorLine, namesOnly = false, multiple = true) {
     const authorMetadata = {}
     let authorIdx = 0
@@ -2651,7 +2764,11 @@ export class Parser {
     return authorMetadata
   }
 
-  // Internal: Parse block metadata lines.
+  /**
+   * Parse block metadata lines.
+   * @returns {Promise<Object>} Accumulated attributes.
+   * @internal
+   */
   static async parseBlockMetadataLines(
     reader,
     document,
@@ -2667,9 +2784,11 @@ export class Parser {
     return attributes
   }
 
-  // Internal: Parse the next line if it contains block metadata.
-  //
-  // Returns true if the line is metadata, otherwise falsy.
+  /**
+   * Parse the next line if it contains block metadata.
+   * @returns {Promise<true|null>} True if the line is metadata, otherwise null.
+   * @internal
+   */
   static async parseBlockMetadataLine(
     reader,
     document,
@@ -2759,7 +2878,10 @@ export class Parser {
     return null
   }
 
-  // Internal: Process consecutive attribute entries.
+  /**
+   * Process consecutive attribute entries.
+   * @internal
+   */
   static async processAttributeEntries(reader, document, attributes = null) {
     await reader.skipCommentLines()
     while (await Parser.processAttributeEntry(reader, document, attributes)) {
@@ -2768,7 +2890,11 @@ export class Parser {
     }
   }
 
-  // Internal: Process a single attribute entry.
+  /**
+   * Process a single attribute entry.
+   * @returns {Promise<boolean>}
+   * @internal
+   */
   static async processAttributeEntry(
     reader,
     document,
@@ -2820,7 +2946,15 @@ export class Parser {
     return true
   }
 
-  // Public: Store the attribute in the document.
+  /**
+   * Store the attribute in the document.
+   * @param {string} name
+   * @param {string} value
+   * @param {Document|null} [doc=null]
+   * @param {Object|null} [attrs=null]
+   * @param {Object} [opts={}]
+   * @returns {[string, string|null]} Tuple of the resolved name and value.
+   */
   static storeAttribute(name, value, doc = null, attrs = null, opts = {}) {
     if (name.endsWith('!')) {
       name = name.slice(0, -1)
@@ -2867,7 +3001,11 @@ export class Parser {
     return [name, value]
   }
 
-  // Internal: Read paragraph lines.
+  /**
+   * Read paragraph lines.
+   * @returns {Promise<string[]>}
+   * @internal
+   */
   static async readParagraphLines(reader, breakAtList, opts = {}) {
     opts.break_on_blank_lines = true
     opts.break_on_list_continuation = true
@@ -2899,9 +3037,13 @@ export class Parser {
     return await reader.readLinesUntil(opts, breakCondition)
   }
 
-  // Public: Check if line is the start of a delimited block.
-  //
-  // Returns BlockMatchData object if return_match_data is true, true/false otherwise.
+  /**
+   * Check if line is the start of a delimited block.
+   * @param {string} line
+   * @param {boolean} [returnMatchData=false]
+   * @returns {{context: string, masq: string[], tip: string, terminator: string}|true|null}
+   *   BlockMatchData object if returnMatchData is true, true/null otherwise.
+   */
   static isDelimitedBlock(line, returnMatchData = false) {
     let lineLen = line.length
     if (lineLen < 2 || !DELIMITED_BLOCK_HEADS[line.slice(0, 2)]) return null
@@ -2947,14 +3089,22 @@ export class Parser {
     return returnMatchData ? { context, masq, tip, terminator: line } : true
   }
 
-  // Internal: Resolve the list marker for a list item.
+  /**
+   * Resolve the list marker for a list item.
+   * @returns {string}
+   * @internal
+   */
   static resolveListMarker(listType, marker) {
     if (listType === 'ulist') return marker
     if (listType === 'olist') return Parser.resolveOrderedListMarker(marker)[0]
     return '<1>'
   }
 
-  // Internal: Resolve the normalized ordered list marker.
+  /**
+   * Resolve the normalized ordered list marker.
+   * @returns {[string]|[string, string]} Tuple of [normalizedMarker] or [normalizedMarker, style].
+   * @internal
+   */
   static resolveOrderedListMarker(
     marker,
     ordinal = null,
@@ -3022,7 +3172,12 @@ export class Parser {
     return [normalizedMarker]
   }
 
-  // Internal: Resolve the start value for an ordered list.
+  /**
+   * Resolve the start value for an ordered list.
+   * @param {string} marker
+   * @returns {number}
+   * @internal
+   */
   static resolveOrderedListStart(marker) {
     if (marker.startsWith('.')) return 1
     const style = ORDERED_LIST_STYLES.find((s) =>
@@ -3044,7 +3199,11 @@ export class Parser {
     }
   }
 
-  // Internal: Check if this line is a sibling list item.
+  /**
+   * Check if this line is a sibling list item.
+   * @returns {boolean}
+   * @internal
+   */
   static isSiblingListItem(line, listType, siblingTrait) {
     if (siblingTrait instanceof RegExp) return siblingTrait.test(line)
     const m = line.match(ListRxMap[listType])
@@ -3053,7 +3212,11 @@ export class Parser {
     return resolvedSibling === Parser.resolveListMarker(listType, m[1])
   }
 
-  // Internal: Parse a table.
+  /**
+   * Parse a table.
+   * @returns {Promise<Table>}
+   * @internal
+   */
   static async parseTable(tableReader, parent, attributes) {
     const table = new Table(parent, attributes)
 
@@ -3232,7 +3395,12 @@ export class Parser {
     return table
   }
 
-  // Internal: Parse column specs.
+  /**
+   * Parse column specs.
+   * @param {string} records
+   * @returns {Object[]}
+   * @internal
+   */
   static parseColspecs(records) {
     records = records.replace(/ /g, '')
     if (!records) return []
@@ -3266,9 +3434,14 @@ export class Parser {
     return specs
   }
 
-  // Internal: Parse cell spec from line.
-  //
-  // Returns [spec, rest].
+  /**
+   * Parse cell spec from line.
+   * @param {string} line
+   * @param {'start'|'end'} [pos='end']
+   * @param {string|null} [delimiter=null]
+   * @returns {[Object|null, string]} Tuple of [spec, rest].
+   * @internal
+   */
   static parseCellspec(line, pos = 'end', delimiter = null) {
     let m,
       rest = ''
@@ -3313,7 +3486,12 @@ export class Parser {
     return [spec, rest]
   }
 
-  // Public: Parse the first positional attribute for style, role, id, and options.
+  /**
+   * Parse the first positional attribute for style, role, id, and options.
+   * @param {Object} attributes
+   * @param {Reader|null} [reader=null]
+   * @returns {string|null} The resolved style value.
+   */
   static parseStyleAttribute(attributes, reader = null) {
     const rawStyle = attributes[1]
     if (
@@ -3396,7 +3574,13 @@ export class Parser {
     }
   }
 
-  // Internal: Remove block indentation and optionally expand tabs.
+  /**
+   * Remove block indentation and optionally expand tabs.
+   * @param {string[]} lines - Modified in place.
+   * @param {number} [indentSize=0]
+   * @param {number} [tabSize=0]
+   * @internal
+   */
   static adjustIndentation(lines, indentSize = 0, tabSize = 0) {
     if (!lines || lines.length === 0) return
 
@@ -3455,14 +3639,26 @@ export class Parser {
     }
   }
 
-  // Internal: Check if string is uniform (all same character).
+  /**
+   * Check if string is uniform (all same character).
+   * @param {string} str
+   * @param {string} chr
+   * @param {number} len
+   * @returns {boolean}
+   * @internal
+   */
   static uniform(str, chr, len) {
     if (str.length !== len) return false
     for (const c of str) if (c !== chr) return false
     return true
   }
 
-  // Internal: Convert an attribute name to a legal form.
+  /**
+   * Convert an attribute name to a legal form.
+   * @param {string} name
+   * @returns {string}
+   * @internal
+   */
   static sanitizeAttributeName(name) {
     return name
       .replace(new RegExp(InvalidAttributeNameCharsRx.source, 'gu'), '')

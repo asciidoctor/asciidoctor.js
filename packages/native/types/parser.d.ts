@@ -1,69 +1,113 @@
 export class Parser {
-    static parse(reader: any, document: any, options?: {}): Promise<any>;
-    static parseDocumentHeader(reader: any, document: any, headerOnly?: boolean): Promise<any>;
-    static parseManpageHeader(reader: any, document: any, blockAttributes: any, headerOnly?: boolean): Promise<void>;
-    static nextSection(reader: any, parent: any, attributes?: {}): Promise<any[]>;
-    static nextBlock(reader: any, parent: any, attributes?: {}, options?: {}): Promise<any>;
-    static buildBlock(blockContext: any, contentModel: any, terminator: any, parent: any, reader: any, attributes: any, options?: {}): Promise<any>;
-    static parseBlocks(reader: any, parent: any, attributes?: any): Promise<void>;
-    static parseList(reader: any, listType: any, parent: any, style?: any, opts?: {}): Promise<List>;
-    static catalogCallouts(text: any, document: any): boolean;
-    static catalogInlineAnchor(id: any, reftext: any, node: any, location: any, doc?: any): void;
-    static catalogInlineAnchors(text: any, block: any, document: any, reader: any): void;
-    static catalogInlineBiblioAnchor(id: any, reftext: any, node: any, reader: any): void;
-    static parseDescriptionList(reader: any, match: any, parent: any): Promise<List>;
-    static parseCalloutList(reader: any, match: any, parent: any, callouts: any): Promise<List>;
-    static parseListItem(reader: any, listBlock: any, match: any, siblingTrait: any, style?: any): Promise<ListItem | (ListItem | ListItem[])[]>;
-    static readLinesForListItem(reader: any, listType: any, siblingTrait?: any, hasText?: boolean): Promise<any[]>;
-    static initializeSection(reader: any, parent: any, attributes?: {}): Promise<Section>;
-    static isNextLineSection(reader: any, attributes: any): Promise<any>;
-    static isNextLineDoctitle(reader: any, attributes: any, leveloffset: any): Promise<boolean>;
-    static isSectionTitle(line1: any, line2?: any): any;
-    static atxSectionTitle(line: any): number;
-    static setextSectionTitle(line1: any, line2: any): any;
-    static parseSectionTitle(reader: any, document: any, sectId?: any): Promise<any[]>;
-    static parseHeaderMetadata(reader: any, document?: any, retrieve?: boolean): Promise<({
-        authorcount: number;
-    } & {
-        authors: any;
-        authorcount: number;
-    }) | ({
-        authorcount: number;
-    } & {
-        authorcount: number;
-    })>;
-    static processAuthors(authorLine: any, namesOnly?: boolean, multiple?: boolean): {
-        authors: any;
-        authorcount: number;
-    };
-    static parseBlockMetadataLines(reader: any, document: any, attributes?: {}, options?: {}): Promise<{}>;
-    static parseBlockMetadataLine(reader: any, document: any, attributes: any, options?: {}): Promise<boolean>;
-    static processAttributeEntries(reader: any, document: any, attributes?: any): Promise<void>;
-    static processAttributeEntry(reader: any, document: any, attributes?: any, match?: any): Promise<boolean>;
-    static storeAttribute(name: any, value: any, doc?: any, attrs?: any, opts?: {}): any[];
-    static readParagraphLines(reader: any, breakAtList: any, opts?: {}): Promise<any>;
-    static isDelimitedBlock(line: any, returnMatchData?: boolean): true | {
-        context: any;
-        masq: any;
-        tip: any;
-        terminator: any;
-    };
-    static resolveListMarker(listType: any, marker: any): any;
-    static resolveOrderedListMarker(marker: any, ordinal?: any, validate?: boolean, reader?: any): any[];
-    static resolveOrderedListStart(marker: any): number;
-    static isSiblingListItem(line: any, listType: any, siblingTrait: any): boolean;
-    static parseTable(tableReader: any, parent: any, attributes: any): Promise<Table>;
-    static parseColspecs(records: any): {
-        width: number;
-    }[];
-    static parseCellspec(line: any, pos?: string, delimiter?: any): any[];
-    static parseStyleAttribute(attributes: any, reader?: any): any;
+    /**
+     * Parse AsciiDoc source from reader into document.
+     * @param {Reader} reader
+     * @param {Document} document
+     * @param {{header_only?: boolean}} [options={}]
+     * @returns {Promise<Document>}
+     */
+    static parse(reader: Reader, document: Document, options?: {
+        header_only?: boolean;
+    }): Promise<Document>;
+    /**
+     * Parse the document header.
+     * @param {Reader} reader
+     * @param {Document} document
+     * @param {boolean} [headerOnly=false]
+     * @returns {Promise<Object>} Block attributes after the header.
+     */
+    static parseDocumentHeader(reader: Reader, document: Document, headerOnly?: boolean): Promise<any>;
+    /**
+     * Parse manpage header.
+     * @param {Reader} reader
+     * @param {Document} document
+     * @param {Object} blockAttributes
+     * @param {boolean} [headerOnly=false]
+     * @returns {Promise<void>}
+     */
+    static parseManpageHeader(reader: Reader, document: Document, blockAttributes: any, headerOnly?: boolean): Promise<void>;
+    /**
+     * Return the next section from the reader.
+     * @param {Reader} reader
+     * @param {Document|Section} parent
+     * @param {Object} [attributes={}]
+     * @returns {Promise<[Section|null, Object]>} Tuple of the new section (or null) and orphaned attributes.
+     */
+    static nextSection(reader: Reader, parent: Document | Section, attributes?: any): Promise<[Section | null, any]>;
+    /**
+     * Parse and return the next Block at the Reader's current location.
+     * @param {Reader} reader
+     * @param {AbstractBlock} parent
+     * @param {Object} [attributes={}]
+     * @param {Object} [options={}]
+     * @returns {Promise<Block|null>}
+     */
+    static nextBlock(reader: Reader, parent: AbstractBlock, attributes?: any, options?: any): Promise<Block | null>;
+    /**
+     * Parse blocks from reader until exhausted.
+     * @param {Reader} reader
+     * @param {AbstractBlock} parent
+     * @param {Object|null} [attributes=null]
+     * @returns {Promise<void>}
+     */
+    static parseBlocks(reader: Reader, parent: AbstractBlock, attributes?: any | null): Promise<void>;
+    /**
+     * Check if line1 (and optionally line2) form a section title.
+     * @param {string} line1
+     * @param {string|null} [line2=null]
+     * @returns {number|null} The section level, or null.
+     */
+    static isSectionTitle(line1: string, line2?: string | null): number | null;
+    /**
+     * Parse section title from reader.
+     * @param {Reader} reader
+     * @param {Document} document
+     * @param {string|null} [sectId=null]
+     * @returns {Promise<[string|null, string|null, string, number, boolean]>} Tuple of [id, reftext, title, level, atx].
+     */
+    static parseSectionTitle(reader: Reader, document: Document, sectId?: string | null): Promise<[string | null, string | null, string, number, boolean]>;
+    /**
+     * Parse header metadata (author line and revision line).
+     * @param {Reader} reader
+     * @param {Document|null} [document=null]
+     * @param {boolean} [retrieve=true]
+     * @returns {Promise<Object|null>}
+     */
+    static parseHeaderMetadata(reader: Reader, document?: Document | null, retrieve?: boolean): Promise<any | null>;
+    /**
+     * Store the attribute in the document.
+     * @param {string} name
+     * @param {string} value
+     * @param {Document|null} [doc=null]
+     * @param {Object|null} [attrs=null]
+     * @param {Object} [opts={}]
+     * @returns {[string, string|null]} Tuple of the resolved name and value.
+     */
+    static storeAttribute(name: string, value: string, doc?: Document | null, attrs?: any | null, opts?: any): [string, string | null];
+    /**
+     * Check if line is the start of a delimited block.
+     * @param {string} line
+     * @param {boolean} [returnMatchData=false]
+     * @returns {{context: string, masq: string[], tip: string, terminator: string}|true|null}
+     *   BlockMatchData object if returnMatchData is true, true/null otherwise.
+     */
+    static isDelimitedBlock(line: string, returnMatchData?: boolean): {
+        context: string;
+        masq: string[];
+        tip: string;
+        terminator: string;
+    } | true | null;
+    /**
+     * Parse the first positional attribute for style, role, id, and options.
+     * @param {Object} attributes
+     * @param {Reader|null} [reader=null]
+     * @returns {string|null} The resolved style value.
+     */
+    static parseStyleAttribute(attributes: any, reader?: Reader | null): string | null;
     static _yieldBufferedAttribute(attrs: any, name: any, value: any, reader: any): void;
-    static adjustIndentation(lines: any, indentSize?: number, tabSize?: number): void;
-    static uniform(str: any, chr: any, len: any): boolean;
-    static sanitizeAttributeName(name: any): any;
 }
+import { Section } from './section.js';
+import { Block } from './block.js';
 import { List } from './list.js';
 import { ListItem } from './list.js';
-import { Section } from './section.js';
 import { Table } from './table.js';

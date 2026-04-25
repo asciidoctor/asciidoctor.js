@@ -278,18 +278,27 @@ end`
 \tend
 ----
 `
-      const expected = `def names
-
-    @names.split
-
-end`
-
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'pre', 1)
       assertCss(output, '.listingblock pre', 1)
-      // TODO: needs DOM parser
-      // const result = xmlnodes_at_xpath('//pre', output, 1).text
-      // assert.equal(result, expected)
+      assertXpath(output, `//pre[text()="def names\n\n    @names.split\n\nend"]`, 1)
+    })
+
+    test('should expand tabs if tabsize is set as a block attribute', async () => {
+      const input = `\
+[tabsize=4,indent=0]
+----
+\tdef names
+
+\t\t@names.split
+
+\tend
+----
+`
+      const output = await convertStringToEmbedded(input)
+      assertCss(output, 'pre', 1)
+      assertCss(output, '.listingblock pre', 1)
+      assertXpath(output, `//pre[text()="def names\n\n    @names.split\n\nend"]`, 1)
     })
 
     test('literal block should honor nowrap option', async () => {
