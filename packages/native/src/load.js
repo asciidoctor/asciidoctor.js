@@ -20,25 +20,23 @@ import { basename, extname } from './helpers.js'
 
 // ── load ──────────────────────────────────────────────────────────────────────
 
-// Public: Parse the AsciiDoc source input into a Document.
-//
-// Accepts input as a Node.js Readable stream (or any object with a read()
-// method), a String, or a String Array. If the input is a file descriptor
-// object produced by openFile() / Node's fs.openSync(), pass a plain object
-// with { path, read() } instead; the function sets docfile/docdir/docname
-// attributes automatically.
-//
-// input   - the AsciiDoc source as a Buffer, String, String Array, or
-//           a file-like object with { path: String, read(): String, mtime? }.
-// options - a plain object of options to control processing (default: {}).
-//           See Document for the full list of recognised keys.
-//           Notable keys:
-//             :attributes - String, Array, or Object of document attributes
-//             :parse      - set to false to skip parsing after Document creation
-//             :logger     - Logger instance to use for this call
-//             :timings    - Timings object with start()/record() interface
-//
-// Returns a Promise that resolves to the Document.
+/**
+ * Parse the AsciiDoc source input into a Document.
+ *
+ * Accepts input as a Node.js Readable stream (or any object with a read()
+ * method), a String, or a String Array. If the input is a file descriptor
+ * object produced by openFile() / Node's fs.openSync(), pass a plain object
+ * with { path, read() } instead; the function sets docfile/docdir/docname
+ * attributes automatically.
+ *
+ * @param {Buffer|string|string[]|{path?: string, read(): string|Promise<string>, mtime?: Date}} input - The AsciiDoc source.
+ * @param {Object} [options={}] - Options to control processing. See Document for the full list.
+ * @param {string|string[]|Object} [options.attributes] - Document attributes.
+ * @param {boolean} [options.parse] - Set to false to skip parsing after Document creation.
+ * @param {Object} [options.logger] - Logger instance to use for this call.
+ * @param {{start(label: string): void, record(label: string): void}} [options.timings] - Timings object.
+ * @returns {Promise<Document>} A Promise that resolves to the Document.
+ */
 export async function load(input, options = {}) {
   // Shallow-copy options so we don't mutate the caller's object.
   options = Object.assign({}, options)
@@ -178,12 +176,13 @@ export async function load(input, options = {}) {
 
 // ── loadFile ──────────────────────────────────────────────────────────────────
 
-// Public: Parse the contents of the AsciiDoc source file into a Document.
-//
-// filename - the String path to the AsciiDoc source file
-// options  - a plain object of options (default: {})
-//
-// Returns a Promise that resolves to the Document.
+/**
+ * Parse the contents of the AsciiDoc source file into a Document.
+ *
+ * @param {string} filename - The path to the AsciiDoc source file.
+ * @param {Object} [options={}] - Options to control processing.
+ * @returns {Promise<Document>} A Promise that resolves to the Document.
+ */
 export async function loadFile(filename, options = {}) {
   const { readFile } = await import('node:fs/promises')
   const nodePath = await _requirePath()
@@ -210,12 +209,16 @@ export async function loadFile(filename, options = {}) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-// Internal: Parse a whitespace-delimited attribute string into a plain object.
-//
-// Mirrors the Ruby idiom:
-//   attrs.gsub(SpaceDelimiterRx, '\1' + NULL).gsub(EscapedSpaceRx, '\1').split(NULL)
-//
-// Returns a plain object { key => value }.
+/**
+ * Parse a whitespace-delimited attribute string into a plain object.
+ *
+ * Mirrors the Ruby idiom:
+ *   attrs.gsub(SpaceDelimiterRx, '\1' + NULL).gsub(EscapedSpaceRx, '\1').split(NULL)
+ *
+ * @param {string} str - The attribute string to parse.
+ * @returns {Object} A plain object mapping attribute keys to values.
+ * @internal
+ */
 function _parseAttributeString(str) {
   const condensed = str
     .replace(SpaceDelimiterRx, `$1${NULL}`)
@@ -233,9 +236,13 @@ function _parseAttributeString(str) {
   return result
 }
 
-// Internal: Parse an array of "key=value" entries into a plain object.
-//
-// Returns a plain object { key => value }.
+/**
+ * Parse an array of "key=value" entries into a plain object.
+ *
+ * @param {string[]} arr - Array of "key=value" strings.
+ * @returns {Object} A plain object mapping attribute keys to values.
+ * @internal
+ */
 function _parseAttributeArray(arr) {
   const result = {}
   for (const entry of arr) {
@@ -249,18 +256,25 @@ function _parseAttributeArray(arr) {
   return result
 }
 
-// Internal: Read all data from an object that has a .read() method.
-// Supports both synchronous (returns string) and async (returns Promise) variants.
-//
-// Returns a Promise that resolves to a String.
+/**
+ * Read all data from an object that has a .read() method.
+ * Supports both synchronous (returns string) and async (returns Promise) variants.
+ *
+ * @param {{read(): string|Promise<string>}} readable - The readable object.
+ * @returns {Promise<string>} A Promise that resolves to a String.
+ * @internal
+ */
 async function _readStream(readable) {
   const data = readable.read()
   return data instanceof Promise ? data : Promise.resolve(data ?? '')
 }
 
-// Internal: Lazily import node:path to avoid issues in browser / Opal environments.
-//
-// Returns a Promise that resolves to the node:path module.
+/**
+ * Lazily import node:path to avoid issues in browser / Opal environments.
+ *
+ * @returns {Promise<typeof import('node:path')>} A Promise that resolves to the node:path module.
+ * @internal
+ */
 async function _requirePath() {
   return import('node:path')
 }
