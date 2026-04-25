@@ -26,7 +26,12 @@ export const Severity = {
 const SEVERITY_LABEL = ['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'ANY']
 const SEVERITY_LABEL_SUBSTITUTES = { WARN: 'WARNING', FATAL: 'FAILED' }
 
-// Convert a string or nullable severity value to a numeric Severity constant.
+/**
+ * Convert a string or nullable severity value to a numeric Severity constant.
+ * @param {number|string|null|undefined} severity
+ * @returns {number}
+ * @internal
+ */
 function resolveSeverity(severity) {
   if (typeof severity === 'number') return severity
   if (typeof severity === 'string')
@@ -36,16 +41,20 @@ function resolveSeverity(severity) {
 
 // ── Logger ────────────────────────────────────────────────────────────────────
 
+/** Standard logger that writes formatted messages to stderr or a custom pipe. */
 export class Logger {
   constructor(opts = {}) {
     this.progname = opts.progname ?? 'asciidoctor'
     this.level = opts.level ?? Severity.WARN
+    /** @internal */
     this._maxSeverity = null
+    /** @internal */
     this._formatter = opts.formatter ?? new Logger.BasicFormatter()
+    /** @internal */
     this._pipe = opts.pipe ?? null // null → write via _writeln
   }
 
-  // Public getter/setter so custom logger impls can access this.formatter
+  /** getter/setter so custom logger impls can access this.formatter */
   get formatter() {
     return this._formatter
   }
@@ -53,6 +62,7 @@ export class Logger {
     this._formatter = f
   }
 
+  /** @returns {number|null} The highest severity level logged so far. */
   get maxSeverity() {
     return this._maxSeverity
   }
@@ -80,18 +90,23 @@ export class Logger {
     return this._maxSeverity
   }
 
+  /** @returns {boolean} Whether DEBUG-level messages will be logged. */
   isDebugEnabled() {
     return this.level <= Severity.DEBUG
   }
+  /** @returns {boolean} Whether INFO-level messages will be logged. */
   isInfoEnabled() {
     return this.level <= Severity.INFO
   }
+  /** @returns {boolean} Whether WARN-level messages will be logged. */
   isWarnEnabled() {
     return this.level <= Severity.WARN
   }
+  /** @returns {boolean} Whether ERROR-level messages will be logged. */
   isErrorEnabled() {
     return this.level <= Severity.ERROR
   }
+  /** @returns {boolean} Whether FATAL-level messages will be logged. */
   isFatalEnabled() {
     return this.level <= Severity.FATAL
   }
@@ -104,6 +119,13 @@ export class Logger {
     return this.level <= Severity.INFO
   }
 
+  /**
+   * Log a message at the given severity level.
+   * @param {number|string} severity - Severity level (numeric constant or string name).
+   * @param {string|{inspect?(): string}|null} [message=null] - The message to log.
+   * @param {string|Function|null} [progname=null] - Program name or message supplier function.
+   * @returns {boolean}
+   */
   add(severity, message = null, progname = null) {
     severity = resolveSeverity(severity)
     if (this._maxSeverity === null || severity > this._maxSeverity) {
@@ -118,7 +140,7 @@ export class Logger {
     return true
   }
 
-  // log() is an alias for add() (Ruby Logger API)
+  /** Alias for {@link add} (Ruby Logger API). */
   log(severity, message, progname) {
     return this.add(severity, message, progname)
   }
@@ -142,6 +164,11 @@ export class Logger {
     return this.add(Severity.UNKNOWN, msg, progname)
   }
 
+  /**
+   * Write a formatted line to stderr or console.error.
+   * @param {string} line
+   * @internal
+   */
   _writeln(line) {
     if (typeof process !== 'undefined' && process.stderr?.write) {
       process.stderr.write(line)
@@ -152,6 +179,14 @@ export class Logger {
 }
 
 Logger.BasicFormatter = class {
+  /**
+   * Format a log entry as "progname: SEVERITY: message\n".
+   * @param {number|string} severity
+   * @param {null} _time
+   * @param {string} progname
+   * @param {string|{inspect?(): string}} msg
+   * @returns {string}
+   */
   call(severity, _time, progname, msg) {
     // severity may be numeric (from newLogger impls) or a string label
     const label =
@@ -166,8 +201,11 @@ Logger.BasicFormatter = class {
 }
 
 Logger.AutoFormattingMessage = {
-  // Attach auto-formatting to any plain object carrying { text, source_location }.
-  // Returns the same object with an inspect() method added.
+  /**
+   * Attach auto-formatting to any plain object carrying { text, source_location }.
+   * @param {{text: string, source_location?: string}} obj
+   * @returns {typeof obj} The same object with inspect() and toString() added.
+   */
   attach(obj) {
     obj.inspect = function () {
       const sloc = this.source_location
@@ -179,8 +217,8 @@ Logger.AutoFormattingMessage = {
 }
 
 // ── LogMessage ────────────────────────────────────────────────────────────────
-// Wrapper stored by MemoryLogger; provides getSeverity/getText/getSourceLocation.
 
+/** Wrapper stored by MemoryLogger; provides getSeverity/getText/getSourceLocation. */
 class LogMessage {
   constructor(severity, message) {
     this.message = message
@@ -208,6 +246,7 @@ class LogMessage {
 
 // ── MemoryLogger ──────────────────────────────────────────────────────────────
 
+/** In-memory logger that stores all log messages for later inspection. */
 export class MemoryLogger {
   constructor() {
     // Default level is UNKNOWN (highest) so isDebug() returns false by default,
@@ -271,8 +310,12 @@ export class MemoryLogger {
     return this.level <= Severity.INFO
   }
 
-  // write(s) allows MemoryLogger to be used with Timings.printReport(); messages
-  // are stored at INFO level with the trailing newline stripped.
+  /**
+   * Write a string at INFO level (trailing newline stripped).
+   * Allows MemoryLogger to be used with Timings.printReport().
+   * @param {string} s
+   * @returns {boolean}
+   */
   write(s) {
     return this.info(s.replace(/\n$/, ''))
   }
@@ -287,6 +330,7 @@ export class MemoryLogger {
 
 // ── NullLogger ────────────────────────────────────────────────────────────────
 
+/** Logger that discards all messages but still tracks the maximum severity. */
 export class NullLogger {
   constructor() {
     this.level = Severity.UNKNOWN
@@ -336,9 +380,11 @@ export class NullLogger {
 }
 
 // ── LoggerManager ─────────────────────────────────────────────────────────────
-// Module-level singleton — the active logger is stored here and can be
-// replaced by callers (e.g. the `load` function).
 
+/**
+ * Module-level singleton — the active logger is stored here and can be
+ * replaced by callers (e.g. the load function).
+ */
 export const LoggerManager = (() => {
   let _loggerClass = Logger
   let _logger = null
@@ -367,18 +413,24 @@ export const LoggerManager = (() => {
       this.logger = newLogger
     },
 
-    // Create a new formatter whose call() delegates to the provided impl.
+    /**
+     * Create a new formatter whose call() delegates to the provided impl.
+     * @param {string} _name
+     * @param {{call: Function}} impl
+     * @returns {{call: Function}}
+     */
     newFormatter(_name, impl) {
       return { call: impl.call.bind(impl) }
     },
 
-    // Create a new Logger instance with custom behaviour supplied via impl.
-    //
-    // impl - An object that may define:
-    //   add(severity, message, progname) - overrides the default add method.
-    //     Severity is always delivered as a numeric constant.
-    //   postConstruct() - called once after the instance is created; `this`
-    //     is the logger instance (use it to open files, etc.).
+    /**
+     * Create a new Logger instance with custom behaviour supplied via impl.
+     * @param {string} _name
+     * @param {{add?: (severity: number, message: any, progname: any) => boolean, postConstruct?: (this: Logger) => void}} impl
+     *   - `add(severity, message, progname)` — overrides the default add method; severity is always numeric.
+     *   - `postConstruct()` — called once after the instance is created (`this` is the logger instance).
+     * @returns {Logger}
+     */
     newLogger(_name, impl) {
       const inst = new Logger()
       if (impl.add) {
@@ -411,15 +463,17 @@ export const LoggerManager = (() => {
 
 // ── Logging mixin ─────────────────────────────────────────────────────────────
 
-// Public: Apply the Logging mixin to a class prototype.
-//
-// proto - The prototype object (e.g. MyClass.prototype) to augment.
-//
-// The mixin installs:
-//   logger               - getter that returns LoggerManager.logger
-//   getLogger()          - method alias for the logger getter
-//   messageWithContext() - builds an auto-formatting message object
-//   createLogMessage()   - alias for messageWithContext (used in extensions)
+/**
+ * Apply the Logging mixin to a class prototype.
+ *
+ * Installs the following on proto:
+ * - `logger` getter — returns `LoggerManager.logger`
+ * - `getLogger()` — method alias for the logger getter
+ * - `messageWithContext(text, context)` — builds an auto-formatting message object
+ * - `createLogMessage(text, context)` — alias for messageWithContext (used in extensions)
+ *
+ * @param {Object} proto - The prototype object (e.g. MyClass.prototype) to augment.
+ */
 export function applyLogging(proto) {
   Object.defineProperty(proto, 'logger', {
     get() {
@@ -436,8 +490,10 @@ export function applyLogging(proto) {
   proto.createLogMessage = proto.messageWithContext
 }
 
-// Convenience: a plain object implementing the Logging mixin interface,
-// for use in non-class contexts (e.g. top-level module functions).
+/**
+ * Plain object implementing the Logging mixin interface, for use in non-class contexts
+ * (e.g. top-level module functions).
+ */
 export const Logging = {
   get logger() {
     return LoggerManager.logger
