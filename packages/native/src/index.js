@@ -37,6 +37,7 @@ class Asciidoctor {
     return ASCIIDOCTOR_CORE_VERSION
   }
 
+  /** @returns {typeof LoggerManager} */
   get LoggerManager() {
     return LoggerManager
   }
@@ -49,6 +50,7 @@ class Asciidoctor {
     return NullLogger
   }
 
+  /** @returns {typeof SafeMode} */
   get SafeMode() {
     return SafeMode
   }
@@ -57,10 +59,12 @@ class Asciidoctor {
     return Timings
   }
 
+  /** @returns {typeof Extensions} */
   get Extensions() {
     return Extensions
   }
 
+  /** @returns {typeof Converter} */
   get ConverterFactory() {
     return Converter
   }
@@ -77,6 +81,7 @@ class Asciidoctor {
     return Section
   }
 
+  /** @returns {typeof SyntaxHighlighter} */
   get SyntaxHighlighter() {
     return SyntaxHighlighter
   }
