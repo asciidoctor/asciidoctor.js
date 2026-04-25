@@ -62,7 +62,9 @@ export class Logger {
     this._formatter = f
   }
 
-  /** @returns {number|null} The highest severity level logged so far. */
+  /**
+   * @returns {number|null} The highest severity level logged so far.
+   */
   get maxSeverity() {
     return this._maxSeverity
   }
@@ -90,23 +92,37 @@ export class Logger {
     return this._maxSeverity
   }
 
-  /** @returns {boolean} Whether DEBUG-level messages will be logged. */
+  /**
+   * @returns {boolean} Whether DEBUG-level messages will be logged.
+   */
   isDebugEnabled() {
     return this.level <= Severity.DEBUG
   }
-  /** @returns {boolean} Whether INFO-level messages will be logged. */
+
+  /**
+   * @returns {boolean} Whether INFO-level messages will be logged.
+   */
   isInfoEnabled() {
     return this.level <= Severity.INFO
   }
-  /** @returns {boolean} Whether WARN-level messages will be logged. */
+
+  /**
+   * @returns {boolean} Whether WARN-level messages will be logged.
+   */
   isWarnEnabled() {
     return this.level <= Severity.WARN
   }
-  /** @returns {boolean} Whether ERROR-level messages will be logged. */
+
+  /**
+   * @returns {boolean} Whether ERROR-level messages will be logged.
+   */
   isErrorEnabled() {
     return this.level <= Severity.ERROR
   }
-  /** @returns {boolean} Whether FATAL-level messages will be logged. */
+
+  /**
+   * @returns {boolean} Whether FATAL-level messages will be logged.
+   */
   isFatalEnabled() {
     return this.level <= Severity.FATAL
   }

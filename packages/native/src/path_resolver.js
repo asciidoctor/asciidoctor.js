@@ -19,12 +19,13 @@ const DOUBLE_SLASH = '//'
 const URI_CLASSLOADER = 'uri:classloader:'
 const WINDOWS_ROOT_RX = /^(?:[a-zA-Z]:)?[\\/]/
 
-// Public: Handles all operations for resolving, cleaning and joining paths.
+/** Handles all operations for resolving, cleaning and joining paths. */
 export class PathResolver {
-  // Public: Construct a new PathResolver.
-  //
-  // fileSeparator - The String file separator (default: '/' or '\\' on Windows).
-  // workingDir    - The String working directory (default: process.cwd()).
+  /**
+   * Construct a new PathResolver.
+   * @param {string|null} fileSeparator - The file separator (default: '/' or '\\' on Windows).
+   * @param {string|null} workingDir - The working directory (default: process.cwd()).
+   */
   constructor(fileSeparator = null, workingDir = null) {
     this.fileSeparator = fileSeparator ?? _platformSeparator()
     if (workingDir) {
@@ -38,9 +39,11 @@ export class PathResolver {
     this._partitionPathWeb = {}
   }
 
-  // Public: Check whether the specified path is an absolute path.
-  //
-  // Returns Boolean.
+  /**
+   * Check whether the specified path is an absolute path.
+   * @param {string} path
+   * @returns {boolean}
+   */
   absolutePath(path) {
     return (
       path.startsWith(SLASH) ||
@@ -49,39 +52,51 @@ export class PathResolver {
     )
   }
 
-  // Public: Check if the specified path is an absolute root path.
-  //
-  // Returns Boolean.
+  /**
+   * Check if the specified path is an absolute root path.
+   * @param {string} path
+   * @returns {boolean}
+   */
   root(path) {
     return this.absolutePath(path)
   }
 
-  // Public: Determine if the path is a UNC (root) path.
-  //
-  // Returns Boolean.
+  /**
+   * Determine if the path is a UNC (root) path.
+   * @param {string} path
+   * @returns {boolean}
+   */
   unc(path) {
     return path.startsWith(DOUBLE_SLASH)
   }
 
-  // Public: Determine if the path is an absolute (root) web path.
-  //
-  // Returns Boolean.
+  /**
+   * Determine if the path is an absolute (root) web path.
+   * @param {string} path
+   * @returns {boolean}
+   */
   webRoot(path) {
     return path.startsWith(SLASH)
   }
 
-  // Public: Determine whether path descends from base.
-  //
-  // Returns Integer offset if path descends from base, false otherwise.
+  /**
+   * Determine whether path descends from base.
+   * @param {string} path
+   * @param {string} base
+   * @returns {number|false} Offset if path descends from base, false otherwise.
+   */
   descendsFrom(path, base) {
     if (base === path) return 0
     if (base === SLASH) return path.startsWith(SLASH) ? 1 : false
     return path.startsWith(base + SLASH) ? base.length + 1 : false
   }
 
-  // Public: Calculate the relative path to this absolute path from the specified base directory.
-  //
-  // Returns a String relative path, or the original path if it cannot be made relative.
+  /**
+   * Calculate the relative path to this absolute path from the specified base directory.
+   * @param {string} path
+   * @param {string} base
+   * @returns {string} Relative path, or the original path if it cannot be made relative.
+   */
   relativePath(path, base) {
     if (this.root(path)) {
       const posixBase = this.posixify(base)
@@ -96,9 +111,11 @@ export class PathResolver {
     return path
   }
 
-  // Public: Normalize path by converting backslashes to forward slashes.
-  //
-  // Returns the posixified String path.
+  /**
+   * Normalize path by converting backslashes to forward slashes.
+   * @param {string} path
+   * @returns {string} The posixified path.
+   */
   posixify(path) {
     if (!path) return ''
     return this.fileSeparator === BACKSLASH && path.includes(BACKSLASH)
@@ -106,14 +123,19 @@ export class PathResolver {
       : path
   }
 
-  // Alias
+  /**
+   * @param {string} path
+   * @returns {string}
+   */
   posixfy(path) {
     return this.posixify(path)
   }
 
-  // Public: Expand the path by resolving parent references (..) and removing self references (.).
-  //
-  // Returns the expanded String path.
+  /**
+   * Expand the path by resolving parent references (..) and removing self references (.).
+   * @param {string} path
+   * @returns {string} The expanded path.
+   */
   expandPath(path) {
     const [pathSegments, pathRoot] = this.partitionPath(path)
     if (path.includes(DOT_DOT)) {
@@ -126,12 +148,12 @@ export class PathResolver {
     return this.joinPath(pathSegments, pathRoot)
   }
 
-  // Public: Partition the path into segments and a root prefix.
-  //
-  // path - the String path to partition
-  // web  - Boolean: treat as web path (optional, default: false)
-  //
-  // Returns a 2-item Array [segments, root] where root may be null.
+  /**
+   * Partition the path into segments and a root prefix.
+   * @param {string} path - The path to partition.
+   * @param {boolean} [web=false] - Treat as web path.
+   * @returns {[string[], string|null]} A 2-item array [segments, root] where root may be null.
+   */
   partitionPath(path, web = false) {
     const cache = web ? this._partitionPathWeb : this._partitionPathSys
     if (cache[path]) return cache[path]
@@ -174,21 +196,26 @@ export class PathResolver {
     return result
   }
 
-  // Public: Join segments with posix separator, prepending root if provided.
-  //
-  // Returns the joined String path.
+  /**
+   * Join segments with posix separator, prepending root if provided.
+   * @param {string[]} segments
+   * @param {string|null} [root=null]
+   * @returns {string} The joined path.
+   */
   joinPath(segments, root = null) {
     return root ? `${root}${segments.join(SLASH)}` : segments.join(SLASH)
   }
 
-  // Public: Securely resolve a system path.
-  //
-  // target - the String target path
-  // start  - the String start path (default: null)
-  // jail   - the String jail path (default: null)
-  // opts   - options: recover (Boolean, default: true), target_name (String)
-  //
-  // Returns an absolute posix String path.
+  /**
+   * Securely resolve a system path.
+   * @param {string} target - The target path.
+   * @param {string|null} [start=null] - The start path.
+   * @param {string|null} [jail=null] - The jail path.
+   * @param {Object} [opts={}] - Options.
+   * @param {boolean} [opts.recover=true] - Recover from jail escapes instead of throwing.
+   * @param {string} [opts.targetName='path'] - Name used in error messages.
+   * @returns {string} An absolute posix path.
+   */
   systemPath(target, start = null, jail = null, opts = {}) {
     const recover = opts.recover !== false
     const targetName = opts.targetName ?? opts.target_name ?? 'path'
@@ -325,12 +352,12 @@ export class PathResolver {
     return this.joinPath(resolvedSegments, jailRoot)
   }
 
-  // Public: Resolve a web path from the target and start paths.
-  //
-  // target - the String target path
-  // start  - the String start (parent) path (default: null)
-  //
-  // Returns a String path with parent references resolved and self references removed.
+  /**
+   * Resolve a web path from the target and start paths.
+   * @param {string} target - The target path.
+   * @param {string|null} [start=null] - The start (parent) path.
+   * @returns {string} Path with parent references resolved and self references removed.
+   */
   webPath(target, start = null) {
     target = this.posixify(target)
     start = this.posixify(start)
@@ -369,9 +396,12 @@ export class PathResolver {
     return uriPrefix ? `${uriPrefix}${resolvedPath}` : resolvedPath
   }
 
-  // Internal: Extract the URI prefix from a string if it is a URI.
-  //
-  // Returns [string_without_prefix, prefix] Array if URI, or the original string.
+  /**
+   * Extract the URI prefix from a string if it is a URI.
+   * @param {string} str
+   * @returns {[string, string]|string} [string_without_prefix, prefix] if URI, or the original string.
+   * @internal
+   */
   _extractUriPrefix(str) {
     if (str.includes(':')) {
       const m = str.match(UriSniffRx)
@@ -385,13 +415,21 @@ applyLogging(PathResolver.prototype)
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/**
+ * @returns {string}
+ * @internal
+ */
 function _platformSeparator() {
   if (typeof process !== 'undefined' && process.platform === 'win32')
     return '\\'
   return '/'
 }
 
-// Minimal expand_path for Node.js (absolute → posix string).
+/**
+ * @param {string} p
+ * @returns {string}
+ * @internal
+ */
 function _expandPath(p) {
   if (typeof process !== 'undefined') {
     // Lazy import to avoid top-level await
@@ -404,7 +442,12 @@ function _expandPath(p) {
   return p
 }
 
-// Compute relative path from `base` to `target` (both absolute POSIX strings).
+/**
+ * @param {string} target
+ * @param {string} base
+ * @returns {string}
+ * @internal
+ */
 function _computeRelativePath(target, base) {
   const targetParts = target.split('/').filter(Boolean)
   const baseParts = base.split('/').filter(Boolean)

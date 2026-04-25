@@ -22,44 +22,33 @@ export const Compliance = {
     'markdownSyntax',
   ]),
 
-  // AsciiDoc terminates paragraphs adjacent to block content (delimiter or
-  // block attribute list). Compliance value: true
+  /** AsciiDoc terminates paragraphs adjacent to block content (delimiter or block attribute list). Compliance value: true */
   blockTerminatesParagraph: true,
 
-  // AsciiDoc does not parse paragraphs with a verbatim style as verbatim
-  // content. Compliance value: false (Asciidoctor default: true)
+  /** AsciiDoc does not parse paragraphs with a verbatim style as verbatim content. Compliance value: false (Asciidoctor default: true) */
   strictVerbatimParagraphs: true,
 
-  // AsciiDoc supports both atx (single-line) and setext (underlined) section
-  // titles. Compliance value: true
+  /** AsciiDoc supports both atx (single-line) and setext (underlined) section titles. Compliance value: true */
   underlineStyleSectionTitles: true,
 
-  // Asciidoctor will unwrap the content in a preamble if the document has a
-  // title and no sections. Compliance value: false (Asciidoctor default: true)
+  /** Asciidoctor will unwrap the content in a preamble if the document has a title and no sections. Compliance value: false (Asciidoctor default: true) */
   unwrapStandalonePreamble: true,
 
-  // AsciiDoc drops lines that contain references to missing attributes.
-  // Possible values: 'skip', 'drop', 'drop-line', 'warn'.
-  // Compliance value: 'drop-line' (Asciidoctor default: 'skip')
+  /** AsciiDoc drops lines that contain references to missing attributes. Possible values: 'skip', 'drop', 'drop-line', 'warn'. Compliance value: 'drop-line' (Asciidoctor default: 'skip') */
   attributeMissing: 'skip',
 
-  // AsciiDoc drops lines that contain an attribute unassignment.
-  // Compliance value: 'drop-line'
+  /** AsciiDoc drops lines that contain an attribute unassignment. Compliance value: 'drop-line' */
   attributeUndefined: 'drop-line',
 
-  // Shorthand syntax for id, role and options on blocks (e.g. #id.role%opt).
-  // Compliance value: false (Asciidoctor default: true)
+  /** Shorthand syntax for id, role and options on blocks (e.g. #id.role%opt). Compliance value: false (Asciidoctor default: true) */
   shorthandPropertySyntax: true,
 
-  // Resolve cross-reference targets by matching reftext or title.
-  // Compliance value: false (Asciidoctor default: true)
+  /** Resolve cross-reference targets by matching reftext or title. Compliance value: false (Asciidoctor default: true) */
   naturalXrefs: true,
 
-  // Starting counter when generating a unique id on conflict.
-  // Compliance value: 2
+  /** Starting counter when generating a unique id on conflict. Compliance value: 2 */
   uniqueIdStartIndex: 2,
 
-  // Recognize commonly-used Markdown syntax where it does not conflict.
-  // Compliance value: false (Asciidoctor default: true)
+  /** Recognize commonly-used Markdown syntax where it does not conflict. Compliance value: false (Asciidoctor default: true) */
   markdownSyntax: true,
 }

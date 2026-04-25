@@ -52,10 +52,11 @@ export class Timings {
     return this.time('read', 'parse', 'convert', 'write')
   }
 
-  // Public: Print a summary report.
-  //
-  // out     - An object with a write(line) or log(line) method (default: console).
-  // subject - Optional String label for the input file.
+  /**
+   * Print a summary report.
+   * @param {{ write?: (s: string) => void, log?: (s: string) => void }} [out=console] - Output sink.
+   * @param {string|null} [subject=null] - Optional label for the input file.
+   */
   printReport(out = console, subject = null) {
     const writeln =
       typeof out.write === 'function'

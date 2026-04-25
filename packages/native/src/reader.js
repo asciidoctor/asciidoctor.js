@@ -215,11 +215,11 @@ export class Reader {
     return await this.nextLineEmpty()
   }
 
-  // Public: Peek at the next line without consuming it.
-  //
-  // direct - When true, bypass processLine and return the raw stack top.
-  //
-  // Returns the String next line, or undefined if there are no more lines.
+  /**
+   * Peek at the next line without consuming it.
+   * @param {boolean} [direct=false] - When true, bypass processLine and return the raw stack top.
+   * @returns {Promise<string|undefined>} The next line, or undefined if there are no more lines.
+   */
   async peekLine(direct = false) {
     while (true) {
       const nextLine = this._lines[this._lines.length - 1]
@@ -236,7 +236,12 @@ export class Reader {
     }
   }
 
-  // Public: Peek at the next num lines without consuming them.
+  /**
+   * Peek at the next num lines without consuming them.
+   * @param {number|null} [num=null]
+   * @param {boolean} [direct=false]
+   * @returns {Promise<string[]>}
+   */
   async peekLines(num = null, direct = false) {
     const oldLookAhead = this._lookAhead
     const result = []
@@ -359,22 +364,22 @@ export class Reader {
     this._lookAhead = 0
   }
 
-  // Public: Read lines until a termination condition is met.
-  //
-  // options - Plain object:
-  //   terminator            - String line at which to stop.
-  //   breakOnBlankLines     - Stop on blank lines.
-  //   breakOnListContinuation - Stop on a list continuation (+).
-  //   skipFirstLine         - Skip the first line before scanning.
-  //   preserveLastLine      - Push the terminating line back.
-  //   readLastLine          - Include the terminating line in result.
-  //   skipLineComments      - Skip line comments.
-  //   skipProcessing        - Disable line preprocessing for this call.
-  //   context               - Name used in unterminated-block warnings.
-  //   cursor                - Starting cursor for unterminated-block warnings.
-  // filter - Optional Function(line) → true to break.
-  //
-  // Returns a String Array.
+  /**
+   * Read lines until a termination condition is met.
+   * @param {Object} [options={}]
+   * @param {string} [options.terminator] - Line at which to stop.
+   * @param {boolean} [options.breakOnBlankLines] - Stop on blank lines.
+   * @param {boolean} [options.breakOnListContinuation] - Stop on a list continuation (+).
+   * @param {boolean} [options.skipFirstLine] - Skip the first line before scanning.
+   * @param {boolean} [options.preserveLastLine] - Push the terminating line back.
+   * @param {boolean} [options.readLastLine] - Include the terminating line in result.
+   * @param {boolean} [options.skipLineComments] - Skip line comments.
+   * @param {boolean} [options.skipProcessing] - Disable line preprocessing for this call.
+   * @param {string} [options.context] - Name used in unterminated-block warnings.
+   * @param {Cursor} [options.cursor] - Starting cursor for unterminated-block warnings.
+   * @param {Function|null} [filter=null] - Optional function(line) returning true to break.
+   * @returns {Promise<string[]>}
+   */
   async readLinesUntil(options = {}, filter = null) {
     const result = []
     let restoreProcessLines = false
@@ -490,13 +495,12 @@ export class Reader {
     return `${this.path}: line ${this.lineno}`
   }
 
-  // Public: Returns the remaining lines in forward order (first remaining line at index 0).
-  // The returned object is a mutable proxy so that element assignments like
-  //   reader.lines[i] = newValue
-  // are reflected back into the internal reversed stack.
-  //
-  // This matches the core API where `reader.lines` is a direct, mutable reference
-  // to the remaining source lines.
+  /**
+   * Returns the remaining lines in forward order (first remaining line at index 0).
+   * The returned object is a mutable proxy so that element assignments like
+   * `reader.lines[i] = newValue` are reflected back into the internal reversed stack.
+   * @returns {string[]}
+   */
   get lines() {
     const _l = this._lines
     const fwd = _l.slice().reverse()
@@ -562,37 +566,60 @@ export class Reader {
 
   // ── Internal (inheritable) ──────────────────────────────────────────────────
 
-  // Internal: Shift the top line off the stack and increment lineno.
-  // Subclasses may override to post-process consumed lines (see PreprocessorReader).
+  /**
+   * Shift the top line off the stack and increment lineno.
+   * Subclasses may override to post-process consumed lines (see PreprocessorReader).
+   * @returns {string|undefined}
+   * @internal
+   */
   _shift() {
     this.lineno++
     if (this._lookAhead > 0) this._lookAhead--
     return this._lines.pop()
   }
 
-  // Internal: Push a line onto the stack and decrement lineno.
+  /**
+   * Push a line onto the stack and decrement lineno.
+   * @param {string} line
+   * @internal
+   */
   _unshift(line) {
     this.lineno--
     this._lookAhead++
     this._lines.push(line)
   }
 
-  // Internal: Restore multiple lines onto the stack.
+  /**
+   * Restore multiple lines onto the stack.
+   * @param {string[]} linesToRestore
+   * @internal
+   */
   _unshiftAll(linesToRestore) {
     this.lineno -= linesToRestore.length
     this._lookAhead += linesToRestore.length
     this._lines.push(...linesToRestore.slice().reverse())
   }
 
-  // Internal: Process a line on first visit. Returns the line unmodified by
-  // default; subclasses override to evaluate preprocessor directives.
+  /**
+   * Process a line on first visit. Returns the line unmodified by default;
+   * subclasses override to evaluate preprocessor directives.
+   * @param {string} line
+   * @returns {string}
+   * @internal
+   */
   processLine(line) {
     if (this.processLines) this._lookAhead++
     return line
   }
 
-  // Internal: Prepare the source data into a String Array.
-  // Subclasses override to add front-matter / indentation handling.
+  /**
+   * Prepare the source data into a String Array.
+   * Subclasses override to add front-matter / indentation handling.
+   * @param {string|string[]|null} data
+   * @param {Object} [opts={}]
+   * @returns {string[]}
+   * @internal
+   */
   _prepareLines(data, opts = {}) {
     const normalize = opts.normalize
     if (normalize) {
@@ -686,8 +713,11 @@ export class PreprocessorReader extends Reader {
     return this._document?.logger ?? console
   }
 
-  // Override: drain conditional stack at EOS; treat blank lines as lines (not as EOF).
-  // peekLine() returns undefined only at true EOF; '' for blank lines.
+  /**
+   * Drain conditional stack at EOS; treat blank lines as lines (not as EOF).
+   * `peekLine()` returns undefined only at true EOF; '' for blank lines.
+   * @returns {Promise<boolean>}
+   */
   async hasMoreLines() {
     return (await this.peekLine()) !== undefined
   }
@@ -718,7 +748,10 @@ export class PreprocessorReader extends Reader {
     return await this.peekLine(direct)
   }
 
-  // Override: strip leading backslash from escaped directives.
+  /**
+   * Strip leading backslash from escaped directives.
+   * @returns {string|undefined}
+   */
   _shift() {
     if (this._unescapeNextLine) {
       this._unescapeNextLine = false
@@ -728,9 +761,15 @@ export class PreprocessorReader extends Reader {
     return super._shift()
   }
 
-  // Public: Push new source onto the reader, switching the include context.
-  //
-  // Returns this reader.
+  /**
+   * Push new source onto the reader, switching the include context.
+   * @param {string|string[]} data
+   * @param {string|null} [file=null]
+   * @param {string|null} [path=null]
+   * @param {number} [lineno=1]
+   * @param {Object} [attributes={}]
+   * @returns {this}
+   */
   pushInclude(data, file = null, path = null, lineno = 1, attributes = {}) {
     this.includeStack.push([
       this._lines,
@@ -851,7 +890,7 @@ export class PreprocessorReader extends Reader {
     return `#<PreprocessorReader {path: ${JSON.stringify(this.path)}, line: ${this.lineno}, include depth: ${this.includeStack.length}}>`
   }
 
-  // Override: save PreprocessorReader-specific fields in addition to Reader fields.
+  /** Save PreprocessorReader-specific fields in addition to Reader fields. */
   save() {
     super.save()
     Object.assign(this._saved, {
@@ -862,7 +901,7 @@ export class PreprocessorReader extends Reader {
     })
   }
 
-  // Override: also restore PreprocessorReader-specific fields.
+  /** Also restore PreprocessorReader-specific fields. */
   restoreSave() {
     if (!this._saved) return
     this._maxdepth = this._saved.maxdepth
@@ -872,7 +911,12 @@ export class PreprocessorReader extends Reader {
     super.restoreSave()
   }
 
-  // Override: add front-matter stripping and indentation adjustment.
+  /**
+   * Add front-matter stripping and indentation adjustment.
+   * @param {string|string[]|null} data
+   * @param {Object} [opts={}]
+   * @returns {string[]}
+   */
   _prepareLines(data, opts = {}) {
     const result = super._prepareLines(data, opts)
 
@@ -896,7 +940,11 @@ export class PreprocessorReader extends Reader {
     return result
   }
 
-  // Override: evaluate preprocessor directives as lines are visited.
+  /**
+   * Evaluate preprocessor directives as lines are visited.
+   * @param {string} line
+   * @returns {Promise<string|undefined>}
+   */
   async processLine(line) {
     if (!this.processLines) return line
 
@@ -967,8 +1015,15 @@ export class PreprocessorReader extends Reader {
 
   // ── Private preprocessor logic ──────────────────────────────────────────────
 
-  // Internal: Evaluate a conditional directive (ifdef/ifndef/ifeval/endif).
-  // Returns true if the cursor should advance past this line.
+  /**
+   * Evaluate a conditional directive (ifdef/ifndef/ifeval/endif).
+   * @param {string} name
+   * @param {string} target
+   * @param {string|null} delimiter
+   * @param {string|null} text
+   * @returns {boolean} True if the cursor should advance past this line.
+   * @internal
+   */
   _preprocessConditionalDirective(name, target, delimiter, text) {
     const noTarget = target === ''
     if (!noTarget) target = target.toLowerCase()
@@ -1100,8 +1155,13 @@ export class PreprocessorReader extends Reader {
     return true
   }
 
-  // Internal: Evaluate a conditional include directive.
-  // Returns true if the line under the cursor was consumed or changed.
+  /**
+   * Evaluate a conditional include directive.
+   * @param {string} target
+   * @param {string|null} attrlist
+   * @returns {Promise<boolean|undefined>} True if the line under the cursor was consumed or changed.
+   * @internal
+   */
   async _preprocessIncludeDirective(target, attrlist) {
     await _requireFsp()
     const doc = this._document
@@ -1331,9 +1391,13 @@ export class PreprocessorReader extends Reader {
     return true
   }
 
-  // Internal: Check whether the current context requires browser-mode include resolution.
-  // Browser mode applies when there is no Node.js fs (true browser environment) or when
-  // the document base_dir is a URI (file:// or http(s)://), even in Node.js.
+  /**
+   * Check whether the current context requires browser-mode include resolution.
+   * Browser mode applies when there is no Node.js fs (true browser environment) or when
+   * the document base_dir is a URI (file:// or http(s)://), even in Node.js.
+   * @returns {boolean}
+   * @internal
+   */
   _isBrowserMode() {
     if (!_fsp) return true
     const baseDir = this._document.baseDir
@@ -1344,7 +1408,14 @@ export class PreprocessorReader extends Reader {
     )
   }
 
-  // Internal: Resolve the include target to [incPath, targetType, relpath] or a Boolean.
+  /**
+   * Resolve the include target to [incPath, targetType, relpath] or a Boolean.
+   * @param {string} target
+   * @param {string|null} attrlist
+   * @param {Object} attributes
+   * @returns {Promise<[string, string, string]|boolean|undefined>}
+   * @internal
+   */
   async _resolveIncludePath(target, attrlist, attributes) {
     const doc = this._document
 
@@ -1396,7 +1467,10 @@ export class PreprocessorReader extends Reader {
     return [incPath, 'file', relpath]
   }
 
-  // Internal: Pop the top include context and restore state.
+  /**
+   * Pop the top include context and restore state.
+   * @internal
+   */
   _popInclude() {
     if (this.includeStack.length === 0) return
     ;[
@@ -1411,7 +1485,13 @@ export class PreprocessorReader extends Reader {
     this._lookAhead = 0
   }
 
-  // Internal: Read lines filtered by line-number ranges.
+  /**
+   * Read lines filtered by line-number ranges.
+   * @param {string[]} fileLines
+   * @param {number[]} incLinenos
+   * @returns {{incLines: string[], incOffset: number|null}}
+   * @internal
+   */
   _filterLinesByLinenos(fileLines, incLinenos) {
     const remaining = [...incLinenos]
     const incLines = []
@@ -1436,7 +1516,17 @@ export class PreprocessorReader extends Reader {
     return { incLines, incOffset }
   }
 
-  // Internal: Filter lines by tag directives.
+  /**
+   * Filter lines by tag directives.
+   * @param {string[]} fileLines
+   * @param {string} incPath
+   * @param {string} expandedTarget
+   * @param {string} targetType
+   * @param {Object} incTagsIn
+   * @param {Object} parsedAttrs
+   * @returns {{incLines: string[], incOffset: number|null}}
+   * @internal
+   */
   _filterLinesByTags(
     fileLines,
     incPath,
@@ -1548,8 +1638,13 @@ export class PreprocessorReader extends Reader {
     return { incLines, incOffset }
   }
 
-  // Internal: Strip YAML/TOML front matter from the data Array (in-place).
-  // Returns the front-matter lines, or null if no front matter was found.
+  /**
+   * Strip YAML/TOML front matter from the data Array (in-place).
+   * @param {string[]} data
+   * @param {boolean} [incrementLinenos=true]
+   * @returns {string[]|null} The front-matter lines, or null if no front matter was found.
+   * @internal
+   */
   _skipFrontMatter(data, incrementLinenos = true) {
     const delim = data[0]
     if (delim !== '---' && delim !== '+++') return null
@@ -1573,7 +1668,12 @@ export class PreprocessorReader extends Reader {
     return frontMatter
   }
 
-  // Internal: Resolve the value of one side of an ifeval expression.
+  /**
+   * Resolve the value of one side of an ifeval expression.
+   * @param {string} val
+   * @returns {string|number|boolean|null}
+   * @internal
+   */
   _resolveExprVal(val) {
     let quoted = false
     if (
@@ -1595,7 +1695,14 @@ export class PreprocessorReader extends Reader {
     return parseInt(val, 10)
   }
 
-  // Internal: Evaluate a binary comparison.
+  /**
+   * Evaluate a binary comparison.
+   * @param {*} lhs
+   * @param {string} op
+   * @param {*} rhs
+   * @returns {boolean}
+   * @internal
+   */
   _evalOp(lhs, op, rhs) {
     // Reject comparisons that mix boolean with non-boolean (invalid in Ruby — throws TypeError).
     if ((typeof lhs === 'boolean') !== (typeof rhs === 'boolean'))
@@ -1609,7 +1716,12 @@ export class PreprocessorReader extends Reader {
     return false
   }
 
-  // Internal: Split a delimited value on comma (if present), otherwise semicolon.
+  /**
+   * Split a delimited value on comma (if present), otherwise semicolon.
+   * @param {string} val
+   * @returns {string[]}
+   * @internal
+   */
   _splitDelimitedValue(val) {
     return val.includes(',') ? val.split(',') : val.split(';')
   }

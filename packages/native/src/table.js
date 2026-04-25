@@ -16,13 +16,25 @@ import { LF, ATTR_REF_HEAD } from './constants.js'
 import { BlankLineRx, LeadingInlineAnchorRx } from './rx.js'
 import { BASIC_SUBS, NORMAL_SUBS } from './substitutors.js'
 
-// Helper: truncate a float to `precision` decimal places (like Ruby's Float#truncate).
+/**
+ * Truncate a float to `precision` decimal places (like Ruby's Float#truncate).
+ * @param {number} value
+ * @param {number} precision
+ * @returns {number}
+ * @internal
+ */
 function truncate(value, precision) {
   const factor = 10 ** precision
   return Math.trunc(value * factor) / factor
 }
 
-// Helper: collapse consecutive identical characters (like Ruby's String#squeeze(q)).
+/**
+ * Collapse consecutive identical characters (like Ruby's String#squeeze(q)).
+ * @param {string} str
+ * @param {string} ch
+ * @returns {string}
+ * @internal
+ */
 function squeezeChar(str, ch) {
   const double = ch + ch
   while (str.includes(double)) str = str.replaceAll(double, ch)
@@ -68,13 +80,21 @@ export class Table extends AbstractBlock {
     if ('rotate-option' in attributes) this.attributes.orientation = 'landscape'
   }
 
-  // Internal: Returns the header option state if the row being processed is the header row, otherwise false.
+  /**
+   * Returns the header option state if the row being processed is the header row, otherwise false.
+   * @returns {boolean|string}
+   * @internal
+   */
   headerRow() {
     const val = this.hasHeaderOption
     return val && this.rows.body.length === 0 ? val : false
   }
 
-  // Internal: Create Column objects from the column spec array.
+  /**
+   * Create Column objects from the column spec array.
+   * @param {Object[]} colspecs
+   * @internal
+   */
   createColumns(colspecs) {
     const cols = []
     let autowidthCols = null
@@ -98,7 +118,12 @@ export class Table extends AbstractBlock {
     }
   }
 
-  // Internal: Assign percentage (and absolute) widths to all columns.
+  /**
+   * Assign percentage (and absolute) widths to all columns.
+   * @param {number|null} [widthBase=null]
+   * @param {Table.Column[]|null} [autowidthCols=null]
+   * @internal
+   */
   assignColumnWidths(widthBase = null, autowidthCols = null) {
     const precision = DEFAULT_PRECISION
     let totalWidth = 0
@@ -147,7 +172,11 @@ export class Table extends AbstractBlock {
     }
   }
 
-  // Internal: Partition rows into header, footer, and body.
+  /**
+   * Partition rows into header, footer, and body.
+   * @param {Object} attrs
+   * @internal
+   */
   async partitionHeaderFooter(attrs) {
     const body = this.rows.body
     let numBodyRows = (this.attributes.rowcount = body.length)
@@ -185,7 +214,10 @@ Table.Rows = class Rows {
     this.body = body
   }
 
-  // Public: Retrieve the rows grouped by section as a nested Array.
+  /**
+   * Retrieve the rows grouped by section as a nested Array.
+   * @returns {Array<[string, Array]>}
+   */
   bySection() {
     return [
       ['head', this.head],
@@ -212,14 +244,19 @@ Table.Column = class Column extends AbstractNode {
     this.updateAttributes(attributes)
   }
 
-  // Alias for parent (always a Table).
+  /** Alias for parent (always a Table). */
   get table() {
     return this.parent
   }
 
-  // Internal: Calculate and assign the widths for this column.
-  //
-  // Returns the resolved colpcwidth value.
+  /**
+   * Calculate and assign the widths for this column.
+   * @param {number|null} colPcwidth
+   * @param {number|null} widthBase
+   * @param {number} precision
+   * @returns {number} The resolved colpcwidth value.
+   * @internal
+   */
   assignWidth(colPcwidth, widthBase, precision) {
     if (widthBase != null) {
       colPcwidth = truncate(
@@ -386,16 +423,24 @@ class Cell extends AbstractBlock {
     this.style = cellStyle
   }
 
-  // Alias for parent (always a Column).
+  /** Alias for parent (always a Column). */
   get column() {
     return this.parent
   }
 
-  // Public: Factory — create and fully initialize a Cell asynchronously.
-  // For AsciiDoc cells, parses the nested document.
-  // NOTE: _innerContent is NOT pre-computed here. Document.convert() will call
-  // _convertAsciiDocCells() after parse completes (so callouts are rewound and
-  // all cross-references from the parent document are already registered).
+  /**
+   * Factory — create and fully initialize a Cell asynchronously.
+   * For AsciiDoc cells, parses the nested document.
+   *
+   * NOTE: _innerContent is NOT pre-computed here. Document.convert() will call
+   * _convertAsciiDocCells() after parse completes (so callouts are rewound and
+   * all cross-references from the parent document are already registered).
+   * @param {Table.Column} column
+   * @param {string} cellText
+   * @param {Object} [attributes={}]
+   * @param {Object} [opts={}]
+   * @returns {Promise<Table.Cell>}
+   */
   static async create(column, cellText, attributes = {}, opts = {}) {
     const cell = new Table.Cell(column, cellText, attributes, opts)
     if (cell._innerDocSetup) {
@@ -437,15 +482,21 @@ class Cell extends AbstractBlock {
     ])
   }
 
-  // Public: Get the String text with substitutions applied.
-  // The result is pre-computed during Document.parse() via precomputeText().
-  // Falls back to the raw text if precomputeText() has not been called yet.
+  /**
+   * Get the text with substitutions applied.
+   * The result is pre-computed during Document.parse() via precomputeText().
+   * Falls back to the raw text if precomputeText() has not been called yet.
+   * @returns {string|null}
+   */
   get text() {
     return this._convertedText ?? this._text ?? null
   }
 
-  // Public: Pre-compute the converted text asynchronously.
-  // Called during Document.parse() so the synchronous getter works during conversion.
+  /**
+   * Pre-compute the converted text asynchronously.
+   * Called during Document.parse() so the synchronous getter works during conversion.
+   * @returns {Promise<void>}
+   */
   async precomputeText() {
     if (this._subs && this._convertedText == null) {
       this._convertedText = await this.applySubs(this._text, this._subs)
@@ -461,8 +512,11 @@ class Cell extends AbstractBlock {
     this._convertedText = null
   }
 
-  // Public: Get the content — converted body data.
-  // For AsciiDoc cells, returns the pre-computed content (set by Document.convert()).
+  /**
+   * Get the content — converted body data.
+   * For AsciiDoc cells, returns the pre-computed content (set by Document.convert()).
+   * @returns {Promise<string|string[]>}
+   */
   async content() {
     if (this.style === 'asciidoc') {
       return this._innerContent ?? ''
@@ -792,8 +846,10 @@ Table.ParserContext = class ParserContext {
     )
   }
 
-  // Private
-
+  /**
+   * @param {boolean} [drop=false]
+   * @internal
+   */
   _closeRow(drop = false) {
     if (!drop) this.table.rows.body.push(this._currentRow)
     if (this.colcount === -1) this.colcount = this._columnVisits

@@ -19,8 +19,8 @@ export class Reader {
     path: any;
     lineno: any;
     _document: any;
-    sourceLines: any;
-    _lines: any;
+    sourceLines: string[];
+    _lines: string[];
     _mark: any;
     _lookAhead: number;
     processLines: boolean;
@@ -32,11 +32,22 @@ export class Reader {
     eof(): boolean;
     nextLineEmpty(): Promise<boolean>;
     isNextLineEmpty(): Promise<boolean>;
-    peekLine(direct?: boolean): Promise<any>;
-    peekLines(num?: any, direct?: boolean): Promise<any[]>;
-    readLine(): Promise<any>;
-    readLines(): Promise<any[]>;
-    readlines(): Promise<any[]>;
+    /**
+     * Peek at the next line without consuming it.
+     * @param {boolean} [direct=false] - When true, bypass processLine and return the raw stack top.
+     * @returns {Promise<string|undefined>} The next line, or undefined if there are no more lines.
+     */
+    peekLine(direct?: boolean): Promise<string | undefined>;
+    /**
+     * Peek at the next num lines without consuming them.
+     * @param {number|null} [num=null]
+     * @param {boolean} [direct=false]
+     * @returns {Promise<string[]>}
+     */
+    peekLines(num?: number | null, direct?: boolean): Promise<string[]>;
+    readLine(): Promise<string>;
+    readLines(): Promise<string[]>;
+    readlines(): Promise<string[]>;
     read(): Promise<string>;
     advance(): Promise<boolean>;
     unshiftLine(lineToRestore: any): void;
@@ -47,9 +58,36 @@ export class Reader {
     replaceLine(replacement: any): boolean;
     skipBlankLines(): Promise<number>;
     skipCommentLines(): Promise<void>;
-    skipLineComments(): Promise<any[]>;
+    skipLineComments(): Promise<string[]>;
     terminate(): void;
-    readLinesUntil(options?: {}, filter?: any): Promise<any[]>;
+    /**
+     * Read lines until a termination condition is met.
+     * @param {Object} [options={}]
+     * @param {string} [options.terminator] - Line at which to stop.
+     * @param {boolean} [options.breakOnBlankLines] - Stop on blank lines.
+     * @param {boolean} [options.breakOnListContinuation] - Stop on a list continuation (+).
+     * @param {boolean} [options.skipFirstLine] - Skip the first line before scanning.
+     * @param {boolean} [options.preserveLastLine] - Push the terminating line back.
+     * @param {boolean} [options.readLastLine] - Include the terminating line in result.
+     * @param {boolean} [options.skipLineComments] - Skip line comments.
+     * @param {boolean} [options.skipProcessing] - Disable line preprocessing for this call.
+     * @param {string} [options.context] - Name used in unterminated-block warnings.
+     * @param {Cursor} [options.cursor] - Starting cursor for unterminated-block warnings.
+     * @param {Function|null} [filter=null] - Optional function(line) returning true to break.
+     * @returns {Promise<string[]>}
+     */
+    readLinesUntil(options?: {
+        terminator?: string;
+        breakOnBlankLines?: boolean;
+        breakOnListContinuation?: boolean;
+        skipFirstLine?: boolean;
+        preserveLastLine?: boolean;
+        readLastLine?: boolean;
+        skipLineComments?: boolean;
+        skipProcessing?: boolean;
+        context?: string;
+        cursor?: Cursor;
+    }, filter?: Function | null): Promise<string[]>;
     get cursor(): Cursor;
     cursorAtLine(lineno: any): Cursor;
     cursorAtMark(): Cursor;
@@ -57,21 +95,22 @@ export class Reader {
     cursorAtPrevLine(): Cursor;
     mark(): void;
     lineInfo(): string;
-    get lines(): any;
-    string(): any;
-    source(): any;
+    /**
+     * Returns the remaining lines in forward order (first remaining line at index 0).
+     * The returned object is a mutable proxy so that element assignments like
+     * `reader.lines[i] = newValue` are reflected back into the internal reversed stack.
+     * @returns {string[]}
+     */
+    get lines(): string[];
+    string(): string;
+    source(): string;
     save(): void;
     restoreSave(): void;
     discardSave(): void;
     toString(): string;
-    _shift(): any;
-    _unshift(line: any): void;
-    _unshiftAll(linesToRestore: any): void;
-    processLine(line: any): any;
-    _prepareLines(data: any, opts?: {}): any;
     getCursor(): Cursor;
-    getLines(): any;
-    getString(): any;
+    getLines(): string[];
+    getString(): string;
     getLogger(): any;
     createLogMessage(text: any, context?: {}): any;
     get logger(): any;
@@ -92,32 +131,34 @@ export class PreprocessorReader extends Reader {
     _skipping: boolean;
     _conditionalStack: any[];
     _includeProcessorExtensions: any;
+    /**
+     * Drain conditional stack at EOS; treat blank lines as lines (not as EOF).
+     * `peekLine()` returns undefined only at true EOF; '' for blank lines.
+     * @returns {Promise<boolean>}
+     */
     hasMoreLines(): Promise<boolean>;
     empty(): Promise<boolean>;
     eof(): Promise<boolean>;
     peekLine(direct?: boolean): any;
-    pushInclude(data: any, file?: any, path?: any, lineno?: number, attributes?: {}): this;
+    /**
+     * Push new source onto the reader, switching the include context.
+     * @param {string|string[]} data
+     * @param {string|null} [file=null]
+     * @param {string|null} [path=null]
+     * @param {number} [lineno=1]
+     * @param {Object} [attributes={}]
+     * @returns {this}
+     */
+    pushInclude(data: string | string[], file?: string | null, path?: string | null, lineno?: number, attributes?: any): this;
     get includeDepth(): number;
     exceedsMaxDepth(): number;
     exceededMaxDepth(): number;
     hasIncludeProcessors(): boolean;
     createIncludeCursor(file: any, path: any, lineno: any): Cursor;
-    processLine(line: any): Promise<any>;
-    _preprocessConditionalDirective(name: any, target: any, delimiter: any, text: any): boolean;
-    _preprocessIncludeDirective(target: any, attrlist: any): Promise<any>;
-    _isBrowserMode(): any;
-    _resolveIncludePath(target: any, attrlist: any, attributes: any): Promise<any>;
-    _popInclude(): void;
-    _filterLinesByLinenos(fileLines: any, incLinenos: any): {
-        incLines: string[];
-        incOffset: number;
-    };
-    _filterLinesByTags(fileLines: any, incPath: any, expandedTarget: any, targetType: any, incTagsIn: any, parsedAttrs: any): {
-        incLines: string[];
-        incOffset: number;
-    };
-    _skipFrontMatter(data: any, incrementLinenos?: boolean): any[];
-    _resolveExprVal(val: any): any;
-    _evalOp(lhs: any, op: any, rhs: any): boolean;
-    _splitDelimitedValue(val: any): any;
+    /**
+     * Evaluate preprocessor directives as lines are visited.
+     * @param {string} line
+     * @returns {Promise<string|undefined>}
+     */
+    processLine(line: string): Promise<string | undefined>;
 }

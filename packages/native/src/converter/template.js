@@ -68,17 +68,16 @@ export class TemplateConverter extends ConverterBase {
     return TemplateConverter._caches
   }
 
-  // Public: Construct a new TemplateConverter (synchronous setup only).
-  //
-  // Prefer TemplateConverter.create() which also runs the async _scan() step.
-  //
-  // backend      - the String backend name (e.g. 'html5')
-  // templateDirs - an Array of String paths to scan for templates
-  // opts         - options Hash:
-  //   :template_engine         - String engine name restriction (e.g. 'nunjucks')
-  //   :template_engine_options - Hash of per-engine option hashes
-  //   :template_cache          - true → use class-level cache, Hash → use supplied cache,
-  //                              anything else → no caching
+  /**
+   * Construct a new TemplateConverter (synchronous setup only).
+   * Prefer TemplateConverter.create() which also runs the async _scan() step.
+   * @param {string} backend - the backend name (e.g. 'html5')
+   * @param {string|string[]} templateDirs - paths to scan for templates
+   * @param {Object} [opts={}]
+   * @param {string} [opts.template_engine] - engine name restriction (e.g. 'nunjucks')
+   * @param {Object} [opts.template_engine_options] - per-engine option objects
+   * @param {boolean|Object} [opts.template_cache] - true → class-level cache, Object → supplied cache
+   */
   constructor(backend, templateDirs, opts = {}) {
     super(backend, opts)
     this._templates = {}
@@ -97,24 +96,30 @@ export class TemplateConverter extends ConverterBase {
     }
   }
 
-  // Public: Async factory — create and fully initialize a TemplateConverter.
+  /**
+   * Async factory — create and fully initialize a TemplateConverter.
+   * @param {string} backend
+   * @param {string|string[]} templateDirs
+   * @param {Object} [opts={}]
+   * @returns {Promise<TemplateConverter>}
+   */
   static async create(backend, templateDirs, opts = {}) {
     const converter = new TemplateConverter(backend, templateDirs, opts)
     await converter._scan()
     return converter
   }
 
-  // Public: Convert an AbstractNode to the backend format using the named template.
-  //
-  // node         - the AbstractNode to convert
-  // templateName - the String name of the template to use (default: node.nodeName)
-  // opts         - optional plain object passed as locals to the template
-  //
-  // Returns a Promise that resolves to the String result from rendering the template.
-  //
-  // Note: convert() is async because getContent() / applySubs() in the native package
-  // is async throughout. We pre-resolve content here and expose it synchronously to
-  // template engines (which are all synchronous) via a Proxy wrapper.
+  /**
+   * Convert an AbstractNode to the backend format using the named template.
+   *
+   * Note: convert() is async because getContent() / applySubs() in the native package
+   * is async throughout. We pre-resolve content here and expose it synchronously to
+   * template engines (which are all synchronous) via a Proxy wrapper.
+   * @param {object} node - the AbstractNode to convert
+   * @param {string|null} [templateName=null] - the template name to use (default: node.nodeName)
+   * @param {object|null} [opts=null] - optional plain object passed as locals to the template
+   * @returns {Promise<string>}
+   */
   async convert(node, templateName = null, opts = null) {
     const name = templateName ?? node.nodeName
     const template = this._templates[name]
@@ -156,33 +161,37 @@ export class TemplateConverter extends ConverterBase {
     return name === 'document' ? result.trim() : result.trimEnd()
   }
 
-  // Public: Check whether there is a template registered for the given name.
-  //
-  // Returns Boolean.
+  /**
+   * Check whether there is a template registered for the given name.
+   * @param {string} name
+   * @returns {boolean}
+   */
   handles(name) {
     return Object.hasOwn(this._templates, name)
   }
 
-  // Public: Retrieve a shallow copy of the templates map.
-  //
-  // Returns a plain object keyed by template name.
+  /**
+   * Retrieve a shallow copy of the templates map.
+   * @returns {Object} plain object keyed by template name
+   */
   get templates() {
     return { ...this._templates }
   }
 
-  // Public: Method alias for the templates getter — matches the core/Ruby API.
-  //
-  // Returns a plain object keyed by template name.
+  /**
+   * Method alias for the templates getter — matches the core/Ruby API.
+   * @returns {Object} plain object keyed by template name
+   */
   getTemplates() {
     return { ...this._templates }
   }
 
-  // Public: Register a template with this converter (and optionally the template cache).
-  //
-  // name     - the String template name
-  // template - the template object ({ render(ctx), file })
-  //
-  // Returns the template object.
+  /**
+   * Register a template with this converter (and optionally the template cache).
+   * @param {string} name - the template name
+   * @param {{ render: Function, file: string }} template - the template object
+   * @returns {{ render: Function, file: string }} the template object
+   */
   register(name, template) {
     if (this.caches.templates && template.file) {
       this.caches.templates[template.file] = template
@@ -193,7 +202,11 @@ export class TemplateConverter extends ConverterBase {
 
   // ── Private ──────────────────────────────────────────────────────────────────
 
-  // Internal: Scan all template directories and populate this._templates.
+  /**
+   * Scan all template directories and populate this._templates.
+   * @returns {Promise<void>}
+   * @internal
+   */
   async _scan() {
     const pathResolver = new PathResolver()
     const backend = this.backend
@@ -248,13 +261,14 @@ export class TemplateConverter extends ConverterBase {
     }
   }
 
-  // Internal: Scan templateDir for template files and return a map of name → template.
-  //
-  // templateDir   - String absolute path to the directory to scan
-  // fileExtFilter - String extension restriction (without leading dot), or null for all
-  // templateCache - Object cache of file → template, or falsy if no cache
-  //
-  // Returns a plain object { [name]: template }.
+  /**
+   * Scan templateDir for template files and return a map of name → template.
+   * @param {string} templateDir - absolute path to the directory to scan
+   * @param {string|null} fileExtFilter - extension restriction (without leading dot), or null for all
+   * @param {Object|null} [templateCache=null] - cache of file → template, or falsy if no cache
+   * @returns {Promise<Object>} plain object { [name]: template }
+   * @internal
+   */
   async _scanDir(templateDir, fileExtFilter, templateCache = null) {
     const result = {}
     let helpersFile = null
@@ -375,9 +389,13 @@ export class TemplateConverter extends ConverterBase {
     return result
   }
 
-  // Internal: Load an optional Node.js module by name.
-  //
-  // Throws an Error with a friendly message if the module is not installed.
+  /**
+   * Load an optional Node.js module by name.
+   * @param {string} moduleName
+   * @returns {*} the required module
+   * @throws {Error} with a friendly message if the module is not installed
+   * @internal
+   */
   _nodeRequire(moduleName) {
     try {
       return _require(moduleName)

@@ -44,34 +44,53 @@ export const SafeMode = {
   SERVER: 10,
   SECURE: 20,
 
-  // Returns the numeric value for a safe-mode name string, or undefined.
+  /**
+   * Returns the numeric value for a safe-mode name string, or undefined.
+   * @param {string} name
+   * @returns {number|undefined}
+   */
   valueForName(name) {
     const key = String(name).toUpperCase()
     const v = SafeMode[key]
     return typeof v === 'number' ? v : undefined
   },
 
-  // Alias for valueForName
+  /**
+   * @param {string} name
+   * @returns {number|undefined}
+   */
   getValueForName(name) {
     return this.valueForName(name)
   },
 
-  // Returns the lowercase name for a numeric safe-mode value, or undefined.
+  /**
+   * Returns the lowercase name for a numeric safe-mode value, or undefined.
+   * @param {number} value
+   * @returns {string|undefined}
+   */
   nameForValue(value) {
     return _safeModeNamesByValue[value]
   },
 
-  // Alias for nameForValue
+  /**
+   * @param {number} value
+   * @returns {string|undefined}
+   */
   getNameForValue(value) {
     return this.nameForValue(value)
   },
 
-  // Returns all safe-mode names in ascending value order.
+  /**
+   * Returns all safe-mode names in ascending value order.
+   * @returns {string[]}
+   */
   names() {
     return Object.values(_safeModeNamesByValue)
   },
 
-  // Alias for names
+  /**
+   * @returns {string[]}
+   */
   getNames() {
     return this.names()
   },

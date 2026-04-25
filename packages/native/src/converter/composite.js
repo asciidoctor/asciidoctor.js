@@ -36,21 +36,23 @@ export class CompositeConverter {
     this._converterCache = new Map()
   }
 
-  // Public: Delegates to the first converter that handles the given transform.
-  //
-  // node      - the AbstractNode to convert
-  // transform - the optional String transform (default: node.nodeName)
-  // opts      - optional hints passed to the delegate's convert method
-  //
-  // Returns the String result from the delegate's convert method.
+  /**
+   * Delegates to the first converter that handles the given transform.
+   * @param {object} node - the AbstractNode to convert
+   * @param {string|null} [transform=null] - the optional transform (default: node.nodeName)
+   * @param {object|null} [opts=null] - optional hints passed to the delegate's convert method
+   * @returns {Promise<string>} the result from the delegate's convert method
+   */
   convert(node, transform = null, opts = null) {
     const t = transform ?? node.nodeName
     return this.converterFor(t).convert(node, t, opts)
   }
 
-  // Public: Retrieve the converter for the specified transform (cached).
-  //
-  // Returns the matching Converter object.
+  /**
+   * Retrieve the converter for the specified transform (cached).
+   * @param {string} transform
+   * @returns {object} the matching converter
+   */
   converterFor(transform) {
     if (this._converterCache.has(transform))
       return this._converterCache.get(transform)
@@ -59,10 +61,13 @@ export class CompositeConverter {
     return converter
   }
 
-  // Public: Find the converter for the specified transform.
-  // Throws an Error if no converter handles the transform.
-  //
-  // Returns the matching Converter object.
+  /**
+   * Find the converter for the specified transform.
+   * @param {string} transform
+   * @returns {object} the matching converter
+   * @throws {Error} if no converter handles the transform
+   * @internal
+   */
   _findConverter(transform) {
     for (const candidate of this.converters) {
       if (

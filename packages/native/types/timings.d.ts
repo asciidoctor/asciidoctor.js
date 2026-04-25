@@ -12,6 +12,14 @@ export class Timings {
     readParseConvert(): any;
     write(): any;
     total(): any;
-    printReport(out?: any, subject?: any): void;
+    /**
+     * Print a summary report.
+     * @param {{ write?: (s: string) => void, log?: (s: string) => void }} [out=console] - Output sink.
+     * @param {string|null} [subject=null] - Optional label for the input file.
+     */
+    printReport(out?: {
+        write?: (s: string) => void;
+        log?: (s: string) => void;
+    }, subject?: string | null): void;
     _now(): any;
 }

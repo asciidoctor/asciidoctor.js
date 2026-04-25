@@ -4,11 +4,36 @@ export namespace SafeMode {
     let SAFE: number;
     let SERVER: number;
     let SECURE: number;
-    function valueForName(name: any): number;
-    function getValueForName(name: any): number;
-    function nameForValue(value: any): any;
-    function getNameForValue(value: any): any;
+    /**
+     * Returns the numeric value for a safe-mode name string, or undefined.
+     * @param {string} name
+     * @returns {number|undefined}
+     */
+    function valueForName(name: string): number | undefined;
+    /**
+     * @param {string} name
+     * @returns {number|undefined}
+     */
+    function getValueForName(name: string): number | undefined;
+    /**
+     * Returns the lowercase name for a numeric safe-mode value, or undefined.
+     * @param {number} value
+     * @returns {string|undefined}
+     */
+    function nameForValue(value: number): string | undefined;
+    /**
+     * @param {number} value
+     * @returns {string|undefined}
+     */
+    function getNameForValue(value: number): string | undefined;
+    /**
+     * Returns all safe-mode names in ascending value order.
+     * @returns {string[]}
+     */
     function names(): string[];
+    /**
+     * @returns {string[]}
+     */
     function getNames(): string[];
 }
 export const LF: "\n";

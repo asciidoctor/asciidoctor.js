@@ -1,5 +1,11 @@
 export default class Html5Converter extends ConverterBase {
-    static create(backend?: string, opts?: {}): Html5Converter;
+    /**
+     * Create a new Html5Converter instance.
+     * @param {string} [backend='html5']
+     * @param {Object} [opts={}]
+     * @returns {Html5Converter}
+     */
+    static create(backend?: string, opts?: any): Html5Converter;
     _xmlMode: boolean;
     _voidSlash: string;
     convert_document(node: any): Promise<string>;

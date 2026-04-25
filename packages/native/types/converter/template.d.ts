@@ -15,26 +15,57 @@ export class TemplateConverter extends ConverterBase {
         scans: {};
         templates: {};
     };
-    static create(backend: any, templateDirs: any, opts?: {}): Promise<TemplateConverter>;
-    constructor(backend: any, templateDirs: any, opts?: {});
+    /**
+     * Async factory — create and fully initialize a TemplateConverter.
+     * @param {string} backend
+     * @param {string|string[]} templateDirs
+     * @param {Object} [opts={}]
+     * @returns {Promise<TemplateConverter>}
+     */
+    static create(backend: string, templateDirs: string | string[], opts?: any): Promise<TemplateConverter>;
+    /**
+     * Construct a new TemplateConverter (synchronous setup only).
+     * Prefer TemplateConverter.create() which also runs the async _scan() step.
+     * @param {string} backend - the backend name (e.g. 'html5')
+     * @param {string|string[]} templateDirs - paths to scan for templates
+     * @param {Object} [opts={}]
+     * @param {string} [opts.template_engine] - engine name restriction (e.g. 'nunjucks')
+     * @param {Object} [opts.template_engine_options] - per-engine option objects
+     * @param {boolean|Object} [opts.template_cache] - true → class-level cache, Object → supplied cache
+     */
+    constructor(backend: string, templateDirs: string | string[], opts?: {
+        template_engine?: string;
+        template_engine_options?: any;
+        template_cache?: boolean | any;
+    });
     _templates: {};
-    templateDirs: any[];
-    engine: any;
+    templateDirs: string[];
+    engine: string;
     engineOptions: any;
     caches: any;
-    convert(node: any, templateName?: any, opts?: any): Promise<any>;
-    handles(name: any): boolean;
-    get templates(): {};
-    getTemplates(): {};
-    register(name: any, template: any): any;
-    _scan(): Promise<void>;
-    _scanDir(templateDir: any, fileExtFilter: any, templateCache?: any): Promise<{
-        'helpers.js': {
-            file: any;
-            ctx: any;
-        };
-    }>;
-    _nodeRequire(moduleName: any): any;
+    /**
+     * Retrieve a shallow copy of the templates map.
+     * @returns {Object} plain object keyed by template name
+     */
+    get templates(): any;
+    /**
+     * Method alias for the templates getter — matches the core/Ruby API.
+     * @returns {Object} plain object keyed by template name
+     */
+    getTemplates(): any;
+    /**
+     * Register a template with this converter (and optionally the template cache).
+     * @param {string} name - the template name
+     * @param {{ render: Function, file: string }} template - the template object
+     * @returns {{ render: Function, file: string }} the template object
+     */
+    register(name: string, template: {
+        render: Function;
+        file: string;
+    }): {
+        render: Function;
+        file: string;
+    };
 }
 export default TemplateConverter;
 import { ConverterBase } from '../converter.js';

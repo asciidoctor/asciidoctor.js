@@ -331,7 +331,10 @@ export { convert as render, convertFile as renderFile }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-/** @internal Lazily import node:path to avoid issues in browser / Opal environments. */
+/**
+ * @internal
+ * Lazily import node:path to avoid issues in browser / Opal environments.
+ */
 async function _requirePath() {
   return import('node:path')
 }

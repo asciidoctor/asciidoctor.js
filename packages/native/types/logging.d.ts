@@ -26,7 +26,9 @@ export class Logger {
     set formatter(f: any);
     /** getter/setter so custom logger impls can access this.formatter */
     get formatter(): any;
-    /** @returns {number|null} The highest severity level logged so far. */
+    /**
+     * @returns {number|null} The highest severity level logged so far.
+     */
     get maxSeverity(): number | null;
     getLevel(): any;
     setLevel(n: any): void;
@@ -35,15 +37,25 @@ export class Logger {
     getProgramName(): any;
     setProgramName(n: any): void;
     getMaxSeverity(): number;
-    /** @returns {boolean} Whether DEBUG-level messages will be logged. */
+    /**
+     * @returns {boolean} Whether DEBUG-level messages will be logged.
+     */
     isDebugEnabled(): boolean;
-    /** @returns {boolean} Whether INFO-level messages will be logged. */
+    /**
+     * @returns {boolean} Whether INFO-level messages will be logged.
+     */
     isInfoEnabled(): boolean;
-    /** @returns {boolean} Whether WARN-level messages will be logged. */
+    /**
+     * @returns {boolean} Whether WARN-level messages will be logged.
+     */
     isWarnEnabled(): boolean;
-    /** @returns {boolean} Whether ERROR-level messages will be logged. */
+    /**
+     * @returns {boolean} Whether ERROR-level messages will be logged.
+     */
     isErrorEnabled(): boolean;
-    /** @returns {boolean} Whether FATAL-level messages will be logged. */
+    /**
+     * @returns {boolean} Whether FATAL-level messages will be logged.
+     */
     isFatalEnabled(): boolean;
     isDebug(): boolean;
     isInfo(): boolean;

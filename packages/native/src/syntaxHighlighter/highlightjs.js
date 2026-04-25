@@ -22,10 +22,16 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
     this._preClass = 'highlightjs'
   }
 
-  // Public: Wrap the source block in <pre><code> with highlight.js CSS classes.
-  //
-  // Adds `language-<lang>` and `hljs` to the <code> class attribute, and strips
-  // the `highlight` class from <pre> when the `nohighlight-option` attribute is set.
+  /**
+   * Wrap the source block in `<pre><code>` with highlight.js CSS classes.
+   *
+   * Adds `language-<lang>` and `hljs` to the `<code>` class attribute, and strips
+   * the `highlight` class from `<pre>` when the `nohighlight-option` attribute is set.
+   * @param {object} node - the source Block being processed
+   * @param {string|null} lang - the source language string, or falsy if none
+   * @param {object} opts - options passed to the base format()
+   * @returns {string}
+   */
   format(node, lang, opts) {
     const transform = (pre, code) => {
       if (node.hasAttr('nohighlight-option')) {
@@ -36,17 +42,23 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
     return super.format(node, lang, { ...opts, transform })
   }
 
-  // Public: Always returns true — highlight.js injects markup into the document.
+  /**
+   * Always returns true — highlight.js injects markup into the document.
+   * @param {string} location - 'head' or 'footer'
+   * @returns {true}
+   */
   hasDocinfo(location) {
     // eslint-disable-line no-unused-vars
     return true
   }
 
-  // Public: Returns the CSS <link> tag (head) or the <script> tags (footer).
-  //
-  // location - String 'head' or 'footer'.
-  // doc      - The Document being converted.
-  // opts     - Plain Object with cdn_base_url and self_closing_tag_slash.
+  /**
+   * Returns the CSS `<link>` tag (head) or the `<script>` tags (footer).
+   * @param {string} location - 'head' or 'footer'
+   * @param {object} doc - the Document being converted
+   * @param {{ cdn_base_url: string, self_closing_tag_slash: string }} opts
+   * @returns {string}
+   */
   docinfo(location, doc, opts) {
     const baseUrl =
       doc.attr('highlightjsdir') ??
