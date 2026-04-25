@@ -4,10 +4,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import Asciidoctor from '../src/index.js'
+import asciidoctor from '../src/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const asciidoctor = Asciidoctor()
 
 const PART_WITH_NO_SECTION = `= Book
 :doctype: book

@@ -2,7 +2,7 @@
 /** @import { Registry, Preprocessor, TreeProcessor, Postprocessor, IncludeProcessor, DocinfoProcessor, BlockProcessor, InlineMacroProcessor, BlockMacroProcessor } from './extensions.js' */
 
 import packageJson from '../package.json' with { type: 'json' }
-import { load, loadFile as _loadFile } from './load.js'
+import { load as _load, loadFile as _loadFile } from './load.js'
 import { LoggerManager, MemoryLogger, NullLogger } from './logging.js'
 import { SafeMode } from './constants.js'
 import { Timings } from './timings.js'
@@ -18,7 +18,7 @@ import {
 
 const ASCIIDOCTOR_CORE_VERSION = '2.0.26'
 
-class Asciidoctor {
+const asciidoctor = {
   /**
    * Get the version of Asciidoctor.js.
    *
@@ -26,7 +26,7 @@ class Asciidoctor {
    */
   getVersion() {
     return packageJson.version
-  }
+  },
 
   /**
    * Get Asciidoctor core version number.
@@ -35,56 +35,40 @@ class Asciidoctor {
    */
   getCoreVersion() {
     return ASCIIDOCTOR_CORE_VERSION
-  }
+  },
 
-  /** @returns {typeof LoggerManager} */
-  get LoggerManager() {
-    return LoggerManager
-  }
+  /** @type {typeof LoggerManager} */
+  LoggerManager,
 
-  get MemoryLogger() {
-    return MemoryLogger
-  }
+  /** @type {typeof MemoryLogger} */
+  MemoryLogger,
 
-  get NullLogger() {
-    return NullLogger
-  }
+  /** @type {typeof NullLogger} */
+  NullLogger,
 
-  /** @returns {typeof SafeMode} */
-  get SafeMode() {
-    return SafeMode
-  }
+  /** @type {typeof SafeMode} */
+  SafeMode,
 
-  get Timings() {
-    return Timings
-  }
+  /** @type {typeof Timings} */
+  Timings,
 
-  /** @returns {typeof Extensions} */
-  get Extensions() {
-    return Extensions
-  }
+  /** @type {typeof Extensions} */
+  Extensions,
 
-  /** @returns {typeof Converter} */
-  get ConverterFactory() {
-    return Converter
-  }
+  /** @type {typeof Converter} */
+  ConverterFactory: Converter,
 
-  get Html5Converter() {
-    return Html5Converter
-  }
+  /** @type {typeof Html5Converter} */
+  Html5Converter,
 
-  get Block() {
-    return Block
-  }
+  /** @type {typeof Block} */
+  Block,
 
-  get Section() {
-    return Section
-  }
+  /** @type {typeof Section} */
+  Section,
 
-  /** @returns {typeof SyntaxHighlighter} */
-  get SyntaxHighlighter() {
-    return SyntaxHighlighter
-  }
+  /** @type {typeof SyntaxHighlighter} */
+  SyntaxHighlighter,
 
   /**
    * Parse the AsciiDoc source input into a Document.
@@ -94,8 +78,8 @@ class Asciidoctor {
    * @returns {Promise<Document>} - the parsed Document
    */
   async load(input, options = {}) {
-    return load(input, options)
-  }
+    return _load(input, options)
+  },
 
   /**
    * Parse the AsciiDoc source input and convert it to the specified backend format.
@@ -105,9 +89,9 @@ class Asciidoctor {
    * @returns {Promise<string>} - the converted output as a String
    */
   async convert(input, options = {}) {
-    const doc = await load(input, options)
+    const doc = await _load(input, options)
     return await doc.convert()
-  }
+  },
 
   /**
    * Parse the contents of the AsciiDoc source file into a Document.
@@ -118,7 +102,7 @@ class Asciidoctor {
    */
   async loadFile(filename, options = {}) {
     return _loadFile(filename, options)
-  }
+  },
 
   /**
    * Parse the contents of the AsciiDoc source file and convert it to the specified backend format.
@@ -130,11 +114,31 @@ class Asciidoctor {
   async convertFile(filename, options = {}) {
     const doc = await _loadFile(filename, options)
     return await doc.convert()
-  }
+  },
 }
 
-export { SyntaxHighlighterBase, Extensions }
+export const {
+  getVersion,
+  getCoreVersion,
+  load,
+  convert,
+  loadFile,
+  convertFile,
+} = asciidoctor
 
-export default function () {
-  return new Asciidoctor()
+export {
+  SyntaxHighlighterBase,
+  LoggerManager,
+  MemoryLogger,
+  NullLogger,
+  SafeMode,
+  Timings,
+  Extensions,
+  Converter as ConverterFactory,
+  Html5Converter,
+  Block,
+  Section,
+  SyntaxHighlighter,
 }
+
+export default asciidoctor

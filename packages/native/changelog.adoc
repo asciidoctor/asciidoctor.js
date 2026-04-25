@@ -17,19 +17,19 @@ All operations involving I/O (file reads, network requests, full parsing) return
 | core (`@asciidoctor/core`) | native (`@asciidoctor/native`) | Note
 
 | `asciidoctor.load(source, opts)` → `Document`
-| `load(source, opts)` → `Promise<Document>`
+| `asciidoctor.load(source, opts)` → `Promise<Document>`
 | Must be awaited
 
 | `asciidoctor.loadFile(path, opts)` → `Document`
-| `loadFile(path, opts)` → `Promise<Document>`
+| `asciidoctor.loadFile(path, opts)` → `Promise<Document>`
 | Must be awaited
 
 | `asciidoctor.convert(source, opts)` → `string`
-| `convert(source, opts)` → `Promise<string>`
+| `asciidoctor.convert(source, opts)` → `Promise<string>`
 | Must be awaited
 
 | `asciidoctor.convertFile(path, opts)` → `string`
-| `convertFile(path, opts)` → `Promise<string>`
+| `asciidoctor.convertFile(path, opts)` → `Promise<string>`
 | Must be awaited
 
 | `document.parse(data?)` → `Document`
@@ -46,16 +46,52 @@ All operations involving I/O (file reads, network requests, full parsing) return
 `@asciidoctor/core` relies on Opal (a Ruby-to-JavaScript transpiler).
 `@asciidoctor/native` is pure JavaScript (ESM) with no transpilation dependency.
 
+=== No instantiation required
+
+`@asciidoctor/core` exports a factory function that must be called to obtain an Asciidoctor instance.
+`@asciidoctor/native` exports a ready-to-use object — no factory call is needed.
+
 [cols="1,1"]
 |===
 | core | native
 
-| `require('@asciidoctor/core')()` → global Asciidoctor instance
-| `import { load, convert, loadFile, convertFile } from '@asciidoctor/native'` → named exports
+| `require('@asciidoctor/core')()` → must call the factory to get an instance
+| `import asciidoctor from '@asciidoctor/native'` → object is immediately usable
 
-| Global Asciidoctor singleton
-| Independent exported functions
+| `asciidoctor.convert(...)` after instantiation
+| `asciidoctor.convert(...)` directly after import
 |===
+
+=== Named exports
+
+In addition to the default export, `@asciidoctor/native` exposes every public member as a named export so that consumers can import only what they need.
+
+.Functions
+[source,javascript]
+----
+import { load, convert, loadFile, convertFile, getVersion, getCoreVersion } from '@asciidoctor/native'
+----
+
+.Classes and objects
+[source,javascript]
+----
+import {
+  Extensions,
+  ConverterFactory,
+  Html5Converter,
+  SyntaxHighlighter,
+  SyntaxHighlighterBase,
+  Block,
+  Section,
+  LoggerManager,
+  MemoryLogger,
+  NullLogger,
+  SafeMode,
+  Timings,
+} from '@asciidoctor/native'
+----
+
+NOTE: `loadFile` and `convertFile` are not available as named exports in the browser build.
 
 === Strict camelCase naming
 
@@ -80,6 +116,25 @@ In `@asciidoctor/core`, some internal properties and options retained the Ruby `
 |===
 
 == Changes by class
+
+=== Asciidoctor (top-level object)
+
+[cols="1,1,2"]
+|===
+| core | native | Note
+
+| `getVersion()` → `string`
+| `getVersion()` → `string`
+| Returns the `@asciidoctor/native` package version
+
+| `getCoreVersion()` → `string`
+| `getCoreVersion()` → `string`
+| Returns the Asciidoctor Ruby core version
+
+| `getRuntime()` → `Object`
+| _(not implemented)_
+| Returns platform / engine / GEM_HOME info — no equivalent in native
+|===
 
 === AbstractNode
 
@@ -131,6 +186,25 @@ In `@asciidoctor/core`, some internal properties and options retained the Ruby `
 |===
 
 === AbstractBlock
+
+==== Asynchronous convert and content
+
+[cols="1,1,2"]
+|===
+| core | native | Note
+
+| `convert()` → `string`
+| `convert()` → `Promise<string>`
+| Must be awaited
+
+| `getContent()` → `string`
+| `getContent()` → `Promise<string>`
+| Alias for `content()` in native; both are asynchronous
+
+| _(no equivalent)_
+| `render()` → `Promise<string>`
+| Deprecated alias for `convert()`; present for backwards compatibility
+|===
 
 ==== Titles: asynchronous pre-computation
 
@@ -217,6 +291,26 @@ accessible without a method call, in addition to the getter methods inherited fr
 | Top-level export
 |===
 
+=== Section
+
+==== Missing setter methods
+
+The following setter methods present in `@asciidoctor/core` are not yet implemented in `@asciidoctor/native`:
+
+[cols="1,2"]
+|===
+| core method | Note
+
+| `setIndex(index)`
+| Sets the 0-based index of the section within its parent
+
+| `setSectionName(name)`
+| Sets the section name (e.g., `abstract`, `colophon`)
+
+| `setSpecial(value)`
+| Marks the section as a special section
+|===
+
 === Inline
 
 [cols="1,1"]
@@ -227,6 +321,51 @@ accessible without a method call, in addition to the getter methods inherited fr
 | `convert()` → `Promise<string>` (asynchronous)
 |===
 
+=== ListItem
+
+==== Asynchronous text pre-computation
+
+In `@asciidoctor/core`, `getText()` applies substitutions synchronously on each call.
+In `@asciidoctor/native`, the text is pre-computed during `Document.parse()` via `precomputeText()` and returned synchronously afterwards.
+
+[cols="1,1,2"]
+|===
+| core | native | Note
+
+| `getText()` → `string` (synchronous, applies subs on each call)
+| `getText()` → `string` (synchronous, result pre-computed by `precomputeText()`)
+| Return type is the same; underlying mechanism differs
+
+| _(no equivalent)_
+| `precomputeText()` → `Promise<void>`
+| Called automatically during `Document.parse()`
+
+| `getList()` → `List`
+| _(not implemented)_
+| Use `getParent()` to retrieve the parent list
+|===
+
+=== Table.Cell
+
+==== Asynchronous text pre-computation and content
+
+[cols="1,1,2"]
+|===
+| core | native | Note
+
+| `getText()` → `string` (synchronous)
+| `get text` → `string \| null` (synchronous, result pre-computed by `precomputeText()`)
+| Result is computed once during parse; raw text otherwise
+
+| _(no equivalent)_
+| `precomputeText()` → `Promise<void>`
+| Called automatically during `Document.parse()`
+
+| `getContent()` → `string` (synchronous)
+| `content()` → `Promise<string \| string[]>`
+| Returns an array for multi-paragraph cells
+|===
+
 == Features specific to @asciidoctor/native
 
 These features have no equivalent in `@asciidoctor/core`.
@@ -235,6 +374,8 @@ These features have no equivalent in `@asciidoctor/core`.
 
 * `AbstractBlock.precomputeTitle()` — asynchronously pre-computes the title with substitutions applied.
 * `AbstractNode.precomputeReftext()` — asynchronously pre-computes the reftext with substitutions applied.
+* `ListItem.precomputeText()` — asynchronously pre-computes the list item text with substitutions applied.
+* `Table.Cell.precomputeText()` — asynchronously pre-computes the cell text with substitutions applied.
 
 These methods are called automatically during `Document.parse()` to allow synchronous getters to work during conversion.
 
@@ -251,8 +392,14 @@ These features are present in `@asciidoctor/core` but not yet implemented in `@a
 |===
 | Feature | Note
 
-| `SafeMode.getValueForName()` / `getNameForValue()` / `getNames()`
-| `SafeMode` is a plain object constant, not a class with static methods
+| `Asciidoctor.getRuntime()` → `Object`
+| Returns platform / engine / GEM_HOME info; no equivalent concept in a native JS library
+
+| `Section.setIndex(index)` / `setSectionName(name)` / `setSpecial(value)`
+| Internal setters used by the parser; not yet exposed as public API
+
+| `ListItem.getList()` → `List`
+| Use `getParent()` instead
 
 | `AbstractNode.isUri(str)` (deprecated)
 | Present in native but marked `@deprecated` — to be removed in a future version

@@ -1,0 +1,112 @@
+= Asciidoctor native
+
+This package provides a native JavaScript implementation of Asciidoctor with no dependency on Opal (the Ruby-to-JavaScript transpiler used by `@asciidoctor/core`).
+It is a pure ESM library that exposes the same functionality:
+
+- parser
+- built-in converters
+- extensions
+
+The API is asynchronous: all parsing and conversion operations return a `Promise`.
+
+== Requirements
+
+Node.js >= 24
+
+== Install
+
+ $ npm i @asciidoctor/native --save
+
+== Usage
+
+Here is a simple example that converts AsciiDoc to HTML5:
+
+.sample.js
+[source,javascript]
+----
+import asciidoctor from '@asciidoctor/native' // <1>
+
+const content = 'https://asciidoctor.org[*Asciidoctor*] running on Node.js!'
+const html = await asciidoctor.convert(content) // <2>
+console.log(html) // <3>
+----
+<1> Import the Asciidoctor native library (ESM)
+<2> Convert AsciiDoc content to HTML5 — the call returns a `Promise` and must be awaited
+<3> Print the HTML5 output to the console
+
+Save the file as _sample.js_ and run it using the `node` command:
+
+    $ node sample.js
+
+You should see the following output in your terminal:
+
+[source,html]
+----
+<div class="paragraph">
+<p><a href="https://asciidoctor.org"><strong>Asciidoctor</strong></a> running on Node.js!</p>
+</div>
+----
+
+=== Convert a file
+
+.convert-file.js
+[source,javascript]
+----
+import { convertFile } from '@asciidoctor/native'
+
+const html = await convertFile('document.adoc', { safe: 'safe' })
+console.log(html)
+----
+
+=== Load without converting
+
+Use `load` when you need to inspect the parsed document model before (or instead of) converting:
+
+.load.js
+[source,javascript]
+----
+import { load } from '@asciidoctor/native'
+
+const doc = await load('== Hello, World!\n\nThis is Asciidoctor native.')
+console.log(doc.getTitle())    // Hello, World!
+console.log(doc.getBlocks())   // array of top-level blocks
+const html = await doc.convert()
+console.log(html)
+----
+
+== Differences from `@asciidoctor/core`
+
+The main differences compared to `@asciidoctor/core` are:
+
+No instantiation required::
+`@asciidoctor/core` exports a factory function that must be called to obtain an instance:
++
+[source,javascript]
+----
+const asciidoctor = require('@asciidoctor/core')() // factory call required
+asciidoctor.convert(content)
+----
++
+`@asciidoctor/native` exports the object directly as a default export, and also exposes every member as a named export — no factory call is needed:
++
+[source,javascript]
+----
+import asciidoctor from '@asciidoctor/native'   // default export — full object
+asciidoctor.convert(content)
+
+import { convert } from '@asciidoctor/native'   // named export — pick what you need
+convert(content)
+----
+
+Asynchronous API::
+All operations involving I/O or parsing return a `Promise` and must be awaited.
+
+ESM only::
+The package is distributed as ES modules.
+Use `import` instead of `require`.
+
+Refer to the link:changelog.adoc[changelog] for a detailed list of API differences.
+
+== Changelog
+
+Refer to the https://github.com/asciidoctor/asciidoctor.js/blob/main/CHANGELOG.adoc[CHANGELOG] for a complete list of changes.

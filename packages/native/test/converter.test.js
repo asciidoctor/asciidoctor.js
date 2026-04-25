@@ -7,9 +7,7 @@
 import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 
-import Asciidoctor from '../src/index.js'
-
-const asciidoctor = Asciidoctor()
+import asciidoctor from '../src/index.js'
 
 // ── Converter classes used across multiple tests ───────────────────────────────
 

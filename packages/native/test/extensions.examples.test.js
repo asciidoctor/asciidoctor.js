@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
-import Asciidoctor from '../src/index.js'
+import asciidoctor from '../src/index.js'
 import fooBarPostprocessor from './extensions/foo-bar-postprocessor.js'
 import loveTreeProcessor from './extensions/love-tree-processor.js'
 import draftPreprocessor from './extensions/draft-preprocessor.js'
@@ -25,8 +25,6 @@ const FIXTURES_DIR = join(__dirname, 'fixtures')
 function fixture (name) {
   return readFileSync(join(FIXTURES_DIR, name), 'utf8')
 }
-
-const asciidoctor = Asciidoctor()
 
 describe('Extensions (examples)', () => {
   afterEach(() => {

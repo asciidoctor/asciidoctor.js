@@ -1,9 +1,7 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import Asciidoctor from '../src/index.js'
-
-const asciidoctor = Asciidoctor()
+import asciidoctor from '../src/index.js'
 
 describe('Timings', () => {
   test('should print timings to an object with a write function', async () => {

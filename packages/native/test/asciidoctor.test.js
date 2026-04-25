@@ -4,15 +4,13 @@ import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
 
-import Asciidoctor from '../src/index.js'
+import asciidoctor from '../src/index.js'
 
 const require = createRequire(import.meta.url)
 const packageJson = require('../package.json')
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const FIXTURES_DIR = join(__dirname, 'fixtures')
-
-const asciidoctor = Asciidoctor()
 
 test('return Asciidoctor.js version', () => {
   assert.equal(asciidoctor.getVersion(), packageJson.version)
