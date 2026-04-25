@@ -20,7 +20,7 @@
   "scripts": {
     "build": "npm run build:data && rollup -c",
     "build:data": "node scripts/generate-stylesheet-data.js",
-    "build:types": "tsc",
+    "build:types": "tsc && node scripts/strip-internal.js",
     "test": "node --test test/**.test.js",
     "test:browser": "vitest run --config vitest.browser.config.js",
     "lint": "biome lint src",

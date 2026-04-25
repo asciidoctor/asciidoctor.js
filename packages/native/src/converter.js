@@ -14,8 +14,13 @@ import { DEFAULT_EXTENSIONS } from './constants.js'
 import { TrailingDigitsRx } from './rx.js'
 
 // ── BackendTraits mixin ───────────────────────────────────────────────────────
-// Apply to a converter instance to give it basebackend/filetype/htmlsyntax helpers.
 
+/**
+ * Apply the BackendTraits mixin to a converter instance to give it
+ * basebackend/filetype/htmlsyntax/outfilesuffix helpers.
+ *
+ * @param {object} instance - the converter instance to augment
+ */
 export function applyBackendTraits(instance) {
   instance._backendTraits = null
 
@@ -57,6 +62,13 @@ export function applyBackendTraits(instance) {
 
 // ── Converter.derive_backend_traits ──────────────────────────────────────────
 
+/**
+ * Derive the backend traits object from a backend name.
+ *
+ * @param {string} backend - the backend name (e.g. 'html5', 'docbook5')
+ * @param {string|null} [basebackend=null] - optional explicit base backend
+ * @returns {{ basebackend: string, filetype: string, outfilesuffix: string, htmlsyntax?: string }}
+ */
 export function deriveBackendTraits(backend, basebackend = null) {
   if (!backend) return {}
   const base = basebackend ?? backend.replace(TrailingDigitsRx, '')
@@ -74,14 +86,20 @@ export function deriveBackendTraits(backend, basebackend = null) {
 }
 
 // ── normalizeConverter ────────────────────────────────────────────────────────
-// Bridge a user-registered converter instance into the interface expected by
-// Document._updateBackendAttributes, which requires _getBackendTraits().
-//
-// Supports three conventions used by user converters:
-//   1. converter.backendTraits = { basebackend, outfilesuffix, filetype, htmlsyntax }
-//   2. Plain properties: converter.basebackend, converter.outfilesuffix, …
-//   3. Already has _getBackendTraits() (e.g. extends ConverterBase) — returned as-is.
 
+/**
+ * Bridge a user-registered converter instance into the interface expected by
+ * Document._updateBackendAttributes, which requires _getBackendTraits().
+ *
+ * Supports three conventions used by user converters:
+ *   1. `converter.backendTraits = { basebackend, outfilesuffix, filetype, htmlsyntax }`
+ *   2. Plain properties: `converter.basebackend`, `converter.outfilesuffix`, …
+ *   3. Already has `_getBackendTraits()` (e.g. extends ConverterBase) — returned as-is.
+ *
+ * @param {object} converter - the converter to normalise
+ * @param {string} backend - the backend name
+ * @returns {object} the normalised converter
+ */
 export function normalizeConverter(converter, backend) {
   if (!converter || typeof converter._getBackendTraits === 'function')
     return converter
@@ -113,6 +131,10 @@ export function normalizeConverter(converter, backend) {
 
 // ── CustomFactory ─────────────────────────────────────────────────────────────
 
+/**
+ * A factory that maps backend names to converter classes or instances.
+ * Use the global {@link Converter} instance (DefaultFactory) for typical use.
+ */
 export class CustomFactory {
   constructor(seedRegistry = null) {
     this._registry = {}
@@ -125,8 +147,13 @@ export class CustomFactory {
     }
   }
 
-  // Public: Register a converter class for one or more backend names.
-  // backends may be passed as individual strings or as a single Array.
+  /**
+   * Register a converter class for one or more backend names.
+   * Backends may be passed as individual strings or as a single Array.
+   *
+   * @param {Function|object} converter - the converter class or instance
+   * @param {...string} backends - backend names; use `'*'` as a catch-all
+   */
   register(converter, ...backends) {
     if (backends.length === 1 && Array.isArray(backends[0]))
       backends = backends[0]
@@ -136,14 +163,25 @@ export class CustomFactory {
     }
   }
 
-  // Public: Retrieve the converter class registered for the given backend.
-  // Returns undefined (not null) when no match is found, mirroring the core API.
+  /**
+   * Retrieve the converter class registered for the given backend.
+   * Returns `undefined` (not null) when no match is found, mirroring the core API.
+   *
+   * @param {string} backend - the backend name
+   * @returns {Function|object|undefined}
+   */
   for(backend) {
     return this._registry[backend] ?? this._catchAll ?? undefined
   }
 
-  // Public: Create a new converter instance for the given backend (synchronous).
-  // Requires the converter class to already be registered; does not support template dirs.
+  /**
+   * Create a new converter instance for the given backend (synchronous).
+   * Requires the converter class to already be registered; does not support template dirs.
+   *
+   * @param {string} backend - the backend name
+   * @param {object} [opts={}] - options passed to the converter constructor
+   * @returns {object|null} the converter instance, or null if not registered
+   */
   createSync(backend, opts = {}) {
     let converter = this.for(backend)
     if (!converter) return null
@@ -152,7 +190,13 @@ export class CustomFactory {
     return normalizeConverter(converter, backend)
   }
 
-  // Public: Create a new converter instance for the given backend.
+  /**
+   * Create a new converter instance for the given backend.
+   *
+   * @param {string} backend - the backend name
+   * @param {object} [opts={}] - options passed to the converter constructor
+   * @returns {Promise<object|null>} the converter instance, or null if not registered
+   */
   async create(backend, opts = {}) {
     let converter = this.for(backend)
     if (converter) {
@@ -206,12 +250,18 @@ export class CustomFactory {
     return null
   }
 
-  // Public: Get the registered converters map. (for testing)
+  /**
+   * Get the registered converters map.
+   *
+   * @returns {object} a shallow copy of the registry
+   */
   converters() {
     return { ...this._registry }
   }
 
-  // Public: Unregister all converters.
+  /**
+   * Unregister all converters.
+   */
   unregisterAll() {
     this._registry = {}
     this._catchAll = null
@@ -258,12 +308,20 @@ class DefaultFactory extends CustomFactory {
     )
   }
 
-  // Public: Return the combined registry (built-in + user-registered entries).
+  /**
+   * Return the combined registry (built-in + user-registered entries).
+   *
+   * @returns {object}
+   */
   getRegistry() {
     return { ...this._defaultRegistry, ...this._registry }
   }
 
-  // Public: Return this factory (mirrors the core ConverterFactory.getDefault() API).
+  /**
+   * Return this factory (mirrors the core ConverterFactory.getDefault() API).
+   *
+   * @returns {DefaultFactory}
+   */
   getDefault() {
     return this
   }
@@ -334,6 +392,13 @@ Converter.deriveBackendTraits = deriveBackendTraits
 
 // ── Converter.Base ────────────────────────────────────────────────────────────
 
+/**
+ * Base class for all Asciidoctor converters.
+ *
+ * Subclass ConverterBase and implement `convert_<nodeName>` methods to handle
+ * specific node types. Register the subclass with the global registry via
+ * {@link ConverterBase.registerFor}.
+ */
 export class ConverterBase {
   constructor(backend, opts = {}) {
     this.backend = backend
@@ -341,13 +406,14 @@ export class ConverterBase {
     applyLogging(this)
   }
 
-  // Public: Convert a node by dispatching to a convert_<transform> method.
-  //
-  // node      - The AbstractNode to convert.
-  // transform - String hint for which method to call (default: node.nodeName).
-  // opts      - Optional hints Hash.
-  //
-  // Returns the String result or null.
+  /**
+   * Convert a node by dispatching to a `convert_<transform>` method.
+   *
+   * @param {object} node - the AbstractNode to convert
+   * @param {string|null} [transform=null] - hint for which method to call (default: node.nodeName)
+   * @param {object|null} [opts=null] - optional hints
+   * @returns {Promise<string|null>} the converted string or null
+   */
   async convert(node, transform = null, opts = null) {
     const method = `convert_${transform ?? node.nodeName}`
     if (typeof this[method] === 'function') {
@@ -359,20 +425,34 @@ export class ConverterBase {
     return null
   }
 
-  // Public: Report whether this converter can handle the given transform.
+  /**
+   * Report whether this converter can handle the given transform.
+   *
+   * @param {string} transform - the transform name
+   * @returns {boolean}
+   */
   handles(transform) {
     return typeof this[`convert_${transform}`] === 'function'
   }
 
-  // Public: Convert using only content (no wrapping).
+  /**
+   * Convert using only content (no wrapping).
+   *
+   * @param {object} node - the node whose content to return
+   * @returns {Promise<string>}
+   */
   async contentOnly(node) {
     return node.content()
   }
 
-  // Public: Skip conversion.
+  /** Skip conversion (no-op). */
   skip(_node) {}
 
-  // Class method: Register this converter class with the global registry.
+  /**
+   * Register this converter class with the global registry.
+   *
+   * @param {...string} backends - backend names to register for
+   */
   static registerFor(...backends) {
     Converter.register(this, ...backends.map(String))
   }

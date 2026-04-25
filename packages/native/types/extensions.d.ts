@@ -282,7 +282,7 @@ export namespace BlockProcessor {
     export { BlockProcessorDsl as DSL };
 }
 /**
- * @internal Base class shared by BlockMacroProcessor and InlineMacroProcessor.
+ * Base class shared by BlockMacroProcessor and InlineMacroProcessor.
  */
 export class MacroProcessor extends Processor {
     constructor(name?: any, config?: {});
@@ -397,8 +397,6 @@ export class Registry {
      * @returns {boolean}
      */
     hasPreprocessors(): boolean;
-    /** @internal Core API compatibility alias for preprocessors(). */
-    get preprocessor_extensions(): any;
     /**
      * Register a TreeProcessor with the extension registry.
      *
@@ -426,8 +424,6 @@ export class Registry {
     hasTeeProcessors(): boolean;
     /** @deprecated Alias for {@link treeProcessors}. */
     treeprocessors(): any;
-    /** @internal Core API compatibility alias for treeProcessors(). */
-    get tree_processor_extensions(): any;
     /**
      * Register a Postprocessor with the extension registry.
      *
@@ -447,8 +443,6 @@ export class Registry {
      * @returns {boolean}
      */
     hasPostprocessors(): boolean;
-    /** @internal Core API compatibility alias for postprocessors(). */
-    get postprocessor_extensions(): any;
     /**
      * Register an IncludeProcessor with the extension registry.
      *
@@ -470,8 +464,6 @@ export class Registry {
     hasIncludeProcessors(): boolean;
     /** Alias for {@link includeProcessor} (snake_case for prefer() / Registry method dispatch). */
     include_processor(...args: any[]): ProcessorExtension;
-    /** @internal Core API compatibility alias for includeProcessors(). */
-    get include_processor_extensions(): any;
     /**
      * Register a DocinfoProcessor with the extension registry.
      *
@@ -495,8 +487,6 @@ export class Registry {
     docinfoProcessors(location?: string | null): ProcessorExtension[];
     /** Alias for {@link docinfoProcessor} (snake_case for prefer() / Registry method dispatch). */
     docinfo_processor(...args: any[]): ProcessorExtension;
-    /** @internal Core API compatibility alias for docinfoProcessors(). */
-    get docinfo_processor_extensions(): any;
     /**
      * Register a BlockProcessor with the extension registry.
      *
@@ -616,32 +606,8 @@ export class Registry {
      * @returns {ProcessorExtension} the Extension stored in the registry.
      */
     prefer(...args: any[]): ProcessorExtension;
-    _addDocumentProcessor(kind: any, args: any): ProcessorExtension;
-    _addSyntaxProcessor(kind: any, args: any): any;
-    _reset(): void;
-    _preprocessor_extensions: any;
-    _tree_processor_extensions: any;
-    _postprocessor_extensions: any;
-    _include_processor_extensions: any;
-    _docinfo_processor_extensions: any;
-    _block_extensions: any;
-    _block_macro_extensions: any;
-    _inline_macro_extensions: any;
-    /**
-     * @internal Normalise an args array to the expected number of values.
-     *
-     * Pops a trailing plain-object as options (or uses {}), then pads / trims
-     * the remaining args to (expect - 1) elements, then appends the options object.
-     * If expect === 1, returns just the options object.
-     */
-    _resolveArgs(args: any, expect: any): any;
-    _asSymbol(name: any): string;
 }
 export namespace Extensions {
-    /** @internal Generate a unique name for an anonymous extension group. */
-    function generateName(): string;
-    /** @internal Increment and return the global auto-id counter. */
-    function nextAutoId(): number;
     /**
      * Return the plain Object that maps names to registered groups.
      *
@@ -679,14 +645,6 @@ export namespace Extensions {
      * @param {...string} names - One or more group names to unregister.
      */
     function unregister(...names: string[]): void;
-    /** @internal Build a subclass of BaseClass with the given prototype functions. */
-    function _buildProcessorClass(BaseClass: any, name: any, functions: any, ...args: any[]): {
-        new (): {
-            [x: string]: any;
-        };
-        [x: string]: any;
-        readonly name: any;
-    };
     /**
      * Create a Preprocessor subclass with the given prototype functions.
      *

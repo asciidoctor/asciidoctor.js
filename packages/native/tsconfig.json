@@ -10,6 +10,7 @@
     "target": "ES2022",
     "rootDir": "src",
     "strict": false,
+    "stripInternal": true,
     "noEmitOnError": false,
     "lib": ["ES2022"]
   },

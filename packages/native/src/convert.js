@@ -27,33 +27,29 @@ import { SafeMode, DEFAULT_STYLESHEET_KEYS } from './constants.js'
 
 // ── convert ───────────────────────────────────────────────────────────────────
 
-// Public: Parse the AsciiDoc source input into a Document and convert it to
-// the specified backend format.
-//
-// Accepts input as a Node.js Readable stream (or any object with a read()
-// method), a String, or a String Array. If the input is a file-like object
-// with a .path property, it is treated as a file: the output is written to a
-// file adjacent to the input by default.
-//
-// If :to_file is true or omitted and the input is a file-like object, the
-// output is written next to the input file. If :to_file is a String path, the
-// output is written there. If :to_file is false, the converted String is
-// returned. If :to_file is '/dev/null', the document is loaded but neither
-// converted nor written.
-//
-// input   - the AsciiDoc source (String, Array, Readable, or file-like object
-//           with a .path property)
-// options - a plain Object of options (default: {})
-//           Notable keys (mirrors Ruby API):
-//             to_file     - String path, Boolean, stream object, or '/dev/null'
-//             to_dir      - String output directory
-//             mkdirs      - Boolean; create missing directories if true
-//             standalone  - Boolean; include header/footer
-//             header_footer - Boolean (deprecated alias for :standalone)
-//             base_dir    - String base directory
-//
-// Returns a Promise that resolves to the Document if output was written to a
-// file, otherwise the converted String.
+/**
+ * Parse the AsciiDoc source input into a Document and convert it to the specified backend format.
+ *
+ * Accepts input as a Node.js Readable stream (or any object with a read() method), a String,
+ * or a String Array. If the input is a file-like object with a `.path` property, it is treated
+ * as a file: the output is written to a file adjacent to the input by default.
+ *
+ * If `to_file` is true or omitted and the input is a file-like object, the output is written
+ * next to the input file. If `to_file` is a String path, the output is written there.
+ * If `to_file` is false, the converted String is returned.
+ * If `to_file` is `'/dev/null'`, the document is loaded but neither converted nor written.
+ *
+ * @param {string|string[]|object} input - the AsciiDoc source (String, Array, Readable, or
+ *   file-like object with a `.path` property)
+ * @param {object} [options={}] - a plain Object of options (mirrors Ruby API):
+ *   - `to_file` {string|boolean|object} - String path, Boolean, stream object, or `'/dev/null'`
+ *   - `to_dir` {string} - output directory
+ *   - `mkdirs` {boolean} - create missing directories if true
+ *   - `standalone` {boolean} - include header/footer
+ *   - `header_footer` {boolean} - deprecated alias for `standalone`
+ *   - `base_dir` {string} - base directory
+ * @returns {Promise<import('./document.js').Document|string>} the Document if output was written to a file, otherwise the converted String
+ */
 export async function convert(input, options = {}) {
   options = Object.assign({}, options)
   delete options.parse
@@ -301,14 +297,14 @@ export async function convert(input, options = {}) {
 
 // ── convertFile ───────────────────────────────────────────────────────────────
 
-// Public: Parse the contents of the AsciiDoc source file into a Document and
-// convert it to the specified backend format.
-//
-// filename - the String path to the AsciiDoc source file
-// options  - a plain Object of options (default: {})
-//
-// Returns a Promise that resolves to the Document if output was written to a
-// file, otherwise the converted String.
+/**
+ * Parse the contents of the AsciiDoc source file into a Document and convert it
+ * to the specified backend format.
+ *
+ * @param {string} filename - the path to the AsciiDoc source file
+ * @param {object} [options={}] - a plain Object of options (see {@link convert})
+ * @returns {Promise<import('./document.js').Document|string>} the Document if output was written to a file, otherwise the converted String
+ */
 export async function convertFile(filename, options = {}) {
   const { readFile, stat } = await import('node:fs/promises')
   const nodePath = await _requirePath()
@@ -335,12 +331,16 @@ export { convert as render, convertFile as renderFile }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-// Internal: Lazily import node:path to avoid issues in browser / Opal environments.
+/** @internal Lazily import node:path to avoid issues in browser / Opal environments. */
 async function _requirePath() {
   return import('node:path')
 }
 
-// Internal: Return true if the given path is an existing directory.
+/**
+ * @internal
+ * @param {string} dir
+ * @returns {Promise<boolean>}
+ */
 async function _isDirectory(dir) {
   try {
     const { stat } = await import('node:fs/promises')
@@ -350,7 +350,11 @@ async function _isDirectory(dir) {
   }
 }
 
-// Internal: Return true if the given path is an existing file.
+/**
+ * @internal
+ * @param {string} path
+ * @returns {Promise<boolean>}
+ */
 async function _isFile(path) {
   try {
     const { stat } = await import('node:fs/promises')

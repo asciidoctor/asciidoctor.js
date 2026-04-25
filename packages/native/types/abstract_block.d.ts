@@ -38,18 +38,6 @@ export class AbstractBlock<TContent extends string | any[] = string> extends Abs
     precomputeTitle(): Promise<void>;
     _computingTitle: boolean;
     /**
-     * @internal Get the raw (unsubstituted) title as set by the parser.
-     * @returns {string|null}
-     */
-    get rawTitle(): string | null;
-    /**
-     * @internal Get the title with only attribute substitutions applied (no specialchars).
-     * @note no longer used for section ID generation (parser now calls applyTitleSubs to match
-     * Ruby's behaviour). Kept for other callers that need a lightweight sync substitution.
-     * @returns {string|null}
-     */
-    get attrSubstitutedTitle(): string | null;
-    /**
      * Check whether the title of this block is defined.
      * @returns {boolean}
      */
@@ -179,16 +167,6 @@ export class AbstractBlock<TContent extends string | any[] = string> extends Abs
      * @param {string} [captionContext=this.context] - The String context used to look up caption attributes.
      */
     assignCaption(value?: string | null, captionContext?: string): void;
-    /**
-     * @internal Assign the next index (0-based) and numeral (1-based) to the section.
-     * @param {AbstractBlock} section - The Section to which to assign the next index and numeral.
-     */
-    assignNumeral(section: AbstractBlock): void;
-    /**
-     * @internal Reassign 0-based section indexes for all descendant sections.
-     * Must be called after removing child sections to keep internal counters correct.
-     */
-    reindexSections(): void;
     /**
      * Walk the document tree and find all block-level nodes that match
      * the selector and optional filter function.

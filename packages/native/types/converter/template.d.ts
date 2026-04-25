@@ -22,6 +22,8 @@ export class TemplateConverter extends ConverterBase {
     engine: any;
     engineOptions: any;
     caches: any;
+    convert(node: any, templateName?: any, opts?: any): Promise<any>;
+    handles(name: any): boolean;
     get templates(): {};
     getTemplates(): {};
     register(name: any, template: any): any;

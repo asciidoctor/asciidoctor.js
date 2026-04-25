@@ -725,7 +725,7 @@ export class BlockProcessor extends Processor {
 BlockProcessor.DSL = BlockProcessorDsl
 
 /**
- * @internal Base class shared by BlockMacroProcessor and InlineMacroProcessor.
+ * Base class shared by BlockMacroProcessor and InlineMacroProcessor.
  */
 export class MacroProcessor extends Processor {
   constructor(name = null, config = {}) {
@@ -1320,6 +1320,7 @@ export class Registry {
 
   // ── Private helpers ──────────────────────────────────────────────────────────
 
+  /** @internal */
   _addDocumentProcessor(kind, args) {
     const kindName = kind.replace(/_/g, ' ')
     const kindClass = DOCUMENT_PROCESSOR_CLASSES[kind]
@@ -1386,6 +1387,7 @@ export class Registry {
     return extension
   }
 
+  /** @internal */
   _addSyntaxProcessor(kind, args) {
     const kindName = kind.replace(/_/g, ' ')
     const kindClass = SYNTAX_PROCESSOR_CLASSES[kind]
@@ -1453,14 +1455,23 @@ export class Registry {
     return store[name]
   }
 
+  /** @internal */
   _reset() {
+    /** @internal */
     this._preprocessor_extensions = null
+    /** @internal */
     this._tree_processor_extensions = null
+    /** @internal */
     this._postprocessor_extensions = null
+    /** @internal */
     this._include_processor_extensions = null
+    /** @internal */
     this._docinfo_processor_extensions = null
+    /** @internal */
     this._block_extensions = null
+    /** @internal */
     this._block_macro_extensions = null
+    /** @internal */
     this._inline_macro_extensions = null
     this.document = null
   }
@@ -1495,6 +1506,7 @@ export class Registry {
     return args
   }
 
+  /** @internal */
   _asSymbol(name) {
     return name != null ? String(name) : null
   }

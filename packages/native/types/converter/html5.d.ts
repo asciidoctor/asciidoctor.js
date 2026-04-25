@@ -20,7 +20,7 @@ export default class Html5Converter extends ConverterBase {
     convert_open(node: any): Promise<string>;
     convert_page_break(_node: any): Promise<string>;
     convert_paragraph(node: any): Promise<string>;
-    convert_pass(node: any): Promise<any>;
+    convert_pass(node: any): Promise<string>;
     convert_preamble(node: any): Promise<string>;
     convert_quote(node: any): Promise<string>;
     convert_thematic_break(node: any): Promise<string>;

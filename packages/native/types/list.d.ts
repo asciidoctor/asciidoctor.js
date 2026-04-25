@@ -95,7 +95,5 @@ export class ListItem extends AbstractBlock<string> {
      * @returns {boolean} `true` if the item contains blocks other than a single nested outline list.
      */
     compound(): boolean;
-    /** @internal Fold the adjacent paragraph block into the list item text. */
-    foldFirst(): void;
 }
 import { AbstractBlock } from './abstract_block.js';
