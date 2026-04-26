@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "node --test test/**.test.js",
-    "lint": "biome check test tasks",
+    "lint": "biome check test tasks && npm run lint --prefix packages/core && npm run lint --prefix packages/asciidoctor",
     "format": "biome format --write test tasks",
     "build:binary": "node packages/asciidoctor/tasks/build-sea.js",
     "release": "node tasks/release.js"

@@ -8,29 +8,10 @@ on:
 jobs:
   build:
     if: github.repository_owner == 'asciidoctor'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-      - name: Install dependencies
-        run: |
-          npm ci
-          npm ci --prefix packages/core
-      - name: Lint, build and test
-        shell: bash
-        run: |
-          npm run lint
-          npm run test
-          npm t --prefix packages/core
-          npm run test:browser --prefix packages/core
-  native_images:
-    needs: build
-    uses: ./.github/workflows/native-image.yml
+    uses: ./.github/workflows/build.yml
   publish:
     if: github.repository_owner == 'asciidoctor'
-    needs: [build, native_images]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

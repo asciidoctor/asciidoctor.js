@@ -68,7 +68,7 @@ const _rawCjsRequire = createRequire(import.meta.url)
 const _require = (id) => (_engineCache[id] ?? _rawCjsRequire(id))`
       )
 
-      return { code: engineImports + '\n' + code, map: null }
+      return { code: `${engineImports}\n${code}`, map: null }
     },
   }
 }

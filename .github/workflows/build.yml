@@ -1,6 +1,7 @@
 name: Build core
 
 on:
+  workflow_call:
   workflow_dispatch:
   push:
     branches:
@@ -16,6 +17,7 @@ on:
 jobs:
   activate:
     if: |
+      (github.event_name == 'workflow_call') ||
       (github.event_name == 'schedule' && github.repository_owner == 'asciidoctor') ||
       (github.event_name != 'schedule' && !endsWith(github.event.head_commit.message, '[skip ci]'))
     runs-on: ubuntu-latest
@@ -42,6 +44,7 @@ jobs:
       - name: Lint, build and test
         shell: bash
         run: |
+          npm run lint
           npm t --prefix packages/core
           npm run test:browser --prefix packages/core
 

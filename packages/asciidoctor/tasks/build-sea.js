@@ -24,8 +24,9 @@ function run(bin, args, opts = {}) {
   execFileSync(bin, args, { stdio: 'inherit', ...opts })
 }
 
-const rollupBin = join(root, 'node_modules', '.bin', 'rollup')
-const postjectBin = join(root, 'node_modules', '.bin', 'postject')
+const ext = platform === 'win32' ? '.cmd' : ''
+const rollupBin = join(root, 'node_modules', '.bin', `rollup${ext}`)
+const postjectBin = join(root, 'node_modules', '.bin', `postject${ext}`)
 
 // 1. Bundle CLI to CJS
 console.log('\n=== Bundling CLI ===')
