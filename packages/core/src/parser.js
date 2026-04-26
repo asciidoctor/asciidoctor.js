@@ -3435,11 +3435,11 @@ export class Parser {
   }
 
   /**
-   * Parse cell spec from line.
+   * Parse cell test from line.
    * @param {string} line
    * @param {'start'|'end'} [pos='end']
    * @param {string|null} [delimiter=null]
-   * @returns {[Object|null, string]} Tuple of [spec, rest].
+   * @returns {[Object|null, string]} Tuple of [test, rest].
    * @internal
    */
   static parseCellspec(line, pos = 'end', delimiter = null) {

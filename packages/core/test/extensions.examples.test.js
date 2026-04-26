@@ -1,5 +1,5 @@
-// Integration tests for the extension examples in spec/share/extensions/.
-// Mirrors packages/core/spec/node/asciidoctor.spec.js → describe('Extensions').
+// Integration tests for the extension examples in test/share/extensions/.
+// Mirrors packages/core/test/node/asciidoctor.test.js → describe('Extensions').
 
 import { describe, test, afterEach } from 'node:test'
 import assert from 'node:assert/strict'

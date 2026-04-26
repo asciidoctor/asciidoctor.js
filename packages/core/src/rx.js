@@ -424,7 +424,7 @@ export const ListRxMap = {
 // ── Tables ────────────────────────────────────────────────────────────────────
 
 /**
- * Parses the column spec (colspec) for a table.
+ * Parses the column test (colspec) for a table.
  * @example
  * 1*h,2*,^3e
  */
@@ -432,14 +432,14 @@ export const ColumnSpecRx =
   /^(?:(\d+)\*)?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?(\d+%?|~)?([a-z])?$/
 
 /**
- * Parses the start of a cell spec.
+ * Parses the start of a cell test.
  * @example
  * 2.3+<.>m
  */
 export const CellSpecStartRx =
   /^[ \t]*(?:(\d+(?:\.\d*)?|(?:\d*\.)?\d+)([*+]))?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?([a-z])?$/
 
-/** Parses the end of a cell spec. */
+/** Parses the end of a cell test. */
 export const CellSpecEndRx =
   /[ \t]+(?:(\d+(?:\.\d*)?|(?:\d*\.)?\d+)([*+]))?([<^>](?:\.[<^>]?)?|(?:[<^>]?\.)?[<^>])?([a-z])?$/
 

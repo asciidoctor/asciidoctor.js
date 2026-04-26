@@ -1,5 +1,5 @@
 // Integration tests for the Extensions public API.
-// Ported from packages/core/spec/share/asciidoctor-spec.cjs → describe('Extensions').
+// Ported from packages/core/test/share/asciidoctor-test.cjs → describe('Extensions').
 //
 // Differences from the core suite:
 //   - load() and convert() are async → all tests use async/await.

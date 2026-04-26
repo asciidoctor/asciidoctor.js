@@ -1,6 +1,6 @@
 // Browser-specific include path resolution for PreprocessorReader.
 //
-// This module implements the logic described in docs/modules/spec/pages/browser-include-spec.adoc
+// This module implements the logic described in docs/modules/test/pages/browser-include-test.adoc
 // and mirrors packages/core/lib/asciidoctor/js/asciidoctor_ext/browser/reader.rb.
 //
 // This logic is specific to Asciidoctor.js and has no equivalent in the upstream Ruby asciidoctor
@@ -49,7 +49,7 @@ function _linkReplacement(reader, target, attrlist) {
 /**
  * Resolve an include path in a browser (URI-based) environment.
  *
- * Implements the rules from the browser-include-spec, in the same order:
+ * Implements the rules from the browser-include-test, in the same order:
  *
  * Top-level include (includeStack is empty):
  * 1. target starts with file:// → inc_path = relpath = target

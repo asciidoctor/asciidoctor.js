@@ -1,7 +1,7 @@
 /**
  * Resolve an include path in a browser (URI-based) environment.
  *
- * Implements the rules from the browser-include-spec, in the same order:
+ * Implements the rules from the browser-include-test, in the same order:
  *
  * Top-level include (includeStack is empty):
  * 1. target starts with file:// → inc_path = relpath = target

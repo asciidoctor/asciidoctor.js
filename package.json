@@ -10,10 +10,10 @@
     "node": ">=24"
   },
   "scripts": {
-    "test": "node --test spec/*/*.spec.js",
-    "lint": "biome check spec tasks",
-    "format": "biome format --write spec tasks",
-    "build:binary": "node tasks/build-sea.js",
+    "test": "node --test test/**.test.js",
+    "lint": "biome check test tasks",
+    "format": "biome format --write test tasks",
+    "build:binary": "node packages/asciidoctor/tasks/build-sea.js",
     "release": "node tasks/release.js"
   },
   "devDependencies": {

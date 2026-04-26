@@ -1,6 +1,6 @@
 // Tests for browser-specific include path resolution.
 //
-// Covers the rules described in docs/modules/spec/pages/browser-include-spec.adoc
+// Covers the rules described in docs/modules/test/pages/browser-include-test.adoc
 // and implemented in src/browser/reader.js.
 //
 // These tests use a mock fetch to avoid real network requests.

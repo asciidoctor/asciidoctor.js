@@ -1,4 +1,4 @@
-// Port of the 'Registering converter' describe block from packages/core/spec/node/asciidoctor.spec.js
+// Port of the 'Registering converter' describe block from packages/core/test/node/asciidoctor.test.js
 //
 // Ruby interop tests ($==, $send, $handles?, $respond_to?, $new) are not ported because
 // they are specific to the Opal bridge and have no equivalent in the core JS implementation.

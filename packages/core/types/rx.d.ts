@@ -257,18 +257,18 @@ export namespace ListRxMap {
     export { CalloutListRx as colist };
 }
 /**
- * Parses the column spec (colspec) for a table.
+ * Parses the column test (colspec) for a table.
  * @example
  * 1*h,2*,^3e
  */
 export const ColumnSpecRx: RegExp;
 /**
- * Parses the start of a cell spec.
+ * Parses the start of a cell test.
  * @example
  * 2.3+<.>m
  */
 export const CellSpecStartRx: RegExp;
-/** Parses the end of a cell spec. */
+/** Parses the end of a cell test. */
 export const CellSpecEndRx: RegExp;
 /**
  * Matches the custom block macro pattern.

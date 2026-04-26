@@ -88,7 +88,7 @@ export namespace Substitutors {
      */
     function highlightSource(source: string, processCallouts: boolean): string;
     /**
-     * Resolve line numbers to highlight from a spec string.
+     * Resolve line numbers to highlight from a test string.
      *
      * @param {string} source
      * @param {string} spec   - e.g. "1-5, !2, 10" or "1..5;!2;10"

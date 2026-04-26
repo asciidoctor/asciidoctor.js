@@ -1,18 +1,20 @@
 import { execFileSync } from 'node:child_process'
 import { copyFileSync, chmodSync, existsSync, mkdirSync } from 'node:fs'
-import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import process from 'node:process'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const root = join(__dirname, '..')
-const pkgDir = join(root, 'packages', 'asciidoctor')
+const pkgDir = join(import.meta.dirname, '..')
+const root = join(pkgDir, '..', '..')
 const distDir = join(pkgDir, 'dist')
 
 if (!existsSync(distDir)) mkdirSync(distDir, { recursive: true })
 
 const platform = process.platform
-const binaryName = platform === 'win32' ? 'asciidoctor.exe' : 'asciidoctor'
+const arch = process.arch
+
+const platformName = platform === 'win32' ? 'win' : platform
+const archName = arch === 'x64' ? 'amd64' : 'arm64'
+const binaryName = `asciidoctor-${platformName}-${archName}${platform === 'win32' ? '.exe' : ''}`
 const outputBinary = join(distDir, binaryName)
 const blobPath = join(distDir, 'cli.blob')
 const SEA_FUSE = 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2'
@@ -31,9 +33,7 @@ run(rollupBin, ['-c'], { cwd: pkgDir })
 
 // 2. Generate SEA blob
 console.log('\n=== Generating SEA blob ===')
-run(process.execPath, ['--experimental-sea-config', 'sea-config.json'], {
-  cwd: pkgDir,
-})
+run(process.execPath, ['--experimental-sea-config', 'sea-config.json'], { cwd: pkgDir })
 
 // 3. Copy Node.js binary and make it executable
 console.log('\n=== Copying Node.js binary ===')
@@ -48,13 +48,7 @@ if (platform === 'darwin') {
 
 // 5. Inject SEA blob
 console.log('\n=== Injecting SEA blob ===')
-const postjectArgs = [
-  outputBinary,
-  'NODE_SEA_BLOB',
-  blobPath,
-  '--sentinel-fuse',
-  SEA_FUSE,
-]
+const postjectArgs = [outputBinary, 'NODE_SEA_BLOB', blobPath, '--sentinel-fuse', SEA_FUSE]
 if (platform === 'darwin') postjectArgs.push('--macho-segment-name', 'NODE_SEA')
 run(postjectBin, postjectArgs)
 

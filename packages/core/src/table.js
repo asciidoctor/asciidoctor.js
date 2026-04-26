@@ -91,7 +91,7 @@ export class Table extends AbstractBlock {
   }
 
   /**
-   * Create Column objects from the column spec array.
+   * Create Column objects from the column test array.
    * @param {Object[]} colspecs
    * @internal
    */

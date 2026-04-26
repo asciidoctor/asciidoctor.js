@@ -1,8 +1,8 @@
-import { describe, it, beforeEach, afterEach } from 'node:test'
+import { describe, test, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert'
 import childProcess from 'node:child_process'
 import sinon from 'sinon'
-import { pushRelease } from '../../tasks/module/release.js'
+import { pushRelease } from '../tasks/release.js'
 
 let childProcessExecSyncStub
 
@@ -18,7 +18,7 @@ describe('Build', () => {
   })
 
   describe('Push release', () => {
-    it('should be able to find the remote name', () => {
+    test('find the remote name', () => {
       childProcessExecSyncStub
         .withArgs('git remote -v')
         .returns(
@@ -38,7 +38,7 @@ describe('Build', () => {
       assert.equal(pushCalls[1][0], 'git push upstream --tags')
     })
 
-    it('should return false if the original repository is absent', () => {
+    test('return false if the original repository is absent', () => {
       childProcessExecSyncStub
         .withArgs('git remote -v')
         .returns(

@@ -15,7 +15,7 @@
   "scripts": {
     "test": "./bin/asciidoctor --version",
     "build:bundle": "rollup -c",
-    "build:binary": "node ../../tasks/build-sea.js"
+    "build:binary": "node tasks/build-sea.js"
   },
   "engines": {
     "node": ">=24"
