@@ -5,182 +5,119 @@
 :idseparator: -
 :toc: preamble
 // URIs:
-:uri-nodejs: http://nodejs.org
-:uri-opal: http://opalrb.org
-:uri-nvm: https://github.com/creationix/nvm
-:uri-asciidoctor: http://asciidoctor.org
+:uri-nodejs: https://nodejs.org
+:uri-volta: https://volta.sh
+:uri-asciidoctor: https://asciidoctor.org
+:uri-asciidoctor-rb: https://github.com/asciidoctor/asciidoctor
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
-:uri-mdn-string: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type
-:uri-jdk8: https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+:uri-biome: https://biomejs.dev
+:uri-vitest: https://vitest.dev
+:uri-claude-code: https://claude.ai/code
 
 This guide will give you all the necessary information you need to become a successful Asciidoctor.js developer and code contributor!
 
 == Introduction
 
-{uri-repo}[Asciidoctor.js] is a direct port of {uri-asciidoctor}[Asciidoctor] from Ruby to JavaScript using {uri-opal}[Opal], a Ruby-to-JavaScript transpiler.
-The project includes a npm build script that executes the Opal compiler on the Asciidoctor source code to produce the Asciidoctor.js scripts.
+{uri-repo}[Asciidoctor.js] is a native JavaScript port of {uri-asciidoctor}[Asciidoctor].
+The `@asciidoctor/core` package is a handwritten/AI-translated ES module that mirrors the {uri-asciidoctor-rb}[Asciidoctor Ruby source], file by file, without any transpilation step.
 
-Opal parses the Ruby code and any required libraries, then rewrites the code into JavaScript under the Opal namespace.
-The resulting JavaScript can be executed within any JavaScript runtime environment (such as a browser).
+The initial port was produced by {uri-claude-code}[Claude Code] (claude-sonnet-4-6) from the Asciidoctor Ruby source and reviewed by human maintainers.
+The public API is intentionally kept compatible with the previous Opal-based releases, with the main breaking change being that all entry points (`load`, `loadFile`, `convert`, `convertFile`) are now `async`.
 
-To interact with the generated code, you either invoke the JavaScript APIs directly, or you can invoke native JavaScript objects from within the Ruby code prior to compilation.
+Each source file under `packages/core/src/` corresponds to a Ruby file in the upstream repository and carries a header comment documenting the translation decisions made for that module (Ruby idioms → JavaScript equivalents, circular dependency workarounds, etc.).
 
 == Setup
 
-To build Asciidoctor.js, you'll need some tools:
+To work on Asciidoctor.js you need:
 
-* {uri-nodejs}[Node.js] >= 8 and npm (we recommend {uri-nvm}[nvm] to manage multiple active Node.js versions)
+* {uri-nodejs}[Node.js] >= 24 and npm (we recommend {uri-volta}[Volta] to manage Node.js versions — the repository already pins the correct version via `volta` in `package.json`)
 
-Start by cloning the source from GitHub:
+Clone the repository and install dependencies:
 
- $ git clone https://github.com/asciidoctor/asciidoctor.js.git
-
-Next, run npm's `install` command:
-
- $ npm i
- $ npm i --prefix packages/core
-
-You're now ready to build Asciidoctor.js.
-
-TIP: Opal.js, the Ruby runtime in JavaScript is available in `packages/core/node_modules/asciidoctor-opal-runtime/src/opal.js`
+[source,bash]
+----
+git clone https://github.com/asciidoctor/asciidoctor.js.git
+cd asciidoctor.js
+npm i
+npm i --prefix packages/core
+----
 
 == Building
 
-This section describes how to build Asciidoctor.js from source, execute the tests and try out the examples.
+=== Building the package
 
-=== Building Asciidoctor.js
-
-To build Asciidoctor.js, simply run the npm `build` script from the root of the project:
-
- $ npm run build --prefix packages/core
-
-WARNING: The build system does not automate updating the dependency on ruby asciidoctor.
-If there is any chance the asciidoctor.js copy of the asciidoctor ruby code is out of date, run `npm clean --prefix packages/core`.
-
-NOTE: The build task will make some minor code changes on Asciidoctor Ruby code.
-As you may know, {uri-mdn-string}[strings are immutable] in JavaScript, so we need to replace the `gsub!` and `sub!` methods.
-These changes are made at build time to keep the Ruby code as fast as possible.
-
-This command produces one JavaScript file per environment in the [path]_packages/core/build_ directory:
-
-- `asciidoctor-browser.js`
-- `asciidoctor-node.js`
-- `asciidoctor-graalvm.js`
-
-These files contain everything you need to use Asciidoctor in a JavaScript environment.
-
-You'll see this script in action when you run the examples, described next.
-
-==== Building against a release
-
-By default Asciidoctor.js will build against the main branch of Asciidoctor (Ruby).
-If you want to build against a release of Asciidoctor, you will need to define the `ASCIIDOCTOR_CORE_VERSION` environment variable.
-
-For instance to build against Asciidoctor (Ruby) v2.0.10 use:
-
- $ ASCIIDOCTOR_CORE_VERSION=v2.0.10 npm run build --prefix packages/core
-
-==== Building against a local copy of Ruby Asciidoctor
-
-The transpilation relies on a copy of the Ruby source in `packages/core/build/asciidoctor`.
-The build instructions above supply this by unpacking a tar.gz of the repository constructed by GitHub.
-Alternatively, you can supply this copy yourself.
-For the following posix-centric suggestions, assume `ASCIIDOCTOR_RB` is the local location of your Asciidoctor Ruby project.
-
-* Remove the current (contents of the) Ruby source directory:
-+
+[source,bash]
 ----
-rm -rf packages/core/build/asciidoctor
-----
-* Choose a method:
-** Using a symlink:
-+
-----
-ln -s $ASCIIDOCTOR_RB packages/core/build/asciidoctor`
-----
-** Copying:
-+
-----
-cp -r $ASCIIDOCTOR_RB packages/core/build/
-----
-** Unpacking a gem:
-+
-----
-mkdir packages/core/build/asciidoctor
-tar -xf $ASCIIDOCTOR_RB/pkg/asciidoctor-*.gem -C packages/core/build --include data.tar.gz
-tar -xzf packages/core/build/data.tar.gz -C packages/core/build/asciidoctor
-----
-* For all of these, `touch packages/core/build/asciidoctor.tar.gz` will prevent `npm build --prefix packages/core` from overwriting your copy with a downloaded one.
-* To actually use your local source you'll need to force recompile by:
-+
-----
-npm run clean:core --prefix packages/core
+npm run build --prefix packages/core
 ----
 
-==== Using "quick" mode
+This produces the following artifacts in `packages/core/build/`:
 
-By default the build will run the whole tests suite but if you want to quickly iterate on your code, we recommend to use the task `build:quick`:
+* `browser/index.js` — browser-optimised ES module bundle (Rollup)
+* `node/index.cjs` — CommonJS bundle for older Node.js toolchains
 
- $ npm run build:quick --prefix packages/core
+The source entry point (`src/index.js`) is used as-is in ES module environments; no build step is required for development.
 
-This task will run only the tests against a Node.js environment.
+=== Generating TypeScript types
 
-=== Building and running the examples
+Type definitions are generated from JSDoc annotations using the TypeScript compiler in declaration-emit mode:
 
-To build the examples, simply run the npm `examples` task from the root of the project:
+[source,bash]
+----
+npm run build:types --prefix packages/core
+----
 
- $ npm run examples --prefix packages/core
+Output lands in `packages/core/types/`.
+`@internal`-tagged symbols are stripped from the emitted `.d.ts` by a post-processing script (`scripts/strip-internal.js`).
 
-This command produces 3 examples in the [path]_packages/core/build/examples_ directory:
+== Testing
 
-* `userguide_test.html` demonstrate how a Ruby script can be compiled to JavaScript using the Opal Compiler and displayed within the browser as a normal HTML file.
-The Ruby script `userguide_test.rb` includes:
-** a string that contains an AsciiDoc source document
-** a call to the Asciidoctor API to render the content of that string to HTML
-** an event listener that inserts the generated HTML into the page
-* `basic.html` demonstrates how to convert an inline AsciiDoc content and insert the result in the HTML page
-* `asciidoctor_example.html` demonstrates how to convert a file using the include directive and insert the result in the HTML page
+=== Running the Node.js test suite
 
-In order to visualize the result, a local http server must be started within the root of this project otherwise you will have a cross origin issue which prevents to load some resources and render the HTML.
-For this purpose, you can run the following command to start a HTTP server locally: `npm run server --prefix packages/core`
+[source,bash]
+----
+npm test --prefix packages/core
+----
 
-Once the server is listening, you can point your browser at:
+Tests use the Node.js built-in runner (`node:test` / `node:assert/strict`).
+The suite contains over 2,300 tests ported from the Asciidoctor Ruby test suite.
 
-* http://localhost:8080/build/examples/asciidoctor_example.html
-* http://localhost:8080/build/examples/build/examples/userguide_test.html
-* http://localhost:8080/build/examples/slide.html
+=== Running the browser test suite
 
-If you open the first link, you should see the Asciidoctor.js README.
-The content on the page was rendered from AsciiDoc by Asciidoctor.js when you loaded the page!
+[source,bash]
+----
+npm run test:browser --prefix packages/core
+----
 
-=== Building and running benchmark
+This runs the same test files through {uri-vitest}[Vitest] with a Playwright/Chromium provider.
+Node.js built-ins (`node:fs`, `node:path`, etc.) are shimmed so that browser-incompatible code paths are exercised via their browser equivalents (`fetch`, `URL`, etc.).
 
-Currently, you can run benchmark against 3 JavaScript environment:
+A small number of test files are excluded from the browser run because they require a running Node.js HTTP server or Node.js-specific infrastructure (see `vitest.browser.config.js`).
 
- * node
- * chrome
+== Linting and formatting
 
-The following command will run benchmark against Node.js:
+The project uses {uri-biome}[Biome] for both linting and formatting (replacing the previous ESLint + Standard setup).
 
- $ npm run benchmark node --prefix packages/core
+[source,bash]
+----
+# Lint
+npm run lint --prefix packages/core
 
-Once `packages/core/build/benchmark` is initialized, you can run benchmark again (without building the project):
+# Format (in-place)
+npm run format --prefix packages/core
 
- $ node packages/core/build/benchmark/node.js
+# Lint + format check (CI mode)
+npm run check --prefix packages/core
+----
 
 == Debugging
-
-Compiling a Ruby application to JavaScript and getting it to run is a process of eliminating fatal errors.
-When the JavaScript fails, the message isn't always clear or even close to where things went wrong.
-The key to working through these failures is to use the browser's JavaScript console.
 
 === Chrome / Chromium
 
 Chrome (and Chromium) has a very intuitive JavaScript console.
 To open it, press kbd:[Ctrl+Shift+J] or right-click on the page, select menu:Inspect Element[] from the context menu and click the *Console* tab.
 
-When an error occurs in the JavaScript, Chrome will print the error message to the console.
-The error message is interactive.
+When an error occurs, Chrome will print the error message to the console.
 Click on the arrow at the start of the line to expand the call trace, as shown here:
 
 image::error-in-chrome-console.png[]
@@ -188,46 +125,28 @@ image::error-in-chrome-console.png[]
 When you identify the entry you want to inspect, click the link to the source location.
 If you want to inspect the state, add a breakpoint and refresh the page.
 
-Chrome tends to cache the JavaScript files too aggressively when running local scripts.
-Make a habit of holding down kbd:[Ctrl] when you click refresh to force Chrome to reload the JavaScript.
-
-Another option is to start Chrome with the application cache disabled.
-
- $ chrome --disable-application-cache
+Chrome tends to cache JavaScript files aggressively when running local scripts.
+Hold down kbd:[Ctrl] when you click refresh to force Chrome to reload the JavaScript.
 
 === Firefox
 
 Firefox also has a JavaScript console.
 To open it, press kbd:[Ctrl+Shift+J] or right-click on the page, select menu:Inspect Element[] from the context menu and click the *Web Console* tab.
 
-When an error occurs in the JavaScript, Firefox will print the error message to the console.
-Unlike Chrome, the error message is not interactive.
-Its power, instead, lies under the hood.
-
-To see the call trace when an exception occurs, you need to configure the Debugger to pause on an exception.
-Click the *Debugger* tab, click the configuration gear icon in the upper right corner of that tab and click *Pause on exceptions*.
-Refresh the page and you'll notice that the debugger has paused at the location in the source where the exception is thrown.
+To see the call trace when an exception occurs, configure the Debugger to pause on exceptions.
+Click the *Debugger* tab, click the configuration gear icon in the upper right corner and click *Pause on exceptions*.
+Refresh the page — the debugger will pause at the location in the source where the exception is thrown.
 
 image::error-in-javascript-debugger.png[]
 
 The call trace is displayed as breadcrumb navigation, which you can use to jump through the stack.
 You can inspect the state at any location by looking through the panels on the right.
 
-== Modifications to Asciidoctor (for compatibility)
+== Contributing a change
 
-Compiling Asciidoctor to JavaScript currently requires some changes in Asciidoctor.
-The goal is to eventually eliminate all of these differences so that Asciidoctor can be compiled to JavaScript as is.
+When porting behaviour from the Ruby source or fixing a bug:
 
-Here's a list of some of the changes that are currently needed:
-
-* Named posix groups in regular expressions are replaced with their ASCII equivalent
-  - JavaScript doesn't support named posix groups, such as [x-]`[[:alpha:]]`)
-* A shim library is needed to implement missing classes in Opal, such as `File` and `Dir`
-* All mutable String operations have been replaced with assignments (this is done at build time)
-  - JavaScript doesn't support mutable strings
-* `$~[0]` used in place of `$&` and `$~[n]` in place of `$n` after running a regular expression (where n is 1, 2, 3...)
-* Opal doesn't recognize modifiers on a regular expression (e.g., multiline)
-* Optional, non-matching capture groups resolve to empty string in gsub block in Firefox (see http://www.bennadel.com/blog/1916-different-browsers-use-different-non-matching-captured-regex-pattern-values.htm)
-* Assignments without a matching value are set to empty string instead of nil (in the following example, `b` is set to empty string)
-
-  a, b = "value".split ',', 2
+. Locate the corresponding Ruby file in the {uri-asciidoctor-rb}[asciidoctor/asciidoctor] repository and cross-reference it with the equivalent file in `packages/core/src/`.
+. Follow the translation conventions documented at the top of each source file and in `packages/core/CLAUDE.md`.
+. Add or update tests in `packages/core/test/` — the test files mirror the structure of the Ruby test suite.
+. Run both the Node.js and browser test suites before submitting a pull request.
