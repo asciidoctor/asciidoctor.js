@@ -35,7 +35,7 @@ jobs:
           npm run build:binary
 
       - name: Cache native image
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v5
         with:
           path: "packages/asciidoctor/dist/asciidoctor-${{ matrix.platform }}*"
           key: "native-image-${{ matrix.platform }}-${{ github.run_id }}"

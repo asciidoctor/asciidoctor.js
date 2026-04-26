@@ -38,28 +38,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Restore Native-image-win-amd64 cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v5
         with:
           path: "packages/asciidoctor/dist/asciidoctor-win-adm64.exe"
           key: "native-image-win-amd64-${{ github.run_id }}"
           fail-on-cache-miss: true
           enableCrossOsArchive: true
       - name: Restore Native-image-linux-amd64 cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v5
         with:
           path: "packages/asciidoctor/dist/asciidoctor-linux-amd64"
           key: "native-image-linux-amd64-${{ github.run_id }}"
           fail-on-cache-miss: true
           enableCrossOsArchive: true
       - name: Restore Native-image-linux-arm64 cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v5
         with:
           path: "packages/asciidoctor/dist/asciidoctor-linux-arm64"
           key: "native-image-linux-arm64-${{ github.run_id }}"
           fail-on-cache-miss: true
           enableCrossOsArchive: true
       - name: Restore Native-image-darwin-arm64 cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v5
         with:
           path: "packages/asciidoctor/dist/asciidoctor-darwin-arm64"
           key: "native-image-darwin-arm64-${{ github.run_id }}"
