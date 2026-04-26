@@ -40,7 +40,7 @@ jobs:
         run: |
           npm ci
           npm ci --prefix packages/core
-          npx playwright install
+          npx playwright install chromium
       - name: Lint, build and test
         shell: bash
         run: |
