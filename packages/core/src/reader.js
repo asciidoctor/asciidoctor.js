@@ -188,6 +188,7 @@ export class Reader {
 
   // ── Public API ──────────────────────────────────────────────────────────────
 
+  /** @returns {boolean | Promise<boolean>} */
   hasMoreLines() {
     if (this._lines.length === 0) {
       this._lookAhead = 0
@@ -196,6 +197,7 @@ export class Reader {
     return true
   }
 
+  /** @returns {boolean | Promise<boolean>} */
   empty() {
     if (this._lines.length === 0) {
       this._lookAhead = 0
@@ -203,6 +205,8 @@ export class Reader {
     }
     return false
   }
+
+  /** @returns {boolean | Promise<boolean>} */
   eof() {
     return this.empty()
   }
@@ -661,6 +665,7 @@ export class Reader {
     return this._document?.logger ?? console
   }
 
+  /** @param {string} msg @param {{ sourceLocation?: any, includeLocation?: any }} [opts] */
   _logWarn(msg, { sourceLocation, includeLocation } = {}) {
     let text = sourceLocation ? `${sourceLocation.lineInfo}: ${msg}` : msg
     if (includeLocation) text += ` (${includeLocation.lineInfo})`
@@ -673,6 +678,7 @@ export class Reader {
     if (opts.includeLocation) text += ` (${opts.includeLocation.lineInfo})`
     this.logger.error(text)
   }
+  /** @param {string} msg @param {{ sourceLocation?: any }} [opts] */
   _logInfo(msg, { sourceLocation } = {}) {
     const text = sourceLocation ? `${sourceLocation.lineInfo}: ${msg}` : msg
     this.logger.info(text)

@@ -1,8 +1,37 @@
 export * from "./rx.js";
 export namespace SafeMode {
+    /**
+     * A safe mode level that disables any of the security features enforced
+     * by Asciidoctor (Node is still subject to its own restrictions).
+     */
     let UNSAFE: number;
+    /**
+     * A safe mode level that closely parallels safe mode in AsciiDoc. This value
+     * prevents access to files which reside outside the parent directory of
+     * the source file and disables any macro other than the `include::[]` directive.
+     */
     let SAFE: number;
+    /**
+     * A safe mode level that disallows the document from setting attributes
+     * that would affect the conversion of the document, in addition to all the
+     * security features of {@link SafeMode.SAFE}. For instance, this level forbids
+     * changing the backend or source-highlighter using an attribute defined
+     * in the source document header. This is the most fundamental level of
+     * security for server deployments (hence the name).
+     */
     let SERVER: number;
+    /**
+     * A safe mode level that disallows the document from attempting to read
+     * files from the file system and including the contents of them into the
+     * document, in additional to all the security features of {@link SafeMode.SERVER}.
+     * For instance, this level disallows use of the `include::[]` directive and the
+     * embedding of binary content (data uri), stylesheets and JavaScripts
+     * referenced by the document. (Asciidoctor and trusted extensions may still
+     * be allowed to embed trusted content into the document).
+     *
+     * Since Asciidoctor is aiming for wide adoption, this level is the default
+     * and is recommended for server deployments.
+     */
     let SECURE: number;
     /**
      * Returns the numeric value for a safe-mode name string, or undefined.

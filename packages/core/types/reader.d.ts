@@ -27,9 +27,12 @@ export class Reader {
     _unescapeNextLine: boolean;
     unterminated: any;
     _saved: any;
-    hasMoreLines(): boolean;
-    empty(): boolean;
-    eof(): boolean;
+    /** @returns {boolean | Promise<boolean>} */
+    hasMoreLines(): boolean | Promise<boolean>;
+    /** @returns {boolean | Promise<boolean>} */
+    empty(): boolean | Promise<boolean>;
+    /** @returns {boolean | Promise<boolean>} */
+    eof(): boolean | Promise<boolean>;
     nextLineEmpty(): Promise<boolean>;
     isNextLineEmpty(): Promise<boolean>;
     /**
@@ -114,9 +117,16 @@ export class Reader {
     getLogger(): any;
     createLogMessage(text: any, context?: {}): any;
     get logger(): any;
-    _logWarn(msg: any, { sourceLocation, includeLocation }?: {}): void;
+    /** @param {string} msg @param {{ sourceLocation?: any, includeLocation?: any }} [opts] */
+    _logWarn(msg: string, { sourceLocation, includeLocation }?: {
+        sourceLocation?: any;
+        includeLocation?: any;
+    }): void;
     _logError(msg: any, opts?: {}): void;
-    _logInfo(msg: any, { sourceLocation }?: {}): void;
+    /** @param {string} msg @param {{ sourceLocation?: any }} [opts] */
+    _logInfo(msg: string, { sourceLocation }?: {
+        sourceLocation?: any;
+    }): void;
 }
 export class PreprocessorReader extends Reader {
     constructor(document: any, data?: any, cursor?: any, opts?: {});
