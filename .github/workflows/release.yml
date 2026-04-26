@@ -41,9 +41,7 @@ jobs:
           npm ci
           npm ci --prefix packages/core
           npx playwright install
-      # package and publish
-      - name: Package
-        run: ./scripts/package.sh
+      # publish
       - name: Publish
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -65,24 +63,6 @@ jobs:
           draft: false
           prerelease: false
       # upload assets
-      - name: Upload source code as a zip file
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/core/bin/asciidoctor.js.dist.zip
-          asset_name: asciidoctor.js.dist.zip
-          asset_content_type: application/zip
-      - name: Upload source code as a tar.gz file
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/core/bin/asciidoctor.js.dist.tar.gz
-          asset_name: asciidoctor.js.dist.tar.gz
-          asset_content_type: application/tar+gzip
       - name: Upload Linux binary
         uses: actions/upload-release-asset@v1.0.2
         env:

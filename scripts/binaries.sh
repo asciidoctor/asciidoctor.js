@@ -1,13 +1,12 @@
 #!/bin/bash
-# Produce macOS, Linux and Windows binaries from asciidoctor/cli
+# Produce a self-contained asciidoctor binary using Node.js SEA.
+# Template engines (ejs, handlebars, nunjucks, pug) are bundled into
+# the binary as devDependencies — not required at runtime by the npm package.
 
-SCRIPT=`realpath $0`
-SCRIPT_PATH=`dirname ${SCRIPT}`
+SCRIPT=$(realpath "$0")
+SCRIPT_PATH=$(dirname "$SCRIPT")
 
-cd "$SCRIPT_PATH"
-cd ../packages/asciidoctor
+cd "$SCRIPT_PATH/.."
 
-# @asciidoctor/core must be published to npmjs before we can install the dependencies
-npm i --save ejs@3.1.2 handlebars@4.7.6 nunjucks@3.2.1 pug@2.0.4
-npm i
-npm run dist
+npm install
+npm run build:binary

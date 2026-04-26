@@ -1,56 +1,58 @@
-const { describe, it, beforeEach, afterEach } = require('node:test')
-const assert = require('node:assert')
-const childProcess = require('child_process')
-const execModule = require('../../tasks/module/exec')
-const sinon = require('sinon')
+import { describe, it, beforeEach, afterEach } from 'node:test'
+import assert from 'node:assert'
+import childProcess from 'node:child_process'
+import sinon from 'sinon'
+import { pushRelease } from '../../tasks/module/release.js'
 
 let childProcessExecSyncStub
 
-describe('Build', function () {
-  beforeEach(function () {
-    childProcessExecSyncStub = sinon.stub(childProcess, 'execSync')
+describe('Build', () => {
+  beforeEach(() => {
+    childProcessExecSyncStub = sinon
+      .stub(childProcess, 'execSync')
+      .returns(Buffer.from(''))
   })
 
-  afterEach(function () {
+  afterEach(() => {
     childProcessExecSyncStub.restore()
   })
 
-  describe('Push release', function () {
-    it('should be able to find the remote name', function () {
+  describe('Push release', () => {
+    it('should be able to find the remote name', () => {
       childProcessExecSyncStub
         .withArgs('git remote -v')
         .returns(
-          'origin\tgit@github.com:Mogztter/asciidoctor.js.git\t(fetch)\n' +
-            'origin\tgit@github.com:Mogztter/asciidoctor.js.git\t(push)\n' +
+          'origin\tgit@github.com:ggrossetie/asciidoctor.js.git\t(fetch)\n' +
+            'origin\tgit@github.com:ggrossetie/asciidoctor.js.git\t(push)\n' +
             'upstream\tgit@github.com:asciidoctor/asciidoctor.js.git\t(fetch)\n' +
             'upstream\tgit@github.com:asciidoctor/asciidoctor.js.git\t(push)'
         )
-      const releaseModule = require('../../tasks/module/release.js')
-      const execSyncStub = sinon.stub(execModule, 'execSync')
-      execSyncStub.returns('void')
 
-      const result = releaseModule.pushRelease()
+      const result = pushRelease()
       assert.equal(result, true, 'pushRelease should return true')
-      assert.equal(execSyncStub.getCall(0).args[0], 'git push upstream main')
-      assert.equal(execSyncStub.getCall(1).args[0], 'git push upstream --tags')
-      execSyncStub.restore()
+
+      const pushCalls = childProcessExecSyncStub.args.filter(([cmd]) =>
+        cmd.startsWith('git push')
+      )
+      assert.equal(pushCalls[0][0], 'git push upstream main')
+      assert.equal(pushCalls[1][0], 'git push upstream --tags')
     })
 
-    it('should return false if the original repository is absent', function () {
+    it('should return false if the original repository is absent', () => {
       childProcessExecSyncStub
         .withArgs('git remote -v')
         .returns(
           'origin\tgit@github.com:ldez/asciidoctor.js.git (fetch)\n' +
             'origin\tgit@github.com:ldez/asciidoctor.js.git (push)'
         )
-      const releaseModule = require('../../tasks/module/release.js')
-      const execSyncStub = sinon.stub(execModule, 'execSync')
-      execSyncStub.returns('void')
 
-      const result = releaseModule.pushRelease()
+      const result = pushRelease()
       assert.equal(result, false, 'pushRelease should return false')
-      assert.equal(execSyncStub.called, false, 'execSync should not be called')
-      execSyncStub.restore()
+
+      const pushCalls = childProcessExecSyncStub.args.filter(([cmd]) =>
+        cmd.startsWith('git push')
+      )
+      assert.equal(pushCalls.length, 0, 'git push should not be called')
     })
   })
 })

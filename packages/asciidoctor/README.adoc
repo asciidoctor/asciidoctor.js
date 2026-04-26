@@ -1,9 +1,13 @@
 = Asciidoctor.js: AsciiDoc in JavaScript powered by Asciidoctor
 
-Asciidoctor.js brings AsciiDoc to the JavaScript world!
+This package is a convenience wrapper that bundles `@asciidoctor/core` and the Asciidoctor CLI.
+It provides a native JavaScript implementation of Asciidoctor with no compilation step.
 
-This project uses https://opalrb.com/[Opal] to transpile http://asciidoctor.org[Asciidoctor], a modern implementation of AsciiDoc, from Ruby to JavaScript to produce _asciidoctor.js_.
-The _asciidoctor.js_ script can be run on any JavaScript platform, including Node.js, GraalVM and, of course, a web browser.
+The API is asynchronous: all parsing and conversion operations return a `Promise`.
+
+== Requirements
+
+Node.js >= 24
 
 == Install
 
@@ -11,23 +15,19 @@ The _asciidoctor.js_ script can be run on any JavaScript platform, including Nod
 
 == Usage
 
-Here is a simple example that converts AsciiDoc to HTML5:
+=== Convert a string
 
 .sample.js
 [source,javascript]
 ----
 import asciidoctor from 'asciidoctor'
 
-const Asciidoctor = asciidoctor() // <1>
-const content = 'http://asciidoctor.org[*Asciidoctor*] ' +
-  'running on https://opalrb.com[_Opal_] ' +
-  'brings AsciiDoc to Node.js!'
-const html = Asciidoctor.convert(content) // <2>
-console.log(html) // <3>
+const content = 'https://asciidoctor.org[*Asciidoctor*] running on Node.js!'
+const html = await asciidoctor.convert(content) // <1>
+console.log(html) // <2>
 ----
-<1> Instantiate the Asciidoctor.js library
-<2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
-<3> Print the HTML5 output to the console
+<1> Convert AsciiDoc content to HTML5 — the call returns a `Promise` and must be awaited
+<2> Print the HTML5 output to the console
 
 Save the file as _sample.js_ and run it using the `node` command:
 
@@ -38,11 +38,48 @@ You should see the following output in your terminal:
 [source,html]
 ----
 <div class="paragraph">
-<p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.com"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
+<p><a href="https://asciidoctor.org"><strong>Asciidoctor</strong></a> running on Node.js!</p>
 </div>
 ----
 
-If you want to know more about Asciidoctor.js, please read the https://docs.asciidoctor.org/asciidoctor.js/latest/[User Manual].
+=== Convert a file
+
+.convert-file.js
+[source,javascript]
+----
+import { convertFile } from 'asciidoctor'
+
+await convertFile('document.adoc', { safe: 'safe' })
+----
+
+=== Load without converting
+
+Use `load` when you need to inspect the parsed document model before (or instead of) converting:
+
+.load.js
+[source,javascript]
+----
+import { load } from 'asciidoctor'
+
+const doc = await load('== Hello, World!\n\nThis is Asciidoctor.')
+console.log(doc.getTitle())    // Hello, World!
+console.log(doc.getBlocks())   // array of top-level blocks
+const html = await doc.convert()
+console.log(html)
+----
+
+== CLI
+
+The `asciidoctor` command is available after installation:
+
+ $ asciidoctor document.adoc
+
+Common options:
+
+ $ asciidoctor -b html5 -a toc document.adoc
+ $ asciidoctor -o - document.adoc          # output to stdout
+ $ asciidoctor --help                       # show all options
+ $ asciidoctor --help syntax                # show AsciiDoc syntax reference
 
 == Contributing
 
@@ -53,6 +90,10 @@ New contributors are always welcome!
 The https://github.com/asciidoctor/asciidoctor.js/blob/main/CONTRIBUTING.adoc[Contributing] guide provides information on how to contribute.
 
 If you want to write code, the https://github.com/asciidoctor/asciidoctor.js/blob/main/CONTRIBUTING-CODE.adoc[Contributing Code] guide will help you to get started quickly.
+
+== Changelog
+
+Refer to the https://github.com/asciidoctor/asciidoctor.js/blob/main/CHANGELOG.adoc[CHANGELOG] for a complete list of changes.
 
 == Copyright
 

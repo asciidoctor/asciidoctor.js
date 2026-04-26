@@ -1,3 +1,5 @@
+/** @import { Block } from './block.js' */
+
 // ESM conversion of syntax_highlighter.rb
 //
 // Ruby-to-JavaScript notes:
