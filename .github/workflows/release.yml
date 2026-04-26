@@ -25,9 +25,12 @@ jobs:
           npm run test
           npm t --prefix packages/core
           npm run test:browser --prefix packages/core
+  native_images:
+    needs: build
+    uses: ./.github/workflows/native-image.yml
   publish:
     if: github.repository_owner == 'asciidoctor'
-    needs: build
+    needs: [build, native_images]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6

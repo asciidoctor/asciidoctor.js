@@ -44,3 +44,7 @@ jobs:
         run: |
           npm t --prefix packages/core
           npm run test:browser --prefix packages/core
+
+  native_images:
+    needs: build
+    uses: ./.github/workflows/native-image.yml
