@@ -21,7 +21,7 @@ const SEA_FUSE = 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2'
 
 function run(bin, args, opts = {}) {
   console.log(`> ${[bin, ...args].join(' ')}`)
-  execFileSync(bin, args, { stdio: 'inherit', ...opts })
+  execFileSync(bin, args, { stdio: 'inherit', shell: platform === 'win32', ...opts })
 }
 
 const ext = platform === 'win32' ? '.cmd' : ''
