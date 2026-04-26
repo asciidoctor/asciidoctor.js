@@ -20,11 +20,21 @@ import { convert } from '@asciidoctor/core'
 
 await convert('Hello _world_')
 ----
+* Requires Node.js ≥ 24
 
 Improvements::
 
 * Complete rewrite from the Ruby source using Claude Code (claude-sonnet-4-6), reviewed by a human
 * Pure ESM library with no external runtime dependencies
+* TypeScript type definitions (`.d.ts`) are now generated from JSDoc annotations — no separate hand-written types file required
+* HTTP includes and remote image inlining use the standard `fetch` API instead of `XMLHttpRequest`
+* File I/O (`loadFile`, `convertFile`, include directives) uses `node:fs/promises` — all operations are fully async, no blocking sync calls
+
+Infrastructure::
+
+* Replaced ESLint + Standard with https://biomejs.dev[Biome] for linting and formatting
+* Browser tests run via `vitest --browser` (Playwright/Chromium) in addition to the Node.js test runner
+* Test suite ported from Asciidoctor Ruby — over 2,300 tests covering the full feature set
 
 == v3.0.4 (2024-02-12)
 
