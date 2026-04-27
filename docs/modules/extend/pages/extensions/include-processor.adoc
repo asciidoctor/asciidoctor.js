@@ -5,27 +5,32 @@ Return the content "foo" if the file extension of the include directive target i
 
 == sample-foo-doc.adoc
 
-```adoc
+[source,adoc]
+----
 \include::./test.foo[]
-```
+----
 
 == FooIncludeProcessor
 
 .foo-include-processor.js
-```js
+[source,js]
+----
 include::example$extensions/foo-include-processor.js[]
-```
+----
 
 == Usage
 
-```js
-const asciidoctor = require('asciidoctor')()
-const registry = asciidoctor.Extensions.create()
-require('./foo-include-processor.js')(registry)
+[source,js]
+----
+import { Extensions, convert } from '@asciidoctor/core'
+import registerFooIncludeProcessor from './foo-include-processor.js'
 
-const html = asciidoctor.convert('include::./test.foo[]', { extension_registry: registry })
+const registry = Extensions.create()
+registerFooIncludeProcessor(registry)
+
+const html = await convert('include::./test.foo[]', { extension_registry: registry })
 console.log(html)
 // <div class="paragraph">
 // <p>foo</p>
-// </div
-```
+// </div>
+----

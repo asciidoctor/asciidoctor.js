@@ -42,7 +42,7 @@ In this case, you should write JavaScript files that export a default function:
 
 [source,js]
 ----
-module.exports = ({ node }) => `<p class="paragraph">${node.getContent()}</p>`
+export default ({ node }) => `<p class="paragraph">${node.getContent()}</p>`
 ----
 
 This function will be called with a <<template-context>> as argument.
@@ -84,7 +84,9 @@ You can also configure the template directory using the API:
 
 [source,js]
 ----
-asciidoctor.convertFile('doc.adoc', { safe: 'safe', backend: 'html5', template_dir: './templates' })
+import { convertFile } from '@asciidoctor/core'
+
+await convertFile('doc.adoc', { safe: 'safe', backend: 'html5', template_dir: './templates' })
 ----
 
 === Multiple templates directories
@@ -100,7 +102,7 @@ From the API, we will need to define the `template_dirs` option:
 
 [source,js]
 ----
-asciidoctor.convertFile('doc.adoc', { safe: 'safe', backend: 'html5', template_dirs: ['./templates-a', './templates-b'] })
+await convertFile('doc.adoc', { safe: 'safe', backend: 'html5', template_dirs: ['./templates-a', './templates-b'] })
 ----
 
 === Conflicts resolution
@@ -142,17 +144,17 @@ This file can be used to declare utility functions that can be used in the templ
 For instance, if you are using Handlebars, you might want to register {url-handlebars-register-partials}[partials] or {url-handlebars-register-helpers}[helpers].
 Similarly, if you are using Nunjucks, you might want to {url-nunjucks-add-filter}[add custom filters].
 
-If this file exists, Asciidoctor.js will load it (using the Node.js `require` directive) and call the `configure` function if it's exported:
+If this file exists, Asciidoctor.js will load it and call the `configure` function if it's exported:
 
 .helpers.js
 [source,js]
 ----
-module.exports.configure = (context) => {
+export function configure (context) {
   // ...
 }
 ----
 
-The `context` object will contain an <<isolated-environment,isolated environement>> (if supported) template engine keyed by template engine name:
+The `context` object will contain an <<isolated-environment,isolated environment>> (if supported) template engine keyed by template engine name:
 
 `handlebars.environment`::
 An isolated Handlebars environment obtained via https://handlebarsjs.com/api-reference/runtime.html#handlebars-create[`Handlebars.create()`]
@@ -165,7 +167,7 @@ Here's a concrete example where we add a Nunjucks filter `shorten` which returns
 .helpers.js
 [source,js]
 ----
-module.exports.configure = (context) => {
+export function configure (context) {
   context.nunjucks.environment.addFilter('shorten', (str, count) => str.slice(0, count || 5))
 }
 ----
@@ -180,7 +182,7 @@ For instance, if we define a value with the same name in two directories the las
 .web/helpers.js
 [source,js]
 ----
-module.exports.configure = (context) => {
+export function configure (context) {
   context.nunjucks.environment.addGlobal('cdn', '//cdn.web.com')
 }
 ----
@@ -188,7 +190,7 @@ module.exports.configure = (context) => {
 .blog/helpers.js
 [source,js]
 ----
-module.exports.configure = (context) => {
+export function configure (context) {
   context.nunjucks.environment.addGlobal('cdn', '//cdn.blog.io')
 }
 ----
@@ -209,8 +211,8 @@ Instead, you can use the `helpers.js` file to export values and functions that w
 [source,js]
 ----
 let assetUriScheme
-module.exports.version = '1.0.0'
-module.exports.getAssetUriScheme = (document) => {
+export const version = '1.0.0'
+export function getAssetUriScheme (document) {
   if (assetUriScheme) {
     return assetUriScheme
   }
@@ -225,7 +227,7 @@ In the above example, the value `version` and the function `getAssetUriScheme` w
 .video.js
 [source,js]
 ----
-module.exports = function ({ node, _, helpers }) {
+export default function ({ node, _, helpers }) {
   const target = node.getAttribute('target')
   const document = node.getDocument()
   const src = `${helpers.getAssetUriScheme(document)}//www.youtube.com/embed/${target}}` // <1>
@@ -297,15 +299,19 @@ For performance reasons, templates are cached, but you can disable this feature 
 
 [source,js]
 ----
-asciidoctor.convert(input, { template_cache: false })
+import { convert } from '@asciidoctor/core'
+
+await convert(input, { template_cache: false })
 ----
 
 It might be useful when you want to configure the same template directory with different options.
-In the following example, we want to an XML https://pugjs.org/language/doctype.html[doctype].
+In the following example, we want to use an XML https://pugjs.org/language/doctype.html[doctype].
 We need to disable the cache otherwise the second conversion will not reconfigure the templates with the `doctype: 'xml'` option:
 
 [source,js]
 ----
+import { convert } from '@asciidoctor/core'
+
 const options = {
   safe: 'safe',
   doctype: 'inline',
@@ -314,8 +320,8 @@ const options = {
   template_cache: false, // disable template cache
 }
 
-console.log(asciidoctor.convert(`image:cat.png[]`, options)) // <img src="cat.png"/>
-console.log(asciidoctor.convert('image:cat.png[]', Object.assign(options, {
+console.log(await convert(`image:cat.png[]`, options)) // <img src="cat.png"/>
+console.log(await convert('image:cat.png[]', Object.assign(options, {
   template_engine_options: {
     pug: {
       doctype: 'xml'

@@ -8,51 +8,24 @@ on:
 jobs:
   build:
     if: github.repository_owner == 'asciidoctor'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      # libgbm-dev is required by Puppeteer 3+
-      - name: Install system dependencies
-        run: |
-          sudo apt-get install -y libgbm-dev
-      - name: Install dependencies
-        run: |
-          npm ci
-          npm ci --prefix packages/core
-      - name: Lint, build and test
-        env:
-          ASCIIDOCTOR_CORE_VERSION: v2.0.23
-        run: |
-          npm run lint
-          npm run test
-          npm run travis --prefix packages/core
+    uses: ./.github/workflows/build.yml
   publish:
     if: github.repository_owner == 'asciidoctor'
-    needs: build
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org/
-      # libgbm-dev is required by Puppeteer 3+
-      - name: Install system dependencies
-        run: |
-          sudo apt-get install -y libgbm-dev
       # install dependencies
       - name: Install dependencies
         run: |
           npm ci
           npm ci --prefix packages/core
-      # package and publish
-      - name: Package
-        env:
-          ASCIIDOCTOR_CORE_VERSION: v2.0.23
-        run: ./scripts/package.sh
+          npx playwright install
+      # publish
       - name: Publish
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -60,8 +33,38 @@ jobs:
       - name: Make sure that @asciidoctor/core has been published on npmjs
         run: |
           timeout 60s ./scripts/wait-asciidoctor-core-published.sh
-      - name: Produce binaries
-        run: ./scripts/binaries.sh
+  upload:
+    needs: [ publish ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore Native-image-win-amd64 cache
+        uses: actions/cache/restore@v5
+        with:
+          path: "packages/asciidoctor/dist/asciidoctor-win-adm64.exe"
+          key: "native-image-win-amd64-${{ github.run_id }}"
+          fail-on-cache-miss: true
+          enableCrossOsArchive: true
+      - name: Restore Native-image-linux-amd64 cache
+        uses: actions/cache/restore@v5
+        with:
+          path: "packages/asciidoctor/dist/asciidoctor-linux-amd64"
+          key: "native-image-linux-amd64-${{ github.run_id }}"
+          fail-on-cache-miss: true
+          enableCrossOsArchive: true
+      - name: Restore Native-image-linux-arm64 cache
+        uses: actions/cache/restore@v5
+        with:
+          path: "packages/asciidoctor/dist/asciidoctor-linux-arm64"
+          key: "native-image-linux-arm64-${{ github.run_id }}"
+          fail-on-cache-miss: true
+          enableCrossOsArchive: true
+      - name: Restore Native-image-darwin-arm64 cache
+        uses: actions/cache/restore@v5
+        with:
+          path: "packages/asciidoctor/dist/asciidoctor-darwin-arm64"
+          key: "native-image-darwin-arm64-${{ github.run_id }}"
+          fail-on-cache-miss: true
+          enableCrossOsArchive: true
       # create the GitHub release
       - name: Create release
         id: create_release
@@ -74,32 +77,23 @@ jobs:
           draft: false
           prerelease: false
       # upload assets
-      - name: Upload source code as a zip file
+      - name: Upload Linux arm64 binary
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/core/bin/asciidoctor.js.dist.zip
-          asset_name: asciidoctor.js.dist.zip
-          asset_content_type: application/zip
-      - name: Upload source code as a tar.gz file
+          asset_path: packages/asciidoctor/dist/asciidoctor-linux-arm64
+          asset_name: asciidoctor-linux-arm64
+          asset_content_type: application/octet-stream
+      - name: Upload Linux amd64 binary
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/core/bin/asciidoctor.js.dist.tar.gz
-          asset_name: asciidoctor.js.dist.tar.gz
-          asset_content_type: application/tar+gzip
-      - name: Upload Linux binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/asciidoctor/dist/asciidoctor-linux
-          asset_name: asciidoctor-linux
+          asset_path: packages/asciidoctor/dist/asciidoctor-linux-amd64
+          asset_name: asciidoctor-linux-amd64
           asset_content_type: application/octet-stream
       - name: Upload macOS binary
         uses: actions/upload-release-asset@v1.0.2
@@ -107,8 +101,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/asciidoctor/dist/asciidoctor-macos
-          asset_name: asciidoctor-macos
+          asset_path: packages/asciidoctor/dist/asciidoctor-darwin-arm64
+          asset_name: asciidoctor-darwin-arm64
           asset_content_type: application/octet-stream
       - name: Upload Windows binary
         uses: actions/upload-release-asset@v1.0.2
@@ -116,8 +110,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/asciidoctor/dist/asciidoctor-win.exe
-          asset_name: asciidoctor-win.exe
+          asset_path: packages/asciidoctor/dist/asciidoctor-win-amd64.exe
+          asset_name: asciidoctor-win-amd64.exe
           asset_content_type: application/octet-stream
       - name: Set release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
@@ -134,3 +128,34 @@ jobs:
             Asciidoctor.js ${{ env.RELEASE_VERSION }} is out!
 
             https://github.com/asciidoctor/asciidoctor.js/releases/tag/${{ env.RELEASE_VERSION }}
+
+  docs:
+    if: github.repository_owner == 'asciidoctor'
+    needs: [publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm ci --prefix packages/core
+      - name: Generate API documentation
+        run: npm run docs --prefix packages/core
+      - name: Compute docs destination folder
+        id: dest
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          if [[ "$TAG" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-(alpha|beta|rc)\. ]]; then
+            echo "folder=${BASH_REMATCH[1]}-dev" >> "$GITHUB_OUTPUT"
+          else
+            echo "folder=$TAG" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: packages/core/build/docs
+          target-folder: ${{ steps.dest.outputs.folder }}

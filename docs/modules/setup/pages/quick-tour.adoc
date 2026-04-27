@@ -1,110 +1,111 @@
 = A quick tour
 
 Asciidoctor.js is a _fast_ text processor for converting AsciiDoc content to HTML5, slidedecks and other formats.
-This is quick tour will give you an overview of how to convert AsciiDoc content to HTML5.
+This quick tour gives you an overview of how to convert AsciiDoc content to HTML5.
 
 == Your first conversion
 
-The first thing you need to do is instantiate Asciidoctor.js to get a {url-jsdoc-latest}/#asciidoctor[processor]:
+Import the `convert` function directly from `@asciidoctor/core` — no instantiation needed:
 
-```js
-var asciidoctor = Asciidoctor()
-```
+[source,js]
+----
+import { convert } from '@asciidoctor/core'
 
-To convert an AsciiDoc-formatted string:
-
-```js
-var html = asciidoctor.convert('Hello, _Asciidoctor_')
+const html = await convert('Hello, _Asciidoctor_')
 console.log(html)
 // <div class="paragraph">
 // <p>Hello, <em>Asciidoctor</em></p>
 // </div>
-```
+----
 
 [NOTE]
 ====
 When converting a string, the header and footer are excluded by default to make Asciidoctor consistent with other lightweight markup engines like Markdown.
 If you want to produce a standalone document, enable it using the `standalone` option:
 
-```js
-var html = asciidoctor.convert('*This* is Asciidoctor.', { standalone: true })
-```
+[source,js]
+----
+const html = await convert('*This* is Asciidoctor.', { standalone: true })
+----
 ====
 
-Alternatively, you can use the function `convertFile` to convert a file containing AsciiDoc markup to HTML 5:
+To convert a file, use `convertFile`:
 
-```js
-var doc = asciidoctor.convertFile('/path/to/file.adoc') // <1>
-```
-<1> The command will output to the file `file.html` in the same directory. +
-The variable `doc` will contain an {url-jsdoc-latest}/#document[Asciidoctor.Document] object.
+[source,js]
+----
+import { convertFile } from '@asciidoctor/core'
 
-Alternatively, you can capture the HTML 5 output in a variable instead of writing it to a file:
+await convertFile('/path/to/file.adoc') // <1>
+----
+<1> Writes the output to `file.html` in the same directory.
 
-```js
-var html = asciidoctor.convertFile('/path/to/file.adoc', { to_file: false, standalone: true })
-```
+To capture the HTML output in a variable instead of writing it to a file:
 
-[NOTE]
-====
-As seen above, the convert functions accept an optional argument to specify options. +
-Use of this argument is described in the xref:processor:convert-options.adoc[Convert options section].
-====
-
-If you are using Node.js, you can also use a `Buffer`:
-
-```js
-var html = asciidoctor.convert(fs.readFileSync('/path/to/file.adoc')) // <1>
-```
-<1> `readFileSync` will return a `Buffer`: https://nodejs.org/api/fs.html#fs_fs_readfilesync_path_options
+[source,js]
+----
+const html = await convertFile('/path/to/file.adoc', { to_file: false, standalone: true })
+----
 
 == Load and convert
 
-To parse an AsciiDoc file into an {url-jsdoc-latest}/#document[Asciidoctor.Document] object:
+Use `loadFile` to parse an AsciiDoc file into a {url-jsdoc-latest}/#document[Document] object:
 
-```js
-var doc = asciidoctor.loadFile('file.adoc')
-```
+[source,js]
+----
+import { loadFile } from '@asciidoctor/core'
 
-You can get information about the document:
-
-```js
+const doc = await loadFile('file.adoc')
 console.log(doc.getDocumentTitle())
 console.log(doc.getAttributes())
-```
+----
 
-More than likely, you will want to convert the document.
-To convert an {url-jsdoc-latest}/#document[Asciidoctor.Document] to HTML5, use the `convert` function on a `Document`:
+To convert the loaded document:
 
-```js
-var doc = asciidoctor.loadFile('file.adoc')
-doc.convert()
-```
+[source,js]
+----
+const doc = await loadFile('file.adoc')
+const html = await doc.convert()
+----
 
-As with the convert functions, it's also possible to load an AsciiDoc-formatted string and a `Buffer`:
+Use `load` to parse an AsciiDoc string directly:
 
-```js
-var doc = asciidoctor.load('Hello, _Asciidoctor_')
-```
-```js
-var doc = asciidoctor.load(fs.readFileSync('/path/to/file.adoc'))
-```
+[source,js]
+----
+import { load } from '@asciidoctor/core'
+
+const doc = await load('Hello, _Asciidoctor_')
+const html = await doc.convert()
+----
+
+[NOTE]
+====
+As seen above, all functions accept an optional options argument to control processing. +
+Use of this argument is described in the xref:processor:convert-options.adoc[Convert options section].
+====
 
 == Styling the HTML with CSS
 
 Asciidoctor.js uses CSS for HTML document styling.
 It comes bundled with a stylesheet, named `asciidoctor.css`.
 
-TIP: The default stylesheet is located at [.path]_node_modules/asciidoctor.js/dist/css/asciidoctor.css_
+TIP: The default stylesheet is located at [.path]_node_modules/@asciidoctor/core/data/asciidoctor-default.css_
 
-When you generate a document using Node.js, the `asciidoctor.css` stylesheet is embedded into the HTML output by default (when the safe mode is less than `secure`).
+When generating a document, the `asciidoctor.css` stylesheet is embedded into the HTML output by default (when the safe mode is less than `secure`).
 
-```js
-asciidoctor.convertFile('/path/to/file.adoc', { safe: 'safe' })
-```
+[source,js]
+----
+import { convertFile } from '@asciidoctor/core'
+
+await convertFile('/path/to/file.adoc', { safe: 'safe' })
+----
 
 To have your document link to the stylesheet, set the `linkcss` attribute:
 
-```js
-asciidoctor.convertFile('/path/to/file.adoc', { safe: 'safe', attributes: { linkcss: true } })
-```
+[source,js]
+----
+await convertFile('/path/to/file.adoc', { safe: 'safe', attributes: { linkcss: true } })
+----
+
+== What's next?
+
+Now that you know the basics, explore the xref:processor:convert-options.adoc[Convert options] to learn how to customize the conversion.

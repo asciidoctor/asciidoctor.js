@@ -1,9 +1,0 @@
-= Image inside
-:data-uri:
-:imagesdir: spec/fixtures/images
-
-== French frog
-
-[[french-frog]]
-.This is a frog
-image::litoria-chloris.jpg[width="40%"]

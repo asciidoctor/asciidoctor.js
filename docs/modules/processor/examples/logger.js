@@ -1,12 +1,16 @@
-const memoryLogger = asciidoctor.MemoryLogger.create()
-asciidoctor.LoggerManager.setLogger(memoryLogger)
+import { MemoryLogger, LoggerManager, convert } from '@asciidoctor/core'
 
-asciidoctor.convert('some content')
+const memoryLogger = MemoryLogger.create()
+LoggerManager.setLogger(memoryLogger)
+
+await convert('some content')
 const errorMessage = memoryLogger.getMessages()[0]
-expect(errorMessage.severity.toString()).to.equal('ERROR')
-expect(errorMessage.message['text']).to.equal('invalid part, must have at least one section (e.g., chapter, appendix, etc.)')
-const sourceLocation = errorMessage.message['source_location']
-expect(sourceLocation.getLineNumber()).to.equal(8)
-expect(sourceLocation.getFile()).to.be.undefined
-expect(sourceLocation.getDirectory()).to.equal(process.cwd())
-expect(sourceLocation.getPath()).to.equal('<stdin>')
+console.log(errorMessage.getSeverity())   // 'ERROR'
+console.log(errorMessage.getText())       // 'invalid part, must have at least one section...'
+const sourceLocation = errorMessage.getSourceLocation()
+if (sourceLocation) {
+  console.log(sourceLocation.getLineNumber())  // 8
+  console.log(sourceLocation.getFile())        // undefined
+  console.log(sourceLocation.getDirectory())   // process.cwd()
+  console.log(sourceLocation.getPath())        // '<stdin>'
+}

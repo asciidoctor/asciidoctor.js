@@ -1,0 +1,10 @@
+{
+  "main": "dist/cli.cjs",
+  "output": "dist/cli.blob",
+  "disableExperimentalSEAWarning": true,
+  "useCodeCache": true,
+  "assets": {
+    "package.json": "package.json",
+    "syntax.adoc": "data/reference/syntax.adoc"
+  }
+}

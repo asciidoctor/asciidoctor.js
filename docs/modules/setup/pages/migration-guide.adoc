@@ -1,0 +1,235 @@
+= Migration guide: @asciidoctor/core v3 → v4
+:toc: left
+:toclevels: 3
+:icons: font
+
+`@asciidoctor/core` v4 is a complete rewrite of the library.
+v3 relied on Opal (a Ruby-to-JavaScript transpiler) to produce a JS bundle from the Ruby source.
+v4 is a native JavaScript implementation — no transpilation, no Ruby, pure ESM.
+
+== Breaking changes
+
+=== Asynchronous API
+
+All parsing and conversion operations now return a `Promise` and must be awaited.
+
+[cols="1,1,2"]
+|===
+| v3 (Opal) | v4 (native) | Note
+
+| `asciidoctor.load(source, opts)` → `Document`
+| `asciidoctor.load(source, opts)` → `Promise<Document>`
+| Must be awaited
+
+| `asciidoctor.loadFile(path, opts)` → `Document`
+| `asciidoctor.loadFile(path, opts)` → `Promise<Document>`
+| Must be awaited
+
+| `asciidoctor.convert(source, opts)` → `string`
+| `asciidoctor.convert(source, opts)` → `Promise<string>`
+| Must be awaited
+
+| `asciidoctor.convertFile(path, opts)` → `string`
+| `asciidoctor.convertFile(path, opts)` → `Promise<string>`
+| Must be awaited
+
+| `document.parse(data?)` → `Document`
+| `document.parse(data?)` → `Promise<Document>`
+| Must be awaited
+
+| `document.convert(opts?)` → `string`
+| `document.convert(opts?)` → `Promise<string>`
+| Must be awaited
+|===
+
+=== No factory call
+
+v3 exports a factory function that must be called to obtain an Asciidoctor instance.
+v4 exports a ready-to-use object — no factory call is needed.
+
+[cols="1,1"]
+|===
+| v3 | v4
+
+| `require('@asciidoctor/core')()` → must call the factory
+| `import asciidoctor from '@asciidoctor/core'` → immediately usable
+|===
+
+=== ESM only
+
+v4 is distributed exclusively as ES modules.
+Use `import` instead of `require`.
+
+=== Strict camelCase naming
+
+Some internal properties and options that retained the Ruby `snake_case` style in v3 are now camelCase.
+
+[cols="1,1"]
+|===
+| v3 (`snake_case`) | v4 (`camelCase`)
+
+| `node_name`
+| `nodeName`
+
+| `source_location`
+| `sourceLocation`
+
+| `content_model`
+| `contentModel`
+
+| `default_subs`
+| `defaultSubs`
+|===
+
+=== Renamed methods
+
+[cols="1,1,2"]
+|===
+| v3 | v4 | Note
+
+| `isRole(expectedValue?)` → `boolean`
+| `hasRoleAttr(expectedValue?)` → `boolean`
+| Checks whether the `role` attribute is set
+
+| `isOption(name)` → `boolean`
+| `hasOption(name)` → `boolean`
+| Checks whether the `<name>-option` attribute is set
+
+| `isReftext()` → `boolean`
+| `hasReftext()` → `boolean`
+| Checks whether the `reftext` attribute is set
+|===
+
+=== Restructured inner classes
+
+[cols="1,1,2"]
+|===
+| v3 | v4 | Note
+
+| `Document.Title` (inner class)
+| `DocumentTitle` (named export)
+| Renamed to avoid collision with `Document`
+
+| `Document.Author` (inner class)
+| `Author` (named export)
+| Top-level export
+
+| `Document.Footnote` (inner class)
+| `Footnote` (named export)
+| Top-level export
+
+| `Document.ImageReference` (inner class)
+| `ImageReference` (named export)
+| Top-level export
+|===
+
+=== Asynchronous methods on AbstractNode
+
+[cols="1,1"]
+|===
+| v3 | v4
+
+| `getIconUri(name)` → `string`
+| `getIconUri(name)` → `Promise<string>`
+
+| `getImageUri(target, key?)` → `string`
+| `getImageUri(target, key?)` → `Promise<string>`
+
+| `readAsset(path, opts)` → `string \| undefined`
+| `readAsset(path, opts)` → `Promise<string \| null>`
+
+| `readContents(target, opts)` → `void`
+| `readContents(target, opts)` → `Promise<string \| null>`
+|===
+
+=== Asynchronous methods on AbstractBlock
+
+[cols="1,1"]
+|===
+| v3 | v4
+
+| `convert()` → `string`
+| `convert()` → `Promise<string>`
+
+| `getContent()` → `string`
+| `getContent()` → `Promise<string>`
+|===
+
+=== Not implemented in v4
+
+[cols="1,2"]
+|===
+| Feature | Note
+
+| `Asciidoctor.getRuntime()` → `Object`
+| Returns platform / engine / GEM_HOME info; no equivalent concept in a native JS library
+
+| `Section.setIndex(index)` / `setSectionName(name)` / `setSpecial(value)`
+| Internal setters used by the parser; not yet exposed as public API
+
+| `ListItem.getList()` → `List`
+| Use `getParent()` instead
+|===
+
+== New in v4
+
+=== Named exports
+
+Every public member is now available as a named export.
+
+.Functions
+[source,javascript]
+----
+import { load, convert, loadFile, convertFile, getVersion, getCoreVersion } from '@asciidoctor/core'
+----
+
+.Classes and objects
+[source,javascript]
+----
+import {
+  Extensions,
+  ConverterFactory,
+  Html5Converter,
+  SyntaxHighlighter,
+  SyntaxHighlighterBase,
+  Block,
+  Section,
+  LoggerManager,
+  MemoryLogger,
+  NullLogger,
+  SafeMode,
+  Timings,
+} from '@asciidoctor/core'
+----
+
+NOTE: `loadFile` and `convertFile` are not available as named exports in the browser build.
+
+=== Document direct properties
+
+Several document values are now accessible as direct instance properties in addition to getter methods.
+
+[cols="1,1"]
+|===
+| Getter method | Direct property
+
+| `getSafe()` → `number`
+| `document.safe`
+
+| `getCompatMode()` → `boolean`
+| `document.compatMode`
+
+| `getSourcemap()` / `setSourcemap(v)`
+| `document.sourcemap`
+
+| `getBaseDir()` → `string`
+| `document.baseDir`
+
+| `getOutfilesuffix()` → `string`
+| `document.outfilesuffix`
+
+| `getBackend()` → `string`
+| `document.backend`
+
+| `getDoctype()` → `string`
+| `document.doctype`
+|===

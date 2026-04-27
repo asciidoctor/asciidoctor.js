@@ -2,32 +2,34 @@
 
 == Update a document attribute
 
-To update a document attribute, you will need to use the `setAttribute` function:
+To update a document attribute, use the `setAttribute` function on the loaded document:
 
-[source,javascript]
+[source,js]
 ----
-var content = '== Title'
-var doc = asciidoctor.load(content)
-console.log(doc.getAttribute('data-uri')) // prints undefined
-console.log(doc.getAttribute('data-uri', 'false')) // prints 'false'
+import { load } from '@asciidoctor/core'
+
+const doc = await load('== Title')
+console.log(doc.getAttribute('data-uri'))         // undefined
+console.log(doc.getAttribute('data-uri', 'false')) // 'false'
 
 doc.setAttribute('data-uri', 'true')
-console.log(doc.getAttribute('data-uri')) // prints 'true'
+console.log(doc.getAttribute('data-uri'))          // 'true'
 ----
 
 == Unset a document attribute
 
-To unset a document attribute, you will need to use the `removeAttribute` function:
+To unset a document attribute, use the `removeAttribute` function:
 
-[source,javascript]
+[source,js]
 ----
-var content = '== Title'
-var doc = asciidoctor.load(content)
+import { load } from '@asciidoctor/core'
+
+const doc = await load('== Title')
 doc.setAttribute('data-uri', 'true')
-console.log(doc.getAttribute('data-uri')) // prints 'true'
+console.log(doc.getAttribute('data-uri')) // 'true'
 
 doc.removeAttribute('data-uri')
-console.log(doc.getAttribute('data-uri')) // prints undefined
+console.log(doc.getAttribute('data-uri')) // undefined
 ----
 
 == What's next?

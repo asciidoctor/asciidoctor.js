@@ -87,15 +87,17 @@ Instead of providing a JavaScript function containing extensions to register, th
 
 == Usage
 
-In the following example, we define the `safe` option to `unsafe` and we also define two attributes:
+In the following example, we define the `safe` option to `server` and we also define two attributes:
 
 `showtitle`:: display the title of an embedded document
 `icons`:: use font icons instead of text for admonitions
 
-[source,javascript]
+[source,js]
 ----
-var content = '= Document title'
-var html = asciidoctor.convert(content, { 'safe': 'server', 'attributes': { 'showtitle': true, 'icons': 'font' } })
+import { convert } from '@asciidoctor/core'
+
+const content = '= Document title'
+const html = await convert(content, { safe: 'server', attributes: { showtitle: true, icons: 'font' } })
 console.log(html)
 // <h1>Document title</h1>
 ----

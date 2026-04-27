@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "strict": false,
+    "types": ["node"]
+  },
+  "files": ["types/index.d.ts"],
+  "typedocOptions": {
+    "entryPoints": ["types/index.d.ts"],
+    "out": "build/docs"
+  }
+}

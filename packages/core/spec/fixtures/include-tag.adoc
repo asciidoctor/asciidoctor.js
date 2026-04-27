@@ -1,6 +1,0 @@
-// tag::a[]
-tag-a
-// end::a[]
-// tag::b[]
-tag-b
-// end::b[]

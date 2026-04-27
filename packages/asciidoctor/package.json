@@ -1,24 +1,32 @@
 {
   "name": "asciidoctor",
-  "version": "3.0.4",
-  "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
+  "version": "4.0.0-alpha.0",
+  "description": "A JavaScript AsciiDoc processor powered by Asciidoctor",
+  "type": "module",
   "main": "index.js",
   "types": "types",
+  "exports": {
+    ".": "./index.js"
+  },
   "bin": {
     "asciidoctor": "bin/asciidoctor",
     "asciidoctorjs": "bin/asciidoctor"
   },
   "scripts": {
     "test": "./bin/asciidoctor --version",
-    "dist": "pkg package.json --out-path dist"
+    "lint": "biome lint bin lib tasks index.js rollup.config.js",
+    "build:bundle": "rollup -c",
+    "build:binary": "node tasks/build-sea.js"
   },
   "engines": {
-    "node": ">=16",
-    "npm": ">=8"
+    "node": ">=24"
   },
   "files": [
     "bin",
-    "types/index.d.ts"
+    "lib",
+    "data",
+    "index.js",
+    "types"
   ],
   "repository": {
     "type": "git",
@@ -30,13 +38,12 @@
   "keywords": [
     "asciidoc",
     "asciidoctor",
-    "opal",
     "javascript",
     "library"
   ],
   "authors": [
     "Dan Allen (https://github.com/mojavelinux)",
-    "Guillaume Grossetie (https://github.com/mogztter)",
+    "Guillaume Grossetie (https://github.com/ggrossetie)",
     "Anthonny Quérouil (https://github.com/anthonny)"
   ],
   "license": "MIT",
@@ -45,14 +52,19 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "@asciidoctor/cli": "4.0.0",
-    "@asciidoctor/core": "3.0.4",
-    "ejs": "^3.1.2",
-    "handlebars": "^4.7.6",
-    "nunjucks": "^3.2.1",
-    "pug": "^3.0.0"
+    "@asciidoctor/core": "^4.0.0-alpha"
   },
   "devDependencies": {
-    "pkg": "5.8.1"
+    "@biomejs/biome": "^2.4.13",
+    "@rollup/plugin-commonjs": "^28.0.9",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "ejs": "^3.1.10",
+    "handlebars": "^4.7.8",
+    "nunjucks": "^3.2.4",
+    "postject": "^1.0.0-alpha.6",
+    "pug": "^3.0.3"
+  },
+  "volta": {
+    "node": "24.14.1"
   }
 }

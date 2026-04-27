@@ -5,27 +5,32 @@ Generate lorem ipsum text.
 
 == sample-lorem-doc.adoc
 
-```adoc
+[source,adoc]
+----
 lorem::sentences[size=2]
-```
+----
 
-== ShoutBlock
+== LoremBlockMacro
 
 .lorem-block-macro.js
-```js
+[source,js]
+----
 include::example$extensions/lorem-block-macro.js[]
-```
+----
 
 == Usage
 
-```js
-const asciidoctor = require('asciidoctor')()
-const registry = asciidoctor.Extensions.create()
-require('./lorem-block-macro.js')(registry)
+[source,js]
+----
+import { Extensions, convert } from '@asciidoctor/core'
+import registerLoremBlockMacro from './lorem-block-macro.js'
 
-const html = asciidoctor.convert('lorem::sentences[size=2]', { 'extension_registry': registry })
+const registry = Extensions.create()
+registerLoremBlockMacro(registry)
+
+const html = await convert('lorem::sentences[size=2]', { extension_registry: registry })
 console.log(html)
 // <div class="paragraph">
-// <p>Lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit. Lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit. Lorem ipsum dolor sit amet lorem ipsum dolor.</p>
+// <p>Lorem ipsum dolor sit amet...</p>
 // </div>
-```
+----

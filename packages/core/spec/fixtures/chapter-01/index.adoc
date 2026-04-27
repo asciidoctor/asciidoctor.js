@@ -1,3 +1,0 @@
-= First chapter
-
-include::../resources/tip-versions.adoc[]

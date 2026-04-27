@@ -5,30 +5,35 @@ Capitalize the text in a `shout` block paragraph as if the author was yelling!
 
 == sample-shout-doc.adoc
 
-```adoc
+[source,adoc]
+----
 [shout]
 Say it loud.
 Say it proud.
-```
+----
 
 == ShoutBlock
 
 .shout-block.js
-```js
+[source,js]
+----
 include::example$extensions/shout-block.js[]
-```
+----
 
 == Usage
 
-```js
-const asciidoctor = require('asciidoctor')()
-const registry = asciidoctor.Extensions.create()
-require('./shout-block.js')(registry)
+[source,js]
+----
+import { Extensions, convertFile } from '@asciidoctor/core'
+import registerShoutBlock from './shout-block.js'
 
-const html = asciidoctor.convertFile('sample-shout-doc.adoc', { 'to_file': false, 'extension_registry': registry })
+const registry = Extensions.create()
+registerShoutBlock(registry)
+
+const html = await convertFile('sample-shout-doc.adoc', { to_file: false, extension_registry: registry })
 console.log(html)
 // <div class="paragraph">
 // <p>SAY IT LOUD.
 // SAY IT PROUD.</p>
 // </div>
-```
+----

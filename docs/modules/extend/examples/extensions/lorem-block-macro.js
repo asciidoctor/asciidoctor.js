@@ -1,37 +1,23 @@
 // NOTE: Below we are using a minimalist implementation to generate lorem ipsum text.
 // If you need a complete implementation, you can use the following Node package:
-// var lorem = require('lorem-ipsum')
+// import loremIpsum from 'lorem-ipsum'
 
-var dictionary = {
-  words: [
-    'lorem',
-    'ipsum',
-    'dolor',
-    'sit',
-    'amet'
-  ]
-}
-
-function getRandomArbitrary (min, max) {
-  return Math.random() * (max - min) + min
+const dictionary = {
+  words: ['lorem', 'ipsum', 'dolor', 'sit', 'amet']
 }
 
 function lorem (opts) {
-  var count = opts.count
-  var units = opts.units
-  var words = dictionary.words
+  const { count, units } = opts
+  const words = dictionary.words
   if (units === 'sentences') {
-    var sentences = []
-    var sentence = []
-    for (i = 0; i < count; i++) {
-      var sentenceLength = getRandomArbitrary(5, 15)
-      for (j = 0; j < sentenceLength; j++) {
-        // use predictive position for testing purpose
-        var position = j % words.length
-        // var position = Math.floor(Math.random() * words.length)
-        var word = dictionary.words[position]
+    const sentences = []
+    for (let i = 0; i < count; i++) {
+      const sentence = []
+      const sentenceLength = Math.random() * (15 - 5) + 5
+      for (let j = 0; j < sentenceLength; j++) {
+        const position = j % words.length
+        let word = words[position]
         if (j === 0) {
-          // capitalize the first letter
           word = word.charAt(0).toUpperCase() + word.slice(1)
         }
         sentence.push(word)
@@ -43,13 +29,13 @@ function lorem (opts) {
   }
 }
 
-module.exports = function (registry) {
+export default function (registry) {
   registry.blockMacro(function () {
-    var self = this
+    const self = this
     self.named('lorem')
     self.process(function (parent, target, attrs) {
-      var size = parseInt(attrs.size)
-      var result = lorem({ count: size, units: target })
+      const size = parseInt(attrs.size)
+      const result = lorem({ count: size, units: target })
       return self.createBlock(parent, 'paragraph', result)
     })
   })

@@ -1,10 +1,18 @@
 = Asciidoctor core
 
-This package provides Asciidoctor core functionality:
+This package provides a native JavaScript implementation of Asciidoctor.
+The code was generated from the Ruby source using https://claude.ai/code[Claude Code] (claude-sonnet-4-6) and reviewed by a human.
+It is a pure ESM library that exposes the same functionality:
 
 - parser
 - built-in converters
 - extensions
+
+The API is asynchronous: all parsing and conversion operations return a `Promise`.
+
+== Requirements
+
+Node.js >= 24
 
 == Install
 
@@ -17,15 +25,14 @@ Here is a simple example that converts AsciiDoc to HTML5:
 .sample.js
 [source,javascript]
 ----
-const asciidoctor = require('@asciidoctor/core')() // <1>
-const content = 'http://asciidoctor.org[*Asciidoctor*] ' +
-  'running on https://opalrb.com[_Opal_] ' +
-  'brings AsciiDoc to Node.js!'
-const html = asciidoctor.convert(content) // <2>
+import asciidoctor from '@asciidoctor/core' // <1>
+
+const content = 'https://asciidoctor.org[*Asciidoctor*] running on Node.js!'
+const html = await asciidoctor.convert(content) // <2>
 console.log(html) // <3>
 ----
-<1> Instantiate the Asciidoctor.js library
-<2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
+<1> Import the Asciidoctor native library (ESM)
+<2> Convert AsciiDoc content to HTML5 — the call returns a `Promise` and must be awaited
 <3> Print the HTML5 output to the console
 
 Save the file as _sample.js_ and run it using the `node` command:
@@ -37,11 +44,36 @@ You should see the following output in your terminal:
 [source,html]
 ----
 <div class="paragraph">
-<p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.com"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
+<p><a href="https://asciidoctor.org"><strong>Asciidoctor</strong></a> running on Node.js!</p>
 </div>
 ----
 
-If you want to know more about Asciidoctor.js, please read the https://asciidoctor-docs.netlify.com/asciidoctor.js/[User Manual].
+=== Convert a file
+
+.convert-file.js
+[source,javascript]
+----
+import { convertFile } from '@asciidoctor/core'
+
+const html = await convertFile('document.adoc', { safe: 'safe' })
+console.log(html)
+----
+
+=== Load without converting
+
+Use `load` when you need to inspect the parsed document model before (or instead of) converting:
+
+.load.js
+[source,javascript]
+----
+import { load } from '@asciidoctor/core'
+
+const doc = await load('== Hello, World!\n\nThis is Asciidoctor core.')
+console.log(doc.getTitle())    // Hello, World!
+console.log(doc.getBlocks())   // array of top-level blocks
+const html = await doc.convert()
+console.log(html)
+----
 
 == Changelog
 

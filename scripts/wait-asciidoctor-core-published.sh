@@ -16,4 +16,4 @@ done
 
 echo "@asciidoctor/core $ASCIIDOCTOR_CORE_VERSION is published!"
 echo "npm view @asciidoctor/core version"
-npm view  @asciidoctor/core version
+npm view @asciidoctor/core version

@@ -5,26 +5,31 @@ Replace the macro `emoticon` with the corresponding text emoticon.
 
 == sample-emoticon-doc.adoc
 
-```adoc
+[source,adoc]
+----
 emoticon:wink[]
 emoticon:grin[]
 emoticon:x[]
-```
+----
 
 == EmoticonInlineMacroProcessor
 
 .emoticon-inline-macro-processor.js
-```js
+[source,js]
+----
 include::example$extensions/emoticon-inline-macro-processor.js[]
-```
+----
 
 == Usage
 
-```js
-const asciidoctor = require('asciidoctor')()
-const registry = asciidoctor.Extensions.create()
-require('./emoticon-inline-macro-processor.js')(registry)
+[source,js]
+----
+import { Extensions, convertFile } from '@asciidoctor/core'
+import registerEmoticonInlineMacro from './emoticon-inline-macro-processor.js'
 
-const html = asciidoctor.convertFile('ssample-emoticon-doc.adoc', { 'to_file': false, 'extension_registry': registry })
+const registry = Extensions.create()
+registerEmoticonInlineMacro(registry)
+
+const html = await convertFile('sample-emoticon-doc.adoc', { to_file: false, extension_registry: registry })
 console.log(html)
-```
+----

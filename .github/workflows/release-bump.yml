@@ -1,0 +1,39 @@
+name: Bump version for release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 3.0.0 or 3.0.0-alpha.1)'
+        required: true
+        type: string
+
+jobs:
+  bump:
+    name: Bump version and tag
+    if: (github.ref_name == 'main' || endsWith(github.ref_name, '.x')) && github.repository_owner == 'asciidoctor'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm ci
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Bump version and create tag
+        env:
+          NO_PUSH: "true"
+        run: node tasks/release.js ${{ inputs.version }}
+      - name: Push commit and tag
+        run: |
+          git push origin ${{ github.ref_name }}
+          git push origin v${{ inputs.version }}

@@ -1,29 +1,9 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "lib": [
-      "es2016",
-      "es6"
-    ],
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "strict": true,
-    "baseUrl": "../",
-    "paths": {
-      "@asciidoctor/core": [
-        "."
-      ]
-    },
-    "typeRoots": [
-      "../"
-    ],
-    "types": [],
-    "noEmit": false,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "target": "ES2022",
+    "module": "NodeNext",
+    "strict": false,
+    "types": ["node"]
   },
-  "files": [
-    "index.d.ts",
-    "tests.ts"
-  ]
+  "include": ["./**/*.d.ts"]
 }

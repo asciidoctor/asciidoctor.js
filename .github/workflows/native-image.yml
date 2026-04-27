@@ -1,0 +1,42 @@
+name: Native Image
+
+on:
+  workflow_call:
+
+jobs:
+  build_images:
+    name: 'Build Native Image ${{ matrix.platform }}'
+    strategy:
+      matrix:
+        os: [ macos-15, windows-latest, ubuntu-latest ]
+        include:
+          - os: 'ubuntu-latest'
+            platform: 'linux-amd64'
+          - os: 'macos-15'
+            platform: 'darwin-arm64'
+          - os: 'windows-latest'
+            platform: 'win-amd64'
+          - os: 'ubuntu-22.04-arm'
+            platform: 'linux-arm64'
+    runs-on: ${{matrix.os}}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Produce native binary
+        shell: bash
+        run: |
+          npm install
+          npm run build:binary
+
+      - name: Cache native image
+        uses: actions/cache/save@v5
+        with:
+          path: "packages/asciidoctor/dist/asciidoctor-${{ matrix.platform }}*"
+          key: "native-image-${{ matrix.platform }}-${{ github.run_id }}"
+          enableCrossOsArchive: true
