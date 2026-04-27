@@ -36,19 +36,6 @@ export class DocBook5Converter extends ConverterBase {
     convert_inline_kbd(node: any): Promise<string>;
     convert_inline_menu(node: any): Promise<string>;
     convert_inline_quoted(node: any): Promise<string>;
-    _commonAttributes(id: any, role?: any, reftext?: any): string;
-    _imageSizeAttributes(attributes: any): string;
-    _authorTag(doc: any, author: any): string;
-    _documentInfoTag(doc: any, abstract: any): Promise<string>;
-    _findRootAbstract(doc: any): any;
-    _extractAbstract(document: any, abstract: any): any;
-    _restoreAbstract(abstract: any): void;
-    _getRootDocument(node: any): any;
-    _generateDocumentId(doc: any): string;
-    _encloseContent(node: any): Promise<any>;
-    _titleTag(node: any, optional?: boolean): string;
-    _coverTag(doc: any, face: any, usePlaceholder?: boolean): Promise<string>;
-    _blockquoteTag(node: any, tagName: any, contentFn: any): Promise<string>;
 }
 export default DocBook5Converter;
 import { ConverterBase } from '../converter.js';

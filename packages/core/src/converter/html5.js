@@ -1792,10 +1792,18 @@ Your browser does not support the video tag.
 
   // ── Private helpers ─────────────────────────────────────────────────────────
 
+  /**
+   * @internal
+   * @private
+   */
   _appendBooleanAttr(name, xml) {
     return xml ? ` ${name}="${name}"` : ` ${name}`
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _appendLinkConstraintAttrs(node, attrs = []) {
     const rel = node.hasOption('nofollow') ? 'nofollow' : null
     const window = node.attributes.window
@@ -1810,10 +1818,18 @@ Your browser does not support the video tag.
     return attrs
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _encodeAttrValue(val) {
     return val.includes('"') ? val.replace(/"/g, '&quot;') : val
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _generateMannameSection(node) {
     let mannameTitle = node.attr('manname-title', 'Name')
     const sections = node.sections()
@@ -1831,6 +1847,10 @@ Your browser does not support the video tag.
 </div>`
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _getRootDocument(node) {
     while ((node = node.document).isNested()) {
       node = node.parentDocument

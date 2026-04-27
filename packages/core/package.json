@@ -21,6 +21,7 @@
     "build": "npm run build:data && rollup -c",
     "build:data": "node scripts/generate-stylesheet-data.js",
     "build:types": "tsc && node scripts/strip-internal.js && node scripts/patch-jsdoc.js",
+    "docs": "typedoc --tsconfig tsconfig.docs.json",
     "test": "node --test test/**.test.js",
     "test:browser": "vitest run --config vitest.browser.config.js",
     "lint": "biome lint src",
@@ -54,6 +55,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.13",
+    "typedoc": "^0.28.4",
     "@rollup/plugin-json": "^6.1.0",
     "@types/node": "^25.6.0",
     "@vitest/browser": "^4.1.4",

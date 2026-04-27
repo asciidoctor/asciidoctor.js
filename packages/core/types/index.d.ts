@@ -19,14 +19,6 @@ export function getCoreVersion(): string;
  */
 export function load(input: string | string[] | Buffer, options?: any): Promise<Document>;
 /**
- * Parse the AsciiDoc source input and convert it to the specified backend format.
- *
- * @param {string|string[]|Buffer} input - the AsciiDoc source as a String, String Array, or Buffer
- * @param {Object} [options={}] - a plain object of options to control processing
- * @returns {Promise<string>} - the converted output as a String
- */
-export function convert(input: string | string[] | Buffer, options?: any): Promise<string>;
-/**
  * Parse the contents of the AsciiDoc source file into a Document.
  *
  * @param {string} filename - the path to the AsciiDoc source file
@@ -34,83 +26,43 @@ export function convert(input: string | string[] | Buffer, options?: any): Promi
  * @returns {Promise<Document>} - the parsed Document
  */
 export function loadFile(filename: string, options?: any): Promise<Document>;
-/**
- * Parse the contents of the AsciiDoc source file and convert it to the specified backend format.
- *
- * @param {string} filename - the path to the AsciiDoc source file
- * @param {Object} [options={}] - a plain object of options to control processing
- * @returns {Promise<string>} - the converted output as a String
- */
-export function convertFile(filename: string, options?: any): Promise<string>;
-export default asciidoctor;
-import type { Document } from './document.js';
+import { Document } from './document.js';
+import { convert } from './convert.js';
+import { convertFile } from './convert.js';
+import { DocumentTitle } from './document.js';
+import { Author } from './document.js';
+import { ImageReference } from './document.js';
+import { RevisionInfo } from './document.js';
+import { Logger } from './logging.js';
+import { AbstractNode } from './abstract_node.js';
+import { AbstractBlock } from './abstract_block.js';
+import { Inline } from './inline.js';
+import { Block } from './block.js';
+import { List } from './list.js';
+import { ListItem } from './list.js';
+import { Section } from './section.js';
+import { Reader } from './reader.js';
 import { SyntaxHighlighterBase } from './syntax_highlighter.js';
 import { LoggerManager } from './logging.js';
 import { MemoryLogger } from './logging.js';
 import { NullLogger } from './logging.js';
 import { SafeMode } from './constants.js';
 import { Timings } from './timings.js';
+import { Registry } from './extensions.js';
+import { ProcessorExtension } from './extensions.js';
+import { Preprocessor } from './extensions.js';
+import { TreeProcessor } from './extensions.js';
+import { Postprocessor } from './extensions.js';
+import { IncludeProcessor } from './extensions.js';
+import { DocinfoProcessor } from './extensions.js';
+import { BlockProcessor } from './extensions.js';
+import { InlineMacroProcessor } from './extensions.js';
+import { BlockMacroProcessor } from './extensions.js';
 import { Extensions } from './extensions.js';
+import { Cursor } from './reader.js';
 import { Converter } from './converter.js';
+import { DefaultFactory as DefaultConverterFactory } from './converter.js';
+import { DefaultFactory as DefaultSyntaxHighlighterFactory } from './syntax_highlighter.js';
 import Html5Converter from './converter/html5.js';
-import { Block } from './block.js';
-import { Section } from './section.js';
 import { SyntaxHighlighter } from './syntax_highlighter.js';
-declare namespace asciidoctor {
-    /**
-     * Get the version of Asciidoctor.js.
-     *
-     * @returns {string} - the version of Asciidoctor.js
-     */
-    export function getVersion(): string;
-    /**
-     * Get Asciidoctor core version number.
-     *
-     * @returns {string} - the version of Asciidoctor core (Ruby)
-     */
-    export function getCoreVersion(): string;
-    export { LoggerManager };
-    export { MemoryLogger };
-    export { NullLogger };
-    export { SafeMode };
-    export { Timings };
-    export { Extensions };
-    export { Converter as ConverterFactory };
-    export { Html5Converter };
-    export { Block };
-    export { Section };
-    export { SyntaxHighlighter };
-    /**
-     * Parse the AsciiDoc source input into a Document.
-     *
-     * @param {string|string[]|Buffer} input - the AsciiDoc source as a String, String Array, or Buffer
-     * @param {Object} [options={}] - a plain object of options to control processing
-     * @returns {Promise<Document>} - the parsed Document
-     */
-    export function load(input: string | string[] | Buffer, options?: any): Promise<Document>;
-    /**
-     * Parse the AsciiDoc source input and convert it to the specified backend format.
-     *
-     * @param {string|string[]|Buffer} input - the AsciiDoc source as a String, String Array, or Buffer
-     * @param {Object} [options={}] - a plain object of options to control processing
-     * @returns {Promise<string>} - the converted output as a String
-     */
-    export function convert(input: string | string[] | Buffer, options?: any): Promise<string>;
-    /**
-     * Parse the contents of the AsciiDoc source file into a Document.
-     *
-     * @param {string} filename - the path to the AsciiDoc source file
-     * @param {Object} [options={}] - a plain object of options to control processing
-     * @returns {Promise<Document>} - the parsed Document
-     */
-    export function loadFile(filename: string, options?: any): Promise<Document>;
-    /**
-     * Parse the contents of the AsciiDoc source file and convert it to the specified backend format.
-     *
-     * @param {string} filename - the path to the AsciiDoc source file
-     * @param {Object} [options={}] - a plain object of options to control processing
-     * @returns {Promise<string>} - the converted output as a String
-     */
-    export function convertFile(filename: string, options?: any): Promise<string>;
-}
-export { SyntaxHighlighterBase, LoggerManager, MemoryLogger, NullLogger, SafeMode, Timings, Extensions, Converter as ConverterFactory, Html5Converter, Block, Section, SyntaxHighlighter };
+export { convert, convertFile, Document, DocumentTitle, Author, ImageReference, RevisionInfo, Logger, AbstractNode, AbstractBlock, Inline, Block, List, ListItem, Section, Reader, SyntaxHighlighterBase, LoggerManager, MemoryLogger, NullLogger, SafeMode, Timings, Registry, ProcessorExtension, Preprocessor, TreeProcessor, Postprocessor, IncludeProcessor, DocinfoProcessor, BlockProcessor, InlineMacroProcessor, BlockMacroProcessor, Extensions, Cursor, Converter as ConverterFactory, DefaultConverterFactory, DefaultSyntaxHighlighterFactory, Html5Converter, SyntaxHighlighter };

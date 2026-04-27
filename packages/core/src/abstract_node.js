@@ -927,7 +927,7 @@ export class AbstractNode {
   }
 
   /**
-   * @deprecated Use {@link isUriish} from helpers.js instead.
+   * @deprecated Use `isUriish` from helpers.js instead.
    * @param {string} str
    * @returns {boolean}
    */

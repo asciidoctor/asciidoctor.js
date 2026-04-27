@@ -84,6 +84,26 @@ export class CustomFactory {
      */
     unregisterAll(): void;
 }
+export class DefaultFactory extends CustomFactory {
+    constructor();
+    _defaultRegistry: {};
+    register(converter: any, ...backends: any[]): void;
+    for(backend: any): any;
+    /**
+     * Return the combined registry (built-in + user-registered entries).
+     *
+     * @returns {object}
+     */
+    getRegistry(): object;
+    /**
+     * Return this factory (mirrors the core ConverterFactory.getDefault() API).
+     *
+     * @returns {DefaultFactory}
+     */
+    getDefault(): DefaultFactory;
+    createSync(backend: any, opts?: {}): any;
+    create(backend: any, opts?: {}): Promise<any>;
+}
 export const Converter: DefaultFactory;
 /**
  * Base class for all Asciidoctor converters.
@@ -127,24 +147,3 @@ export class ConverterBase {
     /** Skip conversion (no-op). */
     skip(_node: any): void;
 }
-declare class DefaultFactory extends CustomFactory {
-    constructor();
-    _defaultRegistry: {};
-    register(converter: any, ...backends: any[]): void;
-    for(backend: any): any;
-    /**
-     * Return the combined registry (built-in + user-registered entries).
-     *
-     * @returns {object}
-     */
-    getRegistry(): object;
-    /**
-     * Return this factory (mirrors the core ConverterFactory.getDefault() API).
-     *
-     * @returns {DefaultFactory}
-     */
-    getDefault(): DefaultFactory;
-    createSync(backend: any, opts?: {}): any;
-    create(backend: any, opts?: {}): Promise<any>;
-}
-export {};

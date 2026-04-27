@@ -37,7 +37,7 @@ export class Block extends AbstractBlock<string> {
         default_subs?: string[];
     });
     defaultSubs: any[];
-    lines: any;
+    lines: any[];
     /** @returns {string} Alias for context — consistent with AsciiDoc terminology. */
     get blockname(): string;
     /** @returns {string[]} The source lines for this block (matches the core API). */

@@ -279,7 +279,7 @@ async function _importBuiltinConverter(backend) {
   return null
 }
 
-class DefaultFactory extends CustomFactory {
+export class DefaultFactory extends CustomFactory {
   constructor() {
     super()
     this._defaultRegistry = {} // separate from CustomFactory._registry (for unregisterAll)

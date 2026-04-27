@@ -128,3 +128,34 @@ jobs:
             Asciidoctor.js ${{ env.RELEASE_VERSION }} is out!
 
             https://github.com/asciidoctor/asciidoctor.js/releases/tag/${{ env.RELEASE_VERSION }}
+
+  docs:
+    if: github.repository_owner == 'asciidoctor'
+    needs: [publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm ci --prefix packages/core
+      - name: Generate API documentation
+        run: npm run docs --prefix packages/core
+      - name: Compute docs destination folder
+        id: dest
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          if [[ "$TAG" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-(alpha|beta|rc)\. ]]; then
+            echo "folder=${BASH_REMATCH[1]}-dev" >> "$GITHUB_OUTPUT"
+          else
+            echo "folder=$TAG" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: packages/core/build/docs
+          target-folder: ${{ steps.dest.outputs.folder }}

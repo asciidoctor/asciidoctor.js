@@ -36,10 +36,24 @@ export default class ManPageConverter extends ConverterBase {
     convert_inline_kbd(node: any): Promise<string>;
     convert_inline_menu(node: any): Promise<string>;
     convert_inline_quoted(node: any): Promise<any>;
-    _appendFootnotes(result: any, node: any): void;
-    manify(str: any, opts?: {}): any;
-    _uppercasePcdata(string: any): any;
-    _encloseContent(node: any): Promise<any>;
-    _getRootDocument(node: any): any;
+    /**
+     * Converts HTML entity references back to their original form, escapes
+     * special man characters and strips trailing whitespace.
+     *
+     * It's crucial that text only ever pass through manify once.
+     *
+     * @param {string} str - the string to convert
+     * @param {Object} [opts={}] - options to control processing
+     * @param {'preserve'|'normalize'|'collapse'} [opts.whitespace='collapse'] - how to handle whitespace:
+     *   `'preserve'` preserves spaces (only expanding tabs);
+     *   `'normalize'` removes spaces around newlines;
+     *   `'collapse'` collapses adjacent whitespace to a single space
+     * @param {boolean} [opts.append_newline=false] - append a newline to the result
+     * @returns {string} the manified string
+     */
+    manify(str: string, opts?: {
+        whitespace?: "preserve" | "normalize" | "collapse";
+        append_newline?: boolean;
+    }): string;
 }
 import { ConverterBase } from '../converter.js';

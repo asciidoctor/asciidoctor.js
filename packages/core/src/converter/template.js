@@ -409,6 +409,10 @@ export class TemplateConverter extends ConverterBase {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/**
+ * @internal
+ * @private
+ */
 async function _isDirectory(p) {
   try {
     return (await fsp.stat(p)).isDirectory()
@@ -417,6 +421,10 @@ async function _isDirectory(p) {
   }
 }
 
+/**
+ * @internal
+ * @private
+ */
 async function _isFile(p) {
   try {
     return (await fsp.stat(p)).isFile()
@@ -425,11 +433,15 @@ async function _isFile(p) {
   }
 }
 
-// Internal: Wrap an AST node in a Proxy that intercepts getContent() / content
-// (and optionally getItems() / items) to return pre-resolved synchronous values.
-//
-// This lets synchronous template engines (nunjucks, ejs, pug, handlebars, …)
-// receive plain strings even though the core applySubs() pipeline is async.
+/**
+ * Wrap an AST node in a Proxy that intercepts getContent() / content
+ * (and optionally getItems() / items) to return pre-resolved synchronous values.
+ *
+ * This lets synchronous template engines (nunjucks, ejs, pug, handlebars, …)
+ * receive plain strings even though the core applySubs() pipeline is async.
+ * @internal
+ * @private
+ */
 function _makeContentProxy(node, content, resolvedItems = null) {
   return new Proxy(node, {
     get(target, prop) {

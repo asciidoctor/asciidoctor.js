@@ -135,9 +135,7 @@ export class CustomFactory {
      */
     create(name: string, backend?: string, opts?: any): SyntaxHighlighterBase | null;
 }
-export const SyntaxHighlighter: DefaultFactory;
-import type { Block } from './block.js';
-declare class DefaultFactory extends CustomFactory {
+export class DefaultFactory extends CustomFactory {
     constructor();
     _defaultRegistry: {};
     register(syntaxHighlighter: any, ...names: any[]): void;
@@ -155,4 +153,5 @@ declare class DefaultFactory extends CustomFactory {
      */
     unregisterAll(): void;
 }
-export {};
+export const SyntaxHighlighter: DefaultFactory;
+import type { Block } from './block.js';

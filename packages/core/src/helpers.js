@@ -21,22 +21,22 @@ import { UriSniffRx } from './rx.js'
 //   UTF-8  BOM  0xEF 0xBB 0xBF → U+FEFF
 //   UTF-16 LE   0xFF 0xFE      → U+FEFF
 //   UTF-16 BE   0xFE 0xFF      → U+FEFF
-const BOM = '\uFEFF'
+const BOM = '﻿'
 
-// Internal: Prepare the source data Array for parsing.
-//
-// Strips a leading BOM from the first element if present, then trims trailing
-// whitespace (trimEnd = true) or only the trailing newline (trimEnd = false)
-// from every line.
-//
-// data    - the source data Array to prepare (no null/undefined entries allowed)
-// trimEnd - whether to strip all trailing whitespace (true) or only \n (false) (default: true)
-//
-// Returns a String Array of prepared lines.
-// Internal: Trim trailing ASCII whitespace only (not Unicode line separators U+2028/U+2029).
-// Ruby's rstrip strips trailing ASCII whitespace (including newlines).
+/** Trim trailing ASCII whitespace only (not Unicode line separators U+2028/U+2029). */
 const rstrip = (line) => line.replace(/[ \t\r\n\f\v]+$/, '')
 
+/**
+ * Prepare the source data Array for parsing.
+ *
+ * Strips a leading BOM from the first element if present, then trims trailing
+ * whitespace (trimEnd = true) or only the trailing newline (trimEnd = false)
+ * from every line.
+ *
+ * @param {string[]} data - the source data Array to prepare (no null/undefined entries allowed)
+ * @param {boolean} [trimEnd=true] - whether to strip all trailing whitespace (true) or only \n (false)
+ * @returns {string[]} Array of prepared lines
+ */
 export function prepareSourceArray(data, trimEnd = true) {
   if (!data.length) return []
   if (data[0].startsWith(BOM)) data[0] = data[0].slice(1)
@@ -46,16 +46,17 @@ export function prepareSourceArray(data, trimEnd = true) {
     : data.map((line) => line.replace(/\r?\n$/, '').replace(/\r$/, ''))
 }
 
-// Internal: Prepare the source data String for parsing.
-//
-// Strips a leading BOM if present, splits into an array, and trims trailing
-// whitespace (trimEnd = true) or only the trailing newline (trimEnd = false)
-// from every line.
-//
-// data    - the source data String to prepare
-// trimEnd - whether to strip all trailing whitespace (true) or only \n (false) (default: true)
-//
-// Returns a String Array of prepared lines.
+/**
+ * Prepare the source data String for parsing.
+ *
+ * Strips a leading BOM if present, splits into an array, and trims trailing
+ * whitespace (trimEnd = true) or only the trailing newline (trimEnd = false)
+ * from every line.
+ *
+ * @param {string} data - the source data String to prepare
+ * @param {boolean} [trimEnd=true] - whether to strip all trailing whitespace (true) or only \n (false)
+ * @returns {string[]} Array of prepared lines
+ */
 export function prepareSourceString(data, trimEnd = true) {
   if (!data) return []
   if (data.startsWith(BOM)) data = data.slice(1)
@@ -70,28 +71,30 @@ export function prepareSourceString(data, trimEnd = true) {
   return trimEnd ? lines.map(rstrip) : lines
 }
 
-// Internal: Efficiently check whether the specified String resembles a URI.
-//
-// Uses UriSniffRx to check whether the String begins with a URI prefix (e.g.
-// http://). No validation of the URI is performed.
-//
-// str - the String to check
-//
-// Returns true if the String is a URI, false if it is not.
+/**
+ * Efficiently check whether the specified String resembles a URI.
+ *
+ * Uses UriSniffRx to check whether the String begins with a URI prefix (e.g.
+ * http://). No validation of the URI is performed.
+ *
+ * @param {string} str - the String to check
+ * @returns {boolean} true if the String resembles a URI, false otherwise
+ */
 export function isUriish(str) {
   return str.includes(':') && UriSniffRx.test(str)
 }
 
-// Internal: Encode a URI component String for safe inclusion in a URI.
-//
-// Encodes all characters that are not unreserved per RFC-3986. Specifically,
-// encodeURIComponent leaves !, ', (, ), and * unencoded; this function encodes
-// those as well so the result matches CGI.escapeURIComponent (Ruby ≥ 3.2) /
-// CGI.escape + gsub('+', '%20').
-//
-// str - the URI component String to encode
-//
-// Returns the encoded String.
+/**
+ * Encode a URI component String for safe inclusion in a URI.
+ *
+ * Encodes all characters that are not unreserved per RFC-3986. Specifically,
+ * encodeURIComponent leaves !, ', (, ), and * unencoded; this function encodes
+ * those as well so the result matches CGI.escapeURIComponent (Ruby ≥ 3.2) /
+ * CGI.escape + gsub('+', '%20').
+ *
+ * @param {string} str - the URI component String to encode
+ * @returns {string} the encoded String
+ */
 export function encodeUriComponent(str) {
   return encodeURIComponent(str).replace(
     /[!'()*]/g,
@@ -99,29 +102,30 @@ export function encodeUriComponent(str) {
   )
 }
 
-// Internal: Replace spaces with %20 in a URI path.
-//
-// str - the String to encode
-//
-// Returns the String with all spaces replaced with %20.
+/**
+ * Replace spaces with %20 in a URI path.
+ *
+ * @param {string} str - the String to encode
+ * @returns {string} the String with all spaces replaced with %20
+ */
 export function encodeSpacesInUri(str) {
   return str.includes(' ') ? str.replaceAll(' ', '%20') : str
 }
 
-// Public: Remove the file extension from a filename and return the result.
-//
-// The filename is expected to be a POSIX path. The extension is only stripped
-// when no path separator follows the last dot, so paths like
-// "dir.with.dots/file" are returned unchanged.
-//
-// filename - the String file name to process
-//
-// Examples
-//
-//   rootname('part1/chapter1.adoc')
-//   // => "part1/chapter1"
-//
-// Returns the String filename with the file extension removed.
+/**
+ * Remove the file extension from a filename and return the result.
+ *
+ * The filename is expected to be a POSIX path. The extension is only stripped
+ * when no path separator follows the last dot, so paths like
+ * "dir.with.dots/file" are returned unchanged.
+ *
+ * @param {string} filename - the String file name to process
+ * @returns {string} the String filename with the file extension removed
+ *
+ * @example
+ * rootname('part1/chapter1.adoc')
+ * // => "part1/chapter1"
+ */
 export function rootname(filename) {
   const lastDotIdx = filename.lastIndexOf('.')
   if (lastDotIdx < 0) return filename
@@ -130,21 +134,20 @@ export function rootname(filename) {
     : filename.slice(0, lastDotIdx)
 }
 
-// Public: Retrieve the basename of a filename, optionally removing the extension.
-//
-// filename - the String file name to process
-// dropExt  - a Boolean flag or an explicit String extension to drop (default: null)
-//
-// Examples
-//
-//   basename('images/tiger.png', true)
-//   // => "tiger"
-//
-//   basename('images/tiger.png', '.png')
-//   // => "tiger"
-//
-// Returns the String filename with leading directories removed and, optionally,
-// the extension removed.
+/**
+ * Retrieve the basename of a filename, optionally removing the extension.
+ *
+ * @param {string} filename - the String file name to process
+ * @param {boolean|string|null} [dropExt=null] - a Boolean flag or an explicit String extension to drop
+ * @returns {string} the String filename with leading directories removed and, optionally, the extension removed
+ *
+ * @example
+ * basename('images/tiger.png', true)
+ * // => "tiger"
+ *
+ * basename('images/tiger.png', '.png')
+ * // => "tiger"
+ */
 export function basename(filename, dropExt = null) {
   if (!dropExt) {
     return ospath.basename(filename)
@@ -153,26 +156,28 @@ export function basename(filename, dropExt = null) {
   return ospath.basename(filename, ext)
 }
 
-// Public: Return whether this path has a file extension.
-//
-// path - the path String to check (expects a POSIX path)
-//
-// Returns true if the path has a file extension, false otherwise.
+/**
+ * Return whether this path has a file extension.
+ *
+ * @param {string} path - the path String to check (expects a POSIX path)
+ * @returns {boolean} true if the path has a file extension, false otherwise
+ */
 export function isExtname(path) {
   const lastDotIdx = path.lastIndexOf('.')
   return lastDotIdx >= 0 && path.indexOf('/', lastDotIdx) < 0
 }
 
-// Public: Retrieve the file extension of the specified path.
-//
-// The file extension is the portion of the last path segment starting from
-// the last period. Differs from Node's path.extname in that the fallback value
-// is configurable.
-//
-// path     - the path String in which to look for a file extension
-// fallback - the fallback String to return if no file extension is present (default: '')
-//
-// Returns the String file extension (with the leading dot) or fallback.
+/**
+ * Retrieve the file extension of the specified path.
+ *
+ * The file extension is the portion of the last path segment starting from
+ * the last period. Differs from Node's path.extname in that the fallback value
+ * is configurable.
+ *
+ * @param {string} path - the path String in which to look for a file extension
+ * @param {string} [fallback=''] - the fallback String to return if no file extension is present
+ * @returns {string} the String file extension (with the leading dot) or fallback
+ */
 export function extname(path, fallback = '') {
   const lastDotIdx = path.lastIndexOf('.')
   if (lastDotIdx < 0) return fallback
@@ -182,20 +187,17 @@ export function extname(path, fallback = '') {
   return path.slice(lastDotIdx)
 }
 
-// Internal: Make a directory, creating all missing parent directories.
-//
-// dir - the String path of the directory to create
-//
-// Returns undefined. Throws if the path cannot be created.
-// Public: Async-aware string replacement using matchAll.
-// The replacer may return a string or a Promise<string>.
-// The regex is treated as global regardless of its flags.
-//
-// str      - The String to perform replacements on.
-// regex    - The RegExp pattern to match.
-// replacer - An async function receiving the same arguments as String#replace callbacks.
-//
-// Returns a Promise<String> with all matches replaced.
+/**
+ * Async-aware string replacement using matchAll.
+ *
+ * The replacer may return a string or a Promise<string>.
+ * The regex is treated as global regardless of its flags.
+ *
+ * @param {string} str - the String to perform replacements on
+ * @param {RegExp} regex - the RegExp pattern to match
+ * @param {Function} replacer - an async function receiving the same arguments as String#replace callbacks
+ * @returns {Promise<string>} the String with all matches replaced
+ */
 export async function asyncReplace(str, regex, replacer) {
   const gRegex = regex.flags.includes('g')
     ? regex
@@ -215,6 +217,12 @@ export async function asyncReplace(str, regex, replacer) {
   return parts.join('')
 }
 
+/**
+ * Make a directory, creating all missing parent directories.
+ *
+ * @param {string} dir - the String path of the directory to create
+ * @returns {Promise<void>} Throws if the path cannot be created
+ */
 export async function mkdirP(dir) {
   const { mkdir } = await import('node:fs/promises')
   await mkdir(dir, { recursive: true })
@@ -240,11 +248,12 @@ const ROMAN_NUMERALS_WITH_REDUCERS = [
 
 const ROMAN_NUMERALS = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 }
 
-// Internal: Convert an integer to a Roman numeral.
-//
-// val - the integer value to convert
-//
-// Returns the String Roman numeral.
+/**
+ * Convert an integer to a Roman numeral.
+ *
+ * @param {number} val - the integer value to convert
+ * @returns {string} the String Roman numeral
+ */
 export function intToRoman(val) {
   let result = ''
   for (const [l, i] of ROMAN_NUMERALS_WITH_REDUCERS) {
@@ -255,11 +264,12 @@ export function intToRoman(val) {
   return result
 }
 
-// Internal: Convert an uppercase Roman numeral to an integer.
-//
-// val - the String Roman numeral in uppercase to convert
-//
-// Returns the integer value.
+/**
+ * Convert an uppercase Roman numeral to an integer.
+ *
+ * @param {string} val - the String Roman numeral in uppercase to convert
+ * @returns {number} the integer value
+ */
 export function romanToInt(val) {
   const valmap = [...val].map((c) => ROMAN_NUMERALS[c])
   let result = 0
@@ -271,15 +281,16 @@ export function romanToInt(val) {
   return result
 }
 
-// Internal: Get the next value in a sequence.
-//
-// Handles integer sequences (numeric increment) and alphabetic sequences
-// (ASCII letter increment with carry, matching Ruby's String#succ for the
-// alphanumeric subset used by Asciidoctor list labels).
-//
-// current - the value to increment as a String or Number
-//
-// Returns the next value in the sequence.
+/**
+ * Get the next value in a sequence.
+ *
+ * Handles integer sequences (numeric increment) and alphabetic sequences
+ * (ASCII letter increment with carry, matching Ruby's String#succ for the
+ * alphanumeric subset used by Asciidoctor list labels).
+ *
+ * @param {string|number} current - the value to increment
+ * @returns {string|number} the next value in the sequence
+ */
 export function nextval(current) {
   if (typeof current === 'number') return current + 1
   const intval = parseInt(current, 10)

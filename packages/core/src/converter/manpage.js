@@ -791,6 +791,10 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
 
   // ── Private helpers ───────────────────────────────────────────────────────────
 
+  /**
+   * @internal
+   * @private
+   */
   _appendFootnotes(result, node) {
     if (!node.hasFootnotes() || node.hasAttr('nofootnotes')) return
     result.push('.SH "NOTES"')
@@ -810,18 +814,21 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
     }
   }
 
-  // Converts HTML entity references back to their original form, escapes
-  // special man characters and strips trailing whitespace.
-  //
-  // It's crucial that text only ever pass through manify once.
-  //
-  // str  - the String to convert
-  // opts - an Object of options to control processing (default: {})
-  //        * whitespace: how to handle whitespace; supported values are:
-  //          'preserve' - preserve spaces (only expanding tabs);
-  //          'normalize' - normalize whitespace (remove spaces around newlines);
-  //          'collapse' - collapse adjacent whitespace to a single space (default)
-  //        * append_newline: Boolean; append a newline to the result (default: false)
+  /**
+   * Converts HTML entity references back to their original form, escapes
+   * special man characters and strips trailing whitespace.
+   *
+   * It's crucial that text only ever pass through manify once.
+   *
+   * @param {string} str - the string to convert
+   * @param {Object} [opts={}] - options to control processing
+   * @param {'preserve'|'normalize'|'collapse'} [opts.whitespace='collapse'] - how to handle whitespace:
+   *   `'preserve'` preserves spaces (only expanding tabs);
+   *   `'normalize'` removes spaces around newlines;
+   *   `'collapse'` collapses adjacent whitespace to a single space
+   * @param {boolean} [opts.append_newline=false] - append a newline to the result
+   * @returns {string} the manified string
+   */
   manify(str, opts = {}) {
     const whitespace = opts.whitespace ?? 'collapse'
     if (whitespace === 'preserve') {
@@ -883,6 +890,10 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
     return opts.append_newline ? `${str}${LF}` : str
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _uppercasePcdata(string) {
     if (!XMLMarkupRx.test(string)) return string.toUpperCase()
     // Reset lastIndex since XMLMarkupRx is stateless (no /g flag) but test() advances for sticky
@@ -891,12 +902,20 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
     )
   }
 
+  /**
+   * @internal
+   * @private
+   */
   async _encloseContent(node) {
     return node.contentModel === 'compound'
       ? await node.content()
       : `.sp\n${this.manify(await node.content(), { whitespace: 'normalize' })}`
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _getRootDocument(node) {
     while ((node = node.document).isNested()) {
       node = node.parentDocument

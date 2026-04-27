@@ -454,7 +454,7 @@ export class AbstractNode {
      */
     readContents(target: string, opts?: any): Promise<string | null>;
     /**
-     * @deprecated Use {@link isUriish} from helpers.js instead.
+     * @deprecated Use `isUriish` from helpers.js instead.
      * @param {string} str
      * @returns {boolean}
      */

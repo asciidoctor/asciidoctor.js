@@ -47,10 +47,5 @@ export default class Html5Converter extends ConverterBase {
     convert_inline_menu(node: any): Promise<string>;
     convert_inline_quoted(node: any): Promise<string>;
     readSvgContents(node: any, target: any): Promise<any>;
-    _appendBooleanAttr(name: any, xml: any): string;
-    _appendLinkConstraintAttrs(node: any, attrs?: any[]): any[];
-    _encodeAttrValue(val: any): any;
-    _generateMannameSection(node: any): string;
-    _getRootDocument(node: any): any;
 }
 import { ConverterBase } from '../converter.js';

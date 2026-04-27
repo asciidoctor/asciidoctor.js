@@ -737,6 +737,10 @@ export class DocBook5Converter extends ConverterBase {
 
   // Private helpers
 
+  /**
+   * @internal
+   * @private
+   */
   _commonAttributes(id, role = null, reftext = null) {
     let attrs = ''
     if (id) {
@@ -757,6 +761,10 @@ export class DocBook5Converter extends ConverterBase {
     return attrs
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _imageSizeAttributes(attributes) {
     if ('scaledwidth' in attributes) {
       return ` width="${attributes.scaledwidth}"`
@@ -770,6 +778,10 @@ export class DocBook5Converter extends ConverterBase {
     return `${widthAttr}${depthAttr}`
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _authorTag(doc, author) {
     const result = ['<author>', '<personname>']
     if (author.firstname)
@@ -788,6 +800,10 @@ export class DocBook5Converter extends ConverterBase {
     return result.join(LF)
   }
 
+  /**
+   * @internal
+   * @private
+   */
   async _documentInfoTag(doc, abstract) {
     const result = ['<info>']
     if (!doc.isNotitle()) {
@@ -871,6 +887,10 @@ export class DocBook5Converter extends ConverterBase {
     return result.join(LF)
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _findRootAbstract(doc) {
     if (!doc.hasBlocks()) return null
     let firstBlock = doc.blocks[0]
@@ -888,6 +908,10 @@ export class DocBook5Converter extends ConverterBase {
       : null
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _extractAbstract(document, abstract) {
     let parent = abstract.parent
     let toDelete = abstract
@@ -899,31 +923,55 @@ export class DocBook5Converter extends ConverterBase {
     return abstract
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _restoreAbstract(abstract) {
     abstract.parent.blocks.unshift(abstract)
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _getRootDocument(node) {
     let doc = node.document
     while (doc.isNested()) doc = doc.parentDocument
     return doc
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _generateDocumentId(doc) {
     return `__${doc.doctype}-root__`
   }
 
+  /**
+   * @internal
+   * @private
+   */
   async _encloseContent(node) {
     return node.contentModel === 'compound'
       ? await node.content()
       : `<simpara>${await node.content()}</simpara>`
   }
 
+  /**
+   * @internal
+   * @private
+   */
   _titleTag(node, optional = true) {
     if (optional && !node.hasTitle()) return ''
     return `<title>${node.title ?? ''}</title>\n`
   }
 
+  /**
+   * @internal
+   * @private
+   */
   async _coverTag(doc, face, usePlaceholder = false) {
     const coverImage = doc.attr(`${face}-cover-image`)
     if (coverImage) {
@@ -943,6 +991,10 @@ export class DocBook5Converter extends ConverterBase {
     return null
   }
 
+  /**
+   * @internal
+   * @private
+   */
   async _blockquoteTag(node, tagName, contentFn) {
     const tag = tagName || 'blockquote'
     const result = [

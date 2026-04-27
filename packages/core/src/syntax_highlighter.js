@@ -225,7 +225,7 @@ export class CustomFactory {
 // by user code). unregisterAll() clears only the custom layer so built-ins
 // remain available after a reset, mirroring Ruby's DefaultFactory behaviour.
 
-class DefaultFactory extends CustomFactory {
+export class DefaultFactory extends CustomFactory {
   constructor() {
     super()
     // _registry (inherited) → custom registrations

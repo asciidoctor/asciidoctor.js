@@ -1,10 +1,10 @@
-# packages/native
+# packages/core
 
 ## Overview
 
 This package is a **native JavaScript implementation of Asciidoctor**, converted from the original [Ruby source](https://github.com/asciidoctor/asciidoctor) by Claude. It is a pure ESM library targeting Node.js ≥ 24 with no Opal/Ruby compilation step.
 
-The existing `@asciidoctor/core` package relies on Opal (a Ruby-to-JavaScript transpiler) to produce a JS bundle from the Ruby source. This `@asciidoctor/native` package replaces that compiled output with handwritten/AI-translated JavaScript modules that follow the same public API.
+This `@asciidoctor/core` package replaces the previous version that relied on Opal (a Ruby-to-JavaScript transpiler) to produce a JS bundle. It is now implemented with handwritten/AI-translated JavaScript modules that follow the same public API.
 
 ## Architecture
 
@@ -55,6 +55,28 @@ When converting or extending code, follow the conventions established in the exi
 - **Thread safety / Mutex** → not needed (single-threaded JS).
 - **Circular dependencies** → resolved via lazy `import()` inside functions; pre-warmed in `load.js` using `Promise.all`.
 - **`node:path`, `node:fs`** → imported lazily (`_requirePath()`) to avoid issues in non-Node environments.
+
+## Generated type declarations
+
+The files under `types/` are **generated** — do not edit them by hand. To regenerate after modifying `src/`:
+
+```
+npm run build:types
+```
+
+This runs `tsc` (emits `.d.ts` from the JSDoc-annotated JS sources), then `scripts/strip-internal.js` (removes `@internal` declarations) and `scripts/patch-jsdoc.js` (restores JSDoc on namespace variables).
+
+If TypeDoc warns that a type is referenced but not included in the documentation, add it as an import and re-export in `src/index.js`, then rebuild.
+
+## Linting
+
+The project uses [Biome](https://biomejs.dev/) for linting and formatting:
+
+```
+npx biome check .
+```
+
+The Biome config is in `biome.json` (package-level) and the root `biome.json`.
 
 ## Running tests
 
