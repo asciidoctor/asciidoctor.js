@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+This release is a complete rewrite of Asciidoctor.js — the Opal runtime and transpiled Ruby code have been replaced by a native JavaScript implementation.
+The public API has been preserved as closely as possible from version 3, but there are breaking changes.
+Please refer to the https://github.com/asciidoctor/asciidoctor.js/blob/main/docs/modules/setup/pages/migration-guide.adoc[migration guide] before upgrading.
+
 Breaking Changes::
 
 * `@asciidoctor/core` is now a native JavaScript implementation — no more Opal transpilation
@@ -21,6 +25,7 @@ import { convert } from '@asciidoctor/core'
 await convert('Hello _world_')
 ----
 * Requires Node.js ≥ 24
+* `@asciidoctor/cli` is deprecated — the CLI is now built into the `asciidoctor` package itself
 
 Improvements::
 
@@ -29,6 +34,10 @@ Improvements::
 * TypeScript type definitions (`.d.ts`) are now generated from JSDoc annotations — no separate hand-written types file required
 * HTTP includes and remote image inlining use the standard `fetch` API instead of `XMLHttpRequest`
 * File I/O (`loadFile`, `convertFile`, include directives) uses `node:fs/promises` — all operations are fully async, no blocking sync calls
+* CLI is now implemented using the Node.js built-in `parseArgs` — no third-party CLI framework required
+* Native binaries are now built with https://nodejs.org/api/single-executable-applications.html[Node.js Single Executable Applications (SEA)] instead of `pkg`
+* Significantly faster — early performance benchmarks show 3–4× speed improvements over version 3
+* Browser bundle is ~700 kB (unminified), down from ~1.74 MB with version 3 (Opal runtime included)
 
 Infrastructure::
 
