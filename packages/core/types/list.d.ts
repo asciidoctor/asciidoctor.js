@@ -41,7 +41,7 @@ export class ListItem extends AbstractBlock<string> {
     _text: string;
     subs: string[];
     /** Contextual alias for parent. */
-    get list(): any;
+    get list(): import("./abstract_node.js").AbstractNode;
     /**
      * Return the text of this list item with substitutions applied.
      * Synchronous because text is pre-computed during parse().

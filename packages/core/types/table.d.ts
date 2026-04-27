@@ -43,9 +43,10 @@ declare class Rows {
     };
 }
 declare class Column extends AbstractNode {
+    constructor(table: any, index: any, attributes?: {});
     style: any;
     /** Alias for parent (always a Table). */
-    get table(): any;
+    get table(): AbstractNode;
     isBlock(): boolean;
     isInline(): boolean;
 }
@@ -67,7 +68,7 @@ declare class Cell extends AbstractBlock<string> {
     static create(column: {
         style: any;
         /** Alias for parent (always a Table). */
-        get table(): any;
+        get table(): AbstractNode;
         /**
          * Calculate and assign the widths for this column.
          * @param {number|null} colPcwidth
@@ -79,15 +80,15 @@ declare class Cell extends AbstractBlock<string> {
         assignWidth(colPcwidth: number | null, widthBase: number | null, precision: number): number;
         isBlock(): boolean;
         isInline(): boolean;
-        document: any;
-        _parent: any;
-        context: any;
+        document: AbstractNode;
+        _parent: AbstractNode;
+        context: string;
         nodeName: string;
         id: string;
         attributes: any;
         passthroughs: any[];
-        get parent(): any;
-        set parent(parent: any);
+        get parent(): AbstractNode;
+        set parent(parent: AbstractNode);
         get role(): any;
         set role(names: any);
         get roles(): any;
@@ -141,7 +142,7 @@ declare class Cell extends AbstractBlock<string> {
         readAsset(path: string, opts?: any): Promise<string | null>;
         readContents(target: string, opts?: any): Promise<string | null>;
         isUri(str: string): boolean;
-        readonly logger: any;
+        get logger(): any;
     }, cellText: string, attributes?: any, opts?: any): Promise<typeof Cell>;
     constructor(column: any, cellText: any, attributes?: {}, opts?: {});
     _cursor: any;
@@ -150,13 +151,13 @@ declare class Cell extends AbstractBlock<string> {
     rowspan: number;
     _innerDocSetup: {
         lines: any;
-        parentDoc: any;
+        parentDoc: AbstractNode;
         parentDoctitle: any;
         options: {
             safe: any;
             backend: any;
             header_footer: boolean;
-            parent: any;
+            parent: AbstractNode;
             cursor: any;
         };
     };
@@ -164,8 +165,9 @@ declare class Cell extends AbstractBlock<string> {
     _text: any;
     style: any;
     /** Alias for parent (always a Column). */
-    get column(): any;
-    reinitialize(hasHeader: any): Promise<typeof Cell | this>;
+    get column(): AbstractNode;
+    /** @returns {Promise<Table.Cell>} */
+    reinitialize(hasHeader: any): Promise<typeof Cell>;
     _catalogInlineAnchor(cellText?: any, cursor?: any): void;
     set text(val: string | null);
     /**

@@ -14,6 +14,7 @@ import ts from 'typescript'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 function isInternal(node) {
   return ts.getJSDocTags(node).some((tag) => tag.tagName.escapedText === 'internal')
@@ -76,5 +77,5 @@ function walkDir(dir) {
   }
 }
 
-const typesDir = new URL('../types', import.meta.url).pathname
+const typesDir = fileURLToPath(new URL('../types', import.meta.url))
 walkDir(typesDir)
