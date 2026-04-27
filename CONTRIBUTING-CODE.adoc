@@ -39,7 +39,6 @@ Clone the repository and install dependencies:
 git clone https://github.com/asciidoctor/asciidoctor.js.git
 cd asciidoctor.js
 npm i
-npm i --prefix packages/core
 ----
 
 == Building
