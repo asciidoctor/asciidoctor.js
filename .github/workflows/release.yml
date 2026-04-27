@@ -23,7 +23,6 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npm ci --prefix packages/core
           npx playwright install
       # publish
       - name: Publish
@@ -142,7 +141,7 @@ jobs:
         with:
           node-version: 24
       - name: Install dependencies
-        run: npm ci --prefix packages/core
+        run: npm ci
       - name: Generate API documentation
         run: npm run docs --prefix packages/core
       - name: Compute docs destination folder
