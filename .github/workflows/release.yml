@@ -23,7 +23,9 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npx playwright install
+      # build
+      - name: Build core
+        run: npm run build --prefix packages/core
       # publish
       - name: Publish
         env:

@@ -61,14 +61,22 @@ async function isReadable(path) {
 /**
  * An abstract base class that provides state and methods for managing a node of AsciiDoc content.
  * The state and methods on this class are common to all content segments in an AsciiDoc document.
+ * @abstract
  */
 export class AbstractNode {
+  /**
+   * @param {AbstractNode} parent
+   * @param {string} context
+   * @param {object} [opts={}]
+   */
   constructor(parent, context, opts = {}) {
     // document is a special case – should refer to itself
     if (context === 'document') {
+      /** @type {AbstractNode} */
       this.document = this
     } else if (parent) {
       this._parent = parent
+      /** @type {AbstractNode} */
       this.document = parent.document
     }
     this.context = context

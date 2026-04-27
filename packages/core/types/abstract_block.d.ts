@@ -1,8 +1,14 @@
 /**
  * @template {string | any[]} [TContent=string]
+ * @abstract
  */
-export class AbstractBlock<TContent extends string | any[] = string> extends AbstractNode {
-    constructor(parent: any, context: any, opts?: {});
+export abstract class AbstractBlock<TContent extends string | any[] = string> extends AbstractNode {
+    /**
+     * @param {AbstractBlock} parent
+     * @param {string} context
+     * @param {object} [opts={}]
+     */
+    constructor(parent: AbstractBlock, context: string, opts?: object);
     contentModel: string;
     blocks: any[];
     subs: any[];
@@ -98,9 +104,9 @@ export class AbstractBlock<TContent extends string | any[] = string> extends Abs
     /**
      * Append a content block to this block's list of blocks.
      * @param {AbstractBlock} block - The new child block.
-     * @returns {this} this block (enables chaining).
+     * @returns {AbstractBlock} this block (enables chaining).
      */
-    append(block: AbstractBlock): this;
+    append(block: AbstractBlock): AbstractBlock;
     /**
      * Determine whether this block contains block content.
      * @returns {boolean}

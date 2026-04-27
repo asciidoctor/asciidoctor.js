@@ -10,9 +10,10 @@
 import ts from 'typescript'
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const srcDir = new URL('../src', import.meta.url).pathname
-const typesDir = new URL('../types', import.meta.url).pathname
+const srcDir = fileURLToPath(new URL('../src', import.meta.url))
+const typesDir = fileURLToPath(new URL('../types', import.meta.url))
 
 /** Returns the raw text of the last leading JSDoc comment for a node, or null. */
 function leadingJSDoc(node, src) {
@@ -61,6 +62,52 @@ function reindent(jsdoc, indent) {
     .split('\n')
     .map((line, i) => (i === 0 ? indent + line : indent + ' ' + line.trimStart()))
     .join('\n')
+}
+
+/**
+ * Parses a JS source file and returns the set of class names annotated with @abstract.
+ * TypeScript does not translate the @abstract JSDoc tag to `abstract class` in .d.ts output,
+ * so we detect it here and apply it as a post-processing step.
+ */
+function collectAbstractClasses(jsPath) {
+  const src = readFileSync(jsPath, 'utf-8')
+  const sf = ts.createSourceFile(jsPath, src, ts.ScriptTarget.Latest, true)
+  const names = new Set()
+
+  for (const stmt of sf.statements) {
+    if (!ts.isClassDeclaration(stmt) || !stmt.name) continue
+    const ranges = ts.getLeadingCommentRanges(src, stmt.getFullStart()) ?? []
+    const hasAbstractTag = ranges.some((r) => {
+      const text = src.slice(r.pos, r.end)
+      return text.includes('@abstract')
+    })
+    if (hasAbstractTag) names.add(stmt.name.text)
+  }
+
+  return names
+}
+
+/**
+ * Patches a .d.ts file by adding the `abstract` keyword to class declarations
+ * that correspond to @abstract-annotated classes in the JS source.
+ * Returns true if any changes were made.
+ */
+function patchAbstractClasses(dtsPath, abstractClassNames) {
+  if (!abstractClassNames.size) return false
+  let src = readFileSync(dtsPath, 'utf-8')
+  let changed = false
+
+  for (const name of abstractClassNames) {
+    const before = src
+    src = src.replace(
+      new RegExp(`(export\\s+(?:declare\\s+)?)class\\s+${name}\\b`, 'g'),
+      `$1abstract class ${name}`
+    )
+    if (src !== before) changed = true
+  }
+
+  if (changed) writeFileSync(dtsPath, src, 'utf-8')
+  return changed
 }
 
 /**
@@ -118,6 +165,11 @@ function walk(dir) {
 
     const jsPath = join(srcDir, entry.replace(/\.d\.ts$/, '.js'))
     if (!existsSync(jsPath)) continue
+
+    const abstractClasses = collectAbstractClasses(jsPath)
+    if (patchAbstractClasses(full, abstractClasses)) {
+      console.log(`patched abstract class(es) in ${entry}`)
+    }
 
     const jsdocByExport = collectPropertyJSDoc(jsPath)
     if (!jsdocByExport.size) continue

@@ -1,22 +1,29 @@
 /**
  * An abstract base class that provides state and methods for managing a node of AsciiDoc content.
  * The state and methods on this class are common to all content segments in an AsciiDoc document.
+ * @abstract
  */
-export class AbstractNode {
-    constructor(parent: any, context: any, opts?: {});
-    document: any;
-    _parent: any;
-    context: any;
+export abstract class AbstractNode {
+    /**
+     * @param {AbstractNode} parent
+     * @param {string} context
+     * @param {object} [opts={}]
+     */
+    constructor(parent: AbstractNode, context: string, opts?: object);
+    /** @type {AbstractNode} */
+    document: AbstractNode;
+    _parent: AbstractNode;
+    context: string;
     nodeName: string;
     id: string;
     attributes: any;
     passthroughs: any[];
-    set parent(parent: any);
+    set parent(parent: AbstractNode);
     /**
      * Get/Set the parent of this node.
      * The setter also updates the document reference.
      */
-    get parent(): any;
+    get parent(): AbstractNode;
     set role(names: any);
     /**
      * Get the space-separated role string for this node.

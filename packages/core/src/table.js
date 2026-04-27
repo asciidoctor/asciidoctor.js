@@ -450,9 +450,10 @@ class Cell extends AbstractBlock {
       if (parentDoctitle) parentDoc.attributes.doctitle = parentDoctitle
       cell._innerDocument = innerDoc
     }
-    return cell
+    return /** @type {Table.Cell} */ cell
   }
 
+  /** @returns {Promise<Table.Cell>} */
   async reinitialize(hasHeader) {
     if (hasHeader) {
       this._reinitializeArgs = null
@@ -462,7 +463,7 @@ class Cell extends AbstractBlock {
       this.style = this.attributes.style ?? null
     }
     if (this._cursor) this._catalogInlineAnchor()
-    return this
+    return /** @type {Table.Cell} */ (this)
   }
 
   _catalogInlineAnchor(cellText = this._text, cursor = null) {

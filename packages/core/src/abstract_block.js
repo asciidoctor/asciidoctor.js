@@ -41,6 +41,7 @@ class StopIteration extends Error {}
 
 /**
  * @template {string | any[]} [TContent=string]
+ * @abstract
  */
 export class AbstractBlock extends AbstractNode {
   /** @type {string|null} */
@@ -50,6 +51,11 @@ export class AbstractBlock extends AbstractNode {
   /** @type {string|null} */
   #caption = null
 
+  /**
+   * @param {AbstractBlock} parent
+   * @param {string} context
+   * @param {object} [opts={}]
+   */
   constructor(parent, context, opts = {}) {
     super(parent, context, opts)
     this.contentModel = 'compound'
@@ -245,7 +251,7 @@ export class AbstractBlock extends AbstractNode {
   /**
    * Append a content block to this block's list of blocks.
    * @param {AbstractBlock} block - The new child block.
-   * @returns {this} this block (enables chaining).
+   * @returns {AbstractBlock} this block (enables chaining).
    */
   append(block) {
     if (block.parent !== this) block.parent = this
