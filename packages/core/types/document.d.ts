@@ -172,13 +172,18 @@ export class Document extends AbstractBlock<string> {
         sanitize?: boolean;
     }): string | DocumentTitle | null;
     get name(): string | DocumentTitle;
+    /**
+     * @param {string|null} [_xrefstyle=null]
+     * @returns {Promise<string|null>}
+     */
+    xreftext(_xrefstyle?: string | null): Promise<string | null>;
     get author(): any;
     get revdate(): any;
     authors(): Author[];
     isNotitle(): boolean;
     isNoheader(): boolean;
     isNofooter(): boolean;
-    firstSection(): any;
+    firstSection(): AbstractBlock<string>;
     hasHeader(): boolean;
     /**
      * Append a child Block, assigning index if it's a section.
@@ -386,11 +391,6 @@ export class Document extends AbstractBlock<string> {
      */
     private _resolveAllTexts;
     _createConverter(backend: any, delegateBackend: any): any;
-    _clearPlaybackAttributes(attributes: any): void;
-    _saveAttributes(): void;
-    _fillDatetimeAttributes(attrs: any, inputMtime: any): void;
-    _updateBackendAttributes(newBackend: any, init?: boolean): any;
-    _updateDoctypeAttributes(newDoctype: any): any;
 }
 export namespace Document {
     export { Footnote };

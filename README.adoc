@@ -53,7 +53,7 @@ You should see the following output in your terminal:
 [source.output,html]
 ----
 <div class="paragraph">
-<p><a href="https://asciidoctor.org"><strong>Asciidoctor</strong></a>  running on Node.js!</p>
+<p><a href="https://asciidoctor.org"><strong>Asciidoctor</strong></a> running on Node.js!</p>
 </div>
 ----
 

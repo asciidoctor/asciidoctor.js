@@ -9,8 +9,21 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
      * @param {object} [opts={}]
      */
     constructor(parent: AbstractBlock, context: string, opts?: object);
+    /**
+     * Describes the type of content this block accepts and how it should be converted. Acceptable values are:
+     *  - `compound` - this block contains other blocks
+     *  - `simple` - this block holds a paragraph of prose that receives normal substitutions
+     *  - `verbatim` - this block holds verbatim text (displayed "as is") that receives verbatim substitutions
+     *  - `raw` - this block holds unprocessed content passed directly to the output with no substitutions applied
+     *  - `empty` - this block has no content
+     * @type {string}
+     */
     contentModel: string;
-    blocks: any[];
+    /**
+     * Array of {@link AbstractBlock} child blocks for this block. Only applies if content model is `compound`.
+     * @type {AbstractBlock[]}
+     */
+    blocks: AbstractBlock[];
     subs: any[];
     numeral: any;
     style: string;
@@ -164,7 +177,8 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
      * @param {string|null} [xrefstyle=null] - Optional String style: 'full', 'short', or 'basic'.
      * @returns {Promise<string|null>} the xreftext, or null.
      */
-    xreftext(xrefstyle?: string | null): Promise<string | null>;
+    getXrefText(xrefstyle?: string | null): Promise<string | null>;
+    xreftext(xrefstyle?: any): Promise<string>;
     /**
      * Generate and assign a caption to this block if not already assigned.
      * If the block has a title and a caption prefix is available, builds a caption

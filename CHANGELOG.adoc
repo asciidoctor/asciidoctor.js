@@ -12,7 +12,7 @@ Breaking Changes::
 
 * `@asciidoctor/core` is now a native JavaScript implementation — no more Opal transpilation
 * API is now fully asynchronous (`convert`, `load`, etc. return a `Promise`)
-* No factory call required, object is exported directly as default export
+* No factory call required, objects and functions are exported directly as named exports
 +
 [source,js]
 ----

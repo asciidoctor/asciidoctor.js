@@ -5,6 +5,7 @@ import {
   Document,
   DocumentTitle,
   Author,
+  Footnote,
   ImageReference,
   RevisionInfo,
 } from './document.js'
@@ -90,6 +91,7 @@ export {
   Document,
   DocumentTitle,
   Author,
+  Footnote,
   ImageReference,
   RevisionInfo,
   Logger,

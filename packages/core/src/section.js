@@ -85,7 +85,9 @@ export class Section extends AbstractBlock {
   }
 
   /**
-   * @inheritdoc
+   * Generate cross-reference text for this section.
+   * Respects an explicit reftext if set; otherwise formats the section title
+   * according to xrefstyle ('full', 'short', or 'basic').
    * @param {string|null} [xrefstyle=null]
    * @returns {Promise<string|null>}
    */

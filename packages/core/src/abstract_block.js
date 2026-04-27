@@ -58,7 +58,20 @@ export class AbstractBlock extends AbstractNode {
    */
   constructor(parent, context, opts = {}) {
     super(parent, context, opts)
+    /**
+     * Describes the type of content this block accepts and how it should be converted. Acceptable values are:
+     *  - `compound` - this block contains other blocks
+     *  - `simple` - this block holds a paragraph of prose that receives normal substitutions
+     *  - `verbatim` - this block holds verbatim text (displayed "as is") that receives verbatim substitutions
+     *  - `raw` - this block holds unprocessed content passed directly to the output with no substitutions applied
+     *  - `empty` - this block has no content
+     * @type {string}
+     */
     this.contentModel = 'compound'
+    /**
+     * Array of {@link AbstractBlock} child blocks for this block. Only applies if content model is `compound`.
+     * @type {AbstractBlock[]}
+     */
     this.blocks = []
     this.subs = []
     this.#title = null
@@ -353,6 +366,10 @@ export class AbstractBlock extends AbstractNode {
    * @param {string|null} [xrefstyle=null] - Optional String style: 'full', 'short', or 'basic'.
    * @returns {Promise<string|null>} the xreftext, or null.
    */
+  async getXrefText(xrefstyle = null) {
+    return this.xreftext(xrefstyle)
+  }
+
   async xreftext(xrefstyle = null) {
     const val = this.reftext
     if (val && val.length > 0) return val
