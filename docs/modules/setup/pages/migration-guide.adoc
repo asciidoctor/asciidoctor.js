@@ -45,14 +45,14 @@ All parsing and conversion operations now return a `Promise` and must be awaited
 === No factory call
 
 v3 exports a factory function that must be called to obtain an Asciidoctor instance.
-v4 exports a ready-to-use object — no factory call is needed.
+v4 uses named exports — import only what you need, no factory call needed.
 
 [cols="1,1"]
 |===
 | v3 | v4
 
 | `require('@asciidoctor/core')()` → must call the factory
-| `import asciidoctor from '@asciidoctor/core'` → immediately usable
+| `import { load, convert } from '@asciidoctor/core'` → use functions directly
 |===
 
 === ESM only
@@ -153,6 +153,10 @@ Some internal properties and options that retained the Ruby `snake_case` style i
 
 | `getContent()` → `string`
 | `getContent()` → `Promise<string>`
+
+| `xreftext(xrefstyle?)` → `string\|null`
+| `xreftext(xrefstyle?)` → `Promise<string\|null>` +
+  alias: `getXrefText(xrefstyle?)`
 |===
 
 === Not implemented in v4
@@ -175,7 +179,8 @@ Some internal properties and options that retained the Ruby `snake_case` style i
 
 === Named exports
 
-Every public member is now available as a named export.
+v4 is named-exports only — there is no default export.
+Every public member is available as a named export.
 
 .Functions
 [source,javascript]
@@ -183,17 +188,75 @@ Every public member is now available as a named export.
 import { load, convert, loadFile, convertFile, getVersion, getCoreVersion } from '@asciidoctor/core'
 ----
 
-.Classes and objects
+.Document and AST nodes
+[source,javascript]
+----
+import {
+  Document,
+  DocumentTitle,
+  Author,
+  Footnote,
+  ImageReference,
+  RevisionInfo,
+  AbstractNode,
+  AbstractBlock,
+  Block,
+  Section,
+  Inline,
+  List,
+  ListItem,
+} from '@asciidoctor/core'
+----
+
+.Reader
+[source,javascript]
+----
+import { Reader, Cursor } from '@asciidoctor/core'
+----
+
+.Converters
+[source,javascript]
+----
+import {
+  ConverterFactory,
+  DefaultConverterFactory,
+  Html5Converter,
+} from '@asciidoctor/core'
+----
+
+.Extensions
 [source,javascript]
 ----
 import {
   Extensions,
-  ConverterFactory,
-  Html5Converter,
+  Registry,
+  ProcessorExtension,
+  Preprocessor,
+  TreeProcessor,
+  Postprocessor,
+  IncludeProcessor,
+  DocinfoProcessor,
+  BlockProcessor,
+  InlineMacroProcessor,
+  BlockMacroProcessor,
+} from '@asciidoctor/core'
+----
+
+.Syntax highlighter
+[source,javascript]
+----
+import {
   SyntaxHighlighter,
   SyntaxHighlighterBase,
-  Block,
-  Section,
+  DefaultSyntaxHighlighterFactory,
+} from '@asciidoctor/core'
+----
+
+.Logging and utilities
+[source,javascript]
+----
+import {
+  Logger,
   LoggerManager,
   MemoryLogger,
   NullLogger,
@@ -206,11 +269,12 @@ NOTE: `loadFile` and `convertFile` are not available as named exports in the bro
 
 === Document direct properties
 
-Several document values are now accessible as direct instance properties in addition to getter methods.
+The v3 getter methods are preserved unchanged.
+In addition, v4 exposes these values as direct instance properties for convenience.
 
 [cols="1,1"]
 |===
-| Getter method | Direct property
+| Getter method (v3 and v4) | Direct property (new in v4)
 
 | `getSafe()` → `number`
 | `document.safe`

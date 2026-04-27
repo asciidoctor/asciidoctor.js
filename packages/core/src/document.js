@@ -1557,10 +1557,23 @@ export class Document extends AbstractBlock {
     return factory.createSync(backend, converterOpts)
   }
 
+  /**
+   * Delete any attributes stored for playback
+   * @param attributes
+   * @private
+   * @internal
+   */
   _clearPlaybackAttributes(attributes) {
     delete attributes.attribute_entries
   }
 
+  /**
+   * Branch the attributes so that the original state can be restored
+   * at a future time.
+   * @returns the duplicated attributes, which will later be restored
+   * @private
+   * @internal
+   */
   _saveAttributes() {
     const attrs = this.attributes
     if (!('doctitle' in attrs)) {
@@ -1689,6 +1702,14 @@ export class Document extends AbstractBlock {
     this._headerAttributes = { ...attrs }
   }
 
+  /**
+   * Assign the local and document datetime attributes, which includes localdate, localyear, localtime,
+   * localdatetime, docdate, docyear, doctime, and docdatetime. Honor the SOURCE_DATE_EPOCH environment variable, if set.
+   * @param attrs
+   * @param inputMtime
+   * @private
+   * @internal
+   */
   _fillDatetimeAttributes(attrs, inputMtime) {
     const sourceDateEpoch =
       typeof process !== 'undefined' ? process.env.SOURCE_DATE_EPOCH : null
@@ -1725,6 +1746,18 @@ export class Document extends AbstractBlock {
     attrs.docdatetime ??= `${docdate} ${doctime}`
   }
 
+  /**
+   * Update the backend attributes to reflect a change in the active backend.
+   *
+   * This method also handles updating the related doctype attributes if the
+   * doctype attribute is assigned at the time this method is called.
+   *
+   * @param newBackend
+   * @param init
+   * @returns {undefined|*} the resolved String backend if updated, nothing otherwise.
+   * @private
+   * @internal
+   */
   _updateBackendAttributes(newBackend, init = false) {
     if (!init && newBackend === this.backend) return undefined
     const currentBackend = this.backend
@@ -1824,6 +1857,14 @@ export class Document extends AbstractBlock {
     return newBackend
   }
 
+  /**
+   * Update the doctype and backend attributes to reflect a change in the active doctype.
+   *
+   * @param newDoctype
+   * @returns {undefined|*} the String doctype if updated, nothing otherwise.
+   * @private
+   * @internal
+   */
   _updateDoctypeAttributes(newDoctype) {
     if (!newDoctype || newDoctype === this.doctype) return undefined
     const currentBackend = this.backend
