@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import asciidoctor from '../src/index.js'
+import { LoggerManager, MemoryLogger, NullLogger, Timings, Extensions, convert } from '../src/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -19,18 +19,18 @@ intro
 
 describe('Logger', () => {
   test('should get default logger', () => {
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
+    const defaultLogger = LoggerManager.getLogger()
     assert.equal(defaultLogger.getLevel(), 2)
     assert.equal(defaultLogger.getProgramName(), 'asciidoctor')
     assert.ok(defaultLogger.getFormatter(), 'formatter should be defined')
   })
 
   test('should send an error message if part has no section', async () => {
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
-    const memoryLogger = asciidoctor.MemoryLogger.create()
+    const defaultLogger = LoggerManager.getLogger()
+    const memoryLogger = MemoryLogger.create()
     try {
-      asciidoctor.LoggerManager.setLogger(memoryLogger)
-      await asciidoctor.convert(PART_WITH_NO_SECTION)
+      LoggerManager.setLogger(memoryLogger)
+      await convert(PART_WITH_NO_SECTION)
       const errorMessage = memoryLogger.getMessages()[0]
       assert.equal(errorMessage.getSeverity(), 'ERROR')
       assert.equal(errorMessage.getText(), 'invalid part, must have at least one section (e.g., chapter, appendix, etc.)')
@@ -42,12 +42,12 @@ describe('Logger', () => {
       }
       assert.equal(sourceLocation.getPath(), '<stdin>')
     } finally {
-      asciidoctor.LoggerManager.setLogger(defaultLogger)
+      LoggerManager.setLogger(defaultLogger)
     }
   })
 
   test('should be able to set program name', () => {
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
+    const defaultLogger = LoggerManager.getLogger()
     try {
       assert.equal(defaultLogger.getProgramName(), 'asciidoctor')
       defaultLogger.setProgramName('asciidoctor.js')
@@ -58,7 +58,7 @@ describe('Logger', () => {
   })
 
   test('should be able to set log level', () => {
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
+    const defaultLogger = LoggerManager.getLogger()
     try {
       assert.equal(defaultLogger.getLevel(), 2)
       defaultLogger.setLevel(3)
@@ -69,7 +69,7 @@ describe('Logger', () => {
   })
 
   test('should use the default formatter', async () => {
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
+    const defaultLogger = LoggerManager.getLogger()
     const defaultFormatter = defaultLogger.getFormatter()
     const canInterceptStderr = typeof process !== 'undefined' && typeof process.stderr?.write === 'function'
     const processStderrWriteFunction = canInterceptStderr ? process.stderr.write : null
@@ -78,7 +78,7 @@ describe('Logger', () => {
       process.stderr.write = function (chunk) { stderrOutput += chunk }
     }
     try {
-      await asciidoctor.convert(PART_WITH_NO_SECTION)
+      await convert(PART_WITH_NO_SECTION)
       if (canInterceptStderr) assert.equal(stderrOutput, 'asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n')
     } finally {
       defaultLogger.setFormatter(defaultFormatter)
@@ -87,7 +87,7 @@ describe('Logger', () => {
   })
 
   test('should be able to use a JSON formatter', async () => {
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
+    const defaultLogger = LoggerManager.getLogger()
     const defaultFormatter = defaultLogger.getFormatter()
     const canInterceptStderr = typeof process !== 'undefined' && typeof process.stderr?.write === 'function'
     const processStderrWriteFunction = canInterceptStderr ? process.stderr.write : null
@@ -96,7 +96,7 @@ describe('Logger', () => {
       process.stderr.write = function (chunk) { stderrOutput += chunk }
     }
     try {
-      defaultLogger.setFormatter(asciidoctor.LoggerManager.newFormatter('JsonFormatter', {
+      defaultLogger.setFormatter(LoggerManager.newFormatter('JsonFormatter', {
         call: function (severity, time, programName, message) {
           const text = message.text
           const sourceLocation = message.source_location
@@ -111,7 +111,7 @@ describe('Logger', () => {
           }) + '\n'
         }
       }))
-      await asciidoctor.convert(PART_WITH_NO_SECTION)
+      await convert(PART_WITH_NO_SECTION)
       if (canInterceptStderr) {
         assert.equal(stderrOutput, '{"programName":"asciidoctor","message":"invalid part, must have at least one section (e.g., chapter, appendix, etc.)","sourceLocation":{"lineNumber":8,"path":"<stdin>"},"severity":"ERROR"}\n')
         assert.equal(JSON.parse(stderrOutput).message, 'invalid part, must have at least one section (e.g., chapter, appendix, etc.)')
@@ -123,8 +123,8 @@ describe('Logger', () => {
   })
 
   test('should not log anything when NullLogger is used', async () => {
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
-    const nullLogger = asciidoctor.NullLogger.create()
+    const defaultLogger = LoggerManager.getLogger()
+    const nullLogger = NullLogger.create()
     const canInterceptStderr = typeof process !== 'undefined' && typeof process.stderr?.write === 'function'
     const stderrWriteFunction = canInterceptStderr ? process.stderr.write : null
     let stderrOutput = ''
@@ -132,24 +132,24 @@ describe('Logger', () => {
       process.stderr.write = function (chunk) { stderrOutput += chunk }
     }
     try {
-      asciidoctor.LoggerManager.setLogger(nullLogger)
-      await asciidoctor.convert(PART_WITH_NO_SECTION)
+      LoggerManager.setLogger(nullLogger)
+      await convert(PART_WITH_NO_SECTION)
       assert.equal(nullLogger.getMaxSeverity(), 3)
       if (canInterceptStderr) assert.equal(stderrOutput, '')
     } finally {
       if (canInterceptStderr) process.stderr.write = stderrWriteFunction
-      asciidoctor.LoggerManager.setLogger(defaultLogger)
+      LoggerManager.setLogger(defaultLogger)
     }
   })
 
   test('should create a custom Logger', async () => {
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
+    const defaultLogger = LoggerManager.getLogger()
     const buildDir = path.join(__dirname, '..', 'build')
     fs.mkdirSync(buildDir, { recursive: true })
     const logFile = path.join(buildDir, 'async.log')
     // Truncate the log file before each run
     fs.writeFileSync(logFile, '')
-    const asyncLogger = asciidoctor.LoggerManager.newLogger('AsyncFileLogger', {
+    const asyncLogger = LoggerManager.newLogger('AsyncFileLogger', {
       postConstruct: function () {
         this.writer = fs.createWriteStream(logFile, { flags: 'a' })
       },
@@ -160,23 +160,23 @@ describe('Logger', () => {
     })
 
     try {
-      asciidoctor.LoggerManager.setLogger(asyncLogger)
-      await asciidoctor.convert(PART_WITH_NO_SECTION)
+      LoggerManager.setLogger(asyncLogger)
+      await convert(PART_WITH_NO_SECTION)
       await new Promise((resolve) => asyncLogger.writer.end(resolve))
       assert.equal(
         fs.readFileSync(logFile, 'UTF-8'),
         'asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n'
       )
     } finally {
-      asciidoctor.LoggerManager.setLogger(defaultLogger)
+      LoggerManager.setLogger(defaultLogger)
     }
   })
 
   test('should print timings to the MemoryLogger', async () => {
-    const memoryLogger = asciidoctor.MemoryLogger.create()
-    const timings = asciidoctor.Timings.create()
+    const memoryLogger = MemoryLogger.create()
+    const timings = Timings.create()
     const options = { timings }
-    await asciidoctor.convert('Hello *world*', options)
+    await convert('Hello *world*', options)
     timings.printReport(memoryLogger, 'stdin')
     const messages = memoryLogger.getMessages()
     assert.equal(messages.length, 4)
@@ -185,7 +185,7 @@ describe('Logger', () => {
   })
 
   test('should print a message with context', async () => {
-    const registry = asciidoctor.Extensions.create()
+    const registry = Extensions.create()
     registry.block(function () {
       const self = this
       self.named('plantuml')
@@ -203,11 +203,11 @@ describe('Logger', () => {
 [plantuml]
 ----
 ----`
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
-    const memoryLogger = asciidoctor.MemoryLogger.create()
+    const defaultLogger = LoggerManager.getLogger()
+    const memoryLogger = MemoryLogger.create()
     try {
-      asciidoctor.LoggerManager.setLogger(memoryLogger)
-      await asciidoctor.convert(input, { extension_registry: registry })
+      LoggerManager.setLogger(memoryLogger)
+      await convert(input, { extension_registry: registry })
       const warnMessage = memoryLogger.getMessages()[0]
       assert.equal(warnMessage.getSeverity(), 'WARN')
       assert.equal(warnMessage.getText(), 'plantuml block is empty')
@@ -220,12 +220,12 @@ describe('Logger', () => {
       assert.equal(fatalMessage.getSeverity(), 'FATAL')
       assert.equal(fatalMessage.getText(), 'game over')
     } finally {
-      asciidoctor.LoggerManager.setLogger(defaultLogger)
+      LoggerManager.setLogger(defaultLogger)
     }
   })
 
   test('should return true if the logger instance is enabled for the specified level', () => {
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
+    const defaultLogger = LoggerManager.getLogger()
     assert.equal(defaultLogger.isDebugEnabled(), false)
     assert.equal(defaultLogger.isInfoEnabled(), false)
     assert.equal(defaultLogger.isWarnEnabled(), true)
@@ -235,7 +235,7 @@ describe('Logger', () => {
 
   test('should log using a message', () => {
     const logs = []
-    const customLogger = asciidoctor.LoggerManager.newLogger('CustomLogger', {
+    const customLogger = LoggerManager.newLogger('CustomLogger', {
       add: function (severity, message, progname) {
         logs.push({ severity, message: message || progname })
       }
@@ -248,7 +248,7 @@ describe('Logger', () => {
 
   test('should log using a message and a program name', () => {
     const logs = []
-    const customLogger = asciidoctor.LoggerManager.newLogger('CustomLogger', {
+    const customLogger = LoggerManager.newLogger('CustomLogger', {
       add: function (severity, message, progname) {
         logs.push({ severity, message, progname })
       }
@@ -262,7 +262,7 @@ describe('Logger', () => {
 
   test('should accept a message as block argument', async () => {
     const messages = []
-    const memoryLogger = asciidoctor.LoggerManager.newLogger('CustomMemoryLogger', {
+    const memoryLogger = LoggerManager.newLogger('CustomMemoryLogger', {
       add: function (severity, message, programName, block) {
         if (typeof block === 'function') {
           messages.push(block())
@@ -271,11 +271,11 @@ describe('Logger', () => {
         }
       }
     })
-    const defaultLogger = asciidoctor.LoggerManager.getLogger()
+    const defaultLogger = LoggerManager.getLogger()
     try {
-      asciidoctor.LoggerManager.setLogger(memoryLogger)
+      LoggerManager.setLogger(memoryLogger)
       memoryLogger.add('error', 'before', 'asciidoctor.js')
-      await asciidoctor.convert('Hello, {name}!', {
+      await convert('Hello, {name}!', {
         attributes: {
           'attribute-missing': 'drop-line'
         }
@@ -286,7 +286,7 @@ describe('Logger', () => {
       assert.ok(messages.includes('dropping line containing reference to missing attribute: name'))
       assert.ok(messages.includes('after'))
     } finally {
-      asciidoctor.LoggerManager.setLogger(defaultLogger)
+      LoggerManager.setLogger(defaultLogger)
     }
   })
 })

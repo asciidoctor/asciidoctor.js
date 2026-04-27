@@ -8,15 +8,15 @@
 import { describe, test, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 
-import asciidoctor from '../src/index.js'
+import { Extensions, load, convert } from '../src/index.js'
 
 describe('Extensions (API)', () => {
   afterEach(() => {
-    asciidoctor.Extensions.unregisterAll()
+    Extensions.unregisterAll()
   })
 
   test('should get global extension', async () => {
-    asciidoctor.Extensions.register(function () {
+    Extensions.register(function () {
       this.treeProcessor(function () {
         const self = this
         self.process(function (doc) {
@@ -25,13 +25,13 @@ describe('Extensions (API)', () => {
       })
     })
 
-    const doc = await asciidoctor.load('test')
+    const doc = await load('test')
     assert.ok(typeof doc.getExtensions() === 'object')
     assert.equal(doc.getExtensions().tree_processor_extensions.length, 1)
   })
 
   test('should get document extension', async () => {
-    const registry = asciidoctor.Extensions.create()
+    const registry = Extensions.create()
     const opts = { extension_registry: registry }
     registry.treeProcessor(function () {
       const self = this
@@ -39,13 +39,13 @@ describe('Extensions (API)', () => {
         doc.append(self.createBlock(doc, 'paragraph', 'd', {}))
       })
     })
-    const doc = await asciidoctor.load('test', opts)
+    const doc = await load('test', opts)
     assert.ok(typeof doc.getExtensions() === 'object')
     assert.equal(doc.getExtensions().tree_processor_extensions.length, 1)
   })
 
   test('should prepend the extension in the list', async () => {
-    const registry = asciidoctor.Extensions.create()
+    const registry = Extensions.create()
     const opts = { extension_registry: registry }
     registry.preprocessor(function () {
       const self = this
@@ -69,13 +69,13 @@ describe('Extensions (API)', () => {
         return reader
       })
     })
-    const result = await asciidoctor.convert('// smiley', opts)
+    const result = await convert('// smiley', opts)
     // Sad face because the second extension is prepended and runs first
     assert.ok(result.includes(':('))
   })
 
   test('should append the extension in the list (default)', async () => {
-    const registry = asciidoctor.Extensions.create()
+    const registry = Extensions.create()
     const opts = { extension_registry: registry }
     registry.preprocessor(function () {
       const self = this
@@ -98,18 +98,18 @@ describe('Extensions (API)', () => {
         return reader
       })
     })
-    const result = await asciidoctor.convert('// smiley', opts)
+    const result = await convert('// smiley', opts)
     // Happy face because the second extension is appended and runs after the first
     assert.ok(result.includes(':)'))
   })
 
   test('should be able to register preferred tree processor', async () => {
-    const SelfSigningTreeProcessor = asciidoctor.Extensions.createTreeProcessor('SelfSigningTreeProcessor', {
+    const SelfSigningTreeProcessor = Extensions.createTreeProcessor('SelfSigningTreeProcessor', {
       process: function (document) {
         document.append(this.createBlock(document, 'paragraph', 'SelfSigningTreeProcessor', {}))
       }
     })
-    asciidoctor.Extensions.register(function () {
+    Extensions.register(function () {
       this.treeProcessor(function () {
         const self = this
         self.process(function (doc) {
@@ -123,19 +123,19 @@ describe('Extensions (API)', () => {
           doc.append(self.createBlock(doc, 'paragraph', 'c', {}))
         })
       })
-      this.prefer('tree_processor', asciidoctor.Extensions.newTreeProcessor('AwesomeTreeProcessor', {
+      this.prefer('tree_processor', Extensions.newTreeProcessor('AwesomeTreeProcessor', {
         process: function (doc) {
           doc.append(this.createBlock(doc, 'paragraph', 'b', {}))
         }
       }))
-      this.prefer('tree_processor', asciidoctor.Extensions.newTreeProcessor({
+      this.prefer('tree_processor', Extensions.newTreeProcessor({
         process: function (doc) {
           doc.append(this.createBlock(doc, 'paragraph', 'a', {}))
         }
       }))
       this.prefer('tree_processor', SelfSigningTreeProcessor)
     })
-    const doc = await asciidoctor.load('')
+    const doc = await load('')
     const lines = doc.getBlocks().map(function (block) {
       return block.getSourceLines()[0]
     })
@@ -145,7 +145,7 @@ describe('Extensions (API)', () => {
   })
 
   test('should register an inline macro with short format', async () => {
-    asciidoctor.Extensions.register(function () {
+    Extensions.register(function () {
       this.inlineMacro('label', function () {
         const self = this
         self.matchFormat('short')
@@ -155,12 +155,12 @@ describe('Extensions (API)', () => {
         })
       })
     })
-    const html = await asciidoctor.convert('label:[Checkbox]', { doctype: 'inline' })
+    const html = await convert('label:[Checkbox]', { doctype: 'inline' })
     assert.equal(html, '<label>Checkbox</label>')
   })
 
   test('should register a block macro that creates a link', async () => {
-    asciidoctor.Extensions.register(function () {
+    Extensions.register(function () {
       this.blockMacro('extlink', function () {
         const self = this
         self.process(function (parent, target, attrs) {
@@ -176,7 +176,7 @@ describe('Extensions (API)', () => {
         })
       })
     })
-    const html = await asciidoctor.convert('extlink::http://github.com[title="GitHub"]')
+    const html = await convert('extlink::http://github.com[title="GitHub"]')
     assert.equal(html, `<div class="openblock external-url">
 <div class="title">GitHub</div>
 <div class="content">
@@ -187,7 +187,7 @@ describe('Extensions (API)', () => {
 
   test('should parse attributes', async () => {
     let parsedAttrs = {}
-    const registry = asciidoctor.Extensions.create()
+    const registry = Extensions.create()
     registry.block(function () {
       this.named('attrs')
       this.onContext('open')
@@ -196,7 +196,7 @@ describe('Extensions (API)', () => {
         Object.assign(parsedAttrs, await this.parseAttributes(parent, 'foo={foo}', { sub_attributes: true }))
       })
     })
-    await asciidoctor.convert(`:foo: bar
+    await convert(`:foo: bar
 [attrs]
 --
 a,b,c,key=val
@@ -209,7 +209,7 @@ a,b,c,key=val
   })
 
   test('should not share attributes between parsed blocks', async () => {
-    const registry = asciidoctor.Extensions.create()
+    const registry = Extensions.create()
     registry.block(function () {
       this.named('wrap')
       this.onContext('open')
@@ -231,7 +231,7 @@ content
 ====
 --
 `
-    const doc = await asciidoctor.load(input, { extension_registry: registry })
+    const doc = await load(input, { extension_registry: registry })
     assert.equal(doc.getBlocks().length, 1)
     const wrap = doc.getBlocks()[0]
     assert.equal(wrap.getBlocks().length, 2)
@@ -242,20 +242,20 @@ content
 
   describe('parseContent', () => {
     test('should convert attributes to Hash when calling parseContent', async () => {
-      const registry = asciidoctor.Extensions.create()
+      const registry = Extensions.create()
       registry.block(function () {
         this.named('test')
         this.process(async (parent, reader) => {
           await this.parseContent(parent, await reader.readLines(), { id: 'foo' })
         })
       })
-      const html = await asciidoctor.convert('[test]\n*Hello world*', { extension_registry: registry })
+      const html = await convert('[test]\n*Hello world*', { extension_registry: registry })
       assert.ok(html.includes('<strong>Hello world</strong>'))
       assert.ok(html.includes('<div id="foo" class="paragraph">'))
     })
 
     test('should parse table content', async () => {
-      const registry = asciidoctor.Extensions.create()
+      const registry = Extensions.create()
       registry.blockMacro(function () {
         this.named('jira')
         this.process(async (parent, target, attrs) => {
@@ -285,7 +285,7 @@ content
           await this.parseContent(parent, content.join('\n'), attrs)
         })
       })
-      const html = await asciidoctor.convert('jira::DOC[]', { extension_registry: registry })
+      const html = await convert('jira::DOC[]', { extension_registry: registry })
       assert.ok(html.includes('<th class="tableblock halign-left valign-top">ID</th>'))
       assert.ok(html.includes('<th class="tableblock halign-left valign-top">Priority</th>'))
       assert.ok(html.includes('<td class="tableblock halign-left valign-top"><p class="tableblock">DOC-1234</p></td>'))
@@ -293,7 +293,7 @@ content
     })
 
     test('should append blocks to current parent', async () => {
-      const registry = asciidoctor.Extensions.create()
+      const registry = Extensions.create()
       registry.block(function () {
         this.named('csv')
         this.onContext('literal')
@@ -302,7 +302,7 @@ content
           return undefined
         })
       })
-      const doc = await asciidoctor.load(`
+      const doc = await load(`
 before
 
 [csv]
@@ -318,7 +318,7 @@ after`, { extension_registry: registry })
     })
 
     test('should not share attributes between parsed blocks (parseContent)', async () => {
-      const registry = asciidoctor.Extensions.create()
+      const registry = Extensions.create()
       registry.block(function () {
         this.named('wrap')
         this.onContext('open')
@@ -327,7 +327,7 @@ after`, { extension_registry: registry })
           return this.parseContent(wrap, await reader.readLines())
         })
       })
-      const doc = await asciidoctor.load(`
+      const doc = await load(`
 [wrap]
 --
 [foo=bar]

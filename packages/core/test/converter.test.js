@@ -7,7 +7,7 @@
 import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 
-import asciidoctor from '../src/index.js'
+import { ConverterFactory, convert, load, Block, Html5Converter } from '../src/index.js'
 
 // ── Converter classes used across multiple tests ───────────────────────────────
 
@@ -179,52 +179,52 @@ getAttribute('fragment'): ${typeof node.getAttribute('fragment') === 'undefined'
 
 describe('Registering converter', () => {
   afterEach(() => {
-    asciidoctor.ConverterFactory.unregisterAll()
+    ConverterFactory.unregisterAll()
   })
 
   test('should get inline anchor attributes', async () => {
-    asciidoctor.ConverterFactory.register(new XrefConverter(), ['xref'])
-    const html = await asciidoctor.convert('xref:file.adoc[]', { backend: 'xref' })
+    ConverterFactory.register(new XrefConverter(), ['xref'])
+    const html = await convert('xref:file.adoc[]', { backend: 'xref' })
     assert.equal(html, `
 getAttributes().fragment: true
 getAttribute('fragment'): true`)
   })
 
   test('should return the default converter registry', async () => {
-    const doc = await asciidoctor.load('')
-    let registry = asciidoctor.ConverterFactory.getRegistry()
+    const doc = await load('')
+    let registry = ConverterFactory.getRegistry()
     assert.ok('html5' in registry)
-    assert.equal(asciidoctor.ConverterFactory.for('blank'), undefined)
-    asciidoctor.ConverterFactory.register(new BlankConverter(), ['blank'])
-    registry = asciidoctor.ConverterFactory.getRegistry()
+    assert.equal(ConverterFactory.for('blank'), undefined)
+    ConverterFactory.register(new BlankConverter(), ['blank'])
+    registry = ConverterFactory.getRegistry()
     assert.deepEqual(Object.keys(registry).sort(), ['blank', 'html5'].sort())
-    assert.equal(typeof asciidoctor.ConverterFactory.for('html5'), 'function')
-    assert.equal(typeof asciidoctor.ConverterFactory.for('blank'), 'object')
-    assert.equal(asciidoctor.ConverterFactory.for('foo'), undefined)
+    assert.equal(typeof ConverterFactory.for('html5'), 'function')
+    assert.equal(typeof ConverterFactory.for('blank'), 'object')
+    assert.equal(ConverterFactory.for('foo'), undefined)
     const result = registry.blank.convert()
     assert.equal(result, '')
     const html5Converter = registry.html5.create()
     assert.equal(
-      await html5Converter.convert(asciidoctor.Block.create(doc, 'paragraph')),
+      await html5Converter.convert(Block.create(doc, 'paragraph')),
       `<div class="paragraph">\n<p></p>\n</div>`
     )
   })
 
   test('should register a custom converter', async () => {
-    asciidoctor.ConverterFactory.register(new DummyConverter(), ['dummy'])
-    const result = await asciidoctor.convert('content', { safe: 'safe', backend: 'dummy' })
+    ConverterFactory.register(new DummyConverter(), ['dummy'])
+    const result = await convert('content', { safe: 'safe', backend: 'dummy' })
     assert.ok(result.includes('<dummy>content</dummy>'))
   })
 
   test('should register a custom converter with delegate', async () => {
-    asciidoctor.ConverterFactory.register(new DelegateConverter(), ['delegate'])
-    const result = await asciidoctor.convert('content', { safe: 'safe', backend: 'delegate' })
+    ConverterFactory.register(new DelegateConverter(), ['delegate'])
+    const result = await convert('content', { safe: 'safe', backend: 'delegate' })
     assert.ok(result.includes('<delegate>content</delegate>'))
   })
 
   test('should retrieve backend traits from a converter class using backendTraits', async () => {
-    asciidoctor.ConverterFactory.register(TEIConverter, ['tei'])
-    const doc = await asciidoctor.load('content', { safe: 'safe', backend: 'tei' })
+    ConverterFactory.register(TEIConverter, ['tei'])
+    const doc = await load('content', { safe: 'safe', backend: 'tei' })
     assert.equal(doc.getAttribute('basebackend'), 'xml')
     assert.equal(doc.getAttribute('outfilesuffix'), '.xml')
     assert.equal(doc.getAttribute('filetype'), 'xml')
@@ -234,8 +234,8 @@ getAttribute('fragment'): true`)
   })
 
   test('should retrieve backend traits from a converter instance using backendTraits property', async () => {
-    asciidoctor.ConverterFactory.register(new TxtConverter(), ['txt'])
-    const doc = await asciidoctor.load('content', { safe: 'safe', backend: 'txt' })
+    ConverterFactory.register(new TxtConverter(), ['txt'])
+    const doc = await load('content', { safe: 'safe', backend: 'txt' })
     assert.equal(doc.getAttribute('basebackend'), 'txt')
     assert.equal(doc.getAttribute('outfilesuffix'), '.txt')
     assert.equal(doc.getAttribute('filetype'), 'txt')
@@ -245,8 +245,8 @@ getAttribute('fragment'): true`)
   })
 
   test('should retrieve backend traits from a converter instance using plain properties', async () => {
-    asciidoctor.ConverterFactory.register(new XMLConverter(), ['xml'])
-    const doc = await asciidoctor.load('content', { safe: 'safe', backend: 'xml' })
+    ConverterFactory.register(new XMLConverter(), ['xml'])
+    const doc = await load('content', { safe: 'safe', backend: 'xml' })
     assert.equal(doc.getAttribute('basebackend'), 'xml')
     assert.equal(doc.getAttribute('outfilesuffix'), '.xml')
     assert.equal(doc.getAttribute('filetype'), 'xml')
@@ -256,8 +256,8 @@ getAttribute('fragment'): true`)
   })
 
   test('should retrieve backend traits from a converter class using plain properties', async () => {
-    asciidoctor.ConverterFactory.register(new EPUB3Converter(), ['epub3'])
-    const doc = await asciidoctor.load('content', { safe: 'safe', backend: 'epub3' })
+    ConverterFactory.register(new EPUB3Converter(), ['epub3'])
+    const doc = await load('content', { safe: 'safe', backend: 'epub3' })
     assert.equal(doc.getAttribute('basebackend'), 'html')
     assert.equal(doc.getAttribute('outfilesuffix'), '.epub')
     assert.equal(doc.getAttribute('htmlsyntax'), 'xml')
@@ -268,7 +268,7 @@ getAttribute('fragment'): true`)
   test('should register a custom converter (fallback to the built-in HTML5 converter)', async () => {
     class BlogConverter {
       constructor () {
-        this.baseConverter = asciidoctor.Html5Converter.create()
+        this.baseConverter = Html5Converter.create()
         this.transforms = {
           document: async (node) => {
             return `<!DOCTYPE html>
@@ -307,7 +307,7 @@ getAttribute('fragment'): true`)
       }
     }
 
-    asciidoctor.ConverterFactory.register(new BlogConverter(), ['blog'])
+    ConverterFactory.register(new BlogConverter(), ['blog'])
     const options = { safe: 'safe', header_footer: true, backend: 'blog' }
     const input = `= One Thing to Write the Perfect Blog Post
 Guillaume Grossetie <ggrossetie@yuzutech.fr>
@@ -316,7 +316,7 @@ Guillaume Grossetie <ggrossetie@yuzutech.fr>
 
 AsciiDoc is about being able to focus on expressing your ideas, writing with ease and passing on knowledge without the distraction of complex applications or angle brackets.
 In other words, it's about discovering writing zen.`
-    const result = await asciidoctor.convert(input, options)
+    const result = await convert(input, options)
     assert.ok(result.includes('<span class="blog-author">Guillaume Grossetie</span>')) // custom blog converter
     assert.ok(result.includes('<div class="sect1">')) // built-in HTML5 converter
   })

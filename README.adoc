@@ -24,8 +24,8 @@ endif::[]
 
 Asciidoctor.js brings AsciiDoc to the JavaScript world!
 
-This project uses {uri-opal}[Opal] to transpile http://asciidoctor.org[Asciidoctor], a modern implementation of AsciiDoc, from Ruby to JavaScript to produce _asciidoctor.js_.
-The _asciidoctor.js_ script can be run on any JavaScript platform, including Node.js, GraalVM and, of course, a web browser.
+This project is a native JavaScript implementation of http://asciidoctor.org[Asciidoctor], a modern implementation of AsciiDoc.
+It runs on Node.js ≥ 24 and in the browser.
 
 == Quickstart
 
@@ -36,17 +36,14 @@ Here is a simple example that converts AsciiDoc to HTML5:
 .sample.js
 [source,javascript]
 ----
-import asciidoctor from 'asciidoctor' // <1>
+import { convert } from 'asciidoctor' // <1>
 
-const Asciidoctor = asciidoctor()
-const content = 'http://asciidoctor.org[*Asciidoctor*] ' +
-  'running on https://opalrb.com[_Opal_] ' +
-  'brings AsciiDoc to Node.js!'
-const html = Asciidoctor.convert(content) // <2>
+const content = 'https://asciidoctor.org[*Asciidoctor*] running on Node.js!'
+const html = await convert(content) // <2>
 console.log(html) // <3>
 ----
-<1> Instantiate the Asciidoctor.js library
-<2> Convert AsciiDoc content to HTML5 using Asciidoctor.js
+<1> Import the named `convert` function from the `asciidoctor` package
+<2> Convert AsciiDoc content to HTML5 (the function is async)
 <3> Print the HTML5 output to the console
 
 Save the file as _sample.js_ and run it using the `node` command:
@@ -58,15 +55,18 @@ You should see the following output in your terminal:
 [source.output,html]
 ----
 <div class="paragraph">
-<p><a href="http://asciidoctor.org"><strong>Asciidoctor</strong></a> running on <a href="http://opalrb.com"><em>Opal</em></a> brings AsciiDoc to Node.js!</p>
+<p><a href="https://asciidoctor.org"><strong>Asciidoctor</strong></a>  running on Node.js!</p>
 </div>
 ----
 
 It's also possible to use the following `script` tag directly into your HTML page:
 
-```html
-<script src="node_modules/@asciidoctor/core/dist/browser/asciidoctor.js"></script>
-```
+[source,html]
+----
+<script type="module">
+import { convert } from 'node_modules/@asciidoctor/core/build/browser/index.js'
+</script>
+----
 
 == Learning
 

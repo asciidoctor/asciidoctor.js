@@ -4,7 +4,7 @@ import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
 
-import asciidoctor from '../src/index.js'
+import { getVersion, SafeMode, load, loadFile } from '../src/index.js'
 
 const require = createRequire(import.meta.url)
 const packageJson = require('../package.json')
@@ -13,43 +13,43 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const FIXTURES_DIR = join(__dirname, 'fixtures')
 
 test('return Asciidoctor.js version', () => {
-  assert.equal(asciidoctor.getVersion(), packageJson.version)
+  assert.equal(getVersion(), packageJson.version)
 })
 
 describe('Safe mode', () => {
   test('get constants', () => {
-    assert.equal(asciidoctor.SafeMode.UNSAFE,0)
-    assert.equal(asciidoctor.SafeMode.SAFE,1)
-    assert.equal(asciidoctor.SafeMode.SERVER,10)
-    assert.equal(asciidoctor.SafeMode.SECURE,20)
+    assert.equal(SafeMode.UNSAFE,0)
+    assert.equal(SafeMode.SAFE,1)
+    assert.equal(SafeMode.SERVER,10)
+    assert.equal(SafeMode.SECURE,20)
   })
   test('get value for name', () => {
-    assert.equal(asciidoctor.SafeMode.getValueForName('secure'),20)
+    assert.equal(SafeMode.getValueForName('secure'),20)
   })
   test('get name for value', () => {
-    assert.equal(asciidoctor.SafeMode.getNameForValue(0),'unsafe')
+    assert.equal(SafeMode.getNameForValue(0),'unsafe')
   })
   test('get names', () => {
-    assert.deepEqual(asciidoctor.SafeMode.getNames(), ['unsafe', 'safe', 'server', 'secure'])
+    assert.deepEqual(SafeMode.getNames(), ['unsafe', 'safe', 'server', 'secure'])
   })
 })
 
 describe('Loading', () => {
   test('load document with inline attributes @', async () => {
     const options = { attributes: 'icons=font@' }
-    const doc = await asciidoctor.load('== Test', options)
+    const doc = await load('== Test', options)
     assert.equal(doc.getAttribute('icons'), 'font')
   })
 
   test('load document with inline attributes !', async () => {
     const options = { attributes: 'icons=font@ data-uri!' }
-    const doc = await asciidoctor.load('== Test', options)
+    const doc = await load('== Test', options)
     assert.equal(doc.getAttribute('icons'), 'font')
   })
 
   test('load document attributes', async () => {
     const options = { attributes: 'icons=font@ data-uri!' }
-    const doc = await asciidoctor.load(`= Document attributes
+    const doc = await load(`= Document attributes
 :bar: value
 :!foo:
 
@@ -63,7 +63,7 @@ content`, options)
 
   test('load document with hash attributes', async () => {
     const options = { attributes: { icons: 'font', sectids: null } }
-    const doc = await asciidoctor.load('== Test', options)
+    const doc = await load('== Test', options)
     assert.equal(doc.getAttribute('icons'), 'font')
     assert.equal(doc.getAttribute('sectids'), undefined)
     assert.equal(doc.findBy({ context: 'section' })[0].getId(), undefined)
@@ -71,7 +71,7 @@ content`, options)
 
   test('load document with boolean attributes', async () => {
     const options = { attributes: 'sectnums' }
-    const doc = await asciidoctor.load('== Test', options)
+    const doc = await load('== Test', options)
     assert.equal(doc.getAttribute('sectnums'), '')
     assert.equal(doc.isAttribute('sectnums'), true)
     assert.equal(doc.isAttribute('sectnums', 'not this'), false)
@@ -81,7 +81,7 @@ content`, options)
   })
 
   test('load document authors', async () => {
-    const doc = await asciidoctor.load(`= Authors
+    const doc = await load(`= Authors
 Guillaume Grossetie; Anders Nawroth
 `)
     assert.equal(doc.getAttribute('author'), 'Guillaume Grossetie')
@@ -96,7 +96,7 @@ Guillaume Grossetie; Anders Nawroth
   })
 
   test('return attributes as JSON object', async () => {
-    const doc = await asciidoctor.load(`= Authors
+    const doc = await load(`= Authors
 Guillaume Grossetie; Anders Nawroth
 `)
     assert.equal(doc.getAttributes().author, 'Guillaume Grossetie')
@@ -104,7 +104,7 @@ Guillaume Grossetie; Anders Nawroth
   })
 
   test('modify document attributes', async () => {
-    const doc = await asciidoctor.load('== Title')
+    const doc = await load('== Title')
     doc.setAttribute('data-uri', 'true')
     assert.equal(doc.getAttribute('data-uri'), 'true')
     doc.removeAttribute('data-uri')
@@ -114,12 +114,12 @@ Guillaume Grossetie; Anders Nawroth
   })
 
   test('get source', async () => {
-    const doc = await asciidoctor.load('== Test')
+    const doc = await load('== Test')
     assert.equal(doc.getSource(), '== Test')
   })
 
   test('get source lines', async () => {
-    const doc = await asciidoctor.load(`== Test
+    const doc = await load(`== Test
 This is the first paragraph.
 
 This is a second paragraph.`)
@@ -127,14 +127,14 @@ This is a second paragraph.`)
   })
 
   test('get reader lines', async () => {
-    const doc = await asciidoctor.load(`line one
+    const doc = await load(`line one
 line two
 line three`, { parse: false })
     assert.deepEqual(doc.getReader().getLines(), ['line one', 'line two', 'line three'])
   })
 
   test('get reader string', async () => {
-    const doc = await asciidoctor.load(`line one
+    const doc = await load(`line one
 line two
 line three`, { parse: false })
     assert.equal(doc.getReader().getString(), `line one
@@ -143,17 +143,17 @@ line three`)
   })
 
   test('document is not be nested', async () => {
-    const doc = await asciidoctor.load('== Test')
+    const doc = await load('== Test')
     assert.equal(doc.isNested(), false)
   })
 
   test('document does not have footnotes', async () => {
-    const doc = await asciidoctor.load('== Test')
+    const doc = await load('== Test')
     assert.equal(doc.hasFootnotes(), false)
   })
 
   test('get document', async () => {
-    const doc = await asciidoctor.load(`= Document Title
+    const doc = await load(`= Document Title
 
 content`)
     assert.equal(doc.getDocument(), doc)
@@ -161,7 +161,7 @@ content`)
   })
 
   test('get parent node', async () => {
-    const doc = await asciidoctor.load(`= Document Title
+    const doc = await load(`= Document Title
 
 content`)
     assert.equal(doc.getParent(), undefined)
@@ -169,28 +169,28 @@ content`)
   })
 
   test('get default doctype', async () => {
-    const doc = await asciidoctor.load('== Test')
+    const doc = await load('== Test')
     assert.equal(doc.getDoctype(), 'article')
   })
 
   test('get doctype', async () => {
-    const doc = await asciidoctor.load('== Test', { doctype: 'inline' })
+    const doc = await load('== Test', { doctype: 'inline' })
     assert.equal(doc.getDoctype(), 'inline')
   })
 
   test('get default backend', async () => {
-    const doc = await asciidoctor.load('== Test')
+    const doc = await load('== Test')
     assert.equal(doc.getBackend(), 'html5')
   })
 
   test('get backend for xhtml5', async () => {
-    const doc = await asciidoctor.load('== Test', { backend: 'xhtml5' })
+    const doc = await load('== Test', { backend: 'xhtml5' })
     assert.equal(doc.getBackend(), 'html5')
     assert.equal(doc.getAttribute('htmlsyntax'), 'xml')
   })
 
   test('get compat mode', async () => {
-    const doc = await asciidoctor.load(`Document Title
+    const doc = await load(`Document Title
 ==============
 
 content`)
@@ -198,24 +198,24 @@ content`)
   })
 
   test('get sourcemap', async () => {
-    const doc = await asciidoctor.load('get _sourcemap_')
+    const doc = await load('get _sourcemap_')
     assert.equal(doc.getSourcemap(), false)
   })
 
   test('set sourcemap', async () => {
-    const doc = await asciidoctor.load('set _sourcemap_')
+    const doc = await load('set _sourcemap_')
     assert.equal(doc.getSourcemap(), false)
     doc.setSourcemap(true)
     assert.equal(doc.getSourcemap(), true)
   })
 
   test('get outfilesuffix', async () => {
-    const doc = await asciidoctor.load('= Document Title')
+    const doc = await load('= Document Title')
     assert.equal(doc.getOutfilesuffix(), '.html')
   })
 
   test('get title', async () => {
-    const doc = await asciidoctor.load(`= The Dangerous Documentation Chronicles: Based on True Events
+    const doc = await load(`= The Dangerous Documentation Chronicles: Based on True Events
 :title: The Actual Dangerous Documentation Chronicles
 
 == The Ravages of Writing`)
@@ -224,7 +224,7 @@ content`)
   })
 
   test('set title', async () => {
-    const doc = await asciidoctor.load(`= The Dangerous Documentation
+    const doc = await load(`= The Dangerous Documentation
 
 == The Ravages of Writing`)
     doc.setTitle('The Dangerous & Thrilling Documentation')
@@ -232,14 +232,14 @@ content`)
   })
 
   test('get doctitle', async () => {
-    const doc = await asciidoctor.load(`= The Dangerous Documentation Chronicles: Based on True Events
+    const doc = await load(`= The Dangerous Documentation Chronicles: Based on True Events
 
 == The Ravages of Writing`)
     assert.equal(doc.getDoctitle(), 'The Dangerous Documentation Chronicles: Based on True Events')
   })
 
   test('get line number of a block when sourcemap is enabled', async () => {
-    const doc = await asciidoctor.load(`= Document Title
+    const doc = await load(`= Document Title
 
 Preamble
 
@@ -258,7 +258,7 @@ First paragraph.`, { sourcemap: true })
   })
 
   test('return undefined when sourcemap is disabled', async () => {
-    const doc = await asciidoctor.load(`= Document Title
+    const doc = await load(`= Document Title
 
 Preamble
 
@@ -273,7 +273,7 @@ First paragraph.`)
   })
 
   test('get counters', async () => {
-    const doc = await asciidoctor.load(`{counter:countme}
+    const doc = await load(`{counter:countme}
 
 {counter:countme}`)
     await doc.convert()
@@ -283,7 +283,7 @@ First paragraph.`)
   })
 
   test('get and set attribute on block', async () => {
-    const doc = await asciidoctor.load(`= Blocks story: Based on True Events
+    const doc = await load(`= Blocks story: Based on True Events
 
 == Once upon a time
 
@@ -296,7 +296,7 @@ Blocks are amazing!`)
   })
 
   test('populate the catalog', async () => {
-    const doc = await asciidoctor.load('link:index.html[Docs]', { safe: 'safe', catalog_assets: true })
+    const doc = await load('link:index.html[Docs]', { safe: 'safe', catalog_assets: true })
     await doc.convert()
     const links = doc.getCatalog().links
     assert.deepEqual(links, ['index.html'])
@@ -306,7 +306,7 @@ Blocks are amazing!`)
 describe('loadFile', () => {
   test('load file and set docfile attributes', async () => {
     const samplePath = join(FIXTURES_DIR, 'sample.adoc')
-    const doc = await asciidoctor.loadFile(samplePath, { safe: 'safe' })
+    const doc = await loadFile(samplePath, { safe: 'safe' })
     assert.equal(doc.doctitle(), 'Document Title')
     assert.equal(doc.attr('docfile'), resolve(samplePath))
     assert.equal(doc.attr('docdir'), dirname(resolve(samplePath)))
