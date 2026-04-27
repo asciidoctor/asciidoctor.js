@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { promises as fsp } from 'node:fs'
 import { join } from 'node:path'
-import log from 'bestikk-log'
 import semver from 'semver'
 import pacote from 'pacote'
 import { publish as npmPublish } from 'libnpmpublish'
@@ -33,7 +32,7 @@ const publish = async (directory) => {
 
 try {
   if (process.env.DRY_RUN) {
-    log.warn(
+    console.warn(
       'Dry run! To publish the release, run the command again without DRY_RUN environment variable'
     )
   }
