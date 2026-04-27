@@ -35,8 +35,8 @@ const prepareRelease = (releaseVersion) => {
     .execSync('git symbolic-ref --short HEAD', { cwd: projectRootDirectory })
     .toString('utf-8')
     .trim()
-  if (branchName !== 'main') {
-    log.error('Release must be performed on main branch')
+  if (branchName !== 'main' && !/^\d+\.\d+\.x$/.test(branchName)) {
+    log.error('Release must be performed on main branch or a maintenance branch (e.g. 1.2.x)')
     process.exit(1)
   }
   // update asciidoctor package version and dependencies
