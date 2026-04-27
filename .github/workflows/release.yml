@@ -38,6 +38,14 @@ jobs:
     needs: [ publish ]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate release notes
+        run: node tasks/changelog.js ${{ github.ref_name }}
       - name: Restore Native-image-win-amd64 cache
         uses: actions/cache/restore@v5
         with:
@@ -75,6 +83,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
+          body_path: RELEASE_NOTES.md
           draft: false
           prerelease: false
       # upload assets
