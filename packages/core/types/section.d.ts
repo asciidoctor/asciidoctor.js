@@ -52,6 +52,14 @@ export class Section extends AbstractBlock<string> {
      */
     sectnum(delimiter?: string, append?: string | false | null): string;
     /**
+     * Generate cross-reference text for this section.
+     * Respects an explicit reftext if set; otherwise formats the section title
+     * according to xrefstyle ('full', 'short', or 'basic').
+     * @param {string|null} [xrefstyle=null]
+     * @returns {Promise<string|null>}
+     */
+    xreftext(xrefstyle?: string | null): Promise<string | null>;
+    /**
      * Append a content block to this block's list of blocks.
      * If the child block is a Section, assign an index/numeral to it.
      * @param {AbstractBlock} block - The child Block to append.

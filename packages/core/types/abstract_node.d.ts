@@ -12,6 +12,7 @@ export abstract class AbstractNode {
     constructor(parent: AbstractNode, context: string, opts?: object);
     /** @type {AbstractNode} */
     document: AbstractNode;
+    /** @type {AbstractNode} */
     _parent: AbstractNode;
     context: string;
     nodeName: string;

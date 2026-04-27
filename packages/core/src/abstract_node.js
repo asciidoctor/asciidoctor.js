@@ -75,6 +75,7 @@ export class AbstractNode {
       /** @type {AbstractNode} */
       this.document = this
     } else if (parent) {
+      /** @type {AbstractNode} */
       this._parent = parent
       /** @type {AbstractNode} */
       this.document = parent.document

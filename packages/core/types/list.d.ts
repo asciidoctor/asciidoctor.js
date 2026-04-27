@@ -4,7 +4,9 @@
 export class List extends AbstractBlock<any[]> {
     constructor(parent: any, context: any, opts?: {});
     /** Alias for blocks — the list items. */
-    get items(): any[];
+    get items(): AbstractBlock<string>[];
+    /** Alias for blocks — the list content. */
+    content(): Promise<AbstractBlock<string>[]>;
     /**
      * Return the list items (alias for items / blocks).
      * @returns {ListItem[]}
