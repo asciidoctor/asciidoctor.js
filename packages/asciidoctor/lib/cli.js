@@ -2,7 +2,7 @@ import { parseArgs } from 'node:util'
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { join, resolve, isAbsolute, dirname, sep } from 'node:path'
-import asciidoctor, { LoggerManager } from '@asciidoctor/core'
+import { getVersion as _getVersion, getCoreVersion, Timings, Extensions, LoggerManager } from '@asciidoctor/core'
 
 const require = createRequire(import.meta.url)
 
@@ -137,14 +137,14 @@ function prepareProcessor(values) {
   for (const requirePath of requirePaths) {
     const lib = requireLibrary(requirePath)
     if (lib && typeof lib.register === 'function') {
-      lib.register(asciidoctor.Extensions)
+      lib.register(Extensions)
     }
   }
 }
 
 function getVersion() {
   const pkg = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf8'))
-  return `Asciidoctor.js ${asciidoctor.getVersion()} (Asciidoctor ${asciidoctor.getCoreVersion()}) [https://asciidoctor.org]
+  return `Asciidoctor.js ${_getVersion()} (Asciidoctor ${getCoreVersion()}) [https://asciidoctor.org]
 Runtime Environment (node ${process.version} on ${process.platform})
 CLI version ${pkg.version}`
 }
@@ -199,20 +199,20 @@ export async function run(argv = process.argv) {
 
   if (isStdin) {
     const data = await readFromStdin()
-    const output = await asciidoctor.convert(data, { ...options, to_file: false })
+    const output = await convert(data, { ...options, to_file: false })
     process.stdout.write(output)
   } else if (files.length > 0) {
     for (const file of files) {
       if (values.verbose) console.log(`converting file ${file}`)
       if (values.timings) {
-        const timings = asciidoctor.Timings.create()
+        const timings = Timings.create()
         const fileOptions = { ...options, timings }
         if (toStdout) fileOptions.to_file = false
-        const result = await asciidoctor.convertFile(file, fileOptions)
+        const result = await convertFile(file, fileOptions)
         if (toStdout && typeof result === 'string') process.stdout.write(result)
         timings.printReport(process.stderr, file)
       } else {
-        const result = await asciidoctor.convertFile(file, options)
+        const result = await convertFile(file, options)
         if (toStdout && typeof result === 'string') process.stdout.write(result)
       }
     }
