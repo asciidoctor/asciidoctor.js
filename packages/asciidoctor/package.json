@@ -47,7 +47,7 @@
   "dependencies": {
     "@asciidoctor/cli": "4.0.0",
     "@asciidoctor/core": "3.0.4",
-    "ejs": "^3.1.2",
+    "ejs": "^5.0.0",
     "handlebars": "^4.7.6",
     "nunjucks": "^3.2.1",
     "pug": "^3.0.0"
