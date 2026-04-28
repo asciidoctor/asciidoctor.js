@@ -197,7 +197,7 @@ export async function convert(input, options = {}) {
   }
 
   if (outfile) {
-    doc.write(output, outfile)
+    await doc.write(output, outfile)
 
     // NOTE document cannot control this behavior if safe >= SafeMode.SERVER
     // NOTE skip if stylesdir is a URI

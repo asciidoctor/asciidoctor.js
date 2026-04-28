@@ -801,7 +801,7 @@ export class AbstractNode {
     const doc = this.document
     if (doc.safe < SafeMode.SAFE) {
       if (start) {
-        if (!doc.pathResolver.isRoot(start)) start = `${doc.baseDir}/${start}`
+        if (!doc.pathResolver.root(start)) start = `${doc.baseDir}/${start}`
       } else {
         start = doc.baseDir
       }
