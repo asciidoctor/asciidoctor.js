@@ -25,13 +25,13 @@ Here is a simple example that converts AsciiDoc to HTML5:
 .sample.js
 [source,javascript]
 ----
-import asciidoctor from '@asciidoctor/core' // <1>
+import { convert } from '@asciidoctor/core' // <1>
 
 const content = 'https://asciidoctor.org[*Asciidoctor*] running on Node.js!'
-const html = await asciidoctor.convert(content) // <2>
+const html = await convert(content) // <2>
 console.log(html) // <3>
 ----
-<1> Import the Asciidoctor native library (ESM)
+<1> Import `convert` from the Asciidoctor native library (ESM, named export)
 <2> Convert AsciiDoc content to HTML5 — the call returns a `Promise` and must be awaited
 <3> Print the HTML5 output to the console
 
