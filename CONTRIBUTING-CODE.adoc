@@ -47,7 +47,7 @@ npm i
 
 [source,bash]
 ----
-npm run build --prefix packages/core
+npm run build -w @asciidoctor/core
 ----
 
 This produces the following artifacts in `packages/core/build/`:
@@ -63,7 +63,7 @@ Type definitions are generated from JSDoc annotations using the TypeScript compi
 
 [source,bash]
 ----
-npm run build:types --prefix packages/core
+npm run build:types -w @asciidoctor/core
 ----
 
 Output lands in `packages/core/types/`.
@@ -71,21 +71,37 @@ Output lands in `packages/core/types/`.
 
 == Testing
 
+=== Running all tests
+
+[source,bash]
+----
+npm test
+----
+
+This runs the root-level tests followed by all workspace test suites.
+
 === Running the Node.js test suite
 
 [source,bash]
 ----
-npm test --prefix packages/core
+npm test -w @asciidoctor/core
 ----
 
 Tests use the Node.js built-in runner (`node:test` / `node:assert/strict`).
 The suite contains over 2,300 tests ported from the Asciidoctor Ruby test suite.
 
+=== Running the CLI test suite
+
+[source,bash]
+----
+npm test -w asciidoctor
+----
+
 === Running the browser test suite
 
 [source,bash]
 ----
-npm run test:browser --prefix packages/core
+npm run test:browser -w @asciidoctor/core
 ----
 
 This runs the same test files through {uri-vitest}[Vitest] with a Playwright/Chromium provider.
@@ -100,13 +116,13 @@ The project uses {uri-biome}[Biome] for both linting and formatting (replacing t
 [source,bash]
 ----
 # Lint
-npm run lint --prefix packages/core
+npm run lint -w @asciidoctor/core
 
 # Format (in-place)
-npm run format --prefix packages/core
+npm run format -w @asciidoctor/core
 
 # Lint + format check (CI mode)
-npm run check --prefix packages/core
+npm run check -w @asciidoctor/core
 ----
 
 == Debugging
@@ -140,6 +156,80 @@ image::error-in-javascript-debugger.png[]
 
 The call trace is displayed as breadcrumb navigation, which you can use to jump through the stack.
 You can inspect the state at any location by looking through the panels on the right.
+
+== Adding a test
+
+All tests use the Node.js built-in test runner (`node:test`, `node:assert/strict`).
+No test framework is required; just import what you need from the standard library.
+
+=== Core tests (`packages/core/test/`)
+
+Test files mirror the structure of the Asciidoctor Ruby test suite and are grouped by feature area (e.g., `blocks.images.test.js`, `document.test.js`).
+
+To add a test for a new or existing behaviour:
+
+. Find the relevant test file in `packages/core/test/` — or create a new one following the `<feature-area>.test.js` naming convention.
+. Import the test helpers and harness at the top:
++
+[source,js]
+----
+import { test, describe } from 'node:test'
+import assert from 'node:assert/strict'
+import { convertStringToEmbedded, documentFromString } from './harness.js'
+import { assertXpath } from './helpers.js'
+----
+. Write the test using `describe` + `test`, and `await` the async conversion functions:
++
+[source,js]
+----
+describe('My feature', () => {
+  test('does the right thing', async () => {
+    const output = await convertStringToEmbedded('some _asciidoc_ input')
+    assertXpath(output, '//em[text()="asciidoc"]', 1)
+  })
+})
+----
+. Run the suite to verify:
++
+[source,bash]
+----
+npm test -w @asciidoctor/core
+----
+
+=== CLI tests (`packages/asciidoctor/test/cli.test.js`)
+
+CLI tests spawn the `bin/asciidoctor` binary via `spawnSync` and assert on exit code, stdout, and stderr.
+
+[source,js]
+----
+import { test, describe } from 'node:test'
+import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const CLI = join(__dirname, '..', 'bin', 'asciidoctor')
+
+function cli(args, opts = {}) {
+  return spawnSync(process.execPath, [CLI, ...args], { encoding: 'utf8', ...opts })
+}
+
+describe('My CLI feature', () => {
+  test('--my-flag behaves correctly', () => {
+    const result = cli(['--my-flag'])
+    assert.equal(result.status, 0)
+    assert.match(result.stdout, /expected output/)
+  })
+})
+----
+
+Run with:
+
+[source,bash]
+----
+npm test -w asciidoctor
+----
 
 == Contributing a change
 
