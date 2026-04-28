@@ -10,10 +10,10 @@
     "node": ">=24"
   },
   "scripts": {
-    "test": "node --test test/**.test.js",
-    "lint": "biome check test tasks && npm run lint --prefix packages/core && npm run lint --prefix packages/asciidoctor",
-    "format": "biome format --write test tasks",
-    "build:binary": "node packages/asciidoctor/tasks/build-sea.js",
+    "test": "npm run test:root && npm run test --workspaces",
+    "test:root": "node --test test/**.test.js",
+    "lint": "biome check test tasks && npm run lint --workspaces",
+    "format": "biome format --write test tasks && npm run format --workspaces",
     "release": "node tasks/release.js"
   },
   "devDependencies": {

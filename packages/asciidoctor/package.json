@@ -13,8 +13,9 @@
     "asciidoctorjs": "bin/asciidoctor"
   },
   "scripts": {
-    "test": "./bin/asciidoctor --version",
+    "test": "node --test test/cli.test.js",
     "lint": "biome lint bin lib tasks index.js rollup.config.js",
+    "format": "biome format --write bin lib tasks index.js rollup.config.js",
     "build:bundle": "rollup -c",
     "build:binary": "node tasks/build-sea.js"
   },
