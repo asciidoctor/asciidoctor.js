@@ -32,7 +32,7 @@ jobs:
         shell: bash
         run: |
           npm install
-          npm run build:binary
+          npm run build:binary -w asciidoctor
 
       - name: Cache native image
         uses: actions/cache/save@v5
