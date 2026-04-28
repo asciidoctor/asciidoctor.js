@@ -12,7 +12,6 @@
 //   - String#succ (nextval) is implemented for the ASCII alphanumeric subset
 //     used by Asciidoctor list-numbering sequences.
 
-import ospath from 'node:path'
 import { UriSniffRx } from './rx.js'
 
 // ── BOM ──────────────────────────────────────────────────────────────────────
@@ -149,11 +148,11 @@ export function rootname(filename) {
  * // => "tiger"
  */
 export function basename(filename, dropExt = null) {
-  if (!dropExt) {
-    return ospath.basename(filename)
-  }
-  const ext = dropExt === true ? extname(filename) : dropExt
-  return ospath.basename(filename, ext)
+  // Split on both POSIX and Windows separators, take the last non-empty segment.
+  const base = filename.replace(/[/\\]+$/, '').split(/[/\\]/).pop() ?? filename
+  if (!dropExt) return base
+  const ext = dropExt === true ? extname(base) : dropExt
+  return ext && base.endsWith(ext) ? base.slice(0, -ext.length) : base
 }
 
 /**
