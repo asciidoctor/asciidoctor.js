@@ -2,7 +2,7 @@ import { parseArgs } from 'node:util'
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { join, resolve, isAbsolute, dirname, sep } from 'node:path'
-import { getVersion as _getVersion, getCoreVersion, Timings, Extensions, LoggerManager } from '@asciidoctor/core'
+import { getVersion as _getVersion, getCoreVersion, Timings, Extensions, LoggerManager, convert, convertFile } from '@asciidoctor/core'
 
 const require = createRequire(import.meta.url)
 
