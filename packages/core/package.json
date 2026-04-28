@@ -32,6 +32,14 @@
     "type": "git",
     "url": "https://github.com/asciidoctor/asciidoctor.js.git"
   },
+  "files": [
+    "src",
+    "build/browser",
+    "build/node",
+    "types",
+    "data",
+    "README.md"
+  ],
   "publishConfig": {
     "access": "public"
   },
