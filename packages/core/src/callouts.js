@@ -3,7 +3,9 @@
 /** Maintains a catalog of callouts and their associations. */
 export class Callouts {
   constructor() {
+    /** @internal */
     this._lists = []
+    /** @internal */
     this._listIndex = 0
     this.nextList()
   }
@@ -15,7 +17,7 @@ export class Callouts {
    */
   register(liOrdinal) {
     const id = this._generateNextCalloutId()
-    this.currentList().push({ ordinal: parseInt(liOrdinal, 10), id })
+    this.getCurrentList().push({ ordinal: parseInt(liOrdinal, 10), id })
     this._coIndex++
     return id
   }
@@ -25,7 +27,7 @@ export class Callouts {
    * @returns {string|null} The unique id of the next callout, or null.
    */
   readNextId() {
-    const list = this.currentList()
+    const list = this.getCurrentList()
     const id = this._coIndex <= list.length ? list[this._coIndex - 1].id : null
     this._coIndex++
     return id
@@ -36,8 +38,8 @@ export class Callouts {
    * @param {number} liOrdinal - The 1-based ordinal of the list item.
    * @returns {string} Space-separated callout ids.
    */
-  calloutIds(liOrdinal) {
-    const list = this.currentList()
+  getCalloutIds(liOrdinal) {
+    const list = this.getCurrentList()
     return list
       .filter((item) => item.ordinal === liOrdinal)
       .map((item) => item.id)
@@ -45,7 +47,7 @@ export class Callouts {
   }
 
   /** @returns {Array<{ordinal: number, id: string}>} The callout objects at the current list index. */
-  currentList() {
+  getCurrentList() {
     return this._lists[this._listIndex - 1]
   }
 
@@ -53,6 +55,7 @@ export class Callouts {
   nextList() {
     this._listIndex++
     if (this._lists.length < this._listIndex) this._lists.push([])
+    /** @internal */
     this._coIndex = 1
   }
 
