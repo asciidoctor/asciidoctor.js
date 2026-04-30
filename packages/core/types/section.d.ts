@@ -29,7 +29,7 @@ export class Section extends AbstractBlock<string> {
     special: boolean;
     numbered: boolean;
     index: number;
-    sectname: any;
+    sectname: string;
     /**
      * The name of this section — alias for title.
      * @returns {string|null}
@@ -77,10 +77,20 @@ export class Section extends AbstractBlock<string> {
      */
     getSectionName(): string | null;
     /**
+     * Set the section name (e.g. 'section', 'appendix').
+     * @param {string|null} val
+     */
+    setSectionName(val: string | null): void;
+    /**
      * Get the 0-based index of this section within the parent block.
      * @returns {number}
      */
     getIndex(): number;
+    /**
+     * Set the 0-based index of this section within the parent block.
+     * @param {number} val
+     */
+    setIndex(val: number): void;
     /**
      * Get whether this section is numbered.
      * @returns {boolean}
@@ -91,6 +101,11 @@ export class Section extends AbstractBlock<string> {
      * @returns {boolean}
      */
     isSpecial(): boolean;
+    /**
+     * Set whether this section is a special section.
+     * @param {boolean} val
+     */
+    setSpecial(val: boolean): void;
     /**
      * Get the section numeral string.
      * @returns {string|null}
