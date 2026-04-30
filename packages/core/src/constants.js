@@ -142,8 +142,7 @@ try {
       process.env.USERPROFILE ||
       (process.cwd ? process.cwd() : '') // eslint-disable-line n/no-process-env
   }
-} catch {
-}
+} catch {}
 export { ROOT_DIR, LIB_DIR, DATA_DIR, USER_HOME }
 
 // ── Primitive constants ───────────────────────────────────────────────────────

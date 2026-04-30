@@ -518,9 +518,9 @@ export class AbstractBlock extends AbstractNode {
     if (this.context === 'document') return null
     const p = this.getParent()
     if (p.context === 'dlist' && this.context === 'list_item') {
-      const idx = p.getItems().findIndex(
-        ([terms, desc]) => terms.includes(this) || desc === this
-      )
+      const idx = p
+        .getItems()
+        .findIndex(([terms, desc]) => terms.includes(this) || desc === this)
       const sib = p.getItems()[idx + 1]
       return sib ? sib : p.nextAdjacentBlock()
     }
