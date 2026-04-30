@@ -18,19 +18,19 @@ All parsing and conversion operations now return a `Promise` and must be awaited
 | v3 (Opal) | v4 (native) | Note
 
 | `asciidoctor.load(source, opts)` → `Document`
-| `asciidoctor.load(source, opts)` → `Promise<Document>`
+| `load(source, opts)` → `Promise<Document>`
 | Must be awaited
 
 | `asciidoctor.loadFile(path, opts)` → `Document`
-| `asciidoctor.loadFile(path, opts)` → `Promise<Document>`
+| `loadFile(path, opts)` → `Promise<Document>`
 | Must be awaited
 
 | `asciidoctor.convert(source, opts)` → `string`
-| `asciidoctor.convert(source, opts)` → `Promise<string>`
+| `convert(source, opts)` → `Promise<string>`
 | Must be awaited
 
 | `asciidoctor.convertFile(path, opts)` → `string`
-| `asciidoctor.convertFile(path, opts)` → `Promise<string>`
+| `convertFile(path, opts)` → `Promise<string>`
 | Must be awaited
 
 | `document.parse(data?)` → `Document`
@@ -54,11 +54,6 @@ v4 uses named exports — import only what you need, no factory call needed.
 | `require('@asciidoctor/core')()` → must call the factory
 | `import { load, convert } from '@asciidoctor/core'` → use functions directly
 |===
-
-=== ESM only
-
-v4 is distributed exclusively as ES modules.
-Use `import` instead of `require`.
 
 === Strict camelCase naming
 
