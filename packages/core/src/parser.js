@@ -1835,7 +1835,7 @@ export class Parser {
       )
       if (listItem) {
         listBlock.blocks.push(listItem)
-        const coids = callouts.calloutIds(listBlock.blocks.length)
+        const coids = callouts.getCalloutIds(listBlock.blocks.length)
         if (!coids) {
           Parser.logger.warn(
             Parser.messageWithContext(

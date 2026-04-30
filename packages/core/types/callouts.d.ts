@@ -1,7 +1,5 @@
 /** Maintains a catalog of callouts and their associations. */
 export class Callouts {
-    _lists: any[];
-    _listIndex: number;
     /**
      * Register a new callout for the given list item ordinal.
      * @param {number} liOrdinal - The 1-based ordinal of the list item.
@@ -18,15 +16,14 @@ export class Callouts {
      * @param {number} liOrdinal - The 1-based ordinal of the list item.
      * @returns {string} Space-separated callout ids.
      */
-    calloutIds(liOrdinal: number): string;
+    getCalloutIds(liOrdinal: number): string;
     /** @returns {Array<{ordinal: number, id: string}>} The callout objects at the current list index. */
-    currentList(): Array<{
+    getCurrentList(): Array<{
         ordinal: number;
         id: string;
     }>;
     /** Advance to the next callout list in the document. */
     nextList(): void;
-    _coIndex: number;
     /** Rewind the list pointer to the beginning (switching parse → convert). */
     rewind(): void;
 }
