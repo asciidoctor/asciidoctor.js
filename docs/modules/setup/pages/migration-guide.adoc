@@ -168,11 +168,6 @@ Some internal properties and options that retained the Ruby `snake_case` style i
 | `Asciidoctor.getRuntime()` → `Object`
 | Returns platform / engine / GEM_HOME info; no equivalent concept in a native JS library
 
-| `Section.setIndex(index)` / `setSectionName(name)` / `setSpecial(value)`
-| Internal setters used by the parser; not yet exposed as public API
-
-| `ListItem.getList()` → `List`
-| Use `getParent()` instead
 |===
 
 == New in v4
