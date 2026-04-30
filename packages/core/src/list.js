@@ -20,22 +20,17 @@ export class List extends AbstractBlock {
     super(parent, context, opts)
   }
 
-  /** Alias for blocks — the list items. */
-  get items() {
-    return this.blocks
-  }
-
   /** Alias for blocks — the list content. */
   async content() {
     return this.blocks
   }
 
   /**
-   * Return the list items (alias for items / blocks).
+   * Return the list items.
    * @returns {ListItem[]}
    */
   getItems() {
-    return this.items
+    return this.blocks
   }
 
   /**
@@ -89,6 +84,15 @@ export class ListItem extends AbstractBlock {
    */
   marker
 
+  /** @internal @type {string|null} */
+  _text
+
+  /** @internal */
+  _convertedText
+
+  /** @internal @type {string[]} */
+  _subsSnapshot
+
   /**
    * @param {List} parent - The parent List block.
    * @param {string|null} [text=null] - The text of this item.
@@ -103,16 +107,41 @@ export class ListItem extends AbstractBlock {
 
   /** Contextual alias for parent. */
   get list() {
-    return this.parent
+    return this.getParent()
+  }
+
+  /**
+   * Return the parent List block (alias of getParent).
+   * @returns {List}
+   */
+  getList() {
+    return this.getParent()
   }
 
   /**
    * Return the text of this list item with substitutions applied.
-   * Synchronous because text is pre-computed during parse().
+   * The result is pre-computed during `Document.parse()` via {@link precomputeText}.
+   * Falls back to the raw text if {@link precomputeText} has not been called yet.
+   *
+   * In Ruby, text is lazy (`apply_subs` on first access), so API callers can modify
+   * subs before accessing text and get the result they expect. Here we replicate
+   * that by invalidating the pre-computed value when subs have changed since it
+   * was computed: returning raw text mirrors what Ruby would produce when subs are
+   * cleared or reduced to a no-op set (since `applySubs` is async and cannot be
+   * re-run synchronously).
    * @returns {string|null}
    */
   getText() {
-    return this.text
+    if (this._convertedText != null && this._subsSnapshot != null) {
+      const cur = this.subs
+      if (
+        cur.length !== this._subsSnapshot.length ||
+        cur.some((s, i) => s !== this._subsSnapshot[i])
+      ) {
+        return this._text ?? null
+      }
+    }
+    return this._convertedText ?? this._text ?? null
   }
 
   /**
@@ -132,32 +161,6 @@ export class ListItem extends AbstractBlock {
   }
 
   /**
-   * Get the string text with substitutions applied.
-   * The result is pre-computed during `Document.parse()` via {@link precomputeText}.
-   * Falls back to the raw text if {@link precomputeText} has not been called yet.
-   *
-   * In Ruby, text is lazy (`apply_subs` on first access), so API callers can modify
-   * subs before accessing text and get the result they expect. Here we replicate
-   * that by invalidating the pre-computed value when subs have changed since it
-   * was computed: returning raw text mirrors what Ruby would produce when subs are
-   * cleared or reduced to a no-op set (since `applySubs` is async and cannot be
-   * re-run synchronously).
-   * @returns {string|null}
-   */
-  get text() {
-    if (this._convertedText != null && this._subsSnapshot != null) {
-      const cur = this.subs
-      if (
-        cur.length !== this._subsSnapshot.length ||
-        cur.some((s, i) => s !== this._subsSnapshot[i])
-      ) {
-        return this._text ?? null
-      }
-    }
-    return this._convertedText ?? this._text ?? null
-  }
-
-  /**
    * Pre-compute the converted text asynchronously.
    * Called during `Document.parse()` so the synchronous getter works during conversion.
    * @returns {Promise<void>}
@@ -173,7 +176,7 @@ export class ListItem extends AbstractBlock {
    * Set the raw text of this list item.
    * @param {string|null} val
    */
-  set text(val) {
+  setText(val) {
     this._text = val
     this._convertedText = null
     this._subsSnapshot = null
@@ -208,6 +211,6 @@ export class ListItem extends AbstractBlock {
   }
 
   toString() {
-    return `#<ListItem {list_context: '${this.parent.context}', text: ${JSON.stringify(this._text)}, blocks: ${(this.blocks ?? []).length}}>`
+    return `#<ListItem {list_context: '${this.getParent().context}', text: ${JSON.stringify(this._text)}, blocks: ${(this.blocks ?? []).length}}>`
   }
 }

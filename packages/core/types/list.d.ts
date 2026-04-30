@@ -3,12 +3,10 @@
  */
 export class List extends AbstractBlock<any[]> {
     constructor(parent: any, context: any, opts?: {});
-    /** Alias for blocks — the list items. */
-    get items(): AbstractBlock<string>[];
     /** Alias for blocks — the list content. */
     content(): Promise<AbstractBlock<string>[]>;
     /**
-     * Return the list items (alias for items / blocks).
+     * Return the list items.
      * @returns {ListItem[]}
      */
     getItems(): ListItem[];
@@ -40,13 +38,25 @@ export class ListItem extends AbstractBlock<string> {
      * @type {string|null}
      */
     marker: string | null;
-    _text: string;
     subs: string[];
     /** Contextual alias for parent. */
     get list(): import("./abstract_node.js").AbstractNode;
     /**
+     * Return the parent List block (alias of getParent).
+     * @returns {List}
+     */
+    getList(): List;
+    /**
      * Return the text of this list item with substitutions applied.
-     * Synchronous because text is pre-computed during parse().
+     * The result is pre-computed during `Document.parse()` via {@link precomputeText}.
+     * Falls back to the raw text if {@link precomputeText} has not been called yet.
+     *
+     * In Ruby, text is lazy (`apply_subs` on first access), so API callers can modify
+     * subs before accessing text and get the result they expect. Here we replicate
+     * that by invalidating the pre-computed value when subs have changed since it
+     * was computed: returning raw text mirrors what Ruby would produce when subs are
+     * cleared or reduced to a no-op set (since `applySubs` is async and cannot be
+     * re-run synchronously).
      * @returns {string|null}
      */
     getText(): string | null;
@@ -61,32 +71,16 @@ export class ListItem extends AbstractBlock<string> {
      */
     hasText(): boolean;
     /**
-     * Set the raw text of this list item.
-     * @param {string|null} val
-     */
-    set text(val: string | null);
-    /**
-     * Get the string text with substitutions applied.
-     * The result is pre-computed during `Document.parse()` via {@link precomputeText}.
-     * Falls back to the raw text if {@link precomputeText} has not been called yet.
-     *
-     * In Ruby, text is lazy (`apply_subs` on first access), so API callers can modify
-     * subs before accessing text and get the result they expect. Here we replicate
-     * that by invalidating the pre-computed value when subs have changed since it
-     * was computed: returning raw text mirrors what Ruby would produce when subs are
-     * cleared or reduced to a no-op set (since `applySubs` is async and cannot be
-     * re-run synchronously).
-     * @returns {string|null}
-     */
-    get text(): string | null;
-    /**
      * Pre-compute the converted text asynchronously.
      * Called during `Document.parse()` so the synchronous getter works during conversion.
      * @returns {Promise<void>}
      */
     precomputeText(): Promise<void>;
-    _convertedText: any;
-    _subsSnapshot: string[];
+    /**
+     * Set the raw text of this list item.
+     * @param {string|null} val
+     */
+    setText(val: string | null): void;
     /**
      * Check whether this list item has simple content.
      * @returns {boolean} `true` if the item has no blocks or only a single nested outline list.

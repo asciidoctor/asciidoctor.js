@@ -663,7 +663,7 @@ Your browser does not support the audio tag.
       result.push('<table>')
       const fontIcons = node.document.hasAttr('icons', 'font')
       let num = 0
-      for (const item of node.items) {
+      for (const item of node.getItems()) {
         num++
         let numLabel
         if (fontIcons) {
@@ -673,15 +673,15 @@ Your browser does not support the audio tag.
         }
         result.push(`<tr>
 <td>${numLabel}</td>
-<td>${item.text}${item.hasBlocks() ? LF + (await item.content()) : ''}</td>
+<td>${item.getText()}${item.hasBlocks() ? LF + (await item.content()) : ''}</td>
 </tr>`)
       }
       result.push('</table>')
     } else {
       result.push('<ol>')
-      for (const item of node.items) {
+      for (const item of node.getItems()) {
         result.push(`<li>
-<p>${item.text}</p>${item.hasBlocks() ? LF + (await item.content()) : ''}
+<p>${item.getText()}</p>${item.hasBlocks() ? LF + (await item.content()) : ''}
 </li>`)
       }
       result.push('</ol>')
@@ -713,13 +713,13 @@ Your browser does not support the audio tag.
     switch (node.style) {
       case 'qanda':
         result.push('<ol>')
-        for (const [terms, dd] of node.items) {
+        for (const [terms, dd] of node.getItems()) {
           result.push('<li>')
           for (const dt of terms) {
-            result.push(`<p><em>${dt.text}</em></p>`)
+            result.push(`<p><em>${dt.getText()}</em></p>`)
           }
           if (dd) {
-            if (dd.hasText()) result.push(`<p>${dd.text}</p>`)
+            if (dd.hasText()) result.push(`<p>${dd.getText()}</p>`)
             if (dd.hasBlocks()) result.push(await dd.content())
           }
           result.push('</li>')
@@ -741,7 +741,7 @@ Your browser does not support the audio tag.
           result.push(`<col${itemWidthAttr}${slash}>`)
           result.push('</colgroup>')
         }
-        for (const [terms, dd] of node.items) {
+        for (const [terms, dd] of node.getItems()) {
           result.push('<tr>')
           result.push(
             `<td class="hdlist1${node.hasOption('strong') ? ' strong' : ''}">`
@@ -749,13 +749,13 @@ Your browser does not support the audio tag.
           let firstTerm = true
           for (const dt of terms) {
             if (!firstTerm) result.push(`<br${slash}>`)
-            result.push(dt.text)
+            result.push(dt.getText())
             firstTerm = false
           }
           result.push('</td>')
           result.push('<td class="hdlist2">')
           if (dd) {
-            if (dd.hasText()) result.push(`<p>${dd.text}</p>`)
+            if (dd.hasText()) result.push(`<p>${dd.getText()}</p>`)
             if (dd.hasBlocks()) result.push(await dd.content())
           }
           result.push('</td>')
@@ -767,13 +767,13 @@ Your browser does not support the audio tag.
       default: {
         result.push('<dl>')
         const dtStyleAttribute = node.style ? '' : ' class="hdlist1"'
-        for (const [terms, dd] of node.items) {
+        for (const [terms, dd] of node.getItems()) {
           for (const dt of terms) {
-            result.push(`<dt${dtStyleAttribute}>${dt.text}</dt>`)
+            result.push(`<dt${dtStyleAttribute}>${dt.getText()}</dt>`)
           }
           if (!dd) continue
           result.push('<dd>')
-          if (dd.hasText()) result.push(`<p>${dd.text}</p>`)
+          if (dd.hasText()) result.push(`<p>${dd.getText()}</p>`)
           if (dd.hasBlocks()) result.push(await dd.content())
           result.push('</dd>')
         }
@@ -982,7 +982,7 @@ ${equation}
       `<ol class="${node.style}"${typeAttribute}${startAttribute}${reversedAttribute}>`
     )
 
-    for (const item of node.items) {
+    for (const item of node.getItems()) {
       if (item.id) {
         result.push(
           `<li id="${item.id}"${item.role ? ` class="${item.role}"` : ''}>`
@@ -992,7 +992,7 @@ ${equation}
       } else {
         result.push('<li>')
       }
-      result.push(`<p>${item.text}</p>`)
+      result.push(`<p>${item.getText()}</p>`)
       if (item.hasBlocks()) result.push(await item.content())
       result.push('</li>')
     }
@@ -1308,7 +1308,7 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
     if (node.hasTitle()) result.push(`<div class="title">${node.title}</div>`)
     result.push(`<ul${ulClassAttribute}>`)
 
-    for (const item of node.items) {
+    for (const item of node.getItems()) {
       if (item.id) {
         result.push(
           `<li id="${item.id}"${item.role ? ` class="${item.role}"` : ''}>`
@@ -1320,10 +1320,10 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
       }
       if (checklist && item.hasAttr('checkbox')) {
         result.push(
-          `<p>${item.hasAttr('checked') ? markerChecked : markerUnchecked}${item.text}</p>`
+          `<p>${item.hasAttr('checked') ? markerChecked : markerUnchecked}${item.getText()}</p>`
         )
       } else {
-        result.push(`<p>${item.text}</p>`)
+        result.push(`<p>${item.getText()}</p>`)
       }
       if (item.hasBlocks()) result.push(await item.content())
       result.push('</li>')

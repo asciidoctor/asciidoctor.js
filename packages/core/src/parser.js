@@ -1919,7 +1919,7 @@ export class Parser {
             listBlock.attributes['checklist-option'] = ''
             listItem.attributes.checkbox = ''
             if (!itemText.startsWith('[ ')) listItem.attributes.checked = ''
-            listItem.text = itemText.slice(4)
+            listItem.setText(itemText.slice(4))
           }
         }
       } else if (listType === 'olist') {

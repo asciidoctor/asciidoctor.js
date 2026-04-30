@@ -183,9 +183,9 @@ export class DocBook5Converter extends ConverterBase {
       `<calloutlist${this._commonAttributes(node.id, node.role, node.reftext)}>`
     )
     if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
-    for (const item of node.items) {
+    for (const item of node.getItems()) {
       result.push(`<callout arearefs="${item.attr('coids')}">`)
-      result.push(`<para>${item.text}</para>`)
+      result.push(`<para>${item.getText()}</para>`)
       if (item.hasBlocks()) result.push(await item.content())
       result.push('</callout>')
     }
@@ -204,12 +204,12 @@ export class DocBook5Converter extends ConverterBase {
       result.push(`<colspec colwidth="${node.attr('labelwidth', 15)}*"/>`)
       result.push(`<colspec colwidth="${node.attr('itemwidth', 85)}*"/>`)
       result.push('<tbody valign="top">')
-      for (const [terms, dd] of node.items) {
+      for (const [terms, dd] of node.getItems()) {
         result.push('<row>\n<entry>')
-        for (const dt of terms) result.push(`<simpara>${dt.text}</simpara>`)
+        for (const dt of terms) result.push(`<simpara>${dt.getText()}</simpara>`)
         result.push('</entry>\n<entry>')
         if (dd) {
-          if (dd.hasText()) result.push(`<simpara>${dd.text}</simpara>`)
+          if (dd.hasText()) result.push(`<simpara>${dd.getText()}</simpara>`)
           if (dd.hasBlocks()) result.push(await dd.content())
         }
         result.push('</entry>\n</row>')
@@ -230,15 +230,15 @@ export class DocBook5Converter extends ConverterBase {
         )
         if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
       }
-      for (const [terms, dd] of node.items) {
+      for (const [terms, dd] of node.getItems()) {
         result.push(`<${entryTag}>`)
         if (labelTag) result.push(`<${labelTag}>`)
         for (const dt of terms)
-          result.push(`<${termTag}>${dt.text}</${termTag}>`)
+          result.push(`<${termTag}>${dt.getText()}</${termTag}>`)
         if (labelTag) result.push(`</${labelTag}>`)
         result.push(`<${itemTag}>`)
         if (dd) {
-          if (dd.hasText()) result.push(`<simpara>${dd.text}</simpara>`)
+          if (dd.hasText()) result.push(`<simpara>${dd.getText()}</simpara>`)
           if (dd.hasBlocks()) result.push(await dd.content())
         }
         result.push(`</${itemTag}>`)
@@ -347,9 +347,9 @@ export class DocBook5Converter extends ConverterBase {
       `<orderedlist${this._commonAttributes(node.id, node.role, node.reftext)}${numAttribute}${startAttribute}>`
     )
     if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
-    for (const item of node.items) {
+    for (const item of node.getItems()) {
       result.push(`<listitem${this._commonAttributes(item.id, item.role)}>`)
-      result.push(`<simpara>${item.text}</simpara>`)
+      result.push(`<simpara>${item.getText()}</simpara>`)
       if (item.hasBlocks()) result.push(await item.content())
       result.push('</listitem>')
     }
@@ -554,9 +554,9 @@ export class DocBook5Converter extends ConverterBase {
         `<bibliodiv${this._commonAttributes(node.id, node.role, node.reftext)}>`
       )
       if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
-      for (const item of node.items) {
+      for (const item of node.getItems()) {
         result.push('<bibliomixed>')
-        result.push(`<bibliomisc>${item.text}</bibliomisc>`)
+        result.push(`<bibliomisc>${item.getText()}</bibliomisc>`)
         if (item.hasBlocks()) result.push(await item.content())
         result.push('</bibliomixed>')
       }
@@ -569,7 +569,7 @@ export class DocBook5Converter extends ConverterBase {
         `<itemizedlist${this._commonAttributes(node.id, node.role, node.reftext)}${markAttribute}>`
       )
       if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
-      for (const item of node.items) {
+      for (const item of node.getItems()) {
         const textMarker =
           checklist && item.hasAttr('checkbox')
             ? item.hasAttr('checked')
@@ -577,7 +577,7 @@ export class DocBook5Converter extends ConverterBase {
               : '&#10063; '
             : ''
         result.push(`<listitem${this._commonAttributes(item.id, item.role)}>`)
-        result.push(`<simpara>${textMarker}${item.text}</simpara>`)
+        result.push(`<simpara>${textMarker}${item.getText()}</simpara>`)
         if (item.hasBlocks()) result.push(await item.content())
         result.push('</listitem>')
       }

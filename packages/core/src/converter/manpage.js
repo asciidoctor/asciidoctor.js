@@ -231,9 +231,9 @@ ${await this._encloseContent(node)}
     result.push('.TS\ntab(:);\nr lw(\\n(.lu*75u/100u).')
 
     let num = 0
-    for (const item of node.items) {
+    for (const item of node.getItems()) {
       result.push(`\\fB(${++num})\\fP\\h'-2n':T{`)
-      result.push(this.manify(item.text, { whitespace: 'normalize' }))
+      result.push(this.manify(item.getText(), { whitespace: 'normalize' }))
       if (item.hasBlocks()) result.push(await item.content())
       result.push('T}')
     }
@@ -248,21 +248,21 @@ ${await this._encloseContent(node)}
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
     }
     let counter = 0
-    for (const [terms, dd] of node.items) {
+    for (const [terms, dd] of node.getItems()) {
       counter++
       if (node.style === 'qanda') {
         result.push(
-          `.sp\n${counter}. ${this.manify(terms.map((dt) => dt.text).join(' '))}\n.RS 4`
+          `.sp\n${counter}. ${this.manify(terms.map((dt) => dt.getText()).join(' '))}\n.RS 4`
         )
       } else {
         result.push(
-          `.sp\n${this.manify(terms.map((dt) => dt.text).join(', '), { whitespace: 'normalize' })}\n.RS 4`
+          `.sp\n${this.manify(terms.map((dt) => dt.getText()).join(', '), { whitespace: 'normalize' })}\n.RS 4`
         )
       }
       if (dd) {
         let hasText = false
         if (dd.hasText()) {
-          result.push(this.manify(dd.text, { whitespace: 'normalize' }))
+          result.push(this.manify(dd.getText(), { whitespace: 'normalize' }))
           hasText = true
         }
         if (dd.hasBlocks()) {
@@ -343,9 +343,9 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
 
     const start = parseInt(node.attr('start', 1), 10)
     let idx = 0
-    for (const item of node.items) {
+    for (const item of node.getItems()) {
       const numeral = idx + start
-      const listText = this.manify(item.text, { whitespace: 'normalize' })
+      const listText = this.manify(item.getText(), { whitespace: 'normalize' })
       result.push(`.sp
 .RS 4
 .ie n \\{\\
@@ -581,8 +581,8 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
     if (node.hasTitle()) {
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
     }
-    for (const item of node.items) {
-      const listText = this.manify(item.text, { whitespace: 'normalize' })
+    for (const item of node.getItems()) {
+      const listText = this.manify(item.getText(), { whitespace: 'normalize' })
       result.push(`.sp
 .RS 4
 .ie n \\{\\

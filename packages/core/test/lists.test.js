@@ -411,7 +411,7 @@ NOTE: This is a note.
 <1> a configuration value
 `
       const doc = await documentFromString(input)
-      const colist = doc.blocks[0].items[0].blocks[doc.blocks[0].items[0].blocks.length - 1]
+      const colist = doc.blocks[0].getItems()[0].blocks[doc.blocks[0].getItems()[0].blocks.length - 1]
       assert.equal(colist.context, 'colist')
       assert.notEqual(colist.style, 'source')
       const output = await doc.convert()
@@ -2742,8 +2742,8 @@ category b::
 paragraph
 `
       const doc = await documentFromString(input)
-      const dd = doc.blocks[0].items[0][1]
-      assert.equal(dd.text, null)
+      const dd = doc.blocks[0].getItems()[0][1]
+      assert.equal(dd.getText(), null)
     })
 
     test('should match trailing line separator in text of list item', async () => {
@@ -4968,11 +4968,11 @@ describe('Checklists', () => {
     const doc = await documentFromString(input)
     const checklist = doc.blocks[0]
     assert.ok(checklist.hasOption('checklist'), 'checklist should have checklist option')
-    assert.ok(checklist.items[0].hasAttribute('checkbox'), 'item 0 should have checkbox attr')
-    assert.ok(!checklist.items[0].hasAttribute('checked'), 'item 0 should not have checked attr')
-    assert.ok(checklist.items[1].hasAttribute('checkbox'), 'item 1 should have checkbox attr')
-    assert.ok(checklist.items[1].hasAttribute('checked'), 'item 1 should have checked attr')
-    assert.ok(!checklist.items[4].hasAttribute('checkbox'), 'item 4 should not have checkbox attr')
+    assert.ok(checklist.getItems()[0].hasAttribute('checkbox'), 'item 0 should have checkbox attr')
+    assert.ok(!checklist.getItems()[0].hasAttribute('checked'), 'item 0 should not have checked attr')
+    assert.ok(checklist.getItems()[1].hasAttribute('checkbox'), 'item 1 should have checkbox attr')
+    assert.ok(checklist.getItems()[1].hasAttribute('checked'), 'item 1 should have checked attr')
+    assert.ok(!checklist.getItems()[4].hasAttribute('checkbox'), 'item 4 should not have checkbox attr')
 
     const output = await doc.convert()
     assertCss(output, '.ulist.checklist', 1)
@@ -4992,12 +4992,12 @@ describe('Checklists', () => {
     const doc = await documentFromString(input)
     const checklist = doc.blocks[0]
     assert.ok(checklist.hasOption('checklist'), 'checklist should have checklist option')
-    assert.ok(checklist.items[0].hasAttribute('checkbox'), 'item 0 should have checkbox attr')
-    assert.ok(!checklist.items[0].hasAttribute('checked'), 'item 0 should not have checked attr')
-    assert.ok(checklist.items[1].hasAttribute('checkbox'), 'item 1 should have checkbox attr')
-    assert.ok(checklist.items[1].hasAttribute('checked'), 'item 1 should have checked attr')
-    assert.ok(!checklist.items[2].hasAttribute('checkbox'), 'item 2 should not have checkbox attr')
-    assert.ok(!checklist.items[3].hasAttribute('checkbox'), 'item 3 should not have checkbox attr')
+    assert.ok(checklist.getItems()[0].hasAttribute('checkbox'), 'item 0 should have checkbox attr')
+    assert.ok(!checklist.getItems()[0].hasAttribute('checked'), 'item 0 should not have checked attr')
+    assert.ok(checklist.getItems()[1].hasAttribute('checkbox'), 'item 1 should have checkbox attr')
+    assert.ok(checklist.getItems()[1].hasAttribute('checked'), 'item 1 should have checked attr')
+    assert.ok(!checklist.getItems()[2].hasAttribute('checkbox'), 'item 2 should not have checkbox attr')
+    assert.ok(!checklist.getItems()[3].hasAttribute('checkbox'), 'item 3 should not have checkbox attr')
   })
 
   test('should create checklist with font icons if at least one item has checkbox syntax and icons attribute is font', async () => {
@@ -5052,9 +5052,9 @@ describe('Lists model', () => {
 `
     const doc = await documentFromString(input)
     const list = doc.blocks[0]
-    const items = list.items
+    const items = list.getItems()
     assert.equal(items.length, 3)
-    assert.deepEqual(list.items, await list.content())
+    assert.deepEqual(list.getItems(), await list.content())
   })
 
   test('list item should be the parent of block attached to a list item', async () => {
@@ -5066,10 +5066,10 @@ listing block in list item 1
 `
     const doc = await documentFromString(input)
     const list = doc.blocks[0]
-    const list_item_1 = list.items[0]
+    const list_item_1 = list.getItems()[0]
     const listing_block = list_item_1.blocks[0]
     assert.equal(listing_block.context, 'listing')
-    assert.equal(listing_block.parent, list_item_1)
+    assert.equal(listing_block.getParent(), list_item_1)
   })
 
   test('outline? should return true for unordered list', async () => {
@@ -5105,8 +5105,8 @@ listing block in list item 1
 `
     const doc = await documentFromString(input)
     const list = doc.blocks[0]
-    assert.ok(list.items[0].simple())
-    assert.ok(!list.items[0].compound())
+    assert.ok(list.getItems()[0].simple())
+    assert.ok(!list.getItems()[0].compound())
   })
 
   test('simple? should return true for list item with nested outline list', async () => {
@@ -5118,8 +5118,8 @@ listing block in list item 1
 `
     const doc = await documentFromString(input)
     const list = doc.blocks[0]
-    assert.ok(list.items[0].simple())
-    assert.ok(!list.items[0].compound())
+    assert.ok(list.getItems()[0].simple())
+    assert.ok(!list.getItems()[0].compound())
   })
 
   test('simple? should return false for list item with block content', async () => {
@@ -5133,8 +5133,8 @@ listing block in list item 1
 `
     const doc = await documentFromString(input)
     const list = doc.blocks[0]
-    assert.ok(!list.items[0].simple())
-    assert.ok(list.items[0].compound())
+    assert.ok(!list.getItems()[0].simple())
+    assert.ok(list.getItems()[0].compound())
   })
 
   test('should allow text of ListItem to be assigned', async () => {
@@ -5144,10 +5144,10 @@ listing block in list item 1
 `
     const doc = await documentFromString(input)
     const list = doc.findBy({ context: 'ulist' })[0]
-    assert.equal(list.items.length, 3)
-    assert.equal(list.items[0].text, 'one')
-    list.items[0].text = 'un'
-    assert.equal(list.items[0].text, 'un')
+    assert.equal(list.getItems().length, 3)
+    assert.equal(list.getItems()[0].getText(), 'one')
+    list.getItems()[0].setText('un')
+    assert.equal(list.getItems()[0].getText(), 'un')
   })
 
   test('id and role assigned to ulist item in model are transmitted to output', async () => {
@@ -5156,7 +5156,7 @@ listing block in list item 1
 * three
 `
     const doc = await documentFromString(input)
-    const item_0 = doc.blocks[0].items[0]
+    const item_0 = doc.blocks[0].getItems()[0]
     item_0.id = 'one'
     item_0.addRole('item')
     const output = await doc.convert()
@@ -5169,7 +5169,7 @@ listing block in list item 1
 . three
 `
     const doc = await documentFromString(input)
-    const item_0 = doc.blocks[0].items[0]
+    const item_0 = doc.blocks[0].getItems()[0]
     item_0.id = 'one'
     item_0.addRole('item')
     const output = await doc.convert()
@@ -5184,17 +5184,17 @@ listing block in list item 1
 `
     const doc = await documentFromString(input)
     const list = doc.findBy({ context: 'ulist' })[0]
-    assert.equal(list.items.length, 4)
-    list.items[0].removeSub('quotes')
-    assert.equal(list.items[0].text, '*one*')
-    assert.ok(!list.items[0].subs.includes('quotes'))
-    list.items[1].subs.splice(0)
-    assert.equal(list.items[1].subs.length, 0)
-    assert.equal(list.items[1].text, '_two_')
-    list.items[2].subs.splice(0, list.items[2].subs.length, 'specialcharacters')
-    assert.deepEqual(list.items[2].subs, ['specialcharacters'])
-    assert.equal(list.items[2].text, '`three`')
-    assert.equal(list.items[3].text, '<mark>four</mark>')
+    assert.equal(list.getItems().length, 4)
+    list.getItems()[0].removeSub('quotes')
+    assert.equal(list.getItems()[0].getText(), '*one*')
+    assert.ok(!list.getItems()[0].subs.includes('quotes'))
+    list.getItems()[1].subs.splice(0)
+    assert.equal(list.getItems()[1].subs.length, 0)
+    assert.equal(list.getItems()[1].getText(), '_two_')
+    list.getItems()[2].subs.splice(0, list.getItems()[2].subs.length, 'specialcharacters')
+    assert.deepEqual(list.getItems()[2].subs, ['specialcharacters'])
+    assert.equal(list.getItems()[2].getText(), '`three`')
+    assert.equal(list.getItems()[3].getText(), '<mark>four</mark>')
   })
 
   test('should set lineno to line number in source where list starts', async () => {
