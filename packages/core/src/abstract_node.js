@@ -65,6 +65,12 @@ async function isReadable(path) {
  */
 export class AbstractNode {
   /**
+   * @type {string|null|undefined}
+   * @internal
+   */
+  _convertedReftext
+
+  /**
    * @param {AbstractNode} parent
    * @param {string} context
    * @param {object} [opts={}]
@@ -100,18 +106,28 @@ export class AbstractNode {
 
   /**
    * Get the space-separated role string for this node.
-   * Set accepts a single role name, a space-separated string, or an Array.
+   *
+   * @returns {string|undefined} the role as a space-separated String.
    */
   get role() {
     return this.attributes.role
   }
 
+  /**
+   * Set the value of the role attribute on this node.
+   *
+   * Accepts a single role name, a space-separated String, or an Array.
+   *
+   * @param {string|string[]} names - A single role name, a space-separated String, or an Array.
+   */
   set role(names) {
     this.attributes.role = Array.isArray(names) ? names.join(' ') : names
   }
 
   /**
-   * Get the role names for this node as an Array.
+   * Retrieve the String role names for this node as an Array.
+   *
+   * @returns {string[]} the role names as a String Array, empty if the role attribute is absent.
    */
   get roles() {
     const val = this.attributes.role
@@ -151,7 +167,7 @@ export class AbstractNode {
   }
 
   /**
-   * @returns true if this AbstractNode is an instance of Block.
+   * @returns {boolean} true if this AbstractNode is an instance of Block.
    * @throws {Error} Subclasses must override this method.
    */
   isBlock() {
@@ -159,7 +175,7 @@ export class AbstractNode {
   }
 
   /**
-   * @returns true if this AbstractNode is an instance of Inline.
+   * @returns {boolean} true if this AbstractNode is an instance of Inline.
    * @throws {Error} Subclasses must override this method.
    */
   isInline() {

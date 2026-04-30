@@ -22,16 +22,26 @@ export abstract class AbstractNode {
      * Also updates the document reference.
      */
     set parent(parent: any);
-    set role(names: any);
+    /**
+     * Set the value of the role attribute on this node.
+     *
+     * Accepts a single role name, a space-separated String, or an Array.
+     *
+     * @param {string|string[]} names - A single role name, a space-separated String, or an Array.
+     */
+    set role(names: string | string[]);
     /**
      * Get the space-separated role string for this node.
-     * Set accepts a single role name, a space-separated string, or an Array.
+     *
+     * @returns {string|undefined} the role as a space-separated String.
      */
-    get role(): any;
+    get role(): string | undefined;
     /**
-     * Get the role names for this node as an Array.
+     * Retrieve the String role names for this node as an Array.
+     *
+     * @returns {string[]} the role names as a String Array, empty if the role attribute is absent.
      */
-    get roles(): any;
+    get roles(): string[];
     /**
      * Retrieve the space-separated String role for this node.
      *
@@ -55,15 +65,15 @@ export abstract class AbstractNode {
      */
     getRoles(): string[];
     /**
-     * @returns true if this AbstractNode is an instance of Block.
+     * @returns {boolean} true if this AbstractNode is an instance of Block.
      * @throws {Error} Subclasses must override this method.
      */
-    isBlock(): void;
+    isBlock(): boolean;
     /**
-     * @returns true if this AbstractNode is an instance of Inline.
+     * @returns {boolean} true if this AbstractNode is an instance of Inline.
      * @throws {Error} Subclasses must override this method.
      */
-    isInline(): void;
+    isInline(): boolean;
     /**
      * Get the converter instance being used to convert the current Document.
      */
@@ -309,7 +319,6 @@ export abstract class AbstractNode {
      * @returns {Promise<void>}
      */
     precomputeReftext(): Promise<void>;
-    _convertedReftext: any;
     /**
      * Check if the reftext attribute is defined.
      *
