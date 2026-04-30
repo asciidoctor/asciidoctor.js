@@ -2,11 +2,26 @@ import { parseArgs } from 'node:util'
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { join, resolve, isAbsolute, dirname, sep } from 'node:path'
-import { getVersion as _getVersion, getCoreVersion, Timings, Extensions, LoggerManager, convert, convertFile } from '@asciidoctor/core'
+import {
+  getVersion as _getVersion,
+  getCoreVersion,
+  Timings,
+  Extensions,
+  LoggerManager,
+  convert,
+  convertFile,
+} from '@asciidoctor/core'
 
 const require = createRequire(import.meta.url)
 
-const FAILURE_LEVELS = { DEBUG: 0, INFO: 1, WARN: 2, WARNING: 2, ERROR: 3, FATAL: 4 }
+const FAILURE_LEVELS = {
+  DEBUG: 0,
+  INFO: 1,
+  WARN: 2,
+  WARNING: 2,
+  ERROR: 3,
+  FATAL: 4,
+}
 
 const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${sep.replace('\\', '\\\\')}]`)
 
@@ -70,16 +85,21 @@ function parseCliArgs(argv) {
 
 function buildOptions(values, extraAttrs = []) {
   const {
-    backend, doctype,
+    backend,
+    doctype,
     'safe-mode': safeMode,
-    embedded, 'no-header-footer': noHeaderFooter,
+    embedded,
+    'no-header-footer': noHeaderFooter,
     'section-numbers': sectionNumbers,
     'base-dir': baseDir,
     'destination-dir': destinationDir,
     'out-file': outFile,
     'template-dir': templateDir,
     'template-engine': templateEngine,
-    quiet, verbose, timings, trace,
+    quiet,
+    verbose,
+    timings,
+    trace,
     'failure-level': failureLevelStr = 'FATAL',
     attribute: cliAttributes,
   } = values
@@ -125,7 +145,9 @@ function requireLibrary(requirePath, cwd = process.cwd()) {
   if (DOT_RELATIVE_RX.test(requirePath)) {
     requirePath = resolve(cwd, requirePath)
   } else if (!isAbsolute(requirePath)) {
-    const paths = [cwd, dirname(import.meta.dirname)].map((s) => join(s, 'node_modules'))
+    const paths = [cwd, dirname(import.meta.dirname)].map((s) =>
+      join(s, 'node_modules')
+    )
     requirePath = require.resolve(requirePath, { paths })
   }
   return require(requirePath)
@@ -143,7 +165,9 @@ function prepareProcessor(values) {
 }
 
 function getVersion() {
-  const pkg = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf8'))
+  const pkg = JSON.parse(
+    readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf8')
+  )
   return `Asciidoctor.js ${_getVersion()} (Asciidoctor ${getCoreVersion()}) [https://asciidoctor.org]
 Runtime Environment (node ${process.version} on ${process.platform})
 CLI version ${pkg.version}`
@@ -179,7 +203,12 @@ export async function run(argv = process.argv) {
 
   if (values.help) {
     if (positionals[0] === 'syntax') {
-      console.log(readFileSync(join(import.meta.dirname, '..', 'data', 'reference', 'syntax.adoc'), 'utf8'))
+      console.log(
+        readFileSync(
+          join(import.meta.dirname, '..', 'data', 'reference', 'syntax.adoc'),
+          'utf8'
+        )
+      )
     } else {
       console.error(HELP_TEXT)
     }
@@ -191,11 +220,14 @@ export async function run(argv = process.argv) {
 
   // Configure logger verbosity
   const logger = LoggerManager.getLogger()
-  if (values.quiet) logger.setLevel(3) // ERROR
+  if (values.quiet)
+    logger.setLevel(3) // ERROR
   else if (values.verbose) logger.setLevel(0) // DEBUG
 
   const files = positionals.filter((f) => f !== '-')
-  const isStdin = positionals.includes('-') || (files.length === 0 && args[args.length - 1] === '-')
+  const isStdin =
+    positionals.includes('-') ||
+    (files.length === 0 && args[args.length - 1] === '-')
 
   if (isStdin) {
     const data = await readFromStdin()

@@ -21,7 +21,11 @@ const SEA_FUSE = 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2'
 
 function run(bin, args, opts = {}) {
   console.log(`> ${[bin, ...args].join(' ')}`)
-  execFileSync(bin, args, { stdio: 'inherit', shell: platform === 'win32', ...opts })
+  execFileSync(bin, args, {
+    stdio: 'inherit',
+    shell: platform === 'win32',
+    ...opts,
+  })
 }
 
 const ext = platform === 'win32' ? '.cmd' : ''
@@ -34,7 +38,9 @@ run(rollupBin, ['-c'], { cwd: pkgDir })
 
 // 2. Generate SEA blob
 console.log('\n=== Generating SEA blob ===')
-run(process.execPath, ['--experimental-sea-config', 'sea-config.json'], { cwd: pkgDir })
+run(process.execPath, ['--experimental-sea-config', 'sea-config.json'], {
+  cwd: pkgDir,
+})
 
 // 3. Copy Node.js binary and make it executable
 console.log('\n=== Copying Node.js binary ===')
@@ -49,7 +55,13 @@ if (platform === 'darwin') {
 
 // 5. Inject SEA blob
 console.log('\n=== Injecting SEA blob ===')
-const postjectArgs = [outputBinary, 'NODE_SEA_BLOB', blobPath, '--sentinel-fuse', SEA_FUSE]
+const postjectArgs = [
+  outputBinary,
+  'NODE_SEA_BLOB',
+  blobPath,
+  '--sentinel-fuse',
+  SEA_FUSE,
+]
 if (platform === 'darwin') postjectArgs.push('--macho-segment-name', 'NODE_SEA')
 run(postjectBin, postjectArgs)
 

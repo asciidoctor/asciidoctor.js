@@ -206,7 +206,8 @@ export class DocBook5Converter extends ConverterBase {
       result.push('<tbody valign="top">')
       for (const [terms, dd] of node.getItems()) {
         result.push('<row>\n<entry>')
-        for (const dt of terms) result.push(`<simpara>${dt.getText()}</simpara>`)
+        for (const dt of terms)
+          result.push(`<simpara>${dt.getText()}</simpara>`)
         result.push('</entry>\n<entry>')
         if (dd) {
           if (dd.hasText()) result.push(`<simpara>${dd.getText()}</simpara>`)
@@ -363,7 +364,10 @@ export class DocBook5Converter extends ConverterBase {
     const reftext = node.reftext
     switch (node.style) {
       case 'abstract': {
-        if (node.getParent() === node.document && node.document.doctype === 'book') {
+        if (
+          node.getParent() === node.document &&
+          node.document.doctype === 'book'
+        ) {
           this.logger.warn(
             'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.'
           )

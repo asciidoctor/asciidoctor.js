@@ -1005,7 +1005,10 @@ ${equation}
   async convert_open(node) {
     const style = node.style
     if (style === 'abstract') {
-      if (node.getParent() === node.document && node.document.doctype === 'book') {
+      if (
+        node.getParent() === node.document &&
+        node.document.doctype === 'book'
+      ) {
         this.logger.warn(
           'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.'
         )

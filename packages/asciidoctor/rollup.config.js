@@ -13,7 +13,13 @@ function nodeAwaitImportToRequire() {
     name: 'node-await-import-to-require',
     transform(code) {
       if (!code.includes("await import('node:")) return null
-      return { code: code.replaceAll(/await import\('(node:[^']+)'\)/g, "require('$1')"), map: null }
+      return {
+        code: code.replaceAll(
+          /await import\('(node:[^']+)'\)/g,
+          "require('$1')"
+        ),
+        map: null,
+      }
     },
   }
 }
@@ -26,7 +32,10 @@ function transformCli() {
 
       // Remove createRequire — CJS output has native require
       code = code.replace("import { createRequire } from 'node:module'\n", '')
-      code = code.replace("const require = createRequire(import.meta.url)\n\n", '\n')
+      code = code.replace(
+        'const require = createRequire(import.meta.url)\n\n',
+        '\n'
+      )
 
       // import.meta.dirname → __dirname (CJS equivalent)
       code = code.replaceAll('import.meta.dirname', '__dirname')
@@ -50,8 +59,12 @@ function transformCli() {
 // resolve to the statically bundled engine modules instead of Node's runtime
 // module resolution (which would fail inside a SEA binary).
 function bundleTemplateEngines() {
-  const engineImports = BUNDLED_ENGINES.map((e) => `import _bundled_${e} from '${e}';`).join('\n')
-  const engineMap = BUNDLED_ENGINES.map((e) => `'${e}': _bundled_${e}`).join(', ')
+  const engineImports = BUNDLED_ENGINES.map(
+    (e) => `import _bundled_${e} from '${e}';`
+  ).join('\n')
+  const engineMap = BUNDLED_ENGINES.map((e) => `'${e}': _bundled_${e}`).join(
+    ', '
+  )
 
   return {
     name: 'bundle-template-engines',

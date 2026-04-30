@@ -149,7 +149,11 @@ export function rootname(filename) {
  */
 export function basename(filename, dropExt = null) {
   // Split on both POSIX and Windows separators, take the last non-empty segment.
-  const base = filename.replace(/[/\\]+$/, '').split(/[/\\]/).pop() ?? filename
+  const base =
+    filename
+      .replace(/[/\\]+$/, '')
+      .split(/[/\\]/)
+      .pop() ?? filename
   if (!dropExt) return base
   const ext = dropExt === true ? extname(base) : dropExt
   return ext && base.endsWith(ext) ? base.slice(0, -ext.length) : base
