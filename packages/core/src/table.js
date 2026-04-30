@@ -291,10 +291,29 @@ Table.Column = class Column extends AbstractNode {
 
 // ── Table.Cell ────────────────────────────────────────────────────────────────
 
+/** @extends {AbstractBlock<string | string[]>} */
 class Cell extends AbstractBlock {
   static get DOUBLE_LF() {
     return LF + LF
   }
+
+  /** @internal */
+  _reinitializeArgs
+
+  /** @internal */
+  _innerDocSetup
+
+  /** @internal */
+  _subs
+
+  /** @internal */
+  _text
+
+  /** @internal */
+  _cellbgcolor
+
+  /** @internal */
+  _convertedText
 
   constructor(column, cellText, attributes = {}, opts = {}) {
     super(column, 'table_cell')

@@ -23,6 +23,27 @@ function isInternal(node) {
 function collectInternalNodes(sourceFile) {
   const internals = []
 
+  function visitTypeLiteral(node) {
+    for (const member of node.members) {
+      if (ts.isPropertySignature(member) || ts.isMethodSignature(member)) {
+        const name = member.name && ts.isIdentifier(member.name) ? member.name.text : null
+        if (isInternal(member) || (name && name.startsWith('_'))) {
+          internals.push(member)
+        }
+      }
+    }
+  }
+
+  function visitNode(node) {
+    ts.forEachChild(node, (child) => {
+      if (ts.isTypeLiteralNode(child)) {
+        visitTypeLiteral(child)
+      } else {
+        visitNode(child)
+      }
+    })
+  }
+
   function visit(node) {
     if (ts.isSourceFile(node) || ts.isModuleBlock(node)) {
       for (const child of node.statements) {
@@ -36,6 +57,8 @@ function collectInternalNodes(sourceFile) {
       for (const member of node.members) {
         if (isInternal(member)) {
           internals.push(member)
+        } else {
+          visitNode(member)
         }
       }
     } else if (ts.isModuleDeclaration(node)) {

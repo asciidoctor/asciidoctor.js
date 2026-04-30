@@ -47,10 +47,9 @@ declare class Column extends AbstractNode {
     style: any;
     /** Alias for parent (always a Table). */
     get table(): AbstractNode;
-    isBlock(): boolean;
-    isInline(): boolean;
 }
-declare class Cell extends AbstractBlock<string> {
+/** @extends {AbstractBlock<string | string[]>} */
+declare class Cell extends AbstractBlock<string | string[]> {
     static get DOUBLE_LF(): string;
     /**
      * Factory — create and fully initialize a Cell asynchronously.
@@ -69,28 +68,18 @@ declare class Cell extends AbstractBlock<string> {
         style: any;
         /** Alias for parent (always a Table). */
         get table(): AbstractNode;
-        /**
-         * Calculate and assign the widths for this column.
-         * @param {number|null} colPcwidth
-         * @param {number|null} widthBase
-         * @param {number} precision
-         * @returns {number} The resolved colpcwidth value.
-         * @internal
-         */
-        assignWidth(colPcwidth: number | null, widthBase: number | null, precision: number): number;
         isBlock(): boolean;
         isInline(): boolean;
         document: Document;
-        _parent: AbstractNode;
         context: string;
         nodeName: string;
         id: string;
         attributes: any;
         passthroughs: any[];
         set parent(parent: any);
-        get role(): any;
-        set role(names: any);
-        get roles(): any;
+        get role(): string | undefined;
+        set role(names: string | string[]);
+        get roles(): string[];
         getRole(): string | undefined;
         setRole(...names: (string | string[])[]): string;
         getRoles(): string[];
@@ -126,7 +115,6 @@ declare class Cell extends AbstractBlock<string> {
         removeRole(name: string): boolean;
         get reftext(): string | null;
         precomputeReftext(): Promise<void>;
-        _convertedReftext: any;
         hasReftext(): boolean;
         getReftext(): string | undefined;
         isReftext(): boolean;
@@ -145,23 +133,8 @@ declare class Cell extends AbstractBlock<string> {
     }, cellText: string, attributes?: any, opts?: any): Promise<typeof Cell>;
     constructor(column: any, cellText: any, attributes?: {}, opts?: {});
     _cursor: any;
-    _reinitializeArgs: any[];
     colspan: number;
     rowspan: number;
-    _innerDocSetup: {
-        lines: any;
-        parentDoc: Document;
-        parentDoctitle: any;
-        options: {
-            safe: any;
-            backend: any;
-            header_footer: boolean;
-            parent: Document;
-            cursor: any;
-        };
-    };
-    _subs: string[];
-    _text: any;
     style: any;
     /** Alias for parent (always a Column). */
     get column(): AbstractNode;
@@ -182,14 +155,6 @@ declare class Cell extends AbstractBlock<string> {
      * @returns {Promise<void>}
      */
     precomputeText(): Promise<void>;
-    _convertedText: any;
-    _cellbgcolor: any;
-    /**
-     * Get the content — converted body data.
-     * For AsciiDoc cells, returns the pre-computed content (set by Document.convert()).
-     * @returns {Promise<string|string[]>}
-     */
-    content(): Promise<string | string[]>;
     lines(): any;
     source(): any;
     get innerDocument(): any;
