@@ -43,7 +43,7 @@ Learn more about https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/M
 
 [source,js]
 ----
-import asciidoctor from '@asciidoctor/core'
+import { convert } from '@asciidoctor/core'
 ----
 
 [NOTE]
@@ -51,7 +51,7 @@ import asciidoctor from '@asciidoctor/core'
 `@asciidoctor/core` is also available as a CommonJS (CJS) module:
 [source,js]
 ----
-const asciidoctor = require('@asciidoctor/core')
+const { convert } = require('@asciidoctor/core')
 ----
 ====
 
