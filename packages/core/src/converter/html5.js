@@ -834,23 +834,23 @@ ${await node.content()}
       if (node.hasOption('inline')) {
         img =
           (await this.readSvgContents(node, target)) ||
-          `<span class="alt">${node.alt()}</span>`
+          `<span class="alt">${node.getAlt()}</span>`
       } else if (
         node.hasOption('interactive') &&
         node.document.safe >= SafeMode.SERVER
       ) {
         const fallback = node.hasAttr('fallback')
-          ? `<img src="${await node.imageUri(node.attr('fallback'))}" alt="${this._encodeAttrValue(node.alt())}"${widthAttr}${heightAttr}${slash}>`
-          : `<span class="alt">${node.alt()}</span>`
+          ? `<img src="${await node.imageUri(node.attr('fallback'))}" alt="${this._encodeAttrValue(node.getAlt())}"${widthAttr}${heightAttr}${slash}>`
+          : `<span class="alt">${node.getAlt()}</span>`
         src = await node.imageUri(target)
         img = `<object type="image/svg+xml" data="${src}"${widthAttr}${heightAttr}>${fallback}</object>`
       } else {
         src = await node.imageUri(target)
-        img = `<img src="${src}" alt="${this._encodeAttrValue(node.alt())}"${widthAttr}${heightAttr}${slash}>`
+        img = `<img src="${src}" alt="${this._encodeAttrValue(node.getAlt())}"${widthAttr}${heightAttr}${slash}>`
       }
     } else {
       src = await node.imageUri(target)
-      img = `<img src="${src}" alt="${this._encodeAttrValue(node.alt())}"${widthAttr}${heightAttr}${slash}>`
+      img = `<img src="${src}" alt="${this._encodeAttrValue(node.getAlt())}"${widthAttr}${heightAttr}${slash}>`
     }
 
     if (node.hasAttr('link')) {
@@ -1634,9 +1634,9 @@ Your browser does not support the video tag.
           : ''
         if (node.hasAttr('height')) attrs += ` height="${node.attr('height')}"`
         if (node.hasAttr('title')) attrs += ` title="${node.attr('title')}"`
-        img = `<img src="${await node.iconUri(target)}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
+        img = `<img src="${await node.iconUri(target)}" alt="${this._encodeAttrValue(node.getAlt())}"${attrs}${this._voidSlash}>`
       } else {
-        img = `[${node.alt()}&#93;`
+        img = `[${node.getAlt()}&#93;`
       }
     } else {
       let attrs = node.hasAttr('width') ? ` width="${node.attr('width')}"` : ''
@@ -1649,23 +1649,23 @@ Your browser does not support the video tag.
         if (node.hasOption('inline')) {
           img =
             (await this.readSvgContents(node, target)) ||
-            `<span class="alt">${node.alt()}</span>`
+            `<span class="alt">${node.getAlt()}</span>`
         } else if (
           node.hasOption('interactive') &&
           node.document.safe >= SafeMode.SERVER
         ) {
           const fallback = node.hasAttr('fallback')
-            ? `<img src="${await node.imageUri(node.attr('fallback'))}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
-            : `<span class="alt">${node.alt()}</span>`
+            ? `<img src="${await node.imageUri(node.attr('fallback'))}" alt="${this._encodeAttrValue(node.getAlt())}"${attrs}${this._voidSlash}>`
+            : `<span class="alt">${node.getAlt()}</span>`
           src = await node.imageUri(target)
           img = `<object type="image/svg+xml" data="${src}"${attrs}>${fallback}</object>`
         } else {
           src = await node.imageUri(target)
-          img = `<img src="${src}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
+          img = `<img src="${src}" alt="${this._encodeAttrValue(node.getAlt())}"${attrs}${this._voidSlash}>`
         }
       } else {
         src = await node.imageUri(target)
-        img = `<img src="${src}" alt="${this._encodeAttrValue(node.alt())}"${attrs}${this._voidSlash}>`
+        img = `<img src="${src}" alt="${this._encodeAttrValue(node.getAlt())}"${attrs}${this._voidSlash}>`
       }
     }
 

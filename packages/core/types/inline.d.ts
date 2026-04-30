@@ -16,8 +16,6 @@ export class Inline extends AbstractNode {
     id: any;
     type: any;
     target: any;
-    isBlock(): boolean;
-    isInline(): boolean;
     /**
      * Convert this inline element using the document's converter.
      * @returns {Promise<string>}
@@ -40,11 +38,15 @@ export class Inline extends AbstractNode {
      * Get the alt text for this inline image.
      * @returns {string} the value of the alt attribute, or ''.
      */
-    alt(): string;
+    getAlt(): string;
     /**
-     * Generate xreftext for this inline node.
-     * @param {string|null} [_xrefstyle=null]
-     * @returns {string|null}
+     * Generate cross-reference text (xreftext) that can be used to refer to this inline node.
+     *
+     * Uses the explicit reftext for this inline node, if specified, retrieved by calling the
+     * reftext method. Otherwise, returns null.
+     *
+     * @param {string|null} [_xrefstyle=null] - Not currently used.
+     * @returns {string|null} the reftext to refer to this inline node, or null if no reftext is defined.
      */
     xreftext(_xrefstyle?: string | null): string | null;
 }

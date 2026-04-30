@@ -71,7 +71,7 @@ export class Inline extends AbstractNode {
    * Get the alt text for this inline image.
    * @returns {string} the value of the alt attribute, or ''.
    */
-  alt() {
+  getAlt() {
     return this.attr('alt') || ''
   }
 
@@ -96,6 +96,7 @@ export class Inline extends AbstractNode {
   }
 
   /**
+   * @internal
    * Pre-compute the reftext with substitutions applied asynchronously.
    * Called during Document.parse() so the synchronous getter works during conversion.
    * @returns {Promise<void>}
@@ -107,9 +108,13 @@ export class Inline extends AbstractNode {
   }
 
   /**
-   * Generate xreftext for this inline node.
-   * @param {string|null} [_xrefstyle=null]
-   * @returns {string|null}
+   * Generate cross-reference text (xreftext) that can be used to refer to this inline node.
+   *
+   * Uses the explicit reftext for this inline node, if specified, retrieved by calling the
+   * reftext method. Otherwise, returns null.
+   *
+   * @param {string|null} [_xrefstyle=null] - Not currently used.
+   * @returns {string|null} the reftext to refer to this inline node, or null if no reftext is defined.
    */
   xreftext(_xrefstyle = null) {
     return this.reftext
