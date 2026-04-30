@@ -363,14 +363,14 @@ export class DocBook5Converter extends ConverterBase {
     const reftext = node.reftext
     switch (node.style) {
       case 'abstract': {
-        if (node.parent === node.document && node.document.doctype === 'book') {
+        if (node.getParent() === node.document && node.document.doctype === 'book') {
           this.logger.warn(
             'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.'
           )
           return ''
         }
         let res = `<abstract>\n${this._titleTag(node)}${await this._encloseContent(node)}\n</abstract>`
-        const parent = node.parent
+        const parent = node.getParent()
         if (
           this.backend === 'docbook5' &&
           !node.hasOption('root') &&
@@ -387,7 +387,7 @@ export class DocBook5Converter extends ConverterBase {
       case 'partintro': {
         if (
           node.level === 0 &&
-          node.parent.context === 'section' &&
+          node.getParent().context === 'section' &&
           node.document.doctype === 'book'
         ) {
           return `<partintro${this._commonAttributes(id, role, reftext)}>\n${this._titleTag(node)}${await this._encloseContent(node)}\n</partintro>`
@@ -913,11 +913,11 @@ export class DocBook5Converter extends ConverterBase {
    * @private
    */
   _extractAbstract(document, abstract) {
-    let parent = abstract.parent
+    let parent = abstract.getParent()
     let toDelete = abstract
     while (parent !== document && parent.blocks.length === 1) {
       toDelete = parent
-      parent = parent.parent
+      parent = parent.getParent()
     }
     parent.blocks.splice(parent.blocks.indexOf(toDelete), 1)
     return abstract
@@ -928,7 +928,7 @@ export class DocBook5Converter extends ConverterBase {
    * @private
    */
   _restoreAbstract(abstract) {
-    abstract.parent.blocks.unshift(abstract)
+    abstract.getParent().blocks.unshift(abstract)
   }
 
   /**

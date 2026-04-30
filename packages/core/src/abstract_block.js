@@ -267,7 +267,7 @@ export class AbstractBlock extends AbstractNode {
    * @returns {AbstractBlock} this block (enables chaining).
    */
   append(block) {
-    if (block.parent !== this) block.parent = this
+    if (block.getParent() !== this) block.parent = this
     this.blocks.push(block)
     return this
   }
@@ -516,7 +516,7 @@ export class AbstractBlock extends AbstractNode {
    */
   nextAdjacentBlock() {
     if (this.context === 'document') return null
-    const p = this.parent
+    const p = this.getParent()
     if (p.context === 'dlist' && this.context === 'list_item') {
       const idx = p.getItems().findIndex(
         ([terms, desc]) => terms.includes(this) || desc === this

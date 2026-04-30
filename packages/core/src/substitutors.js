@@ -1087,7 +1087,7 @@ export const Substitutors = {
     if (
       foundSquareBracket &&
       this.context === 'list_item' &&
-      this.parent.style === 'bibliography'
+      this.getParent().style === 'bibliography'
     ) {
       text = await asyncReplace(
         text,
