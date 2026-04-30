@@ -266,7 +266,7 @@ export class DocBook5Converter extends ConverterBase {
     const alignAttribute = node.hasAttr('align')
       ? ` align="${node.attr('align')}"`
       : ''
-    const mediaobject = `<mediaobject>\n<imageobject>\n<imagedata fileref="${await node.imageUri(node.attr('target'))}"${this._imageSizeAttributes(node.attributes)}${alignAttribute}/>\n</imageobject>\n<textobject><phrase>${node.alt()}</phrase></textobject>\n</mediaobject>`
+    const mediaobject = `<mediaobject>\n<imageobject>\n<imagedata fileref="${await node.imageUri(node.attr('target'))}"${this._imageSizeAttributes(node.attributes)}${alignAttribute}/>\n</imageobject>\n<textobject><phrase>${node.getAlt()}</phrase></textobject>\n</mediaobject>`
     const commonAttrs = this._commonAttributes(node.id, node.role, node.reftext)
     if (node.hasTitle()) {
       return `<figure${commonAttrs}>\n<title>${node.title}</title>\n${mediaobject}\n</figure>`
@@ -658,7 +658,7 @@ export class DocBook5Converter extends ConverterBase {
       node.type === 'icon'
         ? await node.iconUri(node.target)
         : await node.imageUri(node.target)
-    const img = `<inlinemediaobject${this._commonAttributes(node.id, node.role)}>\n<imageobject>\n<imagedata fileref="${fileref}"${this._imageSizeAttributes(node.attributes)}/>\n</imageobject>\n<textobject><phrase>${node.alt()}</phrase></textobject>\n</inlinemediaobject>`
+    const img = `<inlinemediaobject${this._commonAttributes(node.id, node.role)}>\n<imageobject>\n<imagedata fileref="${fileref}"${this._imageSizeAttributes(node.attributes)}/>\n</imageobject>\n<textobject><phrase>${node.getAlt()}</phrase></textobject>\n</inlinemediaobject>`
     if (node.type !== 'icon' && node.hasAttr('link')) {
       const linkHref = node.attr('link')
       return `<link xl:href="${linkHref === 'self' ? fileref : linkHref}">${img}</link>`
