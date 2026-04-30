@@ -183,11 +183,27 @@ export class Section extends AbstractBlock {
   }
 
   /**
+   * Set the section name (e.g. 'section', 'appendix').
+   * @param {string|null} val
+   */
+  setSectionName(val) {
+    this.sectname = val
+  }
+
+  /**
    * Get the 0-based index of this section within the parent block.
    * @returns {number}
    */
   getIndex() {
     return this.index
+  }
+
+  /**
+   * Set the 0-based index of this section within the parent block.
+   * @param {number} val
+   */
+  setIndex(val) {
+    this.index = val
   }
 
   /**
@@ -204,6 +220,14 @@ export class Section extends AbstractBlock {
    */
   isSpecial() {
     return this.special
+  }
+
+  /**
+   * Set whether this section is a special section.
+   * @param {boolean} val
+   */
+  setSpecial(val) {
+    this.special = val
   }
 
   /**
