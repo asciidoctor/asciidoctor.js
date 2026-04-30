@@ -31,6 +31,7 @@ import { XmlSanitizeRx, AttributeEntryPassMacroRx } from './rx.js'
 import { LF } from './constants.js'
 import { applyLogging } from './logging.js'
 import { SyntaxHighlighter } from './syntax_highlighter.js'
+/** @import { Reader } from './reader.js' */
 
 // ── Helper structs ────────────────────────────────────────────────────────────
 
@@ -168,6 +169,44 @@ export class RevisionInfo {
 // ── Document ──────────────────────────────────────────────────────────────────
 
 export class Document extends AbstractBlock {
+  /** @internal */
+  _converter
+  /** @internal */
+  _maxAttributeValueSize
+  /** @internal */
+  _docinfoProcessorExtensions
+  /** @internal */
+  _attributesModified
+  /** @internal */
+  _counters
+  /** @internal */
+  _headerAttributes
+  /** @internal */
+  _reftexts
+  /** @internal */
+  _parsed
+  /** @internal */
+  _inputMtime
+  /** @internal */
+  _parentDoctype
+  /** @internal */
+  _initializeExtensions
+  /** @internal */
+  _timings
+  /** @internal */
+  _attributeOverrides
+  /** @type {Reader} */
+  reader
+  /** @type {string} */
+  doctype
+  /** @type {string} */
+  baseDir
+  /** @type {string} */
+  backend
+  /** @type {number} */
+  safe
+  /** @type {boolean} */
+  compatMode
   /** Override AbstractNode's getter so Document can own its converter directly. */
   get converter() {
     return this._converter
@@ -181,7 +220,9 @@ export class Document extends AbstractBlock {
     // AbstractBlock(parent, context, opts) — we pass `null` and patch afterward.
     super(null, 'document', options)
     // Document is its own parent/document (write _parent directly to avoid shadowing the accessor).
+    /** @internal */
     this._parent = this
+    /** @internal */
     this.document = this
 
     const parentDoc = options.parent ?? null
@@ -516,7 +557,7 @@ export class Document extends AbstractBlock {
     await Parser.parse(this.reader, this, {
       header_only: this.options.parse_header_only,
     })
-    this._restoreAttributes()
+    this.restoreAttributes()
 
     if (!this.parentDocument && this.extensions?.hasTreeProcessors?.()) {
       for (const ext of this.extensions.treeProcessors()) {
@@ -648,6 +689,7 @@ export class Document extends AbstractBlock {
 
   /**
    * @private
+   * @internal
    * Build the reftext→id lookup map. Called at end of parse().
    */
   async _buildReftextsMap() {
@@ -857,22 +899,6 @@ export class Document extends AbstractBlock {
   }
 
   /**
-   * @private
-   * Restore attributes to the state saved at end of header parse.
-   */
-  _restoreAttributes() {
-    if (!this.parentDocument) this.catalog.callouts.rewind()
-    const toRestore = this._headerAttributes
-    if (toRestore) {
-      // Replicate Ruby's Hash#replace: wipe keys added after the header snapshot (e.g. counters)
-      for (const key of Object.keys(this.attributes)) {
-        if (!(key in toRestore)) delete this.attributes[key]
-      }
-      Object.assign(this.attributes, toRestore)
-    }
-  }
-
-  /**
    * Set the specified attribute if not locked.
    * @param {string} name
    * @param {string} [value='']
@@ -948,6 +974,7 @@ export class Document extends AbstractBlock {
 
   /**
    * @private
+   * @internal
    * Walk the block tree in document order and pre-compute the content of
    * every AsciiDoc-style table cell. Must be called AFTER parse() has finished so
    * that (a) callouts.rewind() has been called and (b) all cross-references from
@@ -1131,7 +1158,7 @@ export class Document extends AbstractBlock {
       }
     }
 
-    if (this.extensions && this._docinfoProcessors(location)) {
+    if (this.extensions && this.hasDocinfoProcessors(location)) {
       const extContent = this._docinfoProcessorExtensions[location]
         .map((ext) => ext.processMethod(this))
         .filter(Boolean)
@@ -1140,7 +1167,11 @@ export class Document extends AbstractBlock {
     return content ? content.join(LF) : ''
   }
 
-  _docinfoProcessors(location) {
+  /**
+   * @param {string} [location='head'] A location for checking docinfo extensions at a given location (head or footer).
+   * @returns {boolean} True if docinfo processors are registered for the given location.
+   */
+  hasDocinfoProcessors(location = 'head') {
     if (location in this._docinfoProcessorExtensions) {
       return this._docinfoProcessorExtensions[location] !== false
     }
@@ -1166,13 +1197,32 @@ export class Document extends AbstractBlock {
   }
 
   /**
-   * Resolve the primary title for the document, optionally partitioned.
-   * @param {Object} [opts={}]
-   * @returns {string|DocumentTitle|null}
+   * @deprecated Use {@link getDocumentTitle} instead.
+   * @see getDocumentTitle
    */
   getDoctitle(opts = {}) {
     return this.doctitle(opts)
   }
+
+  /**
+   * Resolve the primary title for the document.
+   *
+   * Searches the following locations in order, returning the first non-empty value:
+   * - document-level attribute named `title`
+   * - header title (the document title)
+   * - title of the first section
+   * - document-level attribute named `untitled-label` (if `opts.use_fallback` is set)
+   *
+   * If no value can be resolved, `null` is returned.
+   *
+   * If `opts.partition` is specified, the value is parsed into a {@link DocumentTitle} object.
+   * If `opts.sanitize` is specified, XML elements are removed from the value.
+   * @param {Object} [opts={}]
+   * @param {boolean} [opts.partition] - Parse the title into a {@link DocumentTitle} with main and subtitle parts.
+   * @param {boolean} [opts.sanitize] - Strip XML/HTML elements from the resolved title.
+   * @param {boolean} [opts.use_fallback] - Fall back to the `untitled-label` attribute if no title is found.
+   * @returns {string|DocumentTitle|null} The resolved title, or null if none found.
+   */
   getDocumentTitle(opts = {}) {
     return this.doctitle(opts)
   }
@@ -1192,12 +1242,24 @@ export class Document extends AbstractBlock {
     return this.backend
   }
 
-  /** @returns {number} The safe mode level. */
+  /**
+   * @returns {number} The safe mode level as a numeric value.
+   * Corresponds to {@link SafeMode}: unsafe (0), safe (1), server (10), secure (20).
+   */
   getSafe() {
     return this.safe
   }
 
-  /** @returns {boolean} True if compat mode is enabled. */
+  /**
+   * Get the AsciiDoc compatibility mode flag.
+   *
+   * Enabling this attribute activates the following syntax changes:
+   * - single quotes as constrained emphasis formatting marks
+   * - single backticks parsed as inline literal, formatted as monospace
+   * - single plus parsed as constrained, monospaced inline formatting
+   * - double plus parsed as constrained, monospaced inline formatting
+   * @returns {boolean} True if compat mode is enabled.
+   */
   getCompatMode() {
     return this.compatMode
   }
@@ -1383,7 +1445,14 @@ export class Document extends AbstractBlock {
 
   /** Restore attributes to their saved header state. */
   restoreAttributes() {
-    this._restoreAttributes()
+    if (!this.parentDocument) this.catalog.callouts.rewind()
+    const toRestore = this._headerAttributes
+    if (toRestore) {
+      for (const key of Object.keys(this.attributes)) {
+        if (!(key in toRestore)) delete this.attributes[key]
+      }
+      Object.assign(this.attributes, toRestore)
+    }
   }
 
   /**
@@ -1393,14 +1462,6 @@ export class Document extends AbstractBlock {
    */
   async getDocinfo(location = 'head', suffix = undefined) {
     return this.docinfo(location, suffix)
-  }
-
-  /**
-   * @param {string} [location='head']
-   * @returns {boolean} True if docinfo processors are registered for the given location.
-   */
-  hasDocinfoProcessors(location = 'head') {
-    return this._docinfoProcessors(location)
   }
 
   /**
@@ -1475,6 +1536,14 @@ export class Document extends AbstractBlock {
       : result
   }
 
+  /**
+   * @private
+   * Resolve the list of substitutions to apply to docinfo files.
+   *
+   * Resolves subs from the `docinfosubs` document attribute if present,
+   * otherwise returns `['attributes']` as the default.
+   * @returns {string[]} The list of substitutions to apply.
+   */
   _resolveDocinfoSubs() {
     return 'docinfosubs' in this.attributes
       ? this.resolveSubs(this.attributes.docinfosubs, 'block', null, 'docinfo')
@@ -1527,6 +1596,12 @@ export class Document extends AbstractBlock {
     }
   }
 
+  /**
+   * @private
+   * Create and initialize an instance of the converter for this document.
+   * @param {string} backend - The backend name (e.g. 'html5', 'docbook5').
+   * @param {string} [delegateBackend] - An optional delegate backend to use when resolving the converter.
+   */
   _createConverter(backend, delegateBackend) {
     const opts = this.options
     if (!this.converter && opts._preCreatedConverter) {

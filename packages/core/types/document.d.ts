@@ -1,3 +1,4 @@
+/** @import { Reader } from './reader.js' */
 export class ImageReference {
     constructor(target: any, imagesdir: any);
     target: any;
@@ -71,39 +72,30 @@ export class Document extends AbstractBlock<string> {
      */
     static create(data: string | string[] | null, options?: any): Promise<Document>;
     constructor(data?: any, options?: {});
+    /** @type {Reader} */
+    reader: Reader;
+    /** @type {string} */
+    doctype: string;
+    /** @type {string} */
+    baseDir: string;
+    /** @type {string} */
+    backend: string;
+    /** @type {number} */
+    safe: number;
+    /** @type {boolean} */
+    compatMode: boolean;
     set converter(v: any);
     /** Override AbstractNode's getter so Document can own its converter directly. */
     get converter(): any;
-    _converter: any;
-    _parent: this;
-    document: this;
     parentDocument: any;
     catalog: any;
-    _attributeOverrides: any;
-    safe: any;
-    compatMode: any;
     outfilesuffix: any;
     sourcemap: any;
-    _timings: any;
     pathResolver: any;
     extensions: any;
     syntaxHighlighter: any;
-    _initializeExtensions: boolean;
-    _parentDoctype: any;
-    _inputMtime: any;
-    _parsed: boolean;
-    _reftexts: {};
     header: Section;
-    _headerAttributes: any;
-    _counters: {};
-    _attributesModified: Set<any>;
-    _docinfoProcessorExtensions: {};
     options: Readonly<{}>;
-    baseDir: any;
-    _maxAttributeValueSize: number;
-    backend: any;
-    doctype: any;
-    reader: any;
     /** Alias catalog as references (backwards compat). */
     get references(): any;
     /** @returns {boolean} True if this is a nested (child) document. */
@@ -143,11 +135,6 @@ export class Document extends AbstractBlock<string> {
      * @returns {string|null} The matching ID, or null.
      */
     resolveId(text: string): string | null;
-    /**
-     * @private
-     * Build the reftext→id lookup map. Called at end of parse().
-     */
-    private _buildReftextsMap;
     isMultipart(): boolean;
     hasFootnotes(): boolean;
     get footnotes(): any;
@@ -155,8 +142,8 @@ export class Document extends AbstractBlock<string> {
     isNested(): boolean;
     isEmbedded(): boolean;
     hasExtensions(): boolean;
-    source(): any;
-    sourceLines(): any;
+    source(): string;
+    sourceLines(): string[];
     basebackend(base: any): boolean;
     /**
      * Resolve the primary title for the document.
@@ -202,11 +189,6 @@ export class Document extends AbstractBlock<string> {
      */
     playbackAttributes(blockAttributes: any): void;
     /**
-     * @private
-     * Restore attributes to the state saved at end of header parse.
-     */
-    private _restoreAttributes;
-    /**
      * Set the specified attribute if not locked.
      * @param {string} name
      * @param {string} [value='']
@@ -237,14 +219,6 @@ export class Document extends AbstractBlock<string> {
      */
     setHeaderAttribute(name: string, value?: string, overwrite?: boolean): boolean;
     /**
-     * @private
-     * Walk the block tree in document order and pre-compute the content of
-     * every AsciiDoc-style table cell. Must be called AFTER parse() has finished so
-     * that (a) callouts.rewind() has been called and (b) all cross-references from
-     * the main document are already registered in the catalog.
-     */
-    private _convertAsciiDocCells;
-    /**
      * Convert the AsciiDoc document.
      * @param {Object} [opts={}]
      * @returns {Promise<string>} The converted output.
@@ -265,21 +239,59 @@ export class Document extends AbstractBlock<string> {
      * @returns {Promise<string>} Combined docinfo content.
      */
     docinfo(location?: string, suffix?: string | null): Promise<string>;
-    _docinfoProcessors(location: any): boolean;
     /**
-     * Resolve the primary title for the document, optionally partitioned.
-     * @param {Object} [opts={}]
-     * @returns {string|DocumentTitle|null}
+     * @param {string} [location='head'] A location for checking docinfo extensions at a given location (head or footer).
+     * @returns {boolean} True if docinfo processors are registered for the given location.
      */
-    getDoctitle(opts?: any): string | DocumentTitle | null;
-    getDocumentTitle(opts?: {}): string | DocumentTitle;
+    hasDocinfoProcessors(location?: string): boolean;
+    /**
+     * @deprecated Use {@link getDocumentTitle} instead.
+     * @see getDocumentTitle
+     */
+    getDoctitle(opts?: {}): string | DocumentTitle;
+    /**
+     * Resolve the primary title for the document.
+     *
+     * Searches the following locations in order, returning the first non-empty value:
+     * - document-level attribute named `title`
+     * - header title (the document title)
+     * - title of the first section
+     * - document-level attribute named `untitled-label` (if `opts.use_fallback` is set)
+     *
+     * If no value can be resolved, `null` is returned.
+     *
+     * If `opts.partition` is specified, the value is parsed into a {@link DocumentTitle} object.
+     * If `opts.sanitize` is specified, XML elements are removed from the value.
+     * @param {Object} [opts={}]
+     * @param {boolean} [opts.partition] - Parse the title into a {@link DocumentTitle} with main and subtitle parts.
+     * @param {boolean} [opts.sanitize] - Strip XML/HTML elements from the resolved title.
+     * @param {boolean} [opts.use_fallback] - Fall back to the `untitled-label` attribute if no title is found.
+     * @returns {string|DocumentTitle|null} The resolved title, or null if none found.
+     */
+    getDocumentTitle(opts?: {
+        partition?: boolean;
+        sanitize?: boolean;
+        use_fallback?: boolean;
+    }): string | DocumentTitle | null;
     /** @returns {string} The document type (e.g. 'article', 'book'). */
     getDoctype(): string;
     /** @returns {string} The backend name (e.g. 'html5', 'docbook5'). */
     getBackend(): string;
-    /** @returns {number} The safe mode level. */
+    /**
+     * @returns {number} The safe mode level as a numeric value.
+     * Corresponds to {@link SafeMode}: unsafe (0), safe (1), server (10), secure (20).
+     */
     getSafe(): number;
-    /** @returns {boolean} True if compat mode is enabled. */
+    /**
+     * Get the AsciiDoc compatibility mode flag.
+     *
+     * Enabling this attribute activates the following syntax changes:
+     * - single quotes as constrained emphasis formatting marks
+     * - single backticks parsed as inline literal, formatted as monospace
+     * - single plus parsed as constrained, monospaced inline formatting
+     * - double plus parsed as constrained, monospaced inline formatting
+     * @returns {boolean} True if compat mode is enabled.
+     */
     getCompatMode(): boolean;
     /** @returns {boolean} True if sourcemap is enabled. */
     getSourcemap(): boolean;
@@ -360,11 +372,6 @@ export class Document extends AbstractBlock<string> {
      */
     getDocinfo(location?: string, suffix?: string): Promise<string>;
     /**
-     * @param {string} [location='head']
-     * @returns {boolean} True if docinfo processors are registered for the given location.
-     */
-    hasDocinfoProcessors(location?: string): boolean;
-    /**
      * Delete the specified attribute if not locked.
      * @param {string} name - The attribute name to remove.
      * @returns {string|undefined} The previous value, or undefined if not present or locked.
@@ -383,19 +390,34 @@ export class Document extends AbstractBlock<string> {
      * Used by processAttributeEntry() which can await the result.
      */
     private _applyAttributeEntryValueSubs;
-    _resolveDocinfoSubs(): any;
+    /**
+     * @private
+     * Resolve the list of substitutions to apply to docinfo files.
+     *
+     * Resolves subs from the `docinfosubs` document attribute if present,
+     * otherwise returns `['attributes']` as the default.
+     * @returns {string[]} The list of substitutions to apply.
+     */
+    private _resolveDocinfoSubs;
     /**
      * @private
      * Walk the block tree and pre-compute all async text values.
      * Handles titles (AbstractBlock), list item text, table cell text, and reftexts.
      */
     private _resolveAllTexts;
-    _createConverter(backend: any, delegateBackend: any): any;
+    /**
+     * @private
+     * Create and initialize an instance of the converter for this document.
+     * @param {string} backend - The backend name (e.g. 'html5', 'docbook5').
+     * @param {string} [delegateBackend] - An optional delegate backend to use when resolving the converter.
+     */
+    private _createConverter;
 }
 export namespace Document {
     export { Footnote };
 }
 export const _deps: {};
 import { AbstractBlock } from './abstract_block.js';
+import type { Reader } from './reader.js';
 import { Section } from './section.js';
 import { Inline } from './inline.js';
