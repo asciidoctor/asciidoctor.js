@@ -22,6 +22,13 @@ export class Callouts {
         ordinal: number;
         id: string;
     }>;
+    /** @returns {Array<Array<{ordinal: number, id: string}>>} All callout lists in the document. */
+    getLists(): Array<Array<{
+        ordinal: number;
+        id: string;
+    }>>;
+    /** @returns {number} The 1-based index of the current callout list. */
+    getListIndex(): number;
     /** Advance to the next callout list in the document. */
     nextList(): void;
     /** Rewind the list pointer to the beginning (switching parse → convert). */
