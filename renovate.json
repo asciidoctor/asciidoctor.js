@@ -9,11 +9,13 @@
   "labels": [
     ":link: dependencies"
   ],
-  "commitMessagePrefix": ":arrow_up:",
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "schedule": ["* 0-3 1 * *"],
   "separateMajorMinor": true,
   "extends": [
     ":preserveSemverRanges",
-    "group:all",
     ":maintainLockFilesMonthly"
   ],
   "packageRules": [
@@ -28,17 +30,63 @@
       "enabled": false
     },
     {
+      "groupName": "rollup & build plugins",
       "matchPackageNames": [
-        "asciidoctor-opal-runtime",
-        "opal-compiler"
-      ],
-      "enabled": false
+        "rollup",
+        "@rollup/plugin-json",
+        "@rollup/plugin-commonjs",
+        "@rollup/plugin-node-resolve"
+      ]
+    },
+    {
+      "groupName": "template engines",
+      "matchPackageNames": [
+        "dot",
+        "ejs",
+        "handlebars",
+        "nunjucks",
+        "pug"
+      ]
+    },
+    {
+      "groupName": "testing",
+      "matchPackageNames": [
+        "vitest",
+        "@vitest/browser",
+        "@vitest/browser-playwright",
+        "@vitest/ui",
+        "playwright",
+        "sinon"
+      ]
+    },
+    {
+      "groupName": "DOM & HTML parsing",
+      "matchPackageNames": [
+        "@xmldom/xmldom",
+        "linkedom",
+        "node-html-parser",
+        "xpath"
+      ]
+    },
+    {
+      "groupName": "TypeScript & types",
+      "matchPackageNames": [
+        "typescript",
+        "typedoc",
+        "@types/node"
+      ]
+    },
+    {
+      "groupName": "GitHub Actions",
+      "matchManagers": [
+        "github-actions"
+      ]
     }
   ],
   "lockFileMaintenance": {
     "extends": [
-      "group:all"
-    ],
-    "commitMessageAction": "Update"
+      "group:all",
+      "schedule:monthly"
+    ]
   }
 }
