@@ -46,5 +46,16 @@
 				"organizeImports": "off"
 			}
 		}
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["src/data/stylesheet-data.js"],
+			"formatter": {
+				"enabled": false
+			},
+			"linter": {
+				"enabled": false
+			}
+		}
+	]
 }
