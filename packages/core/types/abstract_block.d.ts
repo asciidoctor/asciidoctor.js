@@ -32,8 +32,6 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
     level: number;
     _nextSectionIndex: number;
     _nextSectionOrdinal: number;
-    isBlock(): boolean;
-    isInline(): boolean;
     /**
      * Set the String block title (clears the memoised converted title).
      * @param {string|null} val
