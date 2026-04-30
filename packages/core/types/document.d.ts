@@ -3,6 +3,14 @@ export class ImageReference {
     constructor(target: any, imagesdir: any);
     target: any;
     imagesdir: any;
+    /**
+     * @returns {string} the target image path or URI.
+     */
+    getTarget(): string;
+    /**
+     * @returns {string} the images directory.
+     */
+    getImagesDirectory(): string;
     toString(): any;
 }
 export class Footnote {
@@ -10,6 +18,18 @@ export class Footnote {
     index: any;
     id: any;
     text: any;
+    /**
+     * @returns {number} the index of this footnote.
+     */
+    getIndex(): number;
+    /**
+     * @returns {string|null} the id of this footnote, or null if not set.
+     */
+    getId(): string | null;
+    /**
+     * @returns {string} the text of this footnote.
+     */
+    getText(): string;
 }
 export class AttributeEntry {
     constructor(name: any, value: any, negate?: any);
