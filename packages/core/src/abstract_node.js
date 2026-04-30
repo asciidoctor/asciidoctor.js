@@ -72,12 +72,12 @@ export class AbstractNode {
   constructor(parent, context, opts = {}) {
     // document is a special case – should refer to itself
     if (context === 'document') {
-      /** @type {AbstractNode} */
-      this.document = this
+      /** @type {Document} */
+      this.document = /** @type {Document} */ this
     } else if (parent) {
-      /** @type {AbstractNode} */
+      /** @internal */
       this._parent = parent
-      /** @type {AbstractNode} */
+      /** @type {Document} */
       this.document = parent.document
     }
     this.context = context
@@ -90,13 +90,9 @@ export class AbstractNode {
   }
 
   /**
-   * Get/Set the parent of this node.
-   * The setter also updates the document reference.
+   * Set the parent of this node.
+   * Also updates the document reference.
    */
-  get parent() {
-    return this._parent
-  }
-
   set parent(parent) {
     this._parent = parent
     this.document = parent.document
@@ -370,7 +366,7 @@ export class AbstractNode {
    * @returns {AbstractNode|undefined} the parent AbstractNode, or undefined for the root document.
    */
   getParent() {
-    return this.parent
+    return this._parent
   }
 
   /**

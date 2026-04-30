@@ -80,22 +80,21 @@ declare class Cell extends AbstractBlock<string> {
         assignWidth(colPcwidth: number | null, widthBase: number | null, precision: number): number;
         isBlock(): boolean;
         isInline(): boolean;
-        document: AbstractNode;
+        document: Document;
         _parent: AbstractNode;
         context: string;
         nodeName: string;
         id: string;
         attributes: any;
         passthroughs: any[];
-        get parent(): AbstractNode;
-        set parent(parent: AbstractNode);
+        set parent(parent: any);
         get role(): any;
         set role(names: any);
         get roles(): any;
         getRole(): string | undefined;
         setRole(...names: (string | string[])[]): string;
         getRoles(): string[];
-        get converter(): any;
+        readonly converter: any;
         getNodeName(): string;
         getId(): string | undefined;
         setId(id: string): void;
@@ -142,7 +141,7 @@ declare class Cell extends AbstractBlock<string> {
         readAsset(path: string, opts?: any): Promise<string | null>;
         readContents(target: string, opts?: any): Promise<string | null>;
         isUri(str: string): boolean;
-        get logger(): any;
+        readonly logger: any;
     }, cellText: string, attributes?: any, opts?: any): Promise<typeof Cell>;
     constructor(column: any, cellText: any, attributes?: {}, opts?: {});
     _cursor: any;
@@ -151,13 +150,13 @@ declare class Cell extends AbstractBlock<string> {
     rowspan: number;
     _innerDocSetup: {
         lines: any;
-        parentDoc: AbstractNode;
+        parentDoc: Document;
         parentDoctitle: any;
         options: {
             safe: any;
             backend: any;
             header_footer: boolean;
-            parent: AbstractNode;
+            parent: Document;
             cursor: any;
         };
     };

@@ -10,21 +10,18 @@ export abstract class AbstractNode {
      * @param {object} [opts={}]
      */
     constructor(parent: AbstractNode, context: string, opts?: object);
-    /** @type {AbstractNode} */
-    document: AbstractNode;
-    /** @type {AbstractNode} */
-    _parent: AbstractNode;
+    /** @type {Document} */
+    document: Document;
     context: string;
     nodeName: string;
     id: string;
     attributes: any;
     passthroughs: any[];
-    set parent(parent: AbstractNode);
     /**
-     * Get/Set the parent of this node.
-     * The setter also updates the document reference.
+     * Set the parent of this node.
+     * Also updates the document reference.
      */
-    get parent(): AbstractNode;
+    set parent(parent: any);
     set role(names: any);
     /**
      * Get the space-separated role string for this node.

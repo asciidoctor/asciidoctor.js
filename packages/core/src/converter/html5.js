@@ -1005,7 +1005,7 @@ ${equation}
   async convert_open(node) {
     const style = node.style
     if (style === 'abstract') {
-      if (node.parent === node.document && node.document.doctype === 'book') {
+      if (node.getParent() === node.document && node.document.doctype === 'book') {
         this.logger.warn(
           'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.'
         )
@@ -1025,7 +1025,7 @@ ${await node.content()}
     if (
       style === 'partintro' &&
       (node.level > 0 ||
-        node.parent.context !== 'section' ||
+        node.getParent().context !== 'section' ||
         node.document.doctype !== 'book')
     ) {
       this.logger.error(

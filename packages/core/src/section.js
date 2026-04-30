@@ -78,8 +78,8 @@ export class Section extends AbstractBlock {
   sectnum(delimiter = '.', append = null) {
     const suffix =
       append !== null ? (append === false ? '' : append) : delimiter
-    if (this.level > 1 && this.parent instanceof Section) {
-      return `${this.parent.sectnum(delimiter, delimiter)}${this.numeral ?? ''}${suffix}`
+    if (this.level > 1 && this.getParent() instanceof Section) {
+      return `${this.getParent().sectnum(delimiter, delimiter)}${this.numeral ?? ''}${suffix}`
     }
     return `${this.numeral ?? ''}${suffix}`
   }

@@ -246,7 +246,7 @@ Table.Column = class Column extends AbstractNode {
 
   /** Alias for parent (always a Table). */
   get table() {
-    return this.parent
+    return this.getParent()
   }
 
   /**
@@ -266,7 +266,7 @@ Table.Column = class Column extends AbstractNode {
       if (Math.trunc(colPcwidth) === colPcwidth)
         colPcwidth = Math.trunc(colPcwidth)
     }
-    const tableAbswidth = this.parent.attributes.tableabswidth
+    const tableAbswidth = this.getParent().attributes.tableabswidth
     if (tableAbswidth != null) {
       const colAbswidth = truncate(
         (colPcwidth / 100.0) * tableAbswidth,
@@ -425,7 +425,7 @@ class Cell extends AbstractBlock {
 
   /** Alias for parent (always a Column). */
   get column() {
-    return this.parent
+    return this.getParent()
   }
 
   /**
@@ -530,7 +530,7 @@ class Cell extends AbstractBlock {
         const cs = this.style
         parts.push(
           cs && cs !== 'header'
-            ? await new Inline(this.parent, 'quoted', para, {
+            ? await new Inline(this.getParent(), 'quoted', para, {
                 type: cs,
               }).convert()
             : para
@@ -543,7 +543,7 @@ class Cell extends AbstractBlock {
     const cs = this.style
     if (cs && cs !== 'header') {
       return [
-        await new Inline(this.parent, 'quoted', subbedText, {
+        await new Inline(this.getParent(), 'quoted', subbedText, {
           type: cs,
         }).convert(),
       ]
