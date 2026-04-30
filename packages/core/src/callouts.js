@@ -51,6 +51,16 @@ export class Callouts {
     return this._lists[this._listIndex - 1]
   }
 
+  /** @returns {Array<Array<{ordinal: number, id: string}>>} All callout lists in the document. */
+  getLists() {
+    return this._lists
+  }
+
+  /** @returns {number} The 1-based index of the current callout list. */
+  getListIndex() {
+    return this._listIndex
+  }
+
   /** Advance to the next callout list in the document. */
   nextList() {
     this._listIndex++
