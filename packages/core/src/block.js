@@ -148,6 +148,16 @@ export class Block extends AbstractBlock {
     return this.source
   }
 
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  /**
+   * Get the block name (alias for context).
+   * @returns {string}
+   */
+  getBlockName() {
+    return this.blockname
+  }
+
   toString() {
     const contentSummary =
       this.contentModel === 'compound'

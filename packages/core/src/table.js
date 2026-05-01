@@ -287,6 +287,16 @@ Table.Column = class Column extends AbstractNode {
   isInline() {
     return false
   }
+
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  /**
+   * Get the parent table of this column.
+   * @returns {Table}
+   */
+  getTable() {
+    return this.table
+  }
 }
 
 // ── Table.Cell ────────────────────────────────────────────────────────────────
@@ -590,6 +600,48 @@ class Cell extends AbstractBlock {
 
   toString() {
     return `${super.toString()} - [text: ${this._text}, colspan: ${this.colspan ?? 1}, rowspan: ${this.rowspan ?? 1}, attributes: ${JSON.stringify(this.attributes)}]`
+  }
+
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  /**
+   * Get the text with substitutions applied.
+   * @returns {string|null}
+   */
+  getText() {
+    return this.text
+  }
+
+  /**
+   * Set the raw text of this cell.
+   * @param {string|null} val
+   */
+  setText(val) {
+    this.text = val
+  }
+
+  /**
+   * Get the inner document for AsciiDoc-style cells.
+   * @returns {Document|null}
+   */
+  getInnerDocument() {
+    return this.innerDocument
+  }
+
+  /**
+   * Get the source file where this cell is defined.
+   * @returns {string|null}
+   */
+  getFile() {
+    return this.file
+  }
+
+  /**
+   * Get the source line number where this cell is defined.
+   * @returns {number|null}
+   */
+  getLineNumber() {
+    return this.lineno
   }
 }
 Table.Cell = Cell

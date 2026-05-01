@@ -269,6 +269,11 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
      */
     setLevel(val: number | null): void;
     /**
+     * Get the source file where this block started.
+     * @returns {string|undefined} the file path, or undefined when sourcemap is disabled.
+     */
+    getFile(): string | undefined;
+    /**
      * Get the source line number where this block started.
      * @returns {number|undefined} line number, or undefined when sourcemap is disabled.
      */

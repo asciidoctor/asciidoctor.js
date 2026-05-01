@@ -1325,6 +1325,14 @@ export class Document extends AbstractBlock {
     return this.converter
   }
 
+  /**
+   * Set the converter instance for this document.
+   * @param {Object} converter - The converter instance.
+   */
+  setConverter(converter) {
+    this.converter = converter
+  }
+
   /** @returns {string|null} The raw AsciiDoc source. */
   getSource() {
     return this.source()

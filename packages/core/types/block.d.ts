@@ -46,5 +46,10 @@ export class Block extends AbstractBlock<string> {
     get source(): string;
     /** @returns {string} The source as a single String (alias for the source getter). */
     getSource(): string;
+    /**
+     * Get the block name (alias for context).
+     * @returns {string}
+     */
+    getBlockName(): string;
 }
 import { AbstractBlock } from './abstract_block.js';
