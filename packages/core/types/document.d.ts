@@ -179,11 +179,6 @@ export class Document extends AbstractBlock<string> {
         sanitize?: boolean;
     }): string | DocumentTitle | null;
     get name(): string | DocumentTitle;
-    /**
-     * @param {string|null} [_xrefstyle=null]
-     * @returns {Promise<string|null>}
-     */
-    xreftext(_xrefstyle?: string | null): Promise<string | null>;
     get author(): any;
     get revdate(): any;
     authors(): Author[];

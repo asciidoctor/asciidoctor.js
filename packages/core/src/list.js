@@ -26,10 +26,11 @@ export class List extends AbstractBlock {
   }
 
   /**
-   * Return the list items.
+   * Alias for {@link getItems}.
    * @returns {ListItem[]}
+   * @see {getItems}
    */
-  getItems() {
+  get items() {
     return this.blocks
   }
 
@@ -64,6 +65,16 @@ export class List extends AbstractBlock {
    */
   render() {
     return this.convert()
+  }
+
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  /**
+   * Return the list items.
+   * @returns {ListItem[]}
+   */
+  getItems() {
+    return this.blocks
   }
 
   toString() {
@@ -105,33 +116,19 @@ export class ListItem extends AbstractBlock {
     this.marker = null
   }
 
-  /** Contextual alias for parent. */
+  /**
+   * Contextual alias for parent.
+   * @see {getParent}
+   */
   get list() {
     return this.getParent()
   }
 
   /**
-   * Return the parent List block (alias of getParent).
-   * @returns {List}
+   * Alias for {@link getText}.
+   * @see {getText}
    */
-  getList() {
-    return this.getParent()
-  }
-
-  /**
-   * Return the text of this list item with substitutions applied.
-   * The result is pre-computed during `Document.parse()` via {@link precomputeText}.
-   * Falls back to the raw text if {@link precomputeText} has not been called yet.
-   *
-   * In Ruby, text is lazy (`apply_subs` on first access), so API callers can modify
-   * subs before accessing text and get the result they expect. Here we replicate
-   * that by invalidating the pre-computed value when subs have changed since it
-   * was computed: returning raw text mirrors what Ruby would produce when subs are
-   * cleared or reduced to a no-op set (since `applySubs` is async and cannot be
-   * re-run synchronously).
-   * @returns {string|null}
-   */
-  getText() {
+  get text() {
     if (this._convertedText != null && this._subsSnapshot != null) {
       const cur = this.subs
       if (
@@ -145,11 +142,13 @@ export class ListItem extends AbstractBlock {
   }
 
   /**
-   * Return the list marker string for this item (e.g. '.', '..', '*').
-   * @returns {string|null}
+   * Alias for {@link setText}.
+   * @see {setText}
    */
-  getMarker() {
-    return this.marker
+  set text(val) {
+    this._text = val
+    this._convertedText = null
+    this._subsSnapshot = null
   }
 
   /**
@@ -170,16 +169,6 @@ export class ListItem extends AbstractBlock {
       this._convertedText = await this.applySubs(this._text, this.subs)
       this._subsSnapshot = [...this.subs]
     }
-  }
-
-  /**
-   * Set the raw text of this list item.
-   * @param {string|null} val
-   */
-  setText(val) {
-    this._text = val
-    this._convertedText = null
-    this._subsSnapshot = null
   }
 
   /**
@@ -208,6 +197,50 @@ export class ListItem extends AbstractBlock {
     const src = this.blocks.shift().source
     this._text =
       !this._text || this._text.length === 0 ? src : `${this._text}${LF}${src}`
+  }
+
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  /**
+   * Return the parent List block (alias of {@link getParent}).
+   * @returns {List}
+   * @see {getParent}
+   */
+  getList() {
+    return this.list
+  }
+
+  /**
+   * Return the list marker string for this item (e.g. '.', '..', '*').
+   * @returns {string|null}
+   */
+  getMarker() {
+    return this.marker
+  }
+
+  /**
+   * Return the text of this list item with substitutions applied.
+   * The result is pre-computed during `Document.parse()` via {@link precomputeText}.
+   * Falls back to the raw text if {@link precomputeText} has not been called yet.
+   *
+   * In Ruby, text is lazy (`apply_subs` on first access), so API callers can modify
+   * subs before accessing text and get the result they expect. Here we replicate
+   * that by invalidating the pre-computed value when subs have changed since it
+   * was computed: returning raw text mirrors what Ruby would produce when subs are
+   * cleared or reduced to a no-op set (since `applySubs` is async and cannot be
+   * re-run synchronously).
+   * @returns {string|null}
+   */
+  getText() {
+    return this.text
+  }
+
+  /**
+   * Set the raw text of this list item.
+   * @param {string|null} val
+   */
+  setText(val) {
+    this.text = val
   }
 
   toString() {

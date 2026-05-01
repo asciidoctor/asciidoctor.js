@@ -31,6 +31,11 @@ export const DEFAULT_CONTENT_MODEL = new Proxy(
  * Methods for managing AsciiDoc content blocks.
  */
 export class Block extends AbstractBlock {
+  /** @type {string[]} */
+  lines
+  /** @type {string[]|null} */
+  defaultSubs
+
   /**
    * Factory method — mirrors the core Block.create(parent, context, opts) API.
    * @param {AbstractBlock} parent

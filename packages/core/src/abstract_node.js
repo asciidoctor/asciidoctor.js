@@ -96,8 +96,16 @@ export class AbstractNode {
   }
 
   /**
-   * Set the parent of this node.
-   * Also updates the document reference.
+   * Alias for {@link getParent}.
+   * @see {getParent}
+   */
+  get parent() {
+    return this._parent
+  }
+
+  /**
+   * Alias for {@link setParent}.
+   * @see {setParent}
    */
   set parent(parent) {
     this._parent = parent
@@ -105,9 +113,8 @@ export class AbstractNode {
   }
 
   /**
-   * Get the space-separated role string for this node.
-   *
-   * @returns {string|undefined} the role as a space-separated String.
+   * Alias for {@link getRole}.
+   * @see {getRole}
    */
   get role() {
     return this.attributes.role
@@ -125,45 +132,12 @@ export class AbstractNode {
   }
 
   /**
-   * Retrieve the String role names for this node as an Array.
-   *
-   * @returns {string[]} the role names as a String Array, empty if the role attribute is absent.
+   * Alias for {@link getRoles}.
+   * @see {getRoles}
    */
   get roles() {
     const val = this.attributes.role
     return val ? val.split(' ') : []
-  }
-
-  /**
-   * Retrieve the space-separated String role for this node.
-   *
-   * @returns {string|undefined} the role as a space-separated String.
-   */
-  getRole() {
-    return this.role
-  }
-
-  /**
-   * Set the value of the role attribute on this node.
-   *
-   * Accepts a single role name, a space-separated String, an Array, or spread arguments.
-   *
-   * @param {...string|string[]} names - A single role name, a space-separated String, an Array,
-   *   or multiple role names as spread arguments.
-   * @returns {string} the value of the role attribute.
-   */
-  setRole(...names) {
-    this.role = names.length === 1 ? names[0] : names
-    return this.attributes.role
-  }
-
-  /**
-   * Retrieve the String role names for this node as an Array.
-   *
-   * @returns {string[]} the role names as a String Array, empty if the role attribute is absent.
-   */
-  getRoles() {
-    return this.roles
   }
 
   /**
@@ -183,55 +157,12 @@ export class AbstractNode {
   }
 
   /**
-   * Get the converter instance being used to convert the current Document.
+   * Alias for {@link getConverter}.
+   * @see {getConverter}
+   * @returns {object} the converter instance.
    */
   get converter() {
     return this.document.converter
-  }
-
-  /**
-   * Get the String name of this node.
-   *
-   * @returns {string} the node name.
-   */
-  getNodeName() {
-    return this.nodeName
-  }
-
-  /**
-   * Get the String id for this node.
-   *
-   * @returns {string|undefined} the id, or undefined if not set.
-   */
-  getId() {
-    return this.id ?? undefined
-  }
-
-  /**
-   * Set the String id for this node.
-   *
-   * @param {string} id - The String id to assign.
-   */
-  setId(id) {
-    this.id = id
-  }
-
-  /**
-   * Get the context name for this node.
-   *
-   * @returns {string} the context name.
-   */
-  getContext() {
-    return this.context
-  }
-
-  /**
-   * Get the {Converter} instance being used to convert the current {Document}.
-   *
-   * @returns {object} the converter instance.
-   */
-  getConverter() {
-    return this.converter
   }
 
   /**
@@ -356,65 +287,6 @@ export class AbstractNode {
    */
   removeAttribute(name) {
     return this.removeAttr(name)
-  }
-
-  /**
-   * Get the attributes hash for this node.
-   *
-   * @returns {Object} a plain Object of attributes.
-   */
-  getAttributes() {
-    return this.attributes
-  }
-
-  /**
-   * Get the document to which this node belongs.
-   *
-   * @returns {Document} the Document.
-   */
-  getDocument() {
-    return this.document
-  }
-
-  /**
-   * Get the parent node of this node.
-   *
-   * @returns {AbstractNode|undefined} the parent AbstractNode, or undefined for the root document.
-   */
-  getParent() {
-    return this._parent
-  }
-
-  /**
-   * Get the icon URI for the named icon.
-   *
-   * @param {string} name - The String icon name.
-   * @returns {Promise<string>} a Promise resolving to a String URI.
-   */
-  getIconUri(name) {
-    return this.iconUri(name)
-  }
-
-  /**
-   * Get the media URI for the target.
-   *
-   * @param {string} target - The String target path or URL.
-   * @param {string} [assetDirKey='imagesdir'] - The String asset directory attribute key.
-   * @returns {string} a String URI.
-   */
-  getMediaUri(target, assetDirKey = 'imagesdir') {
-    return this.mediaUri(target, assetDirKey)
-  }
-
-  /**
-   * Get the image URI for the target image.
-   *
-   * @param {string} targetImage - The String target image path or URL.
-   * @param {string|null} [assetDirKey=null] - The String asset directory attribute key.
-   * @returns {Promise<string>} a Promise resolving to a String URI.
-   */
-  getImageUri(targetImage, assetDirKey = null) {
-    return this.imageUri(targetImage, assetDirKey)
   }
 
   /**
@@ -591,15 +463,6 @@ export class AbstractNode {
    */
   hasReftext() {
     return 'reftext' in this.attributes
-  }
-
-  /**
-   * Get the value of the reftext attribute with substitutions applied.
-   *
-   * @returns {string|undefined} the reftext value, or undefined if not set.
-   */
-  getReftext() {
-    return this.reftext ?? undefined
   }
 
   /**
@@ -962,5 +825,161 @@ export class AbstractNode {
    */
   get logger() {
     return this.document?.logger ?? console
+  }
+
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  /**
+   * Retrieve the space-separated String role for this node.
+   *
+   * @returns {string|undefined} the role as a space-separated String.
+   */
+  getRole() {
+    return this.role
+  }
+
+  /**
+   * Set the value of the role attribute on this node.
+   *
+   * Accepts a single role name, a space-separated String, an Array, or spread arguments.
+   *
+   * @param {...string|string[]} names - A single role name, a space-separated String, an Array,
+   *   or multiple role names as spread arguments.
+   * @returns {string} the value of the role attribute.
+   */
+  setRole(...names) {
+    this.role = names.length === 1 ? names[0] : names
+    return this.attributes.role
+  }
+
+  /**
+   * Retrieve the String role names for this node as an Array.
+   *
+   * @returns {string[]} the role names as a String Array, empty if the role attribute is absent.
+   */
+  getRoles() {
+    return this.roles
+  }
+
+  /**
+   * Get the attributes hash for this node.
+   *
+   * @returns {Object} a plain Object of attributes.
+   */
+  getAttributes() {
+    return this.attributes
+  }
+
+  /**
+   * Get the document to which this node belongs.
+   *
+   * @returns {Document} the Document.
+   */
+  getDocument() {
+    return this.document
+  }
+
+  /**
+   * Get the parent node of this node.
+   *
+   * @returns {AbstractNode|undefined} the parent AbstractNode, or undefined for the root document.
+   */
+  getParent() {
+    return this._parent
+  }
+
+  /**
+   * Set the parent of this node.
+   * Also updates the document reference.
+   */
+  setParent(parent) {
+    this._parent = parent
+    this.document = parent.document
+  }
+
+  /**
+   * Get the String name of this node.
+   *
+   * @returns {string} the node name.
+   */
+  getNodeName() {
+    return this.nodeName
+  }
+
+  /**
+   * Get the String id for this node.
+   *
+   * @returns {string|undefined} the id, or undefined if not set.
+   */
+  getId() {
+    return this.id ?? undefined
+  }
+
+  /**
+   * Set the String id for this node.
+   *
+   * @param {string} id - The String id to assign.
+   */
+  setId(id) {
+    this.id = id
+  }
+
+  /**
+   * Get the context name for this node.
+   *
+   * @returns {string} the context name.
+   */
+  getContext() {
+    return this.context
+  }
+
+  /**
+   * Get the {Converter} instance being used to convert the current {Document}.
+   *
+   * @returns {object} the converter instance.
+   */
+  getConverter() {
+    return this.converter
+  }
+
+  /**
+   * Get the icon URI for the named icon.
+   *
+   * @param {string} name - The String icon name.
+   * @returns {Promise<string>} a Promise resolving to a String URI.
+   */
+  getIconUri(name) {
+    return this.iconUri(name)
+  }
+
+  /**
+   * Get the media URI for the target.
+   *
+   * @param {string} target - The String target path or URL.
+   * @param {string} [assetDirKey='imagesdir'] - The String asset directory attribute key.
+   * @returns {string} a String URI.
+   */
+  getMediaUri(target, assetDirKey = 'imagesdir') {
+    return this.mediaUri(target, assetDirKey)
+  }
+
+  /**
+   * Get the image URI for the target image.
+   *
+   * @param {string} targetImage - The String target image path or URL.
+   * @param {string|null} [assetDirKey=null] - The String asset directory attribute key.
+   * @returns {Promise<string>} a Promise resolving to a String URI.
+   */
+  getImageUri(targetImage, assetDirKey = null) {
+    return this.imageUri(targetImage, assetDirKey)
+  }
+
+  /**
+   * Get the value of the reftext attribute with substitutions applied.
+   *
+   * @returns {string|undefined} the reftext value, or undefined if not set.
+   */
+  getReftext() {
+    return this.reftext ?? undefined
   }
 }

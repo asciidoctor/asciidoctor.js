@@ -6,10 +6,11 @@ export class List extends AbstractBlock<any[]> {
     /** Alias for blocks — the list content. */
     content(): Promise<AbstractBlock<string>[]>;
     /**
-     * Return the list items.
+     * Alias for {@link getItems}.
      * @returns {ListItem[]}
+     * @see {getItems}
      */
-    getItems(): ListItem[];
+    get items(): ListItem[];
     /**
      * Check whether this list has items (blocks).
      * @returns {boolean}
@@ -20,6 +21,11 @@ export class List extends AbstractBlock<any[]> {
      * @returns {boolean}
      */
     outline(): boolean;
+    /**
+     * Return the list items.
+     * @returns {ListItem[]}
+     */
+    getItems(): ListItem[];
 }
 /**
  * Methods for managing items for AsciiDoc olists, ulists, and dlists.
@@ -38,14 +44,53 @@ export class ListItem extends AbstractBlock<string> {
      * @type {string|null}
      */
     marker: string | null;
-    subs: string[];
-    /** Contextual alias for parent. */
+    /**
+     * Contextual alias for parent.
+     * @see {getParent}
+     */
     get list(): import("./abstract_node.js").AbstractNode;
     /**
-     * Return the parent List block (alias of getParent).
+     * Alias for {@link setText}.
+     * @see {setText}
+     */
+    set text(val: any);
+    /**
+     * Alias for {@link getText}.
+     * @see {getText}
+     */
+    get text(): any;
+    /**
+     * Check whether the text of this list item is non-blank.
+     * @returns {boolean}
+     */
+    hasText(): boolean;
+    /**
+     * Pre-compute the converted text asynchronously.
+     * Called during `Document.parse()` so the synchronous getter works during conversion.
+     * @returns {Promise<void>}
+     */
+    precomputeText(): Promise<void>;
+    /**
+     * Check whether this list item has simple content.
+     * @returns {boolean} `true` if the item has no blocks or only a single nested outline list.
+     */
+    simple(): boolean;
+    /**
+     * Check whether this list item has compound content.
+     * @returns {boolean} `true` if the item contains blocks other than a single nested outline list.
+     */
+    compound(): boolean;
+    /**
+     * Return the parent List block (alias of {@link getParent}).
      * @returns {List}
+     * @see {getParent}
      */
     getList(): List;
+    /**
+     * Return the list marker string for this item (e.g. '.', '..', '*').
+     * @returns {string|null}
+     */
+    getMarker(): string | null;
     /**
      * Return the text of this list item with substitutions applied.
      * The result is pre-computed during `Document.parse()` via {@link precomputeText}.
@@ -61,35 +106,9 @@ export class ListItem extends AbstractBlock<string> {
      */
     getText(): string | null;
     /**
-     * Return the list marker string for this item (e.g. '.', '..', '*').
-     * @returns {string|null}
-     */
-    getMarker(): string | null;
-    /**
-     * Check whether the text of this list item is non-blank.
-     * @returns {boolean}
-     */
-    hasText(): boolean;
-    /**
-     * Pre-compute the converted text asynchronously.
-     * Called during `Document.parse()` so the synchronous getter works during conversion.
-     * @returns {Promise<void>}
-     */
-    precomputeText(): Promise<void>;
-    /**
      * Set the raw text of this list item.
      * @param {string|null} val
      */
     setText(val: string | null): void;
-    /**
-     * Check whether this list item has simple content.
-     * @returns {boolean} `true` if the item has no blocks or only a single nested outline list.
-     */
-    simple(): boolean;
-    /**
-     * Check whether this list item has compound content.
-     * @returns {boolean} `true` if the item contains blocks other than a single nested outline list.
-     */
-    compound(): boolean;
 }
 import { AbstractBlock } from './abstract_block.js';
