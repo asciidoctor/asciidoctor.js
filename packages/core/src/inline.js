@@ -147,4 +147,12 @@ export class Inline extends AbstractNode {
   getAlt() {
     return this.alt
   }
+
+  /**
+   * Get the reftext for this inline node with substitutions applied.
+   * @returns {string|null}
+   */
+  getReftext() {
+    return this.reftext
+  }
 }

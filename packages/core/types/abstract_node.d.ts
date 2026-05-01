@@ -385,6 +385,11 @@ export abstract class AbstractNode {
      */
     get logger(): any;
     /**
+     * Get the logger for this node.
+     * @returns {object} the logger instance.
+     */
+    getLogger(): object;
+    /**
      * Retrieve the space-separated String role for this node.
      *
      * @returns {string|undefined} the role as a space-separated String.

@@ -47,6 +47,11 @@ declare class Column extends AbstractNode {
     style: any;
     /** Alias for parent (always a Table). */
     get table(): AbstractNode;
+    /**
+     * Get the parent table of this column.
+     * @returns {Table}
+     */
+    getTable(): Table;
 }
 /** @extends {AbstractBlock<string | string[]>} */
 declare class Cell extends AbstractBlock<string | string[]> {
@@ -70,6 +75,11 @@ declare class Cell extends AbstractBlock<string | string[]> {
         get table(): AbstractNode;
         isBlock(): boolean;
         isInline(): boolean;
+        /**
+         * Get the parent table of this column.
+         * @returns {Table}
+         */
+        getTable(): Table;
         document: Document;
         context: string;
         nodeName: string;
@@ -116,6 +126,7 @@ declare class Cell extends AbstractBlock<string | string[]> {
         readContents(target: string, opts?: any): Promise<string | null>;
         isUri(str: string): boolean;
         readonly logger: any;
+        getLogger(): object;
         getRole(): string | undefined;
         setRole(...names: (string | string[])[]): string;
         getRoles(): string[];
@@ -163,6 +174,21 @@ declare class Cell extends AbstractBlock<string | string[]> {
     get innerDocument(): any;
     get file(): any;
     get lineno(): any;
+    /**
+     * Get the text with substitutions applied.
+     * @returns {string|null}
+     */
+    getText(): string | null;
+    /**
+     * Set the raw text of this cell.
+     * @param {string|null} val
+     */
+    setText(val: string | null): void;
+    /**
+     * Get the inner document for AsciiDoc-style cells.
+     * @returns {Document|null}
+     */
+    getInnerDocument(): Document | null;
 }
 declare class ParserContext {
     static get FORMATS(): Set<string>;

@@ -755,11 +755,19 @@ export class AbstractBlock extends AbstractNode {
   }
 
   /**
+   * Get the source file where this block started.
+   * @returns {string|undefined} the file path, or undefined when sourcemap is disabled.
+   */
+  getFile() {
+    return this.file ?? undefined
+  }
+
+  /**
    * Get the source line number where this block started.
    * @returns {number|undefined} line number, or undefined when sourcemap is disabled.
    */
   getLineNumber() {
-    return this.sourceLocation?.lineno
+    return this.lineno ?? undefined
   }
 
   /**

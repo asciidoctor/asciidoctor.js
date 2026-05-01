@@ -149,6 +149,14 @@ export class Cursor {
   getPath() {
     return this.path
   }
+
+  /**
+   * Get the line info string for this cursor (e.g. "path/to/file.adoc: line 42").
+   * @returns {string}
+   */
+  getLineInfo() {
+    return this.lineInfo
+  }
 }
 
 // ── Reader ────────────────────────────────────────────────────────────────────
@@ -1730,5 +1738,15 @@ export class PreprocessorReader extends Reader {
    */
   _splitDelimitedValue(val) {
     return val.includes(',') ? val.split(',') : val.split(';')
+  }
+
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  /**
+   * Get the current include depth (number of nested includes).
+   * @returns {number}
+   */
+  getIncludeDepth() {
+    return this.includeDepth
   }
 }

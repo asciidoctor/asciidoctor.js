@@ -11,6 +11,11 @@ export class Cursor {
     getFile(): any;
     getDirectory(): any;
     getPath(): any;
+    /**
+     * Get the line info string for this cursor (e.g. "path/to/file.adoc: line 42").
+     * @returns {string}
+     */
+    getLineInfo(): string;
 }
 export class Reader {
     constructor(data?: any, cursor?: any, opts?: {});
@@ -171,4 +176,9 @@ export class PreprocessorReader extends Reader {
      * @returns {Promise<string|undefined>}
      */
     processLine(line: string): Promise<string | undefined>;
+    /**
+     * Get the current include depth (number of nested includes).
+     * @returns {number}
+     */
+    getIncludeDepth(): number;
 }

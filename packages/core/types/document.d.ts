@@ -316,6 +316,11 @@ export class Document extends AbstractBlock<string> {
     getOutfilesuffix(): string;
     /** @returns {Object} The frozen options object. */
     getOptions(): any;
+    /**
+     * Set the converter instance for this document.
+     * @param {Object} converter - The converter instance.
+     */
+    setConverter(converter: any): void;
     /** @returns {string|null} The raw AsciiDoc source. */
     getSource(): string | null;
     /** @returns {string[]|null} The source lines. */
