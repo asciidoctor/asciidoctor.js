@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.13",
-    "@rollup/plugin-commonjs": "^28.0.9",
+    "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "ejs": "^3.1.10",
     "handlebars": "^4.7.8",
