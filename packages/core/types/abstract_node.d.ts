@@ -18,10 +18,15 @@ export abstract class AbstractNode {
     attributes: any;
     passthroughs: any[];
     /**
-     * Set the parent of this node.
-     * Also updates the document reference.
+     * Alias for {@link setParent}.
+     * @see {setParent}
      */
-    set parent(parent: any);
+    set parent(parent: AbstractNode);
+    /**
+     * Alias for {@link getParent}.
+     * @see {getParent}
+     */
+    get parent(): AbstractNode;
     /**
      * Set the value of the role attribute on this node.
      *
@@ -31,39 +36,15 @@ export abstract class AbstractNode {
      */
     set role(names: string | string[]);
     /**
-     * Get the space-separated role string for this node.
-     *
-     * @returns {string|undefined} the role as a space-separated String.
+     * Alias for {@link getRole}.
+     * @see {getRole}
      */
-    get role(): string | undefined;
+    get role(): string | string[];
     /**
-     * Retrieve the String role names for this node as an Array.
-     *
-     * @returns {string[]} the role names as a String Array, empty if the role attribute is absent.
+     * Alias for {@link getRoles}.
+     * @see {getRoles}
      */
-    get roles(): string[];
-    /**
-     * Retrieve the space-separated String role for this node.
-     *
-     * @returns {string|undefined} the role as a space-separated String.
-     */
-    getRole(): string | undefined;
-    /**
-     * Set the value of the role attribute on this node.
-     *
-     * Accepts a single role name, a space-separated String, an Array, or spread arguments.
-     *
-     * @param {...string|string[]} names - A single role name, a space-separated String, an Array,
-     *   or multiple role names as spread arguments.
-     * @returns {string} the value of the role attribute.
-     */
-    setRole(...names: (string | string[])[]): string;
-    /**
-     * Retrieve the String role names for this node as an Array.
-     *
-     * @returns {string[]} the role names as a String Array, empty if the role attribute is absent.
-     */
-    getRoles(): string[];
+    get roles(): any;
     /**
      * @returns {boolean} true if this AbstractNode is an instance of Block.
      * @throws {Error} Subclasses must override this method.
@@ -75,39 +56,11 @@ export abstract class AbstractNode {
      */
     isInline(): boolean;
     /**
-     * Get the converter instance being used to convert the current Document.
-     */
-    get converter(): any;
-    /**
-     * Get the String name of this node.
-     *
-     * @returns {string} the node name.
-     */
-    getNodeName(): string;
-    /**
-     * Get the String id for this node.
-     *
-     * @returns {string|undefined} the id, or undefined if not set.
-     */
-    getId(): string | undefined;
-    /**
-     * Set the String id for this node.
-     *
-     * @param {string} id - The String id to assign.
-     */
-    setId(id: string): void;
-    /**
-     * Get the context name for this node.
-     *
-     * @returns {string} the context name.
-     */
-    getContext(): string;
-    /**
-     * Get the {Converter} instance being used to convert the current {Document}.
-     *
+     * Alias for {@link getConverter}.
+     * @see {getConverter}
      * @returns {object} the converter instance.
      */
-    getConverter(): object;
+    get converter(): object;
     /**
      * Get the value of the specified attribute.
      *
@@ -182,47 +135,6 @@ export abstract class AbstractNode {
      * @returns {*} the previous value, or undefined if not present.
      */
     removeAttribute(name: string): any;
-    /**
-     * Get the attributes hash for this node.
-     *
-     * @returns {Object} a plain Object of attributes.
-     */
-    getAttributes(): any;
-    /**
-     * Get the document to which this node belongs.
-     *
-     * @returns {Document} the Document.
-     */
-    getDocument(): Document;
-    /**
-     * Get the parent node of this node.
-     *
-     * @returns {AbstractNode|undefined} the parent AbstractNode, or undefined for the root document.
-     */
-    getParent(): AbstractNode | undefined;
-    /**
-     * Get the icon URI for the named icon.
-     *
-     * @param {string} name - The String icon name.
-     * @returns {Promise<string>} a Promise resolving to a String URI.
-     */
-    getIconUri(name: string): Promise<string>;
-    /**
-     * Get the media URI for the target.
-     *
-     * @param {string} target - The String target path or URL.
-     * @param {string} [assetDirKey='imagesdir'] - The String asset directory attribute key.
-     * @returns {string} a String URI.
-     */
-    getMediaUri(target: string, assetDirKey?: string): string;
-    /**
-     * Get the image URI for the target image.
-     *
-     * @param {string} targetImage - The String target image path or URL.
-     * @param {string|null} [assetDirKey=null] - The String asset directory attribute key.
-     * @returns {Promise<string>} a Promise resolving to a String URI.
-     */
-    getImageUri(targetImage: string, assetDirKey?: string | null): Promise<string>;
     /**
      * Assign the value to the attribute name for the current node.
      *
@@ -325,12 +237,6 @@ export abstract class AbstractNode {
      * @returns {boolean}
      */
     hasReftext(): boolean;
-    /**
-     * Get the value of the reftext attribute with substitutions applied.
-     *
-     * @returns {string|undefined} the reftext value, or undefined if not set.
-     */
-    getReftext(): string | undefined;
     /**
      * Check whether this node has reftext — either an explicit 'reftext' attribute
      * or a title that can serve as the cross-reference text.
@@ -478,4 +384,108 @@ export abstract class AbstractNode {
      * The Logging mixin (logging.js) overrides this getter on the prototype.
      */
     get logger(): any;
+    /**
+     * Retrieve the space-separated String role for this node.
+     *
+     * @returns {string|undefined} the role as a space-separated String.
+     */
+    getRole(): string | undefined;
+    /**
+     * Set the value of the role attribute on this node.
+     *
+     * Accepts a single role name, a space-separated String, an Array, or spread arguments.
+     *
+     * @param {...string|string[]} names - A single role name, a space-separated String, an Array,
+     *   or multiple role names as spread arguments.
+     * @returns {string} the value of the role attribute.
+     */
+    setRole(...names: (string | string[])[]): string;
+    /**
+     * Retrieve the String role names for this node as an Array.
+     *
+     * @returns {string[]} the role names as a String Array, empty if the role attribute is absent.
+     */
+    getRoles(): string[];
+    /**
+     * Get the attributes hash for this node.
+     *
+     * @returns {Object} a plain Object of attributes.
+     */
+    getAttributes(): any;
+    /**
+     * Get the document to which this node belongs.
+     *
+     * @returns {Document} the Document.
+     */
+    getDocument(): Document;
+    /**
+     * Get the parent node of this node.
+     *
+     * @returns {AbstractNode|undefined} the parent AbstractNode, or undefined for the root document.
+     */
+    getParent(): AbstractNode | undefined;
+    /**
+     * Set the parent of this node.
+     * Also updates the document reference.
+     */
+    setParent(parent: any): void;
+    /**
+     * Get the String name of this node.
+     *
+     * @returns {string} the node name.
+     */
+    getNodeName(): string;
+    /**
+     * Get the String id for this node.
+     *
+     * @returns {string|undefined} the id, or undefined if not set.
+     */
+    getId(): string | undefined;
+    /**
+     * Set the String id for this node.
+     *
+     * @param {string} id - The String id to assign.
+     */
+    setId(id: string): void;
+    /**
+     * Get the context name for this node.
+     *
+     * @returns {string} the context name.
+     */
+    getContext(): string;
+    /**
+     * Get the {Converter} instance being used to convert the current {Document}.
+     *
+     * @returns {object} the converter instance.
+     */
+    getConverter(): object;
+    /**
+     * Get the icon URI for the named icon.
+     *
+     * @param {string} name - The String icon name.
+     * @returns {Promise<string>} a Promise resolving to a String URI.
+     */
+    getIconUri(name: string): Promise<string>;
+    /**
+     * Get the media URI for the target.
+     *
+     * @param {string} target - The String target path or URL.
+     * @param {string} [assetDirKey='imagesdir'] - The String asset directory attribute key.
+     * @returns {string} a String URI.
+     */
+    getMediaUri(target: string, assetDirKey?: string): string;
+    /**
+     * Get the image URI for the target image.
+     *
+     * @param {string} targetImage - The String target image path or URL.
+     * @param {string|null} [assetDirKey=null] - The String asset directory attribute key.
+     * @returns {Promise<string>} a Promise resolving to a String URI.
+     */
+    getImageUri(targetImage: string, assetDirKey?: string | null): Promise<string>;
+    /**
+     * Get the value of the reftext attribute with substitutions applied.
+     *
+     * @returns {string|undefined} the reftext value, or undefined if not set.
+     */
+    getReftext(): string | undefined;
 }

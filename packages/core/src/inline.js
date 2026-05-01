@@ -6,6 +6,15 @@ import { AbstractNode } from './abstract_node.js'
  * Represents an inline element in an AsciiDoc document.
  */
 export class Inline extends AbstractNode {
+  /** @type {string|null} */
+  id
+  /** @type {string|null} */
+  type
+  /** @type {string|null} */
+  target
+  /** @type {string|null} */
+  text
+
   /**
    * @param {AbstractNode} parent
    * @param {string} context
@@ -52,26 +61,11 @@ export class Inline extends AbstractNode {
     return this.text
   }
 
-  /** Return the text of this inline node. */
-  getText() {
-    return this.text
-  }
-
-  /** Return the type qualifier of this inline node (e.g. 'ref', 'bibref'). */
-  getType() {
-    return this.type
-  }
-
-  /** Return the target (e.g. URI or anchor) of this inline node. */
-  getTarget() {
-    return this.target
-  }
-
   /**
-   * Get the alt text for this inline image.
-   * @returns {string} the value of the alt attribute, or ''.
+   * Alias for {@link getAlt}.
+   * @see {getAlt}
    */
-  getAlt() {
+  get alt() {
     return this.attr('alt') || ''
   }
 
@@ -118,5 +112,39 @@ export class Inline extends AbstractNode {
    */
   xreftext(_xrefstyle = null) {
     return this.reftext
+  }
+
+  // ── JavaScript-style accessors ────────────────────────────────────────────────
+
+  /**
+   * Return the text of this inline node.
+   * @returns {string|null}
+   */
+  getText() {
+    return this.text
+  }
+
+  /**
+   * Return the type qualifier of this inline node (e.g. 'ref', 'bibref').
+   * @returns {string|null}
+   */
+  getType() {
+    return this.type
+  }
+
+  /**
+   * Return the target (e.g. URI or anchor) of this inline node.
+   * @returns {string|null}
+   */
+  getTarget() {
+    return this.target
+  }
+
+  /**
+   * Get the alt text for this inline image.
+   * @returns {string} the value of the alt attribute, or ''.
+   */
+  getAlt() {
+    return this.alt
   }
 }

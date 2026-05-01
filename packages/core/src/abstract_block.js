@@ -1,3 +1,5 @@
+/** @import { Cursor } from './reader.js' */
+
 // ESM conversion of abstract_block.rb
 //
 // Ruby-to-JavaScript notes:
@@ -50,6 +52,18 @@ export class AbstractBlock extends AbstractNode {
   #convertedTitle = null
   /** @type {string|null} */
   #caption = null
+  /** @type {string[]} */
+  subs
+  /** @type {string[]|null} */
+  defaultSubs
+  /** @type {string|number|null} */
+  numeral
+  /** @type {Cursor|null} */
+  sourceLocation
+  /** @internal */
+  _nextSectionIndex
+  /** @internal */
+  _nextSectionOrdinal
 
   /**
    * @param {AbstractBlock} parent
@@ -117,7 +131,7 @@ export class AbstractBlock extends AbstractNode {
    * Pre-compute the converted title asynchronously.
    * Called during Document.parse() so the synchronous getter works during conversion.
    * Re-entrant calls (circular title references) are detected via _computingTitle and
-   * silently skipped so that Section#xreftext() can return null (→ "[refid]" fallback).
+   * silently skipped so that {@link Section.xreftext()} can return null (→ "[refid]" fallback).
    * @returns {Promise<void>}
    */
   async precomputeTitle() {
@@ -359,17 +373,11 @@ export class AbstractBlock extends AbstractNode {
   }
 
   /**
-   * Generate cross-reference text (xreftext) used to refer to this block.
-   * Uses the explicit reftext if set. For sections or captioned blocks (blocks
-   * with both a title and a caption), formats the text according to xrefstyle.
-   * Falls back to the title, or null if no title is available.
+   * Alias for {@link getXrefText}.
    * @param {string|null} [xrefstyle=null] - Optional String style: 'full', 'short', or 'basic'.
    * @returns {Promise<string|null>} the xreftext, or null.
+   * @see {getXrefText}
    */
-  async getXrefText(xrefstyle = null) {
-    return this.xreftext(xrefstyle)
-  }
-
   async xreftext(xrefstyle = null) {
     const val = this.reftext
     if (val && val.length > 0) return val
@@ -755,8 +763,20 @@ export class AbstractBlock extends AbstractNode {
   }
 
   /**
+   * Generate cross-reference text (xreftext) used to refer to this block.
+   * Uses the explicit reftext if set. For sections or captioned blocks (blocks
+   * with both a title and a caption), formats the text according to xrefstyle.
+   * Falls back to the title, or null if no title is available.
+   * @param {string|null} [xrefstyle=null] - Optional String style: 'full', 'short', or 'basic'.
+   * @returns {Promise<string|null>} the xreftext, or null.
+   */
+  async getXrefText(xrefstyle = null) {
+    return this.xreftext(xrefstyle)
+  }
+
+  /**
    * Get the source location of this block.
-   * @returns {object|undefined} the Cursor source location object, or undefined when sourcemap is disabled.
+   * @returns {Cursor|undefined} the Cursor source location object, or undefined when sourcemap is disabled.
    */
   getSourceLocation() {
     return this.sourceLocation ?? undefined

@@ -12,10 +12,12 @@ export class Inline extends AbstractNode {
      *   target - The String target (e.g. a URI).
      */
     constructor(parent: AbstractNode, context: string, text?: string | null, opts?: any);
-    text: string;
-    id: any;
-    type: any;
-    target: any;
+    /** @type {string|null} */
+    type: string | null;
+    /** @type {string|null} */
+    target: string | null;
+    /** @type {string|null} */
+    text: string | null;
     /**
      * Convert this inline element using the document's converter.
      * @returns {Promise<string>}
@@ -28,17 +30,11 @@ export class Inline extends AbstractNode {
      * @returns {string|null}
      */
     content(): string | null;
-    /** Return the text of this inline node. */
-    getText(): string;
-    /** Return the type qualifier of this inline node (e.g. 'ref', 'bibref'). */
-    getType(): any;
-    /** Return the target (e.g. URI or anchor) of this inline node. */
-    getTarget(): any;
     /**
-     * Get the alt text for this inline image.
-     * @returns {string} the value of the alt attribute, or ''.
+     * Alias for {@link getAlt}.
+     * @see {getAlt}
      */
-    getAlt(): string;
+    get alt(): any;
     /**
      * Generate cross-reference text (xreftext) that can be used to refer to this inline node.
      *
@@ -49,5 +45,25 @@ export class Inline extends AbstractNode {
      * @returns {string|null} the reftext to refer to this inline node, or null if no reftext is defined.
      */
     xreftext(_xrefstyle?: string | null): string | null;
+    /**
+     * Return the text of this inline node.
+     * @returns {string|null}
+     */
+    getText(): string | null;
+    /**
+     * Return the type qualifier of this inline node (e.g. 'ref', 'bibref').
+     * @returns {string|null}
+     */
+    getType(): string | null;
+    /**
+     * Return the target (e.g. URI or anchor) of this inline node.
+     * @returns {string|null}
+     */
+    getTarget(): string | null;
+    /**
+     * Get the alt text for this inline image.
+     * @returns {string} the value of the alt attribute, or ''.
+     */
+    getAlt(): string;
 }
 import { AbstractNode } from './abstract_node.js';

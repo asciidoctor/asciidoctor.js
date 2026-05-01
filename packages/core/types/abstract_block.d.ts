@@ -9,6 +9,14 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
      * @param {object} [opts={}]
      */
     constructor(parent: AbstractBlock, context: string, opts?: object);
+    /** @type {string[]} */
+    subs: string[];
+    /** @type {string[]|null} */
+    defaultSubs: string[] | null;
+    /** @type {string|number|null} */
+    numeral: string | number | null;
+    /** @type {Cursor|null} */
+    sourceLocation: Cursor | null;
     /**
      * Describes the type of content this block accepts and how it should be converted. Acceptable values are:
      *  - `compound` - this block contains other blocks
@@ -24,14 +32,8 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
      * @type {AbstractBlock[]}
      */
     blocks: AbstractBlock[];
-    subs: any[];
-    numeral: any;
     style: string;
-    defaultSubs: any;
-    sourceLocation: any;
     level: number;
-    _nextSectionIndex: number;
-    _nextSectionOrdinal: number;
     /**
      * Set the String block title (clears the memoised converted title).
      * @param {string|null} val
@@ -49,7 +51,7 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
      * Pre-compute the converted title asynchronously.
      * Called during Document.parse() so the synchronous getter works during conversion.
      * Re-entrant calls (circular title references) are detected via _computingTitle and
-     * silently skipped so that Section#xreftext() can return null (→ "[refid]" fallback).
+     * silently skipped so that {@link Section.xreftext()} can return null (→ "[refid]" fallback).
      * @returns {Promise<void>}
      */
     precomputeTitle(): Promise<void>;
@@ -168,15 +170,12 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
      */
     removeSub(name: string): void;
     /**
-     * Generate cross-reference text (xreftext) used to refer to this block.
-     * Uses the explicit reftext if set. For sections or captioned blocks (blocks
-     * with both a title and a caption), formats the text according to xrefstyle.
-     * Falls back to the title, or null if no title is available.
+     * Alias for {@link getXrefText}.
      * @param {string|null} [xrefstyle=null] - Optional String style: 'full', 'short', or 'basic'.
      * @returns {Promise<string|null>} the xreftext, or null.
+     * @see {getXrefText}
      */
-    getXrefText(xrefstyle?: string | null): Promise<string | null>;
-    xreftext(xrefstyle?: any): Promise<string>;
+    xreftext(xrefstyle?: string | null): Promise<string | null>;
     /**
      * Generate and assign a caption to this block if not already assigned.
      * If the block has a title and a caption prefix is available, builds a caption
@@ -275,10 +274,19 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
      */
     getLineNumber(): number | undefined;
     /**
-     * Get the source location of this block.
-     * @returns {object|undefined} the Cursor source location object, or undefined when sourcemap is disabled.
+     * Generate cross-reference text (xreftext) used to refer to this block.
+     * Uses the explicit reftext if set. For sections or captioned blocks (blocks
+     * with both a title and a caption), formats the text according to xrefstyle.
+     * Falls back to the title, or null if no title is available.
+     * @param {string|null} [xrefstyle=null] - Optional String style: 'full', 'short', or 'basic'.
+     * @returns {Promise<string|null>} the xreftext, or null.
      */
-    getSourceLocation(): object | undefined;
+    getXrefText(xrefstyle?: string | null): Promise<string | null>;
+    /**
+     * Get the source location of this block.
+     * @returns {Cursor|undefined} the Cursor source location object, or undefined when sourcemap is disabled.
+     */
+    getSourceLocation(): Cursor | undefined;
     /**
      * Get the list of substitutions enabled for this block.
      * @returns {string[]}
@@ -303,3 +311,4 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
     #private;
 }
 import { AbstractNode } from './abstract_node.js';
+import type { Cursor } from './reader.js';
