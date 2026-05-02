@@ -39,6 +39,8 @@ jobs:
         run: |
           npm run check -w @asciidoctor/core
           npm run build -w @asciidoctor/core
+      - name: Validate documentation
+        run: npm run docs -w @asciidoctor/core
       - name: Check no uncommitted changes after build
         run: git diff --exit-code
 
