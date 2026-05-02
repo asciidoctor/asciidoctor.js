@@ -125,6 +125,29 @@ export const SafeMode = {
   },
 }
 
+/**
+ * Named constants for the `contentModel` property on {@link AbstractBlock}.
+ *
+ * The content model controls what kind of content a block accepts and how it
+ * is converted.
+ *
+ * @example
+ * import { ContentModel } from '@asciidoctor/core'
+ * const verbatimBlocks = doc.findBy({}, (b) => b.contentModel === ContentModel.VERBATIM || 'reject')
+ */
+export const ContentModel = {
+  /** The block contains other blocks (sections, sidebars, admonitions, …). */
+  COMPOUND: 'compound',
+  /** The block holds a paragraph of prose that receives normal substitutions. */
+  SIMPLE: 'simple',
+  /** The block holds verbatim text displayed as-is with verbatim substitutions (listing, literal). */
+  VERBATIM: 'verbatim',
+  /** The block holds unprocessed content passed directly to output with no substitutions (pass). */
+  RAW: 'raw',
+  /** The block has no content (e.g. image, thematic break). */
+  EMPTY: 'empty',
+}
+
 // ── File-system paths (Node.js only) ─────────────────────────────────────────
 // In a browser / Deno / Opal-compiled context these will be empty strings.
 let ROOT_DIR = ''

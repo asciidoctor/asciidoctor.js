@@ -121,17 +121,58 @@ export class Document extends AbstractBlock<string> {
     /** @returns {boolean} True if this is a nested (child) document. */
     nested(): boolean;
     /**
-     * Parse the AsciiDoc source.
-     * @param {string|string[]|null} [data=null] - Optional replacement source data.
-     * @returns {Promise<Document>} This Document.
+     * Parse the AsciiDoc source and populate the document AST.
+     *
+     * This method is idempotent — repeated calls are no-ops once parsing is done.
+     * You rarely need to call it directly: prefer {@link Document.create} (factory) or
+     * the top-level {@link load} / {@link loadFile} functions, which call `parse()` for you.
+     *
+     * Call `parse()` explicitly only when you constructed `new Document(...)` by hand and
+     * need to defer the work, or when you want to supply a replacement `data` source.
+     *
+     * @param {string|string[]|null} [data=null] - Optional replacement source lines.
+     *   When provided, replaces the data that was given to the constructor.
+     * @returns {Promise<Document>} This Document instance (allows chaining).
+     *
+     * @example
+     * const doc = new Document('= Hello', {})
+     * await doc.parse()
+     * console.log(doc.getTitle()) // → 'Hello'
      */
     parse(data?: string | string[] | null): Promise<Document>;
+    /**
+     * Return whether the document has been fully parsed.
+     * @returns {boolean}
+     */
     isParsed(): boolean;
     /**
-     * Get the named counter and take the next number in the sequence.
-     * @param {string} name - Counter name.
-     * @param {string|number|null} [seed=null] - Initial value if the counter doesn't exist.
-     * @returns {string|number} The next counter value.
+     * Get the named counter and advance it by one step.
+     *
+     * Counters are document-scoped sequences used for automatic numbering (figures,
+     * tables, custom labels, …). Each call increments the sequence and returns the
+     * new value. Numeric counters increment by 1; alphabetic counters advance through
+     * the alphabet (`'a'` → `'b'` → … → `'z'`).
+     *
+     * When the counter does not yet exist:
+     * - If `seed` is a number (or a string that parses as an integer), the counter starts at `seed`.
+     * - If `seed` is a letter (`'a'`–`'z'`), the counter starts at that letter.
+     * - If `seed` is `null` (default), the counter starts at `1`.
+     *
+     * @param {string} name - Counter name (document-scoped key).
+     * @param {string|number|null} [seed=null] - Starting value for new counters.
+     * @returns {string|number} The new counter value after incrementing.
+     *
+     * @example <caption>Numeric counter (auto-starts at 1)</caption>
+     * doc.counter('figure-number')   // → 1
+     * doc.counter('figure-number')   // → 2
+     *
+     * @example <caption>Alphabetic counter</caption>
+     * doc.counter('appendix-number', 'A')  // → 'A'
+     * doc.counter('appendix-number', 'A')  // → 'B'
+     *
+     * @example <caption>Numeric counter with custom start</caption>
+     * doc.counter('example-number', 5)   // → 5
+     * doc.counter('example-number', 5)   // → 6
      */
     counter(name: string, seed?: string | number | null): string | number;
     /**
@@ -234,17 +275,53 @@ export class Document extends AbstractBlock<string> {
      */
     setHeaderAttribute(name: string, value?: string, overwrite?: boolean): boolean;
     /**
-     * Convert the AsciiDoc document.
-     * @param {Object} [opts={}]
-     * @returns {Promise<string>} The converted output.
+     * Convert the parsed document to its output format (HTML5 by default).
+     *
+     * If `parse()` has not been called yet, it is called automatically.
+     *
+     * @param {Object} [opts={}] - Conversion options.
+     * @param {boolean} [opts.standalone] - When `true`, wraps output in a full
+     *   document shell (html/head/body). Defaults to the `standalone` option
+     *   passed at load time (which itself defaults to `true`).
+     * @param {string} [opts.outfile] - Path of the output file; stored as the
+     *   `outfile` document attribute during conversion.
+     * @param {string} [opts.outdir] - Directory of the output file; stored as the
+     *   `outdir` document attribute during conversion.
+     * @returns {Promise<string>} The converted output string.
+     *
+     * @example <caption>Embedded HTML (no html/head/body wrapper)</caption>
+     * const doc = await Document.create('= Hello\nWorld', {})
+     * const html = await doc.convert({ standalone: false })
+     *
+     * @example <caption>Full standalone HTML page</caption>
+     * const html = await doc.convert({ standalone: true })
      */
-    convert(opts?: any): Promise<string>;
+    convert(opts?: {
+        standalone?: boolean;
+        outfile?: string;
+        outdir?: string;
+    }): Promise<string>;
     /** @deprecated Use convert instead. */
     render(opts?: {}): Promise<string>;
     /**
-     * Write output to the specified file or stream.
-     * @param {string} output - The converted output string.
-     * @param {string|Object} target - File path or writable stream.
+     * Write converted output to a file path or a writable stream.
+     *
+     * When `target` is a **string**, the output is written to that file path using
+     * `node:fs/promises.writeFile`.
+     * When `target` is a **writable stream** (has a `.write()` method), the output
+     * is written to the stream in two chunks (content + newline).
+     * When the converter itself implements `write()`, that method is called instead.
+     *
+     * @param {string} output - The converted output string returned by {@link convert}.
+     * @param {string|import('stream').Writable} target - File path or writable stream.
+     * @returns {Promise<void>}
+     *
+     * @example <caption>Write to a file</caption>
+     * const output = await doc.convert()
+     * await doc.write(output, 'out/index.html')
+     *
+     * @example <caption>Write to a stream</caption>
+     * await doc.write(output, process.stdout)
      */
     write(output: string, target: string | any): Promise<void>;
     /**

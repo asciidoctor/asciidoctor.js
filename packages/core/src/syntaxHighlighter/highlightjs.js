@@ -4,8 +4,8 @@
 //   - Ruby class SyntaxHighlighter::HighlightJsAdapter → HighlightJsAdapter extends SyntaxHighlighterBase.
 //   - register_for 'highlightjs', 'highlight.js' → handled by the parent SyntaxHighlighter factory.
 //   - HIGHLIGHT_JS_VERSION constant imported from constants.js.
-//   - Ruby doc.attr(name, default) → doc.attr(name) with fallback using ?? operator.
-//   - Ruby doc.attr? 'name' → doc.hasAttr('name').
+//   - Ruby doc.getAttribute(name, default) → doc.getAttribute(name) with fallback using ?? operator.
+//   - Ruby doc.attr? 'name' → doc.hasAttribute('name').
 //   - Ruby string interpolation / multiline heredocs → template literals.
 //   - Ruby :head / :footer symbols → plain strings 'head' / 'footer'.
 
@@ -34,7 +34,7 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
    */
   format(node, lang, opts) {
     const transform = (pre, code) => {
-      if (node.hasAttr('nohighlight-option')) {
+      if (node.hasAttribute('nohighlight-option')) {
         pre.class = pre.class.replace(' highlight', '')
       }
       code.class = `language-${lang || 'none'} hljs`
@@ -61,18 +61,18 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
    */
   docinfo(location, doc, opts) {
     const baseUrl =
-      doc.attr('highlightjsdir') ??
+      doc.getAttribute('highlightjsdir') ??
       `${opts.cdn_base_url}/highlight.js/${HIGHLIGHT_JS_VERSION}`
 
     if (location === 'head') {
-      const theme = doc.attr('highlightjs-theme') ?? 'github'
+      const theme = doc.getAttribute('highlightjs-theme') ?? 'github'
       return `<link rel="stylesheet" href="${baseUrl}/styles/${theme}.min.css"${opts.self_closing_tag_slash ?? ''}>`
     }
 
     // footer
-    const langScripts = doc.attr('highlightjs-languages')
+    const langScripts = doc.getAttribute('highlightjs-languages')
       ? doc
-          .attr('highlightjs-languages')
+          .getAttribute('highlightjs-languages')
           .split(',')
           .map(
             (lang) =>

@@ -93,7 +93,37 @@ Some internal properties and options that retained the Ruby `snake_case` style i
 | `isReftext()` → `boolean`
 | `hasReftext()` → `boolean`
 | Checks whether the `reftext` attribute is set. Note: v4 also retains `isReftext()` with broader semantics (returns `true` when `reftext` is set *or* the node has a title).
+
+| `getAttr(name, defaultValue?, inherit?)` → `*`
+| `getAttribute(name, defaultValue?, inherit?)` → `*`
+| `getAttr` is removed. Use `getAttribute` instead — the signature is identical.
 |===
+
+=== `getAttribute` returns `null` instead of `undefined`
+
+In v3, `getAttribute(name)` returned `undefined` when the attribute was absent.
+In v4, it returns `null`.
+
+[cols="1,1"]
+|===
+| v3 | v4
+
+| `node.getAttribute('missing') === undefined` → `true`
+| `node.getAttribute('missing') === null` → `true`
+|===
+
+Update any code that checks the return value against `undefined`:
+
+[source,javascript]
+----
+// v3
+if (node.getAttribute('language') === undefined) { ... }
+
+// v4
+if (node.getAttribute('language') === null) { ... }
+// or equivalently
+if (!node.getAttribute('language')) { ... }
+----
 
 === Restructured inner classes
 
@@ -251,6 +281,7 @@ import {
   MemoryLogger,
   NullLogger,
   SafeMode,
+  ContentModel,
   Timings,
 } from '@asciidoctor/core'
 ----

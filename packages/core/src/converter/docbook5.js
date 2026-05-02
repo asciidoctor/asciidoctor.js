@@ -64,23 +64,23 @@ export class DocBook5Converter extends ConverterBase {
 
   async convert_document(node) {
     const result = ['<?xml version="1.0" encoding="UTF-8"?>']
-    if (node.hasAttr('toc')) {
+    if (node.hasAttribute('toc')) {
       result.push(
-        node.hasAttr('toclevels')
-          ? `<?asciidoc-toc maxdepth="${node.attr('toclevels')}"?>`
+        node.hasAttribute('toclevels')
+          ? `<?asciidoc-toc maxdepth="${node.getAttribute('toclevels')}"?>`
           : '<?asciidoc-toc?>'
       )
     }
-    if (node.hasAttr('sectnums')) {
+    if (node.hasAttribute('sectnums')) {
       result.push(
-        node.hasAttr('sectnumlevels')
-          ? `<?asciidoc-numbered maxdepth="${node.attr('sectnumlevels')}"?>`
+        node.hasAttribute('sectnumlevels')
+          ? `<?asciidoc-numbered maxdepth="${node.getAttribute('sectnumlevels')}"?>`
           : '<?asciidoc-numbered?>'
       )
     }
-    const langAttribute = node.hasAttr('nolang')
+    const langAttribute = node.hasAttribute('nolang')
       ? ''
-      : ` xml:lang="${node.attr('lang', 'en')}"`
+      : ` xml:lang="${node.getAttribute('lang', 'en')}"`
     let rootTagName = node.doctype
     let manpage = false
     if (rootTagName === 'manpage') {
@@ -95,26 +95,28 @@ export class DocBook5Converter extends ConverterBase {
     if (manpage) {
       result.push('<refentry>')
       result.push('<refmeta>')
-      if (node.hasAttr('mantitle'))
+      if (node.hasAttribute('mantitle'))
         result.push(
-          `<refentrytitle>${await node.applyReftextSubs(node.attr('mantitle'))}</refentrytitle>`
+          `<refentrytitle>${await node.applyReftextSubs(node.getAttribute('mantitle'))}</refentrytitle>`
         )
-      if (node.hasAttr('manvolnum'))
-        result.push(`<manvolnum>${node.attr('manvolnum')}</manvolnum>`)
+      if (node.hasAttribute('manvolnum'))
+        result.push(`<manvolnum>${node.getAttribute('manvolnum')}</manvolnum>`)
       result.push(
-        `<refmiscinfo class="source">${node.attr('mansource', '&#160;')}</refmiscinfo>`
+        `<refmiscinfo class="source">${node.getAttribute('mansource', '&#160;')}</refmiscinfo>`
       )
       result.push(
-        `<refmiscinfo class="manual">${node.attr('manmanual', '&#160;')}</refmiscinfo>`
+        `<refmiscinfo class="manual">${node.getAttribute('manmanual', '&#160;')}</refmiscinfo>`
       )
       result.push('</refmeta>')
       result.push('<refnamediv>')
-      if (node.hasAttr('mannames')) {
-        for (const n of node.attr('mannames'))
+      if (node.hasAttribute('mannames')) {
+        for (const n of node.getAttribute('mannames'))
           result.push(`<refname>${n}</refname>`)
       }
-      if (node.hasAttr('manpurpose'))
-        result.push(`<refpurpose>${node.attr('manpurpose')}</refpurpose>`)
+      if (node.hasAttribute('manpurpose'))
+        result.push(
+          `<refpurpose>${node.getAttribute('manpurpose')}</refpurpose>`
+        )
       result.push('</refnamediv>')
     }
     const headerDocinfo = await node.docinfo('header')
@@ -169,7 +171,7 @@ export class DocBook5Converter extends ConverterBase {
   }
 
   async convert_admonition(node) {
-    const tagName = node.attr('name')
+    const tagName = node.getAttribute('name')
     return `<${tagName}${this._commonAttributes(node.id, node.role, node.reftext)}>\n${this._titleTag(node)}${await this._encloseContent(node)}\n</${tagName}>`
   }
 
@@ -184,7 +186,7 @@ export class DocBook5Converter extends ConverterBase {
     )
     if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
     for (const item of node.getItems()) {
-      result.push(`<callout arearefs="${item.attr('coids')}">`)
+      result.push(`<callout arearefs="${item.getAttribute('coids')}">`)
       result.push(`<para>${item.getText()}</para>`)
       if (item.hasBlocks()) result.push(await item.content())
       result.push('</callout>')
@@ -201,8 +203,12 @@ export class DocBook5Converter extends ConverterBase {
         `<${tagName}${this._commonAttributes(node.id, node.role, node.reftext)} tabstyle="horizontal" frame="none" colsep="0" rowsep="0">`
       )
       result.push(`${this._titleTag(node)}<tgroup cols="2">`)
-      result.push(`<colspec colwidth="${node.attr('labelwidth', 15)}*"/>`)
-      result.push(`<colspec colwidth="${node.attr('itemwidth', 85)}*"/>`)
+      result.push(
+        `<colspec colwidth="${node.getAttribute('labelwidth', 15)}*"/>`
+      )
+      result.push(
+        `<colspec colwidth="${node.getAttribute('itemwidth', 85)}*"/>`
+      )
       result.push('<tbody valign="top">')
       for (const [terms, dd] of node.getItems()) {
         result.push('<row>\n<entry>')
@@ -263,10 +269,10 @@ export class DocBook5Converter extends ConverterBase {
   }
 
   async convert_image(node) {
-    const alignAttribute = node.hasAttr('align')
-      ? ` align="${node.attr('align')}"`
+    const alignAttribute = node.hasAttribute('align')
+      ? ` align="${node.getAttribute('align')}"`
       : ''
-    const mediaobject = `<mediaobject>\n<imageobject>\n<imagedata fileref="${await node.imageUri(node.attr('target'))}"${this._imageSizeAttributes(node.attributes)}${alignAttribute}/>\n</imageobject>\n<textobject><phrase>${node.getAlt()}</phrase></textobject>\n</mediaobject>`
+    const mediaobject = `<mediaobject>\n<imageobject>\n<imagedata fileref="${await node.imageUri(node.getAttribute('target'))}"${this._imageSizeAttributes(node.attributes)}${alignAttribute}/>\n</imageobject>\n<textobject><phrase>${node.getAlt()}</phrase></textobject>\n</mediaobject>`
     const commonAttrs = this._commonAttributes(node.id, node.role, node.reftext)
     if (node.hasTitle()) {
       return `<figure${commonAttrs}>\n<title>${node.title}</title>\n${mediaobject}\n</figure>`
@@ -341,8 +347,8 @@ export class DocBook5Converter extends ConverterBase {
   async convert_olist(node) {
     const result = []
     const numAttribute = node.style ? ` numeration="${node.style}"` : ''
-    const startAttribute = node.hasAttr('start')
-      ? ` startingnumber="${node.attr('start')}"`
+    const startAttribute = node.hasAttribute('start')
+      ? ` startingnumber="${node.getAttribute('start')}"`
       : ''
     result.push(
       `<orderedlist${this._commonAttributes(node.id, node.role, node.reftext)}${numAttribute}${startAttribute}>`
@@ -455,11 +461,11 @@ export class DocBook5Converter extends ConverterBase {
     let hasBody = false
     const result = []
     const pgwideAttribute = node.hasOption('pgwide') ? ' pgwide="1"' : ''
-    let frame = node.attr('frame', 'all', 'table-frame')
+    let frame = node.getAttribute('frame', 'all', 'table-frame')
     if (frame === 'ends') frame = 'topbot'
-    const grid = node.attr('grid', null, 'table-grid')
+    const grid = node.getAttribute('grid', null, 'table-grid')
     const tagName = node.hasTitle() ? 'table' : 'informaltable'
-    const orientAttr = node.hasAttr(
+    const orientAttr = node.hasAttribute(
       'orientation',
       'landscape',
       'table-orientation'
@@ -476,7 +482,7 @@ export class DocBook5Converter extends ConverterBase {
     }
     if (tagName === 'table') result.push(`<title>${node.title}</title>`)
     let colWidthKey
-    const width = node.hasAttr('width') ? node.attr('width') : null
+    const width = node.hasAttribute('width') ? node.getAttribute('width') : null
     if (width) {
       for (const piName of TABLE_PI_NAMES)
         result.push(`<?${piName} table-width="${width}"?>`)
@@ -484,10 +490,10 @@ export class DocBook5Converter extends ConverterBase {
     } else {
       colWidthKey = 'colpcwidth'
     }
-    result.push(`<tgroup cols="${node.attr('colcount')}">`)
+    result.push(`<tgroup cols="${node.getAttribute('colcount')}">`)
     for (const col of node.columns) {
       result.push(
-        `<colspec colname="col_${col.attr('colnumber')}" colwidth="${col.attr(colWidthKey)}*"/>`
+        `<colspec colname="col_${col.getAttribute('colnumber')}" colwidth="${col.getAttribute(colWidthKey)}*"/>`
       )
     }
     for (const [tsec, sectionRows] of node.rows.bySection()) {
@@ -498,12 +504,12 @@ export class DocBook5Converter extends ConverterBase {
         result.push('<row>')
         for (const cell of row) {
           const colspanAttribute = cell.colspan
-            ? ` namest="col_${cell.column.attr('colnumber')}" nameend="col_${cell.column.attr('colnumber') + cell.colspan - 1}"`
+            ? ` namest="col_${cell.column.getAttribute('colnumber')}" nameend="col_${cell.column.getAttribute('colnumber') + cell.colspan - 1}"`
             : ''
           const rowspanAttribute = cell.rowspan
             ? ` morerows="${cell.rowspan - 1}"`
             : ''
-          const entryStart = `<entry align="${cell.attr('halign')}" valign="${cell.attr('valign')}"${colspanAttribute}${rowspanAttribute}>`
+          const entryStart = `<entry align="${cell.getAttribute('halign')}" valign="${cell.getAttribute('valign')}"${colspanAttribute}${rowspanAttribute}>`
           let cellContent
           if (tsec === 'head') {
             cellContent = cell.text
@@ -532,8 +538,8 @@ export class DocBook5Converter extends ConverterBase {
               }
             }
           }
-          const entryEnd = node.document.hasAttr('cellbgcolor')
-            ? `<?dbfo bgcolor="${node.document.attr('cellbgcolor')}"?></entry>`
+          const entryEnd = node.document.hasAttribute('cellbgcolor')
+            ? `<?dbfo bgcolor="${node.document.getAttribute('cellbgcolor')}"?></entry>`
             : '</entry>'
           result.push(`${entryStart}${cellContent}${entryEnd}`)
         }
@@ -575,8 +581,8 @@ export class DocBook5Converter extends ConverterBase {
       if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
       for (const item of node.getItems()) {
         const textMarker =
-          checklist && item.hasAttr('checkbox')
-            ? item.hasAttr('checked')
+          checklist && item.hasAttribute('checkbox')
+            ? item.hasAttribute('checked')
               ? '&#10003; '
               : '&#10063; '
             : ''
@@ -659,8 +665,8 @@ export class DocBook5Converter extends ConverterBase {
         ? await node.iconUri(node.target)
         : await node.imageUri(node.target)
     const img = `<inlinemediaobject${this._commonAttributes(node.id, node.role)}>\n<imageobject>\n<imagedata fileref="${fileref}"${this._imageSizeAttributes(node.attributes)}/>\n</imageobject>\n<textobject><phrase>${node.getAlt()}</phrase></textobject>\n</inlinemediaobject>`
-    if (node.type !== 'icon' && node.hasAttr('link')) {
-      const linkHref = node.attr('link')
+    if (node.type !== 'icon' && node.hasAttribute('link')) {
+      const linkHref = node.getAttribute('link')
       return `<link xl:href="${linkHref === 'self' ? fileref : linkHref}">${img}</link>`
     }
     return img
@@ -668,11 +674,11 @@ export class DocBook5Converter extends ConverterBase {
 
   async convert_inline_indexterm(node) {
     let rel = ''
-    const see = node.attr('see')
+    const see = node.getAttribute('see')
     if (see) {
       rel = `\n<see>${see}</see>`
     } else {
-      const seeAlsoList = node.attr('see-also')
+      const seeAlsoList = node.getAttribute('see-also')
       if (seeAlsoList) {
         rel = seeAlsoList.map((s) => `\n<seealso>${s}</seealso>`).join('')
       }
@@ -680,7 +686,7 @@ export class DocBook5Converter extends ConverterBase {
     if (node.type === 'visible') {
       return `<indexterm>\n<primary>${node.text}</primary>${rel}\n</indexterm>${node.text}`
     }
-    const terms = node.attr('terms')
+    const terms = node.getAttribute('terms')
     const numterms = terms.length
     const indexPromote = node.document.hasOption('indexterm-promotion')
     if (numterms > 2) {
@@ -692,7 +698,7 @@ export class DocBook5Converter extends ConverterBase {
   }
 
   async convert_inline_kbd(node) {
-    const keys = node.attr('keys')
+    const keys = node.getAttribute('keys')
     if (keys.length === 1) {
       return `<keycap>${keys[0]}</keycap>`
     }
@@ -700,16 +706,16 @@ export class DocBook5Converter extends ConverterBase {
   }
 
   async convert_inline_menu(node) {
-    const menu = node.attr('menu')
-    const submenus = node.attr('submenus')
+    const menu = node.getAttribute('menu')
+    const submenus = node.getAttribute('submenus')
     if (!submenus || submenus.length === 0) {
-      const menuitem = node.attr('menuitem')
+      const menuitem = node.getAttribute('menuitem')
       if (menuitem) {
         return `<menuchoice><guimenu>${menu}</guimenu> <guimenuitem>${menuitem}</guimenuitem></menuchoice>`
       }
       return `<guimenu>${menu}</guimenu>`
     }
-    return `<menuchoice><guimenu>${menu}</guimenu> <guisubmenu>${submenus.join('</guisubmenu> <guisubmenu>')}</guisubmenu> <guimenuitem>${node.attr('menuitem')}</guimenuitem></menuchoice>`
+    return `<menuchoice><guimenu>${menu}</guimenu> <guisubmenu>${submenus.join('</guisubmenu> <guisubmenu>')}</guisubmenu> <guimenuitem>${node.getAttribute('menuitem')}</guimenuitem></menuchoice>`
   }
 
   async convert_inline_quoted(node) {
@@ -820,14 +826,14 @@ export class DocBook5Converter extends ConverterBase {
         result.push(`<title>${title}</title>`)
       }
     }
-    const date = doc.hasAttr('revdate')
-      ? doc.attr('revdate')
-      : doc.hasAttr('reproducible')
+    const date = doc.hasAttribute('revdate')
+      ? doc.getAttribute('revdate')
+      : doc.hasAttribute('reproducible')
         ? null
-        : doc.attr('docdate')
+        : doc.getAttribute('docdate')
     if (date) result.push(`<date>${date}</date>`)
-    if (doc.hasAttr('copyright')) {
-      const m = CopyrightRx.exec(doc.attr('copyright'))
+    if (doc.hasAttribute('copyright')) {
+      const m = CopyrightRx.exec(doc.getAttribute('copyright'))
       if (m) {
         result.push('<copyright>')
         result.push(`<holder>${m[1]}</holder>`)
@@ -851,23 +857,26 @@ export class DocBook5Converter extends ConverterBase {
         }
       }
       if (
-        doc.hasAttr('revdate') &&
-        (doc.hasAttr('revnumber') || doc.hasAttr('revremark'))
+        doc.hasAttribute('revdate') &&
+        (doc.hasAttribute('revnumber') || doc.hasAttribute('revremark'))
       ) {
         result.push('<revhistory>\n<revision>')
-        if (doc.hasAttr('revnumber'))
-          result.push(`<revnumber>${doc.attr('revnumber')}</revnumber>`)
-        if (doc.hasAttr('revdate'))
-          result.push(`<date>${doc.attr('revdate')}</date>`)
-        if (doc.hasAttr('authorinitials'))
+        if (doc.hasAttribute('revnumber'))
+          result.push(`<revnumber>${doc.getAttribute('revnumber')}</revnumber>`)
+        if (doc.hasAttribute('revdate'))
+          result.push(`<date>${doc.getAttribute('revdate')}</date>`)
+        if (doc.hasAttribute('authorinitials'))
           result.push(
-            `<authorinitials>${doc.attr('authorinitials')}</authorinitials>`
+            `<authorinitials>${doc.getAttribute('authorinitials')}</authorinitials>`
           )
-        if (doc.hasAttr('revremark'))
-          result.push(`<revremark>${doc.attr('revremark')}</revremark>`)
+        if (doc.hasAttribute('revremark'))
+          result.push(`<revremark>${doc.getAttribute('revremark')}</revremark>`)
         result.push('</revision>\n</revhistory>')
       }
-      if (doc.hasAttr('front-cover-image') || doc.hasAttr('back-cover-image')) {
+      if (
+        doc.hasAttribute('front-cover-image') ||
+        doc.hasAttribute('back-cover-image')
+      ) {
         const backCoverTag = await this._coverTag(doc, 'back')
         if (backCoverTag) {
           result.push(await this._coverTag(doc, 'front', true))
@@ -877,15 +886,15 @@ export class DocBook5Converter extends ConverterBase {
           if (frontCoverTag) result.push(frontCoverTag)
         }
       }
-      if (doc.hasAttr('orgname'))
-        result.push(`<orgname>${doc.attr('orgname')}</orgname>`)
+      if (doc.hasAttribute('orgname'))
+        result.push(`<orgname>${doc.getAttribute('orgname')}</orgname>`)
       const docinfo = await doc.docinfo()
       if (docinfo) result.push(docinfo)
     }
     if (abstract) {
-      abstract.setAttr('root-option', '')
+      abstract.setAttribute('root-option', '')
       result.push(await this.convert(abstract, abstract.nodeName))
-      abstract.removeAttr('root-option')
+      abstract.removeAttribute('root-option')
     }
     result.push('</info>')
     return result.join(LF)
@@ -977,7 +986,7 @@ export class DocBook5Converter extends ConverterBase {
    * @private
    */
   async _coverTag(doc, face, usePlaceholder = false) {
-    const coverImage = doc.attr(`${face}-cover-image`)
+    const coverImage = doc.getAttribute(`${face}-cover-image`)
     if (coverImage) {
       let fileref = coverImage
       const sizeAttrs = ''
@@ -1005,11 +1014,12 @@ export class DocBook5Converter extends ConverterBase {
       `<${tag}${this._commonAttributes(node.id, node.role, node.reftext)}>`,
     ]
     if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
-    if (node.hasAttr('attribution') || node.hasAttr('citetitle')) {
+    if (node.hasAttribute('attribution') || node.hasAttribute('citetitle')) {
       result.push('<attribution>')
-      if (node.hasAttr('attribution')) result.push(node.attr('attribution'))
-      if (node.hasAttr('citetitle'))
-        result.push(`<citetitle>${node.attr('citetitle')}</citetitle>`)
+      if (node.hasAttribute('attribution'))
+        result.push(node.getAttribute('attribution'))
+      if (node.hasAttribute('citetitle'))
+        result.push(`<citetitle>${node.getAttribute('citetitle')}</citetitle>`)
       result.push('</attribution>')
     }
     result.push(await contentFn())

@@ -447,8 +447,8 @@ export class Parser {
         preamble = intro = new Block(parent, 'preamble', {
           content_model: 'compound',
         })
-        if (book && parent.hasAttr('preface-title')) {
-          preamble.title = parent.attr('preface-title')
+        if (book && parent.hasAttribute('preface-title')) {
+          preamble.title = parent.getAttribute('preface-title')
         }
         parent.blocks.push(preamble)
       }
@@ -491,7 +491,7 @@ export class Parser {
         nextLevel !== undefined &&
         nextLevel !== false
       ) {
-        const leveloffset = document.attr('leveloffset')
+        const leveloffset = document.getAttribute('leveloffset')
         if (leveloffset) {
           nextLevel += parseInt(leveloffset, 10)
           if (nextLevel < 0) nextLevel = 0
@@ -2509,7 +2509,7 @@ export class Parser {
       throw new Error(`Unrecognized section at ${reader.cursorAtPrevLine()}`)
     }
 
-    const leveloffset = document.attr('leveloffset')
+    const leveloffset = document.getAttribute('leveloffset')
     if (leveloffset) {
       sectLevel += parseInt(leveloffset, 10)
       if (sectLevel < 0) sectLevel = 0
@@ -2978,7 +2978,8 @@ export class Parser {
       if (value != null) {
         if (value !== '') {
           if (name === 'leveloffset') {
-            const current = parseInt(doc.attr('leveloffset', 0), 10) || 0
+            const current =
+              parseInt(doc.getAttribute('leveloffset', 0), 10) || 0
             if (value.startsWith('+'))
               value = String(current + parseInt(value.slice(1), 10))
             else if (value.startsWith('-'))

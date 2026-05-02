@@ -63,7 +63,7 @@ describe('Parser', () => {
     const [attrName, attrValue] = Parser.storeAttribute('foo', 'bar', doc, attrs)
     assert.equal(attrName, 'foo')
     assert.equal(attrValue, 'bar')
-    assert.equal(doc.attr('foo'), 'bar')
+    assert.equal(doc.getAttribute('foo'), 'bar')
     assert.ok('attribute_entries' in attrs)
     assert.equal(attrs.attribute_entries.length, 1)
     assert.equal(attrs.attribute_entries[0].name, 'foo')
@@ -78,7 +78,7 @@ describe('Parser', () => {
     const [attrName, attrValue] = Parser.storeAttribute('foo', '{release}', doc, attrs)
     assert.equal(attrName, 'foo')
     assert.equal(attrValue, 'ultramega')
-    assert.equal(doc.attr('foo'), 'ultramega')
+    assert.equal(doc.getAttribute('foo'), 'ultramega')
     assert.ok('attribute_entries' in attrs)
     assert.equal(attrs.attribute_entries.length, 1)
     assert.equal(attrs.attribute_entries[0].name, 'foo')
@@ -91,7 +91,7 @@ describe('Parser', () => {
     const [attrName, attrValue] = Parser.storeAttribute('foo', 'bar', doc, attrs)
     assert.equal(attrName, 'foo')
     assert.equal(attrValue, 'bar')
-    assert.equal(doc.attr('foo'), 'baz')
+    assert.equal(doc.getAttribute('foo'), 'baz')
     assert.ok(!('attribute_entries' in attrs))
   })
 
@@ -489,9 +489,9 @@ Author Name
         'release-summary': 'The one you can count on!',
       },
     })
-    assert.equal(doc.attr('revnumber'), '1.0.1')
-    assert.equal(doc.attr('revdate'), '2018-05-15')
-    assert.equal(doc.attr('revremark'), 'The one you can count on!')
+    assert.equal(doc.getAttribute('revnumber'), '1.0.1')
+    assert.equal(doc.getAttribute('revdate'), '2018-05-15')
+    assert.equal(doc.getAttribute('revremark'), 'The one you can count on!')
   })
 
   test('parse rev date', async () => {

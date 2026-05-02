@@ -18,11 +18,11 @@ function makeDoc ({ baseDir = '.', allowUriRead = false, compatMode = false } = 
   return {
     baseDir,
     pathResolver,
-    attr: (name) => {
-      if (name === 'allow-uri-read') return allowUriRead ? true : undefined
-      return undefined
+    getAttribute: (name) => {
+      if (name === 'allow-uri-read') return allowUriRead ? true : null
+      return null
     },
-    hasAttr: (name) => {
+    hasAttribute: (name) => {
       if (name === 'compat-mode') return compatMode
       return false
     },

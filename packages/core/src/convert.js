@@ -16,8 +16,8 @@
 //   - Ruby syntax_hl.write_stylesheet? doc → syntaxHl.writeStylesheet(doc).
 //   - Ruby syntax_hl.write_stylesheet doc, dir → syntaxHl.writeStylesheetToDisk(doc, dir).
 //   - Ruby doc.normalize_system_path → doc.normalizeSystemPath.
-//   - Ruby doc.attr? 'x' → doc.hasAttr('x').
-//   - Ruby doc.attr 'x' → doc.attr('x').
+//   - Ruby doc.attr? 'x' → doc.hasAttribute('x').
+//   - Ruby doc.attr 'x' → doc.getAttribute('x').
 //   - Ruby doc.basebackend? 'html' → doc.basebackend('html').
 //   - The entire function is async because load() is async.
 
@@ -204,14 +204,16 @@ export async function convert(input, options = {}) {
     if (
       !streamOutput &&
       doc.safe < SafeMode.SECURE &&
-      doc.hasAttr('linkcss') &&
-      doc.hasAttr('copycss') &&
+      doc.hasAttribute('linkcss') &&
+      doc.hasAttribute('copycss') &&
       doc.basebackend('html') &&
-      !(doc.attr('stylesdir') && isUriish(doc.attr('stylesdir')))
+      !(
+        doc.getAttribute('stylesdir') && isUriish(doc.getAttribute('stylesdir'))
+      )
     ) {
       let copyAsciidoctorStylesheet = false
       let copyUserStylesheet = false
-      const stylesheet = doc.attr('stylesheet')
+      const stylesheet = doc.getAttribute('stylesheet')
       if (stylesheet) {
         if (DEFAULT_STYLESHEET_KEYS.has(stylesheet)) {
           copyAsciidoctorStylesheet = true
@@ -227,7 +229,7 @@ export async function convert(input, options = {}) {
         copyUserStylesheet ||
         copySyntaxHlStylesheet
       ) {
-        const stylesdir = doc.attr('stylesdir')
+        const stylesdir = doc.getAttribute('stylesdir')
         const stylesoutdir = doc.normalizeSystemPath(
           stylesdir,
           outdir,
@@ -246,7 +248,7 @@ export async function convert(input, options = {}) {
         if (copyAsciidoctorStylesheet) {
           // NOTE Stylesheets.instance.write_primary_stylesheet is not yet ported to JS
         } else if (copyUserStylesheet) {
-          let stylesheetSrc = doc.attr('copycss')
+          let stylesheetSrc = doc.getAttribute('copycss')
           if (stylesheetSrc === '' || stylesheetSrc === true) {
             stylesheetSrc = doc.normalizeSystemPath(stylesheet)
           } else {

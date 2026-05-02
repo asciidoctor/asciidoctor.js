@@ -517,7 +517,7 @@ describe('PreprocessorReader', () => {
       const reader = doc.reader
       const expected = ['....', '---', 'name: value', '---', 'content', '....']
       assert.deepEqual(await reader.readlines(), expected)
-      assert.ok(!doc.attr('front-matter'))
+      assert.ok(!doc.getAttribute('front-matter'))
     })
 
     test('should skip front matter in include file if skip-front-matter option is set on include directive', async () => {
@@ -526,7 +526,7 @@ describe('PreprocessorReader', () => {
       const reader = doc.reader
       const expected = ['....', 'content', '....']
       assert.deepEqual(await reader.readlines(), expected)
-      assert.ok(!doc.attr('front-matter'))
+      assert.ok(!doc.getAttribute('front-matter'))
     })
   })
 

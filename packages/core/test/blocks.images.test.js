@@ -132,7 +132,7 @@ image::circle.svg[Circle,50%,opts=inline]
 image::circle.svg[Circle,opts=inline]
 `
       const doc = await documentFromString(input, { safe: 'server', attributes: { docdir: __dirname } })
-      doc.blocks[0].setAttr('width', 50)
+      doc.blocks[0].setAttribute('width', 50)
       const output = await doc.convert()
       assert.match(output, /<svg\s[^>]*width="50"[^>]*>/)
     })
@@ -179,7 +179,7 @@ image::no-such-image.svg[Alt Text]
       const output = await convertString(input)
       // TODO: needs DOM parser
       // const img = xmlnodes_at_xpath('//img', output, 1)
-      // assert.equal(img.attr('alt'), 'A [Bengal] Tiger')
+      // assert.equal(img.getAttribute('alt'), 'A [Bengal] Tiger')
       assert.ok(output.includes('alt="A [Bengal] Tiger"'))
     })
 
@@ -188,8 +188,8 @@ image::no-such-image.svg[Alt Text]
       const output = await convertString(input)
       // TODO: needs DOM parser
       // const img = xmlnodes_at_xpath('//img', output, 1)
-      // assert.equal(img.attr('src'), 'images/big%20tiger.png')
-      // assert.equal(img.attr('alt'), 'A Big Tiger')
+      // assert.equal(img.getAttribute('src'), 'images/big%20tiger.png')
+      // assert.equal(img.getAttribute('alt'), 'A Big Tiger')
       assert.ok(output.includes('src="images/big%20tiger.png"'))
       assert.ok(output.includes('alt="A Big Tiger"'))
     })
@@ -278,8 +278,8 @@ image::images/tiger.png[Tiger]
     test('auto-generate alt text for block image if alt text is not specified', async () => {
       const input = 'image::images/lions-and-tigers.png[]'
       const image = await blockFromString(input)
-      assert.equal(image.getAttr('alt'), 'lions and tigers')
-      assert.equal(image.getAttr('default-alt'), 'lions and tigers')
+      assert.equal(image.getAttribute('alt'), 'lions and tigers')
+      assert.equal(image.getAttribute('default-alt'), 'lions and tigers')
       const output = await image.convert()
       assertXpath(output, '/*[@class="imageblock"]//img[@src="images/lions-and-tigers.png"][@alt="lions and tigers"]', 1)
     })
@@ -603,8 +603,8 @@ image::../..//fixtures/./../../fixtures/dot.gif[Dot]
 
     test('use the imagesdir attribute set on the node when resolving the image path', async () => {
       const image = await blockFromString('image::rainbow.png[]', { attributes: { imagesdir: 'images' } })
-      image.setAttr('imagesdir', 'chapter-1/images')
-      const imageUri = await image.imageUri(image.getAttr('target'))
+      image.setAttribute('imagesdir', 'chapter-1/images')
+      const imageUri = await image.imageUri(image.getAttribute('target'))
       assert.equal(imageUri, 'chapter-1/images/rainbow.png')
     })
 

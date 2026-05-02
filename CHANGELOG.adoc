@@ -24,6 +24,9 @@ import { convert } from '@asciidoctor/core'
 
 await convert('Hello _world_')
 ----
+* `AbstractNode#getAttribute(name)` returns `null` (not `undefined`) when the attribute is absent
+* `AbstractNode#getAttr()` is removed — use `getAttribute()` instead
+
 * Requires Node.js ≥ 24
 * `@asciidoctor/cli` is deprecated — the CLI is now built into the `asciidoctor` package itself
 
@@ -38,6 +41,7 @@ Improvements::
 * Native binaries are now built with https://nodejs.org/api/single-executable-applications.html[Node.js Single Executable Applications (SEA)] instead of `pkg`
 * Significantly faster — early performance benchmarks show 3–4× speed improvements over version 3
 * Browser bundle is ~700 kB (unminified), down from ~1.74 MB with version 3 (Opal runtime included)
+* `ContentModel` constants exported (`COMPOUND`, `SIMPLE`, `VERBATIM`, `RAW`, `EMPTY`) for discoverable access to block content model values
 
 Infrastructure::
 

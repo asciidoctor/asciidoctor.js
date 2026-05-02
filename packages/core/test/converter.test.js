@@ -171,7 +171,7 @@ class XrefConverter {
   convertInlineAnchor (node) {
     return `
 getAttributes().fragment: ${typeof node.getAttributes().fragment === 'undefined'}
-getAttribute('fragment'): ${typeof node.getAttribute('fragment') === 'undefined'}`
+getAttribute('fragment'): ${node.getAttribute('fragment') === null}`
   }
 }
 

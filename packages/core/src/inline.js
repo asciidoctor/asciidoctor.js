@@ -66,7 +66,7 @@ export class Inline extends AbstractNode {
    * @see {getAlt}
    */
   get alt() {
-    return this.attr('alt') || ''
+    return this.getAttribute('alt') || ''
   }
 
   /**

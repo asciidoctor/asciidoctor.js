@@ -166,15 +166,15 @@ describe('ManPageConverter#_uppercasePcdata', () => {
 describe('Configuration', () => {
   test('sets proper manpage-related attributes', async () => {
     const doc = await loadManpage(SAMPLE_MANPAGE_HEADER)
-    assert.equal(doc.attr('filetype'), 'man')
-    // doc.attr() uses a falsy check, so empty-string attributes must be read directly
+    assert.equal(doc.getAttribute('filetype'), 'man')
+    // doc.getAttribute() uses a falsy check, so empty-string attributes must be read directly
     assert.equal(doc.attributes['filetype-man'], '')
-    assert.equal(doc.attr('manvolnum'), '1')
-    assert.equal(doc.attr('outfilesuffix'), '.1')
-    assert.equal(doc.attr('manname'), 'command')
-    assert.equal(doc.attr('mantitle'), 'command')
-    assert.equal(doc.attr('manpurpose'), 'does stuff')
-    assert.equal(doc.attr('docname'), 'command')
+    assert.equal(doc.getAttribute('manvolnum'), '1')
+    assert.equal(doc.getAttribute('outfilesuffix'), '.1')
+    assert.equal(doc.getAttribute('manname'), 'command')
+    assert.equal(doc.getAttribute('mantitle'), 'command')
+    assert.equal(doc.getAttribute('manpurpose'), 'does stuff')
+    assert.equal(doc.getAttribute('docname'), 'command')
   })
 
   test('does not escape hyphen in manname in NAME section', async () => {
@@ -205,10 +205,10 @@ Author Name
       doctype: 'manpage',
       attributes: { cmdname: 'foobar' },
     })
-    assert.equal(doc.attr('manname'), 'foobar')
-    assert.deepEqual(doc.attr('mannames'), ['foobar'])
-    assert.equal(doc.attr('manpurpose'), 'foobar puts the foo in your bar')
-    assert.equal(doc.attr('docname'), 'foobar')
+    assert.equal(doc.getAttribute('manname'), 'foobar')
+    assert.deepEqual(doc.getAttribute('mannames'), ['foobar'])
+    assert.equal(doc.getAttribute('manpurpose'), 'foobar puts the foo in your bar')
+    assert.equal(doc.getAttribute('docname'), 'foobar')
   })
 
   test('does not parse NAME section if manname and manpurpose attributes are pre-set', async () => {
@@ -231,9 +231,9 @@ When you need to put some foo on the bar.`
       doctype: 'manpage',
       attributes: { manname: 'foobar', manpurpose: 'puts some foo on the bar' },
     })
-    assert.equal(doc.attr('manname'), 'foobar')
-    assert.deepEqual(doc.attr('mannames'), ['foobar'])
-    assert.equal(doc.attr('manpurpose'), 'puts some foo on the bar')
+    assert.equal(doc.getAttribute('manname'), 'foobar')
+    assert.deepEqual(doc.getAttribute('mannames'), ['foobar'])
+    assert.equal(doc.getAttribute('manpurpose'), 'puts some foo on the bar')
     assert.equal(doc.sections()[0].title, 'SYNOPSIS')
   })
 
@@ -260,7 +260,7 @@ foobar - puts some foo
 
 When you need to put some foo on the bar.`
     const doc = await loadManpage(input)
-    assert.equal(doc.attr('manpurpose'), 'puts some foo on the bar')
+    assert.equal(doc.getAttribute('manpurpose'), 'puts some foo on the bar')
   })
 
   test('defines default linkstyle', async () => {

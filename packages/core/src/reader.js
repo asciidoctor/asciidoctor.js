@@ -847,7 +847,7 @@ export class PreprocessorReader extends Reader {
     if (this._lines.length === 0) {
       this._popInclude()
     } else if ('leveloffset' in attributes) {
-      const leveloffset = this._document.attr('leveloffset')
+      const leveloffset = this._document.getAttribute('leveloffset')
       const resetLine = leveloffset
         ? `:leveloffset: ${leveloffset}`
         : ':leveloffset!:'
@@ -944,7 +944,10 @@ export class PreprocessorReader extends Reader {
     if (opts.include) {
       if (opts.indent != null) {
         const indentVal = parseInt(opts.indent, 10) || 0
-        const tabsize = parseInt(this._document.attr('tabsize') ?? 0, 10)
+        const tabsize = parseInt(
+          this._document.getAttribute('tabsize') ?? 0,
+          10
+        )
         _adjustIndentation(result, indentVal, tabsize)
       }
     } else {
@@ -1235,7 +1238,7 @@ export class PreprocessorReader extends Reader {
       const lt = expandedTarget.includes(' ')
         ? `pass:c[${expandedTarget}]`
         : expandedTarget
-      const la = doc.hasAttr('compat-mode')
+      const la = doc.hasAttribute('compat-mode')
         ? (attrlist ?? '')
         : `role=include${attrlist ? `,${attrlist}` : ''}`
       return this.replaceNextLine(`link:${lt}[${la}]`)
@@ -1444,13 +1447,13 @@ export class PreprocessorReader extends Reader {
     }
 
     if (isUriish(target) || typeof this._dir !== 'string') {
-      if (!doc.attr('allow-uri-read')) {
+      if (!doc.getAttribute('allow-uri-read')) {
         this._logWarn(
           `cannot include contents of URI: ${target} (allow-uri-read attribute not enabled)`,
           { sourceLocation: this.cursor }
         )
         const lt = target.includes(' ') ? `pass:c[${target}]` : target
-        const la = doc.hasAttr('compat-mode')
+        const la = doc.hasAttribute('compat-mode')
           ? (attrlist ?? '')
           : `role=include${attrlist ? `,${attrlist}` : ''}`
         return this.replaceNextLine(`link:${lt}[${la}]`)
