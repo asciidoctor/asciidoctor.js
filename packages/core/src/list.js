@@ -1,16 +1,7 @@
 // ESM conversion of list.rb
 
 import { AbstractBlock } from './abstract_block.js'
-import { LF } from './constants.js'
-
-const NORMAL_SUBS = Object.freeze([
-  'specialcharacters',
-  'quotes',
-  'attributes',
-  'replacements',
-  'macros',
-  'post_replacements',
-])
+import { LF, NORMAL_SUBS } from './constants.js'
 
 /**
  * @extends {AbstractBlock<any[]>}

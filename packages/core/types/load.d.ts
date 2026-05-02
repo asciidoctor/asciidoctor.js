@@ -36,3 +36,4 @@ export function load(input: Buffer | string | string[] | {
  * @returns {Promise<Document>} A Promise that resolves to the Document.
  */
 export function loadFile(filename: string, options?: any): Promise<Document>;
+import { Document } from './document.js';

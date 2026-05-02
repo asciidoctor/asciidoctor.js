@@ -9,10 +9,7 @@
 //   - Ruby string interpolation / multiline heredocs → template literals.
 //   - Ruby :head / :footer symbols → plain strings 'head' / 'footer'.
 
-import {
-  SyntaxHighlighterBase,
-  SyntaxHighlighter,
-} from '../syntax_highlighter.js'
+import { SyntaxHighlighterBase } from '../syntax_highlighter.js'
 import { HIGHLIGHT_JS_VERSION } from '../constants.js'
 
 export class HighlightJsAdapter extends SyntaxHighlighterBase {
@@ -90,8 +87,5 @@ if (!hljs.initHighlighting.called) {
 </script>`
   }
 }
-
-// Self-register in the global factory (mirrors Ruby's `register_for`).
-SyntaxHighlighter.register(HighlightJsAdapter, 'highlightjs', 'highlight.js')
 
 export default HighlightJsAdapter

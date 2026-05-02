@@ -31,7 +31,9 @@ import { XmlSanitizeRx, AttributeEntryPassMacroRx } from './rx.js'
 import { LF } from './constants.js'
 import { applyLogging } from './logging.js'
 import { SyntaxHighlighter } from './syntax_highlighter.js'
-/** @import { Reader } from './reader.js' */
+import { PreprocessorReader, Cursor } from './reader.js'
+import { Parser } from './parser.js'
+import { Extensions, Registry } from './extensions.js'
 
 // ── Helper structs ────────────────────────────────────────────────────────────
 
@@ -60,47 +62,11 @@ export class ImageReference {
   }
 }
 
-export class Footnote {
-  constructor(index, id, text) {
-    this.index = index
-    this.id = id ?? null
-    this.text = text
-  }
+import { Footnote } from './footnote.js'
+export { Footnote }
 
-  /**
-   * @returns {number} the index of this footnote.
-   */
-  getIndex() {
-    return this.index
-  }
-
-  /**
-   * @returns {string|null} the id of this footnote, or null if not set.
-   */
-  getId() {
-    return this.id
-  }
-
-  /**
-   * @returns {string} the text of this footnote.
-   */
-  getText() {
-    return this.text
-  }
-}
-
-export class AttributeEntry {
-  constructor(name, value, negate = null) {
-    this.name = name
-    this.value = value
-    this.negate = negate == null ? value == null : negate
-  }
-
-  saveTo(blockAttributes) {
-    ;(blockAttributes.attribute_entries ??= []).push(this)
-    return this
-  }
-}
+import { AttributeEntry } from './attribute_entry.js'
+export { AttributeEntry }
 
 /**
  * Parsed and stores a partitioned title (title & subtitle).
@@ -366,13 +332,10 @@ export class Document extends AbstractBlock {
       this.extensions = options.extension_registry ?? null
       // If no explicit registry but global extension groups are registered, activate them.
       if (!this.extensions) {
-        const extsMod = await_require('./extensions.js')
-        if (extsMod.Extensions) {
-          const globalGroups = extsMod.Extensions.groups()
-          if (Object.keys(globalGroups).length > 0) {
-            this.extensions = new extsMod.Registry()
-            this.extensions.activate(this)
-          }
+        const globalGroups = Extensions.groups()
+        if (Object.keys(globalGroups).length > 0) {
+          this.extensions = new Registry()
+          this.extensions.activate(this)
         }
       }
       this.syntaxHighlighter = null
@@ -512,7 +475,6 @@ export class Document extends AbstractBlock {
         this._updateDoctypeAttributes(DEFAULT_DOCTYPE)
       }
       // Set up reader only — parsing is deferred to Document.create() / doc.parse().
-      const { PreprocessorReader } = await_require('./reader.js')
       this.reader = new PreprocessorReader(this, data, options.cursor)
       if (this.sourcemap) this.sourceLocation = this.reader.cursor
     } else {
@@ -531,7 +493,6 @@ export class Document extends AbstractBlock {
       this._fillDatetimeAttributes(attrs, this._inputMtime)
 
       // Extensions initialization deferred — handle in parse()
-      const { PreprocessorReader, Cursor } = await_require('./reader.js')
       this.reader = new PreprocessorReader(
         this,
         data,
@@ -587,7 +548,6 @@ export class Document extends AbstractBlock {
     if (this._parsed) return this
 
     if (data) {
-      const { PreprocessorReader, Cursor } = await_require('./reader.js')
       this.reader = new PreprocessorReader(
         this,
         data,
@@ -603,7 +563,6 @@ export class Document extends AbstractBlock {
       }
     }
 
-    const { Parser } = await_require('./parser.js')
     await Parser.parse(this.reader, this, {
       header_only: this.options.parse_header_only,
     })
@@ -2162,16 +2121,3 @@ function _limitBytesize(str, max) {
 applyLogging(Document.prototype)
 
 Document.Footnote = Footnote
-
-// Module cache populated by load.js before constructing a Document.
-// Keys are bare filenames ('reader.js', 'parser.js').
-export const _deps = {}
-
-// Resolve a relative path (e.g. './reader.js') to a cache key.
-function _depKey(path) {
-  return path.replace(/^\.\//, '')
-}
-
-function await_require(path) {
-  return _deps[_depKey(path)] ?? {}
-}

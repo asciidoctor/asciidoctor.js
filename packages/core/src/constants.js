@@ -653,3 +653,13 @@ export const REPLACEMENTS = [
     'bounding',
   ],
 ]
+
+export const BASIC_SUBS = Object.freeze(['specialcharacters'])
+export const NORMAL_SUBS = Object.freeze([
+  'specialcharacters',
+  'quotes',
+  'attributes',
+  'replacements',
+  'macros',
+  'post_replacements',
+])
