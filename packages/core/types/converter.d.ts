@@ -127,9 +127,9 @@ export class ConverterBase {
      * @param {object} node - the AbstractNode to convert
      * @param {string|null} [transform=null] - hint for which method to call (default: node.nodeName)
      * @param {object|null} [opts=null] - optional hints
-     * @returns {Promise<string|null>} the converted string or null
+     * @returns {Promise<unknown>} the result of the `convert_<transform>` handler; the actual type depends on the implementation
      */
-    convert(node: object, transform?: string | null, opts?: object | null): Promise<string | null>;
+    convert(node: object, transform?: string | null, opts?: object | null): Promise<unknown>;
     /**
      * Report whether this converter can handle the given transform.
      *
