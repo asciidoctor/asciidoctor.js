@@ -248,7 +248,8 @@ export class AbstractNode {
    * @param {string} name - The attribute name to assign.
    * @param {*} [value=''] - The value to assign.
    * @param {boolean} [overwrite=true] - When `false`, does nothing if the attribute already exists.
-   * @returns {boolean} `true` if the attribute was set, `false` if it was blocked by `overwrite=false`.
+   * @returns {string|boolean|null} `true` if the attribute was set, `false` if blocked by `overwrite=false`.
+   *   Subclasses (e.g. `Document`) may return the resolved value string or `null` when the attribute is locked.
    */
   setAttribute(name, value = '', overwrite = true) {
     if (overwrite === false && name in this.attributes) return false
