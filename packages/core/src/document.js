@@ -1,3 +1,5 @@
+/** @import { Reader } from './reader.js' */
+
 // ESM conversion of document.rb
 //
 // Ruby-to-JavaScript notes:
