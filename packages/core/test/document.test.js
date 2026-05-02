@@ -15,7 +15,7 @@ const BUILT_IN_ELEMENTS = [
 ]
 
 // Helpers
-// doc.attr(name) returns null for missing attrs AND for empty-string attrs ('' is falsy).
+// doc.getAttribute(name) returns null for missing attrs AND for empty-string attrs ('' is falsy).
 // Use inAttr(doc, name) to check presence regardless of value.
 const inAttr = (doc, name) => name in doc.attributes
 
@@ -93,8 +93,8 @@ describe('Default settings', () => {
 
   test('safe mode attributes set on document', async () => {
     const doc = await load('')  // no safe option → SECURE
-    assert.equal(doc.attr('safe-mode-level'), SafeMode.SECURE)
-    assert.equal(doc.attr('safe-mode-name'), 'secure')
+    assert.equal(doc.getAttribute('safe-mode-level'), SafeMode.SECURE)
+    assert.equal(doc.getAttribute('safe-mode-name'), 'secure')
     assert.ok(inAttr(doc, 'safe-mode-secure'))
     assert.ok(!inAttr(doc, 'safe-mode-unsafe'))
     assert.ok(!inAttr(doc, 'safe-mode-safe'))
@@ -217,20 +217,20 @@ describe('Structure', () => {
   test('with author and revision metadata', async () => {
     const input = '= AsciiDoc\nStuart Rackham <founder@asciidoc.org>\nv8.6.8, 2012-07-12: See changelog.\n\n== Version 8.6.8\n\nmore info...'
     const doc = await parse(input)
-    assert.equal(doc.attr('author'), 'Stuart Rackham')
-    assert.equal(doc.attr('email'), 'founder@asciidoc.org')
-    assert.equal(doc.attr('revnumber'), '8.6.8')
-    assert.equal(doc.attr('revdate'), '2012-07-12')
-    assert.equal(doc.attr('revremark'), 'See changelog.')
+    assert.equal(doc.getAttribute('author'), 'Stuart Rackham')
+    assert.equal(doc.getAttribute('email'), 'founder@asciidoc.org')
+    assert.equal(doc.getAttribute('revnumber'), '8.6.8')
+    assert.equal(doc.getAttribute('revdate'), '2012-07-12')
+    assert.equal(doc.getAttribute('revremark'), 'See changelog.')
   })
 
   test('author parsed from header line', async () => {
     const input = '= Document Title\nDoc Writer <doc@example.com>\n\ncontent'
     const doc = await parse(input)
-    assert.equal(doc.attr('author'), 'Doc Writer')
-    assert.equal(doc.attr('email'), 'doc@example.com')
-    assert.equal(doc.attr('firstname'), 'Doc')
-    assert.equal(doc.attr('lastname'), 'Writer')
+    assert.equal(doc.getAttribute('author'), 'Doc Writer')
+    assert.equal(doc.getAttribute('email'), 'doc@example.com')
+    assert.equal(doc.getAttribute('firstname'), 'Doc')
+    assert.equal(doc.getAttribute('lastname'), 'Writer')
   })
 
   test('authorcount is 0 when document has no header', async () => {
@@ -326,13 +326,13 @@ describe('Backends and Doctypes', () => {
   test('xhtml5 backend maps to html5 with xml htmlsyntax', async () => {
     const doc = await parse('content', { backend: 'xhtml5' })
     assert.equal(doc.backend, 'html5')
-    assert.equal(doc.attr('htmlsyntax'), 'xml')
+    assert.equal(doc.getAttribute('htmlsyntax'), 'xml')
   })
 
   test('xhtml backend maps to html5 with xml htmlsyntax', async () => {
     const doc = await parse('content', { backend: 'xhtml' })
     assert.equal(doc.backend, 'html5')
-    assert.equal(doc.attr('htmlsyntax'), 'xml')
+    assert.equal(doc.getAttribute('htmlsyntax'), 'xml')
   })
 
   test('book doctype produces book body class', async () => {
@@ -383,7 +383,7 @@ describe('isAttributeLocked', () => {
   test('unlocked attribute can be modified', async () => {
     const doc = await parse('', { safe: 'unsafe' })
     doc.setAttribute('custom', 'value')
-    assert.equal(doc.attr('custom'), 'value')
+    assert.equal(doc.getAttribute('custom'), 'value')
   })
 })
 
@@ -549,7 +549,7 @@ describe('Backends and Doctypes (extended)', () => {
   test('htmlsyntax xml via API produces self-closing hr tag', async () => {
     const doc = await parse('---', { safe: 'safe', attributes: { htmlsyntax: 'xml' } })
     assert.equal(doc.backend, 'html5')
-    assert.equal(doc.attr('htmlsyntax'), 'xml')
+    assert.equal(doc.getAttribute('htmlsyntax'), 'xml')
     const result = await doc.convert()
     assert.ok(result.includes('<hr/>'))
   })
@@ -557,7 +557,7 @@ describe('Backends and Doctypes (extended)', () => {
   test('htmlsyntax xml in document header if followed by backend produces self-closing hr', async () => {
     const input = ':htmlsyntax: xml\n:backend: html5\n\n---'
     const doc = await parse(input, { safe: 'safe' })
-    assert.equal(doc.attr('htmlsyntax'), 'xml')
+    assert.equal(doc.getAttribute('htmlsyntax'), 'xml')
     const result = await doc.convert()
     assert.ok(result.includes('<hr/>'))
   })

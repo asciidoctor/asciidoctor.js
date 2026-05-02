@@ -156,28 +156,28 @@ describe('Sections', () => {
       const sec = await blockFromString(input)
       assert.equal(sec.title, 'Section Title')
       assert.equal(sec.id, 'refid')
-      assert.equal(sec.attr('reftext'), 'reftext')
+      assert.equal(sec.getAttribute('reftext'), 'reftext')
     })
 
     test('explicit id can be defined using an embedded anchor with reftext', async () => {
       const sec = await blockFromString('== Section One [[one,Section Uno]] ==')
       assert.equal(sec.id, 'one')
       assert.equal(sec.title, 'Section One')
-      assert.equal(sec.attr('reftext'), 'Section Uno')
+      assert.equal(sec.getAttribute('reftext'), 'Section Uno')
     })
 
     test('id and reftext in embedded anchor cannot be quoted', async () => {
       const sec = await blockFromString('== Section One [["one","Section Uno"]] ==')
       assert.notEqual(sec.id, 'one')
       assert.equal(sec.title, 'Section One [["one","Section Uno"]]')
-      assert.equal(sec.attr('reftext'), null)
+      assert.equal(sec.getAttribute('reftext'), null)
     })
 
     test('reftext in embedded anchor may contain comma', async () => {
       const sec = await blockFromString('== Section One [[one, Section,Uno]] ==')
       assert.equal(sec.id, 'one')
       assert.equal(sec.title, 'Section One')
-      assert.equal(sec.attr('reftext'), 'Section,Uno')
+      assert.equal(sec.getAttribute('reftext'), 'Section,Uno')
     })
 
     test('should unescape but not process inline anchor', async () => {

@@ -501,7 +501,7 @@ puts 'Hello, Ruby!'
       const doc = await documentFromString(input)
       const matches = doc.findBy({ context: 'listing', style: 'source' })
       assert.equal(matches.length, 1)
-      assert.equal(matches[0].getAttr('language'), 'ruby')
+      assert.equal(matches[0].getAttribute('language'), 'ruby')
     })
 
     test('listing block without an explicit style should be promoted to a source block if source-language is set', async () => {
@@ -515,7 +515,7 @@ puts 'Hello, Ruby!'
       const doc = await documentFromString(input)
       const matches = doc.findBy({ context: 'listing', style: 'source' })
       assert.equal(matches.length, 1)
-      assert.equal(matches[0].getAttr('language'), 'ruby')
+      assert.equal(matches[0].getAttribute('language'), 'ruby')
     })
 
     test('listing block with an explicit style and a second positional argument should not be promoted to a source block', async () => {
@@ -529,7 +529,7 @@ puts 'Hello, Ruby!'
       const matches = doc.findBy({ context: 'listing' })
       assert.equal(matches.length, 1)
       assert.equal(matches[0].style, 'listing')
-      assert.equal(matches[0].getAttr('language'), null)
+      assert.equal(matches[0].getAttribute('language'), null)
     })
 
     test('listing block with an explicit style should not be promoted to a source block if source-language is set', async () => {
@@ -545,7 +545,7 @@ puts 'Hello, Ruby!'
       const matches = doc.findBy({ context: 'listing' })
       assert.equal(matches.length, 1)
       assert.equal(matches[0].style, 'listing')
-      assert.equal(matches[0].getAttr('language'), null)
+      assert.equal(matches[0].getAttribute('language'), null)
     })
 
     test('source block with no title or language should generate screen element in docbook', async () => {

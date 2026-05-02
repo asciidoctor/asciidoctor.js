@@ -10,7 +10,7 @@ import {
   RevisionInfo,
 } from './document.js'
 import { Logger, LoggerManager, MemoryLogger, NullLogger } from './logging.js'
-import { SafeMode } from './constants.js'
+import { SafeMode, ContentModel } from './constants.js'
 import { Timings } from './timings.js'
 import { AbstractNode } from './abstract_node.js'
 import { AbstractBlock } from './abstract_block.js'
@@ -108,6 +108,7 @@ export {
   MemoryLogger,
   NullLogger,
   SafeMode,
+  ContentModel,
   Timings,
   Registry,
   ProcessorExtension,

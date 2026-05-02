@@ -488,11 +488,35 @@ export class AbstractBlock extends AbstractNode {
   /**
    * Walk the document tree and find all block-level nodes that match
    * the selector and optional filter function.
-   * @param {Object} [selector={}] - A plain object with optional keys: context, style, role, id, traverseDocuments.
-   * @param {Function|null} [filter=null] - An optional Function called with each candidate node.
-   *   Return values: true/truthy → accept node; 'prune' → accept, skip children;
-   *   'reject' → skip node and children; 'stop' → stop traversal.
+   *
+   * The selector is a plain object whose keys narrow the search:
+   * - `context` {string} — node context (e.g. `'section'`, `'listing'`, `'paragraph'`, `'image'`)
+   * - `style` {string} — block style (e.g. `'source'`, `'NOTE'`)
+   * - `role` {string} — a CSS role that must appear in the node's role list
+   * - `id` {string} — exact node id; stops traversal after the first match
+   * - `traverseDocuments` {boolean} — when `true`, recurse into AsciiDoc table cells
+   *
+   * The optional filter function receives each candidate node and must return:
+   * - a truthy value (or `true`) → include the node
+   * - `'prune'` → include the node but do **not** recurse into its children
+   * - `'reject'` → skip the node and its children
+   * - `'stop'` → include the node (if it matched) and stop the entire traversal
+   *
+   * @param {Object} [selector={}] - Selector criteria object.
+   * @param {Function|null} [filter=null] - Per-node filter callback.
    * @returns {AbstractBlock[]} array of matching block-level nodes.
+   *
+   * @example <caption>All source listing blocks</caption>
+   * const listings = doc.findBy({ context: 'listing', style: 'source' })
+   *
+   * @example <caption>All sections up to level 2</caption>
+   * const sections = doc.findBy({ context: 'section' }, (node) => node.level <= 2 || 'prune')
+   *
+   * @example <caption>Find a block by id</caption>
+   * const [block] = doc.findBy({ id: 'my-anchor' })
+   *
+   * @example <caption>All image blocks including those inside AsciiDoc table cells</caption>
+   * const images = doc.findBy({ context: 'image', traverseDocuments: true })
    */
   findBy(selector = {}, filter = null) {
     const result = []
@@ -511,7 +535,7 @@ export class AbstractBlock extends AbstractNode {
     return result
   }
 
-  /** Alias for findBy (matches Ruby's `alias query find_by`). */
+  /** Alias for {@link findBy}. */
   query(selector = {}, filter = null) {
     return this.findBy(selector, filter)
   }

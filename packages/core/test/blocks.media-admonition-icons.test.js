@@ -233,8 +233,8 @@ video::http://example.org/podcast.mp3[]
 
     test('should use the imagesdir attribute on the node when resolving the video path', async () => {
       const video = await blockFromString('video::promo.mp4[]', { attributes: { imagesdir: 'images' } })
-      video.setAttr('imagesdir', 'chapter-1/videos')
-      const videoUri = video.mediaUri(video.attr('target'))
+      video.setAttribute('imagesdir', 'chapter-1/videos')
+      const videoUri = video.mediaUri(video.getAttribute('target'))
       assert.equal(videoUri, 'chapter-1/videos/promo.mp4')
     })
 

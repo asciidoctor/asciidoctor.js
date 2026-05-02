@@ -212,7 +212,7 @@ content
 
       const doc = await documentFromString(input)
       assert.equal(doc.blocks[0].caption, null)
-      assert.equal(doc.blocks[0].getAttr('caption'), 'Look! ')
+      assert.equal(doc.blocks[0].getAttribute('caption'), 'Look! ')
       const output = await doc.convert()
       assertXpath(output, '(//*[@class="openblock"])[1]/*[@class="title"][text()="No caption here"]', 1)
     })

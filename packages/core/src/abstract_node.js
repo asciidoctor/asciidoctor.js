@@ -5,7 +5,7 @@
 //   - attr_reader / attr_accessor are implemented as plain instance properties;
 //     cases where the setter has side effects use JS get/set pairs.
 //   - Ruby methods ending in ? are renamed: attr? → hasAttr, block? → isBlock,
-//     inline? → isInline, role? → hasRoleAttr, has_role? → hasRole,
+//     inline? → isInline, role? → hasRoleAttribute, has_role? → hasRole,
 //     option? → hasOption, reftext? → hasReftext.
 //   - Ruby methods ending in = that have side effects use JS set accessors:
 //     parent= → set parent(), role= → set role().
@@ -168,17 +168,27 @@ export class AbstractNode {
   /**
    * Get the value of the specified attribute.
    *
-   * Looks for the attribute on this node first. If not found and fallbackName is
-   * set (default: same as name), and this node is not the Document node, look for
-   * that attribute on the Document node. Otherwise return defaultValue.
+   * Looks for the attribute on this node first. If not found and `fallbackName` is
+   * set, and this node is not the Document node, look for that attribute on the
+   * Document node. Otherwise, return `defaultValue`.
    *
-   * @param {string} name - The String or Symbol name of the attribute to resolve.
+   * @param {string} name - The attribute name to resolve.
    * @param {*} [defaultValue=null] - The value to return if the attribute is not found.
-   * @param {string|boolean|null} [fallbackName=null] - The String/Symbol/true to resolve on the
-   *   Document when the attribute is absent on this node. When true, uses name.
+   * @param {string|boolean|null} [fallbackName=null] - When truthy, also checks the Document's
+   *   attributes. Pass `true` to fall back using the same name, or a string to use a different name.
    * @returns {*} the attribute value or defaultValue.
+   *
+   * @example <caption>Simple lookup</caption>
+   * block.getAttribute('language')           // → 'ruby' or null
+   *
+   * @example <caption>With default</caption>
+   * block.getAttribute('linenums', false)    // → false if not set
+   *
+   * @example <caption>Inherit from document if absent on block</caption>
+   * block.getAttribute('source-highlighter', null, true)    // → falls back to doc attribute of same name
+   * block.getAttribute('linenums', null, 'source-linenums') // → falls back to 'source-linenums' on doc
    */
-  attr(name, defaultValue = null, fallbackName = null) {
+  getAttribute(name, defaultValue = null, fallbackName = null) {
     const key = String(name)
     const val = this.attributes[key]
     if (val != null) return val
@@ -191,16 +201,25 @@ export class AbstractNode {
   }
 
   /**
-   * Check if the specified attribute is defined, optionally comparing against an expected value.
+   * Check if the specified attribute is defined on this node, with optional
+   * value match and document-level fallback.
    *
-   * @param {string} name - The String or Symbol name of the attribute to resolve.
-   * @param {*} [expectedValue=null] - The expected value of the attribute.
-   *   When truthy, the method returns whether the resolved value matches.
-   * @param {string|boolean|null} [fallbackName=null] - The String/Symbol/true to resolve on the
-   *   Document when the attribute is absent on this node.
+   * @param {string} name - The attribute name.
+   * @param {*} [expectedValue=null] - When truthy, also checks that the resolved value equals this.
+   * @param {string|boolean|null} [fallbackName=null] - When truthy, also checks the Document's
+   *   attributes. Pass `true` to use the same name, or a string for a different fallback name.
    * @returns {boolean}
+   *
+   * @example <caption>Presence check</caption>
+   * block.hasAttribute('linenums')                       // → true/false
+   *
+   * @example <caption>Value match</caption>
+   * block.hasAttribute('language', 'ruby')               // → true only when language === 'ruby'
+   *
+   * @example <caption>Inherit presence from document</caption>
+   * block.hasAttribute('source-highlighter', null, true) // → also checks doc-level attribute
    */
-  hasAttr(name, expectedValue = null, fallbackName = null) {
+  hasAttribute(name, expectedValue = null, fallbackName = null) {
     const key = String(name)
     if (expectedValue) {
       const val =
@@ -224,55 +243,23 @@ export class AbstractNode {
   }
 
   /**
-   * Get the value of the specified attribute.
-   *
-   * If the attribute is not found on this node, fallbackName is set, and this node is not
-   * the Document node, get the value of the specified attribute from the Document node.
-   *
-   * @param {string} name - The String name of the attribute to resolve.
-   * @param {*} [defaultValue=undefined] - The value to return if the attribute is not found.
-   * @param {string|boolean} [inherit=false] - The String of the attribute to resolve on the
-   *   Document if the attribute is not found on this node (default: same as name).
-   * @returns {*} the attribute value, or defaultValue if the attribute is not found.
-   */
-  getAttribute(name, defaultValue = undefined, inherit = false) {
-    const val = this.attr(name, null, inherit || null)
-    return val != null ? val : defaultValue
-  }
-
-  /**
-   * Check whether the specified attribute is present on this node.
-   * Alias for {@link hasAttr} for API compatibility.
-   *
-   * @param {string} name - The String name of the attribute to resolve.
-   * @param {*} [expectedValue=null] - The expected value of the attribute.
-   * @param {string|boolean|null} [fallbackName=null] - The fallback attribute name on the Document.
-   * @returns {boolean}
-   */
-  hasAttribute(name, expectedValue = null, fallbackName = null) {
-    return this.hasAttr(name, expectedValue, fallbackName)
-  }
-
-  /**
    * Set the value of the specified attribute on this node.
    *
-   * @param {string} name - The String attribute name to assign.
-   * @param {*} [value=''] - The value to assign to the attribute.
-   * @param {boolean} [overwrite=true] - Whether to overwrite an existing attribute.
-   * @returns {string|boolean|null} true/false in the base class; subclasses (e.g. Document) may return the resolved value string or null.
+   * @param {string} name - The attribute name to assign.
+   * @param {*} [value=''] - The value to assign.
+   * @param {boolean} [overwrite=true] - When `false`, does nothing if the attribute already exists.
+   * @returns {boolean} `true` if the attribute was set, `false` if it was blocked by `overwrite=false`.
    */
   setAttribute(name, value = '', overwrite = true) {
-    return this.setAttr(name, value, overwrite)
+    if (overwrite === false && name in this.attributes) return false
+    this.attributes[name] = value
+    return true
   }
 
   /**
    * Check if the specified attribute is defined with an optional value match.
-   *
-   * Equivalent to {@link getAttribute}, but returns a Boolean rather than the value.
-   *
-   * @param {string} name - The String attribute name.
-   * @param {*} [expectedValue=null] - The expected value; when provided, also checks the value.
-   * @returns {boolean}
+   * Alias for {@link hasAttribute}.
+   * @see {hasAttribute}
    */
   isAttribute(name, expectedValue = null) {
     if (expectedValue != null) return this.getAttribute(name) === expectedValue
@@ -282,50 +269,13 @@ export class AbstractNode {
   /**
    * Remove the attribute from this node.
    *
-   * @param {string} name - The String attribute name to remove.
-   * @returns {*} the previous value, or undefined if not present.
+   * @param {string} name - The attribute name to remove.
+   * @returns {*} the previous value, or `undefined` if the attribute was not present.
    */
   removeAttribute(name) {
-    return this.removeAttr(name)
-  }
-
-  /**
-   * Assign the value to the attribute name for the current node.
-   *
-   * @param {string} name - The String attribute name to assign.
-   * @param {*} [value=''] - The value to assign to the attribute.
-   * @param {boolean} [overwrite=true] - Whether to overwrite an existing attribute.
-   * @returns {boolean} true if set, false if blocked.
-   */
-  setAttr(name, value = '', overwrite = true) {
-    if (overwrite === false && name in this.attributes) return false
-    this.attributes[name] = value
-    return true
-  }
-
-  /**
-   * Remove the attribute from the current node.
-   *
-   * @param {string} name - The String attribute name to remove.
-   * @returns {*} the previous value, or undefined if the attribute was not present.
-   */
-  removeAttr(name) {
     const val = this.attributes[name]
     delete this.attributes[name]
     return val
-  }
-
-  /**
-   * Retrieve the value of the named attribute.
-   * Alias for {@link attr} to match the public Ruby API.
-   *
-   * @param {string} name - The String attribute name.
-   * @param {*} [defaultValue=null] - The value to return if the attribute is not found.
-   * @param {string|boolean} [inherit=false] - The fallback attribute name on the Document.
-   * @returns {*} the attribute value or defaultValue.
-   */
-  getAttr(name, defaultValue = null, inherit = false) {
-    return this.attr(name, defaultValue, inherit || null)
   }
 
   /**
@@ -372,12 +322,20 @@ export class AbstractNode {
   }
 
   /**
-   * Check if the role attribute is set and, optionally, matches expectedValue.
+   * Check if the `role` attribute is set on this node, optionally matching an exact value.
    *
-   * @param {string|null} [expectedValue=null] - The expected String value of the role.
+   * Unlike {@link hasRole}, which checks for an individual role name within a
+   * space-separated list, this method tests the raw `role` attribute string as a whole.
+   *
+   * @param {string|null} [expectedValue=null] - When provided, checks that the `role`
+   *   attribute equals this string exactly.
    * @returns {boolean}
+   *
+   * @example
+   * node.hasRoleAttribute()         // → true if role attribute is set at all
+   * node.hasRoleAttribute('lead')   // → true only when role === 'lead' (not 'lead primary')
    */
-  hasRoleAttr(expectedValue = null) {
+  hasRoleAttribute(expectedValue = null) {
     if (expectedValue != null) return expectedValue === this.attributes.role
     return 'role' in this.attributes
   }
@@ -472,7 +430,7 @@ export class AbstractNode {
    * @returns {boolean}
    */
   isReftext() {
-    return this.hasAttr('reftext') || !!this.title
+    return this.hasAttribute('reftext') || !!this.title
   }
 
   /**
@@ -487,12 +445,12 @@ export class AbstractNode {
    */
   async iconUri(name) {
     let icon
-    if (this.hasAttr('icon')) {
-      icon = this.attr('icon')
+    if (this.hasAttribute('icon')) {
+      icon = this.getAttribute('icon')
       if (!isExtname(icon))
-        icon = `${icon}.${this.document.attr('icontype', 'png')}`
+        icon = `${icon}.${this.document.getAttribute('icontype', 'png')}`
     } else {
-      icon = `${name}.${this.document.attr('icontype', 'png')}`
+      icon = `${name}.${this.document.getAttribute('icontype', 'png')}`
     }
     return this.imageUri(icon, 'iconsdir')
   }
@@ -515,25 +473,28 @@ export class AbstractNode {
    */
   async imageUri(targetImage, assetDirKey = 'imagesdir') {
     const doc = this.document
-    if (doc.safe < SafeMode.SECURE && doc.hasAttr('data-uri')) {
+    if (doc.safe < SafeMode.SECURE && doc.hasAttribute('data-uri')) {
       let imagesBase
       if (
         (isUriish(targetImage) &&
           (targetImage = encodeSpacesInUri(targetImage))) ||
         (assetDirKey &&
-          (imagesBase = this.attr(assetDirKey, null, true)) &&
+          (imagesBase = this.getAttribute(assetDirKey, null, true)) &&
           isUriish(imagesBase) &&
           (targetImage = this.normalizeWebPath(targetImage, imagesBase, false)))
       ) {
-        return doc.hasAttr('allow-uri-read')
-          ? this.generateDataUriFromUri(targetImage, doc.hasAttr('cache-uri'))
+        return doc.hasAttribute('allow-uri-read')
+          ? this.generateDataUriFromUri(
+              targetImage,
+              doc.hasAttribute('cache-uri')
+            )
           : targetImage
       }
       return this.generateDataUri(targetImage, assetDirKey)
     }
     return this.normalizeWebPath(
       targetImage,
-      assetDirKey ? this.attr(assetDirKey, null, true) : null
+      assetDirKey ? this.getAttribute(assetDirKey, null, true) : null
     )
   }
 
@@ -547,7 +508,7 @@ export class AbstractNode {
   mediaUri(target, assetDirKey = 'imagesdir') {
     return this.normalizeWebPath(
       target,
-      assetDirKey ? this.attr(assetDirKey, null, true) : null
+      assetDirKey ? this.getAttribute(assetDirKey, null, true) : null
     )
   }
 
@@ -573,7 +534,7 @@ export class AbstractNode {
     const imagePath = assetDirKey
       ? this.normalizeSystemPath(
           targetImage,
-          this.attr(assetDirKey, null, true),
+          this.getAttribute(assetDirKey, null, true),
           null,
           { targetName: 'image' }
         )
@@ -581,7 +542,7 @@ export class AbstractNode {
     if (isUriish(imagePath)) {
       return await this.generateDataUriFromUri(
         imagePath,
-        this.document.hasAttr('cache-uri')
+        this.document.hasAttribute('cache-uri')
       )
     }
     if (await isReadable(imagePath)) {
@@ -723,7 +684,7 @@ export class AbstractNode {
       if (text != null)
         return opts.normalize ? prepareSourceString(text).join(LF) : text
       if (opts.warnOnFailure) {
-        const docfile = this.attr('docfile') || '<stdin>'
+        const docfile = this.getAttribute('docfile') || '<stdin>'
         const label = opts.label || 'file'
         this.logger.warn(
           `${docfile}: ${label} does not exist or cannot be read: ${path}`
@@ -738,7 +699,7 @@ export class AbstractNode {
       return _fsp.readFile(path, 'utf8')
     }
     if (opts.warnOnFailure) {
-      const docfile = this.attr('docfile') || '<stdin>'
+      const docfile = this.getAttribute('docfile') || '<stdin>'
       const label = opts.label || 'file'
       this.logger.warn(
         `${docfile}: ${label} does not exist or cannot be read: ${path}`
@@ -777,7 +738,7 @@ export class AbstractNode {
         isUriish(start) &&
         (resolvedTarget = doc.pathResolver.webPath(target, start)))
     ) {
-      if (doc.hasAttr('allow-uri-read')) {
+      if (doc.hasAttribute('allow-uri-read')) {
         try {
           const response = await fetch(resolvedTarget)
           const text = await response.text()

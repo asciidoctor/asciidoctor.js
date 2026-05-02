@@ -65,6 +65,18 @@ export namespace SafeMode {
      */
     function getNames(): string[];
 }
+export namespace ContentModel {
+    /** The block contains other blocks (sections, sidebars, admonitions, …). */
+    let COMPOUND: string;
+    /** The block holds a paragraph of prose that receives normal substitutions. */
+    let SIMPLE: string;
+    /** The block holds verbatim text displayed as-is with verbatim substitutions (listing, literal). */
+    let VERBATIM: string;
+    /** The block holds unprocessed content passed directly to output with no substitutions (pass). */
+    let RAW: string;
+    /** The block has no content (e.g. image, thematic break). */
+    let EMPTY: string;
+}
 export const LF: "\n";
 export const NULL: "\0";
 export const TAB: "\t";

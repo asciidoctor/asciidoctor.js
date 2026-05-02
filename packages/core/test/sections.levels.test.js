@@ -139,7 +139,7 @@ content`
 preamble`
         const doc = await documentFromString(input, { standalone: true })
         assert.equal(doc.id, 'reference')
-        assert.equal(doc.attr('css-signature'), 'refguide')
+        assert.equal(doc.getAttribute('css-signature'), 'refguide')
         const output = await doc.convert()
         assertCss(output, 'body#reference', 1)
       })

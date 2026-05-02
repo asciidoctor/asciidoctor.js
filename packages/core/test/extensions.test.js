@@ -40,10 +40,10 @@ import {
 function makeDoc (attrs = {}) {
   return {
     attributes: { ...attrs },
-    hasAttr (name, val = null) {
+    hasAttribute (name, val = null) {
       return val !== null ? this.attributes[name] === val : name in this.attributes
     },
-    setAttr (name, val) { this.attributes[name] = val },
+    setAttribute (name, val) { this.attributes[name] = val },
     doctype: 'article',
   }
 }

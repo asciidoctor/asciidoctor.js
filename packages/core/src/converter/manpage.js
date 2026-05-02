@@ -3,7 +3,7 @@
 // Ruby-to-JavaScript notes:
 //   - Ruby module constants (WHITESPACE, ESC, …) → module-level const
 //   - Ruby symbol keys (:preserve, :normalize, :collapse) → plain strings
-//   - node.attr?  → node.hasAttr()
+//   - node.attr?  → node.hasAttribute()
 //   - node.title? → node.hasTitle()
 //   - node.blocks? → node.hasBlocks()
 //   - node.footnotes? → node.hasFootnotes()
@@ -87,24 +87,28 @@ export default class ManPageConverter extends ConverterBase {
   }
 
   async convert_document(node) {
-    if (!node.hasAttr('mantitle')) {
+    if (!node.hasAttribute('mantitle')) {
       throw new Error(
         'asciidoctor: ERROR: doctype must be set to manpage when using manpage backend'
       )
     }
-    const mantitle = node.attr('mantitle').replace(InvalidSectionIdCharsRx, '')
-    const manvolnum = node.attr('manvolnum', '1')
-    const manname = node.attr('manname', mantitle)
-    const manmanual = node.attr('manmanual')
-    const mansource = node.attr('mansource')
-    const docdate = node.hasAttr('reproducible') ? null : node.attr('docdate')
+    const mantitle = node
+      .getAttribute('mantitle')
+      .replace(InvalidSectionIdCharsRx, '')
+    const manvolnum = node.getAttribute('manvolnum', '1')
+    const manname = node.getAttribute('manname', mantitle)
+    const manmanual = node.getAttribute('manmanual')
+    const mansource = node.getAttribute('mansource')
+    const docdate = node.hasAttribute('reproducible')
+      ? null
+      : node.getAttribute('docdate')
 
     // NOTE the first line enables the table (tbl) preprocessor, necessary for non-Linux systems
     const result = [
       `'\\" t
 .\\"     Title: ${mantitle}
-.\\"    Author: ${node.hasAttr('authors') ? node.attr('authors') : '[see the "AUTHOR(S)" section]'}
-.\\" Generator: Asciidoctor ${node.attr('asciidoctor-version')}`,
+.\\"    Author: ${node.hasAttribute('authors') ? node.getAttribute('authors') : '[see the "AUTHOR(S)" section]'}
+.\\" Generator: Asciidoctor ${node.getAttribute('asciidoctor-version')}`,
     ]
 
     if (docdate) result.push(`.\\"      Date: ${docdate}`)
@@ -152,14 +156,16 @@ export default class ManPageConverter extends ConverterBase {
 .  am MTO
 .    ad l
 .  .`)
-    result.push(`.  LINKSTYLE ${node.attr('man-linkstyle', 'blue R < >')}`)
+    result.push(
+      `.  LINKSTYLE ${node.getAttribute('man-linkstyle', 'blue R < >')}`
+    )
     result.push('.\\}')
 
     if (!node.isNoheader()) {
-      if (node.hasAttr('manpurpose')) {
-        const mannames = node.attr('mannames', [manname])
-        result.push(`.SH "${(node.attr('manname-title', 'NAME')).toUpperCase()}"
-${mannames.map((n) => this.manify(n).replace(/\\-/g, '-')).join(', ')} \\- ${this.manify(node.attr('manpurpose'), { whitespace: 'normalize' })}`)
+      if (node.hasAttribute('manpurpose')) {
+        const mannames = node.getAttribute('mannames', [manname])
+        result.push(`.SH "${(node.getAttribute('manname-title', 'NAME')).toUpperCase()}"
+${mannames.map((n) => this.manify(n).replace(/\\-/g, '-')).join(', ')} \\- ${this.manify(node.getAttribute('manpurpose'), { whitespace: 'normalize' })}`)
       }
     }
 
@@ -215,7 +221,7 @@ ${mannames.map((n) => this.manify(n).replace(/\\-/g, '-')).join(', ')} \\- ${thi
 .nr an-break-flag 1
 .br
 .ps +1
-.B ${node.attr('textlabel')}${titleSuffix}
+.B ${node.getAttribute('textlabel')}${titleSuffix}
 .ps -1
 .br
 ${await this._encloseContent(node)}
@@ -293,7 +299,7 @@ ${await this._encloseContent(node)}
     const titleBlock = node.hasTitle()
       ? `.sp\n.B ${this.manify(node.captionedTitle())}\n.br`
       : '.sp'
-    return `${titleBlock}\n[${this.manify(node.attr('alt'))}]`
+    return `${titleBlock}\n[${this.manify(node.getAttribute('alt'))}]`
   }
 
   async convert_listing(node) {
@@ -341,7 +347,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
     }
 
-    const start = parseInt(node.attr('start', 1), 10)
+    const start = parseInt(node.getAttribute('start', 1), 10)
     let idx = 0
     for (const item of node.getItems()) {
       const numeral = idx + start
@@ -399,11 +405,11 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
     if (node.hasTitle()) {
       result.push(`.sp\n.RS 3\n.B ${this.manify(node.title)}\n.br\n.RE`)
     }
-    let attributionLine = node.hasAttr('citetitle')
-      ? `${node.attr('citetitle')} `
+    let attributionLine = node.hasAttribute('citetitle')
+      ? `${node.getAttribute('citetitle')} `
       : null
-    if (node.hasAttr('attribution')) {
-      attributionLine = `${attributionLine ?? ''}\\(em ${node.attr('attribution')}`
+    if (node.hasAttribute('attribution')) {
+      attributionLine = `${attributionLine ?? ''}\\(em ${node.getAttribute('attribution')}`
     } else {
       attributionLine = null
     }
@@ -472,7 +478,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
             rowText[rowIndex].push(`T{${LF}T}:`)
           }
           rowText[rowIndex].push(`T{${LF}`)
-          const cellHalign = (cell.attr('halign', 'left') ?? 'left')[0]
+          const cellHalign = (cell.getAttribute('halign', 'left') ?? 'left')[0]
           if (tsec === 'body') {
             if (
               rowHeader[rowIndex].length === 0 ||
@@ -609,11 +615,11 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
     if (node.hasTitle()) {
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
     }
-    let attributionLine = node.hasAttr('citetitle')
-      ? `${node.attr('citetitle')} `
+    let attributionLine = node.hasAttribute('citetitle')
+      ? `${node.getAttribute('citetitle')} `
       : null
-    if (node.hasAttr('attribution')) {
-      attributionLine = `${attributionLine ?? ''}\\(em ${node.attr('attribution')}`
+    if (node.hasAttribute('attribution')) {
+      attributionLine = `${attributionLine ?? ''}\\(em ${node.getAttribute('attribution')}`
     } else {
       attributionLine = null
     }
@@ -627,14 +633,16 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
   }
 
   async convert_video(node) {
-    const startParam = node.hasAttr('start')
-      ? `&start=${node.attr('start')}`
+    const startParam = node.hasAttribute('start')
+      ? `&start=${node.getAttribute('start')}`
       : ''
-    const endParam = node.hasAttr('end') ? `&end=${node.attr('end')}` : ''
+    const endParam = node.hasAttribute('end')
+      ? `&end=${node.getAttribute('end')}`
+      : ''
     const titleBlock = node.hasTitle()
       ? `.sp\n.B ${this.manify(node.title)}\n.br`
       : '.sp'
-    return `${titleBlock}\n<${node.mediaUri(node.attr('target'))}${startParam}${endParam}> (video)`
+    return `${titleBlock}\n<${node.mediaUri(node.getAttribute('target'))}${startParam}${endParam}> (video)`
   }
 
   async convert_inline_anchor(node) {
@@ -673,7 +681,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
             if (!resolvingSet.has(refid)) {
               resolvingSet.add(refid)
               const resolved = await ref.xreftext(
-                node.attr('xrefstyle', null, true)
+                node.getAttribute('xrefstyle', null, true)
               )
               resolvingSet.delete(refid)
               if (resolved) {
@@ -720,16 +728,16 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
   }
 
   async convert_inline_footnote(node) {
-    const index = node.attr('index')
+    const index = node.getAttribute('index')
     if (index) return `[${index}]`
     if (node.type === 'xref') return `[${node.text}]`
     return null
   }
 
   async convert_inline_image(node) {
-    return node.hasAttr('link')
-      ? `[${node.attr('alt')}] <${node.attr('link')}>`
-      : `[${node.attr('alt')}]`
+    return node.hasAttribute('link')
+      ? `[${node.getAttribute('alt')}] <${node.getAttribute('link')}>`
+      : `[${node.getAttribute('alt')}]`
   }
 
   async convert_inline_indexterm(node) {
@@ -737,21 +745,21 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
   }
 
   async convert_inline_kbd(node) {
-    const keys = node.attr('keys')
+    const keys = node.getAttribute('keys')
     return `<${ESC_BS}f(CR>${keys.length === 1 ? keys[0] : keys.join(`${ESC_BS}0+${ESC_BS}0`)}</${ESC_BS}fP>`
   }
 
   async convert_inline_menu(node) {
     const caret = `${ESC_BS}0${ESC_BS}(fc${ESC_BS}0`
-    const menu = node.attr('menu')
-    const submenus = node.attr('submenus')
+    const menu = node.getAttribute('menu')
+    const submenus = node.getAttribute('submenus')
     if (submenus && submenus.length > 0) {
       const submenuPath = submenus
         .map((item) => `<${ESC_BS}fI>${item}</${ESC_BS}fP>`)
         .join(caret)
-      return `<${ESC_BS}fI>${menu}</${ESC_BS}fP>${caret}${submenuPath}${caret}<${ESC_BS}fI>${node.attr('menuitem')}</${ESC_BS}fP>`
-    } else if (node.attr('menuitem')) {
-      return `<${ESC_BS}fI>${menu}${caret}${node.attr('menuitem')}</${ESC_BS}fP>`
+      return `<${ESC_BS}fI>${menu}</${ESC_BS}fP>${caret}${submenuPath}${caret}<${ESC_BS}fI>${node.getAttribute('menuitem')}</${ESC_BS}fP>`
+    } else if (node.getAttribute('menuitem')) {
+      return `<${ESC_BS}fI>${menu}${caret}${node.getAttribute('menuitem')}</${ESC_BS}fP>`
     } else {
       return `<${ESC_BS}fI>${menu}</${ESC_BS}fP>`
     }
@@ -796,7 +804,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
    * @private
    */
   _appendFootnotes(result, node) {
-    if (!node.hasFootnotes() || node.hasAttr('nofootnotes')) return
+    if (!node.hasFootnotes() || node.hasAttribute('nofootnotes')) return
     result.push('.SH "NOTES"')
     for (const fn of node.footnotes) {
       result.push(`.IP [${fn.index}]`)

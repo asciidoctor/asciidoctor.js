@@ -40,7 +40,7 @@ import { isUriish } from '../helpers.js'
 function _linkReplacement(reader, target, attrlist) {
   const doc = reader._document
   const lt = target.includes(' ') ? `pass:c[${target}]` : target
-  const la = doc.hasAttr('compat-mode')
+  const la = doc.hasAttribute('compat-mode')
     ? (attrlist ?? '')
     : `role=include${attrlist ? `,${attrlist}` : ''}`
   return `link:${lt}[${la}]`
@@ -92,7 +92,7 @@ export function resolveBrowserIncludePath(reader, target, attrlist) {
     // ── Rule 2: target is an absolute URL (http:// / https:// / …) ───────────
   } else if (isUriish(pTarget)) {
     const descends = pathResolver.descendsFrom(pTarget, baseDir)
-    if (descends === false && !doc.attr('allow-uri-read')) {
+    if (descends === false && !doc.getAttribute('allow-uri-read')) {
       return reader.replaceNextLine(_linkReplacement(reader, target, attrlist))
     }
     incPath = relpath = pTarget
@@ -126,7 +126,7 @@ export function resolveBrowserIncludePath(reader, target, attrlist) {
   } else {
     // Nested include: context dir is an absolute URL.
     const ctxDescends = pathResolver.descendsFrom(ctxDir, baseDir)
-    if (ctxDescends !== false || doc.attr('allow-uri-read')) {
+    if (ctxDescends !== false || doc.getAttribute('allow-uri-read')) {
       incPath = `${ctxDir}/${pTarget}`
       relpath = ctxDescends !== false ? incPath.slice(ctxDescends) : pTarget
     } else {

@@ -1428,8 +1428,8 @@ export const Substitutors = {
    * @returns {string}
    */
   async subCallouts(text) {
-    const calloutRx = this.hasAttr('line-comment')
-      ? CalloutSourceRxMap[this.attr('line-comment')]
+    const calloutRx = this.hasAttribute('line-comment')
+      ? CalloutSourceRxMap[this.getAttribute('line-comment')]
       : CalloutSourceRx
     let autonum = 0
     return asyncReplace(
@@ -1478,7 +1478,7 @@ export const Substitutors = {
     }
 
     let highlightLines = null
-    if (this.hasAttr('highlight')) {
+    if (this.hasAttribute('highlight')) {
       highlightLines = this.resolveLinesToHighlight(
         source,
         this.getAttribute('highlight'),
@@ -2028,8 +2028,8 @@ export const Substitutors = {
     let autonum = 0
     let lineno = 0
     let lastLineno = null
-    const calloutRx = this.hasAttr('line-comment')
-      ? CalloutExtractRxMap[this.attr('line-comment')]
+    const calloutRx = this.hasAttribute('line-comment')
+      ? CalloutExtractRxMap[this.getAttribute('line-comment')]
       : CalloutExtractRx
 
     const lines = source.split(LF).map((line) => {

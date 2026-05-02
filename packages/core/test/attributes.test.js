@@ -57,14 +57,14 @@ describe('Attributes', () => {
 
     test('does not recognize attribute entry if name contains colon', async () => {
       const doc = await documentFromString(':foo:bar: baz')
-      assert.ok(!doc.hasAttr('foo:bar'))
+      assert.ok(!doc.hasAttribute('foo:bar'))
       assert.equal(doc.blocks.length, 1)
       assert.equal(doc.blocks[0].context, 'paragraph')
     })
 
     test('does not recognize attribute entry if name ends with colon', async () => {
       const doc = await documentFromString(':foo:: bar')
-      assert.ok(!doc.hasAttr('foo:'))
+      assert.ok(!doc.hasAttribute('foo:'))
       assert.equal(doc.blocks.length, 1)
       assert.equal(doc.blocks[0].context, 'dlist')
     })
@@ -98,7 +98,7 @@ describe('Attributes', () => {
     test('allow pass macro to surround a multi-line value that contains line breaks', async () => {
       const str = ':signature: pass:a[{author} + \\\n{title} + \\\n{email}]'
       const doc = await documentFromString(str, { attributes: { author: 'Linus Torvalds', title: 'Linux Hacker', email: 'linus.torvalds@example.com' } })
-      assert.equal(doc.attr('signature'), 'Linus Torvalds +\nLinux Hacker +\nlinus.torvalds@example.com')
+      assert.equal(doc.getAttribute('signature'), 'Linus Torvalds +\nLinux Hacker +\nlinus.torvalds@example.com')
     })
 
     test('delete an attribute that ends with !', async () => {
@@ -296,11 +296,11 @@ describe('Attributes', () => {
     test('can soft unset built-in attribute from API and still override in document', async () => {
       for (const attributes of [{ 'sectids!@': '' }, { '!sectids@': '' }, { 'sectids!': '@' }, { '!sectids': '@' }, { sectids: false }]) {
         let doc = await documentFromString('== Heading', { attributes })
-        assert.ok(!doc.hasAttr('sectids'))
+        assert.ok(!doc.hasAttribute('sectids'))
         let output = await doc.convert({ standalone: false })
         assert.ok(!output.includes('id="_heading"'))
         doc = await documentFromString(':sectids:\n\n== Heading', { attributes })
-        assert.ok(doc.hasAttr('sectids'))
+        assert.ok(doc.hasAttribute('sectids'))
         output = await doc.convert({ standalone: false })
         assert.ok(output.includes('id="_heading"'))
       }
@@ -397,97 +397,97 @@ describe('Attributes', () => {
     test('attr not retrieve attribute from document if not set on block', async () => {
       const doc = await documentFromString('paragraph', { attributes: { name: 'value' } })
       const para = doc.blocks[0]
-      assert.equal(para.attr('name'), null)
+      assert.equal(para.getAttribute('name'), null)
     })
 
     test('attr looks for attribute on document if fallback name is true', async () => {
       const doc = await documentFromString('paragraph', { attributes: { name: 'value' } })
       const para = doc.blocks[0]
-      assert.equal(para.attr('name', null, true), 'value')
+      assert.equal(para.getAttribute('name', null, true), 'value')
     })
 
     test('attr uses fallback name when looking for attribute on document', async () => {
       const doc = await documentFromString('paragraph', { attributes: { 'alt-name': 'value' } })
       const para = doc.blocks[0]
-      assert.equal(para.attr('name', null, 'alt-name'), 'value')
+      assert.equal(para.getAttribute('name', null, 'alt-name'), 'value')
     })
 
     test('attr? should not check for attribute on document if not set on block', async () => {
       const doc = await documentFromString('paragraph', { attributes: { name: 'value' } })
       const para = doc.blocks[0]
-      assert.ok(!para.hasAttr('name'))
+      assert.ok(!para.hasAttribute('name'))
     })
 
     test('attr? checks for attribute on document if fallback name is true', async () => {
       const doc = await documentFromString('paragraph', { attributes: { name: 'value' } })
       const para = doc.blocks[0]
-      assert.ok(para.hasAttr('name', null, true))
+      assert.ok(para.hasAttribute('name', null, true))
     })
 
     test('attr? checks for fallback name when looking for attribute on document', async () => {
       const doc = await documentFromString('paragraph', { attributes: { 'alt-name': 'value' } })
       const para = doc.blocks[0]
-      assert.ok(para.hasAttr('name', null, 'alt-name'))
+      assert.ok(para.hasAttribute('name', null, 'alt-name'))
     })
 
     test('set_attr should set value to empty string if no value is specified', async () => {
       const node = new Block(null, 'paragraph', { attributes: {} })
-      node.setAttr('foo')
-      assert.equal(node.attr('foo'), '')
+      node.setAttribute('foo')
+      assert.equal(node.getAttribute('foo'), '')
     })
 
     test('remove_attr should remove attribute and return previous value', async () => {
       const doc = await emptyDocument()
       const node = new Block(doc, 'paragraph', { attributes: { foo: 'bar' } })
-      assert.equal(node.removeAttr('foo'), 'bar')
-      assert.equal(node.attr('foo'), null)
+      assert.equal(node.removeAttribute('foo'), 'bar')
+      assert.equal(node.getAttribute('foo'), null)
     })
 
     test('set_attr should not overwrite existing key if overwrite is false', async () => {
       const node = new Block(null, 'paragraph', { attributes: { foo: 'bar' } })
-      assert.equal(node.attr('foo'), 'bar')
-      node.setAttr('foo', 'baz', false)
-      assert.equal(node.attr('foo'), 'bar')
+      assert.equal(node.getAttribute('foo'), 'bar')
+      node.setAttribute('foo', 'baz', false)
+      assert.equal(node.getAttribute('foo'), 'bar')
     })
 
     test('set_attr should overwrite existing key by default', async () => {
       const node = new Block(null, 'paragraph', { attributes: { foo: 'bar' } })
-      assert.equal(node.attr('foo'), 'bar')
-      node.setAttr('foo', 'baz')
-      assert.equal(node.attr('foo'), 'baz')
+      assert.equal(node.getAttribute('foo'), 'bar')
+      node.setAttribute('foo', 'baz')
+      assert.equal(node.getAttribute('foo'), 'baz')
     })
 
-    test('set_attr should set header attribute in loaded document', async () => {
+    test('setAttribute should set attribute in loaded document', async () => {
       const input = ':uri: http://example.org\n\n{uri}'
-      const doc = await load(input, { attributes: { uri: 'https://github.com' } })
-      doc.setAttr('uri', 'https://google.com')
+      const doc = await load(input)
+      doc.setAttribute('uri', 'https://google.com')
       const output = await doc.convert()
       assert.ok(output.includes('href="https://google.com"'))
     })
 
     test('set_attribute should set attribute if key is not locked', async () => {
       const doc = await emptyDocument()
-      assert.ok(!doc.hasAttr('foo'))
+      assert.ok(!doc.hasAttribute('foo'))
       const res = doc.setAttribute('foo', 'baz')
       assert.ok(res)
-      assert.equal(doc.attr('foo'), 'baz')
+      assert.equal(doc.getAttribute('foo'), 'baz')
     })
 
     test('set_attribute should not set key if key is locked', async () => {
       const doc = await emptyDocument({ attributes: { foo: 'bar' } })
-      assert.equal(doc.attr('foo'), 'bar')
+      assert.equal(doc.getAttribute('foo'), 'bar')
       const res = doc.setAttribute('foo', 'baz')
       assert.ok(!res)
-      assert.equal(doc.attr('foo'), 'bar')
+      assert.equal(doc.getAttribute('foo'), 'bar')
     })
 
     test('set_attribute should update backend attributes', async () => {
       const doc = await emptyDocument({ attributes: { backend: 'html5@' } })
-      assert.equal(doc.attr('backend-html5'), '')
+      assert.equal(doc.getAttribute('backend-html5'), '')
       const res = doc.setAttribute('backend', 'docbook5')
       assert.ok(res)
-      assert.ok(!doc.hasAttr('backend-html5'))
-      assert.equal(doc.attr('backend-docbook5'), '')
+      assert.ok(!doc.hasAttribute('backend-html5'))
+      assert.equal(doc.getAttribute('backend-docbook5'), '')
     })
 
     test('verify toc attribute matrix', async () => {
@@ -510,24 +510,24 @@ describe('Attributes', () => {
         )
         const doc = await documentFromString('', { attributes: attrs })
         if (toc !== null) {
-          assert.ok(doc.hasAttr('toc'), `Expected toc attribute to be present for "${rawAttrs}"`)
+          assert.ok(doc.hasAttribute('toc'), `Expected toc attribute to be present for "${rawAttrs}"`)
         } else {
-          assert.ok(!doc.hasAttr('toc'))
+          assert.ok(!doc.hasAttribute('toc'))
         }
         if (tocPosition) {
-          assert.ok(doc.hasAttr('toc-position', tocPosition), `Expected toc-position=${tocPosition}, got ${doc.attr('toc-position')}`)
+          assert.ok(doc.hasAttribute('toc-position', tocPosition), `Expected toc-position=${tocPosition}, got ${doc.getAttribute('toc-position')}`)
         } else {
-          assert.ok(!doc.hasAttr('toc-position'), `Expected no toc-position, got ${doc.attr('toc-position')}`)
+          assert.ok(!doc.hasAttribute('toc-position'), `Expected no toc-position, got ${doc.getAttribute('toc-position')}`)
         }
         if (tocPlacement) {
-          assert.ok(doc.hasAttr('toc-placement', tocPlacement), `Expected toc-placement=${tocPlacement}, got ${doc.attr('toc-placement')}`)
+          assert.ok(doc.hasAttribute('toc-placement', tocPlacement), `Expected toc-placement=${tocPlacement}, got ${doc.getAttribute('toc-placement')}`)
         } else {
-          assert.ok(!doc.hasAttr('toc-placement'), `Expected no toc-placement, got ${doc.attr('toc-placement')}`)
+          assert.ok(!doc.hasAttribute('toc-placement'), `Expected no toc-placement, got ${doc.getAttribute('toc-placement')}`)
         }
         if (tocClass) {
-          assert.ok(doc.hasAttr('toc-class', tocClass), `Expected toc-class=${tocClass}, got ${doc.attr('toc-class')}`)
+          assert.ok(doc.hasAttribute('toc-class', tocClass), `Expected toc-class=${tocClass}, got ${doc.getAttribute('toc-class')}`)
         } else {
-          assert.ok(!doc.hasAttr('toc-class'), `Expected no toc-class, got ${doc.attr('toc-class')}`)
+          assert.ok(!doc.hasAttribute('toc-class'), `Expected no toc-class, got ${doc.getAttribute('toc-class')}`)
         }
       }
     })
@@ -655,10 +655,10 @@ describe('Attributes', () => {
     test('attribute entries can resolve previously defined attributes', async () => {
       const input = '= Title\nAuthor Name\nv1.0, 2010-01-01: First release!\n:a: value\n:a2: {a}\n:revdate2: {revdate}\n\n{a} == {a2}\n\n{revdate} == {revdate2}'
       const doc = await documentFromString(input)
-      assert.equal(doc.attr('revdate'), '2010-01-01')
-      assert.equal(doc.attr('revdate2'), '2010-01-01')
-      assert.equal(doc.attr('a'), 'value')
-      assert.equal(doc.attr('a2'), 'value')
+      assert.equal(doc.getAttribute('revdate'), '2010-01-01')
+      assert.equal(doc.getAttribute('revdate2'), '2010-01-01')
+      assert.equal(doc.getAttribute('a'), 'value')
+      assert.equal(doc.getAttribute('a2'), 'value')
       const output = await doc.convert()
       assert.ok(output.includes('value == value'))
       assert.ok(output.includes('2010-01-01 == 2010-01-01'))
@@ -667,7 +667,7 @@ describe('Attributes', () => {
     test('warn if unterminated block comment is detected in document header', async () => {
       const input = '= Document Title\n:foo: bar\n////\n:hey: there\n\ncontent'
       const doc = await documentFromString(input)
-      assert.equal(doc.attr('hey'), null)
+      assert.equal(doc.getAttribute('hey'), null)
       assertMessage(logger, 'WARN', 'unterminated comment block')
     })
 
@@ -954,10 +954,10 @@ describe('Attributes', () => {
     test('parses named attribute with valid name', async () => {
       const input = '[normal,foo="bar",_foo="_bar",foo1="bar1",foo-foo="bar-bar",foo.foo="bar.bar"]\ncontent'
       const block = await blockFromString(input)
-      assert.equal(block.attr('foo'), 'bar')
-      assert.equal(block.attr('_foo'), '_bar')
-      assert.equal(block.attr('foo1'), 'bar1')
-      assert.equal(block.attr('foo-foo'), 'bar-bar')
+      assert.equal(block.getAttribute('foo'), 'bar')
+      assert.equal(block.getAttribute('_foo'), '_bar')
+      assert.equal(block.getAttribute('foo1'), 'bar1')
+      assert.equal(block.getAttribute('foo-foo'), 'bar-bar')
     })
 
     test('does not parse named attribute if name is invalid', async () => {
@@ -972,8 +972,8 @@ describe('Attributes', () => {
       const doc = await documentFromString(input)
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
-      assert.equal(qb.attr('attribution'), 'author')
-      assert.equal(qb.attr('attribution'), 'author') // symbol key equivalent
+      assert.equal(qb.getAttribute('attribution'), 'author')
+      assert.equal(qb.getAttribute('attribution'), 'author') // symbol key equivalent
       assert.equal(qb.attributes['attribution'], 'author')
       assert.equal(qb.attributes['citetitle'], 'source')
     })
@@ -983,7 +983,7 @@ describe('Attributes', () => {
       const doc = await documentFromString(input)
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
-      assert.equal(qb.attr('attribution'), 'author')
+      assert.equal(qb.getAttribute('attribution'), 'author')
       assert.equal(qb.attributes['attribution'], 'author')
       assert.ok(qb.attributes['citetitle'].includes('href="http://wikipedia.org"'))
       assert.ok(qb.attributes['citetitle'].includes('>source<'))
@@ -994,7 +994,7 @@ describe('Attributes', () => {
       const doc = await documentFromString(input)
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
-      assert.equal(qb.attr('attribution'), 'author')
+      assert.equal(qb.getAttribute('attribution'), 'author')
       assert.equal(qb.attributes['attribution'], 'author')
       assert.ok(qb.attributes['citetitle'].includes('href="http://wikipedia.org"'))
       assert.ok(qb.attributes['citetitle'].includes('>source<'))
@@ -1053,29 +1053,29 @@ describe('Attributes', () => {
       const input = '[role="lead"]\nA paragraph'
       const doc = await documentFromString(input)
       const p = doc.blocks[0]
-      assert.ok(p.hasRoleAttr())
+      assert.ok(p.hasRoleAttribute())
     })
 
     test('role? does not return true if role attribute is set on document', async () => {
       const input = ':role: lead\n\nA paragraph'
       const doc = await documentFromString(input)
       const p = doc.blocks[0]
-      assert.ok(!p.hasRoleAttr())
+      assert.ok(!p.hasRoleAttribute())
     })
 
     test('role? can check for exact role name match', async () => {
       const input = '[role="lead"]\nA paragraph'
       const doc = await documentFromString(input)
       const p = doc.blocks[0]
-      assert.ok(p.hasRoleAttr('lead'))
-      assert.ok(!doc.blocks[doc.blocks.length - 1].hasRoleAttr('final'))
+      assert.ok(p.hasRoleAttribute('lead'))
+      assert.ok(!doc.blocks[doc.blocks.length - 1].hasRoleAttribute('final'))
     })
 
     test('has_role? can check for presence of role name', async () => {
       const input = '[role="lead abstract"]\nA paragraph'
       const doc = await documentFromString(input)
       const p = doc.blocks[0]
-      assert.ok(!p.hasRoleAttr('lead'))
+      assert.ok(!p.hasRoleAttribute('lead'))
       assert.ok(p.hasRole('lead'))
     })
 
@@ -1110,14 +1110,14 @@ describe('Attributes', () => {
       const doc = await documentFromString('a paragraph')
       const p = doc.blocks[0]
       p.role = 'foobar'
-      assert.equal(p.attr('role'), 'foobar')
+      assert.equal(p.getAttribute('role'), 'foobar')
     })
 
     test('roles= coerces array value to a space-separated string', async () => {
       const doc = await documentFromString('a paragraph')
       const p = doc.blocks[0]
       p.role = ['foo', 'bar']
-      assert.equal(p.attr('role'), 'foo bar')
+      assert.equal(p.getAttribute('role'), 'foo bar')
     })
 
     test('Attribute substitutions are performed on attribute list before parsing attributes', async () => {
@@ -1237,7 +1237,7 @@ describe('Attributes', () => {
       const para = doc.blocks[0]
       const res = para.removeRole('role1')
       assert.ok(res)
-      assert.ok(!para.hasRoleAttr())
+      assert.ok(!para.hasRoleAttribute())
       assert.equal(para.attributes['role'], undefined)
       assert.ok(!para.hasRole('role1'))
     })
@@ -1311,7 +1311,7 @@ describe('Attributes', () => {
       const subsection = sectionOne.blocks[sectionOne.blocks.length - 1]
       assert.equal(subsection.id, 'sub')
       const sectionTwo = doc.blocks[doc.blocks.length - 1]
-      assert.equal(sectionTwo.attr('role'), 'classy')
+      assert.equal(sectionTwo.getAttribute('role'), 'classy')
     })
 
     test('set role', async () => {
