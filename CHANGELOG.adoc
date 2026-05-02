@@ -45,6 +45,7 @@ Infrastructure::
 * Browser tests run via `vitest --browser` (Playwright/Chromium) in addition to the Node.js test runner
 * Test suite ported from Asciidoctor Ruby — over 2,300 tests covering the full feature set
 * Use npm workspaces to simplify dependency installation (#1746)
+* Added `id-token` permission to CI workflows to enable trusted publishing
 
 == v3.0.4 (2024-02-12)
 
