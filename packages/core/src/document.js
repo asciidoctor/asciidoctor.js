@@ -4,7 +4,8 @@
 //   - Document extends AbstractBlock with super(self, 'document').
 //   - Ruby Struct → plain class with named properties.
 //   - Ruby `parse unless @parsed` → synchronous call since JS parse is synchronous.
-//   - Extensions / SyntaxHighlighter are optional and loaded lazily.
+//   - Extensions / SyntaxHighlighter are optional; Extensions is statically imported,
+//     SyntaxHighlighter is loaded lazily by the converter pipeline.
 //   - File.write / process.env / Time.now have Node.js equivalents.
 //   - Mutex / thread-safety not applicable in single-threaded JS.
 //   - `instance_variable_get :@attribute_overrides` → direct property access.

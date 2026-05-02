@@ -45,7 +45,6 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
    * @returns {true}
    */
   hasDocinfo(location) {
-    // eslint-disable-line no-unused-vars
     return true
   }
 

@@ -11,7 +11,9 @@
 //   - LoggerManager from logging.js is used to honour the :logger option.
 //   - SpaceDelimiterRx / EscapedSpaceRx / NULL are imported from rx.js / constants.js
 //     for string-form attributes parsing (mirrors the Ruby gsub/split dance).
-//   - Document is lazily imported to avoid circular-dependency issues at module load.
+//   - Circular dependencies (Document ↔ Parser, etc.) are resolved via static ESM imports
+//     with live bindings; no lazy import() needed. Built-in converters are still loaded
+//     lazily by Converter.create() and self-register on first use.
 
 import { SpaceDelimiterRx, EscapedSpaceRx } from './rx.js'
 import { NULL, BACKEND_ALIASES } from './constants.js'
@@ -21,6 +23,7 @@ import { Document } from './document.js'
 import { Converter } from './converter.js'
 import { SyntaxHighlighter } from './syntax_highlighter.js'
 import HighlightJsAdapter from './syntaxHighlighter/highlightjs.js'
+import HtmlPipelineAdapter from './syntaxHighlighter/html_pipeline.js'
 import { AbstractNode } from './abstract_node.js'
 import { Substitutors } from './substitutors.js'
 
@@ -28,8 +31,9 @@ import { Substitutors } from './substitutors.js'
 // Section, Block, etc.) have subSpecialchars, subAttributes, etc. available.
 Object.assign(AbstractNode.prototype, Substitutors)
 
-// Self-register in the global factory (mirrors Ruby's `register_for`).
+// Register built-in syntax highlighters (mirrors Ruby's `register_for`).
 SyntaxHighlighter.register(HighlightJsAdapter, 'highlightjs', 'highlight.js')
+SyntaxHighlighter.register(HtmlPipelineAdapter, 'html-pipeline')
 
 // ── load ──────────────────────────────────────────────────────────────────────
 
