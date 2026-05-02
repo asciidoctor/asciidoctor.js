@@ -64,6 +64,7 @@ jobs:
         shell: bash
         run: |
           npm test
+          npm run test:browser -w @asciidoctor/core
 
   native_images:
     needs: test
