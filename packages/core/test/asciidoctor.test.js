@@ -18,19 +18,24 @@ test('return Asciidoctor.js version', () => {
 
 describe('Safe mode', () => {
   test('get constants', () => {
-    assert.equal(SafeMode.UNSAFE,0)
-    assert.equal(SafeMode.SAFE,1)
-    assert.equal(SafeMode.SERVER,10)
-    assert.equal(SafeMode.SECURE,20)
+    assert.equal(SafeMode.UNSAFE, 0)
+    assert.equal(SafeMode.SAFE, 1)
+    assert.equal(SafeMode.SERVER, 10)
+    assert.equal(SafeMode.SECURE, 20)
   })
   test('get value for name', () => {
-    assert.equal(SafeMode.getValueForName('secure'),20)
+    assert.equal(SafeMode.getValueForName('secure'), 20)
   })
   test('get name for value', () => {
-    assert.equal(SafeMode.getNameForValue(0),'unsafe')
+    assert.equal(SafeMode.getNameForValue(0), 'unsafe')
   })
   test('get names', () => {
-    assert.deepEqual(SafeMode.getNames(), ['unsafe', 'safe', 'server', 'secure'])
+    assert.deepEqual(SafeMode.getNames(), [
+      'unsafe',
+      'safe',
+      'server',
+      'secure',
+    ])
   })
 })
 
@@ -49,11 +54,14 @@ describe('Loading', () => {
 
   test('load document attributes', async () => {
     const options = { attributes: 'icons=font@ data-uri!' }
-    const doc = await load(`= Document attributes
+    const doc = await load(
+      `= Document attributes
 :bar: value
 :!foo:
 
-content`, options)
+content`,
+      options
+    )
     assert.equal(doc.getAttribute('bar'), 'value')
     assert.equal(doc.getAttribute('quz'), null)
     assert.equal(doc.getAttributes().quz, undefined)
@@ -91,7 +99,10 @@ Guillaume Grossetie; Anders Nawroth
     assert.equal(doc.getAttribute('authorinitials'), 'GG')
     assert.equal(doc.getAttribute('authorinitials_1'), 'GG')
     assert.equal(doc.getAttribute('authorinitials_2'), 'AN')
-    assert.equal(doc.getAttribute('authors'), 'Guillaume Grossetie, Anders Nawroth')
+    assert.equal(
+      doc.getAttribute('authors'),
+      'Guillaume Grossetie, Anders Nawroth'
+    )
     assert.equal(doc.getAuthor(), 'Guillaume Grossetie')
   })
 
@@ -100,7 +111,10 @@ Guillaume Grossetie; Anders Nawroth
 Guillaume Grossetie; Anders Nawroth
 `)
     assert.equal(doc.getAttributes().author, 'Guillaume Grossetie')
-    assert.equal(doc.getAttributes().authors, 'Guillaume Grossetie, Anders Nawroth')
+    assert.equal(
+      doc.getAttributes().authors,
+      'Guillaume Grossetie, Anders Nawroth'
+    )
   })
 
   test('modify document attributes', async () => {
@@ -123,23 +137,41 @@ Guillaume Grossetie; Anders Nawroth
 This is the first paragraph.
 
 This is a second paragraph.`)
-    assert.deepEqual(doc.getSourceLines(), ['== Test', 'This is the first paragraph.', '', 'This is a second paragraph.'])
+    assert.deepEqual(doc.getSourceLines(), [
+      '== Test',
+      'This is the first paragraph.',
+      '',
+      'This is a second paragraph.',
+    ])
   })
 
   test('get reader lines', async () => {
-    const doc = await load(`line one
+    const doc = await load(
+      `line one
 line two
-line three`, { parse: false })
-    assert.deepEqual(doc.getReader().getLines(), ['line one', 'line two', 'line three'])
+line three`,
+      { parse: false }
+    )
+    assert.deepEqual(doc.getReader().getLines(), [
+      'line one',
+      'line two',
+      'line three',
+    ])
   })
 
   test('get reader string', async () => {
-    const doc = await load(`line one
+    const doc = await load(
+      `line one
 line two
-line three`, { parse: false })
-    assert.equal(doc.getReader().getString(), `line one
+line three`,
+      { parse: false }
+    )
+    assert.equal(
+      doc.getReader().getString(),
+      `line one
 line two
-line three`)
+line three`
+    )
   })
 
   test('document is not be nested', async () => {
@@ -215,12 +247,19 @@ content`)
   })
 
   test('get title', async () => {
-    const doc = await load(`= The Dangerous Documentation Chronicles: Based on True Events
+    const doc =
+      await load(`= The Dangerous Documentation Chronicles: Based on True Events
 :title: The Actual Dangerous Documentation Chronicles
 
 == The Ravages of Writing`)
-    assert.equal(doc.getTitle(), 'The Actual Dangerous Documentation Chronicles')
-    assert.equal(doc.getCaptionedTitle(), 'The Actual Dangerous Documentation Chronicles')
+    assert.equal(
+      doc.getTitle(),
+      'The Actual Dangerous Documentation Chronicles'
+    )
+    assert.equal(
+      doc.getCaptionedTitle(),
+      'The Actual Dangerous Documentation Chronicles'
+    )
   })
 
   test('set title', async () => {
@@ -228,24 +267,34 @@ content`)
 
 == The Ravages of Writing`)
     doc.setTitle('The Dangerous & Thrilling Documentation')
-    assert.equal(doc.getDoctitle(), 'The Dangerous &amp; Thrilling Documentation')
+    assert.equal(
+      doc.getDoctitle(),
+      'The Dangerous &amp; Thrilling Documentation'
+    )
   })
 
   test('get doctitle', async () => {
-    const doc = await load(`= The Dangerous Documentation Chronicles: Based on True Events
+    const doc =
+      await load(`= The Dangerous Documentation Chronicles: Based on True Events
 
 == The Ravages of Writing`)
-    assert.equal(doc.getDoctitle(), 'The Dangerous Documentation Chronicles: Based on True Events')
+    assert.equal(
+      doc.getDoctitle(),
+      'The Dangerous Documentation Chronicles: Based on True Events'
+    )
   })
 
   test('get line number of a block when sourcemap is enabled', async () => {
-    const doc = await load(`= Document Title
+    const doc = await load(
+      `= Document Title
 
 Preamble
 
 == First section
 
-First paragraph.`, { sourcemap: true })
+First paragraph.`,
+      { sourcemap: true }
+    )
     assert.equal(doc.getSourcemap(), true)
     const blocks = doc.getBlocks()
     assert.equal(blocks.length, 2)
@@ -296,7 +345,10 @@ Blocks are amazing!`)
   })
 
   test('populate the catalog', async () => {
-    const doc = await load('link:index.html[Docs]', { safe: 'safe', catalog_assets: true })
+    const doc = await load('link:index.html[Docs]', {
+      safe: 'safe',
+      catalog_assets: true,
+    })
     await doc.convert()
     const links = doc.getCatalog().links
     assert.deepEqual(links, ['index.html'])

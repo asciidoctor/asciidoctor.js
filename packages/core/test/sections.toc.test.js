@@ -30,17 +30,41 @@ While they were waiting...
 That's all she wrote!`
       const output = await convertString(input)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"][@class="toc"]', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/*[@id="toctitle"][text()="Table of Contents"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/*[@id="toctitle"][text()="Table of Contents"]',
+        1
+      )
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul[@class="sectlevel1"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul[@class="sectlevel1"]',
+        1
+      )
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]//ul', 2)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]//li', 4)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="Section One"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="Section One"]',
+        1
+      )
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li/ul', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li/ul[@class="sectlevel2"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li/ul[@class="sectlevel2"]',
+        1
+      )
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li/ul/li', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li/ul/li/a[@href="#_interlude"][text()="Interlude"]', 1)
-      assertXpath(output, '((//*[@id="header"]//*[@id="toc"]/ul)[1]/li)[3]/a[@href="#_section_three"][text()="Section Three"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li/ul/li/a[@href="#_interlude"][text()="Interlude"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//*[@id="header"]//*[@id="toc"]/ul)[1]/li)[3]/a[@href="#_section_three"][text()="Section Three"]',
+        1
+      )
     })
 
     test('should output numbered table of contents in header if toc and numbered attributes are set', async () => {
@@ -65,14 +89,30 @@ While they were waiting...
 That's all she wrote!`
       const output = await convertString(input)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"][@class="toc"]', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/*[@id="toctitle"][text()="Table of Contents"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/*[@id="toctitle"][text()="Table of Contents"]',
+        1
+      )
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul', 1)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]//ul', 2)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]//li', 4)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]',
+        1
+      )
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li/ul/li', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li/ul/li/a[@href="#_interlude"][text()="2.1. Interlude"]', 1)
-      assertXpath(output, '((//*[@id="header"]//*[@id="toc"]/ul)[1]/li)[3]/a[@href="#_section_three"][text()="3. Section Three"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li/ul/li/a[@href="#_interlude"][text()="2.1. Interlude"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//*[@id="header"]//*[@id="toc"]/ul)[1]/li)[3]/a[@href="#_section_three"][text()="3. Section Three"]',
+        1
+      )
     })
 
     test('should output a table of contents that honors numbered setting at position of section in document', async () => {
@@ -99,12 +139,24 @@ While they were waiting...
 That's all she wrote!`
       const output = await convertString(input)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"][@class="toc"]', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/*[@id="toctitle"][text()="Table of Contents"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/*[@id="toctitle"][text()="Table of Contents"]',
+        1
+      )
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul', 1)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]//ul', 2)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]//li', 4)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]', 1)
-      assertXpath(output, '((//*[@id="header"]//*[@id="toc"]/ul)[1]/li)[3]/a[@href="#_section_three"][text()="Section Three"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//*[@id="header"]//*[@id="toc"]/ul)[1]/li)[3]/a[@href="#_section_three"][text()="Section Three"]',
+        1
+      )
     })
 
     test('should not number parts in table of contents for book doctype when numbered attribute is set', async () => {
@@ -133,12 +185,36 @@ blah`
       assertXpath(output, '//*[@id="toc"]/ul', 1)
       assertXpath(output, '//*[@id="toc"]/ul[@class="sectlevel0"]', 1)
       assertXpath(output, '//*[@id="toc"]/ul[@class="sectlevel0"]/li', 2)
-      assertXpath(output, '(//*[@id="toc"]/ul[@class="sectlevel0"]/li)[1]/a[text()="Part 1"]', 1)
-      assertXpath(output, '(//*[@id="toc"]/ul[@class="sectlevel0"]/li)[2]/a[text()="Part 2"]', 1)
-      assertXpath(output, '(//*[@id="toc"]/ul[@class="sectlevel0"]/li)[1]/ul', 1)
-      assertXpath(output, '(//*[@id="toc"]/ul[@class="sectlevel0"]/li)[1]/ul[@class="sectlevel1"]', 1)
-      assertXpath(output, '(//*[@id="toc"]/ul[@class="sectlevel0"]/li)[1]/ul/li', 2)
-      assertXpath(output, '((//*[@id="toc"]/ul[@class="sectlevel0"]/li)[1]/ul/li)[1]/a[text()="1. First Section of Part 1"]', 1)
+      assertXpath(
+        output,
+        '(//*[@id="toc"]/ul[@class="sectlevel0"]/li)[1]/a[text()="Part 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@id="toc"]/ul[@class="sectlevel0"]/li)[2]/a[text()="Part 2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@id="toc"]/ul[@class="sectlevel0"]/li)[1]/ul',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@id="toc"]/ul[@class="sectlevel0"]/li)[1]/ul[@class="sectlevel1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@id="toc"]/ul[@class="sectlevel0"]/li)[1]/ul/li',
+        2
+      )
+      assertXpath(
+        output,
+        '((//*[@id="toc"]/ul[@class="sectlevel0"]/li)[1]/ul/li)[1]/a[text()="1. First Section of Part 1"]',
+        1
+      )
     })
 
     test('should output table of contents in header if toc2 attribute is set', async () => {
@@ -156,7 +232,11 @@ They couldn't believe their eyes when...`
       const output = await convertString(input)
       assertCss(output, 'body.article.toc2.toc-left', 1)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"][@class="toc2"]', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]',
+        1
+      )
     })
 
     test('should set toc position if toc attribute is set to position', async () => {
@@ -174,7 +254,11 @@ They couldn't believe their eyes when...`
       const output = await convertString(input)
       assertCss(output, 'body.article.toc2.toc-right', 1)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"][@class="toc2"]', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]',
+        1
+      )
     })
 
     test('should set toc position if toc and toc-position attributes are set', async () => {
@@ -193,7 +277,11 @@ They couldn't believe their eyes when...`
       const output = await convertString(input)
       assertCss(output, 'body.article.toc2.toc-right', 1)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"][@class="toc2"]', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]',
+        1
+      )
     })
 
     test('should set toc position if toc2 and toc-position attribute are set', async () => {
@@ -212,7 +300,11 @@ They couldn't believe their eyes when...`
       const output = await convertString(input)
       assertCss(output, 'body.article.toc2.toc-right', 1)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"][@class="toc2"]', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]',
+        1
+      )
     })
 
     test('should set toc position if toc attribute is set to direction', async () => {
@@ -230,7 +322,11 @@ They couldn't believe their eyes when...`
       const output = await convertString(input)
       assertCss(output, 'body.article.toc2.toc-right', 1)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"][@class="toc2"]', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li[1]/a[@href="#_section_one"][text()="1. Section One"]',
+        1
+      )
     })
 
     test('should set toc placement to preamble if toc attribute is set to preamble', async () => {
@@ -276,7 +372,11 @@ Fin.`
       assertCss(output, '#header #toc.toc2', 1)
       assertCss(output, '#header #toc li', 2)
       assertCss(output, '#header #toc #toctitle', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/*[@id="toctitle"][text()="Contents"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/*[@id="toctitle"][text()="Contents"]',
+        1
+      )
     })
 
     test('should only show parts in toc if toclevels is 0', async () => {
@@ -378,7 +478,11 @@ For my family.
       assertCss(output, '#toc > ul.sectlevel0', 1)
       assertCss(output, '#toc a', 5)
       assertCss(output, '#toc > ul.sectlevel0 > li.sectlevel1', 1)
-      assertCss(output, '#toc > ul.sectlevel0 > li.sectlevel1 a[href="#_dedication"]', 1)
+      assertCss(
+        output,
+        '#toc > ul.sectlevel0 > li.sectlevel1 a[href="#_dedication"]',
+        1
+      )
       assertCss(output, '#toc > ul.sectlevel0 ul.sectlevel1', 2)
     })
 
@@ -549,7 +653,11 @@ Fin.`
       assertCss(output, '#toctitle', 1)
       assertCss(output, '#preamble #toc', 1)
       assertCss(output, '#preamble #toc.contents', 1)
-      assertXpath(output, '//*[@id="toc"]/*[@class="title"][text() = "Contents"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="toc"]/*[@class="title"][text() = "Contents"]',
+        1
+      )
       assertCss(output, '#toc li', 2)
       assertXpath(output, '(//*[@id="toc"]//li)[1]/a[text() = "Section 1"]', 1)
       assertXpath(output, '(//*[@id="toc"]//li)[2]/a[text() = "Section 2"]', 1)
@@ -588,7 +696,11 @@ Fin.`
       assertCss(output, '#toctitle', 0)
       assertCss(output, '#preamble #contents', 1)
       assertCss(output, '#preamble #contents.contents', 1)
-      assertXpath(output, '//*[@id="contents"]/*[@class="title"][text() = "Contents"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="contents"]/*[@class="title"][text() = "Contents"]',
+        1
+      )
       assertCss(output, '#contents li', 6)
       assertCss(output, '#contents a[href="#_section_1"]', 1)
       assertCss(output, '#contents a[href="#_section_1_1"]', 1)
@@ -659,15 +771,31 @@ While they were waiting...
 That's all she wrote!`
       const output = await convertString(input)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"][@class="toc"]', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/*[@id="toctitle"][text()="Table of Contents"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/*[@id="toctitle"][text()="Table of Contents"]',
+        1
+      )
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul', 1)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]//ul', 2)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]//li', 4)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li[2]/a[@href="#_section_two"][text()="Section Two"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li[2]/a[@href="#_section_two"][text()="Section Two"]',
+        1
+      )
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li/ul/li', 1)
       assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li[2]/ul/li', 1)
-      assertXpath(output, '//*[@id="header"]//*[@id="toc"]/ul/li/ul/li/a[@href="#_interlude"][text()="Interlude"]', 1)
-      assertXpath(output, '((//*[@id="header"]//*[@id="toc"]/ul)[1]/li)[3]/a[@href="#_section_three"][text()="Section Three"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="header"]//*[@id="toc"]/ul/li/ul/li/a[@href="#_interlude"][text()="Interlude"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//*[@id="header"]//*[@id="toc"]/ul)[1]/li)[3]/a[@href="#_section_three"][text()="Section Three"]',
+        1
+      )
     })
 
     test('should not display a table of contents if document has no sections', async () => {
@@ -704,9 +832,21 @@ content`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/*[@id="toc"]', 1)
       assertXpath(output, '/*[@id="toc"]//li', 3)
-      assertXpath(output, '/*[@id="toc"]//li[1]/a[@href="#_section_one"][text()="Section One"]', 1)
-      assertXpath(output, '/*[@id="toc"]//li[2]/a[@href="#_section_two"][text()="Section Two"]', 1)
-      assertXpath(output, '/*[@id="toc"]//li[3]/a[@href="#_plant_trees_by_searching"][text()="Plant Trees by Searching"]', 1)
+      assertXpath(
+        output,
+        '/*[@id="toc"]//li[1]/a[@href="#_section_one"][text()="Section One"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/*[@id="toc"]//li[2]/a[@href="#_section_two"][text()="Section Two"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/*[@id="toc"]//li[3]/a[@href="#_plant_trees_by_searching"][text()="Plant Trees by Searching"]',
+        1
+      )
     })
 
     test('should not remove non-anchor tags from contents of entries in table of contents', async () => {
@@ -728,9 +868,21 @@ content`
       const output = await convertStringToEmbedded(input, { safe: 'safe' })
       assertXpath(output, '/*[@id="toc"]', 1)
       assertXpath(output, '/*[@id="toc"]//li', 3)
-      assertXpath(output, '/*[@id="toc"]//li[1]/a[@href="#_run_command"]/code[text()="run"]', 1)
-      assertXpath(output, '/*[@id="toc"]//li[2]/a[@href="#_issues"]/span[@class="icon"]', 1)
-      assertXpath(output, '/*[@id="toc"]//li[3]/a[@href="#_sustainable_searches"]/em[text()="Sustainable"]', 1)
+      assertXpath(
+        output,
+        '/*[@id="toc"]//li[1]/a[@href="#_run_command"]/code[text()="run"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/*[@id="toc"]//li[2]/a[@href="#_issues"]/span[@class="icon"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/*[@id="toc"]//li[3]/a[@href="#_sustainable_searches"]/em[text()="Sustainable"]',
+        1
+      )
     })
   })
 })

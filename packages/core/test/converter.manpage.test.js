@@ -32,13 +32,24 @@ command - does stuff
 
 // Standalone conversion (full document with .TH header)
 const manpage = async (input, opts = {}) => {
-  const doc = await load(input, { safe: 'safe', backend: 'manpage', doctype: 'manpage', standalone: true, ...opts })
+  const doc = await load(input, {
+    safe: 'safe',
+    backend: 'manpage',
+    doctype: 'manpage',
+    standalone: true,
+    ...opts,
+  })
   return await doc.convert()
 }
 
 // Non-standalone / embedded conversion (body content only, no .TH header)
 const convert = async (input, opts = {}) => {
-  const doc = await load(input, { safe: 'safe', backend: 'manpage', doctype: 'manpage', ...opts })
+  const doc = await load(input, {
+    safe: 'safe',
+    backend: 'manpage',
+    doctype: 'manpage',
+    ...opts,
+  })
   return await doc.convert()
 }
 
@@ -57,11 +68,17 @@ describe('ManPageConverter#manify', () => {
   })
 
   test('normalizes whitespace: removes blanks around newlines', () => {
-    assert.equal(c.manify('hello  \n  world', { whitespace: 'normalize' }), 'hello\nworld')
+    assert.equal(
+      c.manify('hello  \n  world', { whitespace: 'normalize' }),
+      'hello\nworld'
+    )
   })
 
   test('preserves whitespace: expands tabs to 8 spaces', () => {
-    assert.equal(c.manify('\thello', { whitespace: 'preserve' }), '        hello')
+    assert.equal(
+      c.manify('\thello', { whitespace: 'preserve' }),
+      '        hello'
+    )
   })
 
   test('preserves whitespace: escapes leading indent (non-line-start spaces)', () => {
@@ -111,7 +128,7 @@ describe('ManPageConverter#manify', () => {
   })
 
   test('replaces apostrophe with \\*(Aq', () => {
-    assert.equal(c.manify("it's"), "it\\*(Aqs")
+    assert.equal(c.manify("it's"), 'it\\*(Aqs')
   })
 
   test('decodes copyright &#169;', () => {
@@ -178,15 +195,23 @@ describe('Configuration', () => {
   })
 
   test('does not escape hyphen in manname in NAME section', async () => {
-    const input = SAMPLE_MANPAGE_HEADER.replace('command - does stuff', 'git-describe - does stuff')
+    const input = SAMPLE_MANPAGE_HEADER.replace(
+      'command - does stuff',
+      'git-describe - does stuff'
+    )
     const result = await manpage(input)
     assert.ok(result.includes('\n.SH "NAME"\ngit-describe \\- does stuff\n'))
   })
 
   test('outputs multiple mannames in NAME section', async () => {
-    const input = SAMPLE_MANPAGE_HEADER.replace('command - does stuff', 'command, alt_command - does stuff')
+    const input = SAMPLE_MANPAGE_HEADER.replace(
+      'command - does stuff',
+      'command, alt_command - does stuff'
+    )
     const result = await manpage(input)
-    assert.ok(result.split('\n').includes('command, alt_command \\- does stuff'))
+    assert.ok(
+      result.split('\n').includes('command, alt_command \\- does stuff')
+    )
   })
 
   test('substitutes attributes in manname and manpurpose in NAME section', async () => {
@@ -207,7 +232,10 @@ Author Name
     })
     assert.equal(doc.getAttribute('manname'), 'foobar')
     assert.deepEqual(doc.getAttribute('mannames'), ['foobar'])
-    assert.equal(doc.getAttribute('manpurpose'), 'foobar puts the foo in your bar')
+    assert.equal(
+      doc.getAttribute('manpurpose'),
+      'foobar puts the foo in your bar'
+    )
     assert.equal(doc.getAttribute('docname'), 'foobar')
   })
 
@@ -287,7 +315,9 @@ Describe this thing.`
     })
     assert.ok(result.includes('Manual: General Commands Manual'))
     assert.ok(result.includes('Source: Control All The Things 5.0'))
-    assert.ok(result.includes('"Control All The Things 5.0" "General Commands Manual"'))
+    assert.ok(
+      result.includes('"Control All The Things 5.0" "General Commands Manual"')
+    )
   })
 })
 
@@ -300,7 +330,10 @@ describe('Manify (integration)', () => {
 (C) & (R) are translated to character references, but not the &.`
     const result = await convert(input)
     const lines = result.split('\n')
-    assert.equal(lines[lines.length - 1], '\\(co & \\(rg are translated to character references, but not the &.')
+    assert.equal(
+      lines[lines.length - 1],
+      '\\(co & \\(rg are translated to character references, but not the &.'
+    )
   })
 
   test('replaces numeric character reference for plus', async () => {
@@ -361,7 +394,7 @@ Ao gravar o commit, acrescente uma linha que diz "(cherry picked from commit
 foi escolhida. Isso é feito apenas para picaretas de cereja sem conflitos.`
     const result = await convert(input)
     const lines = result.split('\n')
-    const dotLine = lines.find(l => l.startsWith('\\&.'))
+    const dotLine = lines.find((l) => l.startsWith('\\&.'))
     assert.ok(dotLine, 'should have a line starting with \\&.')
     assert.ok(dotLine.startsWith('\\&.\\|.\\|.'))
   })
@@ -387,7 +420,11 @@ Oh, here it goes again
     should have known,
 should have known again`
     const result = await convert(input)
-    assert.ok(result.includes('Oh, here it goes again\nI should have known,\nshould have known,\nshould have known again'))
+    assert.ok(
+      result.includes(
+        'Oh, here it goes again\nI should have known,\nshould have known,\nshould have known again'
+      )
+    )
   })
 
   test('normalizes whitespace in a list item', async () => {
@@ -398,7 +435,11 @@ should have known again`
   should have known,
 should have known again`
     const result = await convert(input)
-    assert.ok(result.includes('Oh, here it goes again\nI should have known,\nshould have known,\nshould have known again'))
+    assert.ok(
+      result.includes(
+        'Oh, here it goes again\nI should have known,\nshould have known,\nshould have known again'
+      )
+    )
   })
 
   test('drops principal text of list item in ulist if empty', async () => {
@@ -486,9 +527,9 @@ does stuff
 
 describe('Backslash', () => {
   test('does not escape spaces for empty manual or source fields', async () => {
-    const headerLines = SAMPLE_MANPAGE_HEADER
-      .split('\n')
-      .filter(l => !l.startsWith(':manmanual:') && !l.startsWith(':mansource:'))
+    const headerLines = SAMPLE_MANPAGE_HEADER.split('\n').filter(
+      (l) => !l.startsWith(':manmanual:') && !l.startsWith(':mansource:')
+    )
     const input = headerLines.join('\n')
     const result = await manpage(input)
     assert.match(result, / Manual: \\ \\&/)
@@ -516,7 +557,10 @@ describe('Backslash', () => {
 more`
     const result = await convert(input)
     const lines = result.split('\n')
-    assert.equal(lines[lines.length - 2], '\\(rs.foo \\(rs bar \\(rs\\(rs baz\\(rs')
+    assert.equal(
+      lines[lines.length - 2],
+      '\\(rs.foo \\(rs bar \\(rs\\(rs baz\\(rs'
+    )
   })
 
   test('preserves inline breaks', async () => {
@@ -599,7 +643,10 @@ and http://sbcl.sf.net[SBCL].`
     assert.equal(lines[len - 8], '.sp')
     assert.equal(lines[len - 7], 'The corresponding implementations are')
     assert.equal(lines[len - 6], '.URL "http://clisp.sf.net" "CLISP" ","')
-    assert.equal(lines[len - 5], '.URL "http://ccl.clozure.com" "Clozure CL" ","')
+    assert.equal(
+      lines[len - 5],
+      '.URL "http://ccl.clozure.com" "Clozure CL" ","'
+    )
     assert.equal(lines[len - 4], '.URL "http://cmucl.org" "CMUCL" ","')
     assert.equal(lines[len - 3], '.URL "http://ecls.sf.net" "ECL" ","')
     assert.equal(lines[len - 2], 'and \\c')
@@ -616,7 +663,10 @@ The corresponding implementations are http://clisp.sf.net[CLISP], http://ccl.clo
     assert.equal(lines[len - 8], '.sp')
     assert.equal(lines[len - 7], 'The corresponding implementations are \\c')
     assert.equal(lines[len - 6], '.URL "http://clisp.sf.net" "CLISP" ","')
-    assert.equal(lines[len - 5], '.URL "http://ccl.clozure.com" "Clozure CL" ","')
+    assert.equal(
+      lines[len - 5],
+      '.URL "http://ccl.clozure.com" "Clozure CL" ","'
+    )
     assert.equal(lines[len - 4], '.URL "http://cmucl.org" "CMUCL" ","')
     assert.equal(lines[len - 3], '.URL "http://ecls.sf.net" "ECL" ","')
     assert.equal(lines[len - 2], 'and')
@@ -632,7 +682,10 @@ Please search |link:http://discuss.asciidoctor.org[the forums]| before asking.`
     const len = lines.length
     assert.equal(lines[len - 4], '.sp')
     assert.equal(lines[len - 3], 'Please search |\\c')
-    assert.equal(lines[len - 2], '.URL "http://discuss.asciidoctor.org" "the forums" "|"')
+    assert.equal(
+      lines[len - 2],
+      '.URL "http://discuss.asciidoctor.org" "the forums" "|"'
+    )
     assert.equal(lines[len - 1], 'before asking.')
   })
 
@@ -664,14 +717,21 @@ mailto:doc@example.org[Contact the doc]`
     assert.equal(lines[len - 4], '.sp')
     assert.equal(lines[len - 3], 'First paragraph.')
     assert.equal(lines[len - 2], '.sp')
-    assert.equal(lines[len - 1], '.MTO "doc\\(atexample.org" "Contact the doc" ""')
+    assert.equal(
+      lines[len - 1],
+      '.MTO "doc\\(atexample.org" "Contact the doc" ""'
+    )
   })
 
   test('sets text of MTO macro to blank for implicit email', async () => {
     const input = `${SAMPLE_MANPAGE_HEADER}
 Bugs fixed daily by doc@example.org.`
     const result = await convert(input)
-    assert.ok(result.endsWith('Bugs fixed daily by \\c\n.MTO "doc\\(atexample.org" "" "."'))
+    assert.ok(
+      result.endsWith(
+        'Bugs fixed daily by \\c\n.MTO "doc\\(atexample.org" "" "."'
+      )
+    )
   })
 })
 
@@ -848,7 +908,11 @@ image::signs-point-to-yes.jpg[]`
 
 image::rainbow.jpg["That's a double rainbow, otherwise known as rainbow++!"]`
     const result = await convert(input)
-    assert.ok(result.endsWith('\n.sp\n[That\\*(Aqs a double rainbow, otherwise known as rainbow++!]'))
+    assert.ok(
+      result.endsWith(
+        '\n.sp\n[That\\*(Aqs a double rainbow, otherwise known as rainbow++!]'
+      )
+    )
   })
 
   test('replaces inline image with alt text enclosed in square brackets', async () => {
@@ -864,7 +928,11 @@ The Magic 8 Ball says image:signs-point-to-yes.jpg[].`
 
 The Magic 8 Ball says image:signs-point-to-yes.jpg[link=https://en.wikipedia.org/wiki/Magic_8-Ball].`
     const result = await convert(input)
-    assert.ok(result.includes('The Magic 8 Ball says [signs point to yes] <https://en.wikipedia.org/wiki/Magic_8\\-Ball>.'))
+    assert.ok(
+      result.includes(
+        'The Magic 8 Ball says [signs point to yes] <https://en.wikipedia.org/wiki/Magic_8\\-Ball>.'
+      )
+    )
   })
 })
 
@@ -904,12 +972,15 @@ ls - list directory`
   })
 
   test('omits date line when reproducible attribute is set', async () => {
-    const result = await manpage(`${MAN_HEADER}
+    const result = await manpage(
+      `${MAN_HEADER}
 :reproducible:
 
 == NAME
 
-ls - list`, {})
+ls - list`,
+      {}
+    )
     assert.doesNotMatch(result, /\.\\" {6}Date:/)
   })
 })
@@ -1357,7 +1428,11 @@ You can access this information using the options listed under <<_generic_progra
 
 -V, --version:: Output the version number of grep and exit.`
     const result = await convert(input)
-    assert.ok(result.includes('You can access this information using the options listed under Generic Program Information.'))
+    assert.ok(
+      result.includes(
+        'You can access this information using the options listed under Generic Program Information.'
+      )
+    )
   })
 
   test('populates automatic link text for each occurrence of internal xref', async () => {
@@ -1375,8 +1450,16 @@ The options listed in <<_generic_program_information>> should always be used by 
 
 -V, --version:: Output the version number of grep and exit.`
     const result = await convert(input)
-    assert.ok(result.includes('You can access this information using the options listed under Generic Program Information.'))
-    assert.ok(result.includes('The options listed in Generic Program Information should always be used by themselves.'))
+    assert.ok(
+      result.includes(
+        'You can access this information using the options listed under Generic Program Information.'
+      )
+    )
+    assert.ok(
+      result.includes(
+        'The options listed in Generic Program Information should always be used by themselves.'
+      )
+    )
   })
 
   test('uppercases reftext for level-1 section titles if reftext matches section title', async () => {
@@ -1394,7 +1477,9 @@ See <<_foo_bar>> section for details.
 
 Foo goes with bar, not baz.`
     const result = await convert(input)
-    assert.ok(result.includes('If you read nothing else, read the FOO BAR section.'))
+    assert.ok(
+      result.includes('If you read nothing else, read the FOO BAR section.')
+    )
     assert.ok(result.includes('See FOO BAR section for details.'))
   })
 })
@@ -1514,13 +1599,17 @@ go to \\c
 
 describe('Environment', () => {
   test('uses SOURCE_DATE_EPOCH as modified time of input file', async (t) => {
-    if (typeof process === 'undefined' || typeof process.env === 'undefined') return t.skip()
+    if (typeof process === 'undefined' || typeof process.env === 'undefined')
+      return t.skip()
     const oldSourceDateEpoch = process.env.SOURCE_DATE_EPOCH
     try {
       process.env.SOURCE_DATE_EPOCH = '1234123412'
       const result = await manpage(SAMPLE_MANPAGE_HEADER)
       assert.match(result, /Date: 2009-02-08/)
-      assert.match(result, /^\.TH "COMMAND" "1" "2009-02-08" "Command 1\.2\.3" "Command Manual"$/m)
+      assert.match(
+        result,
+        /^\.TH "COMMAND" "1" "2009-02-08" "Command 1\.2\.3" "Command Manual"$/m
+      )
     } finally {
       if (oldSourceDateEpoch === undefined) {
         delete process.env.SOURCE_DATE_EPOCH

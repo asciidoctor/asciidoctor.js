@@ -2,7 +2,11 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath, assertMessage } from './helpers.js'
-import { convertString, convertStringToEmbedded, blockFromString } from './harness.js'
+import {
+  convertString,
+  convertStringToEmbedded,
+  blockFromString,
+} from './harness.js'
 
 describe('Blocks', () => {
   let logger
@@ -29,7 +33,11 @@ ____
       assertCss(output, '.quoteblock > blockquote', 1)
       assertCss(output, '.quoteblock > blockquote > .paragraph > p', 1)
       assertCss(output, '.quoteblock > .attribution', 0)
-      assertXpath(output, '//*[@class="quoteblock"]//p[text()="A famous quote."]', 1)
+      assertXpath(
+        output,
+        '//*[@class="quoteblock"]//p[text()="A famous quote."]',
+        1
+      )
     })
 
     test('quote block with attribution', async () => {
@@ -46,7 +54,11 @@ ____
       assertCss(output, '.quoteblock > .attribution', 1)
       assertCss(output, '.quoteblock > .attribution > cite', 1)
       assertCss(output, '.quoteblock > .attribution > br + cite', 1)
-      assertXpath(output, '//*[@class="quoteblock"]/*[@class="attribution"]/cite[text()="Famous Book (1999)"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="quoteblock"]/*[@class="attribution"]/cite[text()="Famous Book (1999)"]',
+        1
+      )
       // TODO: needs DOM parser
       // const attribution = xmlnodes_at_xpath('//*[@class="quoteblock"]/*[@class="attribution"]', output, 1)
       // const author = attribution.children.first
@@ -92,7 +104,11 @@ ____
       assertCss(output, '.quoteblock', 1)
       assertCss(output, '.quoteblock > blockquote', 1)
       assertCss(output, '.quoteblock > blockquote > .paragraph', 1)
-      assertCss(output, '.quoteblock > blockquote > .paragraph + .admonitionblock', 1)
+      assertCss(
+        output,
+        '.quoteblock > blockquote > .paragraph + .admonitionblock',
+        1
+      )
     })
 
     test('quote block with attribution converted to DocBook', async () => {
@@ -107,7 +123,11 @@ ____
       assertCss(output, 'blockquote > simpara', 1)
       assertCss(output, 'blockquote > attribution', 1)
       assertCss(output, 'blockquote > attribution > citetitle', 1)
-      assertXpath(output, '//blockquote/attribution/citetitle[text()="Famous Book (1999)"]', 1)
+      assertXpath(
+        output,
+        '//blockquote/attribution/citetitle[text()="Famous Book (1999)"]',
+        1
+      )
       // TODO: needs DOM parser
       // const attribution = xmlnodes_at_xpath('//blockquote/attribution', output, 1)
       // const author = attribution.children.first
@@ -126,7 +146,11 @@ ____
       assertCss(output, 'epigraph > simpara', 1)
       assertCss(output, 'epigraph > attribution', 1)
       assertCss(output, 'epigraph > attribution > citetitle', 1)
-      assertXpath(output, '//epigraph/attribution/citetitle[text()="Famous Book (1999)"]', 1)
+      assertXpath(
+        output,
+        '//epigraph/attribution/citetitle[text()="Famous Book (1999)"]',
+        1
+      )
       // TODO: needs DOM parser
       // const attribution = xmlnodes_at_xpath('//epigraph/attribution', output, 1)
       // const author = attribution.children.first
@@ -143,7 +167,11 @@ ____
       assertCss(output, '.quoteblock > blockquote', 1)
       assertCss(output, '.quoteblock > blockquote > .paragraph > p', 1)
       assertCss(output, '.quoteblock > .attribution', 0)
-      assertXpath(output, `//*[@class="quoteblock"]//p[text()="A famous quote.\nSome more inspiring words."]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="quoteblock"]//p[text()="A famous quote.\nSome more inspiring words."]`,
+        1
+      )
     })
 
     test('lazy markdown-style quote block with single paragraph and no attribution', async () => {
@@ -156,7 +184,11 @@ Some more inspiring words.
       assertCss(output, '.quoteblock > blockquote', 1)
       assertCss(output, '.quoteblock > blockquote > .paragraph > p', 1)
       assertCss(output, '.quoteblock > .attribution', 0)
-      assertXpath(output, `//*[@class="quoteblock"]//p[text()="A famous quote.\nSome more inspiring words."]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="quoteblock"]//p[text()="A famous quote.\nSome more inspiring words."]`,
+        1
+      )
     })
 
     test('markdown-style quote block with multiple paragraphs and no attribution', async () => {
@@ -170,8 +202,16 @@ Some more inspiring words.
       assertCss(output, '.quoteblock > blockquote', 1)
       assertCss(output, '.quoteblock > blockquote > .paragraph > p', 2)
       assertCss(output, '.quoteblock > .attribution', 0)
-      assertXpath(output, `(//*[@class="quoteblock"]//p)[1][text()="A famous quote."]`, 1)
-      assertXpath(output, `(//*[@class="quoteblock"]//p)[2][text()="Some more inspiring words."]`, 1)
+      assertXpath(
+        output,
+        `(//*[@class="quoteblock"]//p)[1][text()="A famous quote."]`,
+        1
+      )
+      assertXpath(
+        output,
+        `(//*[@class="quoteblock"]//p)[2][text()="Some more inspiring words."]`,
+        1
+      )
     })
 
     test('markdown-style quote block with multiple blocks and no attribution', async () => {
@@ -186,8 +226,16 @@ Some more inspiring words.
       assertCss(output, '.quoteblock > blockquote > .paragraph > p', 1)
       assertCss(output, '.quoteblock > blockquote > .admonitionblock', 1)
       assertCss(output, '.quoteblock > .attribution', 0)
-      assertXpath(output, `(//*[@class="quoteblock"]//p)[1][text()="A famous quote."]`, 1)
-      assertXpath(output, `(//*[@class="quoteblock"]//*[@class="admonitionblock note"]//*[@class="content"])[1][normalize-space(text())="Some more inspiring words."]`, 1)
+      assertXpath(
+        output,
+        `(//*[@class="quoteblock"]//p)[1][text()="A famous quote."]`,
+        1
+      )
+      assertXpath(
+        output,
+        `(//*[@class="quoteblock"]//*[@class="admonitionblock note"]//*[@class="content"])[1][normalize-space(text())="Some more inspiring words."]`,
+        1
+      )
     })
 
     test('markdown-style quote block with single paragraph and attribution', async () => {
@@ -200,11 +248,19 @@ Some more inspiring words.
       assertCss(output, '.quoteblock', 1)
       assertCss(output, '.quoteblock > blockquote', 1)
       assertCss(output, '.quoteblock > blockquote > .paragraph > p', 1)
-      assertXpath(output, `//*[@class="quoteblock"]//p[text()="A famous quote.\nSome more inspiring words."]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="quoteblock"]//p[text()="A famous quote.\nSome more inspiring words."]`,
+        1
+      )
       assertCss(output, '.quoteblock > .attribution', 1)
       assertCss(output, '.quoteblock > .attribution > cite', 1)
       assertCss(output, '.quoteblock > .attribution > br + cite', 1)
-      assertXpath(output, '//*[@class="quoteblock"]/*[@class="attribution"]/cite[text()="Famous Source, Volume 1 (1999)"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="quoteblock"]/*[@class="attribution"]/cite[text()="Famous Source, Volume 1 (1999)"]',
+        1
+      )
       // TODO: needs DOM parser
       // const attribution = xmlnodes_at_xpath('//*[@class="quoteblock"]/*[@class="attribution"]', output, 1)
       // const author = attribution.children.first
@@ -218,7 +274,11 @@ Some more inspiring words.
       assertCss(output, '.quoteblock > blockquote', 1)
       assertCss(output, '.quoteblock > blockquote > *', 0)
       assertCss(output, '.quoteblock > .attribution', 1)
-      assertXpath(output, `//*[@class="quoteblock"]//*[@class="attribution"][contains(text(),"Anonymous")]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="quoteblock"]//*[@class="attribution"][contains(text(),"Anonymous")]`,
+        1
+      )
     })
 
     test('should parse credit line in markdown-style quote block like positional block attributes', async () => {
@@ -229,7 +289,11 @@ Some more inspiring words.
 `
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.quoteblock', 1)
-      assertCss(output, '.quoteblock cite a[href="https://jeffersonpapers.princeton.edu/selected-documents/james-madison-1"]', 1)
+      assertCss(
+        output,
+        '.quoteblock cite a[href="https://jeffersonpapers.princeton.edu/selected-documents/james-madison-1"]',
+        1
+      )
     })
 
     test('quoted paragraph-style quote block with attribution', async () => {
@@ -241,11 +305,19 @@ Some more inspiring words."
       const output = await convertString(input)
       assertCss(output, '.quoteblock', 1)
       assertCss(output, '.quoteblock > blockquote', 1)
-      assertXpath(output, `//*[@class="quoteblock"]/blockquote[normalize-space(text())="A famous quote. Some more inspiring words."]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="quoteblock"]/blockquote[normalize-space(text())="A famous quote. Some more inspiring words."]`,
+        1
+      )
       assertCss(output, '.quoteblock > .attribution', 1)
       assertCss(output, '.quoteblock > .attribution > cite', 1)
       assertCss(output, '.quoteblock > .attribution > br + cite', 1)
-      assertXpath(output, '//*[@class="quoteblock"]/*[@class="attribution"]/cite[text()="Famous Source, Volume 1 (1999)"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="quoteblock"]/*[@class="attribution"]/cite[text()="Famous Source, Volume 1 (1999)"]',
+        1
+      )
       // TODO: needs DOM parser
       // const attribution = xmlnodes_at_xpath('//*[@class="quoteblock"]/*[@class="attribution"]', output, 1)
       // const author = attribution.children.first
@@ -260,7 +332,11 @@ and as necessary in the political world as storms in the physical."
 `
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.quoteblock', 1)
-      assertCss(output, '.quoteblock cite a[href="https://jeffersonpapers.princeton.edu/selected-documents/james-madison-1"]', 1)
+      assertCss(
+        output,
+        '.quoteblock cite a[href="https://jeffersonpapers.princeton.edu/selected-documents/james-madison-1"]',
+        1
+      )
     })
 
     test('single-line verse block without attribution', async () => {
@@ -275,7 +351,11 @@ ____
       assertCss(output, '.verseblock > pre', 1)
       assertCss(output, '.verseblock > .attribution', 0)
       assertCss(output, '.verseblock p', 0)
-      assertXpath(output, '//*[@class="verseblock"]/pre[normalize-space(text())="A famous verse."]', 1)
+      assertXpath(
+        output,
+        '//*[@class="verseblock"]/pre[normalize-space(text())="A famous verse."]',
+        1
+      )
     })
 
     test('single-line verse block with attribution', async () => {
@@ -292,7 +372,11 @@ ____
       assertCss(output, '.verseblock > .attribution', 1)
       assertCss(output, '.verseblock > .attribution > cite', 1)
       assertCss(output, '.verseblock > .attribution > br + cite', 1)
-      assertXpath(output, '//*[@class="verseblock"]/*[@class="attribution"]/cite[text()="Famous Poem"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="verseblock"]/*[@class="attribution"]/cite[text()="Famous Poem"]',
+        1
+      )
       // TODO: needs DOM parser
       // const attribution = xmlnodes_at_xpath('//*[@class="verseblock"]/*[@class="attribution"]', output, 1)
       // const author = attribution.children.first
@@ -312,7 +396,11 @@ ____
       assertCss(output, 'blockquote > literallayout', 1)
       assertCss(output, 'blockquote > attribution', 1)
       assertCss(output, 'blockquote > attribution > citetitle', 1)
-      assertXpath(output, '//blockquote/attribution/citetitle[text()="Famous Poem"]', 1)
+      assertXpath(
+        output,
+        '//blockquote/attribution/citetitle[text()="Famous Poem"]',
+        1
+      )
       // TODO: needs DOM parser
       // const attribution = xmlnodes_at_xpath('//blockquote/attribution', output, 1)
       // const author = attribution.children.first
@@ -332,7 +420,11 @@ ____
       assertCss(output, 'epigraph > literallayout', 1)
       assertCss(output, 'epigraph > attribution', 1)
       assertCss(output, 'epigraph > attribution > citetitle', 1)
-      assertXpath(output, '//epigraph/attribution/citetitle[text()="Famous Poem"]', 1)
+      assertXpath(
+        output,
+        '//epigraph/attribution/citetitle[text()="Famous Poem"]',
+        1
+      )
       // TODO: needs DOM parser
       // const attribution = xmlnodes_at_xpath('//epigraph/attribution', output, 1)
       // const author = attribution.children.first
@@ -352,8 +444,16 @@ ____
       assertXpath(output, '//*[@class="verseblock"]', 1)
       assertXpath(output, '//*[@class="verseblock"]/pre', 1)
       assertXpath(output, '//*[@class="verseblock"]//p', 0)
-      assertXpath(output, '//*[@class="verseblock"]/pre[contains(text(), "A famous verse.")]', 1)
-      assertXpath(output, '//*[@class="verseblock"]/pre[contains(text(), "Stanza two.")]', 1)
+      assertXpath(
+        output,
+        '//*[@class="verseblock"]/pre[contains(text(), "A famous verse.")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="verseblock"]/pre[contains(text(), "Stanza two.")]',
+        1
+      )
     })
 
     test('verse block does not contain block elements', async () => {
@@ -406,7 +506,11 @@ _GET /groups/link:#group-id[\\{group-id\\}]_
 ____
 `
       const output = await convertStringToEmbedded(input)
-      assert.ok(output.includes('<pre class="content"><em>GET /groups/<a href="#group-id">{group-id}</a></em></pre>'))
+      assert.ok(
+        output.includes(
+          '<pre class="content"><em>GET /groups/<a href="#group-id">{group-id}</a></em></pre>'
+        )
+      )
     })
   })
 })

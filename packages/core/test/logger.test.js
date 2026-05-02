@@ -4,7 +4,14 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { LoggerManager, MemoryLogger, NullLogger, Timings, Extensions, convert } from '../src/index.js'
+import {
+  LoggerManager,
+  MemoryLogger,
+  NullLogger,
+  Timings,
+  Extensions,
+  convert,
+} from '../src/index.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -33,7 +40,10 @@ describe('Logger', () => {
       await convert(PART_WITH_NO_SECTION)
       const errorMessage = memoryLogger.getMessages()[0]
       assert.equal(errorMessage.getSeverity(), 'ERROR')
-      assert.equal(errorMessage.getText(), 'invalid part, must have at least one section (e.g., chapter, appendix, etc.)')
+      assert.equal(
+        errorMessage.getText(),
+        'invalid part, must have at least one section (e.g., chapter, appendix, etc.)'
+      )
       const sourceLocation = errorMessage.getSourceLocation()
       assert.equal(sourceLocation.getLineNumber(), 8)
       assert.equal(sourceLocation.getFile(), undefined)
@@ -71,15 +81,25 @@ describe('Logger', () => {
   test('should use the default formatter', async () => {
     const defaultLogger = LoggerManager.getLogger()
     const defaultFormatter = defaultLogger.getFormatter()
-    const canInterceptStderr = typeof process !== 'undefined' && typeof process.stderr?.write === 'function'
-    const processStderrWriteFunction = canInterceptStderr ? process.stderr.write : null
+    const canInterceptStderr =
+      typeof process !== 'undefined' &&
+      typeof process.stderr?.write === 'function'
+    const processStderrWriteFunction = canInterceptStderr
+      ? process.stderr.write
+      : null
     let stderrOutput = ''
     if (canInterceptStderr) {
-      process.stderr.write = function (chunk) { stderrOutput += chunk }
+      process.stderr.write = function (chunk) {
+        stderrOutput += chunk
+      }
     }
     try {
       await convert(PART_WITH_NO_SECTION)
-      if (canInterceptStderr) assert.equal(stderrOutput, 'asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n')
+      if (canInterceptStderr)
+        assert.equal(
+          stderrOutput,
+          'asciidoctor: ERROR: <stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)\n'
+        )
     } finally {
       defaultLogger.setFormatter(defaultFormatter)
       if (canInterceptStderr) process.stderr.write = processStderrWriteFunction
@@ -89,32 +109,48 @@ describe('Logger', () => {
   test('should be able to use a JSON formatter', async () => {
     const defaultLogger = LoggerManager.getLogger()
     const defaultFormatter = defaultLogger.getFormatter()
-    const canInterceptStderr = typeof process !== 'undefined' && typeof process.stderr?.write === 'function'
-    const processStderrWriteFunction = canInterceptStderr ? process.stderr.write : null
+    const canInterceptStderr =
+      typeof process !== 'undefined' &&
+      typeof process.stderr?.write === 'function'
+    const processStderrWriteFunction = canInterceptStderr
+      ? process.stderr.write
+      : null
     let stderrOutput = ''
     if (canInterceptStderr) {
-      process.stderr.write = function (chunk) { stderrOutput += chunk }
+      process.stderr.write = function (chunk) {
+        stderrOutput += chunk
+      }
     }
     try {
-      defaultLogger.setFormatter(LoggerManager.newFormatter('JsonFormatter', {
-        call: function (severity, time, programName, message) {
-          const text = message.text
-          const sourceLocation = message.source_location
-          return JSON.stringify({
-            programName,
-            message: text,
-            sourceLocation: {
-              lineNumber: sourceLocation.getLineNumber(),
-              path: sourceLocation.getPath()
-            },
-            severity
-          }) + '\n'
-        }
-      }))
+      defaultLogger.setFormatter(
+        LoggerManager.newFormatter('JsonFormatter', {
+          call: function (severity, time, programName, message) {
+            const text = message.text
+            const sourceLocation = message.source_location
+            return (
+              JSON.stringify({
+                programName,
+                message: text,
+                sourceLocation: {
+                  lineNumber: sourceLocation.getLineNumber(),
+                  path: sourceLocation.getPath(),
+                },
+                severity,
+              }) + '\n'
+            )
+          },
+        })
+      )
       await convert(PART_WITH_NO_SECTION)
       if (canInterceptStderr) {
-        assert.equal(stderrOutput, '{"programName":"asciidoctor","message":"invalid part, must have at least one section (e.g., chapter, appendix, etc.)","sourceLocation":{"lineNumber":8,"path":"<stdin>"},"severity":"ERROR"}\n')
-        assert.equal(JSON.parse(stderrOutput).message, 'invalid part, must have at least one section (e.g., chapter, appendix, etc.)')
+        assert.equal(
+          stderrOutput,
+          '{"programName":"asciidoctor","message":"invalid part, must have at least one section (e.g., chapter, appendix, etc.)","sourceLocation":{"lineNumber":8,"path":"<stdin>"},"severity":"ERROR"}\n'
+        )
+        assert.equal(
+          JSON.parse(stderrOutput).message,
+          'invalid part, must have at least one section (e.g., chapter, appendix, etc.)'
+        )
       }
     } finally {
       defaultLogger.setFormatter(defaultFormatter)
@@ -125,11 +161,15 @@ describe('Logger', () => {
   test('should not log anything when NullLogger is used', async () => {
     const defaultLogger = LoggerManager.getLogger()
     const nullLogger = NullLogger.create()
-    const canInterceptStderr = typeof process !== 'undefined' && typeof process.stderr?.write === 'function'
+    const canInterceptStderr =
+      typeof process !== 'undefined' &&
+      typeof process.stderr?.write === 'function'
     const stderrWriteFunction = canInterceptStderr ? process.stderr.write : null
     let stderrOutput = ''
     if (canInterceptStderr) {
-      process.stderr.write = function (chunk) { stderrOutput += chunk }
+      process.stderr.write = function (chunk) {
+        stderrOutput += chunk
+      }
     }
     try {
       LoggerManager.setLogger(nullLogger)
@@ -154,9 +194,14 @@ describe('Logger', () => {
         this.writer = fs.createWriteStream(logFile, { flags: 'a' })
       },
       add: function (severity, message, _progname) {
-        const log = this.formatter.call(severity, new Date(), this.progname, message)
+        const log = this.formatter.call(
+          severity,
+          new Date(),
+          this.progname,
+          message
+        )
         this.writer.write(log)
-      }
+      },
     })
 
     try {
@@ -194,7 +239,12 @@ describe('Logger', () => {
       self.process(function (parent, reader) {
         const lines = reader.getLines()
         if (lines.length === 0) {
-          reader.getLogger().log('warn', reader.createLogMessage('plantuml block is empty', { source_location: reader.getCursor() }))
+          reader.getLogger().log(
+            'warn',
+            reader.createLogMessage('plantuml block is empty', {
+              source_location: reader.getCursor(),
+            })
+          )
           reader.getLogger().fatal('game over')
         }
       })
@@ -238,7 +288,7 @@ describe('Logger', () => {
     const customLogger = LoggerManager.newLogger('CustomLogger', {
       add: function (severity, message, progname) {
         logs.push({ severity, message: message || progname })
-      }
+      },
     })
     customLogger.error('hello')
     const errorMessage = logs[0]
@@ -251,7 +301,7 @@ describe('Logger', () => {
     const customLogger = LoggerManager.newLogger('CustomLogger', {
       add: function (severity, message, progname) {
         logs.push({ severity, message, progname })
-      }
+      },
     })
     customLogger.add('error', 'hi', 'asciidoctor.js')
     const errorMessage = logs[0]
@@ -269,7 +319,7 @@ describe('Logger', () => {
         } else {
           messages.push(message)
         }
-      }
+      },
     })
     const defaultLogger = LoggerManager.getLogger()
     try {
@@ -277,13 +327,17 @@ describe('Logger', () => {
       memoryLogger.add('error', 'before', 'asciidoctor.js')
       await convert('Hello, {name}!', {
         attributes: {
-          'attribute-missing': 'drop-line'
-        }
+          'attribute-missing': 'drop-line',
+        },
       })
       memoryLogger.add('error', 'after', 'asciidoctor.js')
       assert.equal(messages.length, 3)
       assert.ok(messages.includes('before'))
-      assert.ok(messages.includes('dropping line containing reference to missing attribute: name'))
+      assert.ok(
+        messages.includes(
+          'dropping line containing reference to missing attribute: name'
+        )
+      )
       assert.ok(messages.includes('after'))
     } finally {
       LoggerManager.setLogger(defaultLogger)

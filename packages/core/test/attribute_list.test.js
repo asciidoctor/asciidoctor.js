@@ -5,11 +5,11 @@ import { AttributeList } from '../src/attribute_list.js'
 
 // Helper: creates a minimal document stub for tests that require apply_subs behaviour.
 // By default, applySubs should not be called (override as needed in individual tests).
-function emptyDocument (opts = {}) {
+function emptyDocument(opts = {}) {
   const attributes = opts.attributes ?? {}
   return {
     attributes,
-    applySubs (_) {
+    applySubs(_) {
       throw new Error('applySubs should not be called')
     },
   }
@@ -205,7 +205,7 @@ describe('AttributeList', () => {
 
   test('collect named attributes quoted', async () => {
     const attributes = {}
-    const line = "first='value', second=\"value two\", third=three"
+    const line = 'first=\'value\', second="value two", third=three'
     const expected = { first: 'value', second: 'value two', third: 'three' }
     await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
@@ -213,7 +213,8 @@ describe('AttributeList', () => {
 
   test('collect named attributes quoted containing non-semantic spaces', async () => {
     const attributes = {}
-    const line = "     first    =     'value', second     =\"value two\"     , third=       three      "
+    const line =
+      '     first    =     \'value\', second     ="value two"     , third=       three      '
     const expected = { first: 'value', second: 'value two', third: 'three' }
     await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
@@ -222,7 +223,12 @@ describe('AttributeList', () => {
   test('collect mixed named and unnamed attributes', async () => {
     const attributes = {}
     const line = 'first, second="value two", third=three, Sherlock Holmes'
-    const expected = { 1: 'first', second: 'value two', third: 'three', 4: 'Sherlock Holmes' }
+    const expected = {
+      1: 'first',
+      second: 'value two',
+      third: 'three',
+      4: 'Sherlock Holmes',
+    }
     await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
@@ -238,7 +244,12 @@ describe('AttributeList', () => {
   test('collect options attribute', async () => {
     const attributes = {}
     const line = "quote, options='opt1,,opt2 , opt3'"
-    const expected = { 1: 'quote', 'opt1-option': '', 'opt2-option': '', 'opt3-option': '' }
+    const expected = {
+      1: 'quote',
+      'opt1-option': '',
+      'opt2-option': '',
+      'opt3-option': '',
+    }
     await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
@@ -246,7 +257,12 @@ describe('AttributeList', () => {
   test('collect opts attribute as options', async () => {
     const attributes = {}
     const line = "quote, opts='opt1,,opt2 , opt3'"
-    const expected = { 1: 'quote', 'opt1-option': '', 'opt2-option': '', 'opt3-option': '' }
+    const expected = {
+      1: 'quote',
+      'opt1-option': '',
+      'opt2-option': '',
+      'opt3-option': '',
+    }
     await new AttributeList(line).parseInto(attributes)
     assert.deepEqual(attributes, expected)
   })
@@ -262,7 +278,15 @@ describe('AttributeList', () => {
   test('collect and rekey unnamed attributes', async () => {
     const attributes = {}
     const line = 'first, second one, third, fourth'
-    const expected = { 1: 'first', 2: 'second one', 3: 'third', 4: 'fourth', a: 'first', b: 'second one', c: 'third' }
+    const expected = {
+      1: 'first',
+      2: 'second one',
+      3: 'third',
+      4: 'fourth',
+      a: 'first',
+      b: 'second one',
+      c: 'third',
+    }
     await new AttributeList(line).parseInto(attributes, ['a', 'b', 'c'])
     assert.deepEqual(attributes, expected)
   })
@@ -270,14 +294,29 @@ describe('AttributeList', () => {
   test('do not assign nil to attribute mapped to missing positional attribute', async () => {
     const attributes = {}
     const line = 'alt text,,100'
-    const expected = { 1: 'alt text', 2: null, 3: '100', alt: 'alt text', height: '100' }
-    await new AttributeList(line).parseInto(attributes, ['alt', 'width', 'height'])
+    const expected = {
+      1: 'alt text',
+      2: null,
+      3: '100',
+      alt: 'alt text',
+      height: '100',
+    }
+    await new AttributeList(line).parseInto(attributes, [
+      'alt',
+      'width',
+      'height',
+    ])
     assert.deepEqual(attributes, expected)
   })
 
   test('rekey positional attributes', () => {
     const attributes = { 1: 'source', 2: 'java' }
-    const expected = { 1: 'source', 2: 'java', style: 'source', language: 'java' }
+    const expected = {
+      1: 'source',
+      2: 'java',
+      style: 'source',
+      language: 'java',
+    }
     AttributeList.rekey(attributes, ['style', 'language', 'linenums'])
     assert.deepEqual(attributes, expected)
   })

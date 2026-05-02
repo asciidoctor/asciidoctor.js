@@ -1,6 +1,6 @@
 let assetUriScheme
 module.exports = {
-  getAssetUriScheme (document) {
+  getAssetUriScheme(document) {
     if (assetUriScheme) {
       return assetUriScheme
     }
@@ -12,7 +12,7 @@ module.exports = {
     }
     return assetUriScheme
   },
-  getLocalAttribute (node, name, defaultValue) {
+  getLocalAttribute(node, name, defaultValue) {
     return node.getAttribute(name, defaultValue, false)
-  }
+  },
 }

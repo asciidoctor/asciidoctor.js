@@ -4,8 +4,20 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { assertXpath, assertCss, assertMessage, assertMessages, usingMemoryLogger, decodeChar } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
+import {
+  assertXpath,
+  assertCss,
+  assertMessage,
+  assertMessages,
+  usingMemoryLogger,
+  decodeChar,
+} from './helpers.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+  blockFromString,
+} from './harness.js'
 
 // ── Sections › Substitutions ──────────────────────────────────────────────────
 
@@ -46,7 +58,11 @@ content`
       await usingMemoryLogger(async (logger) => {
         const result = await convertStringToEmbedded(input)
         assertXpath(result, '//h4[text()="Nested Section"]', 1)
-        assertMessage(logger, 'WARN', '<stdin>: line 5: section title out of sequence: expected level 2, got level 3')
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 5: section title out of sequence: expected level 2, got level 3'
+        )
       })
     })
 
@@ -60,7 +76,11 @@ content`
       await usingMemoryLogger(async (logger) => {
         const result = await convertStringToEmbedded(input)
         assertXpath(result, '//h3[text()="Not a Chapter"]', 1)
-        assertMessage(logger, 'WARN', '<stdin>: line 4: section title out of sequence: expected levels 0 or 1, got level 2')
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 4: section title out of sequence: expected levels 0 or 1, got level 2'
+        )
       })
     })
 
@@ -84,7 +104,11 @@ content`
 ===== Nested Section`
       await usingMemoryLogger(async (logger) => {
         await convertStringToEmbedded(input, { attributes: { fragment: '' } })
-        assertMessage(logger, 'WARN', '<stdin>: line 5: section title out of sequence: expected level 3, got level 4')
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 5: section title out of sequence: expected level 3, got level 4'
+        )
       })
     })
 
@@ -120,8 +144,14 @@ not allowed`
       await usingMemoryLogger(async (logger) => {
         await convertStringToEmbedded(input)
         assertMessages(logger, [
-          ['ERROR', '<stdin>: line 19: glossary sections do not support nested sections'],
-          ['ERROR', '<stdin>: line 26: bibliography sections do not support nested sections'],
+          [
+            'ERROR',
+            '<stdin>: line 19: glossary sections do not support nested sections',
+          ],
+          [
+            'ERROR',
+            '<stdin>: line 26: bibliography sections do not support nested sections',
+          ],
         ])
       })
     })
@@ -189,10 +219,22 @@ not allowed`
       await usingMemoryLogger(async (logger) => {
         await convertStringToEmbedded(input)
         assertMessages(logger, [
-          ['ERROR', '<stdin>: line 14: colophon sections do not support nested sections'],
-          ['ERROR', '<stdin>: line 21: dedication sections do not support nested sections'],
-          ['ERROR', '<stdin>: line 50: glossary sections do not support nested sections'],
-          ['ERROR', '<stdin>: line 57: bibliography sections do not support nested sections'],
+          [
+            'ERROR',
+            '<stdin>: line 14: colophon sections do not support nested sections',
+          ],
+          [
+            'ERROR',
+            '<stdin>: line 21: dedication sections do not support nested sections',
+          ],
+          [
+            'ERROR',
+            '<stdin>: line 50: glossary sections do not support nested sections',
+          ],
+          [
+            'ERROR',
+            '<stdin>: line 57: bibliography sections do not support nested sections',
+          ],
         ])
       })
     })
@@ -245,10 +287,18 @@ not in section`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/h1[@id="_independent_heading"]', 1)
       assertXpath(output, '/h1[@class="float"]', 1)
-      assertXpath(output, '/h1[@class="float"][text()="Independent Heading!"]', 1)
+      assertXpath(
+        output,
+        '/h1[@class="float"][text()="Independent Heading!"]',
+        1
+      )
       assertXpath(output, '/h1/following-sibling::*[@class="paragraph"]', 1)
       assertXpath(output, '/h1/following-sibling::*[@class="paragraph"]/p', 1)
-      assertXpath(output, '/h1/following-sibling::*[@class="paragraph"]/p[text()="not in section"]', 1)
+      assertXpath(
+        output,
+        '/h1/following-sibling::*[@class="paragraph"]/p[text()="not in section"]',
+        1
+      )
     })
 
     test('should create discrete heading instead of section if style is discrete', async () => {
@@ -260,10 +310,18 @@ not in section`
       assertXpath(output, '/h3', 1)
       assertXpath(output, '/h3[@id="_independent_heading"]', 1)
       assertXpath(output, '/h3[@class="discrete"]', 1)
-      assertXpath(output, '/h3[@class="discrete"][text()="Independent Heading!"]', 1)
+      assertXpath(
+        output,
+        '/h3[@class="discrete"][text()="Independent Heading!"]',
+        1
+      )
       assertXpath(output, '/h3/following-sibling::*[@class="paragraph"]', 1)
       assertXpath(output, '/h3/following-sibling::*[@class="paragraph"]/p', 1)
-      assertXpath(output, '/h3/following-sibling::*[@class="paragraph"]/p[text()="not in section"]', 1)
+      assertXpath(
+        output,
+        '/h3/following-sibling::*[@class="paragraph"]/p[text()="not in section"]',
+        1
+      )
     })
 
     test('should generate id for discrete heading from converted title', async () => {
@@ -274,7 +332,11 @@ not in section`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/h3', 1)
       assertXpath(output, '/h3[@class="discrete"][@id="_heading"]', 1)
-      assertXpath(output, '/h3[@class="discrete"][@id="_heading"][text()=" Heading "]', 1)
+      assertXpath(
+        output,
+        '/h3[@class="discrete"][@id="_heading"][text()=" Heading "]',
+        1
+      )
     })
 
     test('should create discrete heading if style is float with shorthand role and id', async () => {
@@ -285,10 +347,18 @@ not in section`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/h1[@id="first"]', 1)
       assertXpath(output, '/h1[@class="float independent"]', 1)
-      assertXpath(output, '/h1[@class="float independent"][text()="Independent Heading!"]', 1)
+      assertXpath(
+        output,
+        '/h1[@class="float independent"][text()="Independent Heading!"]',
+        1
+      )
       assertXpath(output, '/h1/following-sibling::*[@class="paragraph"]', 1)
       assertXpath(output, '/h1/following-sibling::*[@class="paragraph"]/p', 1)
-      assertXpath(output, '/h1/following-sibling::*[@class="paragraph"]/p[text()="not in section"]', 1)
+      assertXpath(
+        output,
+        '/h1/following-sibling::*[@class="paragraph"]/p[text()="not in section"]',
+        1
+      )
     })
 
     test('should create discrete heading if style is discrete with shorthand role and id', async () => {
@@ -299,10 +369,18 @@ not in section`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/h1[@id="first"]', 1)
       assertXpath(output, '/h1[@class="discrete independent"]', 1)
-      assertXpath(output, '/h1[@class="discrete independent"][text()="Independent Heading!"]', 1)
+      assertXpath(
+        output,
+        '/h1[@class="discrete independent"][text()="Independent Heading!"]',
+        1
+      )
       assertXpath(output, '/h1/following-sibling::*[@class="paragraph"]', 1)
       assertXpath(output, '/h1/following-sibling::*[@class="paragraph"]/p', 1)
-      assertXpath(output, '/h1/following-sibling::*[@class="paragraph"]/p[text()="not in section"]', 1)
+      assertXpath(
+        output,
+        '/h1/following-sibling::*[@class="paragraph"]/p[text()="not in section"]',
+        1
+      )
     })
 
     test('discrete heading should be a block with context floating_title', async () => {
@@ -359,7 +437,9 @@ not in section`
 === Independent Heading!
 
 not in section`
-      const output = await convertStringToEmbedded(input, { attributes: { sectids: null } })
+      const output = await convertStringToEmbedded(input, {
+        attributes: { sectids: null },
+      })
       assertXpath(output, '/h3', 1)
       assertXpath(output, '/h3[@id="_independent_heading"]', 0)
       assertXpath(output, '/h3[@class="float"]', 1)
@@ -396,7 +476,9 @@ not in section`
       const doc = await documentFromString(input)
       const heading = doc.blocks[0]
       assert.equal(heading.title, 'Independent Heading!')
-      assert.ok(!Object.prototype.hasOwnProperty.call(heading.attributes, 'title'))
+      assert.ok(
+        !Object.prototype.hasOwnProperty.call(heading.attributes, 'title')
+      )
     })
 
     test('should use specified id and reftext when registering discrete section reference', async () => {

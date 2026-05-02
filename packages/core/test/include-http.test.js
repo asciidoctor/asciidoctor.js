@@ -9,14 +9,30 @@ import { startServer } from './http-server.js'
 
 const convert = async (input, opts = {}) => (await load(input, opts)).convert()
 
-const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'http')
+const FIXTURES_DIR = join(
+  dirname(fileURLToPath(import.meta.url)),
+  'fixtures',
+  'http'
+)
 
-function buildRoutes (baseUri) {
+function buildRoutes(baseUri) {
   const routes = new Map()
-  routes.set('/foo.adoc', { contentType: 'text/plain; charset=utf-8', body: readFileSync(join(FIXTURES_DIR, 'foo.adoc'), 'utf8') })
-  routes.set('/include-tag.adoc', { contentType: 'text/plain; charset=utf-8', body: readFileSync(join(FIXTURES_DIR, 'include-tag.adoc'), 'utf8') })
-  routes.set('/include-lines.adoc', { contentType: 'text/plain; charset=utf-8', body: readFileSync(join(FIXTURES_DIR, 'include-lines.adoc'), 'utf8') })
-  routes.set('/dir/bar.adoc', { contentType: 'text/plain; charset=utf-8', body: readFileSync(join(FIXTURES_DIR, 'dir', 'bar.adoc'), 'utf8') })
+  routes.set('/foo.adoc', {
+    contentType: 'text/plain; charset=utf-8',
+    body: readFileSync(join(FIXTURES_DIR, 'foo.adoc'), 'utf8'),
+  })
+  routes.set('/include-tag.adoc', {
+    contentType: 'text/plain; charset=utf-8',
+    body: readFileSync(join(FIXTURES_DIR, 'include-tag.adoc'), 'utf8'),
+  })
+  routes.set('/include-lines.adoc', {
+    contentType: 'text/plain; charset=utf-8',
+    body: readFileSync(join(FIXTURES_DIR, 'include-lines.adoc'), 'utf8'),
+  })
+  routes.set('/dir/bar.adoc', {
+    contentType: 'text/plain; charset=utf-8',
+    body: readFileSync(join(FIXTURES_DIR, 'dir', 'bar.adoc'), 'utf8'),
+  })
   return routes
 }
 
@@ -74,28 +90,55 @@ describe('Include http URI', () => {
   })
 
   test('should partially include file via http URI using lines', async () => {
-    const html12 = await convert(`include::${baseUri}/include-lines.adoc[lines=1..2]`, {
-      safe: 'safe',
-      attributes: { 'allow-uri-read': true },
-    })
-    assert.ok(html12.includes('First line'), `Expected "First line" in:\n${html12}`)
-    assert.ok(html12.includes('Second line'), `Expected "Second line" in:\n${html12}`)
-    assert.ok(!html12.includes('Third line'), `Expected no "Third line" in:\n${html12}`)
+    const html12 = await convert(
+      `include::${baseUri}/include-lines.adoc[lines=1..2]`,
+      {
+        safe: 'safe',
+        attributes: { 'allow-uri-read': true },
+      }
+    )
+    assert.ok(
+      html12.includes('First line'),
+      `Expected "First line" in:\n${html12}`
+    )
+    assert.ok(
+      html12.includes('Second line'),
+      `Expected "Second line" in:\n${html12}`
+    )
+    assert.ok(
+      !html12.includes('Third line'),
+      `Expected no "Third line" in:\n${html12}`
+    )
 
-    const html34 = await convert(`include::${baseUri}/include-lines.adoc[lines=3..4]`, {
-      safe: 'safe',
-      attributes: { 'allow-uri-read': true },
-    })
-    assert.ok(html34.includes('Third line'), `Expected "Third line" in:\n${html34}`)
-    assert.ok(html34.includes('Fourth line'), `Expected "Fourth line" in:\n${html34}`)
-    assert.ok(!html34.includes('First line'), `Expected no "First line" in:\n${html34}`)
+    const html34 = await convert(
+      `include::${baseUri}/include-lines.adoc[lines=3..4]`,
+      {
+        safe: 'safe',
+        attributes: { 'allow-uri-read': true },
+      }
+    )
+    assert.ok(
+      html34.includes('Third line'),
+      `Expected "Third line" in:\n${html34}`
+    )
+    assert.ok(
+      html34.includes('Fourth line'),
+      `Expected "Fourth line" in:\n${html34}`
+    )
+    assert.ok(
+      !html34.includes('First line'),
+      `Expected no "First line" in:\n${html34}`
+    )
   })
 
   test('should not include URI when allow-uri-read is not set', async () => {
     const html = await convert(`include::${baseUri}/foo.adoc[]`, {
       safe: 'safe',
     })
-    assert.ok(!html.includes('Foo'), `Expected URI content not included when allow-uri-read is disabled:\n${html}`)
+    assert.ok(
+      !html.includes('Foo'),
+      `Expected URI content not included when allow-uri-read is disabled:\n${html}`
+    )
   })
 
   test('should log error when http URI returns 404', async () => {
@@ -103,6 +146,9 @@ describe('Include http URI', () => {
       safe: 'safe',
       attributes: { 'allow-uri-read': true },
     })
-    assert.ok(html.includes('Unresolved directive'), `Expected unresolved directive warning in:\n${html}`)
+    assert.ok(
+      html.includes('Unresolved directive'),
+      `Expected unresolved directive warning in:\n${html}`
+    )
   })
 })

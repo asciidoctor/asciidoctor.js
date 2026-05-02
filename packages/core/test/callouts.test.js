@@ -75,7 +75,8 @@ describe('Callouts', () => {
   })
 
   test('convert should populate the callouts', async () => {
-    const doc = await load(`
+    const doc = await load(
+      `
 [source,javascript]
 ----
 import { load } from '@asciidoctor/core' // <1>
@@ -85,7 +86,9 @@ await doc.convert() // <3>
 ----
 <1> import the load function
 <2> load the document
-<3> convert the document`, { safe: 'safe', catalog_assets: true })
+<3> convert the document`,
+      { safe: 'safe', catalog_assets: true }
+    )
     await doc.convert()
     const callouts = doc.getCallouts()
     assert.equal(callouts.getLists()[0].length, 3)

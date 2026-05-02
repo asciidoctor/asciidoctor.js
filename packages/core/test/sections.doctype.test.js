@@ -4,8 +4,17 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { assertXpath, assertCss, assertMessage, usingMemoryLogger } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded } from './harness.js'
+import {
+  assertXpath,
+  assertCss,
+  assertMessage,
+  usingMemoryLogger,
+} from './helpers.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+} from './harness.js'
 
 // ── Sections › heading patterns in blocks ────────────────────────────────────
 
@@ -48,7 +57,11 @@ preamble
 This should be a tip, not a heading.
 ====`
       const output = await convertString(input)
-      assertXpath(output, '//*[@class="admonitionblock tip"]//p[text() = "This should be a tip, not a heading."]', 1)
+      assertXpath(
+        output,
+        '//*[@class="admonitionblock tip"]//p[text() = "This should be a tip, not a heading."]',
+        1
+      )
     })
 
     test('should not match a heading in a description list', async () => {
@@ -100,7 +113,11 @@ fin.`
 ====`
       const output = await convertString(input)
       assertXpath(output, '//h2', 0)
-      assertXpath(output, '//*[@class="exampleblock"]//p[text() = "== not a heading"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="exampleblock"]//p[text() = "== not a heading"]',
+        1
+      )
     })
   })
 
@@ -141,8 +158,16 @@ That's all she wrote!`
       assertXpath(output, '/article/section[1]/title[text() = "Section 1"]', 1)
       assertXpath(output, '/article/section[2]/title[text() = "Section 2"]', 1)
       assertXpath(output, '/article/section/section', 4)
-      assertXpath(output, '/article/section[1]/section[1]/title[text() = "Subsection One"]', 1)
-      assertXpath(output, '/article/section[2]/section[1]/title[text() = "Subsection Three"]', 1)
+      assertXpath(
+        output,
+        '/article/section[1]/section[1]/title[text() = "Subsection One"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/article/section[2]/section[1]/title[text() = "Subsection Three"]',
+        1
+      )
     })
   })
 
@@ -187,7 +212,11 @@ That's all she wrote!`
       assertCss(output, '#content h2', 3)
       assertXpath(output, '//h1[@id="_chapter_one"][text() = "Chapter One"]', 1)
       assertXpath(output, '//h1[@id="_chapter_two"][text() = "Chapter Two"]', 1)
-      assertXpath(output, '//h1[@id="_chapter_three"][text() = "Chapter Three"]', 1)
+      assertXpath(
+        output,
+        '//h1[@id="_chapter_three"][text() = "Chapter Three"]',
+        1
+      )
       assertCss(output, '#_chapter_one + .openblock.partintro p', 1)
       assertCss(output, '#_chapter_two + .openblock.partintro p', 1)
     })
@@ -202,7 +231,11 @@ That's all she wrote!`
 = Level 0 Section`
       await usingMemoryLogger(async (logger) => {
         await convertString(input)
-        assertMessage(logger, 'ERROR', '<stdin>: line 7: level 0 sections can only be used when doctype is book')
+        assertMessage(
+          logger,
+          'ERROR',
+          '<stdin>: line 7: level 0 sections can only be used when doctype is book'
+        )
       })
     })
 
@@ -254,7 +287,10 @@ content`
       assert.equal(doc.findBy({ id: 'chapter-title' })[0].sectname, 'chapter')
       assert.equal(doc.findBy({ id: 'section-title' })[0].sectname, 'section')
       assert.equal(doc.findBy({ id: 'appendix-title' })[0].sectname, 'appendix')
-      assert.equal(doc.findBy({ id: 'appendix-section-title' })[0].sectname, 'section')
+      assert.equal(
+        doc.findBy({ id: 'appendix-section-title' })[0].sectname,
+        'section'
+      )
     })
 
     test('should allow part intro to be defined using special section', async () => {
@@ -274,9 +310,21 @@ Chapter content`
       const output = await convertString(input, { backend: 'docbook' })
       assertXpath(output, '/book/part[@xml:id="_part_1"]', 1)
       assertXpath(output, '/book/part[@xml:id="_part_1"]/partintro', 1)
-      assertXpath(output, '/book/part[@xml:id="_part_1"]/partintro[@xml:id="_part_intro"]', 1)
-      assertXpath(output, '/book/part[@xml:id="_part_1"]/partintro[@xml:id="_part_intro"]/title[text()="Part Intro"]', 1)
-      assertXpath(output, '/book/part[@xml:id="_part_1"]/partintro[@xml:id="_part_intro"]/following-sibling::chapter[@xml:id="_chapter_1"]', 1)
+      assertXpath(
+        output,
+        '/book/part[@xml:id="_part_1"]/partintro[@xml:id="_part_intro"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/part[@xml:id="_part_1"]/partintro[@xml:id="_part_intro"]/title[text()="Part Intro"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/part[@xml:id="_part_1"]/partintro[@xml:id="_part_intro"]/following-sibling::chapter[@xml:id="_chapter_1"]',
+        1
+      )
     })
 
     test('should add partintro style to child paragraph of part', async () => {
@@ -297,7 +345,11 @@ part intro--a summary
       assert.equal(partintro.style, 'partintro')
       assert.equal(partintro.blocks[0].context, 'paragraph')
       assert.deepEqual(partintro.blocks[0].lines, ['part intro--a summary'])
-      assert.ok((await partintro.convert()).includes('part intro&#8212;&#8203;a summary'))
+      assert.ok(
+        (await partintro.convert()).includes(
+          'part intro&#8212;&#8203;a summary'
+        )
+      )
     })
 
     test('should preserve title on partintro defined as partintro paragraph', async () => {
@@ -422,7 +474,11 @@ more part intro
 intro`
       await usingMemoryLogger(async (logger) => {
         await documentFromString(input)
-        assertMessage(logger, 'ERROR', '<stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)')
+        assertMessage(
+          logger,
+          'ERROR',
+          '<stdin>: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)'
+        )
       })
     })
 
@@ -462,8 +518,16 @@ That's all she wrote!`
       assertXpath(output, '/book/part[1]/title[text() = "Part 1"]', 1)
       assertXpath(output, '/book/part[2]/title[text() = "Part 2"]', 1)
       assertXpath(output, '/book/part/chapter', 4)
-      assertXpath(output, '/book/part[1]/chapter[1]/title[text() = "Chapter One"]', 1)
-      assertXpath(output, '/book/part[2]/chapter[1]/title[text() = "Chapter Three"]', 1)
+      assertXpath(
+        output,
+        '/book/part[1]/chapter[1]/title[text() = "Chapter One"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/part[2]/chapter[1]/title[text() = "Chapter Three"]',
+        1
+      )
     })
 
     test('subsections in preface and appendix should start at level 2', async () => {

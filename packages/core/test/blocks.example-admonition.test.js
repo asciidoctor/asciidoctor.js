@@ -2,7 +2,11 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath, assertMessage } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded } from './harness.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+} from './harness.js'
 
 describe('Blocks', () => {
   let logger
@@ -54,8 +58,16 @@ You futz with XML.
       assert.equal(doc.blocks[1].numeral, 2)
       assert.equal(await doc.blocks[1].number, 2)
       const output = await doc.convert()
-      assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Example 1. Writing Docs with AsciiDoc"]', 1)
-      assertXpath(output, '(//*[@class="exampleblock"])[2]/*[@class="title"][text()="Example 2. Writing Docs with DocBook"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Example 1. Writing Docs with AsciiDoc"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="exampleblock"])[2]/*[@class="title"][text()="Example 2. Writing Docs with DocBook"]',
+        1
+      )
       assert.equal(doc.attributes['example-number'], 2)
     })
 
@@ -84,8 +96,16 @@ You futz with XML.
       assert.equal(doc.blocks[1].numeral, 'B')
       assert.equal(await doc.blocks[1].number, 'B')
       const output = await doc.convert()
-      assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Example A. Writing Docs with AsciiDoc"]', 1)
-      assertXpath(output, '(//*[@class="exampleblock"])[2]/*[@class="title"][text()="Example B. Writing Docs with DocBook"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Example A. Writing Docs with AsciiDoc"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="exampleblock"])[2]/*[@class="title"][text()="Example B. Writing Docs with DocBook"]',
+        1
+      )
       assert.equal(doc.attributes['example-number'], 'B')
     })
 
@@ -106,10 +126,20 @@ You futz with XML.
 ====
 `
 
-      const doc = await documentFromString(input, { attributes: { 'example-number': '`' } })
+      const doc = await documentFromString(input, {
+        attributes: { 'example-number': '`' },
+      })
       const output = await doc.convert()
-      assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Example a. Writing Docs with AsciiDoc"]', 1)
-      assertXpath(output, '(//*[@class="exampleblock"])[2]/*[@class="title"][text()="Example b. Writing Docs with DocBook"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Example a. Writing Docs with AsciiDoc"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="exampleblock"])[2]/*[@class="title"][text()="Example b. Writing Docs with DocBook"]',
+        1
+      )
       assert.equal(doc.attributes['example-number'], 'b')
     })
 
@@ -127,7 +157,11 @@ You just write.
       const doc = await documentFromString(input)
       assert.equal(await doc.blocks[0].numeral, null)
       const output = await doc.convert()
-      assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Look! Writing Docs with AsciiDoc"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Look! Writing Docs with AsciiDoc"]',
+        1
+      )
       assert.ok(!('example-number' in doc.attributes))
     })
 
@@ -156,9 +190,21 @@ yet another example
 
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/*[@class="exampleblock"]', 3)
-      assertXpath(output, '(/*[@class="exampleblock"])[1]/*[@class="title"][starts-with(text(), "Example ")]', 1)
-      assertXpath(output, '(/*[@class="exampleblock"])[2]/*[@class="title"][text()="second example"]', 1)
-      assertXpath(output, '(/*[@class="exampleblock"])[3]/*[@class="title"][starts-with(text(), "Exhibit ")]', 1)
+      assertXpath(
+        output,
+        '(/*[@class="exampleblock"])[1]/*[@class="title"][starts-with(text(), "Example ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '(/*[@class="exampleblock"])[2]/*[@class="title"][text()="second example"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(/*[@class="exampleblock"])[3]/*[@class="title"][starts-with(text(), "Exhibit ")]',
+        1
+      )
     })
 
     test('should use explicit caption if specified even if block-specific global caption is disabled', async () => {
@@ -177,7 +223,11 @@ You just write.
       const doc = await documentFromString(input)
       assert.equal(await doc.blocks[0].numeral, null)
       const output = await doc.convert()
-      assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Look! Writing Docs with AsciiDoc"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Look! Writing Docs with AsciiDoc"]',
+        1
+      )
       assert.ok(!('example-number' in doc.attributes))
     })
 
@@ -197,7 +247,11 @@ You just write.
       const doc = await documentFromString(input)
       assert.equal(await doc.blocks[0].numeral, null)
       const output = await doc.convert()
-      assertXpath(output, '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Look! Writing Docs with AsciiDoc"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="exampleblock"])[1]/*[@class="title"][text()="Look! Writing Docs with AsciiDoc"]',
+        1
+      )
       assert.ok(!('example-number' in doc.attributes))
     })
 
@@ -214,7 +268,11 @@ content
       assert.equal(doc.blocks[0].caption, null)
       assert.equal(doc.blocks[0].getAttribute('caption'), 'Look! ')
       const output = await doc.convert()
-      assertXpath(output, '(//*[@class="openblock"])[1]/*[@class="title"][text()="No caption here"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="openblock"])[1]/*[@class="title"][text()="No caption here"]',
+        1
+      )
     })
 
     test('should create details/summary set if collapsible option is set', async () => {
@@ -306,7 +364,11 @@ eof
 
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/*[@class="exampleblock"]', 1)
-      assertMessage(logger, 'warn', '<stdin>: line 3: unterminated example block')
+      assertMessage(
+        logger,
+        'warn',
+        '<stdin>: line 3: unterminated example block'
+      )
     })
   })
 
@@ -320,7 +382,11 @@ TIP: Override the caption of an admonition block using an attribute entry
 `
 
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="admonitionblock tip"]//*[@class="icon"]/*[@class="title"][text()="Pro Tip"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="admonitionblock tip"]//*[@class="icon"]/*[@class="title"][text()="Pro Tip"]',
+        1
+      )
     })
 
     test('can override caption of admonition block using document attribute', async () => {
@@ -331,7 +397,11 @@ TIP: Override the caption of an admonition block using an attribute entry
 `
 
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="admonitionblock tip"]//*[@class="icon"]/*[@class="title"][text()="Pro Tip"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="admonitionblock tip"]//*[@class="icon"]/*[@class="title"][text()="Pro Tip"]',
+        1
+      )
     })
 
     test('blank caption document attribute should not blank admonition block caption', async () => {
@@ -342,7 +412,11 @@ TIP: Override the caption of an admonition block using an attribute entry
 `
 
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="admonitionblock tip"]//*[@class="icon"]/*[@class="title"][text()="Tip"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="admonitionblock tip"]//*[@class="icon"]/*[@class="title"][text()="Tip"]',
+        1
+      )
     })
 
     test('should generate appropriate tag based on admonition type in DocBook output', async () => {
@@ -359,12 +433,18 @@ CAUTION: Slippery when wet.
 WARNING: The software you're about to use has *not* been tested.
 `
 
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       for (const type of ['note', 'important', 'tip', 'caution', 'warning']) {
         assertCss(output, type, 1)
         assertCss(output, `${type} > simpara`, 1)
       }
-      assertXpath(output, '/tip/simpara[text()="Look for the warp under the bridge."]', 1)
+      assertXpath(
+        output,
+        '/tip/simpara[text()="Look for the warp under the bridge."]',
+        1
+      )
       assert.ok(!output.includes('Pro Tip'))
     })
   })

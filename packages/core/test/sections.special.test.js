@@ -5,9 +5,16 @@ import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { assertXpath } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+  blockFromString,
+} from './harness.js'
 
-function decodeChar (code) { return String.fromCodePoint(code) }
+function decodeChar(code) {
+  return String.fromCodePoint(code)
+}
 
 // ── Sections › Links and anchors ─────────────────────────────────────────────
 
@@ -21,13 +28,31 @@ Installation section.
 === Linux
 
 Linux installation instructions.`
-      const output = await convertStringToEmbedded(input, { attributes: { sectanchors: '' } })
+      const output = await convertStringToEmbedded(input, {
+        attributes: { sectanchors: '' },
+      })
       assertXpath(output, '/*[@class="sect1"]/h2[@id="_installation"]/a', 1)
-      assertXpath(output, '/*[@class="sect1"]/h2[@id="_installation"]/a[@class="anchor"][@href="#_installation"]', 1)
-      assertXpath(output, '/*[@class="sect1"]/h2[@id="_installation"]/a/following-sibling::text()="Installation"', 1)
+      assertXpath(
+        output,
+        '/*[@class="sect1"]/h2[@id="_installation"]/a[@class="anchor"][@href="#_installation"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/*[@class="sect1"]/h2[@id="_installation"]/a/following-sibling::text()="Installation"',
+        1
+      )
       assertXpath(output, '//*[@class="sect2"]/h3[@id="_linux"]/a', 1)
-      assertXpath(output, '//*[@class="sect2"]/h3[@id="_linux"]/a[@class="anchor"][@href="#_linux"]', 1)
-      assertXpath(output, '//*[@class="sect2"]/h3[@id="_linux"]/a/following-sibling::text()="Linux"', 1)
+      assertXpath(
+        output,
+        '//*[@class="sect2"]/h3[@id="_linux"]/a[@class="anchor"][@href="#_linux"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="sect2"]/h3[@id="_linux"]/a/following-sibling::text()="Linux"',
+        1
+      )
     })
 
     test('should position after title text if sectanchors is set to after', async () => {
@@ -38,13 +63,31 @@ Installation section.
 === Linux
 
 Linux installation instructions.`
-      const output = await convertStringToEmbedded(input, { attributes: { sectanchors: 'after' } })
+      const output = await convertStringToEmbedded(input, {
+        attributes: { sectanchors: 'after' },
+      })
       assertXpath(output, '/*[@class="sect1"]/h2[@id="_installation"]/a', 1)
-      assertXpath(output, '/*[@class="sect1"]/h2[@id="_installation"]/a[@class="anchor"][@href="#_installation"]', 1)
-      assertXpath(output, '/*[@class="sect1"]/h2[@id="_installation"]/a/preceding-sibling::text()="Installation"', 1)
+      assertXpath(
+        output,
+        '/*[@class="sect1"]/h2[@id="_installation"]/a[@class="anchor"][@href="#_installation"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/*[@class="sect1"]/h2[@id="_installation"]/a/preceding-sibling::text()="Installation"',
+        1
+      )
       assertXpath(output, '//*[@class="sect2"]/h3[@id="_linux"]/a', 1)
-      assertXpath(output, '//*[@class="sect2"]/h3[@id="_linux"]/a[@class="anchor"][@href="#_linux"]', 1)
-      assertXpath(output, '//*[@class="sect2"]/h3[@id="_linux"]/a/preceding-sibling::text()="Linux"', 1)
+      assertXpath(
+        output,
+        '//*[@class="sect2"]/h3[@id="_linux"]/a[@class="anchor"][@href="#_linux"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="sect2"]/h3[@id="_linux"]/a/preceding-sibling::text()="Linux"',
+        1
+      )
     })
 
     test('should link section if sectlinks document attribute is set', async () => {
@@ -55,13 +98,31 @@ Installation section.
 === Linux
 
 Linux installation instructions.`
-      const output = await convertStringToEmbedded(input, { attributes: { sectlinks: '' } })
+      const output = await convertStringToEmbedded(input, {
+        attributes: { sectlinks: '' },
+      })
       assertXpath(output, '/*[@class="sect1"]/h2[@id="_installation"]/a', 1)
-      assertXpath(output, '/*[@class="sect1"]/h2[@id="_installation"]/a[@class="link"][@href="#_installation"]', 1)
-      assertXpath(output, '/*[@class="sect1"]/h2[@id="_installation"]/a[text()="Installation"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="sect1"]/h2[@id="_installation"]/a[@class="link"][@href="#_installation"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/*[@class="sect1"]/h2[@id="_installation"]/a[text()="Installation"]',
+        1
+      )
       assertXpath(output, '//*[@class="sect2"]/h3[@id="_linux"]/a', 1)
-      assertXpath(output, '//*[@class="sect2"]/h3[@id="_linux"]/a[@class="link"][@href="#_linux"]', 1)
-      assertXpath(output, '//*[@class="sect2"]/h3[@id="_linux"]/a[text()="Linux"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="sect2"]/h3[@id="_linux"]/a[@class="link"][@href="#_linux"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="sect2"]/h3[@id="_linux"]/a[text()="Linux"]',
+        1
+      )
     })
 
     test('should start section link after supplemental anchors when sectlinks is set', async () => {
@@ -73,8 +134,16 @@ Linux installation instructions.`
       assertXpath(output, '/*[@class="sect1"]/h2[@id="foo"]', 1)
       assertXpath(output, '/*[@class="sect1"]/h2[@id="foo"]/a', 2)
       assertXpath(output, '/*[@class="sect1"]/h2[@id="foo"]/a[@id="fu"]', 1)
-      assertXpath(output, '/*[@class="sect1"]/h2[@id="foo"]/a[@class="link"]', 1)
-      assertXpath(output, '/*[@class="sect1"]/h2[@id="foo"]/a[@id="fu"]/following-sibling::a[@class="link"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="sect1"]/h2[@id="foo"]/a[@class="link"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/*[@class="sect1"]/h2[@id="foo"]/a[@id="fu"]/following-sibling::a[@class="link"]',
+        1
+      )
     })
   })
 
@@ -149,8 +218,16 @@ Details
 
 Details`
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, `//h2[text()="Appendix ${decodeChar(946)}: Attribute Options"]`, 1)
-      assertXpath(output, `//h2[text()="Appendix ${decodeChar(947)}: All the Other Stuff"]`, 1)
+      assertXpath(
+        output,
+        `//h2[text()="Appendix ${decodeChar(946)}: Attribute Options"]`,
+        1
+      )
+      assertXpath(
+        output,
+        `//h2[text()="Appendix ${decodeChar(947)}: All the Other Stuff"]`,
+        1
+      )
     })
 
     test('should use style from last block attribute line above section that defines a style', async () => {
@@ -170,7 +247,11 @@ Details`
 
 Details`
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '//h2[@id="attribute-options"][text()="Appendix A: Attribute Options"]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="attribute-options"][text()="Appendix A: Attribute Options"]',
+        1
+      )
     })
 
     test('should use custom appendix caption if specified', async () => {
@@ -207,7 +288,11 @@ Details
 
 Details`
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '(//h2)[1][text()="Appendix A: Attribute Options"]', 1)
+      assertXpath(
+        output,
+        '(//h2)[1][text()="Appendix A: Attribute Options"]',
+        1
+      )
       assertXpath(output, '(//h2)[2][text()="Appendix B: Migration"]', 1)
     })
 
@@ -228,7 +313,11 @@ content
 content`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '(//h2)[1][text()="1. First Section"]', 1)
-      assertXpath(output, '(//h2)[2][text()="Appendix A: Attribute Options"]', 1)
+      assertXpath(
+        output,
+        '(//h2)[2][text()="Appendix A: Attribute Options"]',
+        1
+      )
       assertXpath(output, '(//h2)[3][text()="2. Migration"]', 1)
     })
 
@@ -244,7 +333,11 @@ Details
 
 Details`
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '(//h2)[1][text()="Appendix A: Attribute Options"]', 1)
+      assertXpath(
+        output,
+        '(//h2)[1][text()="Appendix A: Attribute Options"]',
+        1
+      )
       assertXpath(output, '(//h3)[1][text()="A.1. Optional Attributes"]', 1)
     })
 
@@ -316,7 +409,11 @@ Details
 Terms`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '(//h2)[1][text()="1. Section One"]', 1)
-      assertXpath(output, '(//h2)[2][text()="Appendix A: Attribute Options"]', 1)
+      assertXpath(
+        output,
+        '(//h2)[2][text()="Appendix A: Attribute Options"]',
+        1
+      )
       assertXpath(output, '(//h2)[3][text()="Appendix B: Migration"]', 1)
       assertXpath(output, '(//h3)[1][text()="Gotchas"]', 1)
       assertXpath(output, '(//h2)[4][text()="Glossary"]', 1)
@@ -350,8 +447,16 @@ Details
 Terms`
       const output = await convertString(input)
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="1. Section One"]', 1)
-      assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Appendix A: Attribute Options"]', 1)
-      assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Appendix B: Migration"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="toc"]/ul//li/a[text()="Appendix A: Attribute Options"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@id="toc"]/ul//li/a[text()="Appendix B: Migration"]',
+        1
+      )
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Gotchas"]', 1)
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Glossary"]', 1)
     })
@@ -368,9 +473,21 @@ Terms`
 
 ==== Level 3`
       const output = await convertString(input)
-      assertXpath(output, '//*[@id="toc"]//a[@href="#_level_1"][text()="1. Level 1"]', 1)
-      assertXpath(output, '//*[@id="toc"]//a[@href="#_level_2"][text()="1.1. Level 2"]', 1)
-      assertXpath(output, '//*[@id="toc"]//a[@href="#_level_3"][text()="Level 3"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="toc"]//a[@href="#_level_1"][text()="1. Level 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@id="toc"]//a[@href="#_level_2"][text()="1.1. Level 2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@id="toc"]//a[@href="#_level_3"][text()="Level 3"]',
+        1
+      )
     })
 
     test('should not number special sections or their subsections by default except for appendices', async () => {
@@ -410,7 +527,11 @@ Terms`
       assertXpath(output, '(//h2)[1][text()="Preface"]', 1)
       assertXpath(output, '(//h3)[1][text()="Preface Subsection"]', 1)
       assertXpath(output, '(//h2)[2][text()="1. Section One"]', 1)
-      assertXpath(output, '(//h2)[3][text()="Appendix A: Attribute Options"]', 1)
+      assertXpath(
+        output,
+        '(//h2)[3][text()="Appendix A: Attribute Options"]',
+        1
+      )
       assertXpath(output, '(//h2)[4][text()="Appendix B: Migration"]', 1)
       assertXpath(output, '(//h3)[2][text()="B.1. Gotchas"]', 1)
       assertXpath(output, '(//h2)[5][text()="Glossary"]', 1)
@@ -452,10 +573,22 @@ Details
 Terms`
       const output = await convertString(input)
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Preface"]', 1)
-      assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Preface Subsection"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="toc"]/ul//li/a[text()="Preface Subsection"]',
+        1
+      )
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="1. Section One"]', 1)
-      assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Appendix A: Attribute Options"]', 1)
-      assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Appendix B: Migration"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="toc"]/ul//li/a[text()="Appendix A: Attribute Options"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@id="toc"]/ul//li/a[text()="Appendix B: Migration"]',
+        1
+      )
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="B.1. Gotchas"]', 1)
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Glossary"]', 1)
     })
@@ -497,7 +630,11 @@ Terms`
       assertXpath(output, '(//h2)[1][text()="1. Preface"]', 1)
       assertXpath(output, '(//h3)[1][text()="1.1. Preface Subsection"]', 1)
       assertXpath(output, '(//h2)[2][text()="2. Section One"]', 1)
-      assertXpath(output, '(//h2)[3][text()="Appendix A: Attribute Options"]', 1)
+      assertXpath(
+        output,
+        '(//h2)[3][text()="Appendix A: Attribute Options"]',
+        1
+      )
       assertXpath(output, '(//h2)[4][text()="Appendix B: Migration"]', 1)
       assertXpath(output, '(//h3)[2][text()="B.1. Gotchas"]', 1)
       assertXpath(output, '(//h2)[5][text()="3. Glossary"]', 1)
@@ -539,10 +676,22 @@ Details
 Terms`
       const output = await convertString(input)
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="1. Preface"]', 1)
-      assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="1.1. Preface Subsection"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="toc"]/ul//li/a[text()="1.1. Preface Subsection"]',
+        1
+      )
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="2. Section One"]', 1)
-      assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Appendix A: Attribute Options"]', 1)
-      assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="Appendix B: Migration"]', 1)
+      assertXpath(
+        output,
+        '//*[@id="toc"]/ul//li/a[text()="Appendix A: Attribute Options"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@id="toc"]/ul//li/a[text()="Appendix B: Migration"]',
+        1
+      )
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="B.1. Gotchas"]', 1)
       assertXpath(output, '//*[@id="toc"]/ul//li/a[text()="3. Glossary"]', 1)
     })
@@ -645,31 +794,127 @@ Colophon content
 = Index Title`
       const output = await convertString(input, { backend: 'docbook' })
       assertXpath(output, '/book/chapter[@xml:id="abstract_title"]', 1)
-      assertXpath(output, '/book/chapter[@xml:id="abstract_title"]/title[text()="Abstract Title"]', 1)
-      assertXpath(output, '/book/chapter/following-sibling::dedication[@xml:id="dedication_title"]', 1)
-      assertXpath(output, '/book/chapter/following-sibling::dedication[@xml:id="dedication_title"]/title[text()="Dedication Title"]', 1)
-      assertXpath(output, '/book/dedication/following-sibling::preface[@xml:id="preface_title"]', 1)
-      assertXpath(output, '/book/dedication/following-sibling::preface[@xml:id="preface_title"]/title[text()="Preface Title"]', 1)
-      assertXpath(output, '/book/preface/section[@xml:id="preface_sub_section"]', 1)
-      assertXpath(output, '/book/preface/section[@xml:id="preface_sub_section"]/title[text()="Preface sub-section"]', 1)
-      assertXpath(output, '/book/preface/following-sibling::part[@xml:id="part_1"]', 1)
-      assertXpath(output, '/book/preface/following-sibling::part[@xml:id="part_1"]/title[text()="Part 1"]', 1)
+      assertXpath(
+        output,
+        '/book/chapter[@xml:id="abstract_title"]/title[text()="Abstract Title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/chapter/following-sibling::dedication[@xml:id="dedication_title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/chapter/following-sibling::dedication[@xml:id="dedication_title"]/title[text()="Dedication Title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/dedication/following-sibling::preface[@xml:id="preface_title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/dedication/following-sibling::preface[@xml:id="preface_title"]/title[text()="Preface Title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/preface/section[@xml:id="preface_sub_section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/preface/section[@xml:id="preface_sub_section"]/title[text()="Preface sub-section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/preface/following-sibling::part[@xml:id="part_1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/preface/following-sibling::part[@xml:id="part_1"]/title[text()="Part 1"]',
+        1
+      )
       assertXpath(output, '/book/part[@xml:id="part_1"]/partintro', 1)
-      assertXpath(output, '/book/part[@xml:id="part_1"]/partintro/title[text()="Part intro title"]', 1)
-      assertXpath(output, '/book/part[@xml:id="part_1"]/partintro/following-sibling::chapter[@xml:id="chapter_1"]', 1)
-      assertXpath(output, '/book/part[@xml:id="part_1"]/partintro/following-sibling::chapter[@xml:id="chapter_1"]/title[text()="Chapter 1"]', 1)
-      assertXpath(output, '(/book/part)[2]/following-sibling::appendix[@xml:id="appendix_title"]', 1)
-      assertXpath(output, '(/book/part)[2]/following-sibling::appendix[@xml:id="appendix_title"]/title[text()="Appendix Title"]', 1)
-      assertXpath(output, '/book/appendix/section[@xml:id="appendix_sub_section"]', 1)
-      assertXpath(output, '/book/appendix/section[@xml:id="appendix_sub_section"]/title[text()="Appendix sub-section"]', 1)
-      assertXpath(output, '/book/appendix/following-sibling::bibliography[@xml:id="bibliography_title"]', 1)
-      assertXpath(output, '/book/appendix/following-sibling::bibliography[@xml:id="bibliography_title"]/title[text()="Bibliography Title"]', 1)
-      assertXpath(output, '/book/bibliography/following-sibling::glossary[@xml:id="glossary_title"]', 1)
-      assertXpath(output, '/book/bibliography/following-sibling::glossary[@xml:id="glossary_title"]/title[text()="Glossary Title"]', 1)
-      assertXpath(output, '/book/glossary/following-sibling::colophon[@xml:id="colophon_title"]', 1)
-      assertXpath(output, '/book/glossary/following-sibling::colophon[@xml:id="colophon_title"]/title[text()="Colophon Title"]', 1)
-      assertXpath(output, '/book/colophon/following-sibling::index[@xml:id="index_title"]', 1)
-      assertXpath(output, '/book/colophon/following-sibling::index[@xml:id="index_title"]/title[text()="Index Title"]', 1)
+      assertXpath(
+        output,
+        '/book/part[@xml:id="part_1"]/partintro/title[text()="Part intro title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/part[@xml:id="part_1"]/partintro/following-sibling::chapter[@xml:id="chapter_1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/part[@xml:id="part_1"]/partintro/following-sibling::chapter[@xml:id="chapter_1"]/title[text()="Chapter 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(/book/part)[2]/following-sibling::appendix[@xml:id="appendix_title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(/book/part)[2]/following-sibling::appendix[@xml:id="appendix_title"]/title[text()="Appendix Title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/appendix/section[@xml:id="appendix_sub_section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/appendix/section[@xml:id="appendix_sub_section"]/title[text()="Appendix sub-section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/appendix/following-sibling::bibliography[@xml:id="bibliography_title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/appendix/following-sibling::bibliography[@xml:id="bibliography_title"]/title[text()="Bibliography Title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/bibliography/following-sibling::glossary[@xml:id="glossary_title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/bibliography/following-sibling::glossary[@xml:id="glossary_title"]/title[text()="Glossary Title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/glossary/following-sibling::colophon[@xml:id="colophon_title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/glossary/following-sibling::colophon[@xml:id="colophon_title"]/title[text()="Colophon Title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/colophon/following-sibling::index[@xml:id="index_title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/book/colophon/following-sibling::index[@xml:id="index_title"]/title[text()="Index Title"]',
+        1
+      )
     })
 
     test('abstract section maps to abstract element in docbook for article doctype', async () => {
@@ -682,7 +927,11 @@ Colophon content
 Abstract content`
       const output = await convertString(input, { backend: 'docbook' })
       assertXpath(output, '/article/info/abstract[@xml:id="abstract_title"]', 1)
-      assertXpath(output, '/article/info/abstract[@xml:id="abstract_title"]/title[text()="Abstract Title"]', 1)
+      assertXpath(
+        output,
+        '/article/info/abstract[@xml:id="abstract_title"]/title[text()="Abstract Title"]',
+        1
+      )
     })
 
     test('should allow a special section to be nested at arbitrary depth in DocBook output', async () => {
@@ -716,7 +965,9 @@ The corresponding definition.`
 == Dedication
 
 content`
-        const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+        const output = await convertStringToEmbedded(input, {
+          backend: 'docbook',
+        })
         assertXpath(output, '/dedication', 1)
         assertXpath(output, '/dedication/title', 0)
       }

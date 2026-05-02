@@ -14,7 +14,9 @@ describe('Block', () => {
     })
 
     test('blockname getter returns context for quote block', async () => {
-      const doc = await documentFromString('[quote,Author]\n____\nA quote.\n____')
+      const doc = await documentFromString(
+        '[quote,Author]\n____\nA quote.\n____'
+      )
       const block = doc.blocks[0]
       assert.equal(block.blockname, 'quote')
     })
@@ -46,15 +48,24 @@ describe('Block', () => {
       const doc = await documentFromString('****\nParagraph inside.\n****')
       const block = doc.blocks[0]
       const str = block.toString()
-      assert.ok(str.includes('compound'), 'compound content_model should appear')
-      assert.ok(str.includes('blocks:'), 'block count should appear for compound')
+      assert.ok(
+        str.includes('compound'),
+        'compound content_model should appear'
+      )
+      assert.ok(
+        str.includes('blocks:'),
+        'block count should appear for compound'
+      )
     })
 
     test('toString() includes line count for non-compound blocks', async () => {
       const doc = await documentFromString('----\nline one\nline two\n----')
       const block = doc.blocks[0]
       const str = block.toString()
-      assert.ok(str.includes('lines:'), 'line count should appear for verbatim block')
+      assert.ok(
+        str.includes('lines:'),
+        'line count should appear for verbatim block'
+      )
     })
   })
 })

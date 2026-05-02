@@ -6,7 +6,13 @@ export default function (registry) {
     this.handles((target) => target.endsWith('.txt'))
     this.process(async function (doc, reader, target, attrs) {
       const content = await readFile(join(doc.getBaseDir(), target), 'utf8')
-      return reader.pushInclude(content.trimEnd().split('\n'), target, target, 1, attrs)
+      return reader.pushInclude(
+        content.trimEnd().split('\n'),
+        target,
+        target,
+        1,
+        attrs
+      )
     })
   })
 }

@@ -24,7 +24,7 @@ describe('Sections', () => {
     })
 
     test('synthetic id removes non-word characters', async () => {
-      const sec = await blockFromString("== We\u2019re back!")
+      const sec = await blockFromString('== We\u2019re back!')
       assert.equal(sec.id, '_were_back')
     })
 
@@ -34,7 +34,9 @@ describe('Sections', () => {
     })
 
     test('synthetic id removes entities', async () => {
-      const sec = await blockFromString('== Ben & Jerry &amp; Company&sup1; &#34;Ice Cream Brothers&#34; &#12354;')
+      const sec = await blockFromString(
+        '== Ben & Jerry &amp; Company&sup1; &#34;Ice Cream Brothers&#34; &#12354;'
+      )
       assert.equal(sec.id, '_ben_jerry_company_ice_cream_brothers')
     })
 
@@ -44,7 +46,9 @@ describe('Sections', () => {
     })
 
     test('synthetic id removes XML tags', async () => {
-      const sec = await blockFromString('== Use the `run` command to make it icon:gear[]')
+      const sec = await blockFromString(
+        '== Use the `run` command to make it icon:gear[]'
+      )
       assert.equal(sec.id, '_use_the_run_command_to_make_it_gear')
     })
 
@@ -84,7 +88,9 @@ describe('Sections', () => {
     })
 
     test('synthetic id separator can be hyphen and hyphens are preserved', async () => {
-      const sec = await blockFromString(':idseparator: -\n\n== State-of-the-art design')
+      const sec = await blockFromString(
+        ':idseparator: -\n\n== State-of-the-art design'
+      )
       assert.equal(sec.id, '_state-of-the-art-design')
     })
 
@@ -105,12 +111,16 @@ describe('Sections', () => {
     })
 
     test('synthetic id separator can be set to blank when idprefix is blank', async () => {
-      const sec = await blockFromString(':idprefix:\n:idseparator:\n\n== Section One')
+      const sec = await blockFromString(
+        ':idprefix:\n:idseparator:\n\n== Section One'
+      )
       assert.equal(sec.id, 'sectionone')
     })
 
     test('synthetic id separator is removed from beginning of id when idprefix is blank', async () => {
-      const sec = await blockFromString(':idprefix:\n:idseparator: _\n\n== +Section One')
+      const sec = await blockFromString(
+        ':idprefix:\n:idseparator: _\n\n== +Section One'
+      )
       assert.equal(sec.id, 'section_one')
     })
 
@@ -152,7 +162,8 @@ describe('Sections', () => {
     })
 
     test('explicit id can be defined using an embedded anchor when using setext section titles', async () => {
-      const input = 'Section Title [[refid,reftext]]\n-------------------------------'
+      const input =
+        'Section Title [[refid,reftext]]\n-------------------------------'
       const sec = await blockFromString(input)
       assert.equal(sec.title, 'Section Title')
       assert.equal(sec.id, 'refid')
@@ -167,14 +178,18 @@ describe('Sections', () => {
     })
 
     test('id and reftext in embedded anchor cannot be quoted', async () => {
-      const sec = await blockFromString('== Section One [["one","Section Uno"]] ==')
+      const sec = await blockFromString(
+        '== Section One [["one","Section Uno"]] =='
+      )
       assert.notEqual(sec.id, 'one')
       assert.equal(sec.title, 'Section One [["one","Section Uno"]]')
       assert.equal(sec.getAttribute('reftext'), null)
     })
 
     test('reftext in embedded anchor may contain comma', async () => {
-      const sec = await blockFromString('== Section One [[one, Section,Uno]] ==')
+      const sec = await blockFromString(
+        '== Section One [[one, Section,Uno]] =='
+      )
       assert.equal(sec.id, 'one')
       assert.equal(sec.title, 'Section One')
       assert.equal(sec.getAttribute('reftext'), 'Section,Uno')
@@ -352,7 +367,11 @@ content`
         assert.equal(ref.reftext, null)
         assert.equal(ref.title, 'First Install')
         assert.equal(doc.resolveId('First Install'), 'install')
-        assertMessage(logger, 'WARN', '<stdin>: line 7: id assigned to section already in use: install')
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 7: id assigned to section already in use: install'
+        )
       })
     })
 
@@ -371,10 +390,20 @@ content`
         assert.ok(ref != null)
         assert.equal(ref.reftext, null)
         assert.equal(ref.title, 'Do Not Repeat Yourself')
-        assert.equal(doc.resolveId('Do Not Repeat Yourself'), '_do_not_repeat_yourself')
-        assertMessage(logger, 'WARN', '<stdin>: line 6: id assigned to section already in use: _do_not_repeat_yourself')
+        assert.equal(
+          doc.resolveId('Do Not Repeat Yourself'),
+          '_do_not_repeat_yourself'
+        )
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 6: id assigned to section already in use: _do_not_repeat_yourself'
+        )
         const converted = await doc.convert({ standalone: false })
-        assert.equal((converted.match(/id="_do_not_repeat_yourself"/g) || []).length, 2)
+        assert.equal(
+          (converted.match(/id="_do_not_repeat_yourself"/g) || []).length,
+          2
+        )
       })
     })
 
@@ -393,7 +422,11 @@ content`
         assert.equal(ref.reftext, null)
         assert.equal(ref.title, 'First Install')
         assert.equal(doc.resolveId('First Install'), 'install')
-        assertMessage(logger, 'WARN', '<stdin>: line 7: id assigned to block already in use: install')
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 7: id assigned to block already in use: install'
+        )
       })
     })
   })

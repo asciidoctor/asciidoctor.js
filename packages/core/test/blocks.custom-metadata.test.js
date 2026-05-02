@@ -2,7 +2,11 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager, Severity } from '../src/logging.js'
 import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded } from './harness.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+} from './harness.js'
 
 describe('Blocks', () => {
   let logger
@@ -49,7 +53,11 @@ bar
 paragraph`
       const output = await convertString(input)
       assertXpath(output, '//*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="paragraph"]/*[@class="title"][text()="Title"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="paragraph"]/*[@class="title"][text()="Title"]',
+        1
+      )
       assertXpath(output, '//*[@class="paragraph"]/p[text()="paragraph"]', 1)
     })
 
@@ -64,8 +72,16 @@ section paragraph`
       assertXpath(output, '//*[@id="preamble"]/*', 0)
       assertXpath(output, '//*[@id="content"]/h1[text()="Section Title"]', 1)
       assertXpath(output, '//*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="paragraph"]/*[@class="title"][text()="Block title"]', 1)
-      assertMessage(logger, 'error', 'level 0 sections can only be used when doctype is book')
+      assertXpath(
+        output,
+        '//*[@class="paragraph"]/*[@class="title"][text()="Block title"]',
+        1
+      )
+      assertMessage(
+        logger,
+        'error',
+        'level 0 sections can only be used when doctype is book'
+      )
     })
 
     test('block title above document title gets carried over to first block in first section if no preamble', async () => {
@@ -79,9 +95,13 @@ section paragraph`
 paragraph`
       const doc = await documentFromString(input)
       // NOTE block title demotes document title to level-0 section
-      assert.ok(!await doc.header)
+      assert.ok(!(await doc.header))
       const output = await doc.convert()
-      assertXpath(output, '//*[@class="sect1"]//*[@class="paragraph"]/*[@class="title"][text()="Block title"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="sect1"]//*[@class="paragraph"]/*[@class="title"][text()="Block title"]',
+        1
+      )
     })
 
     test('should apply substitutions to a block title in normal order', async () => {
@@ -93,12 +113,16 @@ The one and only!`
         attributes: {
           'link-url': 'https://acme.com',
           'link-text': 'ACME',
-          'tm': '(TM)',
+          tm: '(TM)',
         },
       })
       assertCss(output, '.title', 1)
       assertCss(output, '.title a[href="https://acme.com"]', 1)
-      assertXpath(output, `//*[@class="title"][contains(text(),"${decodeChar(8482)}")]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="title"][contains(text(),"${decodeChar(8482)}")]`,
+        1
+      )
     })
 
     test('empty attribute list should not appear in output', async () => {

@@ -6,12 +6,43 @@ import { DocumentTitle } from '../src/document.js'
 import { SafeMode } from '../src/constants.js'
 
 const BUILT_IN_ELEMENTS = [
-  'admonition', 'audio', 'colist', 'dlist', 'document', 'embedded', 'example',
-  'floating_title', 'image', 'inline_anchor', 'inline_break', 'inline_button',
-  'inline_callout', 'inline_footnote', 'inline_image', 'inline_indexterm',
-  'inline_kbd', 'inline_menu', 'inline_quoted', 'listing', 'literal', 'stem',
-  'olist', 'open', 'page_break', 'paragraph', 'pass', 'preamble', 'quote',
-  'section', 'sidebar', 'table', 'thematic_break', 'toc', 'ulist', 'verse', 'video',
+  'admonition',
+  'audio',
+  'colist',
+  'dlist',
+  'document',
+  'embedded',
+  'example',
+  'floating_title',
+  'image',
+  'inline_anchor',
+  'inline_break',
+  'inline_button',
+  'inline_callout',
+  'inline_footnote',
+  'inline_image',
+  'inline_indexterm',
+  'inline_kbd',
+  'inline_menu',
+  'inline_quoted',
+  'listing',
+  'literal',
+  'stem',
+  'olist',
+  'open',
+  'page_break',
+  'paragraph',
+  'pass',
+  'preamble',
+  'quote',
+  'section',
+  'sidebar',
+  'table',
+  'thematic_break',
+  'toc',
+  'ulist',
+  'verse',
+  'video',
 ]
 
 // Helpers
@@ -23,7 +54,8 @@ const parse = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
 const empty = (opts = {}) => parse('', opts)
 
 // convert to full standalone HTML (with <html>, header, footer)
-const convert = async (input, opts = {}) => (await parse(input, { standalone: true, ...opts })).convert()
+const convert = async (input, opts = {}) =>
+  (await parse(input, { standalone: true, ...opts })).convert()
 // convert to embedded HTML (no <html> wrapper)
 const embed = async (input, opts = {}) => (await parse(input, opts)).convert()
 
@@ -38,7 +70,9 @@ describe('DocumentTitle', () => {
   })
 
   test('partitions title with custom separator', () => {
-    const title = new DocumentTitle('Main Title:: And More:: Subtitle', { separator: '::' })
+    const title = new DocumentTitle('Main Title:: And More:: Subtitle', {
+      separator: '::',
+    })
     assert.equal(title.main, 'Main Title:: And More')
     assert.equal(title.subtitle, 'Subtitle')
   })
@@ -72,7 +106,7 @@ describe('DocumentTitle', () => {
 
 describe('Default settings', () => {
   test('safe mode defaults to SECURE', async () => {
-    const doc = await load('')  // no safe option → defaults to SECURE
+    const doc = await load('') // no safe option → defaults to SECURE
     assert.equal(doc.safe, SafeMode.SECURE)
   })
 
@@ -92,7 +126,7 @@ describe('Default settings', () => {
   })
 
   test('safe mode attributes set on document', async () => {
-    const doc = await load('')  // no safe option → SECURE
+    const doc = await load('') // no safe option → SECURE
     assert.equal(doc.getAttribute('safe-mode-level'), SafeMode.SECURE)
     assert.equal(doc.getAttribute('safe-mode-name'), 'secure')
     assert.ok(inAttr(doc, 'safe-mode-secure'))
@@ -102,7 +136,10 @@ describe('Default settings', () => {
   })
 
   test('toc and sectnums enabled by default in docbook backend', async () => {
-    const doc = await parse('content', { backend: 'docbook5', standalone: true })
+    const doc = await parse('content', {
+      backend: 'docbook5',
+      standalone: true,
+    })
     assert.ok(inAttr(doc, 'toc'))
     assert.ok(inAttr(await doc, 'sectnums'))
     const result = await doc.convert()
@@ -111,7 +148,9 @@ describe('Default settings', () => {
   })
 
   test('allow document-level attributes to be modified', async () => {
-    const doc = await parse('= Document Title\n:lang: fr\n\ncontent is in {lang}')
+    const doc = await parse(
+      '= Document Title\n:lang: fr\n\ncontent is in {lang}'
+    )
     assert.equal(doc.getAttribute('lang'), 'fr')
     doc.setAttribute('lang', 'us')
     assert.equal(doc.getAttribute('lang'), 'us')
@@ -175,7 +214,8 @@ describe('Structure', () => {
   })
 
   test('subtitle with custom separator', async () => {
-    const input = '[separator=::]\n= Main Title:: Subtitle\nAuthor Name\n\ncontent'
+    const input =
+      '[separator=::]\n= Main Title:: Subtitle\nAuthor Name\n\ncontent'
     const doc = await parse(input)
     const title = doc.doctitle({ partition: true })
     assert.ok(title.hasSubtitle())
@@ -192,7 +232,8 @@ describe('Structure', () => {
   })
 
   test('title attribute overrides doctitle', async () => {
-    const input = '= Document Title\n:title: Override\n\n{doctitle}\n\n== First Section'
+    const input =
+      '= Document Title\n:title: Override\n\n{doctitle}\n\n== First Section'
     const doc = await parse(input)
     assert.equal(doc.doctitle(), 'Override')
     assert.equal(doc.title, 'Override')
@@ -215,7 +256,8 @@ describe('Structure', () => {
   })
 
   test('with author and revision metadata', async () => {
-    const input = '= AsciiDoc\nStuart Rackham <founder@asciidoc.org>\nv8.6.8, 2012-07-12: See changelog.\n\n== Version 8.6.8\n\nmore info...'
+    const input =
+      '= AsciiDoc\nStuart Rackham <founder@asciidoc.org>\nv8.6.8, 2012-07-12: See changelog.\n\n== Version 8.6.8\n\nmore info...'
     const doc = await parse(input)
     assert.equal(doc.getAttribute('author'), 'Stuart Rackham')
     assert.equal(doc.getAttribute('email'), 'founder@asciidoc.org')
@@ -239,12 +281,17 @@ describe('Structure', () => {
   })
 
   test('embedded document when standalone is false', async () => {
-    const doc = await parse('= Document Title\n\ncontent', { standalone: false })
+    const doc = await parse('= Document Title\n\ncontent', {
+      standalone: false,
+    })
     assert.ok(inAttr(doc, 'embedded'))
   })
 
   test('standalone document includes html and header/footer', async () => {
-    const doc = await parse('= Title\n\nparagraph', { safe: 'unsafe', standalone: true })
+    const doc = await parse('= Title\n\nparagraph', {
+      safe: 'unsafe',
+      standalone: true,
+    })
     const result = await doc.convert()
     assert.ok(result.includes('<html'))
     assert.ok(result.includes('id="header"'))
@@ -266,7 +313,9 @@ describe('Structure', () => {
 
 describe('Catalog', () => {
   test('catalog and references are the same object', async () => {
-    const doc = await parse('= Title\n\n== Section A\n\nContent\n\n== Section B\n\nContent.footnote:[commentary]')
+    const doc = await parse(
+      '= Title\n\n== Section A\n\nContent\n\n== Section B\n\nContent.footnote:[commentary]'
+    )
     assert.ok(doc.catalog != null)
     assert.equal(doc.catalog, doc.references)
     assert.equal(doc.catalog.footnotes, doc.references.footnotes)
@@ -336,7 +385,12 @@ describe('Backends and Doctypes', () => {
   })
 
   test('book doctype produces book body class', async () => {
-    const result = await (await parse('= Title\n\nparagraph', { attributes: { backend: 'html5', doctype: 'book' }, standalone: true })).convert()
+    const result = await (
+      await parse('= Title\n\nparagraph', {
+        attributes: { backend: 'html5', doctype: 'book' },
+        standalone: true,
+      })
+    ).convert()
     assert.ok(result.includes('class="book"'))
   })
 })
@@ -376,7 +430,9 @@ describe('Counter', () => {
 
 describe('isAttributeLocked', () => {
   test('attribute locked via API cannot be changed by document', async () => {
-    const doc = await parse(':foo: original\n\n{foo}', { attributes: { foo: 'locked' } })
+    const doc = await parse(':foo: original\n\n{foo}', {
+      attributes: { foo: 'locked' },
+    })
     assert.ok(doc.isAttributeLocked('foo'))
   })
 
@@ -410,7 +466,11 @@ describe('Converter (extended)', () => {
     assert.ok('basebackend-html' in doc.attributes)
     const converter = doc.converter
     for (const element of BUILT_IN_ELEMENTS) {
-      assert.equal(typeof converter[`convert_${element}`], 'function', `missing convert_${element}`)
+      assert.equal(
+        typeof converter[`convert_${element}`],
+        'function',
+        `missing convert_${element}`
+      )
     }
   })
 
@@ -422,13 +482,17 @@ describe('Converter (extended)', () => {
   })
 
   test('adds favicon link tag when favicon attribute is a .ico path', async () => {
-    const result = await convert('= Untitled', { attributes: { favicon: '/favicon.ico' } })
+    const result = await convert('= Untitled', {
+      attributes: { favicon: '/favicon.ico' },
+    })
     assert.ok(result.includes('href="/favicon.ico"'))
     assert.ok(result.includes('type="image/x-icon"'))
   })
 
   test('adds favicon link tag when favicon attribute is a .png path', async () => {
-    const result = await convert('= Untitled', { attributes: { favicon: '/img/favicon.png' } })
+    const result = await convert('= Untitled', {
+      attributes: { favicon: '/img/favicon.png' },
+    })
     assert.ok(result.includes('href="/img/favicon.png"'))
     assert.ok(result.includes('type="image/png"'))
   })
@@ -452,14 +516,18 @@ describe('HTML output', () => {
   })
 
   test('last-update-label! disables last updated text in footer', async () => {
-    const result = await convert('= Document Title\n\npreamble', { attributes: { 'last-update-label!': '' } })
+    const result = await convert('= Document Title\n\npreamble', {
+      attributes: { 'last-update-label!': '' },
+    })
     assert.ok(result.includes('id="footer-text"'))
     // footer-text should be empty (no "Last updated" text)
     assert.match(result, /id="footer-text"[^>]*>\s*<\/div>/)
   })
 
   test('embedded document has no html wrapper or header/footer divs', async () => {
-    const result = await embed('= Document Title\n\ncontent', { standalone: false })
+    const result = await embed('= Document Title\n\ncontent', {
+      standalone: false,
+    })
     assert.ok(!result.includes('<html'))
     assert.ok(!result.includes('id="header"'))
     assert.ok(!result.includes('id="footer"'))
@@ -480,34 +548,52 @@ describe('HTML output', () => {
     ].join('\n')
     const output = await convert(input)
     assert.ok(output.includes('name="author" content="Stuart Rackham"'))
-    assert.ok(output.includes('name="description" content="AsciiDoc user guide"'))
-    assert.ok(output.includes('name="keywords" content="asciidoc,documentation"'))
+    assert.ok(
+      output.includes('name="description" content="AsciiDoc user guide"')
+    )
+    assert.ok(
+      output.includes('name="keywords" content="asciidoc,documentation"')
+    )
     assert.ok(output.includes('name="copyright" content="Stuart Rackham"'))
-    assert.ok(output.includes('id="author"') && output.includes('Stuart Rackham'))
+    assert.ok(
+      output.includes('id="author"') && output.includes('Stuart Rackham')
+    )
     assert.ok(output.includes('id="revnumber"') && output.includes('8.6.8'))
     assert.ok(output.includes('id="revdate"') && output.includes('2012-07-12'))
-    assert.ok(output.includes('id="revremark"') && output.includes('See changelog.'))
+    assert.ok(
+      output.includes('id="revremark"') && output.includes('See changelog.')
+    )
   })
 
   test('author apostrophe is substituted as right single quotation mark entity', async () => {
-    const input = "= Document Title\nStephen O'Grady <founder@redmonk.com>\n\ncontent"
+    const input =
+      "= Document Title\nStephen O'Grady <founder@redmonk.com>\n\ncontent"
     const output = await convert(input)
     assert.ok(output.includes('&#8217;'))
-    assert.ok(output.includes('name="author"') && output.includes('Stephen O&#8217;Grady'))
+    assert.ok(
+      output.includes('name="author"') &&
+        output.includes('Stephen O&#8217;Grady')
+    )
   })
 
   test('ampersand in author name is not double-escaped', async () => {
     const input = '= Document Title\nR&D Lab\n\n{author}'
     const output = await convert(input)
     const count = (output.match(/R&amp;D Lab/g) || []).length
-    assert.ok(count >= 2, `expected at least 2 occurrences of R&amp;D Lab, got ${count}`)
+    assert.ok(
+      count >= 2,
+      `expected at least 2 occurrences of R&amp;D Lab, got ${count}`
+    )
   })
 
   test('multiple authors appear in HTML output', async () => {
-    const input = '= Document Title\nDoc Writer <thedoctor@asciidoc.org>; Junior Writer <junior@asciidoctor.org>\n\ncontent'
+    const input =
+      '= Document Title\nDoc Writer <thedoctor@asciidoc.org>; Junior Writer <junior@asciidoctor.org>\n\ncontent'
     const output = await convert(input)
     assert.ok(output.includes('id="author"') && output.includes('Doc Writer'))
-    assert.ok(output.includes('id="author2"') && output.includes('Junior Writer'))
+    assert.ok(
+      output.includes('id="author2"') && output.includes('Junior Writer')
+    )
     assert.ok(output.includes('href="mailto:thedoctor@asciidoc.org"'))
     assert.ok(output.includes('href="mailto:junior@asciidoctor.org"'))
   })
@@ -534,20 +620,27 @@ describe('HTML output', () => {
 
 describe('Backends and Doctypes (extended)', () => {
   test('html5 doctype article produces article body class', async () => {
-    const result = await convert('= Title\n\nparagraph', { attributes: { backend: 'html5' } })
+    const result = await convert('= Title\n\nparagraph', {
+      attributes: { backend: 'html5' },
+    })
     assert.ok(result.includes('<html'))
     assert.ok(result.includes('class="article"'))
     assert.ok(result.includes('<h1>Title</h1>'))
   })
 
   test('html5 doctype book produces book body class', async () => {
-    const result = await convert('= Title\n\nparagraph', { attributes: { backend: 'html5', doctype: 'book' } })
+    const result = await convert('= Title\n\nparagraph', {
+      attributes: { backend: 'html5', doctype: 'book' },
+    })
     assert.ok(result.includes('class="book"'))
     assert.ok(result.includes('<h1>Title</h1>'))
   })
 
   test('htmlsyntax xml via API produces self-closing hr tag', async () => {
-    const doc = await parse('---', { safe: 'safe', attributes: { htmlsyntax: 'xml' } })
+    const doc = await parse('---', {
+      safe: 'safe',
+      attributes: { htmlsyntax: 'xml' },
+    })
     assert.equal(doc.backend, 'html5')
     assert.equal(doc.getAttribute('htmlsyntax'), 'xml')
     const result = await doc.convert()
@@ -657,11 +750,18 @@ describe('Compat get* API', () => {
     const doc = await parse(input)
     const refs = doc.getRefs()
     assert.ok(refs != null)
-    assert.ok('_my_section' in refs || 'my-section' in refs || Object.values(refs).some((r) => r.id === 'my-section' || r.id === '_my_section'))
+    assert.ok(
+      '_my_section' in refs ||
+        'my-section' in refs ||
+        Object.values(refs).some(
+          (r) => r.id === 'my-section' || r.id === '_my_section'
+        )
+    )
   })
 
   test('getImages returns images registered via catalog_assets', async () => {
-    const input = '= Title\n\nimage::sunset.jpg[Sunset,300,200]\n\nimage::ocean.jpg[Ocean]'
+    const input =
+      '= Title\n\nimage::sunset.jpg[Sunset,300,200]\n\nimage::ocean.jpg[Ocean]'
     const doc = await parse(input, { catalog_assets: true })
     const images = doc.getImages()
     assert.equal(images.length, 2)
@@ -676,7 +776,8 @@ describe('Compat get* API', () => {
   })
 
   test('getLinks returns links registered after convert when catalog_assets is enabled', async () => {
-    const input = 'https://asciidoctor.org[Asciidoctor]\n\nlink:index.html[Docs]'
+    const input =
+      'https://asciidoctor.org[Asciidoctor]\n\nlink:index.html[Docs]'
     const doc = await parse(input, { catalog_assets: true })
     await doc.convert()
     const links = doc.getLinks()

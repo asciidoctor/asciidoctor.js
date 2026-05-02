@@ -6,7 +6,7 @@ import { createServer } from 'node:http'
  * @param {Map<string, { contentType: string, body: string|Buffer }>} routes
  * @returns {Promise<{ server: import('node:http').Server, baseUri: string }>}
  */
-export function startServer (routes) {
+export function startServer(routes) {
   return new Promise((resolve) => {
     const server = createServer((req, res) => {
       const route = routes.get(req.url)

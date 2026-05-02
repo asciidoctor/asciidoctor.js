@@ -16,7 +16,7 @@ const emptyDocument = async (opts = {}) => load('', { safe: 'safe', ...opts })
 
 // Mirrors the Ruby test helper: create a Reader from input lines and call
 // Parser.parseHeaderMetadata, optionally passing a document.
-async function parseHeaderMetadata (input, doc = null) {
+async function parseHeaderMetadata(input, doc = null) {
   const lines = input === '' ? [] : input.split('\n')
   const reader = new Reader(lines)
   return await Parser.parseHeaderMetadata(reader, doc)
@@ -28,7 +28,9 @@ describe('Parser', () => {
   // ── isSectionTitle ──────────────────────────────────────────────────────────
 
   test('is_section_title?', () => {
-    assert.ok(Parser.isSectionTitle('AsciiDoc Home Page', '==================') != null)
+    assert.ok(
+      Parser.isSectionTitle('AsciiDoc Home Page', '==================') != null
+    )
     assert.ok(Parser.isSectionTitle('=== AsciiDoc Home Page') != null)
   })
 
@@ -49,7 +51,11 @@ describe('Parser', () => {
   })
 
   test('store attribute with negated value', () => {
-    for (const [name, value] of [['foo!', null], ['!foo', null], ['foo', null]]) {
+    for (const [name, value] of [
+      ['foo!', null],
+      ['!foo', null],
+      ['foo', null],
+    ]) {
       const [attrName, attrValue] = Parser.storeAttribute(name, value)
       assert.equal(attrName, name.replace('!', ''))
       assert.equal(attrValue, null)
@@ -60,7 +66,12 @@ describe('Parser', () => {
     const doc = await emptyDocument()
     doc.setAttribute('foo', 'baz')
     const attrs = {}
-    const [attrName, attrValue] = Parser.storeAttribute('foo', 'bar', doc, attrs)
+    const [attrName, attrValue] = Parser.storeAttribute(
+      'foo',
+      'bar',
+      doc,
+      attrs
+    )
     assert.equal(attrName, 'foo')
     assert.equal(attrValue, 'bar')
     assert.equal(doc.getAttribute('foo'), 'bar')
@@ -75,7 +86,12 @@ describe('Parser', () => {
     doc.setAttribute('foo', 'baz')
     doc.setAttribute('release', 'ultramega')
     const attrs = {}
-    const [attrName, attrValue] = Parser.storeAttribute('foo', '{release}', doc, attrs)
+    const [attrName, attrValue] = Parser.storeAttribute(
+      'foo',
+      '{release}',
+      doc,
+      attrs
+    )
     assert.equal(attrName, 'foo')
     assert.equal(attrValue, 'ultramega')
     assert.equal(doc.getAttribute('foo'), 'ultramega')
@@ -88,7 +104,12 @@ describe('Parser', () => {
   test('store inaccessible attribute on document with value', async () => {
     const doc = await emptyDocument({ attributes: { foo: 'baz' } })
     const attrs = {}
-    const [attrName, attrValue] = Parser.storeAttribute('foo', 'bar', doc, attrs)
+    const [attrName, attrValue] = Parser.storeAttribute(
+      'foo',
+      'bar',
+      doc,
+      attrs
+    )
     assert.equal(attrName, 'foo')
     assert.equal(attrValue, 'bar')
     assert.equal(doc.getAttribute('foo'), 'baz')
@@ -96,11 +117,20 @@ describe('Parser', () => {
   })
 
   test('store accessible attribute on document with negated value', async () => {
-    for (const [name, value] of [['foo!', null], ['!foo', null], ['foo', null]]) {
+    for (const [name, value] of [
+      ['foo!', null],
+      ['!foo', null],
+      ['foo', null],
+    ]) {
       const doc = await emptyDocument()
       doc.setAttribute('foo', 'baz')
       const attrs = {}
-      const [attrName, attrValue] = Parser.storeAttribute(name, value, doc, attrs)
+      const [attrName, attrValue] = Parser.storeAttribute(
+        name,
+        value,
+        doc,
+        attrs
+      )
       assert.equal(attrName, name.replace('!', ''))
       assert.equal(attrValue, null)
       assert.ok('attribute_entries' in attrs)
@@ -111,10 +141,19 @@ describe('Parser', () => {
   })
 
   test('store inaccessible attribute on document with negated value', async () => {
-    for (const [name, value] of [['foo!', null], ['!foo', null], ['foo', null]]) {
+    for (const [name, value] of [
+      ['foo!', null],
+      ['!foo', null],
+      ['foo', null],
+    ]) {
       const doc = await emptyDocument({ attributes: { foo: 'baz' } })
       const attrs = {}
-      const [attrName, attrValue] = Parser.storeAttribute(name, value, doc, attrs)
+      const [attrName, attrValue] = Parser.storeAttribute(
+        name,
+        value,
+        doc,
+        attrs
+      )
       assert.equal(attrName, name.replace('!', ''))
       assert.equal(attrValue, null)
       assert.ok(!('attribute_entries' in attrs))
@@ -231,7 +270,9 @@ describe('Parser', () => {
   })
 
   test('parse author first middle last email', async () => {
-    const metadata = await parseHeaderMetadata('David Heinemeier Hansson <rails@ruby-lang.org>')
+    const metadata = await parseHeaderMetadata(
+      'David Heinemeier Hansson <rails@ruby-lang.org>'
+    )
     assert.equal(metadata['authorcount'], 1)
     assert.equal(metadata['author'], 'David Heinemeier Hansson')
     assert.equal(metadata['author'], metadata['authors'])
@@ -253,7 +294,9 @@ describe('Parser', () => {
   })
 
   test('parse author first last email', async () => {
-    const metadata = await parseHeaderMetadata('Stuart Rackham <founder@asciidoc.org>')
+    const metadata = await parseHeaderMetadata(
+      'Stuart Rackham <founder@asciidoc.org>'
+    )
     assert.equal(metadata['authorcount'], 1)
     assert.equal(metadata['author'], 'Stuart Rackham')
     assert.equal(metadata['author'], metadata['authors'])
@@ -264,7 +307,9 @@ describe('Parser', () => {
   })
 
   test('parse author with hyphen', async () => {
-    const metadata = await parseHeaderMetadata('Tim Berners-Lee <founder@www.org>')
+    const metadata = await parseHeaderMetadata(
+      'Tim Berners-Lee <founder@www.org>'
+    )
     assert.equal(metadata['authorcount'], 1)
     assert.equal(metadata['author'], 'Tim Berners-Lee')
     assert.equal(metadata['author'], metadata['authors'])
@@ -274,8 +319,10 @@ describe('Parser', () => {
     assert.equal(metadata['authorinitials'], 'TB')
   })
 
-  test("parse author with single quote", async () => {
-    const metadata = await parseHeaderMetadata("Stephen O'Grady <founder@redmonk.com>")
+  test('parse author with single quote', async () => {
+    const metadata = await parseHeaderMetadata(
+      "Stephen O'Grady <founder@redmonk.com>"
+    )
     assert.equal(metadata['authorcount'], 1)
     assert.equal(metadata['author'], "Stephen O'Grady")
     assert.equal(metadata['author'], metadata['authors'])
@@ -329,7 +376,9 @@ describe('Parser', () => {
   })
 
   test('parse author condenses whitespace', async () => {
-    const metadata = await parseHeaderMetadata('Stuart       Rackham     <founder@asciidoc.org>')
+    const metadata = await parseHeaderMetadata(
+      'Stuart       Rackham     <founder@asciidoc.org>'
+    )
     assert.equal(metadata['authorcount'], 1)
     assert.equal(metadata['author'], 'Stuart Rackham')
     assert.equal(metadata['author'], metadata['authors'])
@@ -340,16 +389,26 @@ describe('Parser', () => {
   })
 
   test('parse invalid author line becomes author', async () => {
-    const metadata = await parseHeaderMetadata('   Stuart       Rackham, founder of AsciiDoc   <founder@asciidoc.org>')
+    const metadata = await parseHeaderMetadata(
+      '   Stuart       Rackham, founder of AsciiDoc   <founder@asciidoc.org>'
+    )
     assert.equal(metadata['authorcount'], 1)
-    assert.equal(metadata['author'], 'Stuart Rackham, founder of AsciiDoc <founder@asciidoc.org>')
+    assert.equal(
+      metadata['author'],
+      'Stuart Rackham, founder of AsciiDoc <founder@asciidoc.org>'
+    )
     assert.equal(metadata['author'], metadata['authors'])
-    assert.equal(metadata['firstname'], 'Stuart Rackham, founder of AsciiDoc <founder@asciidoc.org>')
+    assert.equal(
+      metadata['firstname'],
+      'Stuart Rackham, founder of AsciiDoc <founder@asciidoc.org>'
+    )
     assert.equal(metadata['authorinitials'], 'S')
   })
 
   test('parse multiple authors', async () => {
-    const metadata = await parseHeaderMetadata('Doc Writer <doc.writer@asciidoc.org>; John Smith <john.smith@asciidoc.org>')
+    const metadata = await parseHeaderMetadata(
+      'Doc Writer <doc.writer@asciidoc.org>; John Smith <john.smith@asciidoc.org>'
+    )
     assert.equal(metadata['authorcount'], 2)
     assert.equal(metadata['authors'], 'Doc Writer, John Smith')
     assert.equal(metadata['author'], 'Doc Writer')
@@ -363,7 +422,9 @@ describe('Parser', () => {
   })
 
   test('skips blank author entries in implicit author line', async () => {
-    const metadata = await parseHeaderMetadata('Doc Writer; ; John Smith <john.smith@asciidoc.org>;')
+    const metadata = await parseHeaderMetadata(
+      'Doc Writer; ; John Smith <john.smith@asciidoc.org>;'
+    )
     assert.equal(metadata['authorcount'], 2)
     assert.equal(metadata['author_1'], 'Doc Writer')
     assert.equal(metadata['author_2'], 'John Smith')
@@ -393,7 +454,8 @@ describe('Parser', () => {
   })
 
   test('use implicit authors if value of authors attribute matches computed value', async () => {
-    const input = 'Doc Writer; Junior Writer\n:authors: Doc Writer, Junior Writer'
+    const input =
+      'Doc Writer; Junior Writer\n:authors: Doc Writer, Junior Writer'
     const doc = await emptyDocument()
     await parseHeaderMetadata(input, doc)
     assert.equal(doc.attributes['authors'], 'Doc Writer, Junior Writer')
@@ -402,12 +464,16 @@ describe('Parser', () => {
   })
 
   test('replace implicit authors if value of authors attribute does not match computed value', async () => {
-    const input = 'Doc Writer; Junior Writer\n:authors: Stuart Rackham; Dan Allen; Sarah White'
+    const input =
+      'Doc Writer; Junior Writer\n:authors: Stuart Rackham; Dan Allen; Sarah White'
     const doc = await emptyDocument()
     const metadata = await parseHeaderMetadata(input, doc)
     assert.equal(metadata['authorcount'], 3)
     assert.equal(doc.attributes['authorcount'], 3)
-    assert.equal(doc.attributes['authors'], 'Stuart Rackham, Dan Allen, Sarah White')
+    assert.equal(
+      doc.attributes['authors'],
+      'Stuart Rackham, Dan Allen, Sarah White'
+    )
     assert.equal(doc.attributes['author_1'], 'Stuart Rackham')
     assert.equal(doc.attributes['author_2'], 'Dan Allen')
     assert.equal(doc.attributes['author_3'], 'Sarah White')
@@ -431,18 +497,25 @@ describe('Parser', () => {
     const doc = await emptyDocument()
     await parseHeaderMetadata(input, doc)
     assert.equal(doc.attributes['authorcount'], 2)
-    assert.equal(doc.attributes['authors'], 'Kismet Chameleon, Lazarus het Draeke')
+    assert.equal(
+      doc.attributes['authors'],
+      'Kismet Chameleon, Lazarus het Draeke'
+    )
     assert.equal(doc.attributes['author_1'], 'Kismet Chameleon')
     assert.equal(doc.attributes['author_2'], 'Lazarus het Draeke')
     assert.equal(doc.attributes['lastname_2'], 'het Draeke')
   })
 
   test('allows authors to be overridden using explicit author attributes', async () => {
-    const input = 'Kismet Chameleon; Johnny Bravo; Lazarus het_Draeke\n:author_2: Danger Mouse'
+    const input =
+      'Kismet Chameleon; Johnny Bravo; Lazarus het_Draeke\n:author_2: Danger Mouse'
     const doc = await emptyDocument()
     await parseHeaderMetadata(input, doc)
     assert.equal(doc.attributes['authorcount'], 3)
-    assert.equal(doc.attributes['authors'], 'Kismet Chameleon, Danger Mouse, Lazarus het Draeke')
+    assert.equal(
+      doc.attributes['authors'],
+      'Kismet Chameleon, Danger Mouse, Lazarus het Draeke'
+    )
     assert.equal(doc.attributes['author_1'], 'Kismet Chameleon')
     assert.equal(doc.attributes['author_2'], 'Danger Mouse')
     assert.equal(doc.attributes['author_3'], 'Lazarus het Draeke')
@@ -450,11 +523,15 @@ describe('Parser', () => {
   })
 
   test('removes formatting before partitioning author defined using author attribute', async () => {
-    const input = ':author: pass:n[http://example.org/community/team.html[Ze_**Project** team]]'
+    const input =
+      ':author: pass:n[http://example.org/community/team.html[Ze_**Project** team]]'
     const doc = await emptyDocument()
     await parseHeaderMetadata(input, doc)
     assert.equal(doc.attributes['authorcount'], 1)
-    assert.equal(doc.attributes['authors'], '<a href="http://example.org/community/team.html">Ze <strong>Project</strong> team</a>')
+    assert.equal(
+      doc.attributes['authors'],
+      '<a href="http://example.org/community/team.html">Ze <strong>Project</strong> team</a>'
+    )
     assert.equal(doc.attributes['firstname'], 'Ze Project')
     assert.equal(doc.attributes['lastname'], 'team')
   })
@@ -462,7 +539,8 @@ describe('Parser', () => {
   // ── parseHeaderMetadata – revision line ─────────────────────────────────────
 
   test('parse rev number date remark', async () => {
-    const input = 'Ryan Waldron\nv0.0.7, 2013-12-18: The first release you can stand on'
+    const input =
+      'Ryan Waldron\nv0.0.7, 2013-12-18: The first release you can stand on'
     const metadata = await parseHeaderMetadata(input)
     assert.equal(metadata['revnumber'], '0.0.7')
     assert.equal(metadata['revdate'], '2013-12-18')
@@ -470,7 +548,8 @@ describe('Parser', () => {
   })
 
   test('parse rev number, date, and remark as attribute references', async () => {
-    const input = 'Author Name\nv{project-version}, {release-date}: {release-summary}'
+    const input =
+      'Author Name\nv{project-version}, {release-date}: {release-summary}'
     const metadata = await parseHeaderMetadata(input)
     assert.equal(metadata['revnumber'], '{project-version}')
     assert.equal(metadata['revdate'], '{release-date}')
@@ -521,7 +600,8 @@ Author Name
   })
 
   test('parse rev date remark', async () => {
-    const input = 'Ryan Waldron\n2013-12-18:  The first release you can stand on'
+    const input =
+      'Ryan Waldron\n2013-12-18:  The first release you can stand on'
     const metadata = await parseHeaderMetadata(input)
     assert.equal(metadata['revdate'], '2013-12-18')
     assert.equal(metadata['revremark'], 'The first release you can stand on')
@@ -537,7 +617,10 @@ Author Name
   test('parse rev remark only', async () => {
     const input = 'Joe Cool\n :Must start revremark-only line with space'
     const metadata = await parseHeaderMetadata(input)
-    assert.equal(metadata['revremark'], 'Must start revremark-only line with space')
+    assert.equal(
+      metadata['revremark'],
+      'Must start revremark-only line with space'
+    )
     assert.ok(!('revdate' in metadata))
   })
 
@@ -562,7 +645,8 @@ Author Name
   })
 
   test('skip block comment before rev', async () => {
-    const input = 'Ryan Waldron\n////\nAsciidoctor\nrelease info\n////\nv0.0.7, 2013-12-18'
+    const input =
+      'Ryan Waldron\n////\nAsciidoctor\nrelease info\n////\nv0.0.7, 2013-12-18'
     const metadata = await parseHeaderMetadata(input)
     assert.equal(metadata['authorcount'], 1)
     assert.equal(metadata['author'], 'Ryan Waldron')
@@ -580,7 +664,10 @@ Author Name
 
   test('attribute entry overrides generated author initials', async () => {
     const doc = await emptyDocument()
-    const metadata = await parseHeaderMetadata('Stuart Rackham <founder@asciidoc.org>\n:Author Initials: SJR', doc)
+    const metadata = await parseHeaderMetadata(
+      'Stuart Rackham <founder@asciidoc.org>\n:Author Initials: SJR',
+      doc
+    )
     assert.equal(metadata['authorinitials'], 'SR')
     assert.equal(doc.attributes['authorinitials'], 'SJR')
   })
@@ -658,10 +745,14 @@ which is already in use.`
       await load(input, { safe: 'safe' })
       const found = logger.messages.some((m) => {
         if (m.severity !== 'WARN') return false
-        const msg = typeof m.message === 'string' ? m.message : String(m.message)
+        const msg =
+          typeof m.message === 'string' ? m.message : String(m.message)
         return msg.includes('id assigned to anchor already in use: in-use')
       })
-      assert.ok(found, `Expected WARN about duplicate anchor but got: ${JSON.stringify(logger.messages)}`)
+      assert.ok(
+        found,
+        `Expected WARN about duplicate anchor but got: ${JSON.stringify(logger.messages)}`
+      )
     } finally {
       LoggerManager.logger = defaultLogger
     }
