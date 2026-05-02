@@ -27,9 +27,9 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
    * @param {object} node - the source Block being processed
    * @param {string|null} lang - the source language string, or falsy if none
    * @param {object} opts - options passed to the base format()
-   * @returns {string}
+   * @returns {Promise<string>}
    */
-  format(node, lang, opts) {
+  async format(node, lang, opts) {
     const transform = (pre, code) => {
       if (node.hasAttribute('nohighlight-option')) {
         pre.class = pre.class.replace(' highlight', '')

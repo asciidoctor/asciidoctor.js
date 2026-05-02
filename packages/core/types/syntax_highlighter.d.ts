@@ -81,12 +81,12 @@ export class SyntaxHighlighterBase {
      * @param {Object} opts - options
      * @param {boolean} [opts.nowrap] - disable line wrapping
      * @param {Function} [opts.transform] - called with (pre, code) attribute objects before building tags
-     * @returns {string} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags
+     * @returns {Promise<string>} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags
      */
     format(node: Block, lang: string, opts: {
         nowrap?: boolean;
         transform?: Function;
-    }): string;
+    }): Promise<string>;
     /**
      * Indicates whether this highlighter wants to write a stylesheet to disk.
      *
