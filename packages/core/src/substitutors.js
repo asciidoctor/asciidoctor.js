@@ -126,14 +126,6 @@ const PLUS = '+'
 // ── Internal helpers ──────────────────────────────────────────────────────────
 
 /**
- * Ruby `str.slice(start, length)` → JS `str.substr(start, length)`.
- * Provided here for readability in complex gsub callbacks.
- */
-function _rslice(str, start, len) {
-  return str.substr(start, len)
-}
-
-/**
  * Ruby `str.partition(delim)` → `[before, delim, after]` (first occurrence).
  * Returns `[str, '', '']` when delim is not found.
  */
