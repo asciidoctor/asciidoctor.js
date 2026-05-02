@@ -11,7 +11,7 @@ import { MemoryLogger, LoggerManager } from '../src/logging.js'
  * Decode a Unicode character by code point.
  * Ruby: decode_char 8212  →  JS: decodeChar(8212)
  */
-export function decodeChar (code) {
+export function decodeChar(code) {
   return String.fromCodePoint(code)
 }
 
@@ -24,7 +24,7 @@ export function decodeChar (code) {
  * matched by CSS selectors. Use assertXpath for any assertion that needs to
  * reach inside a <pre> block (e.g. pre/code or pre//code patterns).
  */
-export function countCss (html, selector) {
+export function countCss(html, selector) {
   // Normalize XML namespace declarations and xml: attribute prefix so that
   // css-select can match DocBook/XML output without namespace support.
   const normalized = html
@@ -55,7 +55,7 @@ export function countCss (html, selector) {
  * Assert that exactly `expected` elements match `selector` in `html`.
  * Ruby: assert_css '.foo', html, 1
  */
-export function assertCss (html, selector, expected) {
+export function assertCss(html, selector, expected) {
   const actual = countCss(html, selector)
   assert.equal(
     actual,
@@ -68,15 +68,22 @@ export function assertCss (html, selector, expected) {
  * Count occurrences of an XPath expression in an HTML string.
  * Ruby: assert_xpath '//p', html, 2
  */
-export function countXpath (html, xpath) {
+export function countXpath(html, xpath) {
   const trimmed = html.trimStart()
   let xmlSrc
-  if (trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html') || trimmed.startsWith('<?xml')) {
+  if (
+    trimmed.startsWith('<!DOCTYPE') ||
+    trimmed.startsWith('<html') ||
+    trimmed.startsWith('<?xml')
+  ) {
     // Full HTML document: strip DOCTYPE and self-close void elements so that
     // xmldom can parse as XML (no XHTML namespace, so XPath element names work as-is).
     xmlSrc = html
       .replace(/<!DOCTYPE[^>]*>/i, '')
-      .replace(/<(meta|link|br|hr|img|input|area|base|col|embed|param|source|track|wbr)\b((?:[^>"']|"[^"]*"|'[^']*')*?)>/gi, '<$1$2/>')
+      .replace(
+        /<(meta|link|br|hr|img|input|area|base|col|embed|param|source|track|wbr)\b((?:[^>"']|"[^"]*"|'[^']*')*?)>/gi,
+        '<$1$2/>'
+      )
       .trim()
   } else {
     // Fragment: self-close void elements so xmldom can parse as XML, then wrap in <root>
@@ -92,19 +99,24 @@ export function countXpath (html, xpath) {
   // needing a namespace resolver (elements with xmlns="..." would otherwise be in a
   // named namespace and //svg would not find them).
   xmlSrc = xmlSrc.replace(/\s+xmlns(?::\w+)?="[^"]*"/g, '')
-  const doc = new DOMParser({ onError: () => {} }).parseFromString(xmlSrc, 'text/xml')
+  const doc = new DOMParser({ onError: () => {} }).parseFromString(
+    xmlSrc,
+    'text/xml'
+  )
   // Cast to any to bridge @xmldom/xmldom ↔ xpath type mismatch (compatible at runtime).
   // Use a namespace-aware selector so that xml:id attributes (xml namespace) are resolved.
-  const selectFn = useNamespaces({ xml: 'http://www.w3.org/XML/1998/namespace' })
+  const selectFn = useNamespaces({
+    xml: 'http://www.w3.org/XML/1998/namespace',
+  })
   const nodes = selectFn(xpath, /** @type {any} */ (doc))
-  return Array.isArray(nodes) ? nodes.length : (nodes ? 1 : 0)
+  return Array.isArray(nodes) ? nodes.length : nodes ? 1 : 0
 }
 
 /**
  * Assert that exactly `expected` nodes match `xpath` in `html`.
  * Ruby: assert_xpath '//p', html, 2
  */
-export function assertXpath (html, xpath, expected) {
+export function assertXpath(html, xpath, expected) {
   const actual = countXpath(html, xpath)
   assert.equal(
     actual,
@@ -117,21 +129,25 @@ export function assertXpath (html, xpath, expected) {
  * Assert that a logger contains a message with the given severity and text.
  * Ruby: assert_message @logger, :WARN, 'text', Hash
  */
-export function assertMessage (logger, severity, text) {
+export function assertMessage(logger, severity, text) {
   const sev = severity.toUpperCase()
   const found = logger.messages.some((m) => {
     if (m.severity.toUpperCase() !== sev) return false
-    const msgText = typeof m.message === 'string' ? m.message : String(m.message)
+    const msgText =
+      typeof m.message === 'string' ? m.message : String(m.message)
     return msgText.includes(text)
   })
-  assert.ok(found, `Expected ${sev} message containing "${text}" but got: ${JSON.stringify(logger.messages)}`)
+  assert.ok(
+    found,
+    `Expected ${sev} message containing "${text}" but got: ${JSON.stringify(logger.messages)}`
+  )
 }
 
 /**
  * Assert that a logger contains exactly the given list of messages (order-independent).
  * Ruby: assert_messages @logger, [[:WARN, 'text'], [:ERROR, 'text2']]
  */
-export function assertMessages (logger, expected) {
+export function assertMessages(logger, expected) {
   assert.equal(
     logger.messages.length,
     expected.length,
@@ -146,7 +162,7 @@ export function assertMessages (logger, expected) {
  * Run fn with a fresh MemoryLogger installed, then restore the original logger.
  * Ruby: using_memory_logger { |logger| ... }
  */
-export async function usingMemoryLogger (fn) {
+export async function usingMemoryLogger(fn) {
   const defaultLogger = LoggerManager.logger
   const logger = new MemoryLogger()
   LoggerManager.logger = logger

@@ -5,7 +5,12 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { assertCss, assertXpath, assertMessage, usingMemoryLogger } from './helpers.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  usingMemoryLogger,
+} from './helpers.js'
 import { convertStringToEmbedded } from './harness.js'
 
 // ── Tables › PSV › Spans & Styles ────────────────────────────────────────────
@@ -41,21 +46,69 @@ d|9 2+>|10
       assertCss(output, 'table > tbody > tr:nth-child(3) > td', 1)
       assertCss(output, 'table > tbody > tr:nth-child(4) > td', 2)
 
-      assertCss(output, 'table > tbody > tr:nth-child(1) > td:nth-child(1).halign-left.valign-top p em', 1)
-      assertCss(output, 'table > tbody > tr:nth-child(1) > td:nth-child(2).halign-right.valign-top p strong', 1)
-      assertCss(output, 'table > tbody > tr:nth-child(1) > td:nth-child(3).halign-center.valign-top p', 1)
-      assertCss(output, 'table > tbody > tr:nth-child(1) > td:nth-child(3).halign-center.valign-top p *', 0)
-      assertCss(output, 'table > tbody > tr:nth-child(1) > td:nth-child(4).halign-right.valign-top p strong', 1)
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(1) > td:nth-child(1).halign-left.valign-top p em',
+        1
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(1) > td:nth-child(2).halign-right.valign-top p strong',
+        1
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(1) > td:nth-child(3).halign-center.valign-top p',
+        1
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(1) > td:nth-child(3).halign-center.valign-top p *',
+        0
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(1) > td:nth-child(4).halign-right.valign-top p strong',
+        1
+      )
 
-      assertCss(output, 'table > tbody > tr:nth-child(2) > td:nth-child(1).halign-center.valign-top p em', 1)
-      assertCss(output, 'table > tbody > tr:nth-child(2) > td:nth-child(2).halign-center.valign-middle[colspan="2"][rowspan="2"] p code', 1)
-      assertCss(output, 'table > tbody > tr:nth-child(2) > td:nth-child(3).halign-left.valign-bottom[rowspan="3"] p code', 1)
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(2) > td:nth-child(1).halign-center.valign-top p em',
+        1
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(2) > td:nth-child(2).halign-center.valign-middle[colspan="2"][rowspan="2"] p code',
+        1
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(2) > td:nth-child(3).halign-left.valign-bottom[rowspan="3"] p code',
+        1
+      )
 
-      assertCss(output, 'table > tbody > tr:nth-child(3) > td:nth-child(1).halign-center.valign-top p em', 1)
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(3) > td:nth-child(1).halign-center.valign-top p em',
+        1
+      )
 
-      assertCss(output, 'table > tbody > tr:nth-child(4) > td:nth-child(1).halign-left.valign-top p', 1)
-      assertCss(output, 'table > tbody > tr:nth-child(4) > td:nth-child(1).halign-left.valign-top p em', 0)
-      assertCss(output, 'table > tbody > tr:nth-child(4) > td:nth-child(2).halign-right.valign-top[colspan="2"] p code', 1)
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(4) > td:nth-child(1).halign-left.valign-top p',
+        1
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(4) > td:nth-child(1).halign-left.valign-top p em',
+        0
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(4) > td:nth-child(2).halign-right.valign-top[colspan="2"] p code',
+        1
+      )
     })
 
     test('sets up columns correctly if first row has cell that spans columns', async () => {
@@ -66,10 +119,26 @@ d|9 2+>|10
 |===`
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'table > tbody > tr:nth-child(1) > td', 2)
-      assertCss(output, 'table > tbody > tr:nth-child(1) > td:nth-child(1)[colspan="2"]', 1)
-      assertCss(output, 'table > tbody > tr:nth-child(1) > td:nth-child(2):not([colspan])', 1)
-      assertCss(output, 'table > tbody > tr:nth-child(2) > td:not([colspan])', 3)
-      assertCss(output, 'table > tbody > tr:nth-child(3) > td:not([colspan])', 3)
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(1) > td:nth-child(1)[colspan="2"]',
+        1
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(1) > td:nth-child(2):not([colspan])',
+        1
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(2) > td:not([colspan])',
+        3
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(3) > td:not([colspan])',
+        3
+      )
     })
 
     test('supports repeating cells', async () => {
@@ -104,13 +173,19 @@ d|9 2+>|10
 2+|Two Columns
 |One Column |One Column
 |===`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '//colspec', 2)
       assertXpath(output, '(//colspec)[1][@colname="col_1"]', 1)
       assertXpath(output, '(//colspec)[2][@colname="col_2"]', 1)
       assertXpath(output, '//row', 2)
       assertXpath(output, '(//row)[1]/entry', 1)
-      assertXpath(output, '(//row)[1]/entry[@namest="col_1"][@nameend="col_2"]', 1)
+      assertXpath(
+        output,
+        '(//row)[1]/entry[@namest="col_1"][@nameend="col_2"]',
+        1
+      )
     })
 
     test('calculates colnames correctly when using implicit column count and cells with mixed colspans', async () => {
@@ -118,14 +193,20 @@ d|9 2+>|10
 2+|Two Columns | One Column
 |One Column |One Column |One Column
 |===`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '//colspec', 3)
       assertXpath(output, '(//colspec)[1][@colname="col_1"]', 1)
       assertXpath(output, '(//colspec)[2][@colname="col_2"]', 1)
       assertXpath(output, '(//colspec)[3][@colname="col_3"]', 1)
       assertXpath(output, '//row', 2)
       assertXpath(output, '(//row)[1]/entry', 2)
-      assertXpath(output, '(//row)[1]/entry[@namest="col_1"][@nameend="col_2"]', 1)
+      assertXpath(
+        output,
+        '(//row)[1]/entry[@namest="col_1"][@nameend="col_2"]',
+        1
+      )
       assertXpath(output, '(//row)[2]/entry[@namest]', 0)
       assertXpath(output, '(//row)[2]/entry[@nameend]', 0)
     })
@@ -137,7 +218,9 @@ d|9 2+>|10
 | Host processes    | Core 0 | Core 1   | Core 4 | Core 5
 | Guest processes   | Core 2 | Core 3   | Core 6 | Core 7
 |===`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '//colspec', 5)
       for (let n = 1; n <= 5; n++) {
         assertXpath(output, `(//colspec)[${n}][@colname="col_${n}"]`, 1)
@@ -145,8 +228,16 @@ d|9 2+>|10
       assertXpath(output, '(//row)[1]/entry', 3)
       assertXpath(output, '((//row)[1]/entry)[1][@namest]', 0)
       assertXpath(output, '((//row)[1]/entry)[1][@namend]', 0)
-      assertXpath(output, '((//row)[1]/entry)[2][@namest="col_2"][@nameend="col_3"]', 1)
-      assertXpath(output, '((//row)[1]/entry)[3][@namest="col_4"][@nameend="col_5"]', 1)
+      assertXpath(
+        output,
+        '((//row)[1]/entry)[2][@namest="col_2"][@nameend="col_3"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//row)[1]/entry)[3][@namest="col_4"][@nameend="col_5"]',
+        1
+      )
     })
 
     test('should drop row but preserve remaining rows after cell with colspan exceeds number of columns', async () => {
@@ -163,7 +254,11 @@ more C
         assertCss(output, 'table', 1)
         assertCss(output, 'table tr', 1)
         assertXpath(output, '/table/tbody/tr/td[1]/p[text()="B"]', 1)
-        assertMessage(logger, 'ERROR', '<stdin>: line 3: dropping cell because it exceeds specified number of columns')
+        assertMessage(
+          logger,
+          'ERROR',
+          '<stdin>: line 3: dropping cell because it exceeds specified number of columns'
+        )
       })
     })
 
@@ -176,7 +271,11 @@ more C
         const output = await convertStringToEmbedded(input)
         assertCss(output, 'table', 1)
         assertCss(output, 'table *', 0)
-        assertMessage(logger, 'ERROR', '<stdin>: line 3: dropping cell because it exceeds specified number of columns')
+        assertMessage(
+          logger,
+          'ERROR',
+          '<stdin>: line 3: dropping cell because it exceeds specified number of columns'
+        )
       })
     })
 
@@ -190,7 +289,11 @@ more C
         assertCss(output, 'table', 1)
         assertCss(output, 'table tr', 1)
         assertXpath(output, '/table/tbody/tr/td[1]/p[text()="a"]', 1)
-        assertMessage(logger, 'ERROR', '<stdin>: line 3: dropping cell because it exceeds specified number of columns')
+        assertMessage(
+          logger,
+          'ERROR',
+          '<stdin>: line 3: dropping cell because it exceeds specified number of columns'
+        )
       })
     })
 
@@ -205,7 +308,11 @@ more C
         assertCss(output, 'table', 1)
         assertCss(output, 'table tr', 1)
         assertCss(output, 'table tr td', 7)
-        assertMessage(logger, 'ERROR', '<stdin>: line 3: dropping cell because it exceeds specified number of columns')
+        assertMessage(
+          logger,
+          'ERROR',
+          '<stdin>: line 3: dropping cell because it exceeds specified number of columns'
+        )
       })
     })
 
@@ -220,7 +327,11 @@ more C
         const output = await convertStringToEmbedded(input)
         assertCss(output, 'table', 1)
         assertCss(output, 'table tr', 2)
-        assertMessage(logger, 'ERROR', '<stdin>: line 5: dropping cells from incomplete row detected end of table')
+        assertMessage(
+          logger,
+          'ERROR',
+          '<stdin>: line 5: dropping cells from incomplete row detected end of table'
+        )
       })
     })
 
@@ -265,12 +376,22 @@ I wouldn't have it any other way.
       assertCss(output, 'table > tbody', 1)
       assertCss(output, 'table > tbody > tr', 1)
       assertCss(output, 'table > tbody > tr > td', 2)
-      assertCss(output, 'table > tbody > tr > td:nth-child(1).halign-left.valign-top > p.tableblock', 7)
-      assertCss(output, 'table > tbody > tr > td:nth-child(2).halign-center.valign-top > div.literal > pre', 1)
+      assertCss(
+        output,
+        'table > tbody > tr > td:nth-child(1).halign-left.valign-top > p.tableblock',
+        7
+      )
+      assertCss(
+        output,
+        'table > tbody > tr > td:nth-child(2).halign-center.valign-top > div.literal > pre',
+        1
+      )
       // Count lines in the literal block
       const { parse } = await import('node-html-parser')
       const root = parse(`<body>${output}</body>`)
-      const pre = root.querySelector('table > tbody > tr > td:nth-child(2) > div.literal > pre')
+      const pre = root.querySelector(
+        'table > tbody > tr > td:nth-child(2) > div.literal > pre'
+      )
       assert.ok(pre, 'Expected to find a <pre> element')
       assert.equal(pre.textContent.split('\n').length, 26)
     })
@@ -297,9 +418,21 @@ second paragraph
 third paragraph
 |===`
       const result = await convertStringToEmbedded(input)
-      assertXpath(result, `(//p[@class="tableblock"])[1][text()="first wrapped\nparagraph"]`, 1)
-      assertXpath(result, `(//p[@class="tableblock"])[2][text()="second paragraph"]`, 1)
-      assertXpath(result, `(//p[@class="tableblock"])[3][text()="third paragraph"]`, 1)
+      assertXpath(
+        result,
+        `(//p[@class="tableblock"])[1][text()="first wrapped\nparagraph"]`,
+        1
+      )
+      assertXpath(
+        result,
+        `(//p[@class="tableblock"])[2][text()="second paragraph"]`,
+        1
+      )
+      assertXpath(
+        result,
+        `(//p[@class="tableblock"])[3][text()="third paragraph"]`,
+        1
+      )
     })
   })
 })

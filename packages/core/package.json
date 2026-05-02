@@ -25,9 +25,9 @@
     "test": "node --test test/**.test.js",
     "test:coverage": "node --test --experimental-test-coverage --test-coverage-include='src/**' test/**.test.js",
     "test:browser": "vitest run --config vitest.browser.config.js",
-    "lint": "biome lint src",
-    "format": "biome format --write src",
-    "check": "biome check src"
+    "lint": "biome lint src test",
+    "format": "biome format --write src test",
+    "check": "biome check src test"
   },
   "repository": {
     "type": "git",

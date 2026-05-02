@@ -7,64 +7,72 @@
 import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { ConverterFactory, convert, load, Block, Html5Converter } from '../src/index.js'
+import {
+  ConverterFactory,
+  convert,
+  load,
+  Block,
+  Html5Converter,
+} from '../src/index.js'
 
 // ── Converter classes used across multiple tests ───────────────────────────────
 
 class BlankConverter {
-  convert () {
+  convert() {
     return ''
   }
 }
 
 class DummyConverter {
-  constructor () {
+  constructor() {
     this.transforms = {
       embedded: async (node) => {
         return `<dummy>${await node.getContent()}</dummy>`
       },
       paragraph: (node) => {
         return node.getContent()
-      }
+      },
     }
   }
 
-  convert (node, transform) {
+  convert(node, transform) {
     return this.transforms[transform || node.nodeName](node)
   }
 }
 
 class DelegateConverter {
-  convert (node, transform) {
+  convert(node, transform) {
     return this[`convert_${transform || node.nodeName}`](node)
   }
 
-  async convert_embedded (node) { // eslint-disable-line camelcase
+  async convert_embedded(node) {
+    // eslint-disable-line camelcase
     return `<delegate>${await node.getContent()}</delegate>`
   }
 
-  convert_paragraph (node) { // eslint-disable-line camelcase
+  convert_paragraph(node) {
+    // eslint-disable-line camelcase
     return node.getContent()
   }
 }
 
 class TEIConverter {
-  constructor (backend, _) {
+  constructor(backend, _) {
     this.backend = backend
     this.backendTraits = {
       basebackend: 'xml',
       outfilesuffix: '.xml',
       filetype: 'xml',
-      htmlsyntax: 'xml'
+      htmlsyntax: 'xml',
     }
     this.transforms = {
       embedded: async (node) => {
         return `<tei>${await node.getContent()}</tei>`
-      }
+      },
     }
   }
 
-  async convert (node, transform) {
+  async convert(node, transform) {
     const name = transform || node.nodeName
     if (name === 'paragraph') {
       return await this.convertParagraph(node)
@@ -72,13 +80,13 @@ class TEIConverter {
     return await this.transforms[name](node)
   }
 
-  convertParagraph (node) {
+  convertParagraph(node) {
     return node.getContent()
   }
 }
 
 class XMLConverter {
-  constructor () {
+  constructor() {
     this.backend = 'xml'
     this.basebackend = 'xml'
     this.outfilesuffix = '.xml'
@@ -87,11 +95,11 @@ class XMLConverter {
     this.transforms = {
       embedded: async (node) => {
         return `<xml>${await node.getContent()}</xml>`
-      }
+      },
     }
   }
 
-  convert (node, transform) {
+  convert(node, transform) {
     const name = transform || node.nodeName
     if (name === 'paragraph') {
       return this.convertParagraph(node)
@@ -99,28 +107,28 @@ class XMLConverter {
     return this.transforms[name](node)
   }
 
-  convertParagraph (node) {
+  convertParagraph(node) {
     return node.getContent()
   }
 }
 
 class TxtConverter {
-  constructor () {
+  constructor() {
     this.backendTraits = {
       basebackend: 'txt',
       outfilesuffix: '.txt',
       filetype: 'txt',
       htmlsyntax: 'txt',
-      supports_templates: true
+      supports_templates: true,
     }
     this.transforms = {
       embedded: async (node) => {
         return `${await node.getContent()}`
-      }
+      },
     }
   }
 
-  convert (node, transform) {
+  convert(node, transform) {
     const name = transform || node.nodeName
     if (name === 'paragraph') {
       return this.convertParagraph(node)
@@ -128,13 +136,13 @@ class TxtConverter {
     return this.transforms[name](node)
   }
 
-  convertParagraph (node) {
+  convertParagraph(node) {
     return node.getContent()
   }
 }
 
 class EPUB3Converter {
-  constructor () {
+  constructor() {
     this.backend = 'epub3'
     this.basebackend = 'html'
     this.outfilesuffix = '.epub'
@@ -142,11 +150,11 @@ class EPUB3Converter {
     this.transforms = {
       embedded: async (node) => {
         return `<epub3>${await node.getContent()}</epub3>`
-      }
+      },
     }
   }
 
-  convert (node, transform) {
+  convert(node, transform) {
     const name = transform || node.nodeName
     if (name === 'paragraph') {
       return this.convertParagraph(node)
@@ -154,13 +162,13 @@ class EPUB3Converter {
     return this.transforms[name](node)
   }
 
-  convertParagraph (node) {
+  convertParagraph(node) {
     return node.getContent()
   }
 }
 
 class XrefConverter {
-  convert (node, transform) {
+  convert(node, transform) {
     const name = transform || node.nodeName
     if (name === 'inline_anchor') {
       return this.convertInlineAnchor(node)
@@ -168,7 +176,7 @@ class XrefConverter {
     return node.getContent()
   }
 
-  convertInlineAnchor (node) {
+  convertInlineAnchor(node) {
     return `
 getAttributes().fragment: ${typeof node.getAttributes().fragment === 'undefined'}
 getAttribute('fragment'): ${node.getAttribute('fragment') === null}`
@@ -185,9 +193,12 @@ describe('Registering converter', () => {
   test('should get inline anchor attributes', async () => {
     ConverterFactory.register(new XrefConverter(), ['xref'])
     const html = await convert('xref:file.adoc[]', { backend: 'xref' })
-    assert.equal(html, `
+    assert.equal(
+      html,
+      `
 getAttributes().fragment: true
-getAttribute('fragment'): true`)
+getAttribute('fragment'): true`
+    )
   })
 
   test('should return the default converter registry', async () => {
@@ -218,7 +229,10 @@ getAttribute('fragment'): true`)
 
   test('should register a custom converter with delegate', async () => {
     ConverterFactory.register(new DelegateConverter(), ['delegate'])
-    const result = await convert('content', { safe: 'safe', backend: 'delegate' })
+    const result = await convert('content', {
+      safe: 'safe',
+      backend: 'delegate',
+    })
     assert.ok(result.includes('<delegate>content</delegate>'))
   })
 
@@ -267,7 +281,7 @@ getAttribute('fragment'): true`)
 
   test('should register a custom converter (fallback to the built-in HTML5 converter)', async () => {
     class BlogConverter {
-      constructor () {
+      constructor() {
         this.baseConverter = Html5Converter.create()
         this.transforms = {
           document: async (node) => {
@@ -294,11 +308,11 @@ getAttribute('fragment'): true`)
     ${await node.getContent()}
   </section>
 </body>`
-          }
+          },
         }
       }
 
-      convert (node, transform, opts) {
+      convert(node, transform, opts) {
         const template = this.transforms[transform || node.nodeName]
         if (template) {
           return template(node)
@@ -317,7 +331,9 @@ Guillaume Grossetie <ggrossetie@yuzutech.fr>
 AsciiDoc is about being able to focus on expressing your ideas, writing with ease and passing on knowledge without the distraction of complex applications or angle brackets.
 In other words, it's about discovering writing zen.`
     const result = await convert(input, options)
-    assert.ok(result.includes('<span class="blog-author">Guillaume Grossetie</span>')) // custom blog converter
+    assert.ok(
+      result.includes('<span class="blog-author">Guillaume Grossetie</span>')
+    ) // custom blog converter
     assert.ok(result.includes('<div class="sect1">')) // built-in HTML5 converter
   })
 })

@@ -2,7 +2,14 @@ import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
-import { mkdtemp, rm, readFile, writeFile, mkdir, readdir } from 'node:fs/promises'
+import {
+  mkdtemp,
+  rm,
+  readFile,
+  writeFile,
+  mkdir,
+  readdir,
+} from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 
 import { convert, convertFile, render, renderFile } from '../src/convert.js'
@@ -21,10 +28,16 @@ async function withTmpDir(fn) {
 // ── convert() – no file I/O ───────────────────────────────────────────────────
 
 test('convert string with to_file:false returns embedded HTML string', async () => {
-  const output = await convert('Hello *world*', { safe: 'unsafe', to_file: false })
+  const output = await convert('Hello *world*', {
+    safe: 'unsafe',
+    to_file: false,
+  })
   assert.equal(typeof output, 'string')
   assert.ok(output.includes('<strong>world</strong>'))
-  assert.ok(!output.includes('<!DOCTYPE html>'), 'embedded output has no doctype')
+  assert.ok(
+    !output.includes('<!DOCTYPE html>'),
+    'embedded output has no doctype'
+  )
 })
 
 test('convert with to_file:/dev/null returns Document without converting', async () => {
@@ -34,14 +47,25 @@ test('convert with to_file:/dev/null returns Document without converting', async
 })
 
 test('convert with header_footer:true produces full standalone HTML page', async () => {
-  const output = await convert('Hello', { safe: 'unsafe', to_file: false, header_footer: true })
+  const output = await convert('Hello', {
+    safe: 'unsafe',
+    to_file: false,
+    header_footer: true,
+  })
   assert.ok(output.includes('<!DOCTYPE html>'))
 })
 
 test('convert to writable stream returns Document and calls stream.write()', async () => {
   const chunks = []
-  const stream = { write(data) { chunks.push(data) } }
-  const doc = await convert('Hello *world*', { safe: 'unsafe', to_file: stream })
+  const stream = {
+    write(data) {
+      chunks.push(data)
+    },
+  }
+  const doc = await convert('Hello *world*', {
+    safe: 'unsafe',
+    to_file: stream,
+  })
   assert.equal(doc.constructor.name, 'Document')
   const html = chunks.join('')
   assert.ok(html.includes('<strong>world</strong>'))
@@ -53,7 +77,10 @@ describe('convert() writing to file', () => {
   test('to_file path writes HTML file and returns Document', async () => {
     await withTmpDir(async (dir) => {
       const outPath = join(dir, 'output.html')
-      const doc = await convert('Hello *world*', { safe: 'unsafe', to_file: outPath })
+      const doc = await convert('Hello *world*', {
+        safe: 'unsafe',
+        to_file: outPath,
+      })
       assert.equal(doc.constructor.name, 'Document')
       const html = await readFile(outPath, 'utf8')
       assert.ok(html.includes('<strong>world</strong>'))
@@ -62,7 +89,11 @@ describe('convert() writing to file', () => {
 
   test('to_dir alone writes file named from docname attribute', async () => {
     await withTmpDir(async (dir) => {
-      const doc = await convert('Hello', { safe: 'unsafe', to_dir: dir, attributes: 'docname=mytest' })
+      const doc = await convert('Hello', {
+        safe: 'unsafe',
+        to_dir: dir,
+        attributes: 'docname=mytest',
+      })
       assert.equal(doc.constructor.name, 'Document')
       const html = await readFile(join(dir, 'mytest.html'), 'utf8')
       assert.ok(html.includes('Hello'))
@@ -71,7 +102,11 @@ describe('convert() writing to file', () => {
 
   test('to_dir + to_file writes to named file in directory', async () => {
     await withTmpDir(async (dir) => {
-      const doc = await convert('Hello', { safe: 'unsafe', to_dir: dir, to_file: 'result.html' })
+      const doc = await convert('Hello', {
+        safe: 'unsafe',
+        to_dir: dir,
+        to_file: 'result.html',
+      })
       assert.equal(doc.constructor.name, 'Document')
       const html = await readFile(join(dir, 'result.html'), 'utf8')
       assert.ok(html.includes('Hello'))
@@ -81,7 +116,12 @@ describe('convert() writing to file', () => {
   test('mkdirs:true creates missing directory and writes file', async () => {
     await withTmpDir(async (dir) => {
       const outDir = join(dir, 'new', 'subdir')
-      await convert('Hello', { safe: 'unsafe', to_dir: outDir, to_file: 'output.html', mkdirs: true })
+      await convert('Hello', {
+        safe: 'unsafe',
+        to_dir: outDir,
+        to_file: 'output.html',
+        mkdirs: true,
+      })
       const html = await readFile(join(outDir, 'output.html'), 'utf8')
       assert.ok(html.includes('Hello'))
     })
@@ -91,7 +131,12 @@ describe('convert() writing to file', () => {
     await withTmpDir(async (dir) => {
       const outDir = join(dir, 'nonexistent')
       await assert.rejects(
-        () => convert('Hello', { safe: 'unsafe', to_dir: outDir, to_file: 'output.html' }),
+        () =>
+          convert('Hello', {
+            safe: 'unsafe',
+            to_dir: outDir,
+            to_file: 'output.html',
+          }),
         /target directory does not exist/
       )
     })
@@ -102,7 +147,10 @@ describe('convert() writing to file', () => {
       const inputPath = join(dir, 'hello.adoc')
       const content = '= Hello\n\nWorld.'
       await writeFile(inputPath, content, 'utf8')
-      const doc = await convert({ path: inputPath, read: () => content }, { safe: 'unsafe' })
+      const doc = await convert(
+        { path: inputPath, read: () => content },
+        { safe: 'unsafe' }
+      )
       assert.equal(doc.constructor.name, 'Document')
       const html = await readFile(join(dir, 'hello.html'), 'utf8')
       assert.ok(html.includes('World'))
@@ -115,7 +163,8 @@ describe('convert() writing to file', () => {
       const inputPath = join(dir, 'hello.html')
       await writeFile(inputPath, '<p>existing</p>', 'utf8')
       await assert.rejects(
-        () => convert({ path: inputPath, read: () => 'Hello' }, { safe: 'unsafe' }),
+        () =>
+          convert({ path: inputPath, read: () => 'Hello' }, { safe: 'unsafe' }),
         /input file and output file cannot be the same/
       )
     })
@@ -127,7 +176,10 @@ describe('convert() writing to file', () => {
       const content = '= Hello\n\nWorld.'
       await writeFile(inputPath, content, 'utf8')
       const outPath = join(dir, 'custom.html')
-      const doc = await convert({ path: inputPath, read: () => content }, { safe: 'unsafe', to_file: outPath })
+      const doc = await convert(
+        { path: inputPath, read: () => content },
+        { safe: 'unsafe', to_file: outPath }
+      )
       assert.equal(doc.constructor.name, 'Document')
       const html = await readFile(outPath, 'utf8')
       assert.ok(html.includes('World'))
@@ -139,7 +191,11 @@ describe('convert() writing to file', () => {
       const inputPath = join(dir, 'hello.adoc')
       await writeFile(inputPath, '= Hello', 'utf8')
       await assert.rejects(
-        () => convert({ path: inputPath, read: () => '= Hello' }, { safe: 'unsafe', to_file: inputPath }),
+        () =>
+          convert(
+            { path: inputPath, read: () => '= Hello' },
+            { safe: 'unsafe', to_file: inputPath }
+          ),
         /input file and output file cannot be the same/
       )
     })
@@ -150,10 +206,16 @@ describe('convert() writing to file', () => {
 
 describe('convertFile()', () => {
   test('reads file and returns embedded HTML string with to_file:false', async () => {
-    const output = await convertFile(join(FIXTURES_DIR, 'sample.adoc'), { safe: 'unsafe', to_file: false })
+    const output = await convertFile(join(FIXTURES_DIR, 'sample.adoc'), {
+      safe: 'unsafe',
+      to_file: false,
+    })
     assert.equal(typeof output, 'string')
     assert.ok(output.includes('Preamble paragraph'))
-    assert.ok(!output.includes('<!DOCTYPE html>'), 'embedded output has no doctype')
+    assert.ok(
+      !output.includes('<!DOCTYPE html>'),
+      'embedded output has no doctype'
+    )
   })
 
   test('reads file and writes adjacent .html file', async () => {
@@ -178,7 +240,10 @@ test('render is an alias for convert', async () => {
 })
 
 test('renderFile is an alias for convertFile', async () => {
-  const output = await renderFile(join(FIXTURES_DIR, 'sample.adoc'), { safe: 'unsafe', to_file: false })
+  const output = await renderFile(join(FIXTURES_DIR, 'sample.adoc'), {
+    safe: 'unsafe',
+    to_file: false,
+  })
   assert.equal(typeof output, 'string')
   assert.ok(output.includes('Preamble paragraph'))
 })
@@ -197,9 +262,16 @@ describe('stylesheet copying (linkcss + copycss)', () => {
       const outDir = join(dir, 'out')
       await mkdir(outDir)
       // stylesheet='' (default) → falsy → DEFAULT_STYLESHEET_KEYS block is skipped entirely
-      await convert(fileInput(inputPath, content), { safe: 'unsafe', to_dir: outDir, attributes: { linkcss: '' } })
+      await convert(fileInput(inputPath, content), {
+        safe: 'unsafe',
+        to_dir: outDir,
+        attributes: { linkcss: '' },
+      })
       const files = await readdir(outDir)
-      assert.ok(!files.some((f) => f.endsWith('.css')), 'asciidoctor.css should not be written (not yet ported)')
+      assert.ok(
+        !files.some((f) => f.endsWith('.css')),
+        'asciidoctor.css should not be written (not yet ported)'
+      )
     })
   })
 
@@ -217,7 +289,10 @@ describe('stylesheet copying (linkcss + copycss)', () => {
         attributes: { linkcss: '', stylesheet: 'DEFAULT' },
       })
       const files = await readdir(outDir)
-      assert.ok(!files.some((f) => f.endsWith('.css')), 'no CSS file written (not yet ported)')
+      assert.ok(
+        !files.some((f) => f.endsWith('.css')),
+        'no CSS file written (not yet ported)'
+      )
     })
   })
 
@@ -250,7 +325,11 @@ describe('stylesheet copying (linkcss + copycss)', () => {
       await convert(fileInput(inputPath, content), {
         safe: 'unsafe',
         to_dir: outDir,
-        attributes: { linkcss: '', stylesheet: 'mystyle.css', stylesdir: 'css' },
+        attributes: {
+          linkcss: '',
+          stylesheet: 'mystyle.css',
+          stylesdir: 'css',
+        },
       })
       const css = await readFile(join(outDir, 'css', 'mystyle.css'), 'utf8')
       assert.ok(css.includes('color: blue'))
@@ -269,7 +348,11 @@ describe('stylesheet copying (linkcss + copycss)', () => {
         safe: 'unsafe',
         to_dir: outDir,
         mkdirs: true,
-        attributes: { linkcss: '', stylesheet: 'mystyle.css', stylesdir: 'styles' },
+        attributes: {
+          linkcss: '',
+          stylesheet: 'mystyle.css',
+          stylesdir: 'styles',
+        },
       })
       const css = await readFile(join(outDir, 'styles', 'mystyle.css'), 'utf8')
       assert.ok(css.includes('margin: 0'))
@@ -289,7 +372,11 @@ describe('stylesheet copying (linkcss + copycss)', () => {
           convert(fileInput(inputPath, content), {
             safe: 'unsafe',
             to_dir: outDir,
-            attributes: { linkcss: '', stylesheet: 'mystyle.css', stylesdir: 'missing-styles' },
+            attributes: {
+              linkcss: '',
+              stylesheet: 'mystyle.css',
+              stylesdir: 'missing-styles',
+            },
           }),
         /target stylesheet directory does not exist/
       )
@@ -306,10 +393,16 @@ describe('stylesheet copying (linkcss + copycss)', () => {
       await convert(fileInput(inputPath, content), {
         safe: 'unsafe',
         to_dir: outDir,
-        attributes: { linkcss: '', stylesheet: 'https://example.com/style.css' },
+        attributes: {
+          linkcss: '',
+          stylesheet: 'https://example.com/style.css',
+        },
       })
       const files = await readdir(outDir)
-      assert.ok(!files.some((f) => f.endsWith('.css')), 'URI stylesheet must not be copied')
+      assert.ok(
+        !files.some((f) => f.endsWith('.css')),
+        'URI stylesheet must not be copied'
+      )
     })
   })
 
@@ -324,10 +417,17 @@ describe('stylesheet copying (linkcss + copycss)', () => {
       await convert(fileInput(inputPath, content), {
         safe: 'unsafe',
         to_dir: outDir,
-        attributes: { linkcss: '', stylesheet: 'mystyle.css', stylesdir: 'https://cdn.example.com/' },
+        attributes: {
+          linkcss: '',
+          stylesheet: 'mystyle.css',
+          stylesdir: 'https://cdn.example.com/',
+        },
       })
       const files = await readdir(outDir)
-      assert.ok(!files.some((f) => f.endsWith('.css')), 'URI stylesdir must skip copy entirely')
+      assert.ok(
+        !files.some((f) => f.endsWith('.css')),
+        'URI stylesdir must skip copy entirely'
+      )
     })
   })
 
@@ -365,7 +465,11 @@ describe('stylesheet copying (linkcss + copycss)', () => {
         safe: 'unsafe',
         to_dir: outDir,
         mkdirs: true,
-        attributes: { linkcss: '', stylesheet: 'themes/base.css', copycss: join(dir, 'base.css') },
+        attributes: {
+          linkcss: '',
+          stylesheet: 'themes/base.css',
+          copycss: join(dir, 'base.css'),
+        },
       })
       const css = await readFile(join(outDir, 'themes', 'base.css'), 'utf8')
       assert.ok(css.includes('padding: 0'))
@@ -385,7 +489,11 @@ describe('stylesheet copying (linkcss + copycss)', () => {
           convert(fileInput(inputPath, content), {
             safe: 'unsafe',
             to_dir: outDir,
-            attributes: { linkcss: '', stylesheet: 'themes/base.css', copycss: join(dir, 'base.css') },
+            attributes: {
+              linkcss: '',
+              stylesheet: 'themes/base.css',
+              copycss: join(dir, 'base.css'),
+            },
           }),
         /target stylesheet directory does not exist/
       )
@@ -405,7 +513,11 @@ describe('stylesheet copying (linkcss + copycss)', () => {
         attributes: { linkcss: '', stylesheet: 'mystyle.css' },
       })
       const css = await readFile(join(dir, 'mystyle.css'), 'utf8')
-      assert.equal(css, 'original', 'file must not be overwritten when src == dest')
+      assert.equal(
+        css,
+        'original',
+        'file must not be overwritten when src == dest'
+      )
     })
   })
 
@@ -422,7 +534,9 @@ describe('stylesheet copying (linkcss + copycss)', () => {
         to_dir: outDir,
         attributes: { linkcss: '', stylesheet: 'mystyle.css' },
       })
-      await assert.rejects(readFile(join(outDir, 'mystyle.css'), 'utf8'), { code: 'ENOENT' })
+      await assert.rejects(readFile(join(outDir, 'mystyle.css'), 'utf8'), {
+        code: 'ENOENT',
+      })
     })
   })
 })

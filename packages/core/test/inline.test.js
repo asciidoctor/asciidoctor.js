@@ -9,14 +9,18 @@ import { documentFromString } from './harness.js'
 describe('Inline', () => {
   describe('type predicates', () => {
     test('isBlock() returns false', async () => {
-      const doc = await documentFromString('[[anchor-id,My Text]]paragraph text')
+      const doc = await documentFromString(
+        '[[anchor-id,My Text]]paragraph text'
+      )
       const inline = doc.catalog.refs['anchor-id']
       assert.ok(inline instanceof Inline)
       assert.equal(inline.isBlock(), false)
     })
 
     test('isInline() returns true', async () => {
-      const doc = await documentFromString('[[anchor-id,My Text]]paragraph text')
+      const doc = await documentFromString(
+        '[[anchor-id,My Text]]paragraph text'
+      )
       const inline = doc.catalog.refs['anchor-id']
       assert.equal(inline.isInline(), true)
     })
@@ -95,7 +99,10 @@ describe('Inline', () => {
     test('render() is a deprecated alias for convert()', async () => {
       const doc = await documentFromString('[[anchor-id,Tigers]]paragraph text')
       const inline = doc.catalog.refs['anchor-id']
-      const [converted, rendered] = await Promise.all([inline.convert(), inline.render()])
+      const [converted, rendered] = await Promise.all([
+        inline.convert(),
+        inline.render(),
+      ])
       assert.equal(rendered, converted)
     })
   })

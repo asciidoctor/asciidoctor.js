@@ -2,7 +2,13 @@ module.exports = function ({ node, _, helpers }) {
   const rew = node.isOption('rewind') ? 'true' : undefined
   const vol = node.isOption('muted') ? 0 : node.getAttribute('volume')
   const target = helpers.getLocalAttribute(node, 'target')
-  const params = ['enablejsapi=1', 'rel=0', 'showinfo=0', 'controls=0', 'disablekb=1']
+  const params = [
+    'enablejsapi=1',
+    'rel=0',
+    'showinfo=0',
+    'controls=0',
+    'disablekb=1',
+  ]
   if (helpers.getLocalAttribute(node, 'start')) {
     params.push(`start=${helpers.getLocalAttribute(node, 'start')}`)
   }

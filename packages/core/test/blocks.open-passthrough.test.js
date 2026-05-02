@@ -2,7 +2,12 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+  blockFromString,
+} from './harness.js'
 
 describe('Blocks', () => {
   let logger
@@ -116,7 +121,11 @@ This is an open block with a title.
       assertCss(output, 'article > formalpara', 1)
       assertCss(output, 'article > formalpara > *', 2)
       assertCss(output, 'article > formalpara > title', 1)
-      assertXpath(output, '/article/formalpara/title[text()="Behold the open"]', 1)
+      assertXpath(
+        output,
+        '/article/formalpara/title[text()="Behold the open"]',
+        1
+      )
       assertCss(output, 'article > formalpara > para', 1)
       assertCss(output, 'article > formalpara > para > simpara', 1)
     })
@@ -129,9 +138,17 @@ This is an open paragraph with a title.`
       assertCss(output, 'article > formalpara', 1)
       assertCss(output, 'article > formalpara > *', 2)
       assertCss(output, 'article > formalpara > title', 1)
-      assertXpath(output, '/article/formalpara/title[text()="Behold the open"]', 1)
+      assertXpath(
+        output,
+        '/article/formalpara/title[text()="Behold the open"]',
+        1
+      )
       assertCss(output, 'article > formalpara > para', 1)
-      assertXpath(output, '/article/formalpara/para[text()="This is an open paragraph with a title."]', 1)
+      assertXpath(
+        output,
+        '/article/formalpara/para[text()="This is an open paragraph with a title."]',
+        1
+      )
     })
 
     test('transfer role on open block to DocBook output', async () => {
@@ -232,7 +249,15 @@ line below
 
       const doc = await documentFromString(input, { standalone: false })
       const block = doc.blocks[1]
-      assert.deepEqual(block.lines, ['', '', '  first line', '', 'last line', '', ''])
+      assert.deepEqual(block.lines, [
+        '',
+        '',
+        '  first line',
+        '',
+        'last line',
+        '',
+        '',
+      ])
       const result = await doc.convert()
       assert.equal(result, 'line above\n  first line\n\nlast line\nline below')
     })

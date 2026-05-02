@@ -5,25 +5,38 @@ import { load } from '../src/load.js'
 import { Block } from '../src/block.js'
 import { SafeMode, INTRINSIC_ATTRIBUTES, USER_HOME } from '../src/constants.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+  blockFromString,
+} from './harness.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const convertInlineString = (input, opts = {}) => documentFromString(input, { doctype: 'inline', ...opts }).then(async ( doc) => await doc.convert())
-const emptyDocument = (opts = {}) => documentFromString('', { parse: false, ...opts })
+const convertInlineString = (input, opts = {}) =>
+  documentFromString(input, { doctype: 'inline', ...opts }).then(
+    async (doc) => await doc.convert()
+  )
+const emptyDocument = (opts = {}) =>
+  documentFromString('', { parse: false, ...opts })
 
 // Simple helper to assert that a logger contains a message with the given severity and text.
-function assertMessage (logger, severity, text) {
+function assertMessage(logger, severity, text) {
   const found = logger.messages.some((m) => {
     if (m.severity !== severity) return false
-    const msgText = typeof m.message === 'string' ? m.message : String(m.message)
+    const msgText =
+      typeof m.message === 'string' ? m.message : String(m.message)
     return msgText.includes(text)
   })
-  assert.ok(found, `Expected ${severity} message containing "${text}" but got: ${JSON.stringify(logger.messages)}`)
+  assert.ok(
+    found,
+    `Expected ${severity} message containing "${text}" but got: ${JSON.stringify(logger.messages)}`
+  )
 }
 
 // Count occurrences of a closing tag (proxy for element count).
-function countTag (html, tag) {
+function countTag(html, tag) {
   return (html.match(new RegExp(`</${tag}>`, 'gi')) ?? []).length
 }
 
@@ -70,35 +83,62 @@ describe('Attributes', () => {
     })
 
     test('allows any word character defined by Unicode in an attribute name', async () => {
-      for (const [name, value] of [['café', 'a coffee shop'], ['سمن', 'سازمان مردمنهاد']]) {
+      for (const [name, value] of [
+        ['café', 'a coffee shop'],
+        ['سمن', 'سازمان مردمنهاد'],
+      ]) {
         const str = `:${name}: ${value}\n\n{${name}}`
         const result = await convertStringToEmbedded(str)
-        assert.ok(result.includes(value), `Expected output to include "${value}"`)
+        assert.ok(
+          result.includes(value),
+          `Expected output to include "${value}"`
+        )
       }
     })
 
     test('creates an attribute by fusing a legacy multi-line value', async () => {
-      const str = ':description: This is the first      +\n              Ruby implementation of +\n              AsciiDoc.'
+      const str =
+        ':description: This is the first      +\n              Ruby implementation of +\n              AsciiDoc.'
       const doc = await documentFromString(str)
-      assert.equal(doc.attributes['description'], 'This is the first Ruby implementation of AsciiDoc.')
+      assert.equal(
+        doc.attributes['description'],
+        'This is the first Ruby implementation of AsciiDoc.'
+      )
     })
 
     test('creates an attribute by fusing a multi-line value', async () => {
-      const str = ':description: This is the first \\\n              Ruby implementation of \\\n              AsciiDoc.'
+      const str =
+        ':description: This is the first \\\n              Ruby implementation of \\\n              AsciiDoc.'
       const doc = await documentFromString(str)
-      assert.equal(doc.attributes['description'], 'This is the first Ruby implementation of AsciiDoc.')
+      assert.equal(
+        doc.attributes['description'],
+        'This is the first Ruby implementation of AsciiDoc.'
+      )
     })
 
     test('honors line break characters in multi-line values', async () => {
-      const str = ':signature: Linus Torvalds + \\\nLinux Hacker + \\\nlinus.torvalds@example.com'
+      const str =
+        ':signature: Linus Torvalds + \\\nLinux Hacker + \\\nlinus.torvalds@example.com'
       const doc = await documentFromString(str)
-      assert.equal(doc.attributes['signature'], 'Linus Torvalds +\nLinux Hacker +\nlinus.torvalds@example.com')
+      assert.equal(
+        doc.attributes['signature'],
+        'Linus Torvalds +\nLinux Hacker +\nlinus.torvalds@example.com'
+      )
     })
 
     test('allow pass macro to surround a multi-line value that contains line breaks', async () => {
       const str = ':signature: pass:a[{author} + \\\n{title} + \\\n{email}]'
-      const doc = await documentFromString(str, { attributes: { author: 'Linus Torvalds', title: 'Linux Hacker', email: 'linus.torvalds@example.com' } })
-      assert.equal(doc.getAttribute('signature'), 'Linus Torvalds +\nLinux Hacker +\nlinus.torvalds@example.com')
+      const doc = await documentFromString(str, {
+        attributes: {
+          author: 'Linus Torvalds',
+          title: 'Linux Hacker',
+          email: 'linus.torvalds@example.com',
+        },
+      })
+      assert.equal(
+        doc.getAttribute('signature'),
+        'Linus Torvalds +\nLinux Hacker +\nlinus.torvalds@example.com'
+      )
     })
 
     test('delete an attribute that ends with !', async () => {
@@ -107,7 +147,9 @@ describe('Attributes', () => {
     })
 
     test('delete an attribute that ends with ! set via API', async () => {
-      const doc = await documentFromString(':frog: Tanglefoot', { attributes: { 'frog!': '' } })
+      const doc = await documentFromString(':frog: Tanglefoot', {
+        attributes: { 'frog!': '' },
+      })
       assert.equal(doc.attributes['frog'], undefined)
     })
 
@@ -117,12 +159,16 @@ describe('Attributes', () => {
     })
 
     test('delete an attribute that begins with ! set via API', async () => {
-      const doc = await documentFromString(':frog: Tanglefoot', { attributes: { '!frog': '' } })
+      const doc = await documentFromString(':frog: Tanglefoot', {
+        attributes: { '!frog': '' },
+      })
       assert.equal(doc.attributes['frog'], undefined)
     })
 
     test('delete an attribute set via API to nil value', async () => {
-      const doc = await documentFromString(':frog: Tanglefoot', { attributes: { frog: null } })
+      const doc = await documentFromString(':frog: Tanglefoot', {
+        attributes: { frog: null },
+      })
       assert.equal(doc.attributes['frog'], undefined)
     })
 
@@ -137,30 +183,46 @@ describe('Attributes', () => {
     })
 
     test('performs attribute substitution on attribute value', async () => {
-      const doc = await documentFromString(':version: 1.0\n:release: Asciidoctor {version}')
+      const doc = await documentFromString(
+        ':version: 1.0\n:release: Asciidoctor {version}'
+      )
       assert.equal(doc.attributes['release'], 'Asciidoctor 1.0')
     })
 
     test('assigns attribute to empty string if substitution fails to resolve attribute', async () => {
-      await documentFromString(':release: Asciidoctor {version}', { attributes: { 'attribute-missing': 'drop-line' } })
-      assertMessage(logger, 'INFO', 'dropping line containing reference to missing attribute: version')
+      await documentFromString(':release: Asciidoctor {version}', {
+        attributes: { 'attribute-missing': 'drop-line' },
+      })
+      assertMessage(
+        logger,
+        'INFO',
+        'dropping line containing reference to missing attribute: version'
+      )
     })
 
     test('assigns multi-line attribute to empty string if substitution fails to resolve attribute', async () => {
       const input = ':release: Asciidoctor +\n          {version}'
-      const doc = await documentFromString(input, { attributes: { 'attribute-missing': 'drop-line' } })
+      const doc = await documentFromString(input, {
+        attributes: { 'attribute-missing': 'drop-line' },
+      })
       assert.equal(doc.attributes['release'], '')
-      assertMessage(logger, 'INFO', 'dropping line containing reference to missing attribute: version')
+      assertMessage(
+        logger,
+        'INFO',
+        'dropping line containing reference to missing attribute: version'
+      )
     })
 
     test('resolves attributes inside attribute value within header', async () => {
-      const input = '= Document Title\n:big: big\n:bigfoot: {big}foot\n\n{bigfoot}'
+      const input =
+        '= Document Title\n:big: big\n:bigfoot: {big}foot\n\n{bigfoot}'
       const result = await convertStringToEmbedded(input)
       assert.ok(result.includes('bigfoot'))
     })
 
     test('resolves attributes and pass macro inside attribute value outside header', async () => {
-      const input = '= Document Title\n\ncontent\n\n:big: pass:a,q[_big_]\n:bigfoot: {big}foot\n{bigfoot}'
+      const input =
+        '= Document Title\n\ncontent\n\n:big: pass:a,q[_big_]\n:bigfoot: {big}foot\n{bigfoot}'
       const result = await convertStringToEmbedded(input)
       assert.ok(result.includes('<em>big</em>foot'))
     })
@@ -176,7 +238,9 @@ describe('Attributes', () => {
     test('handle multibyte characters when limiting attribute value size', async () => {
       const expected = '日本'
       const input = ':name: 日本語\n\n{name}'
-      const result = await convertInlineString(input, { attributes: { 'max-attribute-value-size': 6 } })
+      const result = await convertInlineString(input, {
+        attributes: { 'max-attribute-value-size': 6 },
+      })
       assert.equal(result, expected)
       assert.equal(Buffer.byteLength(result, 'utf8'), 6)
     })
@@ -184,7 +248,9 @@ describe('Attributes', () => {
     test('do not mangle multibyte characters when limiting attribute value size', async () => {
       const expected = '日本'
       const input = ':name: 日本語\n\n{name}'
-      const result = await convertInlineString(input, { attributes: { 'max-attribute-value-size': 8 } })
+      const result = await convertInlineString(input, {
+        attributes: { 'max-attribute-value-size': 8 },
+      })
       assert.equal(result, expected)
       assert.equal(Buffer.byteLength(result, 'utf8'), 6)
     })
@@ -192,7 +258,9 @@ describe('Attributes', () => {
     test('allow maximize size of attribute value to be disabled', async () => {
       const expected = 'a'.repeat(5000)
       const input = `:name: ${'a'.repeat(5000)}\n\n{name}`
-      const result = await convertInlineString(input, { attributes: { 'max-attribute-value-size': null } })
+      const result = await convertInlineString(input, {
+        attributes: { 'max-attribute-value-size': null },
+      })
       assert.equal(result, expected)
       assert.equal(Buffer.byteLength(result, 'utf8'), 5000)
     })
@@ -211,13 +279,18 @@ describe('Attributes', () => {
 
     test('user-home attribute can be overridden by API if safe mode is less than SERVER', async () => {
       const input = 'Go {user-home}!'
-      const output = await convertInlineString(input, { attributes: { 'user-home': '/home' } })
+      const output = await convertInlineString(input, {
+        attributes: { 'user-home': '/home' },
+      })
       assert.equal(output, 'Go /home!')
     })
 
     test('user-home attribute can be overridden by API if safe mode is SERVER or greater', async () => {
       const input = 'Go {user-home}!'
-      const output = await convertInlineString(input, { safe: 'server', attributes: { 'user-home': '/home' } })
+      const output = await convertInlineString(input, {
+        safe: 'server',
+        attributes: { 'user-home': '/home' },
+      })
       assert.equal(output, 'Go /home!')
     })
 
@@ -226,7 +299,9 @@ describe('Attributes', () => {
       assert.equal(doc.attributes['xml-busters'], '<>&')
       doc = await documentFromString(':xml-busters: pass:none[<>&]')
       assert.equal(doc.attributes['xml-busters'], '<>&')
-      doc = await documentFromString(':xml-busters: pass:specialcharacters[<>&]')
+      doc = await documentFromString(
+        ':xml-busters: pass:specialcharacters[<>&]'
+      )
       assert.equal(doc.attributes['xml-busters'], '&lt;&gt;&amp;')
       doc = await documentFromString(':xml-busters: pass:n,-c[<(C)>]')
       assert.equal(doc.attributes['xml-busters'], '<&#169;>')
@@ -240,7 +315,8 @@ describe('Attributes', () => {
     })
 
     test('attribute is treated as defined until it is unset', async () => {
-      const input = ':holygrail:\nifdef::holygrail[]\nThe holy grail has been found!\nendif::holygrail[]\n\n:holygrail!:\nifndef::holygrail[]\nBuggers! What happened to the grail?\nendif::holygrail[]'
+      const input =
+        ':holygrail:\nifdef::holygrail[]\nThe holy grail has been found!\nendif::holygrail[]\n\n:holygrail!:\nifndef::holygrail[]\nBuggers! What happened to the grail?\nendif::holygrail[]'
       const output = await convertString(input)
       assert.ok(output.includes('The holy grail has been found!'))
       assert.ok(output.includes('Buggers! What happened to the grail?'))
@@ -248,58 +324,90 @@ describe('Attributes', () => {
     })
 
     test('attribute set via API overrides attribute set in document', async () => {
-      const doc = await documentFromString(':cash: money', { attributes: { cash: 'heroes' } })
+      const doc = await documentFromString(':cash: money', {
+        attributes: { cash: 'heroes' },
+      })
       assert.equal(doc.attributes['cash'], 'heroes')
     })
 
     test('attribute set via API cannot be unset by document', async () => {
-      const doc = await documentFromString(':cash!:', { attributes: { cash: 'heroes' } })
+      const doc = await documentFromString(':cash!:', {
+        attributes: { cash: 'heroes' },
+      })
       assert.equal(doc.attributes['cash'], 'heroes')
     })
 
     test('attribute soft set via API using modifier on name can be overridden by document', async () => {
-      const doc = await documentFromString(':cash: money', { attributes: { 'cash@': 'heroes' } })
+      const doc = await documentFromString(':cash: money', {
+        attributes: { 'cash@': 'heroes' },
+      })
       assert.equal(doc.attributes['cash'], 'money')
     })
 
     test('attribute soft set via API using modifier on value can be overridden by document', async () => {
-      const doc = await documentFromString(':cash: money', { attributes: { cash: 'heroes@' } })
+      const doc = await documentFromString(':cash: money', {
+        attributes: { cash: 'heroes@' },
+      })
       assert.equal(doc.attributes['cash'], 'money')
     })
 
     test('attribute soft set via API using modifier on name can be unset by document', async () => {
-      let doc = await documentFromString(':cash!:', { attributes: { 'cash@': 'heroes' } })
+      let doc = await documentFromString(':cash!:', {
+        attributes: { 'cash@': 'heroes' },
+      })
       assert.equal(doc.attributes['cash'], undefined)
-      doc = await documentFromString(':cash!:', { attributes: { 'cash@': true } })
+      doc = await documentFromString(':cash!:', {
+        attributes: { 'cash@': true },
+      })
       assert.equal(doc.attributes['cash'], undefined)
     })
 
     test('attribute soft set via API using modifier on value can be unset by document', async () => {
-      const doc = await documentFromString(':cash!:', { attributes: { cash: 'heroes@' } })
+      const doc = await documentFromString(':cash!:', {
+        attributes: { cash: 'heroes@' },
+      })
       assert.equal(doc.attributes['cash'], undefined)
     })
 
     test('attribute unset via API cannot be set by document', async () => {
-      for (const attributes of [{ 'cash!': '' }, { '!cash': '' }, { cash: null }]) {
+      for (const attributes of [
+        { 'cash!': '' },
+        { '!cash': '' },
+        { cash: null },
+      ]) {
         const doc = await documentFromString(':cash: money', { attributes })
         assert.equal(doc.attributes['cash'], undefined)
       }
     })
 
     test('attribute soft unset via API can be set by document', async () => {
-      for (const attributes of [{ 'cash!@': '' }, { '!cash@': '' }, { 'cash!': '@' }, { '!cash': '@' }, { cash: false }]) {
+      for (const attributes of [
+        { 'cash!@': '' },
+        { '!cash@': '' },
+        { 'cash!': '@' },
+        { '!cash': '@' },
+        { cash: false },
+      ]) {
         const doc = await documentFromString(':cash: money', { attributes })
         assert.equal(doc.attributes['cash'], 'money')
       }
     })
 
     test('can soft unset built-in attribute from API and still override in document', async () => {
-      for (const attributes of [{ 'sectids!@': '' }, { '!sectids@': '' }, { 'sectids!': '@' }, { '!sectids': '@' }, { sectids: false }]) {
+      for (const attributes of [
+        { 'sectids!@': '' },
+        { '!sectids@': '' },
+        { 'sectids!': '@' },
+        { '!sectids': '@' },
+        { sectids: false },
+      ]) {
         let doc = await documentFromString('== Heading', { attributes })
         assert.ok(!doc.hasAttribute('sectids'))
         let output = await doc.convert({ standalone: false })
         assert.ok(!output.includes('id="_heading"'))
-        doc = await documentFromString(':sectids:\n\n== Heading', { attributes })
+        doc = await documentFromString(':sectids:\n\n== Heading', {
+          attributes,
+        })
         assert.ok(doc.hasAttribute('sectids'))
         output = await doc.convert({ standalone: false })
         assert.ok(output.includes('id="_heading"'))
@@ -330,7 +438,10 @@ describe('Attributes', () => {
 
     test('backend and doctype attributes are set by default in custom configuration', async () => {
       const input = '= Document Title\nAuthor Name\n\ncontent'
-      const doc = await documentFromString(input, { doctype: 'book', backend: 'docbook' })
+      const doc = await documentFromString(input, {
+        doctype: 'book',
+        backend: 'docbook',
+      })
       const expected = {
         backend: 'docbook5',
         'backend-docbook5': '',
@@ -351,7 +462,8 @@ describe('Attributes', () => {
     })
 
     test('backend attributes are updated if backend attribute is defined in document and safe mode is less than SERVER', async () => {
-      const input = '= Document Title\nAuthor Name\n:backend: docbook\n:doctype: book\n\ncontent'
+      const input =
+        '= Document Title\nAuthor Name\n:backend: docbook\n:doctype: book\n\ncontent'
       const doc = await documentFromString(input, { safe: SafeMode.SAFE })
       const expected = {
         backend: 'docbook5',
@@ -379,7 +491,10 @@ describe('Attributes', () => {
     })
 
     test('backend attributes defined in document options overrides backend attribute in document', async () => {
-      const doc = await documentFromString(':backend: docbook5', { safe: SafeMode.SAFE, attributes: { backend: 'html5' } })
+      const doc = await documentFromString(':backend: docbook5', {
+        safe: SafeMode.SAFE,
+        attributes: { backend: 'html5' },
+      })
       assert.equal(doc.attributes['backend'], 'html5')
       assert.ok('backend-html5' in doc.attributes)
       assert.equal(doc.attributes['basebackend'], 'html')
@@ -389,43 +504,57 @@ describe('Attributes', () => {
     test('can only access a positional attribute from the attributes hash', async () => {
       // In Ruby, integer keys (positional) and string keys are distinct; in JS they are not
       // (all object keys are strings). So attr(1) CAN find the attribute stored at key '1'.
-      const node = new Block(null, 'paragraph', { attributes: { 1: 'position 1' } })
+      const node = new Block(null, 'paragraph', {
+        attributes: { 1: 'position 1' },
+      })
       assert.equal(node.attributes[1], 'position 1')
       assert.equal(node.attributes['1'], 'position 1')
     })
 
     test('attr not retrieve attribute from document if not set on block', async () => {
-      const doc = await documentFromString('paragraph', { attributes: { name: 'value' } })
+      const doc = await documentFromString('paragraph', {
+        attributes: { name: 'value' },
+      })
       const para = doc.blocks[0]
       assert.equal(para.getAttribute('name'), null)
     })
 
     test('attr looks for attribute on document if fallback name is true', async () => {
-      const doc = await documentFromString('paragraph', { attributes: { name: 'value' } })
+      const doc = await documentFromString('paragraph', {
+        attributes: { name: 'value' },
+      })
       const para = doc.blocks[0]
       assert.equal(para.getAttribute('name', null, true), 'value')
     })
 
     test('attr uses fallback name when looking for attribute on document', async () => {
-      const doc = await documentFromString('paragraph', { attributes: { 'alt-name': 'value' } })
+      const doc = await documentFromString('paragraph', {
+        attributes: { 'alt-name': 'value' },
+      })
       const para = doc.blocks[0]
       assert.equal(para.getAttribute('name', null, 'alt-name'), 'value')
     })
 
     test('attr? should not check for attribute on document if not set on block', async () => {
-      const doc = await documentFromString('paragraph', { attributes: { name: 'value' } })
+      const doc = await documentFromString('paragraph', {
+        attributes: { name: 'value' },
+      })
       const para = doc.blocks[0]
       assert.ok(!para.hasAttribute('name'))
     })
 
     test('attr? checks for attribute on document if fallback name is true', async () => {
-      const doc = await documentFromString('paragraph', { attributes: { name: 'value' } })
+      const doc = await documentFromString('paragraph', {
+        attributes: { name: 'value' },
+      })
       const para = doc.blocks[0]
       assert.ok(para.hasAttribute('name', null, true))
     })
 
     test('attr? checks for fallback name when looking for attribute on document', async () => {
-      const doc = await documentFromString('paragraph', { attributes: { 'alt-name': 'value' } })
+      const doc = await documentFromString('paragraph', {
+        attributes: { 'alt-name': 'value' },
+      })
       const para = doc.blocks[0]
       assert.ok(para.hasAttribute('name', null, 'alt-name'))
     })
@@ -500,34 +629,69 @@ describe('Attributes', () => {
         ['toc=right', '', 'right', 'auto', 'toc2'],
         ['toc=preamble', '', 'content', 'preamble', null],
         ['toc=macro', '', 'content', 'macro', null],
-        ['toc toc-placement=macro toc-position=left', '', 'content', 'macro', null],
+        [
+          'toc toc-placement=macro toc-position=left',
+          '',
+          'content',
+          'macro',
+          null,
+        ],
         ['toc toc-placement!', '', 'content', 'macro', null],
       ]
 
-      for (const [rawAttrs, toc, tocPosition, tocPlacement, tocClass] of expectedData) {
+      for (const [
+        rawAttrs,
+        toc,
+        tocPosition,
+        tocPlacement,
+        tocClass,
+      ] of expectedData) {
         const attrs = Object.fromEntries(
-          rawAttrs.split(' ').map((e) => e.includes('=') ? e.split('=', 2) : [e, ''])
+          rawAttrs
+            .split(' ')
+            .map((e) => (e.includes('=') ? e.split('=', 2) : [e, '']))
         )
         const doc = await documentFromString('', { attributes: attrs })
         if (toc !== null) {
-          assert.ok(doc.hasAttribute('toc'), `Expected toc attribute to be present for "${rawAttrs}"`)
+          assert.ok(
+            doc.hasAttribute('toc'),
+            `Expected toc attribute to be present for "${rawAttrs}"`
+          )
         } else {
           assert.ok(!doc.hasAttribute('toc'))
         }
         if (tocPosition) {
-          assert.ok(doc.hasAttribute('toc-position', tocPosition), `Expected toc-position=${tocPosition}, got ${doc.getAttribute('toc-position')}`)
+          assert.ok(
+            doc.hasAttribute('toc-position', tocPosition),
+            `Expected toc-position=${tocPosition}, got ${doc.getAttribute('toc-position')}`
+          )
         } else {
-          assert.ok(!doc.hasAttribute('toc-position'), `Expected no toc-position, got ${doc.getAttribute('toc-position')}`)
+          assert.ok(
+            !doc.hasAttribute('toc-position'),
+            `Expected no toc-position, got ${doc.getAttribute('toc-position')}`
+          )
         }
         if (tocPlacement) {
-          assert.ok(doc.hasAttribute('toc-placement', tocPlacement), `Expected toc-placement=${tocPlacement}, got ${doc.getAttribute('toc-placement')}`)
+          assert.ok(
+            doc.hasAttribute('toc-placement', tocPlacement),
+            `Expected toc-placement=${tocPlacement}, got ${doc.getAttribute('toc-placement')}`
+          )
         } else {
-          assert.ok(!doc.hasAttribute('toc-placement'), `Expected no toc-placement, got ${doc.getAttribute('toc-placement')}`)
+          assert.ok(
+            !doc.hasAttribute('toc-placement'),
+            `Expected no toc-placement, got ${doc.getAttribute('toc-placement')}`
+          )
         }
         if (tocClass) {
-          assert.ok(doc.hasAttribute('toc-class', tocClass), `Expected toc-class=${tocClass}, got ${doc.getAttribute('toc-class')}`)
+          assert.ok(
+            doc.hasAttribute('toc-class', tocClass),
+            `Expected toc-class=${tocClass}, got ${doc.getAttribute('toc-class')}`
+          )
         } else {
-          assert.ok(!doc.hasAttribute('toc-class'), `Expected no toc-class, got ${doc.getAttribute('toc-class')}`)
+          assert.ok(
+            !doc.hasAttribute('toc-class'),
+            `Expected no toc-class, got ${doc.getAttribute('toc-class')}`
+          )
         }
       }
     })
@@ -537,15 +701,22 @@ describe('Attributes', () => {
 
   describe('Interpolation', () => {
     test('convert properly with simple names', async () => {
-      const html = await convertString(':frog: Tanglefoot\n:my_super-hero: Spiderman\n\nYo, {frog}!\nBeat {my_super-hero}!')
+      const html = await convertString(
+        ':frog: Tanglefoot\n:my_super-hero: Spiderman\n\nYo, {frog}!\nBeat {my_super-hero}!'
+      )
       assert.ok(html.includes('Yo, Tanglefoot!'))
       assert.ok(html.includes('Beat Spiderman!'))
     })
 
     test('attribute lookup is not case sensitive', async () => {
-      const input = ':He-Man: The most powerful man in the universe\n\nHe-Man: {He-Man}\n\nShe-Ra: {She-Ra}'
-      const result = await convertStringToEmbedded(input, { attributes: { 'She-Ra': 'The Princess of Power' } })
-      assert.ok(result.includes('He-Man: The most powerful man in the universe'))
+      const input =
+        ':He-Man: The most powerful man in the universe\n\nHe-Man: {He-Man}\n\nShe-Ra: {She-Ra}'
+      const result = await convertStringToEmbedded(input, {
+        attributes: { 'She-Ra': 'The Princess of Power' },
+      })
+      assert.ok(
+        result.includes('He-Man: The most powerful man in the universe')
+      )
       assert.ok(result.includes('She-Ra: The Princess of Power'))
     })
 
@@ -555,20 +726,28 @@ describe('Attributes', () => {
     })
 
     test('collapses spaces in attribute names', async () => {
-      const input = 'Main Header\n===========\n:My frog: Tanglefoot\n\nYo, {myfrog}!'
+      const input =
+        'Main Header\n===========\n:My frog: Tanglefoot\n\nYo, {myfrog}!'
       const output = await convertString(input)
       assert.ok(output.includes('Yo, Tanglefoot!'))
     })
 
     test('ignores lines with bad attributes if attribute-missing is drop-line', async () => {
-      const input = ':attribute-missing: drop-line\n\nThis is\nblah blah {foobarbaz}\nall there is.'
+      const input =
+        ':attribute-missing: drop-line\n\nThis is\nblah blah {foobarbaz}\nall there is.'
       const output = await convertStringToEmbedded(input)
       assert.ok(!output.includes('blah blah'))
-      assertMessage(logger, 'INFO', 'dropping line containing reference to missing attribute: foobarbaz')
+      assertMessage(
+        logger,
+        'INFO',
+        'dropping line containing reference to missing attribute: foobarbaz'
+      )
     })
 
     test('attribute value gets interpreted when converting', async () => {
-      const doc = await documentFromString(':google: http://google.com[Google]\n\n{google}')
+      const doc = await documentFromString(
+        ':google: http://google.com[Google]\n\n{google}'
+      )
       assert.equal(await doc.attributes['google'], 'http://google.com[Google]')
       const output = await doc.convert()
       assert.ok(output.includes('href="http://google.com"'))
@@ -576,15 +755,21 @@ describe('Attributes', () => {
     })
 
     test('drop line with reference to missing attribute if attribute-missing attribute is drop-line', async () => {
-      const input = ':attribute-missing: drop-line\n\nLine 1: This line should appear in the output.\nLine 2: Oh no, a {bogus-attribute}! This line should not appear in the output.'
+      const input =
+        ':attribute-missing: drop-line\n\nLine 1: This line should appear in the output.\nLine 2: Oh no, a {bogus-attribute}! This line should not appear in the output.'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Line 1'))
       assert.ok(!output.includes('Line 2'))
-      assertMessage(logger, 'INFO', 'dropping line containing reference to missing attribute: bogus-attribute')
+      assertMessage(
+        logger,
+        'INFO',
+        'dropping line containing reference to missing attribute: bogus-attribute'
+      )
     })
 
     test('do not drop line with reference to missing attribute by default', async () => {
-      const input = 'Line 1: This line should appear in the output.\nLine 2: A {bogus-attribute}! This time, this line should appear in the output.'
+      const input =
+        'Line 1: This line should appear in the output.\nLine 2: A {bogus-attribute}! This time, this line should appear in the output.'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Line 1'))
       assert.ok(output.includes('Line 2'))
@@ -592,14 +777,16 @@ describe('Attributes', () => {
     })
 
     test('drop line with attribute unassignment by default', async () => {
-      const input = ':a:\n\nLine 1: This line should appear in the output.\nLine 2: {set:a!}This line should not appear in the output.'
+      const input =
+        ':a:\n\nLine 1: This line should appear in the output.\nLine 2: {set:a!}This line should not appear in the output.'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Line 1'))
       assert.ok(!output.includes('Line 2'))
     })
 
     test('do not drop line with attribute unassignment if attribute-undefined is drop', async () => {
-      const input = ':attribute-undefined: drop\n:a:\n\nLine 1: This line should appear in the output.\nLine 2: {set:a!}This line should appear in the output.'
+      const input =
+        ':attribute-undefined: drop\n:a:\n\nLine 1: This line should appear in the output.\nLine 2: {set:a!}This line should appear in the output.'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Line 1'))
       assert.ok(output.includes('Line 2'))
@@ -617,25 +804,32 @@ describe('Attributes', () => {
 
     test('drop line that only contains unresolved attribute when attribute-missing is drop', async () => {
       const input = 'Line 1\n{unresolved}\nLine 2'
-      const output = await convertStringToEmbedded(input, { attributes: { 'attribute-missing': 'drop' } })
+      const output = await convertStringToEmbedded(input, {
+        attributes: { 'attribute-missing': 'drop' },
+      })
       assert.ok(output.includes('Line 1'))
       assert.ok(output.includes('Line 2'))
       assert.equal(countTag(output, 'p'), 1)
     })
 
     test('substitutes inside unordered list items', async () => {
-      const html = await convertString(':foo: bar\n* snort at the {foo}\n* yawn')
+      const html = await convertString(
+        ':foo: bar\n* snort at the {foo}\n* yawn'
+      )
       assert.ok(html.includes('snort at the bar'))
     })
 
     test('substitutes inside section title', async () => {
-      const output = await convertString(':prefix: Cool\n\n== {prefix} Title\n\ncontent')
+      const output = await convertString(
+        ':prefix: Cool\n\n== {prefix} Title\n\ncontent'
+      )
       assert.ok(output.includes('>Cool Title<'))
       assert.ok(output.includes('id="_cool_title"'))
     })
 
     test('interpolates attribute defined in header inside attribute entry in header', async () => {
-      const input = '= Title\nAuthor Name\n:attribute-a: value\n:attribute-b: {attribute-a}\n\npreamble'
+      const input =
+        '= Title\nAuthor Name\n:attribute-a: value\n:attribute-b: {attribute-a}\n\npreamble'
       const doc = await documentFromString(input, { parse_header_only: true })
       assert.equal(doc.attributes['attribute-b'], 'value')
     })
@@ -647,13 +841,15 @@ describe('Attributes', () => {
     })
 
     test('interpolates revinfo attribute inside attribute entry in header', async () => {
-      const input = '= Title\nAuthor Name\n2013-01-01\n:date: {revdate}\n\npreamble'
+      const input =
+        '= Title\nAuthor Name\n2013-01-01\n:date: {revdate}\n\npreamble'
       const doc = await documentFromString(input, { parse_header_only: true })
       assert.equal(doc.attributes['date'], '2013-01-01')
     })
 
     test('attribute entries can resolve previously defined attributes', async () => {
-      const input = '= Title\nAuthor Name\nv1.0, 2010-01-01: First release!\n:a: value\n:a2: {a}\n:revdate2: {revdate}\n\n{a} == {a2}\n\n{revdate} == {revdate2}'
+      const input =
+        '= Title\nAuthor Name\nv1.0, 2010-01-01: First release!\n:a: value\n:a2: {a}\n:revdate2: {revdate}\n\n{a} == {a2}\n\n{revdate} == {revdate2}'
       const doc = await documentFromString(input)
       assert.equal(doc.getAttribute('revdate'), '2010-01-01')
       assert.equal(doc.getAttribute('revdate2'), '2010-01-01')
@@ -672,27 +868,37 @@ describe('Attributes', () => {
     })
 
     test('substitutes inside block title', async () => {
-      let input = ':gem_name: asciidoctor\n\n.Require the +{gem_name}+ gem\nTo use {gem_name}, the first thing to do is to import it in your Ruby source file.'
-      let output = await convertStringToEmbedded(input, { attributes: { 'compat-mode': '' } })
+      let input =
+        ':gem_name: asciidoctor\n\n.Require the +{gem_name}+ gem\nTo use {gem_name}, the first thing to do is to import it in your Ruby source file.'
+      let output = await convertStringToEmbedded(input, {
+        attributes: { 'compat-mode': '' },
+      })
       assert.ok(output.includes('<code>asciidoctor</code>'))
 
-      input = ':gem_name: asciidoctor\n\n.Require the `{gem_name}` gem\nTo use {gem_name}, the first thing to do is to import it in your Ruby source file.'
+      input =
+        ':gem_name: asciidoctor\n\n.Require the `{gem_name}` gem\nTo use {gem_name}, the first thing to do is to import it in your Ruby source file.'
       output = await convertStringToEmbedded(input)
       assert.ok(output.includes('<code>asciidoctor</code>'))
     })
 
     test('sets attribute until it is deleted', async () => {
-      const input = ':foo: bar\n\nCrossing the {foo}.\n\n:foo!:\n\nBelly up to the {foo}.'
+      const input =
+        ':foo: bar\n\nCrossing the {foo}.\n\n:foo!:\n\nBelly up to the {foo}.'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Crossing the bar.'))
       assert.ok(!output.includes('Crossing the bar.') || true) // present
       // {foo} should not resolve after deletion
-      assert.ok(output.includes('{foo}') || !output.includes('Belly up to the bar.'))
+      assert.ok(
+        output.includes('{foo}') || !output.includes('Belly up to the bar.')
+      )
     })
 
     test('allow compat-mode to be set and unset in middle of document', async () => {
-      const input = ':foo: bar\n\n[[paragraph-a]]\n`{foo}`\n\n:compat-mode!:\n\n[[paragraph-b]]\n`{foo}`\n\n:compat-mode:\n\n[[paragraph-c]]\n`{foo}`'
-      const result = await convertStringToEmbedded(input, { attributes: { 'compat-mode': '@' } })
+      const input =
+        ':foo: bar\n\n[[paragraph-a]]\n`{foo}`\n\n:compat-mode!:\n\n[[paragraph-b]]\n`{foo}`\n\n:compat-mode:\n\n[[paragraph-c]]\n`{foo}`'
+      const result = await convertStringToEmbedded(input, {
+        attributes: { 'compat-mode': '@' },
+      })
       // paragraph-a: compat mode on → {foo} not replaced inside backtick
       assert.ok(result.includes('id="paragraph-a"'))
       // paragraph-b: compat mode off → {foo} replaced → 'bar'
@@ -711,32 +917,45 @@ describe('Attributes', () => {
     })
 
     test('does not substitute attributes inside listing blocks', async () => {
-      const input = ":forecast: snow\n\n----\nputs 'The forecast for today is {forecast}'\n----"
+      const input =
+        ":forecast: snow\n\n----\nputs 'The forecast for today is {forecast}'\n----"
       const output = await convertString(input)
       assert.ok(output.includes('{forecast}'))
     })
 
     test('does not substitute attributes inside literal blocks', async () => {
-      const input = ':foo: bar\n\n....\nYou insert the text {foo} to expand the value\nof the attribute named foo in your document.\n....'
+      const input =
+        ':foo: bar\n\n....\nYou insert the text {foo} to expand the value\nof the attribute named foo in your document.\n....'
       const output = await convertString(input)
       assert.ok(output.includes('{foo}'))
     })
 
     test('does not show docdir and shows relative docfile if safe mode is SERVER or greater', async () => {
       const input = '* docdir: {docdir}\n* docfile: {docfile}'
-      const docdir = (typeof process !== 'undefined' && typeof process.cwd === 'function') ? process.cwd() : '/test'
+      const docdir =
+        typeof process !== 'undefined' && typeof process.cwd === 'function'
+          ? process.cwd()
+          : '/test'
       const docfile = `${docdir}/sample.adoc`
       const output = await convertStringToEmbedded(input, {
         safe: SafeMode.SERVER,
         attributes: { docdir, docfile },
       })
-      assert.ok(output.includes('docdir: </p>') || output.includes('docdir: \n') || output.match(/docdir:\s*<\/p>/) || output.includes('docdir: '))
+      assert.ok(
+        output.includes('docdir: </p>') ||
+          output.includes('docdir: \n') ||
+          output.match(/docdir:\s*<\/p>/) ||
+          output.includes('docdir: ')
+      )
       assert.ok(output.includes('docfile: sample.adoc'))
     })
 
     test('shows absolute docdir and docfile paths if safe mode is less than SERVER', async () => {
       const input = '* docdir: {docdir}\n* docfile: {docfile}'
-      const docdir = (typeof process !== 'undefined' && typeof process.cwd === 'function') ? process.cwd() : '/test'
+      const docdir =
+        typeof process !== 'undefined' && typeof process.cwd === 'function'
+          ? process.cwd()
+          : '/test'
       const docfile = `${docdir}/sample.adoc`
       const output = await convertStringToEmbedded(input, {
         safe: SafeMode.SAFE,
@@ -768,10 +987,15 @@ describe('Attributes', () => {
     })
 
     test('unassigns attribute defined in attribute reference with set prefix', async () => {
-      const input = ':attribute-missing: drop-line\n:foo:\n\n{set:foo!}\n{foo}yes'
+      const input =
+        ':attribute-missing: drop-line\n:foo:\n\n{set:foo!}\n{foo}yes'
       const output = await convertStringToEmbedded(input)
       assert.equal(countTag(output, 'p'), 1)
-      assertMessage(logger, 'INFO', 'dropping line containing reference to missing attribute: foo')
+      assertMessage(
+        logger,
+        'INFO',
+        'dropping line containing reference to missing attribute: foo'
+      )
     })
   })
 
@@ -781,7 +1005,10 @@ describe('Attributes', () => {
     test('substitute intrinsics', async () => {
       for (const [key, value] of Object.entries(INTRINSIC_ATTRIBUTES)) {
         const html = await convertString(`Look, a {${key}} is here`)
-        assert.ok(html.includes(value), `Expected output to contain "${value}" for {${key}}`)
+        assert.ok(
+          html.includes(value),
+          `Expected output to contain "${value}" for {${key}}`
+        )
       }
     })
 
@@ -838,48 +1065,72 @@ describe('Attributes', () => {
     })
 
     test('increments counter with positive numeric value', async () => {
-      const input = '[subs=attributes]\n++++\n{counter:mycounter:1}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
+      const input =
+        '[subs=attributes]\n++++\n{counter:mycounter:1}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
       const doc = await documentFromString(input, { standalone: false })
       const output = await doc.convert()
       assert.equal(doc.attributes['mycounter'], 3)
-      const lines = output.split('\n').map((l) => l.trimEnd()).filter((l) => l)
+      const lines = output
+        .split('\n')
+        .map((l) => l.trimEnd())
+        .filter((l) => l)
       assert.deepEqual(lines, ['1', '2', '3', '3'])
     })
 
     test('increments counter with negative numeric value', async () => {
-      const input = '[subs=attributes]\n++++\n{counter:mycounter:-2}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
+      const input =
+        '[subs=attributes]\n++++\n{counter:mycounter:-2}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
       const doc = await documentFromString(input, { standalone: false })
       const output = await doc.convert()
       assert.equal(doc.attributes['mycounter'], 0)
-      const lines = output.split('\n').map((l) => l.trimEnd()).filter((l) => l)
+      const lines = output
+        .split('\n')
+        .map((l) => l.trimEnd())
+        .filter((l) => l)
       assert.deepEqual(lines, ['-2', '-1', '0', '0'])
     })
 
     test('increments counter with ASCII character value', async () => {
-      const input = '[subs=attributes]\n++++\n{counter:mycounter:A}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
+      const input =
+        '[subs=attributes]\n++++\n{counter:mycounter:A}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
       const output = await convertStringToEmbedded(input)
-      const lines = output.split('\n').map((l) => l.trimEnd()).filter((l) => l)
+      const lines = output
+        .split('\n')
+        .map((l) => l.trimEnd())
+        .filter((l) => l)
       assert.deepEqual(lines, ['A', 'B', 'C', 'C'])
     })
 
     test('increments counter with non-ASCII character value', async () => {
-      const input = '[subs=attributes]\n++++\n{counter:mycounter:é}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
+      const input =
+        '[subs=attributes]\n++++\n{counter:mycounter:é}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
       const output = await convertStringToEmbedded(input)
-      const lines = output.split('\n').map((l) => l.trimEnd()).filter((l) => l)
+      const lines = output
+        .split('\n')
+        .map((l) => l.trimEnd())
+        .filter((l) => l)
       assert.deepEqual(lines, ['é', 'ê', 'ë', 'ë'])
     })
 
     test('increments counter with emoji character value', async () => {
-      const input = '[subs=attributes]\n++++\n{counter:smiley:😋}\n{counter:smiley}\n{counter:smiley}\n{smiley}\n++++'
+      const input =
+        '[subs=attributes]\n++++\n{counter:smiley:😋}\n{counter:smiley}\n{counter:smiley}\n{smiley}\n++++'
       const output = await convertStringToEmbedded(input)
-      const lines = output.split('\n').map((l) => l.trimEnd()).filter((l) => l)
+      const lines = output
+        .split('\n')
+        .map((l) => l.trimEnd())
+        .filter((l) => l)
       assert.deepEqual(lines, ['😋', '😌', '😍', '😍'])
     })
 
     test('increments counter with multi-character value', async () => {
-      const input = '[subs=attributes]\n++++\n{counter:math:1x}\n{counter:math}\n{counter:math}\n{math}\n++++'
+      const input =
+        '[subs=attributes]\n++++\n{counter:math:1x}\n{counter:math}\n{counter:math}\n{math}\n++++'
       const output = await convertStringToEmbedded(input)
-      const lines = output.split('\n').map((l) => l.trimEnd()).filter((l) => l)
+      const lines = output
+        .split('\n')
+        .map((l) => l.trimEnd())
+        .filter((l) => l)
       assert.deepEqual(lines, ['1x', '1y', '1z', '1z'])
     })
 
@@ -893,7 +1144,8 @@ describe('Attributes', () => {
     })
 
     test('counter value can be reset by attribute entry', async () => {
-      const input = ':mycounter:\n\nbefore: {counter:mycounter} {counter:mycounter} {counter:mycounter}\n\n:mycounter!:\n\nafter: {counter:mycounter}'
+      const input =
+        ':mycounter:\n\nbefore: {counter:mycounter} {counter:mycounter} {counter:mycounter}\n\n:mycounter!:\n\nafter: {counter:mycounter}'
       const doc = await documentFromString(input)
       const output = await doc.convert({ standalone: false })
       assert.equal(doc.attributes['mycounter'], 1)
@@ -902,7 +1154,8 @@ describe('Attributes', () => {
     })
 
     test('counter value can be advanced by attribute entry', async () => {
-      const input = 'before: {counter:mycounter}\n\n:mycounter: 10\n\nafter: {counter:mycounter}'
+      const input =
+        'before: {counter:mycounter}\n\n:mycounter: 10\n\nafter: {counter:mycounter}'
       const doc = await documentFromString(input)
       const output = await doc.convert({ standalone: false })
       assert.equal(doc.attributes['mycounter'], 11)
@@ -911,7 +1164,8 @@ describe('Attributes', () => {
     })
 
     test('nested document should use counter from parent document', async () => {
-      const input = '.Title for Foo\nimage::foo.jpg[]\n\n[cols="2*a"]\n|===\n|\n.Title for Bar\nimage::bar.jpg[]\n\n|\n.Title for Baz\nimage::baz.jpg[]\n|===\n\n.Title for Qux\nimage::qux.jpg[]'
+      const input =
+        '.Title for Foo\nimage::foo.jpg[]\n\n[cols="2*a"]\n|===\n|\n.Title for Bar\nimage::bar.jpg[]\n\n|\n.Title for Baz\nimage::baz.jpg[]\n|===\n\n.Title for Qux\nimage::qux.jpg[]'
       const output = await convertStringToEmbedded(input)
       assert.ok(output.includes('Figure 1. Title for Foo'))
       assert.ok(output.includes('Figure 2. Title for Bar'))
@@ -921,18 +1175,23 @@ describe('Attributes', () => {
 
     test('do not allow counter to modify locked attribute', async () => {
       const input = '{counter:foo:ignored} is not {foo}'
-      const output = await convertStringToEmbedded(input, { attributes: { foo: 'bar' } })
+      const output = await convertStringToEmbedded(input, {
+        attributes: { foo: 'bar' },
+      })
       assert.ok(output.includes('bas is not bar'))
     })
 
     test('do not allow counter2 to modify locked attribute', async () => {
       const input = '{counter2:foo:ignored}{foo}'
-      const output = await convertStringToEmbedded(input, { attributes: { foo: 'bar' } })
+      const output = await convertStringToEmbedded(input, {
+        attributes: { foo: 'bar' },
+      })
       assert.ok(output.includes('>bar<'))
     })
 
     test('do not allow counter to modify built-in locked attribute', async () => {
-      const input = '{counter:max-include-depth:128} is one more than {max-include-depth}'
+      const input =
+        '{counter:max-include-depth:128} is one more than {max-include-depth}'
       const doc = await documentFromString(input, { standalone: false })
       const output = await doc.convert()
       assert.ok(output.includes('65 is one more than 64'))
@@ -952,7 +1211,8 @@ describe('Attributes', () => {
 
   describe('Block attributes', () => {
     test('parses named attribute with valid name', async () => {
-      const input = '[normal,foo="bar",_foo="_bar",foo1="bar1",foo-foo="bar-bar",foo.foo="bar.bar"]\ncontent'
+      const input =
+        '[normal,foo="bar",_foo="_bar",foo1="bar1",foo-foo="bar-bar",foo.foo="bar.bar"]\ncontent'
       const block = await blockFromString(input)
       assert.equal(block.getAttribute('foo'), 'bar')
       assert.equal(block.getAttribute('_foo'), '_bar')
@@ -979,24 +1239,30 @@ describe('Attributes', () => {
     })
 
     test('normal substitutions are performed on single-quoted positional attribute', async () => {
-      const input = "[quote, author, 'http://wikipedia.org[source]']\n____\nA famous quote.\n____"
+      const input =
+        "[quote, author, 'http://wikipedia.org[source]']\n____\nA famous quote.\n____"
       const doc = await documentFromString(input)
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
       assert.equal(qb.getAttribute('attribution'), 'author')
       assert.equal(qb.attributes['attribution'], 'author')
-      assert.ok(qb.attributes['citetitle'].includes('href="http://wikipedia.org"'))
+      assert.ok(
+        qb.attributes['citetitle'].includes('href="http://wikipedia.org"')
+      )
       assert.ok(qb.attributes['citetitle'].includes('>source<'))
     })
 
     test('normal substitutions are performed on single-quoted named attribute', async () => {
-      const input = "[quote, author, citetitle='http://wikipedia.org[source]']\n____\nA famous quote.\n____"
+      const input =
+        "[quote, author, citetitle='http://wikipedia.org[source]']\n____\nA famous quote.\n____"
       const doc = await documentFromString(input)
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
       assert.equal(qb.getAttribute('attribution'), 'author')
       assert.equal(qb.attributes['attribution'], 'author')
-      assert.ok(qb.attributes['citetitle'].includes('href="http://wikipedia.org"'))
+      assert.ok(
+        qb.attributes['citetitle'].includes('href="http://wikipedia.org"')
+      )
       assert.ok(qb.attributes['citetitle'].includes('>source<'))
     })
 
@@ -1023,7 +1289,8 @@ describe('Attributes', () => {
     })
 
     test('first attribute in list may be double quoted', async () => {
-      const input = '["quote", "author", "source", role="famous"]\n____\nA famous quote.\n____'
+      const input =
+        '["quote", "author", "source", role="famous"]\n____\nA famous quote.\n____'
       const doc = await documentFromString(input)
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
@@ -1033,7 +1300,8 @@ describe('Attributes', () => {
     })
 
     test('first attribute in list may be single quoted', async () => {
-      const input = "['quote', 'author', 'source', role='famous']\n____\nA famous quote.\n____"
+      const input =
+        "['quote', 'author', 'source', role='famous']\n____\nA famous quote.\n____"
       const doc = await documentFromString(input)
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
@@ -1139,7 +1407,8 @@ describe('Attributes', () => {
     })
 
     test('id, role and options attributes can be specified using shorthand syntax on block style using multiple block attribute lines', async () => {
-      const input = '[literal]\n[#first]\n[.lead]\n[%step]\nA literal paragraph.'
+      const input =
+        '[literal]\n[#first]\n[.lead]\n[%step]\nA literal paragraph.'
       const doc = await documentFromString(input)
       const para = doc.blocks[0]
       assert.equal(para.context, 'literal')
@@ -1295,7 +1564,8 @@ describe('Attributes', () => {
     })
 
     test('Last wins for id attribute', async () => {
-      const input = '[[bar]]\n[[foo]]\n== Section\n\nparagraph\n\n[[baz]]\n[id=\'coolio\']\n=== Section'
+      const input =
+        "[[bar]]\n[[foo]]\n== Section\n\nparagraph\n\n[[baz]]\n[id='coolio']\n=== Section"
       const doc = await documentFromString(input)
       const sec = doc.firstSection()
       assert.equal(sec.id, 'foo')
@@ -1304,7 +1574,8 @@ describe('Attributes', () => {
     })
 
     test('trailing block attributes transfer to the following section', async () => {
-      const input = '[[one]]\n\n== Section One\n\nparagraph\n\n[[sub]]\n// try to mess this up!\n\n=== Sub-section\n\nparagraph\n\n[role=\'classy\']\n\n////\nblock comment\n////\n\n== Section Two\n\ncontent'
+      const input =
+        "[[one]]\n\n== Section One\n\nparagraph\n\n[[sub]]\n// try to mess this up!\n\n=== Sub-section\n\nparagraph\n\n[role='classy']\n\n////\nblock comment\n////\n\n== Section Two\n\ncontent"
       const doc = await documentFromString(input)
       const sectionOne = doc.blocks[0]
       assert.equal(sectionOne.id, 'one')

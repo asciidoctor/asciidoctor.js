@@ -9,7 +9,8 @@ import { blockFromString } from './harness.js'
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const load_ = (input, opts = {}) => load(input, { safe: 'safe', ...opts })
-const convertInlineString = async (input, opts = {}) => (await load_(input, { doctype: 'inline', ...opts })).convert()
+const convertInlineString = async (input, opts = {}) =>
+  (await load_(input, { doctype: 'inline', ...opts })).convert()
 
 // ── Substitutions — Replacements ──────────────────────────────────────────────
 
@@ -17,12 +18,18 @@ describe('Substitutions', () => {
   describe('Replacements', () => {
     test('unescapes XML entities', async () => {
       const para = await blockFromString('< &quot; &there4; &#34; &#x22; >')
-      assert.equal(await para.applySubs(para.source), '&lt; &quot; &there4; &#34; &#x22; &gt;')
+      assert.equal(
+        await para.applySubs(para.source),
+        '&lt; &quot; &there4; &#34; &#x22; &gt;'
+      )
     })
 
     test('replaces arrows', async () => {
       const para = await blockFromString('<- -> <= => \\<- \\-> \\<= \\=>')
-      assert.equal(await para.applySubs(para.source), '&#8592; &#8594; &#8656; &#8658; &lt;- -&gt; &lt;= =&gt;')
+      assert.equal(
+        await para.applySubs(para.source),
+        '&#8592; &#8594; &#8656; &#8658; &lt;- -&gt; &lt;= =&gt;'
+      )
     })
 
     test('replaces dashes', async () => {
@@ -53,7 +60,10 @@ describe('Substitutions', () => {
 
     test('replaces marks', async () => {
       const para = await blockFromString('(C) (R) (TM) \\(C) \\(R) \\(TM)')
-      assert.equal(para.subReplacements(para.source), '&#169; &#174; &#8482; (C) (R) (TM)')
+      assert.equal(
+        para.subReplacements(para.source),
+        '&#169; &#174; &#8482; (C) (R) (TM)'
+      )
     })
 
     test('preserves entity references', async () => {
@@ -69,22 +79,27 @@ describe('Substitutions', () => {
     })
 
     test('replaces punctuation', async () => {
-      const para = await blockFromString("John's Hideout is the Whites`' place... foo\\'bar")
-      assert.equal(para.subReplacements(para.source), "John&#8217;s Hideout is the Whites&#8217; place&#8230;&#8203; foo'bar")
+      const para = await blockFromString(
+        "John's Hideout is the Whites`' place... foo\\'bar"
+      )
+      assert.equal(
+        para.subReplacements(para.source),
+        "John&#8217;s Hideout is the Whites&#8217; place&#8230;&#8203; foo'bar"
+      )
     })
 
     test('should replace right single quote marks', async () => {
       const given = [
-        '`\'Twas the night',
-        'a `\'57 Chevy!',
-        'the whites`\' place',
-        'the whites`\'.',
-        'the whites`\'--where the wild things are',
-        'the whites`\'\nhave',
-        'It\'s Mary`\'s little lamb.',
+        "`'Twas the night",
+        "a `'57 Chevy!",
+        "the whites`' place",
+        "the whites`'.",
+        "the whites`'--where the wild things are",
+        "the whites`'\nhave",
+        "It's Mary`'s little lamb.",
         "consecutive single quotes '' are not modified",
         "he is 6' tall",
-        '\\`\'',
+        "\\`'",
       ]
       const expected = [
         '&#8217;Twas the night',
@@ -96,7 +111,7 @@ describe('Substitutions', () => {
         'It&#8217;s Mary&#8217;s little lamb.',
         "consecutive single quotes '' are not modified",
         "he is 6' tall",
-        '`\'',
+        "`'",
       ]
       for (let i = 0; i < given.length; i++) {
         const para = await blockFromString(given[i])

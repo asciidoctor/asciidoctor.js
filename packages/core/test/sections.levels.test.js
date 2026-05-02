@@ -4,10 +4,21 @@ import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { Section } from '../src/section.js'
-import { assertXpath, assertCss, assertMessage, usingMemoryLogger } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded } from './harness.js'
+import {
+  assertXpath,
+  assertCss,
+  assertMessage,
+  usingMemoryLogger,
+} from './helpers.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+} from './harness.js'
 
-function decodeChar (code) { return String.fromCodePoint(code) }
+function decodeChar(code) {
+  return String.fromCodePoint(code)
+}
 
 // ── Sections › Levels ─────────────────────────────────────────────────────────
 
@@ -17,22 +28,46 @@ describe('Sections', () => {
       test('document title with multiline syntax', async () => {
         const title = 'My Title'
         const chars = '='.repeat(title.length)
-        assertXpath(await convertString(title + '\n' + chars), '//h1[not(@id)][text() = "My Title"]', 1)
-        assertXpath(await convertString(title + '\n' + chars + '\n'), '//h1[not(@id)][text() = "My Title"]', 1)
+        assertXpath(
+          await convertString(title + '\n' + chars),
+          '//h1[not(@id)][text() = "My Title"]',
+          1
+        )
+        assertXpath(
+          await convertString(title + '\n' + chars + '\n'),
+          '//h1[not(@id)][text() = "My Title"]',
+          1
+        )
       })
 
       test('document title with multiline syntax, give a char', async () => {
         const title = 'My Title'
         const chars = '='.repeat(title.length + 1)
-        assertXpath(await convertString(title + '\n' + chars), '//h1[not(@id)][text() = "My Title"]', 1)
-        assertXpath(await convertString(title + '\n' + chars + '\n'), '//h1[not(@id)][text() = "My Title"]', 1)
+        assertXpath(
+          await convertString(title + '\n' + chars),
+          '//h1[not(@id)][text() = "My Title"]',
+          1
+        )
+        assertXpath(
+          await convertString(title + '\n' + chars + '\n'),
+          '//h1[not(@id)][text() = "My Title"]',
+          1
+        )
       })
 
       test('document title with multiline syntax, take a char', async () => {
         const title = 'My Title'
         const chars = '='.repeat(title.length - 1)
-        assertXpath(await convertString(title + '\n' + chars), '//h1[not(@id)][text() = "My Title"]', 1)
-        assertXpath(await convertString(title + '\n' + chars + '\n'), '//h1[not(@id)][text() = "My Title"]', 1)
+        assertXpath(
+          await convertString(title + '\n' + chars),
+          '//h1[not(@id)][text() = "My Title"]',
+          1
+        )
+        assertXpath(
+          await convertString(title + '\n' + chars + '\n'),
+          '//h1[not(@id)][text() = "My Title"]',
+          1
+        )
       })
 
       test('document title with multiline syntax and unicode characters', async () => {
@@ -85,20 +120,34 @@ preamble`
       })
 
       test('document title with atx syntax', async () => {
-        assertXpath(await convertString('= My Title'), '//h1[not(@id)][text() = "My Title"]', 1)
+        assertXpath(
+          await convertString('= My Title'),
+          '//h1[not(@id)][text() = "My Title"]',
+          1
+        )
       })
 
       test('document title with symmetric syntax', async () => {
-        assertXpath(await convertString('= My Title ='), '//h1[not(@id)][text() = "My Title"]', 1)
+        assertXpath(
+          await convertString('= My Title ='),
+          '//h1[not(@id)][text() = "My Title"]',
+          1
+        )
       })
 
       test('document title created from leveloffset shift defined in document', async () => {
-        assertXpath(await convertString(':leveloffset: -1\n== Document Title'), '//h1[not(@id)][text() = "Document Title"]', 1)
+        assertXpath(
+          await convertString(':leveloffset: -1\n== Document Title'),
+          '//h1[not(@id)][text() = "Document Title"]',
+          1
+        )
       })
 
       test('document title created from leveloffset shift defined in API', async () => {
         assertXpath(
-          await convertString('== Document Title', { attributes: { leveloffset: '-1@' } }),
+          await convertString('== Document Title', {
+            attributes: { leveloffset: '-1@' },
+          }),
           '//h1[not(@id)][text() = "Document Title"]',
           1
         )
@@ -172,7 +221,11 @@ This is the <<manual>>.`
 content`
         await usingMemoryLogger(async (logger) => {
           const doc = await documentFromString(input)
-          assertMessage(logger, 'ERROR', '<stdin>: line 2: level 0 sections can only be used when doctype is book')
+          assertMessage(
+            logger,
+            'ERROR',
+            '<stdin>: line 2: level 0 sections can only be used when doctype is book'
+          )
           assert.ok(!doc.hasHeader())
           assert.ok(doc.attributes['title'] == null)
           assert.equal(doc.blocks[0].attributes['style'], 'glossary')
@@ -215,7 +268,11 @@ content`
         await usingMemoryLogger(async (logger) => {
           const result = await convertStringToEmbedded(input)
           assertCss(result, 'h2', 0)
-          assertMessage(logger, 'WARN', '<stdin>: line 2: unterminated listing block')
+          assertMessage(
+            logger,
+            'WARN',
+            '<stdin>: line 2: unterminated listing block'
+          )
         })
       })
 
@@ -224,8 +281,16 @@ content`
         await usingMemoryLogger(async (logger) => {
           const result = await convertStringToEmbedded(input)
           assertCss(result, 'h2', 0)
-          assertMessage(logger, 'WARN', '<stdin>: line 1: unterminated quote block')
-          assertMessage(logger, 'WARN', '<stdin>: line 2: unterminated listing block')
+          assertMessage(
+            logger,
+            'WARN',
+            '<stdin>: line 1: unterminated quote block'
+          )
+          assertMessage(
+            logger,
+            'WARN',
+            '<stdin>: line 2: unterminated listing block'
+          )
         })
       })
 
@@ -249,20 +314,32 @@ endif::[]`
       })
 
       test('with atx syntax', async () => {
-        assertXpath(await convertString('== My Title'), '//h2[@id="_my_title"][text() = "My Title"]', 1)
+        assertXpath(
+          await convertString('== My Title'),
+          '//h2[@id="_my_title"][text() = "My Title"]',
+          1
+        )
       })
 
       test('with atx symmetric syntax', async () => {
-        assertXpath(await convertString('== My Title =='), '//h2[@id="_my_title"][text() = "My Title"]', 1)
+        assertXpath(
+          await convertString('== My Title =='),
+          '//h2[@id="_my_title"][text() = "My Title"]',
+          1
+        )
       })
 
       test('with atx non-matching symmetric syntax', async () => {
-        assertXpath(await convertString('== My Title ==='), '//h2[@id="_my_title"][text() = "My Title ==="]', 1)
+        assertXpath(
+          await convertString('== My Title ==='),
+          '//h2[@id="_my_title"][text() = "My Title ==="]',
+          1
+        )
       })
 
       test('with XML entity', async () => {
         assertXpath(
-          await convertString("== What\u2019s new?"),
+          await convertString('== What\u2019s new?'),
           `//h2[@id='_whats_new'][text() = "What${decodeChar(8217)}s new?"]`,
           1
         )
@@ -270,8 +347,8 @@ endif::[]`
 
       test('with non-word character', async () => {
         assertXpath(
-          await convertString("== What\u2019s new?"),
-          "//h2[@id=\"_whats_new\"][text() = \"What\u2019s new?\"]",
+          await convertString('== What\u2019s new?'),
+          '//h2[@id="_whats_new"][text() = "What\u2019s new?"]',
           1
         )
       })
@@ -285,27 +362,47 @@ endif::[]`
       })
 
       test('with trailing whitespace', async () => {
-        assertXpath(await convertString('== My Title '), '//h2[@id="_my_title"][text() = "My Title"]', 1)
+        assertXpath(
+          await convertString('== My Title '),
+          '//h2[@id="_my_title"][text() = "My Title"]',
+          1
+        )
       })
 
       test('with custom blank idprefix', async () => {
-        assertXpath(await convertString(':idprefix:\n\n== My Title '), '//h2[@id="my_title"][text() = "My Title"]', 1)
+        assertXpath(
+          await convertString(':idprefix:\n\n== My Title '),
+          '//h2[@id="my_title"][text() = "My Title"]',
+          1
+        )
       })
 
       test('with custom non-blank idprefix', async () => {
-        assertXpath(await convertString(':idprefix: ref_\n\n== My Title '), '//h2[@id="ref_my_title"][text() = "My Title"]', 1)
+        assertXpath(
+          await convertString(':idprefix: ref_\n\n== My Title '),
+          '//h2[@id="ref_my_title"][text() = "My Title"]',
+          1
+        )
       })
 
       test('with multibyte characters', async () => {
         const input = '== Asciidoctor in \u4e2d\u6587'
         const output = await convertString(input)
-        assertXpath(output, '//h2[@id="_asciidoctor_in_\u4e2d\u6587"][text()="Asciidoctor in \u4e2d\u6587"]', 1)
+        assertXpath(
+          output,
+          '//h2[@id="_asciidoctor_in_\u4e2d\u6587"][text()="Asciidoctor in \u4e2d\u6587"]',
+          1
+        )
       })
 
       test('with only multibyte characters', async () => {
         const input = '== \u89c6\u56fe'
         const output = await convertStringToEmbedded(input)
-        assertXpath(output, '//h2[@id="_\u89c6\u56fe"][text()="\u89c6\u56fe"]', 1)
+        assertXpath(
+          output,
+          '//h2[@id="_\u89c6\u56fe"][text()="\u89c6\u56fe"]',
+          1
+        )
       })
 
       test('multiline syntax with only multibyte characters', async () => {
@@ -319,8 +416,16 @@ content
 
 content`
         const output = await convertStringToEmbedded(input)
-        assertXpath(output, '//h2[@id="_\u89c6\u56fe"][text()="\u89c6\u56fe"]', 1)
-        assertXpath(output, '//h2[@id="_\u8fde\u63a5\u5668"][text()="\u8fde\u63a5\u5668"]', 1)
+        assertXpath(
+          output,
+          '//h2[@id="_\u89c6\u56fe"][text()="\u89c6\u56fe"]',
+          1
+        )
+        assertXpath(
+          output,
+          '//h2[@id="_\u8fde\u63a5\u5668"][text()="\u8fde\u63a5\u5668"]',
+          1
+        )
       })
     })
 
@@ -394,7 +499,9 @@ content`
       const doc = await documentFromString(`= Title
 
 == Section A`)
-      const sectionB = Section.create(doc, 2, true, { attributes: { foo: 'bar' } })
+      const sectionB = Section.create(doc, 2, true, {
+        attributes: { foo: 'bar' },
+      })
       sectionB.setTitle('Section B')
       doc.append(sectionB)
       const sections = doc.findBy({ context: 'section' })

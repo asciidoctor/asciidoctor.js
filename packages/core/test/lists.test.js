@@ -8,25 +8,38 @@ import { select } from 'xpath'
 
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertXpath, assertCss } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded } from './harness.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+} from './harness.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function assertMessage (logger, severity, text) {
+function assertMessage(logger, severity, text) {
   const sev = severity.toUpperCase()
   const found = logger.messages.some((m) => {
     if (m.severity.toUpperCase() !== sev) return false
-    const msgText = typeof m.message === 'string' ? m.message : String(m.message)
+    const msgText =
+      typeof m.message === 'string' ? m.message : String(m.message)
     return msgText.includes(text)
   })
-  assert.ok(found, `Expected ${sev} message containing "${text}" but got: ${JSON.stringify(logger.messages)}`)
+  assert.ok(
+    found,
+    `Expected ${sev} message containing "${text}" but got: ${JSON.stringify(logger.messages)}`
+  )
 }
 
-function getTextAtXpath (html, xpath) {
+function getTextAtXpath(html, xpath) {
   const xmlSrc = `<root>${html.replace(/<(meta|link|br|hr|img|input|area|base|col|embed|param|source|track|wbr)((?:[^>"']|"[^"]*"|'[^']*')*?)>/gi, '<$1$2/>')}</root>`
   const cleanSrc = xmlSrc.replace(/\s+xmlns(?::\w+)?="[^"]*"/g, '')
-  const adjustedXpath = xpath.replace(/^\/([^/])/, '/root/$1').replace(/\(\/([^/])/g, '(/root/$1')
-  const doc = new DOMParser({ onError: () => {} }).parseFromString(cleanSrc, 'text/xml')
+  const adjustedXpath = xpath
+    .replace(/^\/([^/])/, '/root/$1')
+    .replace(/\(\/([^/])/g, '(/root/$1')
+  const doc = new DOMParser({ onError: () => {} }).parseFromString(
+    cleanSrc,
+    'text/xml'
+  )
   const nodes = select(adjustedXpath, /** @type {any} */ (doc))
   if (!Array.isArray(nodes) || nodes.length === 0) return null
   return nodes[0].textContent
@@ -139,7 +152,11 @@ more text
       assertXpath(output, '//ul', 2)
       assertXpath(output, '(//ul)[1]/li', 2)
       assertXpath(output, '(//ul)[2]/li', 1)
-      assertXpath(output, '(//ul)[2]/preceding-sibling::*[@class = "title"][text() = "Also"]', 1)
+      assertXpath(
+        output,
+        '(//ul)[2]/preceding-sibling::*[@class = "title"][text() = "Also"]',
+        1
+      )
     })
 
     test('dash elements separated by an attribute entry offset by a blank line should not merge lists', async () => {
@@ -227,7 +244,10 @@ term:: def
       assertCss(output, 'ul ol', 1)
       assert.ok(!output.includes('* Foo'), 'output should not include "* Foo"')
       assertCss(output, 'ul dl', 1)
-      assert.ok(!output.includes('term:: def'), 'output should not include "term:: def"')
+      assert.ok(
+        !output.includes('term:: def'),
+        'output should not include "term:: def"'
+      )
     })
 
     test('an indented wrapped line is unindented and folded into text of list item', async () => {
@@ -258,7 +278,10 @@ second wrapped line
       assertCss(output, 'ul li', 2)
       const text = getTextAtXpath(output, '(//ul/li)[1]/p')
       if (text !== null) {
-        const lines = text.replace(/\n\s*\n/g, '\n').split('\n').filter((l) => l.length > 0)
+        const lines = text
+          .replace(/\n\s*\n/g, '\n')
+          .split('\n')
+          .filter((l) => l.length > 0)
         assert.equal(lines.length, 3)
         assert.equal(lines[0], 'list item 1')
         assert.equal(lines[1], '  // not line comment')
@@ -301,7 +324,10 @@ term:: def
       assertCss(output, 'ul ol', 1)
       assert.ok(!output.includes('* Foo'), 'output should not include "* Foo"')
       assertCss(output, 'ul dl', 1)
-      assert.ok(!output.includes('term:: def'), 'output should not include "term:: def"')
+      assert.ok(
+        !output.includes('term:: def'),
+        'output should not include "term:: def"'
+      )
     })
 
     test('a literal paragraph offset by blank lines in list content is appended as a literal block', async () => {
@@ -320,8 +346,16 @@ term:: def
       assertXpath(output, '//ul/li', 3)
       assertXpath(output, '(//ul/li)[1]/p[text() = "Foo"]', 1)
       assertXpath(output, '(//ul/li)[1]/*[@class="literalblock"]', 1)
-      assertXpath(output, '(//ul/li)[1]/p/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '((//ul/li)[1]/*[@class="literalblock"])[1]//pre[text() = "literal"]', 1)
+      assertXpath(
+        output,
+        '(//ul/li)[1]/p/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ul/li)[1]/*[@class="literalblock"])[1]//pre[text() = "literal"]',
+        1
+      )
     })
 
     test('should escape special characters in all literal paragraphs attached to list item', async () => {
@@ -339,7 +373,11 @@ term:: def
       assertCss(output, 'li:first-of-type > *', 3)
       assertCss(output, 'li:first-of-type pre', 2)
       assertXpath(output, '((//li)[1]//pre)[1][text()="<code>text</code>"]', 1)
-      assertXpath(output, '((//li)[1]//pre)[2][text()="more <code>text</code>"]', 1)
+      assertXpath(
+        output,
+        '((//li)[1]//pre)[2][text()="more <code>text</code>"]',
+        1
+      )
     })
 
     test('a literal paragraph offset by a blank line in list content followed by line with continuation is appended as two blocks', async () => {
@@ -360,10 +398,26 @@ para
       assertXpath(output, '//ul/li', 3)
       assertXpath(output, '(//ul/li)[1]/p[text() = "Foo"]', 1)
       assertXpath(output, '(//ul/li)[1]/*[@class="literalblock"]', 1)
-      assertXpath(output, '(//ul/li)[1]/p/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '((//ul/li)[1]/*[@class="literalblock"])[1]//pre[text() = "literal"]', 1)
-      assertXpath(output, '(//ul/li)[1]/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '(//ul/li)[1]/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]/p[text()="para"]', 1)
+      assertXpath(
+        output,
+        '(//ul/li)[1]/p/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ul/li)[1]/*[@class="literalblock"])[1]//pre[text() = "literal"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//ul/li)[1]/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//ul/li)[1]/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
     })
 
     test('an admonition paragraph attached by a line continuation to a list item with wrapped text should produce admonition', async () => {
@@ -376,9 +430,17 @@ NOTE: This is a note.
       assertCss(output, 'ul', 1)
       assertCss(output, 'ul > li', 1)
       assertCss(output, 'ul > li > p', 1)
-      assertXpath(output, `//ul/li/p[text()="first-line text\nwrapped text"]`, 1)
+      assertXpath(
+        output,
+        `//ul/li/p[text()="first-line text\nwrapped text"]`,
+        1
+      )
       assertCss(output, 'ul > li > p + .admonitionblock.note', 1)
-      assertXpath(output, '//ul/li/*[@class="admonitionblock note"]//td[@class="content"][normalize-space(text())="This is a note."]', 1)
+      assertXpath(
+        output,
+        '//ul/li/*[@class="admonitionblock note"]//td[@class="content"][normalize-space(text())="This is a note."]',
+        1
+      )
     })
 
     test('paragraph-like blocks attached to an ancestor list item by a list continuation should produce blocks', async () => {
@@ -411,7 +473,10 @@ NOTE: This is a note.
 <1> a configuration value
 `
       const doc = await documentFromString(input)
-      const colist = doc.blocks[0].getItems()[0].blocks[doc.blocks[0].getItems()[0].blocks.length - 1]
+      const colist =
+        doc.blocks[0].getItems()[0].blocks[
+          doc.blocks[0].getItems()[0].blocks.length - 1
+        ]
       assert.equal(colist.context, 'colist')
       assert.notEqual(colist.style, 'source')
       const output = await doc.convert()
@@ -452,8 +517,16 @@ paragraph in list item 1
       assertCss(output, 'ul', 1)
       assertCss(output, 'ul li', 2)
       assertXpath(output, '(//ul/li)[1]/p[text()="list item 1"]', 1)
-      assertXpath(output, '(//ul/li)[1]/p/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '(//ul/li)[1]/p/following-sibling::*[@class="paragraph"]/p[text()="paragraph in list item 1"]', 1)
+      assertXpath(
+        output,
+        '(//ul/li)[1]/p/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//ul/li)[1]/p/following-sibling::*[@class="paragraph"]/p[text()="paragraph in list item 1"]',
+        1
+      )
       assertXpath(output, '(//ul/li)[2]/p[text()="list item 2"]', 1)
     })
 
@@ -472,10 +545,26 @@ para
       assertXpath(output, '//ul/li', 2)
       assertXpath(output, '(//ul/li)[1]/p[text() = "Foo"]', 1)
       assertXpath(output, '(//ul/li)[1]/*[@class="literalblock"]', 1)
-      assertXpath(output, '(//ul/li)[1]/p/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, `((//ul/li)[1]/*[@class="literalblock"])[1]//pre[text() = "  literal\n. still literal"]`, 1)
-      assertXpath(output, '(//ul/li)[1]/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '(//ul/li)[1]/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]/p[text()="para"]', 1)
+      assertXpath(
+        output,
+        '(//ul/li)[1]/p/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        `((//ul/li)[1]/*[@class="literalblock"])[1]//pre[text() = "  literal\n. still literal"]`,
+        1
+      )
+      assertXpath(
+        output,
+        '(//ul/li)[1]/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//ul/li)[1]/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
     })
 
     test('consecutive literal paragraph offset by blank lines in list content are appended as a literal blocks', async () => {
@@ -497,9 +586,21 @@ para
       assertXpath(output, '//ul/li', 3)
       assertXpath(output, '(//ul/li)[1]/p[text() = "Foo"]', 1)
       assertXpath(output, '(//ul/li)[1]/*[@class="literalblock"]', 2)
-      assertXpath(output, '(//ul/li)[1]/p/following-sibling::*[@class="literalblock"]', 2)
-      assertXpath(output, `((//ul/li)[1]/*[@class="literalblock"])[1]//pre[text()="literal"]`, 1)
-      assertXpath(output, `((//ul/li)[1]/*[@class='literalblock'])[2]//pre[text()='more\nliteral']`, 1)
+      assertXpath(
+        output,
+        '(//ul/li)[1]/p/following-sibling::*[@class="literalblock"]',
+        2
+      )
+      assertXpath(
+        output,
+        `((//ul/li)[1]/*[@class="literalblock"])[1]//pre[text()="literal"]`,
+        1
+      )
+      assertXpath(
+        output,
+        `((//ul/li)[1]/*[@class='literalblock'])[2]//pre[text()='more\nliteral']`,
+        1
+      )
     })
 
     test('a literal paragraph without a trailing blank line consumes following list items', async () => {
@@ -517,8 +618,16 @@ para
       assertXpath(output, '//ul/li', 1)
       assertXpath(output, '(//ul/li)[1]/p[text() = "Foo"]', 1)
       assertXpath(output, '(//ul/li)[1]/*[@class="literalblock"]', 1)
-      assertXpath(output, '(//ul/li)[1]/p/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, `((//ul/li)[1]/*[@class='literalblock'])[1]//pre[text() = '  literal\n- Boo\n- Blech']`, 1)
+      assertXpath(
+        output,
+        '(//ul/li)[1]/p/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        `((//ul/li)[1]/*[@class='literalblock'])[1]//pre[text() = '  literal\n- Boo\n- Blech']`,
+        1
+      )
     })
 
     test('asterisk elements with no blank lines', async () => {
@@ -628,7 +737,11 @@ more text
       assertXpath(output, '//ul', 2)
       assertXpath(output, '(//ul)[1]/li', 2)
       assertXpath(output, '(//ul)[2]/li', 1)
-      assertXpath(output, '(//ul)[2]/preceding-sibling::*[@class = "title"][text() = "Also"]', 1)
+      assertXpath(
+        output,
+        '(//ul)[2]/preceding-sibling::*[@class = "title"][text() = "Also"]',
+        1
+      )
     })
 
     test('asterisk elements separated by an attribute entry offset by a blank line should not merge lists', async () => {
@@ -690,7 +803,10 @@ item
       assertCss(output, 'ul', 1)
       assertCss(output, 'ul > li', 2)
       assertCss(output, 'h2', 0)
-      assert.ok(output.includes('== Not a section'), 'output should include "== Not a section"')
+      assert.ok(
+        output.includes('== Not a section'),
+        'output should include "== Not a section"'
+      )
       assertXpath(output, `(//li)[2]/p[text() = "second\n== Not a section"]`, 1)
     })
 
@@ -699,7 +815,10 @@ item
       const input = `* a\n* b${ls}\n* c`
       const output = await convertString(input)
       assertCss(output, 'li', 3)
-      assert.ok(output.includes(`<p>b${ls}</p>`), `expected <p>b${ls}</p> in output`)
+      assert.ok(
+        output.includes(`<p>b${ls}</p>`),
+        `expected <p>b${ls}</p> in output`
+      )
     })
 
     test('should match line separator in text of list item', async () => {
@@ -707,7 +826,10 @@ item
       const input = `* a\n* b${ls}b\n* c`
       const output = await convertString(input)
       assertCss(output, 'li', 3)
-      assert.ok(output.includes(`<p>b${ls}b</p>`), `expected <p>b${ls}b</p> in output`)
+      assert.ok(
+        output.includes(`<p>b${ls}b</p>`),
+        `expected <p>b${ls}b</p> in output`
+      )
     })
   })
 
@@ -780,8 +902,16 @@ Grays Peak rises to 14,278 feet, making it the highest summit in the Front Range
       assert.ok('mount-evans' in refs, 'refs should contain mount-evans')
       assert.ok('grays-peak' in refs, 'refs should contain grays-peak')
       const output = await doc.convert()
-      assertXpath(output, '(//p)[1]/a[@href="#grays-peak"][text()="Grays Peak"]', 1)
-      assertXpath(output, '(//p)[1]/a[@href="#mount-evans"][text()="Mount Evans"]', 1)
+      assertXpath(
+        output,
+        '(//p)[1]/a[@href="#grays-peak"][text()="Grays Peak"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//p)[1]/a[@href="#mount-evans"][text()="Mount Evans"]',
+        1
+      )
     })
 
     test('should discover anchor at start of ordered list item text and register it as a reference', async () => {
@@ -821,7 +951,11 @@ end
       const refs = doc.catalog.refs
       assert.ok('url-mapping' in refs, 'refs should contain url-mapping')
       const output = await doc.convert()
-      assertXpath(output, '(//p)[1]/a[@href="#url-mapping"][text()="url mapping"]', 1)
+      assertXpath(
+        output,
+        '(//p)[1]/a[@href="#url-mapping"][text()="url mapping"]',
+        1
+      )
     })
   })
 
@@ -939,7 +1073,11 @@ end
       assertXpath(output, '((//ul)[1]/li//ul)[1]/li', 1)
       assertXpath(output, '(((//ul)[1]/li//ul)[1]/li//ul)[1]/li', 1)
       assertXpath(output, '((((//ul)[1]/li//ul)[1]/li//ul)[1]/li//ul)[1]/li', 1)
-      assertXpath(output, '(((((//ul)[1]/li//ul)[1]/li//ul)[1]/li//ul)[1]/li//ul)[1]/li', 1)
+      assertXpath(
+        output,
+        '(((((//ul)[1]/li//ul)[1]/li//ul)[1]/li//ul)[1]/li//ul)[1]/li',
+        1
+      )
     })
 
     test('nested arbitrary depth with asterisks', async () => {
@@ -949,7 +1087,10 @@ end
         items.push(`${'*'.repeat(i + 1)} ${ch}`)
       }
       const output = await convertStringToEmbedded(items.join('\n'))
-      assert.ok(!output.includes('*'), 'output should not include literal asterisks')
+      assert.ok(
+        !output.includes('*'),
+        'output should not include literal asterisks'
+      )
       assertCss(output, 'li', 26)
     })
 
@@ -978,7 +1119,10 @@ end
       const input = '\u2022\u2022 Boo'
       const output = await convertString(input)
       assertXpath(output, '//ul', 0)
-      assert.ok(output.includes('\u2022'), 'output should include unicode bullet')
+      assert.ok(
+        output.includes('\u2022'),
+        'output should include unicode bullet'
+      )
     })
 
     test('nested ordered elements (2)', async () => {
@@ -1088,8 +1232,16 @@ end
       assertCss(output, '.ulist > ul > li > p', 3)
       assertCss(output, '.ulist > ul > li > p + .olist', 1)
       assertCss(output, '.ulist > ul > li > p + .olist > ol > li > p', 1)
-      assertCss(output, '.ulist > ul > li > p + .olist > ol > li > p + .ulist', 1)
-      assertCss(output, '.ulist > ul > li > p + .olist > ol > li > p + .ulist > ul > li > p', 1)
+      assertCss(
+        output,
+        '.ulist > ul > li > p + .olist > ol > li > p + .ulist',
+        1
+      )
+      assertCss(
+        output,
+        '.ulist > ul > li > p + .olist > ol > li > p + .ulist > ul > li > p',
+        1
+      )
       assertCss(output, '.ulist > ul > li + li > p', 1)
     })
 
@@ -1128,10 +1280,26 @@ end
       assertXpath(output, '//ul//ol', 1)
       assertXpath(output, '//ul/li/p', 1)
       assertXpath(output, '//ul/li/p[text()="bullet"]', 1)
-      assertXpath(output, '//ul/li/p/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, `//ul/li/p/following-sibling::*[@class="literalblock"]//pre[text()="literal\nbut not\nhungry"]`, 1)
-      assertXpath(output, '//*[@class="literalblock"]/following-sibling::*[@class="olist arabic"]', 1)
-      assertXpath(output, '//*[@class="literalblock"]/following-sibling::*[@class="olist arabic"]//p[text()="numbered"]', 1)
+      assertXpath(
+        output,
+        '//ul/li/p/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        `//ul/li/p/following-sibling::*[@class="literalblock"]//pre[text()="literal\nbut not\nhungry"]`,
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="literalblock"]/following-sibling::*[@class="olist arabic"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="literalblock"]/following-sibling::*[@class="olist arabic"]//p[text()="numbered"]',
+        1
+      )
     })
 
     test('nested list item does not eat the title of the following detached block', async () => {
@@ -1149,8 +1317,16 @@ literal
 `
       const output = await convertString(input)
       assertXpath(output, '//*[@class="ulist"]/ul', 2)
-      assertXpath(output, '(//*[@class="ulist"])[1]/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '(//*[@class="ulist"])[1]/following-sibling::*[@class="literalblock"]/*[@class="title"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="ulist"])[1]/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="ulist"])[1]/following-sibling::*[@class="literalblock"]/*[@class="title"]',
+        1
+      )
     })
 
     test('lines with alternating markers of bulleted and description list types separated by blank lines should be nested', async () => {
@@ -1205,7 +1381,11 @@ Item one, paragraph two
       assertXpath(output, '//ul/li[1]/p', 1)
       assertXpath(output, '//ul/li[1]//p', 2)
       assertXpath(output, '//ul/li[1]/p[text() = "Item one, paragraph one"]', 1)
-      assertXpath(output, '//ul/li[1]/*[@class = "paragraph"]/p[text() = "Item one, paragraph two"]', 1)
+      assertXpath(
+        output,
+        '//ul/li[1]/*[@class = "paragraph"]/p[text() = "Item one, paragraph two"]',
+        1
+      )
     })
 
     test('adjacent list continuation line attaches following block', async () => {
@@ -1224,7 +1404,11 @@ Item one, literal block
       assertXpath(output, '//ul', 1)
       assertXpath(output, '//ul/li', 2)
       assertXpath(output, '//ul/li[1]/p', 1)
-      assertXpath(output, '(//ul/li[1]/p/following-sibling::*)[1][@class = "literalblock"]', 1)
+      assertXpath(
+        output,
+        '(//ul/li[1]/p/following-sibling::*)[1][@class = "literalblock"]',
+        1
+      )
     })
 
     test('adjacent list continuation line attaches following block with block attributes', async () => {
@@ -1247,9 +1431,21 @@ Item one, literal block
       assertXpath(output, '//ul', 1)
       assertXpath(output, '//ul/li', 2)
       assertXpath(output, '//ul/li[1]/p', 1)
-      assertXpath(output, '(//ul/li[1]/p/following-sibling::*)[1][@id="beck"][@class = "listingblock"]', 1)
-      assertXpath(output, '(//ul/li[1]/p/following-sibling::*)[1][@id="beck"]/div[@class="title"][starts-with(text(),"Read")]', 1)
-      assertXpath(output, '(//ul/li[1]/p/following-sibling::*)[1][@id="beck"]//code[@data-lang="ruby"][starts-with(text(),"5.times")]', 1)
+      assertXpath(
+        output,
+        '(//ul/li[1]/p/following-sibling::*)[1][@id="beck"][@class = "listingblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//ul/li[1]/p/following-sibling::*)[1][@id="beck"]/div[@class="title"][starts-with(text(),"Read")]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//ul/li[1]/p/following-sibling::*)[1][@id="beck"]//code[@data-lang="ruby"][starts-with(text(),"5.times")]',
+        1
+      )
     })
 
     test('trailing block attribute line attached by continuation should not create block', async () => {
@@ -1305,8 +1501,16 @@ ____
       assertXpath(output, '//ul', 1)
       assertXpath(output, '//ul/li', 2)
       assertXpath(output, '//ul/li[1]/p', 1)
-      assertXpath(output, '(//ul/li[1]/p/following-sibling::*)[1][@class = "literalblock"]', 1)
-      assertXpath(output, '(//ul/li[1]/p/following-sibling::*)[2][@class = "quoteblock"]', 1)
+      assertXpath(
+        output,
+        '(//ul/li[1]/p/following-sibling::*)[1][@class = "literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//ul/li[1]/p/following-sibling::*)[2][@class = "quoteblock"]',
+        1
+      )
     })
 
     test('list item with hanging indent followed by block attached by list continuation', async () => {
@@ -1325,8 +1529,16 @@ open block in list item 1
       assertCss(output, 'ol', 1)
       assertCss(output, 'ol li', 2)
       assertXpath(output, `(//ol/li)[1]/p[text()="list item 1\ncontinued"]`, 1)
-      assertXpath(output, '(//ol/li)[1]/p/following-sibling::*[@class="openblock"]', 1)
-      assertXpath(output, '(//ol/li)[1]/p/following-sibling::*[@class="openblock"]//p[text()="open block in list item 1"]', 1)
+      assertXpath(
+        output,
+        '(//ol/li)[1]/p/following-sibling::*[@class="openblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//ol/li)[1]/p/following-sibling::*[@class="openblock"]//p[text()="open block in list item 1"]',
+        1
+      )
       assertXpath(output, `(//ol/li)[2]/p[text()="list item 2"]`, 1)
     })
 
@@ -1350,12 +1562,32 @@ nested list item paragraph
       assertCss(output, '.ulist ul > li', 1)
       assertXpath(output, '(//ol/li)[1]/*', 3)
       assertXpath(output, '((//ol/li)[1]/*)[1]/self::p', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[1]/self::p[text()="list item 1"]', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[2]/self::div[@class="paragraph"]', 1)
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[1]/self::p[text()="list item 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[2]/self::div[@class="paragraph"]',
+        1
+      )
       assertXpath(output, '((//ol/li)[1]/*)[3]/self::div[@class="ulist"]', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[3]/self::div[@class="ulist"]/ul/li', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[3]/self::div[@class="ulist"]/ul/li/p[text()="nested list item"]', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[3]/self::div[@class="ulist"]/ul/li/p/following-sibling::div[@class="paragraph"]', 1)
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[3]/self::div[@class="ulist"]/ul/li',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[3]/self::div[@class="ulist"]/ul/li/p[text()="nested list item"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[3]/self::div[@class="ulist"]/ul/li/p/following-sibling::div[@class="paragraph"]',
+        1
+      )
     })
 
     test('trailing list continuations should attach to list items at respective levels', async () => {
@@ -1381,13 +1613,37 @@ paragraph for list item 1
       assertCss(output, '.olist .ulist', 1)
       assertXpath(output, '(//ol/li)[1]/*', 3)
       assertXpath(output, '((//ol/li)[1]/*)[1]/self::p', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[1]/self::p[text()="list item 1"]', 1)
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[1]/self::p[text()="list item 1"]',
+        1
+      )
       assertXpath(output, '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li', 2)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/*', 2)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/p', 1)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/div[@class="paragraph"]', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[3]/self::div[@class="paragraph"]', 1)
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li',
+        2
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/*',
+        2
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/p',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/div[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[3]/self::div[@class="paragraph"]',
+        1
+      )
     })
 
     test('trailing list continuations should attach to list items of different types at respective levels', async () => {
@@ -1408,17 +1664,49 @@ bullet 1 paragraph
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '(//ul)[1]/li', 2)
       assertXpath(output, '((//ul)[1]/li[1])/*', 3)
-      assertXpath(output, '(((//ul)[1]/li[1])/*)[1]/self::p[text()="bullet 1"]', 1)
+      assertXpath(
+        output,
+        '(((//ul)[1]/li[1])/*)[1]/self::p[text()="bullet 1"]',
+        1
+      )
       assertXpath(output, '(((//ul)[1]/li[1])/*)[2]/ol', 1)
-      assertXpath(output, '(((//ul)[1]/li[1])/*)[3]/self::div[@class="paragraph"]/p[text()="bullet 1 paragraph"]', 1)
+      assertXpath(
+        output,
+        '(((//ul)[1]/li[1])/*)[3]/self::div[@class="paragraph"]/p[text()="bullet 1 paragraph"]',
+        1
+      )
       assertXpath(output, '((//ul)[1]/li)[1]/div/ol/li', 1)
       assertXpath(output, '((//ul)[1]/li)[1]/div/ol/li/*', 3)
-      assertXpath(output, '(((//ul)[1]/li)[1]/div/ol/li/*)[1]/self::p[text()="numbered 1.1"]', 1)
-      assertXpath(output, '(((//ul)[1]/li)[1]/div/ol/li/*)[2]/self::div[@class="ulist"]', 1)
-      assertXpath(output, '(((//ul)[1]/li)[1]/div/ol/li/*)[3]/self::div[@class="paragraph"]/p[text()="numbered 1.1 paragraph"]', 1)
-      assertXpath(output, '((//ul)[1]/li)[1]/div/ol/li/div[@class="ulist"]/ul/li', 1)
-      assertXpath(output, '((//ul)[1]/li)[1]/div/ol/li/div[@class="ulist"]/ul/li/*', 1)
-      assertXpath(output, '((//ul)[1]/li)[1]/div/ol/li/div[@class="ulist"]/ul/li/p[text()="bullet 1.1.1"]', 1)
+      assertXpath(
+        output,
+        '(((//ul)[1]/li)[1]/div/ol/li/*)[1]/self::p[text()="numbered 1.1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ul)[1]/li)[1]/div/ol/li/*)[2]/self::div[@class="ulist"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ul)[1]/li)[1]/div/ol/li/*)[3]/self::div[@class="paragraph"]/p[text()="numbered 1.1 paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ul)[1]/li)[1]/div/ol/li/div[@class="ulist"]/ul/li',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ul)[1]/li)[1]/div/ol/li/div[@class="ulist"]/ul/li/*',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ul)[1]/li)[1]/div/ol/li/div[@class="ulist"]/ul/li/p[text()="bullet 1.1.1"]',
+        1
+      )
     })
 
     test('repeated list continuations should attach to list items at respective levels', async () => {
@@ -1449,16 +1737,52 @@ paragraph for list item 1
       assertCss(output, '.olist .ulist', 1)
       assertXpath(output, '(//ol/li)[1]/*', 3)
       assertXpath(output, '((//ol/li)[1]/*)[1]/self::p', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[1]/self::p[text()="list item 1"]', 1)
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[1]/self::p[text()="list item 1"]',
+        1
+      )
       assertXpath(output, '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li', 2)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/*', 2)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/p', 1)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/div[@class="openblock"]', 1)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/*', 2)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/p', 1)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/div[@class="paragraph"]', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[3]/self::div[@class="paragraph"]', 1)
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li',
+        2
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/*',
+        2
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/p',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/div[@class="openblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/*',
+        2
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/p',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/div[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[3]/self::div[@class="paragraph"]',
+        1
+      )
     })
 
     test('repeated list continuations attached directly to list item should attach to list items at respective levels', async () => {
@@ -1489,16 +1813,52 @@ paragraph for list item 1
       assertCss(output, '.olist .ulist', 1)
       assertXpath(output, '(//ol/li)[1]/*', 3)
       assertXpath(output, '((//ol/li)[1]/*)[1]/self::p', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[1]/self::p[text()="list item 1"]', 1)
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[1]/self::p[text()="list item 1"]',
+        1
+      )
       assertXpath(output, '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li', 2)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/*', 2)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/p', 1)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/div[@class="openblock"]', 1)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/*', 2)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/p', 1)
-      assertXpath(output, '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/div[@class="paragraph"]', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[3]/self::div[@class="paragraph"]', 1)
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li',
+        2
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/*',
+        2
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/p',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[1]/div[@class="openblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/*',
+        2
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/p',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li)[2]/div[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[3]/self::div[@class="paragraph"]',
+        1
+      )
     })
 
     test('repeated list continuations should attach to list items at respective levels ignoring blank lines', async () => {
@@ -1528,9 +1888,21 @@ paragraph for list item 1
       assertCss(output, '.ulist ul > li', 2)
       assertCss(output, '.olist .ulist', 1)
       assertXpath(output, '(//ol/li)[1]/*', 3)
-      assertXpath(output, '((//ol/li)[1]/*)[1]/self::p[text()="list item 1"]', 1)
-      assertXpath(output, '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li', 2)
-      assertXpath(output, '((//ol/li)[1]/*)[3]/self::div[@class="paragraph"]', 1)
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[1]/self::p[text()="list item 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[2]/self::div[@class="ulist"]/ul/li',
+        2
+      )
+      assertXpath(
+        output,
+        '((//ol/li)[1]/*)[3]/self::div[@class="paragraph"]',
+        1
+      )
     })
 
     test('trailing list continuations should ignore preceding blank lines', async () => {
@@ -1554,18 +1926,58 @@ bullet 1 paragraph
 `
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '((//ul)[1]/li[1])/*', 3)
-      assertXpath(output, '(((//ul)[1]/li[1])/*)[1]/self::p[text()="bullet 1"]', 1)
-      assertXpath(output, '(((//ul)[1]/li[1])/*)[2]/self::div[@class="ulist"]', 1)
-      assertXpath(output, '(((//ul)[1]/li[1])/*)[3]/self::div[@class="paragraph"]/p[text()="bullet 1 paragraph"]', 1)
+      assertXpath(
+        output,
+        '(((//ul)[1]/li[1])/*)[1]/self::p[text()="bullet 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ul)[1]/li[1])/*)[2]/self::div[@class="ulist"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ul)[1]/li[1])/*)[3]/self::div[@class="paragraph"]/p[text()="bullet 1 paragraph"]',
+        1
+      )
       assertXpath(output, '((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li', 1)
       assertXpath(output, '((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/*', 3)
-      assertXpath(output, '(((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/*)[1]/self::p[text()="bullet 1.1"]', 1)
-      assertXpath(output, '(((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/*)[2]/self::div[@class="ulist"]', 1)
-      assertXpath(output, '(((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/*)[3]/self::div[@class="paragraph"]/p[text()="bullet 1.1 paragraph"]', 1)
-      assertXpath(output, '((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/div[@class="ulist"]/ul/li', 1)
-      assertXpath(output, '((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/div[@class="ulist"]/ul/li/*', 2)
-      assertXpath(output, '(((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/div[@class="ulist"]/ul/li/*)[1]/self::p', 1)
-      assertXpath(output, '(((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/div[@class="ulist"]/ul/li/*)[2]/self::div[@class="openblock"]', 1)
+      assertXpath(
+        output,
+        '(((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/*)[1]/self::p[text()="bullet 1.1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/*)[2]/self::div[@class="ulist"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/*)[3]/self::div[@class="paragraph"]/p[text()="bullet 1.1 paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/div[@class="ulist"]/ul/li',
+        1
+      )
+      assertXpath(
+        output,
+        '((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/div[@class="ulist"]/ul/li/*',
+        2
+      )
+      assertXpath(
+        output,
+        '(((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/div[@class="ulist"]/ul/li/*)[1]/self::p',
+        1
+      )
+      assertXpath(
+        output,
+        '(((//ul)[1]/li)[1]/div[@class="ulist"]/ul/li/div[@class="ulist"]/ul/li/*)[2]/self::div[@class="openblock"]',
+        1
+      )
     })
 
     test('indented outline list item with different marker offset by a blank line should be recognized as a nested list', async () => {
@@ -1591,9 +2003,21 @@ attached paragraph
       assertXpath(output, '((//ul/li)[1]/*)[2]/self::div/ol', 1)
       assertXpath(output, '((//ul/li)[1]/*)[2]/self::div/ol/li', 2)
       for (let idx = 1; idx <= 2; idx++) {
-        assertXpath(output, `(((//ul/li)[1]/*)[2]/self::div/ol/li)[${idx}]/*`, 2)
-        assertXpath(output, `((((//ul/li)[1]/*)[2]/self::div/ol/li)[${idx}]/*)[1]/self::p`, 1)
-        assertXpath(output, `((((//ul/li)[1]/*)[2]/self::div/ol/li)[${idx}]/*)[2]/self::div[@class="paragraph"]`, 1)
+        assertXpath(
+          output,
+          `(((//ul/li)[1]/*)[2]/self::div/ol/li)[${idx}]/*`,
+          2
+        )
+        assertXpath(
+          output,
+          `((((//ul/li)[1]/*)[2]/self::div/ol/li)[${idx}]/*)[1]/self::p`,
+          1
+        )
+        assertXpath(
+          output,
+          `((((//ul/li)[1]/*)[2]/self::div/ol/li)[${idx}]/*)[2]/self::div[@class="paragraph"]`,
+          1
+        )
       }
     })
 
@@ -1621,9 +2045,21 @@ attached paragraph
       assertXpath(output, '((//ul/li)[1]/*)[2]/self::div/dl/dt', 2)
       assertXpath(output, '((//ul/li)[1]/*)[2]/self::div/dl/dd', 2)
       for (let idx = 1; idx <= 2; idx++) {
-        assertXpath(output, `(((//ul/li)[1]/*)[2]/self::div/dl/dd)[${idx}]/*`, 2)
-        assertXpath(output, `((((//ul/li)[1]/*)[2]/self::div/dl/dd)[${idx}]/*)[1]/self::p`, 1)
-        assertXpath(output, `((((//ul/li)[1]/*)[2]/self::div/dl/dd)[${idx}]/*)[2]/self::div[@class="paragraph"]`, 1)
+        assertXpath(
+          output,
+          `(((//ul/li)[1]/*)[2]/self::div/dl/dd)[${idx}]/*`,
+          2
+        )
+        assertXpath(
+          output,
+          `((((//ul/li)[1]/*)[2]/self::div/dl/dd)[${idx}]/*)[1]/self::p`,
+          1
+        )
+        assertXpath(
+          output,
+          `((((//ul/li)[1]/*)[2]/self::div/dl/dd)[${idx}]/*)[2]/self::div[@class="paragraph"]`,
+          1
+        )
       }
     })
 
@@ -1646,7 +2082,11 @@ Item one, paragraph two
       assertXpath(output, '//ul/li', 2)
       assertXpath(output, '//ul/li[1]/p', 1)
       assertXpath(output, '//ul/li[1]/div/p', 1)
-      assertXpath(output, '//ul/li[1]//p[text() = "Item one, paragraph one"]', 1)
+      assertXpath(
+        output,
+        '//ul/li[1]//p[text() = "Item one, paragraph one"]',
+        1
+      )
     })
 
     test('should warn if unterminated block is detected in list item', async () => {
@@ -1816,7 +2256,11 @@ iii) 3
       assertCss(output, 'li:first-of-type > *', 3)
       assertCss(output, 'li:first-of-type pre', 2)
       assertXpath(output, '((//li)[1]//pre)[1][text()="<code>text</code>"]', 1)
-      assertXpath(output, '((//li)[1]//pre)[2][text()="more <code>text</code>"]', 1)
+      assertXpath(
+        output,
+        '((//li)[1]//pre)[2][text()="more <code>text</code>"]',
+        1
+      )
     })
 
     test('dot elements with interspersed line comments should be skipped and not break list', async () => {
@@ -1868,7 +2312,11 @@ more text
       assertXpath(output, '//ol', 2)
       assertXpath(output, '(//ol)[1]/li', 2)
       assertXpath(output, '(//ol)[2]/li', 1)
-      assertXpath(output, '(//ol)[2]/preceding-sibling::*[@class = "title"][text() = "Also"]', 1)
+      assertXpath(
+        output,
+        '(//ol)[2]/preceding-sibling::*[@class = "title"][text() = "Also"]',
+        1
+      )
     })
 
     test('dot elements separated by an attribute entry offset by a blank line should not merge lists', async () => {
@@ -1931,7 +2379,9 @@ more text
 . item 7
 . item 8
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook5' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook5',
+      })
       assertXpath(output, '//orderedlist', 1)
       assertXpath(output, '(//orderedlist)/listitem', 2)
       assertXpath(output, '(//orderedlist)[@startingnumber = "7"]', 1)
@@ -1995,7 +2445,10 @@ z. z
       const input = `. a\n. b${ls}\n. c`
       const output = await convertString(input)
       assertCss(output, 'li', 3)
-      assert.ok(output.includes(`<p>b${ls}</p>`), `expected <p>b${ls}</p> in output`)
+      assert.ok(
+        output.includes(`<p>b${ls}</p>`),
+        `expected <p>b${ls}</p> in output`
+      )
     })
 
     test('should match line separator in text of list item', async () => {
@@ -2003,7 +2456,10 @@ z. z
       const input = `. a\n. b${ls}b\n. c`
       const output = await convertString(input)
       assertCss(output, 'li', 3)
-      assert.ok(output.includes(`<p>b${ls}b</p>`), `expected <p>b${ls}b</p> in output`)
+      assert.ok(
+        output.includes(`<p>b${ls}b</p>`),
+        `expected <p>b${ls}b</p> in output`
+      )
     })
   })
 
@@ -2069,7 +2525,11 @@ describe('Description lists (dlist)', () => {
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'dl', 1)
       assertCss(output, 'dl > dt', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "[]"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "[]"]',
+        1
+      )
     })
 
     test('should parse a dlist if term is include and principal text matches macro form', async () => {
@@ -2077,7 +2537,11 @@ describe('Description lists (dlist)', () => {
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'dl', 1)
       assertCss(output, 'dl > dt', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "${placeholder}"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "${placeholder}"]',
+        1
+      )
     })
 
     test('single-line adjacent elements', async () => {
@@ -2089,9 +2553,17 @@ term2:: def2
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('should parse sibling items using same rules', async () => {
@@ -2103,9 +2575,17 @@ term2;; ;; def2
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = ";; def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = ";; def1"]',
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = ";; def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = ";; def2"]',
+        1
+      )
     })
 
     test('should allow term to end with a semicolon when using double semicolon delimiter', async () => {
@@ -2115,7 +2595,11 @@ term2;; ;; def2
       assertCss(output, 'dl', 1)
       assertCss(output, 'dl > dt', 1)
       assertXpath(output, '(//dl/dt)[1][text() = "term;"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "def"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "def"]',
+        1
+      )
     })
 
     test('single-line indented adjacent elements', async () => {
@@ -2127,9 +2611,17 @@ term2;; ;; def2
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('single-line indented adjacent elements with tabs', async () => {
@@ -2139,9 +2631,17 @@ term2;; ;; def2
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('single-line elements separated by blank line should create a single list', async () => {
@@ -2195,7 +2695,11 @@ term2:: def2
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '(//dl)[1]/dt', 1)
       assertXpath(output, '(//dl)[2]/dt', 1)
-      assertXpath(output, '(//dl)[2]/preceding-sibling::*[@class="title"][text() = "Some more"]', 1)
+      assertXpath(
+        output,
+        '(//dl)[2]/preceding-sibling::*[@class="title"][text() = "Some more"]',
+        1
+      )
     })
 
     test('multi-line elements with paragraph content', async () => {
@@ -2209,9 +2713,17 @@ def2
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('multi-line elements with indented paragraph content', async () => {
@@ -2225,9 +2737,17 @@ term2::
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('multi-line elements with indented paragraph content that includes comment lines', async () => {
@@ -2244,9 +2764,17 @@ term2::
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, `(//dl/dt)[2]/following-sibling::dd/p[text() = "def2\ndef2 continued"]`, 1)
+      assertXpath(
+        output,
+        `(//dl/dt)[2]/following-sibling::dd/p[text() = "def2\ndef2 continued"]`,
+        1
+      )
     })
 
     test('should not strip comment line in literal paragraph block attached to list item', async () => {
@@ -2258,7 +2786,11 @@ term2::
 `
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="literalblock"]', 1)
-      assertXpath(output, `//*[@class="literalblock"]//pre[text()=" line 1\n// not a comment\n line 3"]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="literalblock"]//pre[text()=" line 1\n// not a comment\n line 3"]`,
+        1
+      )
     })
 
     test('should escape special characters in all literal paragraphs attached to list item', async () => {
@@ -2278,8 +2810,16 @@ another term::
       assertCss(output, 'dd:first-of-type > *', 3)
       assertCss(output, 'dd:first-of-type pre', 2)
       assertXpath(output, '((//dd)[1]//pre)[1][text()="<code>text</code>"]', 1)
-      assertXpath(output, '((//dd)[1]//pre)[2][text()="more <code>text</code>"]', 1)
-      assertXpath(output, '((//dd)[2]//p)[1][text()="<code>text</code> in a paragraph"]', 1)
+      assertXpath(
+        output,
+        '((//dd)[1]//pre)[2][text()="more <code>text</code>"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//dd)[2]//p)[1][text()="<code>text</code> in a paragraph"]',
+        1
+      )
     })
 
     test('multi-line element with paragraph starting with multiple dashes should not be seen as list', async () => {
@@ -2297,9 +2837,17 @@ term2::
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, `(//dl/dt)[1]/following-sibling::dd/p[text() = "def1${thin}${em}${thin}and a note"]`, 1)
+      assertXpath(
+        output,
+        `(//dl/dt)[1]/following-sibling::dd/p[text() = "def1${thin}${em}${thin}and a note"]`,
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('multi-line element with multiple terms', async () => {
@@ -2314,7 +2862,11 @@ def2
       assertXpath(output, '(//dl/dt)[1]/following-sibling::dt', 1)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
       assertXpath(output, '(//dl/dt)[2]/following-sibling::dd', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('consecutive terms share same varlistentry in docbook', async () => {
@@ -2324,12 +2876,18 @@ description
 
 last::
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '//varlistentry', 2)
       assertXpath(output, '(//varlistentry)[1]/term', 2)
       assertXpath(output, '(//varlistentry)[2]/term', 1)
       assertXpath(output, '(//varlistentry)[2]/listitem', 1)
-      assertXpath(output, '(//varlistentry)[2]/listitem[normalize-space(text())=""]', 1)
+      assertXpath(
+        output,
+        '(//varlistentry)[2]/listitem[normalize-space(text())=""]',
+        1
+      )
     })
 
     test('multi-line elements with blank line before paragraph content', async () => {
@@ -2345,9 +2903,17 @@ def2
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('multi-line elements with paragraph and literal content', async () => {
@@ -2365,9 +2931,17 @@ term2::
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd//pre', 1)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('mixed single and multi-line adjacent elements', async () => {
@@ -2380,9 +2954,17 @@ def2
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '//dl/dt/following-sibling::dd', 2)
       assertXpath(output, '(//dl/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '(//dl/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('should discover anchor at start of description term text and register it as a reference', async () => {
@@ -2396,8 +2978,16 @@ def2
       assert.ok('mount-evans' in refs, 'refs should contain mount-evans')
       assert.ok('grays-peak' in refs, 'refs should contain grays-peak')
       const output = await doc.convert()
-      assertXpath(output, '(//p)[1]/a[@href="#grays-peak"][text()="Grays Peak"]', 1)
-      assertXpath(output, '(//p)[1]/a[@href="#mount-evans"][text()="Mount Evans"]', 1)
+      assertXpath(
+        output,
+        '(//p)[1]/a[@href="#grays-peak"][text()="Grays Peak"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//p)[1]/a[@href="#mount-evans"][text()="Mount Evans"]',
+        1
+      )
       assertXpath(output, '//dl', 1)
       assertXpath(output, '//dl/dt', 2)
       assertXpath(output, '(//dl/dt)[1]/a[@id="mount-evans"]', 1)
@@ -2500,7 +3090,11 @@ term2:: def2
       assertXpath(output, '(//dl/dt)[2][normalize-space(text())="term2"]', 1)
       assertXpath(output, '(//dl/dd)[1]//p', 2)
       assertXpath(output, '((//dl/dd)[1]//p)[1][text()="def1"]', 1)
-      assertXpath(output, '(//dl/dd)[1]/p/following-sibling::*[@class="paragraph"]/p[text() = "more detail"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dd)[1]/p/following-sibling::*[@class="paragraph"]/p[text() = "more detail"]',
+        1
+      )
     })
 
     test('paragraph attached by a list continuation on either side to a multi-line element in a description list', async () => {
@@ -2516,7 +3110,11 @@ term2:: def2
       assertXpath(output, '(//dl/dt)[2][normalize-space(text())="term2"]', 1)
       assertXpath(output, '(//dl/dd)[1]//p', 2)
       assertXpath(output, '((//dl/dd)[1]//p)[1][text()="def1"]', 1)
-      assertXpath(output, '(//dl/dd)[1]/p/following-sibling::*[@class="paragraph"]/p[text() = "more detail"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dd)[1]/p/following-sibling::*[@class="paragraph"]/p[text() = "more detail"]',
+        1
+      )
     })
 
     test('should continue to parse subsequent blocks attached to list item after first block is dropped', async () => {
@@ -2546,7 +3144,11 @@ term2:: def
 `
       const output = await convertString(input)
       assertXpath(output, '//dl/dd//p', 2)
-      assertXpath(output, '(//dl/dd)[1]/*[@class="verseblock"]/pre[text() = "la la la"]', 1)
+      assertXpath(
+        output,
+        '(//dl/dd)[1]/*[@class="verseblock"]/pre[text() = "la la la"]',
+        1
+      )
     })
 
     test('list inside a description list', async () => {
@@ -2597,9 +3199,21 @@ Another new paragraph
       assertXpath(output, '//dl/dd', 2)
       assertXpath(output, '(//dl/dd)[1]/p[text() = "def1"]', 1)
       assertXpath(output, '(//dl/dd)[2]/p[text() = "def2"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]', 2)
-      assertXpath(output, '(//*[@class="dlist"]/following-sibling::*[@class="paragraph"])[1]/p[text() = "A new paragraph"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]/following-sibling::*[@class="paragraph"])[2]/p[text() = "Another new paragraph"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]',
+        2
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]/following-sibling::*[@class="paragraph"])[1]/p[text() = "A new paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]/following-sibling::*[@class="paragraph"])[2]/p[text() = "Another new paragraph"]',
+        1
+      )
     })
 
     test('should only grab one literal line following last item if item has no inline description', async () => {
@@ -2620,9 +3234,21 @@ Another new paragraph
       assertXpath(output, '//dl/dd', 2)
       assertXpath(output, '(//dl/dd)[1]/p[text() = "def1"]', 1)
       assertXpath(output, '(//dl/dd)[2]/p[text() = "def2"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]', 2)
-      assertXpath(output, '(//*[@class="dlist"]/following-sibling::*[@class="paragraph"])[1]/p[text() = "A new paragraph"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]/following-sibling::*[@class="paragraph"])[2]/p[text() = "Another new paragraph"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]',
+        2
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]/following-sibling::*[@class="paragraph"])[1]/p[text() = "A new paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]/following-sibling::*[@class="paragraph"])[2]/p[text() = "Another new paragraph"]',
+        1
+      )
     })
 
     test('should append subsequent paragraph literals to list item as block content', async () => {
@@ -2643,10 +3269,26 @@ A new paragraph.
       assertXpath(output, '//dl/dd', 2)
       assertXpath(output, '(//dl/dd)[1]/p[text() = "def1"]', 1)
       assertXpath(output, '(//dl/dd)[2]/p[text() = "def2"]', 1)
-      assertXpath(output, '(//dl/dd)[2]/p/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '(//dl/dd)[2]/p/following-sibling::*[@class="literalblock"]//pre[text() = "literal"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]/following-sibling::*[@class="paragraph"])[1]/p[text() = "A new paragraph."]', 1)
+      assertXpath(
+        output,
+        '(//dl/dd)[2]/p/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl/dd)[2]/p/following-sibling::*[@class="literalblock"]//pre[text() = "literal"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]/following-sibling::*[@class="paragraph"])[1]/p[text() = "A new paragraph."]',
+        1
+      )
     })
 
     test('should not match comment line that looks like description list term', async () => {
@@ -2672,7 +3314,11 @@ section text
       assertXpath(output, '/*[@class="ulist"]', 1)
       assertXpath(output, '/*[@class="sect1"]', 1)
       assertXpath(output, '/*[@class="sect1"]/h2[text()="Section"]', 1)
-      assertXpath(output, '/*[@class="ulist"]/following-sibling::*[@class="sect1"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="ulist"]/following-sibling::*[@class="sect1"]',
+        1
+      )
     })
 
     test('should not match comment line that looks like sibling description list term', async () => {
@@ -2722,7 +3368,10 @@ category b::
 ///term:: def
 `
       const output = await convertStringToEmbedded(input)
-      assert.ok(!output.includes('ignored term'), 'output should not include "ignored term"')
+      assert.ok(
+        !output.includes('ignored term'),
+        'output should not include "ignored term"'
+      )
       assertXpath(output, '//dt[text()="///term"]', 1)
     })
 
@@ -2751,7 +3400,10 @@ paragraph
       const input = `A:: a\nB:: b${ls}\nC:: c`
       const output = await convertString(input)
       assertCss(output, 'dd', 3)
-      assert.ok(output.includes(`<p>b${ls}</p>`), `expected <p>b${ls}</p> in output`)
+      assert.ok(
+        output.includes(`<p>b${ls}</p>`),
+        `expected <p>b${ls}</p> in output`
+      )
     })
 
     test('should match line separator in text of list item', async () => {
@@ -2759,7 +3411,10 @@ paragraph
       const input = `A:: a\nB:: b${ls}b\nC:: c`
       const output = await convertString(input)
       assertCss(output, 'dd', 3)
-      assert.ok(output.includes(`<p>b${ls}b</p>`), `expected <p>b${ls}b</p> in output`)
+      assert.ok(
+        output.includes(`<p>b${ls}b</p>`),
+        `expected <p>b${ls}b</p> in output`
+      )
     })
   })
 
@@ -2791,12 +3446,32 @@ term2:: def2
       const output = await convertString(input)
       assertXpath(output, '//dl', 2)
       assertXpath(output, '//dl//dl', 1)
-      assertXpath(output, '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '//dl//dl/dt[normalize-space(text()) = "label1"]', 1)
-      assertXpath(output, '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('single-line adjacent maximum nested elements', async () => {
@@ -2821,12 +3496,32 @@ term2:: def2
       const output = await convertString(input)
       assertXpath(output, '//dl', 2)
       assertXpath(output, '//dl//dl', 1)
-      assertXpath(output, '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '//dl//dl/dt[normalize-space(text()) = "label1"]', 1)
-      assertXpath(output, '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('single-line nested elements separated by blank line at nested level', async () => {
@@ -2839,12 +3534,32 @@ term2:: def2
       const output = await convertString(input)
       assertXpath(output, '//dl', 2)
       assertXpath(output, '//dl//dl', 1)
-      assertXpath(output, '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '//dl//dl/dt[normalize-space(text()) = "label1"]', 1)
-      assertXpath(output, '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('single-line adjacent nested elements with alternate delimiters', async () => {
@@ -2855,12 +3570,32 @@ term2:: def2
       const output = await convertString(input)
       assertXpath(output, '//dl', 2)
       assertXpath(output, '//dl//dl', 1)
-      assertXpath(output, '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '//dl//dl/dt[normalize-space(text()) = "label1"]', 1)
-      assertXpath(output, '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('multi-line adjacent nested elements', async () => {
@@ -2874,12 +3609,32 @@ def2
       const output = await convertString(input)
       assertXpath(output, '//dl', 2)
       assertXpath(output, '//dl//dl', 1)
-      assertXpath(output, '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '//dl//dl/dt[normalize-space(text()) = "label1"]', 1)
-      assertXpath(output, '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('multi-line nested elements separated by blank line at nested level repeated', async () => {
@@ -2896,12 +3651,36 @@ term2:: def2
       const output = await convertString(input)
       assertXpath(output, '//dl', 2)
       assertXpath(output, '//dl//dl', 1)
-      assertXpath(output, '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]', 1)
-      assertXpath(output, '(//dl//dl/dt)[1][normalize-space(text()) = "label1"]', 1)
-      assertXpath(output, '(//dl//dl/dt)[1]/following-sibling::dd/p[text() = "detail1"]', 1)
-      assertXpath(output, '(//dl//dl/dt)[2][normalize-space(text()) = "label2"]', 1)
-      assertXpath(output, '(//dl//dl/dt)[2]/following-sibling::dd/p[text() = "detail2"]', 1)
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl//dl/dt)[1][normalize-space(text()) = "label1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl//dl/dt)[1]/following-sibling::dd/p[text() = "detail1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl//dl/dt)[2][normalize-space(text()) = "label2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl//dl/dt)[2]/following-sibling::dd/p[text() = "detail2"]',
+        1
+      )
     })
 
     test('multi-line element with indented nested element', async () => {
@@ -2917,13 +3696,33 @@ term2::
       assertXpath(output, '//dl//dl', 1)
       assertXpath(output, '(//dl)[1]/dt', 2)
       assertXpath(output, '(//dl)[1]/dd', 2)
-      assertXpath(output, '((//dl)[1]/dt)[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '((//dl)[1]/dt)[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '((//dl)[1]/dt)[1][normalize-space(text()) = "term1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//dl)[1]/dt)[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '//dl//dl/dt', 1)
       assertXpath(output, '//dl//dl/dt[normalize-space(text()) = "label1"]', 1)
-      assertXpath(output, '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]', 1)
-      assertXpath(output, '((//dl)[1]/dt)[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '((//dl)[1]/dt)[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//dl)[1]/dt)[2][normalize-space(text()) = "term2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//dl)[1]/dt)[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('mixed single and multi-line elements with indented nested elements', async () => {
@@ -2935,12 +3734,32 @@ term2:: def2
       const output = await convertString(input)
       assertXpath(output, '//dl', 2)
       assertXpath(output, '//dl//dl', 1)
-      assertXpath(output, '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]', 1)
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1]/following-sibling::dd/p[text() = "def1"]',
+        1
+      )
       assertXpath(output, '//dl//dl/dt[normalize-space(text()) = "label1"]', 1)
-      assertXpath(output, '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]', 1)
+      assertXpath(
+        output,
+        '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2][normalize-space(text()) = "term2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[2]/following-sibling::dd/p[text() = "def2"]',
+        1
+      )
     })
 
     test('multi-line elements with first paragraph folded to text with adjacent nested element', async () => {
@@ -2952,11 +3771,27 @@ detail1
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//dl', 2)
       assertXpath(output, '//dl//dl', 1)
-      assertXpath(output, '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]', 1)
-      assertXpath(output, '(//dl)[1]/dt[1]/following-sibling::dd/p[starts-with(text(), "def1")]', 1)
-      assertXpath(output, '(//dl)[1]/dt[1]/following-sibling::dd/p[contains(text(), "continued")]', 1)
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1][normalize-space(text()) = "term1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1]/following-sibling::dd/p[starts-with(text(), "def1")]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1]/following-sibling::dd/p[contains(text(), "continued")]',
+        1
+      )
       assertXpath(output, '//dl//dl/dt[normalize-space(text()) = "label1"]', 1)
-      assertXpath(output, '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]', 1)
+      assertXpath(
+        output,
+        '//dl//dl/dt/following-sibling::dd/p[text() = "detail1"]',
+        1
+      )
     })
 
     test('nested dlist attached by list continuation should not consume detached paragraph', async () => {
@@ -2985,9 +3820,21 @@ def 1
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//dl', 2)
       assertXpath(output, '//dl//dl', 1)
-      assertXpath(output, '(//dl)[1]/dt[1][normalize-space(text()) = "category"]', 1)
-      assertXpath(output, '(//dl)[1]//dl/dt[1][normalize-space(text()) = "term 1"]', 1)
-      assertXpath(output, '(//dl)[1]//dl/dt[1]/following-sibling::dd//p[starts-with(text(), "def 1")]', 1)
+      assertXpath(
+        output,
+        '(//dl)[1]/dt[1][normalize-space(text()) = "category"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]//dl/dt[1][normalize-space(text()) = "term 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//dl)[1]//dl/dt[1]/following-sibling::dd//p[starts-with(text(), "def 1")]',
+        1
+      )
     })
   })
 
@@ -3010,12 +3857,18 @@ description
 
 last::
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '/glossentry', 2)
       assertXpath(output, '(/glossentry)[1]/glossterm', 2)
       assertXpath(output, '(/glossentry)[2]/glossterm', 1)
       assertXpath(output, '(/glossentry)[2]/glossdef', 1)
-      assertXpath(output, '(/glossentry)[2]/glossdef[normalize-space(text())=""]', 1)
+      assertXpath(
+        output,
+        '(/glossentry)[2]/glossdef[normalize-space(text())=""]',
+        1
+      )
     })
 
     test('should convert horizontal list with proper markup', async () => {
@@ -3031,17 +3884,52 @@ second term:: description
       assertCss(output, '.hdlist table', 1)
       assertCss(output, '.hdlist table colgroup', 0)
       assertCss(output, '.hdlist table tr', 2)
-      assert.ok(!output.includes('<tbody>'), 'output should not include <tbody>')
+      assert.ok(
+        !output.includes('<tbody>'),
+        'output should not include <tbody>'
+      )
       assertXpath(output, `/*[@class="hdlist"]/table/tr[1]/td`, 2)
-      assertXpath(output, `/*[@class="hdlist"]/table/tr[1]/td[@class="hdlist1"]`, 1)
-      assertXpath(output, `/*[@class="hdlist"]/table/tr[1]/td[@class="hdlist2"]`, 1)
-      assertXpath(output, `/*[@class="hdlist"]/table/tr[1]/td[@class="hdlist2"]/p`, 1)
-      assertXpath(output, `/*[@class="hdlist"]/table/tr[1]/td[@class="hdlist2"]/p/following-sibling::*[@class="paragraph"]`, 1)
-      assertXpath(output, '((//tr)[1]/td)[1][normalize-space(text())="first term"]', 1)
-      assertXpath(output, '((//tr)[1]/td)[2]/p[normalize-space(text())="description"]', 1)
+      assertXpath(
+        output,
+        `/*[@class="hdlist"]/table/tr[1]/td[@class="hdlist1"]`,
+        1
+      )
+      assertXpath(
+        output,
+        `/*[@class="hdlist"]/table/tr[1]/td[@class="hdlist2"]`,
+        1
+      )
+      assertXpath(
+        output,
+        `/*[@class="hdlist"]/table/tr[1]/td[@class="hdlist2"]/p`,
+        1
+      )
+      assertXpath(
+        output,
+        `/*[@class="hdlist"]/table/tr[1]/td[@class="hdlist2"]/p/following-sibling::*[@class="paragraph"]`,
+        1
+      )
+      assertXpath(
+        output,
+        '((//tr)[1]/td)[1][normalize-space(text())="first term"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//tr)[1]/td)[2]/p[normalize-space(text())="description"]',
+        1
+      )
       assertXpath(output, `/*[@class="hdlist"]/table/tr[2]/td`, 2)
-      assertXpath(output, '((//tr)[2]/td)[1][normalize-space(text())="second term"]', 1)
-      assertXpath(output, '((//tr)[2]/td)[2]/p[normalize-space(text())="description"]', 1)
+      assertXpath(
+        output,
+        '((//tr)[2]/td)[1][normalize-space(text())="second term"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//tr)[2]/td)[2]/p[normalize-space(text())="description"]',
+        1
+      )
     })
 
     test('should set col widths of item and label if specified', async () => {
@@ -3062,12 +3950,22 @@ term:: def
 [labelwidth="25", itemwidth="75"]
 term:: def
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertCss(output, 'informaltable', 1)
       assertCss(output, 'informaltable > tgroup', 1)
       assertCss(output, 'informaltable > tgroup > colspec', 2)
-      assertXpath(output, '(/informaltable/tgroup/colspec)[1][@colwidth="25*"]', 1)
-      assertXpath(output, '(/informaltable/tgroup/colspec)[2][@colwidth="75*"]', 1)
+      assertXpath(
+        output,
+        '(/informaltable/tgroup/colspec)[1][@colwidth="25*"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(/informaltable/tgroup/colspec)[2][@colwidth="75*"]',
+        1
+      )
     })
 
     test('should add strong class to label if strong option is set', async () => {
@@ -3102,12 +4000,18 @@ description
 
 last::
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '//row', 2)
       assertXpath(output, '(//row)[1]/entry', 2)
       assertXpath(output, '((//row)[1]/entry)[1]/simpara', 2)
       assertXpath(output, '(//row)[2]/entry', 2)
-      assertXpath(output, '((//row)[2]/entry)[2][normalize-space(text())=""]', 1)
+      assertXpath(
+        output,
+        '((//row)[2]/entry)[2][normalize-space(text())=""]',
+        1
+      )
     })
 
     test('should convert horizontal list in docbook with proper markup', async () => {
@@ -3119,10 +4023,16 @@ more detail
 
 second term:: description
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '/table', 1)
       assertXpath(output, '/table[@tabstyle="horizontal"]', 1)
-      assertXpath(output, '/table[@tabstyle="horizontal"]/title[text()="Terms"]', 1)
+      assertXpath(
+        output,
+        '/table[@tabstyle="horizontal"]/title[text()="Terms"]',
+        1
+      )
       assertXpath(output, '/table//row', 2)
       assertXpath(output, '(/table//row)[1]/entry', 2)
       assertXpath(output, '(/table//row)[2]/entry', 2)
@@ -3144,12 +4054,32 @@ NOTE: A note about Answer 2.
       assertCss(output, '.qanda > ol > li', 2)
       for (let idx = 1; idx <= 2; idx++) {
         assertCss(output, `.qanda > ol > li:nth-child(${idx}) > p`, 2)
-        assertCss(output, `.qanda > ol > li:nth-child(${idx}) > p:first-child > em`, 1)
-        assertXpath(output, `/*[@class = 'qlist qanda']/ol/li[${idx}]/p[1]/em[normalize-space(text()) = 'Question ${idx}']`, 1)
-        assertCss(output, `.qanda > ol > li:nth-child(${idx}) > p:last-child > *`, 0)
-        assertXpath(output, `/*[@class = 'qlist qanda']/ol/li[${idx}]/p[2][normalize-space(text()) = 'Answer ${idx}.']`, 1)
+        assertCss(
+          output,
+          `.qanda > ol > li:nth-child(${idx}) > p:first-child > em`,
+          1
+        )
+        assertXpath(
+          output,
+          `/*[@class = 'qlist qanda']/ol/li[${idx}]/p[1]/em[normalize-space(text()) = 'Question ${idx}']`,
+          1
+        )
+        assertCss(
+          output,
+          `.qanda > ol > li:nth-child(${idx}) > p:last-child > *`,
+          0
+        )
+        assertXpath(
+          output,
+          `/*[@class = 'qlist qanda']/ol/li[${idx}]/p[2][normalize-space(text()) = 'Answer ${idx}.']`,
+          1
+        )
       }
-      assertXpath(output, '/*[@class = "qlist qanda"]/ol/li[2]/p[2]/following-sibling::div[@class="admonitionblock note"]', 1)
+      assertXpath(
+        output,
+        '/*[@class = "qlist qanda"]/ol/li[2]/p[2]/following-sibling::div[@class="admonitionblock note"]',
+        1
+      )
     })
 
     test('should convert qanda list in DocBook with proper semantics', async () => {
@@ -3161,18 +4091,44 @@ Question 2::
 +
 NOTE: A note about Answer 2.
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertCss(output, 'qandaset', 1)
       assertCss(output, 'qandaset > qandaentry', 2)
       for (let idx = 1; idx <= 2; idx++) {
-        assertCss(output, `qandaset > qandaentry:nth-child(${idx}) > question`, 1)
-        assertCss(output, `qandaset > qandaentry:nth-child(${idx}) > question > simpara`, 1)
-        assertXpath(output, `/qandaset/qandaentry[${idx}]/question/simpara[normalize-space(text()) = 'Question ${idx}']`, 1)
+        assertCss(
+          output,
+          `qandaset > qandaentry:nth-child(${idx}) > question`,
+          1
+        )
+        assertCss(
+          output,
+          `qandaset > qandaentry:nth-child(${idx}) > question > simpara`,
+          1
+        )
+        assertXpath(
+          output,
+          `/qandaset/qandaentry[${idx}]/question/simpara[normalize-space(text()) = 'Question ${idx}']`,
+          1
+        )
         assertCss(output, `qandaset > qandaentry:nth-child(${idx}) > answer`, 1)
-        assertCss(output, `qandaset > qandaentry:nth-child(${idx}) > answer > simpara`, 1)
-        assertXpath(output, `/qandaset/qandaentry[${idx}]/answer/simpara[normalize-space(text()) = 'Answer ${idx}.']`, 1)
+        assertCss(
+          output,
+          `qandaset > qandaentry:nth-child(${idx}) > answer > simpara`,
+          1
+        )
+        assertXpath(
+          output,
+          `/qandaset/qandaentry[${idx}]/answer/simpara[normalize-space(text()) = 'Answer ${idx}.']`,
+          1
+        )
       }
-      assertXpath(output, '/qandaset/qandaentry[2]/answer/simpara/following-sibling::note', 1)
+      assertXpath(
+        output,
+        '/qandaset/qandaentry[2]/answer/simpara/following-sibling::note',
+        1
+      )
     })
 
     test('consecutive questions should share same question element in docbook', async () => {
@@ -3183,13 +4139,19 @@ response
 
 last question::
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '//qandaentry', 2)
       assertXpath(output, '(//qandaentry)[1]/question', 1)
       assertXpath(output, '(//qandaentry)[1]/question/simpara', 2)
       assertXpath(output, '(//qandaentry)[2]/question', 1)
       assertXpath(output, '(//qandaentry)[2]/answer', 1)
-      assertXpath(output, '(//qandaentry)[2]/answer[normalize-space(text())=""]', 1)
+      assertXpath(
+        output,
+        '(//qandaentry)[2]/answer[normalize-space(text())=""]',
+        1
+      )
     })
 
     test('should convert bibliography list with proper semantics', async () => {
@@ -3207,7 +4169,11 @@ last question::
       assertCss(output, '.ulist.bibliography ul li p', 2)
       assertCss(output, '.ulist.bibliography ul li:nth-child(1) p a#taoup', 1)
       assertXpath(output, '//a/*', 0)
-      assertXpath(output, '(//a)[1][starts-with(following-sibling::text(), "[taoup] ")]', 1)
+      assertXpath(
+        output,
+        '(//a)[1][starts-with(following-sibling::text(), "[taoup] ")]',
+        1
+      )
     })
 
     test('should convert bibliography list with proper semantics to DocBook', async () => {
@@ -3218,16 +4184,42 @@ last question::
   _DocBook - The Definitive Guide_. O'Reilly & Associates. 1999.
   ISBN 1-56592-580-7.
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertCss(output, 'bibliodiv', 1)
       assertCss(output, 'bibliodiv > bibliomixed', 2)
       assertCss(output, 'bibliodiv > bibliomixed > bibliomisc', 2)
-      assertCss(output, 'bibliodiv > bibliomixed:nth-child(1) > bibliomisc > anchor', 1)
-      assertCss(output, 'bibliodiv > bibliomixed:nth-child(1) > bibliomisc > anchor[xreflabel="[taoup]"]', 1)
-      assertXpath(output, '(//bibliomixed)[1]/bibliomisc/anchor[starts-with(following-sibling::text(), "[taoup] Eric")]', 1)
-      assertCss(output, 'bibliodiv > bibliomixed:nth-child(2) > bibliomisc > anchor', 1)
-      assertCss(output, 'bibliodiv > bibliomixed:nth-child(2) > bibliomisc > anchor[xreflabel="[walsh-muellner]"]', 1)
-      assertXpath(output, '(//bibliomixed)[2]/bibliomisc/anchor[starts-with(following-sibling::text(), "[walsh-muellner] Norman")]', 1)
+      assertCss(
+        output,
+        'bibliodiv > bibliomixed:nth-child(1) > bibliomisc > anchor',
+        1
+      )
+      assertCss(
+        output,
+        'bibliodiv > bibliomixed:nth-child(1) > bibliomisc > anchor[xreflabel="[taoup]"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//bibliomixed)[1]/bibliomisc/anchor[starts-with(following-sibling::text(), "[taoup] Eric")]',
+        1
+      )
+      assertCss(
+        output,
+        'bibliodiv > bibliomixed:nth-child(2) > bibliomisc > anchor',
+        1
+      )
+      assertCss(
+        output,
+        'bibliodiv > bibliomixed:nth-child(2) > bibliomisc > anchor[xreflabel="[walsh-muellner]"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//bibliomixed)[2]/bibliomisc/anchor[starts-with(following-sibling::text(), "[walsh-muellner] Norman")]',
+        1
+      )
     })
 
     test('should warn if a bibliography ID is already in use', async () => {
@@ -3241,7 +4233,11 @@ Addison-Wesley. 1997.
       assertCss(output, '.ulist.bibliography', 1)
       assertCss(output, '.ulist.bibliography ul li:nth-child(1) p a#Fowler', 1)
       assertCss(output, '.ulist.bibliography ul li:nth-child(2) p a#Fowler', 1)
-      assertMessage(logger, 'WARN', 'id assigned to bibliography anchor already in use: Fowler')
+      assertMessage(
+        logger,
+        'WARN',
+        'id assigned to bibliography anchor already in use: Fowler'
+      )
     })
 
     test('should automatically add bibliography style to top-level lists in bibliography section', async () => {
@@ -3270,7 +4266,10 @@ Addison-Wesley. 1997.
 - [[[1984]]] George Orwell. _1984_. New American Library. 1950.
 `
       const output = await convertStringToEmbedded(input)
-      assert.ok(output.includes('[[[1984]]]'), 'output should include [[[1984]]]')
+      assert.ok(
+        output.includes('[[[1984]]]'),
+        'output should include [[[1984]]]'
+      )
       assertXpath(output, '//a[@id="1984"]', 0)
     })
 
@@ -3279,7 +4278,10 @@ Addison-Wesley. 1997.
 - [[[_1984]]] George Orwell. __1984__. New American Library. 1950.
 `
       const output = await convertStringToEmbedded(input)
-      assert.ok(!output.includes('[[[_1984]]]'), 'output should not include [[[_1984]]]')
+      assert.ok(
+        !output.includes('[[[_1984]]]'),
+        'output should not include [[[_1984]]]'
+      )
       assert.ok(output.includes('[_1984]'), 'output should include [_1984]')
       assertXpath(output, '//a[@id="_1984"]', 1)
     })
@@ -3295,7 +4297,10 @@ Please read <<Fowler_1997>>.
 * [[[Fowler_1997]]] Fowler M. _Analysis Patterns: Reusable Object Models_. Addison-Wesley. 1997.
 `
       const doc = await documentFromString(input)
-      assert.ok(doc.catalog.refs['Fowler_1997'] != null, 'refs should contain Fowler_1997')
+      assert.ok(
+        doc.catalog.refs['Fowler_1997'] != null,
+        'refs should contain Fowler_1997'
+      )
     })
 
     test('should use reftext from bibliography anchor at xref and entry', async () => {
@@ -3321,19 +4326,34 @@ Then move on to <<Fowler_1997>>.
       assertXpath(result, '//a[@href="#Fowler_1997"]', 1)
       assertXpath(result, '//a[@href="#Fowler_1997"][text()="[1]"]', 1)
       assertXpath(result, '//a[@id="Fowler_1997"]', 1)
-      assertXpath(result, '(//a[@id="Fowler_1997"])[1][starts-with(following-sibling::text(), "[1] ")]', 1)
+      assertXpath(
+        result,
+        '(//a[@id="Fowler_1997"])[1][starts-with(following-sibling::text(), "[1] ")]',
+        1
+      )
       assertXpath(result, '//a[@href="#TMMM"]', 1)
       assertXpath(result, '//a[@href="#TMMM"][text()="[TMMM]"]', 1)
       assertXpath(result, '//a[@id="TMMM"]', 1)
-      assertXpath(result, '(//a[@id="TMMM"])[1][starts-with(following-sibling::text(), "[TMMM] ")]', 1)
+      assertXpath(
+        result,
+        '(//a[@id="TMMM"])[1][starts-with(following-sibling::text(), "[TMMM] ")]',
+        1
+      )
     })
 
     test('should assign reftext of bibliography anchor to xreflabel in DocBook backend', async () => {
       const input = `[bibliography]
 * [[[Fowler_1997,1]]] Fowler M. _Analysis Patterns: Reusable Object Models_. Addison-Wesley. 1997.
 `
-      const result = await convertStringToEmbedded(input, { backend: 'docbook' })
-      assert.ok(result.includes('<anchor xml:id="Fowler_1997" xreflabel="[1]"/>[1] Fowler'), 'result should include expected anchor')
+      const result = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
+      assert.ok(
+        result.includes(
+          '<anchor xml:id="Fowler_1997" xreflabel="[1]"/>[1] Fowler'
+        ),
+        'result should include expected anchor'
+      )
     })
   })
 })
@@ -3449,7 +4469,7 @@ term1::
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
     })
 
-    test("folds text that looks like ruler offset by blank line", async () => {
+    test('folds text that looks like ruler offset by blank line', async () => {
       const input = `== Lists
 
 term1::
@@ -3462,7 +4482,7 @@ term1::
       assertXpath(output, `//*[@class="dlist"]//dd/p[text()="'''"]`, 1)
     })
 
-    test("folds text that looks like ruler offset by blank line and line comment", async () => {
+    test('folds text that looks like ruler offset by blank line and line comment', async () => {
       const input = `== Lists
 
 term1::
@@ -3476,7 +4496,7 @@ term1::
       assertXpath(output, `//*[@class="dlist"]//dd/p[text()="'''"]`, 1)
     })
 
-    test("folds text that looks like ruler and the line following it offset by blank line", async () => {
+    test('folds text that looks like ruler and the line following it offset by blank line', async () => {
       const input = `== Lists
 
 term1::
@@ -3487,7 +4507,11 @@ continued
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
-      assertXpath(output, `//*[@class="dlist"]//dd/p[normalize-space(text())="''' continued"]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="dlist"]//dd/p[normalize-space(text())="''' continued"]`,
+        1
+      )
     })
 
     test('folds text that looks like title offset by blank line', async () => {
@@ -3540,7 +4564,11 @@ term1::
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p[text()="== Another Section"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p[text()="== Another Section"]',
+        1
+      )
       assertXpath(output, '//h2', 1)
     })
 
@@ -3559,8 +4587,16 @@ term1::
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]', 2)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]//pre[text()="literal"]', 2)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]',
+        2
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]//pre[text()="literal"]',
+        2
+      )
     })
 
     test('folds text of subsequent line and appends following literal line offset by blank line as block if term has no inline description', async () => {
@@ -3577,8 +4613,16 @@ term2:: def2
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 2)
       assertXpath(output, '(//*[@class="dlist"]//dd)[1]/p[text()="def1"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="literalblock"]//pre[text()="literal"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="literalblock"]//pre[text()="literal"]',
+        1
+      )
     })
 
     test('appends literal line attached by continuation as block if item has no inline description', async () => {
@@ -3593,7 +4637,11 @@ term1::
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="literalblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="literalblock"]//pre[text()="literal"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="literalblock"]//pre[text()="literal"]',
+        1
+      )
     })
 
     test('appends literal line attached by continuation as block if item has no inline description followed by ruler', async () => {
@@ -3610,7 +4658,11 @@ term1::
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="literalblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="literalblock"]//pre[text()="literal"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="literalblock"]//pre[text()="literal"]',
+        1
+      )
       assertXpath(output, '//*[@class="dlist"]/following-sibling::hr', 1)
     })
 
@@ -3628,7 +4680,11 @@ para
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]/p[text()="para"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
       assertXpath(output, '//*[@class="dlist"]/following-sibling::hr', 1)
     })
 
@@ -3648,9 +4704,21 @@ literal
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]/p[text()="para"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="literalblock"]//pre[text()="literal"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="literalblock"]//pre[text()="literal"]',
+        1
+      )
     })
 
     test('appends block attached by continuation but not subsequent block not attached by continuation', async () => {
@@ -3670,9 +4738,21 @@ detached
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="literalblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="literalblock"]//pre[text()="literal"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="literalblock"]//pre[text()="detached"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="literalblock"]//pre[text()="literal"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="literalblock"]//pre[text()="detached"]',
+        1
+      )
     })
 
     test('appends list if item has no inline description', async () => {
@@ -3726,13 +4806,37 @@ paragraph
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.dlist > dl', 1)
       assertCss(output, '.dlist dt', 2)
-      assertXpath(output, '(//*[@class="dlist"]//dt)[1][normalize-space(text())="label 1"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]//dt)[2][normalize-space(text())="label 2"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dt)[1][normalize-space(text())="label 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dt)[2][normalize-space(text())="label 2"]',
+        1
+      )
       assertCss(output, '.dlist dd', 2)
-      assertXpath(output, '(//*[@class="dlist"]//dd)[1]/p[text()="description 1"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]//dd)[2]/p[text()="description 2"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="ulist"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="ulist"]//li', 3)
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dd)[1]/p[text()="description 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dd)[2]/p[text()="description 2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="ulist"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="ulist"]//li',
+        3
+      )
       assertCss(output, '.dlist + .paragraph', 1)
     })
 
@@ -3753,13 +4857,37 @@ paragraph
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.dlist > dl', 1)
       assertCss(output, '.dlist dt', 2)
-      assertXpath(output, '(//*[@class="dlist"]//dt)[1][normalize-space(text())="label 1"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]//dt)[2][normalize-space(text())="label 2"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dt)[1][normalize-space(text())="label 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dt)[2][normalize-space(text())="label 2"]',
+        1
+      )
       assertCss(output, '.dlist dd', 2)
-      assertXpath(output, '(//*[@class="dlist"]//dd)[1]/p[text()="description 1"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]//dd)[2]/p[text()="description 2"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="ulist"]', 1)
-      assertXpath(output, '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="ulist"]//li', 3)
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dd)[1]/p[text()="description 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dd)[2]/p[text()="description 2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="ulist"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//*[@class="dlist"]//dd)[1]/p/following-sibling::*[@class="ulist"]//li',
+        3
+      )
       assertCss(output, '.dlist + .paragraph', 1)
     })
 
@@ -3781,8 +4909,16 @@ para
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="ulist"]', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="ulist"]/ul/li', 3)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="ulist"]/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="ulist"]/following-sibling::*[@class="paragraph"]/p[text()="para"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="ulist"]/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="ulist"]/following-sibling::*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
     })
 
     test('first continued line associated with nested list item and second continued line associated with term', async () => {
@@ -3802,9 +4938,21 @@ term1 para
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="ulist"]', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="ulist"]/ul/li', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="ulist"]/ul/li/*[@class="paragraph"]/p[text()="nested list para"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="ulist"]/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="ulist"]/following-sibling::*[@class="paragraph"]/p[text()="term1 para"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="ulist"]/ul/li/*[@class="paragraph"]/p[text()="nested list para"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="ulist"]/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="ulist"]/following-sibling::*[@class="paragraph"]/p[text()="term1 para"]',
+        1
+      )
     })
 
     test('literal line attached by continuation swallows adjacent line that looks like term', async () => {
@@ -3823,7 +4971,11 @@ notnestedterm:::
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="literalblock"]', 2)
-      assertXpath(output, `//*[@class="dlist"]//dd/*[@class="literalblock"]//pre[text()="  literal\nnotnestedterm:::"]`, 2)
+      assertXpath(
+        output,
+        `//*[@class="dlist"]//dd/*[@class="literalblock"]//pre[text()="  literal\nnotnestedterm:::"]`,
+        2
+      )
     })
 
     test('line attached by continuation is appended as paragraph if term has no inline description', async () => {
@@ -3838,7 +4990,11 @@ para
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]/p[text()="para"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
     })
 
     test('attached paragraph does not break on adjacent nested description list term', async () => {
@@ -3851,7 +5007,10 @@ not a term::: def
       assertCss(output, '.dlist > dl > dt', 1)
       assertCss(output, '.dlist > dl > dd', 1)
       assertCss(output, '.dlist > dl > dd > .paragraph', 1)
-      assert.ok(output.includes('not a term::: def'), 'output should include "not a term::: def"')
+      assert.ok(
+        output.includes('not a term::: def'),
+        'output should include "not a term::: def"'
+      )
     })
 
     test('attached paragraph is terminated by adjacent sibling description list term', async () => {
@@ -3864,7 +5023,10 @@ not a term:: def
       assertCss(output, '.dlist > dl > dt', 2)
       assertCss(output, '.dlist > dl > dd', 2)
       assertCss(output, '.dlist > dl > dd > .paragraph', 1)
-      assert.ok(!output.includes('not a term:: def'), 'output should not include "not a term:: def"')
+      assert.ok(
+        !output.includes('not a term:: def'),
+        'output should not include "not a term:: def"'
+      )
     })
 
     test('attached styled paragraph does not break on adjacent nested description list term', async () => {
@@ -3878,7 +5040,10 @@ not a term::: def
       assertCss(output, '.dlist > dl > dt', 1)
       assertCss(output, '.dlist > dl > dd', 1)
       assertCss(output, '.dlist > dl > dd > .quoteblock', 1)
-      assert.ok(output.includes('not a term::: def'), 'output should include "not a term::: def"')
+      assert.ok(
+        output.includes('not a term::: def'),
+        'output should include "not a term::: def"'
+      )
     })
 
     test('appends line as paragraph if attached by continuation following blank line and line comment when term has no inline description', async () => {
@@ -3895,7 +5060,11 @@ para
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]/p[text()="para"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
     })
 
     test('line attached by continuation offset by blank line is appended as paragraph if term has no inline description', async () => {
@@ -3911,7 +5080,11 @@ para
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p', 0)
       assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]/p[text()="para"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
     })
 
     test('delimited block breaks list even when term has no inline description', async () => {
@@ -3925,8 +5098,16 @@ detached
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 0)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="exampleblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="exampleblock"]//p[text()="detached"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="exampleblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="exampleblock"]//p[text()="detached"]',
+        1
+      )
     })
 
     test('block attribute line above delimited block that breaks a dlist is not duplicated', async () => {
@@ -3940,7 +5121,11 @@ detached
 `
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="listingblock rolename"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="listingblock rolename"]',
+        1
+      )
     })
 
     test('block attribute line above paragraph breaks list even when term has no inline description', async () => {
@@ -3953,8 +5138,16 @@ detached
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 0)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="verseblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="verseblock"]/pre[text()="detached"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="verseblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="verseblock"]/pre[text()="detached"]',
+        1
+      )
     })
 
     test('block attribute line above paragraph that breaks a dlist is not duplicated', async () => {
@@ -3966,7 +5159,11 @@ detached
 `
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="paragraph rolename"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="paragraph rolename"]',
+        1
+      )
     })
 
     test('block anchor line breaks list even when term has no inline description', async () => {
@@ -3979,8 +5176,16 @@ detached
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 0)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]/p[text()="detached"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]/p[text()="detached"]',
+        1
+      )
     })
 
     test('block attribute lines above nested horizontal list does not break list', async () => {
@@ -4069,7 +5274,11 @@ continued
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
-      assertXpath(output, `//*[@class="dlist"]//dd/p[text()="def1\ncontinued"]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="dlist"]//dd/p[text()="def1\ncontinued"]`,
+        1
+      )
     })
 
     test('folds text from inline description and subsequent lines', async () => {
@@ -4082,7 +5291,11 @@ continued
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
-      assertXpath(output, `//*[@class="dlist"]//dd/p[text()="def1\ncontinued\ncontinued"]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="dlist"]//dd/p[text()="def1\ncontinued\ncontinued"]`,
+        1
+      )
     })
 
     test('folds text from inline description and line following comment line', async () => {
@@ -4095,7 +5308,11 @@ continued
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
-      assertXpath(output, `//*[@class="dlist"]//dd/p[text()="def1\ncontinued"]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="dlist"]//dd/p[text()="def1\ncontinued"]`,
+        1
+      )
     })
 
     test('folds text from inline description and subsequent indented line', async () => {
@@ -4107,7 +5324,11 @@ term1:: def1
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
-      assertXpath(output, `//*[@class="dlist"]//dd/p[text()="def1\ncontinued"]`, 1)
+      assertXpath(
+        output,
+        `//*[@class="dlist"]//dd/p[text()="def1\ncontinued"]`,
+        1
+      )
     })
 
     test('appends literal line offset by blank line as block if item has inline description', async () => {
@@ -4121,8 +5342,16 @@ term1:: def1
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]//pre[text()="literal"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]//pre[text()="literal"]',
+        1
+      )
     })
 
     test('appends literal line offset by blank line as block and appends line after continuation as block if item has inline description', async () => {
@@ -4138,10 +5367,26 @@ para
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]//pre[text()="literal"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]/p[text()="para"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]//pre[text()="literal"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="literalblock"]/following-sibling::*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
     })
 
     test('appends line after continuation as block and literal line offset by blank line as block if item has inline description', async () => {
@@ -4157,10 +5402,26 @@ para
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]/p[text()="para"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/*[@class="paragraph"]/following-sibling::*[@class="literalblock"]//pre[text()="literal"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="paragraph"]/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/*[@class="paragraph"]/following-sibling::*[@class="literalblock"]//pre[text()="literal"]',
+        1
+      )
     })
 
     test('appends list if item has inline description', async () => {
@@ -4175,8 +5436,16 @@ term1:: def1
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="ulist"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="ulist"]/ul/li', 3)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="ulist"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="ulist"]/ul/li',
+        3
+      )
     })
 
     test('appends literal line attached by continuation as block if item has inline description followed by ruler', async () => {
@@ -4192,8 +5461,16 @@ term1:: def1
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]//pre[text()="literal"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="literalblock"]//pre[text()="literal"]',
+        1
+      )
       assertXpath(output, '//*[@class="dlist"]/following-sibling::hr', 1)
     })
 
@@ -4208,8 +5485,16 @@ detached
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]/p[text()="detached"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]/p[text()="detached"]',
+        1
+      )
     })
 
     test('nested term with description does not consume following heading', async () => {
@@ -4228,11 +5513,31 @@ Detached
       assertXpath(output, '//*[@class="dlist"]//dd', 2)
       assertXpath(output, '//*[@class="dlist"]/dl//dl', 1)
       assertXpath(output, '//*[@class="dlist"]/dl//dl/dt', 1)
-      assertXpath(output, '((//*[@class="dlist"])[1]//dd)[1]/p[text()="def"]', 1)
-      assertXpath(output, '((//*[@class="dlist"])[1]//dd)[1]/p/following-sibling::*[@class="dlist"]', 1)
-      assertXpath(output, '((//*[@class="dlist"])[1]//dd)[1]/p/following-sibling::*[@class="dlist"]//dd/p[text()="nesteddef"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="sect2"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="sect2"]/h3[text()="Detached"]', 1)
+      assertXpath(
+        output,
+        '((//*[@class="dlist"])[1]//dd)[1]/p[text()="def"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//*[@class="dlist"])[1]//dd)[1]/p/following-sibling::*[@class="dlist"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//*[@class="dlist"])[1]//dd)[1]/p/following-sibling::*[@class="dlist"]//dd/p[text()="nesteddef"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="sect2"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="sect2"]/h3[text()="Detached"]',
+        1
+      )
     })
 
     test('line attached by continuation is appended as paragraph if term has inline description followed by detached paragraph', async () => {
@@ -4248,10 +5553,26 @@ detached
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]/p[text()="para"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]/p[text()="detached"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="paragraph"]/p[text()="detached"]',
+        1
+      )
     })
 
     test('line attached by continuation is appended as paragraph if term has inline description followed by detached block', async () => {
@@ -4269,10 +5590,26 @@ detached
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]/p[text()="para"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="sidebarblock"]', 1)
-      assertXpath(output, '//*[@class="dlist"]/following-sibling::*[@class="sidebarblock"]//p[text()="detached"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="sidebarblock"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]/following-sibling::*[@class="sidebarblock"]//p[text()="detached"]',
+        1
+      )
     })
 
     test('line attached by continuation offset by line comment is appended as paragraph if term has inline description', async () => {
@@ -4287,8 +5624,16 @@ para
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]/p[text()="para"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
     })
 
     test('line attached by continuation offset by blank line is appended as paragraph if term has inline description', async () => {
@@ -4303,8 +5648,16 @@ para
       assertXpath(output, '//*[@class="dlist"]/dl', 1)
       assertXpath(output, '//*[@class="dlist"]//dd', 1)
       assertXpath(output, '//*[@class="dlist"]//dd/p[text()="def1"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]', 1)
-      assertXpath(output, '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]/p[text()="para"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="dlist"]//dd/p/following-sibling::*[@class="paragraph"]/p[text()="para"]',
+        1
+      )
     })
 
     test('line comment offset by blank line divides lists because item has text', async () => {
@@ -4344,7 +5697,11 @@ term2:: def2
 `
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//*[@class="dlist"]/dl', 2)
-      assertXpath(output, '(//*[@class="dlist"])[2]/*[@class="title"][text()="title"]', 1)
+      assertXpath(
+        output,
+        '(//*[@class="dlist"])[2]/*[@class="title"][text()="title"]',
+        1
+      )
     })
   })
 })
@@ -4418,10 +5775,26 @@ puts doc.convert # <3>
     assertXpath(output, '(//programlisting//co)[1][@xml:id="CO1-1"]', 1)
     assertXpath(output, '(//programlisting//co)[2][@xml:id="CO1-2"]', 1)
     assertXpath(output, '(//programlisting//co)[3][@xml:id="CO1-3"]', 1)
-    assertXpath(output, '//programlisting/following-sibling::calloutlist/callout', 3)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[1][@arearefs = "CO1-1"]', 1)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[2][@arearefs = "CO1-2"]', 1)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[3][@arearefs = "CO1-3"]', 1)
+    assertXpath(
+      output,
+      '//programlisting/following-sibling::calloutlist/callout',
+      3
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[1][@arearefs = "CO1-1"]',
+      1
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[2][@arearefs = "CO1-2"]',
+      1
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[3][@arearefs = "CO1-3"]',
+      1
+    )
   })
 
   test('listing block with sequential callouts followed by non-adjacent callout list', async () => {
@@ -4444,11 +5817,31 @@ Paragraph.
     assertXpath(output, '(//programlisting//co)[1][@xml:id="CO1-1"]', 1)
     assertXpath(output, '(//programlisting//co)[2][@xml:id="CO1-2"]', 1)
     assertXpath(output, '(//programlisting//co)[3][@xml:id="CO1-3"]', 1)
-    assertXpath(output, '//programlisting/following-sibling::*[1][self::simpara]', 1)
-    assertXpath(output, '//programlisting/following-sibling::calloutlist/callout', 3)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[1][@arearefs = "CO1-1"]', 1)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[2][@arearefs = "CO1-2"]', 1)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[3][@arearefs = "CO1-3"]', 1)
+    assertXpath(
+      output,
+      '//programlisting/following-sibling::*[1][self::simpara]',
+      1
+    )
+    assertXpath(
+      output,
+      '//programlisting/following-sibling::calloutlist/callout',
+      3
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[1][@arearefs = "CO1-1"]',
+      1
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[2][@arearefs = "CO1-2"]',
+      1
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[3][@arearefs = "CO1-3"]',
+      1
+    )
   })
 
   test('listing block with a callout that refers to two different lines', async () => {
@@ -4467,9 +5860,21 @@ puts doc.convert # <2>
     assertXpath(output, '(//programlisting//co)[1][@xml:id="CO1-1"]', 1)
     assertXpath(output, '(//programlisting//co)[2][@xml:id="CO1-2"]', 1)
     assertXpath(output, '(//programlisting//co)[3][@xml:id="CO1-3"]', 1)
-    assertXpath(output, '//programlisting/following-sibling::calloutlist/callout', 2)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[1][@arearefs = "CO1-1"]', 1)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[2][@arearefs = "CO1-2 CO1-3"]', 1)
+    assertXpath(
+      output,
+      '//programlisting/following-sibling::calloutlist/callout',
+      2
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[1][@arearefs = "CO1-1"]',
+      1
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[2][@arearefs = "CO1-2 CO1-3"]',
+      1
+    )
   })
 
   test('source block with non-sequential callouts followed by adjacent callout list', async () => {
@@ -4489,10 +5894,26 @@ puts doc.convert # <1>
     assertXpath(output, '(//programlisting//co)[1][@xml:id="CO1-1"]', 1)
     assertXpath(output, '(//programlisting//co)[2][@xml:id="CO1-2"]', 1)
     assertXpath(output, '(//programlisting//co)[3][@xml:id="CO1-3"]', 1)
-    assertXpath(output, '//programlisting/following-sibling::calloutlist/callout', 3)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[1][@arearefs = "CO1-3"]', 1)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[2][@arearefs = "CO1-1"]', 1)
-    assertXpath(output, '(//programlisting/following-sibling::calloutlist/callout)[3][@arearefs = "CO1-2"]', 1)
+    assertXpath(
+      output,
+      '//programlisting/following-sibling::calloutlist/callout',
+      3
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[1][@arearefs = "CO1-3"]',
+      1
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[2][@arearefs = "CO1-1"]',
+      1
+    )
+    assertXpath(
+      output,
+      '(//programlisting/following-sibling::calloutlist/callout)[3][@arearefs = "CO1-2"]',
+      1
+    )
   })
 
   test('two listing blocks can share the same callout list', async () => {
@@ -4551,10 +5972,22 @@ puts doc.convert # <2>
     assertXpath(output, '((//programlisting)[2]//co)[2][@xml:id="CO2-2"]', 1)
     assertXpath(output, '//calloutlist', 2)
     assertXpath(output, '(//calloutlist)[1]/callout', 1)
-    assertXpath(output, '((//calloutlist)[1]/callout)[1][@arearefs = "CO1-1"]', 1)
+    assertXpath(
+      output,
+      '((//calloutlist)[1]/callout)[1][@arearefs = "CO1-1"]',
+      1
+    )
     assertXpath(output, '(//calloutlist)[2]/callout', 2)
-    assertXpath(output, '((//calloutlist)[2]/callout)[1][@arearefs = "CO2-1"]', 1)
-    assertXpath(output, '((//calloutlist)[2]/callout)[2][@arearefs = "CO2-2"]', 1)
+    assertXpath(
+      output,
+      '((//calloutlist)[2]/callout)[1][@arearefs = "CO2-1"]',
+      1
+    )
+    assertXpath(
+      output,
+      '((//calloutlist)[2]/callout)[2][@arearefs = "CO2-2"]',
+      1
+    )
   })
 
   test('callout list retains block content', async () => {
@@ -4575,7 +6008,11 @@ You can write this to file rather than printing to stdout.
 `
     const output = await convertStringToEmbedded(input)
     assertXpath(output, '//ol/li', 3)
-    assertXpath(output, `(//ol/li)[1]/p[text()="Imports the library\nas a RubyGem"]`, 1)
+    assertXpath(
+      output,
+      `(//ol/li)[1]/p[text()="Imports the library\nas a RubyGem"]`,
+      1
+    )
     assertXpath(output, `(//ol/li)[2]//ul`, 1)
     assertXpath(output, `(//ol/li)[2]//ul/li`, 2)
     assertXpath(output, `(//ol/li)[3]//p`, 2)
@@ -4617,8 +6054,14 @@ Asciidoctor.convert 'convert me!' \\<2>
     for (const attributes of [{}, { 'source-highlighter': 'coderay' }]) {
       const output = await convertStringToEmbedded(input, { attributes })
       assertCss(output, 'pre b', 0)
-      assert.ok(output.includes(' # &lt;1&gt;'), 'output should include escaped callout 1')
-      assert.ok(output.includes(' &lt;2&gt;'), 'output should include escaped callout 2')
+      assert.ok(
+        output.includes(' # &lt;1&gt;'),
+        'output should include escaped callout 1'
+      )
+      assert.ok(
+        output.includes(' &lt;2&gt;'),
+        'output should include escaped callout 2'
+      )
     }
   })
 
@@ -4668,9 +6111,20 @@ exit 0
 `
     const output = await convertStringToEmbedded(input)
     assertXpath(output, '//code/b', 6)
-    assert.ok(/ <b class="conum">\(1\)<\/b>/.test(output), 'output should match callout (1) pattern')
-    assert.ok(/ <b class="conum">\(2\)<\/b> <b class="conum">\(3\)<\/b> <b class="conum">\(4\)<\/b>/.test(output), 'output should match callouts (2)(3)(4) pattern')
-    assert.ok(/ <b class="conum">\(5\)<\/b><b class="conum">\(6\)<\/b>/.test(output), 'output should match callouts (5)(6) pattern')
+    assert.ok(
+      / <b class="conum">\(1\)<\/b>/.test(output),
+      'output should match callout (1) pattern'
+    )
+    assert.ok(
+      / <b class="conum">\(2\)<\/b> <b class="conum">\(3\)<\/b> <b class="conum">\(4\)<\/b>/.test(
+        output
+      ),
+      'output should match callouts (2)(3)(4) pattern'
+    )
+    assert.ok(
+      / <b class="conum">\(5\)<\/b><b class="conum">\(6\)<\/b>/.test(output),
+      'output should match callouts (5)(6) pattern'
+    )
   })
 
   test('should allow XML comment-style callouts', async () => {
@@ -4771,10 +6225,22 @@ main = putStrLn "Hello, World!" -- <1>
     for (const attributes of [{}, { 'source-highlighter': 'coderay' }]) {
       const output = await convertStringToEmbedded(input, { attributes })
       assertXpath(output, '//b', 4)
-      assert.ok(output.includes('# <b class="conum">(1)</b>'), 'output should include ruby callout with guard')
-      assert.ok(output.includes('// <b class="conum">(1)</b>'), 'output should include groovy callout with guard')
-      assert.ok(output.includes(';; <b class="conum">(1)</b>'), 'output should include clojure callout with guard')
-      assert.ok(output.includes('-- <b class="conum">(1)</b>'), 'output should include haskell callout with guard')
+      assert.ok(
+        output.includes('# <b class="conum">(1)</b>'),
+        'output should include ruby callout with guard'
+      )
+      assert.ok(
+        output.includes('// <b class="conum">(1)</b>'),
+        'output should include groovy callout with guard'
+      )
+      assert.ok(
+        output.includes(';; <b class="conum">(1)</b>'),
+        'output should include clojure callout with guard'
+      )
+      assert.ok(
+        output.includes('-- <b class="conum">(1)</b>'),
+        'output should include haskell callout with guard'
+      )
     }
   })
 
@@ -4805,13 +6271,27 @@ main = putStrLn "Hello, World!" -- <1>
 <1> Haskell
 `
     for (const attributes of [{}, { 'source-highlighter': 'coderay' }]) {
-      const output = await convertStringToEmbedded(input, { attributes: { ...attributes, icons: 'font' } })
+      const output = await convertStringToEmbedded(input, {
+        attributes: { ...attributes, icons: 'font' },
+      })
       assertXpath(output, '//code/b', 4)
       assertXpath(output, '//code/i[@class="conum"]', 4)
-      assert.ok(!output.includes("puts 'Hello, world!' # "), 'ruby line comment guard should be removed')
-      assert.ok(!output.includes("println 'Hello, world!' // "), 'groovy line comment guard should be removed')
-      assert.ok(!output.includes('(def hello (fn [] "Hello, world!")) ;; '), 'clojure line comment guard should be removed')
-      assert.ok(!output.includes('main = putStrLn "Hello, World!" -- '), 'haskell line comment guard should be removed')
+      assert.ok(
+        !output.includes("puts 'Hello, world!' # "),
+        'ruby line comment guard should be removed'
+      )
+      assert.ok(
+        !output.includes("println 'Hello, world!' // "),
+        'groovy line comment guard should be removed'
+      )
+      assert.ok(
+        !output.includes('(def hello (fn [] "Hello, world!")) ;; '),
+        'clojure line comment guard should be removed'
+      )
+      assert.ok(
+        !output.includes('main = putStrLn "Hello, World!" -- '),
+        'haskell line comment guard should be removed'
+      )
     }
   })
 
@@ -4826,8 +6306,14 @@ hello_world() -> % <1>
 `
     const output = await convertStringToEmbedded(input)
     assertXpath(output, '//b', 2)
-    assert.ok(output.includes('% <b class="conum">(1)</b>'), 'output should include erlang callout 1 with guard')
-    assert.ok(output.includes('%<b class="conum">(2)</b>'), 'output should include erlang callout 2 with guard')
+    assert.ok(
+      output.includes('% <b class="conum">(1)</b>'),
+      'output should include erlang callout 1 with guard'
+    )
+    assert.ok(
+      output.includes('%<b class="conum">(2)</b>'),
+      'output should include erlang callout 2 with guard'
+    )
   })
 
   test('should allow line comment chars preceding callout number to be configurable when source-highlighter is coderay', async () => {
@@ -4838,9 +6324,14 @@ hello_world() -> % <1>
 ----
 <1> Prints a paragraph with the text "Hello"
 `
-    const output = await convertStringToEmbedded(input, { attributes: { 'source-highlighter': 'coderay' } })
+    const output = await convertStringToEmbedded(input, {
+      attributes: { 'source-highlighter': 'coderay' },
+    })
     assertXpath(output, '//b', 1)
-    assert.ok(output.includes('-# <b class="conum">(1)</b>'), 'output should include -# callout with guard')
+    assert.ok(
+      output.includes('-# <b class="conum">(1)</b>'),
+      'output should include -# callout with guard'
+    )
     assert.ok(output.includes('%p Hello'), 'output should include %p Hello')
   })
 
@@ -4851,8 +6342,13 @@ hello_world() -> % <1>
 ----
 <1> The start of an open block.
 `
-    const output = await convertStringToEmbedded(input, { attributes: { icons: 'font' } })
-    assert.ok(output.includes('-- <i class="conum"'), 'output should include -- before conum icon')
+    const output = await convertStringToEmbedded(input, {
+      attributes: { icons: 'font' },
+    })
+    assert.ok(
+      output.includes('-- <i class="conum"'),
+      'output should include -- before conum icon'
+    )
   })
 
   test('literal block with callouts', async () => {
@@ -4869,9 +6365,21 @@ Violets are blue <2>
     assertXpath(output, '//literallayout//co', 2)
     assertXpath(output, '(//literallayout//co)[1][@xml:id="CO1-1"]', 1)
     assertXpath(output, '(//literallayout//co)[2][@xml:id="CO1-2"]', 1)
-    assertXpath(output, '//literallayout/following-sibling::*[1][self::calloutlist]/callout', 2)
-    assertXpath(output, '(//literallayout/following-sibling::*[1][self::calloutlist]/callout)[1][@arearefs = "CO1-1"]', 1)
-    assertXpath(output, '(//literallayout/following-sibling::*[1][self::calloutlist]/callout)[2][@arearefs = "CO1-2"]', 1)
+    assertXpath(
+      output,
+      '//literallayout/following-sibling::*[1][self::calloutlist]/callout',
+      2
+    )
+    assertXpath(
+      output,
+      '(//literallayout/following-sibling::*[1][self::calloutlist]/callout)[1][@arearefs = "CO1-1"]',
+      1
+    )
+    assertXpath(
+      output,
+      '(//literallayout/following-sibling::*[1][self::calloutlist]/callout)[2][@arearefs = "CO1-2"]',
+      1
+    )
   })
 
   test('callout list with icons enabled', async () => {
@@ -4885,14 +6393,24 @@ puts doc.convert # <3>
 <2> Describe the second line
 <3> Describe the third line
 `
-    const output = await convertStringToEmbedded(input, { attributes: { icons: '' } })
+    const output = await convertStringToEmbedded(input, {
+      attributes: { icons: '' },
+    })
     assertXpath(output, '//div[@class="listingblock"]//code/img', 3)
     for (let i = 1; i <= 3; i++) {
-      assertXpath(output, `(/div[@class="listingblock"]//code/img)[${i}][@src="./images/icons/callouts/${i}.png"][@alt="${i}"]`, 1)
+      assertXpath(
+        output,
+        `(/div[@class="listingblock"]//code/img)[${i}][@src="./images/icons/callouts/${i}.png"][@alt="${i}"]`,
+        1
+      )
     }
     assertCss(output, '.colist table td img', 3)
     for (let i = 1; i <= 3; i++) {
-      assertXpath(output, `(/div[@class="colist arabic"]//td/img)[${i}][@src="./images/icons/callouts/${i}.png"][@alt="${i}"]`, 1)
+      assertXpath(
+        output,
+        `(/div[@class="colist arabic"]//td/img)[${i}][@src="./images/icons/callouts/${i}.png"][@alt="${i}"]`,
+        1
+      )
     }
   })
 
@@ -4907,18 +6425,36 @@ puts doc.convert #<3>
 <2> Describe the second line
 <3> Describe the third line
 `
-    const output = await convertStringToEmbedded(input, { attributes: { icons: 'font' } })
+    const output = await convertStringToEmbedded(input, {
+      attributes: { icons: 'font' },
+    })
     assertXpath(output, '//div[@class="listingblock"]//code/i', 3)
     for (let i = 1; i <= 3; i++) {
       assertXpath(output, `(/div[@class="listingblock"]//code/i)[${i}]`, 1)
-      assertXpath(output, `(/div[@class="listingblock"]//code/i)[${i}][@class="conum"][@data-value="${i}"]`, 1)
-      assertXpath(output, `(/div[@class="listingblock"]//code/i)[${i}]/following-sibling::b[text()="(${i})"]`, 1)
+      assertXpath(
+        output,
+        `(/div[@class="listingblock"]//code/i)[${i}][@class="conum"][@data-value="${i}"]`,
+        1
+      )
+      assertXpath(
+        output,
+        `(/div[@class="listingblock"]//code/i)[${i}]/following-sibling::b[text()="(${i})"]`,
+        1
+      )
     }
     assertCss(output, '.colist table td i', 3)
     for (let i = 1; i <= 3; i++) {
       assertXpath(output, `(/div[@class="colist arabic"]//td/i)[${i}]`, 1)
-      assertXpath(output, `(/div[@class="colist arabic"]//td/i)[${i}][@class="conum"][@data-value = "${i}"]`, 1)
-      assertXpath(output, `(/div[@class="colist arabic"]//td/i)[${i}]/following-sibling::b[text() = "${i}"]`, 1)
+      assertXpath(
+        output,
+        `(/div[@class="colist arabic"]//td/i)[${i}][@class="conum"][@data-value = "${i}"]`,
+        1
+      )
+      assertXpath(
+        output,
+        `(/div[@class="colist arabic"]//td/i)[${i}]/following-sibling::b[text() = "${i}"]`,
+        1
+      )
     }
   })
 
@@ -4934,7 +6470,10 @@ C <3>
 <3> c`
     const output = await convertString(input)
     assertCss(output, 'li', 3)
-    assert.ok(output.includes(`<p>b${ls}</p>`), `expected <p>b${ls}</p> in output`)
+    assert.ok(
+      output.includes(`<p>b${ls}</p>`),
+      `expected <p>b${ls}</p> in output`
+    )
   })
 
   test('should match line separator in text of list item', async () => {
@@ -4949,7 +6488,10 @@ C <3>
 <3> c`
     const output = await convertString(input)
     assertCss(output, 'li', 3)
-    assert.ok(output.includes(`<p>b${ls}b</p>`), `expected <p>b${ls}b</p> in output`)
+    assert.ok(
+      output.includes(`<p>b${ls}b</p>`),
+      `expected <p>b${ls}b</p> in output`
+    )
   })
 })
 
@@ -4967,20 +6509,58 @@ describe('Checklists', () => {
 `
     const doc = await documentFromString(input)
     const checklist = doc.blocks[0]
-    assert.ok(checklist.hasOption('checklist'), 'checklist should have checklist option')
-    assert.ok(checklist.getItems()[0].hasAttribute('checkbox'), 'item 0 should have checkbox attr')
-    assert.ok(!checklist.getItems()[0].hasAttribute('checked'), 'item 0 should not have checked attr')
-    assert.ok(checklist.getItems()[1].hasAttribute('checkbox'), 'item 1 should have checkbox attr')
-    assert.ok(checklist.getItems()[1].hasAttribute('checked'), 'item 1 should have checked attr')
-    assert.ok(!checklist.getItems()[4].hasAttribute('checkbox'), 'item 4 should not have checkbox attr')
+    assert.ok(
+      checklist.hasOption('checklist'),
+      'checklist should have checklist option'
+    )
+    assert.ok(
+      checklist.getItems()[0].hasAttribute('checkbox'),
+      'item 0 should have checkbox attr'
+    )
+    assert.ok(
+      !checklist.getItems()[0].hasAttribute('checked'),
+      'item 0 should not have checked attr'
+    )
+    assert.ok(
+      checklist.getItems()[1].hasAttribute('checkbox'),
+      'item 1 should have checkbox attr'
+    )
+    assert.ok(
+      checklist.getItems()[1].hasAttribute('checked'),
+      'item 1 should have checked attr'
+    )
+    assert.ok(
+      !checklist.getItems()[4].hasAttribute('checkbox'),
+      'item 4 should not have checkbox attr'
+    )
 
     const output = await doc.convert()
     assertCss(output, '.ulist.checklist', 1)
-    assertXpath(output, `(/*[@class="ulist checklist"]/ul/li)[1]/p[text()="${cross} todo"]`, 1)
-    assertXpath(output, `(/*[@class="ulist checklist"]/ul/li)[2]/p[text()="${check} done"]`, 1)
-    assertXpath(output, `(/*[@class="ulist checklist"]/ul/li)[3]/p[text()="${cross} another todo"]`, 1)
-    assertXpath(output, `(/*[@class="ulist checklist"]/ul/li)[4]/p[text()="${check} another done"]`, 1)
-    assertXpath(output, '(/*[@class="ulist checklist"]/ul/li)[5]/p[text()="plain"]', 1)
+    assertXpath(
+      output,
+      `(/*[@class="ulist checklist"]/ul/li)[1]/p[text()="${cross} todo"]`,
+      1
+    )
+    assertXpath(
+      output,
+      `(/*[@class="ulist checklist"]/ul/li)[2]/p[text()="${check} done"]`,
+      1
+    )
+    assertXpath(
+      output,
+      `(/*[@class="ulist checklist"]/ul/li)[3]/p[text()="${cross} another todo"]`,
+      1
+    )
+    assertXpath(
+      output,
+      `(/*[@class="ulist checklist"]/ul/li)[4]/p[text()="${check} another done"]`,
+      1
+    )
+    assertXpath(
+      output,
+      '(/*[@class="ulist checklist"]/ul/li)[5]/p[text()="plain"]',
+      1
+    )
   })
 
   test('entry is not a checklist item if the closing bracket is not immediately followed by the space character', async () => {
@@ -4991,13 +6571,34 @@ describe('Checklists', () => {
 `
     const doc = await documentFromString(input)
     const checklist = doc.blocks[0]
-    assert.ok(checklist.hasOption('checklist'), 'checklist should have checklist option')
-    assert.ok(checklist.getItems()[0].hasAttribute('checkbox'), 'item 0 should have checkbox attr')
-    assert.ok(!checklist.getItems()[0].hasAttribute('checked'), 'item 0 should not have checked attr')
-    assert.ok(checklist.getItems()[1].hasAttribute('checkbox'), 'item 1 should have checkbox attr')
-    assert.ok(checklist.getItems()[1].hasAttribute('checked'), 'item 1 should have checked attr')
-    assert.ok(!checklist.getItems()[2].hasAttribute('checkbox'), 'item 2 should not have checkbox attr')
-    assert.ok(!checklist.getItems()[3].hasAttribute('checkbox'), 'item 3 should not have checkbox attr')
+    assert.ok(
+      checklist.hasOption('checklist'),
+      'checklist should have checklist option'
+    )
+    assert.ok(
+      checklist.getItems()[0].hasAttribute('checkbox'),
+      'item 0 should have checkbox attr'
+    )
+    assert.ok(
+      !checklist.getItems()[0].hasAttribute('checked'),
+      'item 0 should not have checked attr'
+    )
+    assert.ok(
+      checklist.getItems()[1].hasAttribute('checkbox'),
+      'item 1 should have checkbox attr'
+    )
+    assert.ok(
+      checklist.getItems()[1].hasAttribute('checked'),
+      'item 1 should have checked attr'
+    )
+    assert.ok(
+      !checklist.getItems()[2].hasAttribute('checkbox'),
+      'item 2 should not have checkbox attr'
+    )
+    assert.ok(
+      !checklist.getItems()[3].hasAttribute('checkbox'),
+      'item 3 should not have checkbox attr'
+    )
   })
 
   test('should create checklist with font icons if at least one item has checkbox syntax and icons attribute is font', async () => {
@@ -5005,11 +6606,17 @@ describe('Checklists', () => {
 - [x] done
 - plain
 `
-    const output = await convertStringToEmbedded(input, { attributes: { icons: 'font' } })
+    const output = await convertStringToEmbedded(input, {
+      attributes: { icons: 'font' },
+    })
     assertCss(output, '.ulist.checklist', 1)
     assertCss(output, '.ulist.checklist li i.fa-check-square-o', 1)
     assertCss(output, '.ulist.checklist li i.fa-square-o', 1)
-    assertXpath(output, '(/*[@class="ulist checklist"]/ul/li)[3]/p[text()="plain"]', 1)
+    assertXpath(
+      output,
+      '(/*[@class="ulist checklist"]/ul/li)[3]/p[text()="plain"]',
+      1
+    )
   })
 
   test('should create interactive checklist if interactive option is set even with icons attribute is font', async () => {
@@ -5021,8 +6628,14 @@ describe('Checklists', () => {
 `
     const doc = await documentFromString(input)
     const checklist = doc.blocks[0]
-    assert.ok(checklist.hasOption('checklist'), 'checklist should have checklist option')
-    assert.ok(checklist.hasOption('interactive'), 'checklist should have interactive option')
+    assert.ok(
+      checklist.hasOption('checklist'),
+      'checklist should have checklist option'
+    )
+    assert.ok(
+      checklist.hasOption('interactive'),
+      'checklist should have interactive option'
+    )
 
     const output = await doc.convert()
     assertCss(output, '.ulist.checklist', 1)
@@ -5037,7 +6650,10 @@ describe('Checklists', () => {
       const doc = await documentFromString(input)
       const list = doc.blocks[0]
       assert.equal(list.context, 'ulist')
-      assert.ok(!list.hasOption('checklist'), 'list should not have checklist option')
+      assert.ok(
+        !list.hasOption('checklist'),
+        'list should not have checklist option'
+      )
     }
   })
 })
@@ -5191,7 +6807,9 @@ listing block in list item 1
     list.getItems()[1].subs.splice(0)
     assert.equal(list.getItems()[1].subs.length, 0)
     assert.equal(list.getItems()[1].getText(), '_two_')
-    list.getItems()[2].subs.splice(0, list.getItems()[2].subs.length, 'specialcharacters')
+    list
+      .getItems()[2]
+      .subs.splice(0, list.getItems()[2].subs.length, 'specialcharacters')
     assert.deepEqual(list.getItems()[2].subs, ['specialcharacters'])
     assert.equal(list.getItems()[2].getText(), '`three`')
     assert.equal(list.getItems()[3].getText(), '<mark>four</mark>')

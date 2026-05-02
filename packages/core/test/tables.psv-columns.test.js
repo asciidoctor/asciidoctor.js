@@ -79,7 +79,9 @@ describe('Tables', () => {
 |a |b |c |d
 |1 |2 |3 |4
 |=======`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook5' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook5',
+      })
       assertCss(output, 'tgroup[cols="4"]', 1)
       assertCss(output, 'tgroup colspec', 4)
       assertCss(output, 'tgroup colspec[colwidth]', 4)
@@ -98,7 +100,9 @@ describe('Tables', () => {
 |a |b |c |d
 |1 |2 |3 |4
 |=======`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook5' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook5',
+      })
       assertCss(output, 'tgroup[cols="4"]', 1)
       assertCss(output, 'tgroup colspec', 4)
       assertCss(output, 'tgroup colspec[colwidth]', 4)

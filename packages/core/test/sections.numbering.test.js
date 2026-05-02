@@ -29,7 +29,11 @@ text in standalone document
 // end simulated include::[]`
       await usingMemoryLogger(async (logger) => {
         await convertString(input)
-        assertMessage(logger, 'ERROR', '<stdin>: line 7: level 0 sections can only be used when doctype is book')
+        assertMessage(
+          logger,
+          'ERROR',
+          '<stdin>: line 7: level 0 sections can only be used when doctype is book'
+        )
       })
     })
 
@@ -64,9 +68,21 @@ Main section text.`
       })
       assert.ok(/Main document written by Doc Writer/.test(output))
       assert.ok(/Standalone document written by Junior Writer/.test(output))
-      assertXpath(output, '//*[@class="sect1"]/h2[text() = "Standalone Document"]', 1)
-      assertXpath(output, '//*[@class="sect2"]/h3[text() = "Section in Standalone"]', 1)
-      assertXpath(output, '//*[@class="sect1"]/h2[text() = "Section in Main"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="sect1"]/h2[text() = "Standalone Document"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="sect2"]/h3[text() = "Section in Standalone"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class="sect1"]/h2[text() = "Section in Main"]',
+        1
+      )
     })
 
     test('level offset should be added to discrete heading', async () => {
@@ -78,7 +94,11 @@ Doc Writer
 [float]
 = Discrete Heading`
       const output = await convertString(input)
-      assertXpath(output, '//h2[@class="float"][text() = "Discrete Heading"]', 1)
+      assertXpath(
+        output,
+        '//h2[@class="float"][text() = "Discrete Heading"]',
+        1
+      )
     })
 
     test('should be able to reset level offset', async () => {
@@ -97,8 +117,16 @@ Standalone preamble.
 
 == Level 1 Section`
       const output = await convertString(input)
-      assertXpath(output, '//*[@class = "sect1"]/h2[text() = "Standalone Document"]', 1)
-      assertXpath(output, '//*[@class = "sect1"]/h2[text() = "Level 1 Section"]', 1)
+      assertXpath(
+        output,
+        '//*[@class = "sect1"]/h2[text() = "Standalone Document"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[@class = "sect1"]/h2[text() = "Level 1 Section"]',
+        1
+      )
     })
 
     test('should add relative offset value to current leveloffset', async () => {
@@ -120,7 +148,11 @@ content
 content`
       const output = await convertString(input)
       assertXpath(output, '//*[@class = "sect1"]/h2[text() = "Chapter 1"]', 1)
-      assertXpath(output, '//*[@class = "sect2"]/h3[text() = "Standalone Section"]', 1)
+      assertXpath(
+        output,
+        '//*[@class = "sect2"]/h3[text() = "Standalone Section"]',
+        1
+      )
     })
   })
 
@@ -205,12 +237,36 @@ text
 
 text`
       const output = await convertString(input)
-      assertXpath(output, '//h2[@id="_section_1"][starts-with(text(), "1. ")]', 1)
-      assertXpath(output, '//h3[@id="_section_1_1"][starts-with(text(), "1.1. ")]', 1)
-      assertXpath(output, '//h4[@id="_section_1_1_1"][starts-with(text(), "1.1.1. ")]', 1)
-      assertXpath(output, '//h2[@id="_section_2"][starts-with(text(), "2. ")]', 1)
-      assertXpath(output, '//h3[@id="_section_2_1"][starts-with(text(), "2.1. ")]', 1)
-      assertXpath(output, '//h3[@id="_section_2_2"][starts-with(text(), "2.2. ")]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_section_1"][starts-with(text(), "1. ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h3[@id="_section_1_1"][starts-with(text(), "1.1. ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h4[@id="_section_1_1_1"][starts-with(text(), "1.1.1. ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_2"][starts-with(text(), "2. ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h3[@id="_section_2_1"][starts-with(text(), "2.1. ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h3[@id="_section_2_2"][starts-with(text(), "2.2. ")]',
+        1
+      )
     })
 
     test('should output section numbers when numbered attribute is set', async () => {
@@ -241,12 +297,36 @@ text
 
 text`
       const output = await convertString(input)
-      assertXpath(output, '//h2[@id="_section_1"][starts-with(text(), "1. ")]', 1)
-      assertXpath(output, '//h3[@id="_section_1_1"][starts-with(text(), "1.1. ")]', 1)
-      assertXpath(output, '//h4[@id="_section_1_1_1"][starts-with(text(), "1.1.1. ")]', 1)
-      assertXpath(output, '//h2[@id="_section_2"][starts-with(text(), "2. ")]', 1)
-      assertXpath(output, '//h3[@id="_section_2_1"][starts-with(text(), "2.1. ")]', 1)
-      assertXpath(output, '//h3[@id="_section_2_2"][starts-with(text(), "2.2. ")]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_section_1"][starts-with(text(), "1. ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h3[@id="_section_1_1"][starts-with(text(), "1.1. ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h4[@id="_section_1_1_1"][starts-with(text(), "1.1.1. ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_2"][starts-with(text(), "2. ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h3[@id="_section_2_1"][starts-with(text(), "2.1. ")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h3[@id="_section_2_2"][starts-with(text(), "2.2. ")]',
+        1
+      )
     })
 
     test('should not crash if child section of part is out of sequence and part numbering is disabled', async () => {
@@ -261,7 +341,11 @@ text`
         const output = await convertString(input)
         assertXpath(output, '//h1[text()="Part"]', 1)
         assertXpath(output, '//h3[text()=".1. Out of Sequence Section"]', 1)
-        assertMessage(logger, 'WARN', '<stdin>: line 7: section title out of sequence: expected level 1, got level 2')
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 7: section title out of sequence: expected level 1, got level 2'
+        )
       })
     })
 
@@ -345,8 +429,16 @@ content
 
 content`
       const output = await convertString(input)
-      assertXpath(output, '//h1[@id="_language"][text() = "Part I: Language"]', 1)
-      assertXpath(output, '//h1[@id="_processor"][text() = "Part II: Processor"]', 1)
+      assertXpath(
+        output,
+        '//h1[@id="_language"][text() = "Part I: Language"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h1[@id="_processor"][text() = "Part II: Processor"]',
+        1
+      )
     })
 
     test('should prepend value of chapter-signifier attribute to title of numbered chapter', async () => {
@@ -368,7 +460,11 @@ content
 
 content`
       const output = await convertString(input)
-      assertXpath(output, '//h2[@id="_syntax"][text() = "Chapter 1. Syntax"]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_syntax"][text() = "Chapter 1. Syntax"]',
+        1
+      )
       assertXpath(output, '//h2[@id="_cli"][text() = "Chapter 2. CLI"]', 1)
     })
 
@@ -383,8 +479,16 @@ content`
 
 == Maybe the End`
       const output = await convertString(input)
-      assertXpath(output, '//h2[@id="_not_the_beginning"][text() = "Chapter 10. Not the Beginning"]', 1)
-      assertXpath(output, '//h2[@id="_maybe_the_end"][text() = "Chapter 11. Maybe the End"]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_not_the_beginning"][text() = "Chapter 10. Not the Beginning"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_maybe_the_end"][text() = "Chapter 11. Maybe the End"]',
+        1
+      )
     })
 
     test('blocks should have level', async () => {
@@ -430,13 +534,41 @@ paragraph`
 == Section Three`
       const output = await convertString(input)
       assertXpath(output, '//h1[text()="Document Title"]', 1)
-      assertXpath(output, '//h2[@id="_colophon_section"][text()="Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_another_colophon_section"][text()="Another Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_final_colophon_section"][text()="Final Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_section_one"][text()="1. Section One"]', 1)
-      assertXpath(output, '//h3[@id="_section_one_subsection"][text()="1.1. Section One Subsection"]', 1)
-      assertXpath(output, '//h2[@id="_section_two"][text()="2. Section Two"]', 1)
-      assertXpath(output, '//h2[@id="_section_three"][text()="3. Section Three"]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_colophon_section"][text()="Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_another_colophon_section"][text()="Another Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_final_colophon_section"][text()="Final Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_one"][text()="1. Section One"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h3[@id="_section_one_subsection"][text()="1.1. Section One Subsection"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_two"][text()="2. Section Two"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_three"][text()="3. Section Three"]',
+        1
+      )
     })
 
     test('section numbers can be toggled even if numbered attribute is enabled via the API', async () => {
@@ -459,15 +591,45 @@ paragraph`
 == Section Two
 
 == Section Three`
-      const output = await convertString(input, { attributes: { numbered: '' } })
+      const output = await convertString(input, {
+        attributes: { numbered: '' },
+      })
       assertXpath(output, '//h1[text()="Document Title"]', 1)
-      assertXpath(output, '//h2[@id="_colophon_section"][text()="Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_another_colophon_section"][text()="Another Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_final_colophon_section"][text()="Final Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_section_one"][text()="1. Section One"]', 1)
-      assertXpath(output, '//h3[@id="_section_one_subsection"][text()="1.1. Section One Subsection"]', 1)
-      assertXpath(output, '//h2[@id="_section_two"][text()="2. Section Two"]', 1)
-      assertXpath(output, '//h2[@id="_section_three"][text()="3. Section Three"]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_colophon_section"][text()="Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_another_colophon_section"][text()="Another Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_final_colophon_section"][text()="Final Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_one"][text()="1. Section One"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h3[@id="_section_one_subsection"][text()="1.1. Section One Subsection"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_two"][text()="2. Section Two"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_three"][text()="3. Section Three"]',
+        1
+      )
     })
 
     test('section numbers cannot be toggled even if numbered attribute is disabled via the API', async () => {
@@ -490,15 +652,37 @@ paragraph`
 == Section Two
 
 == Section Three`
-      const output = await convertString(input, { attributes: { 'numbered!': '' } })
+      const output = await convertString(input, {
+        attributes: { 'numbered!': '' },
+      })
       assertXpath(output, '//h1[text()="Document Title"]', 1)
-      assertXpath(output, '//h2[@id="_colophon_section"][text()="Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_another_colophon_section"][text()="Another Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_final_colophon_section"][text()="Final Colophon Section"]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_colophon_section"][text()="Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_another_colophon_section"][text()="Another Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_final_colophon_section"][text()="Final Colophon Section"]',
+        1
+      )
       assertXpath(output, '//h2[@id="_section_one"][text()="Section One"]', 1)
-      assertXpath(output, '//h3[@id="_section_one_subsection"][text()="Section One Subsection"]', 1)
+      assertXpath(
+        output,
+        '//h3[@id="_section_one_subsection"][text()="Section One Subsection"]',
+        1
+      )
       assertXpath(output, '//h2[@id="_section_two"][text()="Section Two"]', 1)
-      assertXpath(output, '//h2[@id="_section_three"][text()="Section Three"]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_section_three"][text()="Section Three"]',
+        1
+      )
     })
 
     test('section numbers should not increment until numbered attribute is turned back on', async () => {
@@ -522,13 +706,41 @@ paragraph`
 == Section Three`
       const output = await convertString(input)
       assertXpath(output, '//h1[text()="Document Title"]', 1)
-      assertXpath(output, '//h2[@id="_colophon_section"][text()="Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_another_colophon_section"][text()="Another Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_final_colophon_section"][text()="Final Colophon Section"]', 1)
-      assertXpath(output, '//h2[@id="_section_one"][text()="1. Section One"]', 1)
-      assertXpath(output, '//h3[@id="_section_one_subsection"][text()="1.1. Section One Subsection"]', 1)
-      assertXpath(output, '//h2[@id="_section_two"][text()="2. Section Two"]', 1)
-      assertXpath(output, '//h2[@id="_section_three"][text()="3. Section Three"]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_colophon_section"][text()="Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_another_colophon_section"][text()="Another Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_final_colophon_section"][text()="Final Colophon Section"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_one"][text()="1. Section One"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h3[@id="_section_one_subsection"][text()="1.1. Section One Subsection"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_two"][text()="2. Section Two"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//h2[@id="_section_three"][text()="3. Section Three"]',
+        1
+      )
     })
 
     test('table with asciidoc content should not disable numbering of subsequent sections', async () => {
@@ -548,9 +760,17 @@ a|content
 content`
       const output = await convertString(input)
       assertXpath(output, '//h2[@id="_section_one"]', 1)
-      assertXpath(output, '//h2[@id="_section_one"][text()="1. Section One"]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_section_one"][text()="1. Section One"]',
+        1
+      )
       assertXpath(output, '//h2[@id="_section_two"]', 1)
-      assertXpath(output, '//h2[@id="_section_two"][text()="2. Section Two"]', 1)
+      assertXpath(
+        output,
+        '//h2[@id="_section_two"][text()="2. Section Two"]',
+        1
+      )
     })
 
     test('should not number parts when doctype is book', async () => {
@@ -604,7 +824,11 @@ content`
       const result = await convertString(input)
       for (let num = 1; num <= 4; num++) {
         assertXpath(result, `//h2[@id="_chapter_${num}"]`, 1)
-        assertXpath(result, `//h2[@id="_chapter_${num}"][text()="${num}. Chapter ${num}"]`, 1)
+        assertXpath(
+          result,
+          `//h2[@id="_chapter_${num}"][text()="${num}. Chapter ${num}"]`,
+          1
+        )
       }
     })
 
@@ -638,7 +862,9 @@ content`
 == Nearing the End
 
 == The End`
-      const doc = await documentFromString(input, { attributes: { sectnums: '' } })
+      const doc = await documentFromString(input, {
+        attributes: { sectnums: '' },
+      })
       for (const sect of doc.sections()) {
         const n = parseInt(sect.numeral, 10)
         if (n % 2 === 0) {

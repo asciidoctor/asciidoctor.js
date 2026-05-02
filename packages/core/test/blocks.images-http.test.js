@@ -29,8 +29,20 @@ describe('Blocks', () => {
     before(async () => {
       const FIXTURES_DIR = path.join(__dirname, 'fixtures')
       const routes = new Map([
-        ['/fixtures/dot.gif', { contentType: 'image/gif', body: readFileSync(path.join(FIXTURES_DIR, 'dot.gif')) }],
-        ['/fixtures/circle.svg', { contentType: 'image/svg+xml', body: readFileSync(path.join(FIXTURES_DIR, 'circle.svg'), 'utf8') }],
+        [
+          '/fixtures/dot.gif',
+          {
+            contentType: 'image/gif',
+            body: readFileSync(path.join(FIXTURES_DIR, 'dot.gif')),
+          },
+        ],
+        [
+          '/fixtures/circle.svg',
+          {
+            contentType: 'image/svg+xml',
+            body: readFileSync(path.join(FIXTURES_DIR, 'circle.svg'), 'utf8'),
+          },
+        ],
       ])
       ;({ server, baseUri } = await startServer(routes))
     })
@@ -41,7 +53,10 @@ describe('Blocks', () => {
 
     test('embeds remote SVG to inline when inline option is set on block and allow-uri-read is set on document', async () => {
       const input = `[%inline]\nimage::${baseUri}/fixtures/circle.svg[Circle,100,100]`
-      const output = await convertStringToEmbedded(input, { safe: 'safe', attributes: { 'allow-uri-read': '' } })
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { 'allow-uri-read': '' },
+      })
       assertCss(output, 'svg', 1)
       assertCss(output, 'svg[style]', 0)
       assertCss(output, 'svg[width="100"]', 1)
@@ -51,21 +66,42 @@ describe('Blocks', () => {
 
     test('embeds base64-encoded data uri for remote image when data-uri attribute is set', async () => {
       const input = `:data-uri:\n\nimage::${baseUri}/fixtures/dot.gif[Dot]`
-      const output = await convertStringToEmbedded(input, { safe: 'safe', attributes: { 'allow-uri-read': '' } })
-      assertXpath(output, '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]', 1)
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { 'allow-uri-read': '' },
+      })
+      assertXpath(
+        output,
+        '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]',
+        1
+      )
     })
 
     test('embeds base64-encoded data uri for remote image when imagesdir is a URI and data-uri attribute is set', async () => {
       const input = `:data-uri:\n:imagesdir: ${baseUri}/fixtures\n\nimage::dot.gif[Dot]`
-      const output = await convertStringToEmbedded(input, { safe: 'safe', attributes: { 'allow-uri-read': '' } })
-      assertXpath(output, '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]', 1)
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { 'allow-uri-read': '' },
+      })
+      assertXpath(
+        output,
+        '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]',
+        1
+      )
     })
 
     test('uses remote image uri when data-uri attribute is set and image cannot be retrieved', async () => {
       const imageUri = `${baseUri}/fixtures/missing-image.gif`
       const input = `:data-uri:\n\nimage::${imageUri}[Missing image]`
-      const output = await convertStringToEmbedded(input, { safe: 'safe', attributes: { 'allow-uri-read': '' } })
-      assertXpath(output, `/*[@class="imageblock"]//img[@src="data:image/gif;base64,"][@alt="Missing image"]`, 1)
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { 'allow-uri-read': '' },
+      })
+      assertXpath(
+        output,
+        `/*[@class="imageblock"]//img[@src="data:image/gif;base64,"][@alt="Missing image"]`,
+        1
+      )
       assertMessage(logger, 'warn', 'image to embed not found or not readable')
     })
 
@@ -73,7 +109,11 @@ describe('Blocks', () => {
       const imageUri = `${baseUri}/fixtures/dot.gif`
       const input = `:data-uri:\n\nimage::${imageUri}[Dot]`
       const output = await convertStringToEmbedded(input, { safe: 'safe' })
-      assertXpath(output, `/*[@class="imageblock"]//img[@src="${imageUri}"][@alt="Dot"]`, 1)
+      assertXpath(
+        output,
+        `/*[@class="imageblock"]//img[@src="${imageUri}"][@alt="Dot"]`,
+        1
+      )
     })
   })
 })

@@ -34,7 +34,8 @@ describe('Tables', () => {
       // Verify section order: thead, tbody, tfoot
       const { parse } = await import('node-html-parser')
       const root = parse(`<body>${output}</body>`)
-      const tableSectionNames = root.querySelectorAll('table > *')
+      const tableSectionNames = root
+        .querySelectorAll('table > *')
         .map((n) => n.tagName.toLowerCase())
         .filter((n) => n.startsWith('t'))
       assert.deepEqual(tableSectionNames, ['thead', 'tbody', 'tfoot'])
@@ -50,7 +51,9 @@ describe('Tables', () => {
 |Item 3     |3
 |Total      |6
 |===`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertCss(output, 'table', 1)
       assertCss(output, 'table > title', 1)
       assertCss(output, 'table > tgroup', 1)
@@ -70,7 +73,8 @@ describe('Tables', () => {
       // Verify section order: thead, tbody, tfoot
       const { parse } = await import('node-html-parser')
       const root = parse(`<body>${output}</body>`)
-      const tableSectionNames = root.querySelectorAll('table > tgroup > *')
+      const tableSectionNames = root
+        .querySelectorAll('table > tgroup > *')
         .map((n) => n.tagName.toLowerCase())
         .filter((n) => n.startsWith('t'))
       assert.deepEqual(tableSectionNames, ['thead', 'tbody', 'tfoot'])
@@ -86,12 +90,36 @@ describe('Tables', () => {
 |===`
       const output = await convertString(input, { backend: 'docbook' })
       assertCss(output, 'informaltable', 1)
-      assertCss(output, 'informaltable thead > row > entry[align="left"][valign="top"]', 1)
-      assertCss(output, 'informaltable thead > row > entry[align="center"][valign="middle"]', 1)
-      assertCss(output, 'informaltable thead > row > entry[align="right"][valign="top"]', 1)
-      assertCss(output, 'informaltable tbody > row > entry[align="left"][valign="top"]', 1)
-      assertCss(output, 'informaltable tbody > row > entry[align="center"][valign="middle"]', 1)
-      assertCss(output, 'informaltable tbody > row > entry[align="right"][valign="top"]', 1)
+      assertCss(
+        output,
+        'informaltable thead > row > entry[align="left"][valign="top"]',
+        1
+      )
+      assertCss(
+        output,
+        'informaltable thead > row > entry[align="center"][valign="middle"]',
+        1
+      )
+      assertCss(
+        output,
+        'informaltable thead > row > entry[align="right"][valign="top"]',
+        1
+      )
+      assertCss(
+        output,
+        'informaltable tbody > row > entry[align="left"][valign="top"]',
+        1
+      )
+      assertCss(
+        output,
+        'informaltable tbody > row > entry[align="center"][valign="middle"]',
+        1
+      )
+      assertCss(
+        output,
+        'informaltable tbody > row > entry[align="right"][valign="top"]',
+        1
+      )
     })
 
     test('should preserve frame value ends when converting to HTML', async () => {
@@ -117,7 +145,9 @@ describe('Tables', () => {
 |===
 |A |B |C
 |===`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertCss(output, 'informaltable[frame="topbot"]', 1)
     })
 
@@ -126,7 +156,9 @@ describe('Tables', () => {
 |===
 |A |B |C
 |===`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertCss(output, 'informaltable[frame="topbot"]', 1)
     })
 
@@ -136,7 +168,9 @@ describe('Tables', () => {
 |===
 |Column A | Column B | Column C
 |===`
-        const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+        const output = await convertStringToEmbedded(input, {
+          backend: 'docbook',
+        })
         assertCss(output, 'informaltable', 1)
         assertCss(output, 'informaltable[orient="land"]', 1)
       }
@@ -384,8 +418,16 @@ just text
 | emphasis
 |===`
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '((//tbody/tr)[1]/td)[1]//strong/em[text()="strong"]', 1)
-      assertXpath(output, '((//tbody/tr)[1]/td)[2]//em/strong[text()="emphasis"]', 1)
+      assertXpath(
+        output,
+        '((//tbody/tr)[1]/td)[1]//strong/em[text()="strong"]',
+        1
+      )
+      assertXpath(
+        output,
+        '((//tbody/tr)[1]/td)[2]//em/strong[text()="emphasis"]',
+        1
+      )
       assertXpath(output, '((//tbody/tr)[2]/td)[1]//strong[text()="strong"]', 1)
       assertXpath(output, '((//tbody/tr)[2]/td)[2]//em[text()="emphasis"]', 1)
     })
@@ -434,12 +476,32 @@ I am getting in shape!
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'table', 1)
       assertCss(output, 'table[width="80%"]', 1)
-      assertXpath(output, '/table/caption[@class="title"][text()="Table 1. Horizontal and vertical source data"]', 1)
+      assertXpath(
+        output,
+        '/table/caption[@class="title"][text()="Table 1. Horizontal and vertical source data"]',
+        1
+      )
       assertCss(output, 'table > colgroup > col', 4)
-      assertCss(output, 'table > colgroup > col:nth-child(1)[width="17.647%"]', 1)
-      assertCss(output, 'table > colgroup > col:nth-child(2)[width="11.7647%"]', 1)
-      assertCss(output, 'table > colgroup > col:nth-child(3)[width="11.7647%"]', 1)
-      assertCss(output, 'table > colgroup > col:nth-child(4)[width="58.8236%"]', 1)
+      assertCss(
+        output,
+        'table > colgroup > col:nth-child(1)[width="17.647%"]',
+        1
+      )
+      assertCss(
+        output,
+        'table > colgroup > col:nth-child(2)[width="11.7647%"]',
+        1
+      )
+      assertCss(
+        output,
+        'table > colgroup > col:nth-child(3)[width="11.7647%"]',
+        1
+      )
+      assertCss(
+        output,
+        'table > colgroup > col:nth-child(4)[width="58.8236%"]',
+        1
+      )
       assertCss(output, 'table > thead', 1)
       assertCss(output, 'table > thead > tr', 1)
       assertCss(output, 'table > thead > tr > th', 4)
@@ -447,9 +509,21 @@ I am getting in shape!
       assertCss(output, 'table > tbody > tr:nth-child(1) > td', 4)
       assertCss(output, 'table > tbody > tr:nth-child(2) > td', 4)
       assertCss(output, 'table > tbody > tr:nth-child(3) > td', 4)
-      assertXpath(output, `/table/tbody/tr[1]/td[4]/p[text()='Worked out MSHR (max sustainable heart rate) by going hard\nfor this interval.']`, 1)
-      assertCss(output, 'table > tbody > tr:nth-child(3) > td:nth-child(4) > p', 2)
-      assertXpath(output, '/table/tbody/tr[3]/td[4]/p[2][text()="I am getting in shape!"]', 1)
+      assertXpath(
+        output,
+        `/table/tbody/tr[1]/td[4]/p[text()='Worked out MSHR (max sustainable heart rate) by going hard\nfor this interval.']`,
+        1
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(3) > td:nth-child(4) > p',
+        2
+      )
+      assertXpath(
+        output,
+        '/table/tbody/tr[3]/td[4]/p[2][text()="I am getting in shape!"]',
+        1
+      )
     })
   })
 })

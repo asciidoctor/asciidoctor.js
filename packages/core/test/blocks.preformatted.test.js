@@ -2,7 +2,12 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath, assertMessage } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+  blockFromString,
+} from './harness.js'
 
 describe('Blocks', () => {
   let logger
@@ -29,7 +34,11 @@ paragraph 2
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/*[@class="paragraph"]/p', 2)
       assertXpath(output, '/*[@class="listingblock"]', 1)
-      assertXpath(output, '(/*[@class="paragraph"]/following-sibling::*)[1][@class="listingblock"]', 1)
+      assertXpath(
+        output,
+        '(/*[@class="paragraph"]/following-sibling::*)[1][@class="listingblock"]',
+        1
+      )
     })
 
     test('should warn if listing block is not terminated', async () => {
@@ -45,7 +54,11 @@ eof
 `
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/*[@class="listingblock"]', 1)
-      assertMessage(logger, 'warn', '<stdin>: line 3: unterminated listing block')
+      assertMessage(
+        logger,
+        'warn',
+        '<stdin>: line 3: unterminated listing block'
+      )
     })
 
     test('should not crash when converting verbatim block that has no lines', async () => {
@@ -157,7 +170,16 @@ last line
 `
       const doc = await documentFromString(input, { standalone: false })
       const block = doc.blocks[0]
-      assert.deepEqual(block.lines, ['', '', '  first line', '', 'last line', '', '{empty}', ''])
+      assert.deepEqual(block.lines, [
+        '',
+        '',
+        '  first line',
+        '',
+        'last line',
+        '',
+        '{empty}',
+        '',
+      ])
       const result = await doc.convert()
       assertXpath(result, `//pre[text()="  first line\n\nlast line"]`, 1)
     })
@@ -167,7 +189,11 @@ last line
 
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/*[@class="listingblock"]//pre', 1)
-      assertXpath(output, `/*[@class="listingblock"]//pre[text()="source line 1\nsource line 2"]`, 1)
+      assertXpath(
+        output,
+        `/*[@class="listingblock"]//pre[text()="source line 1\nsource line 2"]`,
+        1
+      )
     })
 
     test('should remove block indent if indent attribute is 0', async () => {
@@ -231,7 +257,11 @@ end`
 `
       // expected = lines 2..6 with 4 spaces replaced by 1 space, joined, trailing newline chopped
       const inputLines = input.split('\n')
-      const expected = inputLines.slice(2, 7).map((l) => l.replace('    ', ' ')).join('\n').replace(/\n$/, '')
+      const expected = inputLines
+        .slice(2, 7)
+        .map((l) => l.replace('    ', ' '))
+        .join('\n')
+        .replace(/\n$/, '')
 
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'pre', 1)
@@ -256,7 +286,11 @@ end`
 `
       // expected = lines 4..8 with 4 spaces replaced by 1 space, joined, trailing newline chopped
       const inputLines = input.split('\n')
-      const expected = inputLines.slice(4, 9).map((l) => l.replace('    ', ' ')).join('\n').replace(/\n$/, '')
+      const expected = inputLines
+        .slice(4, 9)
+        .map((l) => l.replace('    ', ' '))
+        .join('\n')
+        .replace(/\n$/, '')
 
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'pre', 1)
@@ -281,7 +315,11 @@ end`
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'pre', 1)
       assertCss(output, '.listingblock pre', 1)
-      assertXpath(output, `//pre[text()="def names\n\n    @names.split\n\nend"]`, 1)
+      assertXpath(
+        output,
+        `//pre[text()="def names\n\n    @names.split\n\nend"]`,
+        1
+      )
     })
 
     test('should expand tabs if tabsize is set as a block attribute', async () => {
@@ -298,7 +336,11 @@ end`
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'pre', 1)
       assertCss(output, '.listingblock pre', 1)
-      assertXpath(output, `//pre[text()="def names\n\n    @names.split\n\nend"]`, 1)
+      assertXpath(
+        output,
+        `//pre[text()="def names\n\n    @names.split\n\nend"]`,
+        1
+      )
     })
 
     test('literal block should honor nowrap option', async () => {
@@ -359,7 +401,11 @@ Map<String, String> *attributes*; //<1>
       const block = await blockFromString(input)
       assert.deepEqual(block.subs, ['specialcharacters', 'callouts', 'quotes'])
       const output = await block.convert()
-      assert.ok(output.includes('Map&lt;String, String&gt; <strong>attributes</strong>;'))
+      assert.ok(
+        output.includes(
+          'Map&lt;String, String&gt; <strong>attributes</strong>;'
+        )
+      )
       assertXpath(output, '//pre/b[text()="(1)"]', 1)
     })
 
@@ -372,8 +418,7 @@ No callout here <1>
 `
       const block = await blockFromString(input)
       assert.deepEqual(block.subs, ['specialcharacters'])
-      const output = await
-        block.convert()
+      const output = await block.convert()
       assertXpath(output, '//pre/b[text()="(1)"]', 0)
     })
 
@@ -416,7 +461,9 @@ nums = [1, 2, 3, [.added]#4#]
 ----
 `
       const output = await convertStringToEmbedded(input)
-      assert.ok(output.includes('nums = [1, 2, 3, <span class="added">4</span>]'))
+      assert.ok(
+        output.includes('nums = [1, 2, 3, <span class="added">4</span>]')
+      )
     })
 
     test('first character of block title may be a period if not followed by space', async () => {
@@ -438,7 +485,9 @@ nums = [1, 2, 3, [.added]#4#]
 listing block
 ----
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '/screen[text()="listing block"]', 1)
     })
 
@@ -449,7 +498,9 @@ listing block
 listing block
 ----
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '/formalpara', 1)
       assertXpath(output, '/formalpara/title[text()="title"]', 1)
       assertXpath(output, '/formalpara/para/screen[text()="listing block"]', 1)
@@ -463,7 +514,11 @@ listing block content
 ----
 `
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="listingblock"][1]/*[@class="title"][text()="title"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="listingblock"][1]/*[@class="title"][text()="title"]',
+        1
+      )
     })
 
     test('should prepend caption specified by listing-caption attribute and number to title of listing block with title', async () => {
@@ -476,7 +531,11 @@ listing block content
 ----
 `
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="listingblock"][1]/*[@class="title"][text()="Listing 1. title"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="listingblock"][1]/*[@class="title"][text()="Listing 1. title"]',
+        1
+      )
     })
 
     test('should prepend caption specified by caption attribute on listing block even if listing-caption attribute is not set', async () => {
@@ -488,7 +547,11 @@ listing block content
 ----
 `
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="listingblock"][1]/*[@class="title"][text()="Listing 1. Behold!"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="listingblock"][1]/*[@class="title"][text()="Listing 1. Behold!"]',
+        1
+      )
     })
 
     test('listing block without an explicit style and with a second positional argument should be promoted to a source block', async () => {
@@ -555,8 +618,14 @@ puts 'Hello, Ruby!'
 source block
 ----
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
-      assertXpath(output, '/screen[@linenumbering="unnumbered"][text()="source block"]', 1)
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
+      assertXpath(
+        output,
+        '/screen[@linenumbering="unnumbered"][text()="source block"]',
+        1
+      )
     })
 
     test('source block with title and no language should generate screen element inside formalpara element for docbook', async () => {
@@ -567,10 +636,16 @@ source block
 source block
 ----
 `
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertXpath(output, '/formalpara', 1)
       assertXpath(output, '/formalpara/title[text()="title"]', 1)
-      assertXpath(output, '/formalpara/para/screen[@linenumbering="unnumbered"][text()="source block"]', 1)
+      assertXpath(
+        output,
+        '/formalpara/para/screen[@linenumbering="unnumbered"][text()="source block"]',
+        1
+      )
     })
   })
 })

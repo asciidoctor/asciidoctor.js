@@ -64,7 +64,9 @@ describe('Table', () => {
     })
 
     test('getInnerDocument() returns a Document for an AsciiDoc cell', async () => {
-      const doc = await documentFromString('|===\na|== Inner\n\nParagraph.\n|===')
+      const doc = await documentFromString(
+        '|===\na|== Inner\n\nParagraph.\n|==='
+      )
       const cell = doc.blocks[0].rows.body[0][0]
       const inner = cell.getInnerDocument()
       assert.ok(inner !== null)

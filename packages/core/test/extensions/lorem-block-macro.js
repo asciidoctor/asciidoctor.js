@@ -1,12 +1,12 @@
 const dictionary = {
-  words: ['lorem', 'ipsum', 'dolor', 'sit', 'amet']
+  words: ['lorem', 'ipsum', 'dolor', 'sit', 'amet'],
 }
 
-function getRandomArbitrary (min, max) {
+function getRandomArbitrary(min, max) {
   return Math.random() * (max - min) + min
 }
 
-function lorem (opts) {
+function lorem(opts) {
   const count = opts.count
   const units = opts.units
   const words = dictionary.words

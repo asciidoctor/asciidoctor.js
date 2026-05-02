@@ -7,7 +7,11 @@ import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager, Severity } from '../src/logging.js'
 import { ADMONITION_STYLES } from '../src/constants.js'
 import { assertXpath, assertCss, assertMessage } from './helpers.js'
-import { convertString, convertStringToEmbedded, blockFromString } from './harness.js'
+import {
+  convertString,
+  convertStringToEmbedded,
+  blockFromString,
+} from './harness.js'
 
 // ── Paragraphs ────────────────────────────────────────────────────────────────
 
@@ -20,7 +24,11 @@ Yep. Text. Plain and simple.`
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'p', 2)
       assertXpath(output, '(//p)[1][text() = "Plain text for the win!"]', 1)
-      assertXpath(output, '(//p)[2][text() = "Yep. Text. Plain and simple."]', 1)
+      assertXpath(
+        output,
+        '(//p)[2][text() = "Yep. Text. Plain and simple."]',
+        1
+      )
     })
 
     test('should associate block title with paragraph', async () => {
@@ -31,7 +39,11 @@ Winning.`
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'p', 2)
       assertXpath(output, '(//p)[1]/preceding-sibling::*[@class = "title"]', 1)
-      assertXpath(output, '(//p)[1]/preceding-sibling::*[@class = "title"][text() = "Titled"]', 1)
+      assertXpath(
+        output,
+        '(//p)[1]/preceding-sibling::*[@class = "title"][text() = "Titled"]',
+        1
+      )
       assertXpath(output, '(//p)[2]/preceding-sibling::*[@class = "title"]', 0)
     })
 
@@ -84,7 +96,11 @@ Nothing special.`
   Last line.`
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'p', 1)
-      assertXpath(output, '//p[text()="Normal paragraph.\n  Nothing special.\nLast line."]', 1)
+      assertXpath(
+        output,
+        '//p[text()="Normal paragraph.\n  Nothing special.\nLast line."]',
+        1
+      )
     })
 
     test('normal paragraph terminates at block attribute list', async () => {
@@ -111,7 +127,11 @@ text in open block
 +`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/*[@class="paragraph"]', 2)
-      assertXpath(output, '(/*[@class="paragraph"])[1]/p[text() = "normal text"]', 1)
+      assertXpath(
+        output,
+        '(/*[@class="paragraph"])[1]/p[text() = "normal text"]',
+        1
+      )
       assertXpath(output, '(/*[@class="paragraph"])[2]/p[text() = "+"]', 1)
     })
 
@@ -129,19 +149,34 @@ indexterm:[Big cats,Tigers,Siberian Tiger]
 Here is an index entry for indexterm2:[Linux].
 (((Operating Systems,Linux)))
 Note that multi-entry terms generate separate index entries.`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook', attributes: { 'indexterm-promotion-option': '' } })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+        attributes: { 'indexterm-promotion-option': '' },
+      })
       assertXpath(output, '/simpara', 1)
 
       assertXpath(output, '(//indexterm)[1]/primary[text()="tigers"]', 1)
 
       assertXpath(output, '(//indexterm)[2]/primary[text()="Big cats"]', 1)
       assertXpath(output, '(//indexterm)[2]/secondary[text()="Tigers"]', 1)
-      assertXpath(output, '(//indexterm)[2]/tertiary[text()="Siberian Tiger"]', 1)
+      assertXpath(
+        output,
+        '(//indexterm)[2]/tertiary[text()="Siberian Tiger"]',
+        1
+      )
 
       assertXpath(output, '(//indexterm)[3]/primary[text()="Tigers"]', 1)
-      assertXpath(output, '(//indexterm)[3]/secondary[text()="Siberian Tiger"]', 1)
+      assertXpath(
+        output,
+        '(//indexterm)[3]/secondary[text()="Siberian Tiger"]',
+        1
+      )
 
-      assertXpath(output, '(//indexterm)[4]/primary[text()="Siberian Tiger"]', 1)
+      assertXpath(
+        output,
+        '(//indexterm)[4]/primary[text()="Siberian Tiger"]',
+        1
+      )
 
       assertXpath(output, '(//indexterm)[5]/primary[text()="Linux"]', 1)
 
@@ -154,14 +189,24 @@ Note that multi-entry terms generate separate index entries.`
 indexterm:[Big cats,Tigers,Siberian Tiger]
 Note that multi-entry terms generate separate index entries.
 (((Operating Systems,Linux)))`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assertCss(output, 'indexterm', 2)
 
       assertXpath(output, '(//indexterm)[1]/primary[text()="Big cats"]', 1)
       assertXpath(output, '(//indexterm)[1]/secondary[text()="Tigers"]', 1)
-      assertXpath(output, '(//indexterm)[1]/tertiary[text()="Siberian Tiger"]', 1)
+      assertXpath(
+        output,
+        '(//indexterm)[1]/tertiary[text()="Siberian Tiger"]',
+        1
+      )
 
-      assertXpath(output, '(//indexterm)[2]/primary[text()="Operating Systems"]', 1)
+      assertXpath(
+        output,
+        '(//indexterm)[2]/primary[text()="Operating Systems"]',
+        1
+      )
       assertXpath(output, '(//indexterm)[2]/secondary[text()="Linux"]', 1)
     })
 
@@ -169,14 +214,20 @@ Note that multi-entry terms generate separate index entries.
       const input = `[subs="specialcharacters"]
 *<Hey Jude>*`
       const output = await convertStringToEmbedded(input)
-      assert.ok(output.includes('*&lt;Hey Jude&gt;*'), `Expected output to include '*&lt;Hey Jude&gt;*' but got:\n${output}`)
+      assert.ok(
+        output.includes('*&lt;Hey Jude&gt;*'),
+        `Expected output to include '*&lt;Hey Jude&gt;*' but got:\n${output}`
+      )
     })
 
     test('normal paragraph should honor specialchars shorthand', async () => {
       const input = `[subs="specialchars"]
 *<Hey Jude>*`
       const output = await convertStringToEmbedded(input)
-      assert.ok(output.includes('*&lt;Hey Jude&gt;*'), `Expected output to include '*&lt;Hey Jude&gt;*' but got:\n${output}`)
+      assert.ok(
+        output.includes('*&lt;Hey Jude&gt;*'),
+        `Expected output to include '*&lt;Hey Jude&gt;*' but got:\n${output}`
+      )
     })
 
     test('should add a hardbreak at end of each line when hardbreaks option is set', async () => {
@@ -187,7 +238,10 @@ lips`
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'br', 2)
       assertXpath(output, '//p', 1)
-      assert.ok(output.includes('<p>read<br>\nmy<br>\nlips</p>'), `Expected hardbreak output but got:\n${output}`)
+      assert.ok(
+        output.includes('<p>read<br>\nmy<br>\nlips</p>'),
+        `Expected hardbreak output but got:\n${output}`
+      )
     })
 
     test('should be able to toggle hardbreaks by setting hardbreaks-option on document', async () => {
@@ -228,21 +282,33 @@ roll it back`
 You're good to go!`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '//pre', 1)
-      assertXpath(output, '//pre[text() = "yum install ruby rubygems\ngem install asciidoctor"]', 1)
+      assertXpath(
+        output,
+        '//pre[text() = "yum install ruby rubygems\ngem install asciidoctor"]',
+        1
+      )
     })
 
     test('literal paragraph', async () => {
       const input = `[literal]
 this text is literally literal`
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="literalblock"]//pre[text()="this text is literally literal"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="literalblock"]//pre[text()="this text is literally literal"]',
+        1
+      )
     })
 
     test('should read content below literal style verbatim', async () => {
       const input = `[literal]
 image::not-an-image-block[]`
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="literalblock"]//pre[text()="image::not-an-image-block[]"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="literalblock"]//pre[text()="image::not-an-image-block[]"]',
+        1
+      )
       assertCss(output, 'img', 0)
     })
 
@@ -250,7 +316,11 @@ image::not-an-image-block[]`
       const input = `[listing]
 this text is a listing`
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="listingblock"]//pre[text()="this text is a listing"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="listingblock"]//pre[text()="this text is a listing"]',
+        1
+      )
     })
 
     test('source paragraph', async () => {
@@ -262,7 +332,11 @@ use the source, luke!`
       assert.equal(block.getAttribute('cloaked-context'), 'paragraph')
       assert.equal(block.getAttribute('language'), null)
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="listingblock"]//pre[@class="highlight"]/code[text()="use the source, luke!"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="listingblock"]//pre[@class="highlight"]/code[text()="use the source, luke!"]',
+        1
+      )
     })
 
     test('source code paragraph with language', async () => {
@@ -274,7 +348,11 @@ die 'zomg perl is tough';`
       assert.equal(block.getAttribute('cloaked-context'), 'paragraph')
       assert.equal(block.getAttribute('language'), 'perl')
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, `/*[@class="listingblock"]//pre[@class="highlight"]/code[@class="language-perl"][@data-lang="perl"][text()="die 'zomg perl is tough';"]`, 1)
+      assertXpath(
+        output,
+        `/*[@class="listingblock"]//pre[@class="highlight"]/code[@class="language-perl"][@data-lang="perl"][text()="die 'zomg perl is tough';"]`,
+        1
+      )
     })
 
     test('literal paragraph terminates at block attribute list', async () => {
@@ -301,7 +379,11 @@ normal text
 +`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '/*[@class="literalblock"]', 1)
-      assertXpath(output, '/*[@class="literalblock"]//pre[text() = "literal text"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="literalblock"]//pre[text() = "literal text"]',
+        1
+      )
       assertXpath(output, '/*[@class="paragraph"]', 1)
       assertXpath(output, '/*[@class="paragraph"]/p[text() = "+"]', 1)
     })
@@ -314,7 +396,11 @@ Famous quote.`
       const output = await convertString(input)
       assertXpath(output, '//*[@class = "quoteblock"]', 1)
       assertXpath(output, '//*[@class = "quoteblock"]//p', 0)
-      assertXpath(output, '//*[@class = "quoteblock"]//*[contains(text(), "Famous quote.")]', 1)
+      assertXpath(
+        output,
+        '//*[@class = "quoteblock"]//*[contains(text(), "Famous quote.")]',
+        1
+      )
     })
 
     test('quote paragraph terminates at list continuation', async () => {
@@ -332,7 +418,11 @@ A famouse quote.
       assertXpath(output, '//*[@class = "verseblock"]', 1)
       assertXpath(output, '//*[@class = "verseblock"]/pre', 1)
       assertXpath(output, '//*[@class = "verseblock"]//p', 0)
-      assertXpath(output, '//*[@class = "verseblock"]/pre[normalize-space(text()) = "Famous verse."]', 1)
+      assertXpath(
+        output,
+        '//*[@class = "verseblock"]/pre[normalize-space(text()) = "Famous verse."]',
+        1
+      )
     })
 
     test('should perform normal subs on a verse paragraph', async () => {
@@ -340,7 +430,9 @@ A famouse quote.
 _GET /groups/link:#group-id[{group-id}]_`
       const output = await convertStringToEmbedded(input)
       assert.ok(
-        output.includes('<pre class="content"><em>GET /groups/<a href="#group-id">{group-id}</a></em></pre>'),
+        output.includes(
+          '<pre class="content"><em>GET /groups/<a href="#group-id">{group-id}</a></em></pre>'
+        ),
         `Expected verse subs output but got:\n${output}`
       )
     })
@@ -350,7 +442,10 @@ _GET /groups/link:#group-id[{group-id}]_`
 [quote]
 *Hey Jude*`
       const output = await convertStringToEmbedded(input)
-      assert.ok(output.includes('*Hey Jude*'), `Expected output to include '*Hey Jude*' but got:\n${output}`)
+      assert.ok(
+        output.includes('*Hey Jude*'),
+        `Expected output to include '*Hey Jude*' but got:\n${output}`
+      )
     })
   })
 
@@ -358,21 +453,35 @@ _GET /groups/link:#group-id[{group-id}]_`
     test('note multiline syntax', async () => {
       for (const style of ADMONITION_STYLES) {
         const output = await convertString(`[${style}]\nThis is a winner.`)
-        assertXpath(output, `//div[@class='admonitionblock ${style.toLowerCase()}']`, 1)
+        assertXpath(
+          output,
+          `//div[@class='admonitionblock ${style.toLowerCase()}']`,
+          1
+        )
       }
     })
 
     test('note block syntax', async () => {
       for (const style of ADMONITION_STYLES) {
-        const output = await convertString(`[${style}]\n====\nThis is a winner.\n====`)
-        assertXpath(output, `//div[@class='admonitionblock ${style.toLowerCase()}']`, 1)
+        const output = await convertString(
+          `[${style}]\n====\nThis is a winner.\n====`
+        )
+        assertXpath(
+          output,
+          `//div[@class='admonitionblock ${style.toLowerCase()}']`,
+          1
+        )
       }
     })
 
     test('note inline syntax', async () => {
       for (const style of ADMONITION_STYLES) {
         const output = await convertString(`${style}: This is important, fool!`)
-        assertXpath(output, `//div[@class='admonitionblock ${style.toLowerCase()}']`, 1)
+        assertXpath(
+          output,
+          `//div[@class='admonitionblock ${style.toLowerCase()}']`,
+          1
+        )
       }
     })
 
@@ -491,9 +600,13 @@ Wise words from a wise person.`
 
     describe('Inline doctype', () => {
       test('should only format and output text in first paragraph when doctype is inline', async () => {
-        const input = 'http://asciidoc.org[AsciiDoc] is a _lightweight_ markup language...\n\nignored'
+        const input =
+          'http://asciidoc.org[AsciiDoc] is a _lightweight_ markup language...\n\nignored'
         const output = await convertString(input, { doctype: 'inline' })
-        assert.equal(output, '<a href="http://asciidoc.org">AsciiDoc</a> is a <em>lightweight</em> markup language&#8230;&#8203;')
+        assert.equal(
+          output,
+          '<a href="http://asciidoc.org">AsciiDoc</a> is a <em>lightweight</em> markup language&#8230;&#8203;'
+        )
       })
 
       test('should output nil and warn if first block is not a paragraph', async () => {
@@ -503,7 +616,10 @@ Wise words from a wise person.`
         try {
           LoggerManager.logger = logger = new MemoryLogger()
           const output = await convertString(input, { doctype: 'inline' })
-          assert.ok(output == null || output === '', `Expected nil/empty output but got: ${output}`)
+          assert.ok(
+            output == null || output === '',
+            `Expected nil/empty output but got: ${output}`
+          )
           assertMessage(logger, 'WARN', 'no inline candidate')
         } finally {
           LoggerManager.logger = defaultLogger
@@ -529,7 +645,11 @@ bar`
       const logger = new MemoryLogger()
       LoggerManager.logger = logger
       await convertStringToEmbedded(input)
-      assert.equal(logger.messages.length, 0, `Expected no log messages but got: ${JSON.stringify(logger.messages)}`)
+      assert.equal(
+        logger.messages.length,
+        0,
+        `Expected no log messages but got: ${JSON.stringify(logger.messages)}`
+      )
     })
 
     test('should log debug message if paragraph style is unknown and debug level is enabled', async () => {

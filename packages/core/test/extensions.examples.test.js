@@ -24,7 +24,7 @@ import asyncTransformBlock from './extensions/async-transform-block.js'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const FIXTURES_DIR = join(__dirname, 'fixtures')
 
-function fixture (name) {
+function fixture(name) {
   return readFileSync(join(FIXTURES_DIR, name), 'utf8')
 }
 
@@ -37,7 +37,9 @@ describe('Extensions (examples)', () => {
     test('should replace foo with bar', async () => {
       const registry = Extensions.create()
       fooBarPostprocessor(registry)
-      const result = await convert(fixture('foo-bar-postprocessor-ex.adoc'), { extension_registry: registry })
+      const result = await convert(fixture('foo-bar-postprocessor-ex.adoc'), {
+        extension_registry: registry,
+      })
       assert.ok(result.includes('bar, qux, bar.'))
       assert.ok(!result.includes('foo'))
     })
@@ -69,7 +71,9 @@ describe('Extensions (examples)', () => {
     test('should replace first block with love message', async () => {
       const registry = Extensions.create()
       loveTreeProcessor(registry)
-      const result = await convert(fixture('love-tree-processor-ex.adoc'), { extension_registry: registry })
+      const result = await convert(fixture('love-tree-processor-ex.adoc'), {
+        extension_registry: registry,
+      })
       assert.ok(result.includes('Made with icon:heart[]'))
     })
 
@@ -99,11 +103,15 @@ describe('Extensions (examples)', () => {
     test('should mark document as DRAFT', async () => {
       const registry = Extensions.create()
       draftPreprocessor(registry)
-      const doc = await load(fixture('draft-preprocessor-ex.adoc'), { extension_registry: registry })
+      const doc = await load(fixture('draft-preprocessor-ex.adoc'), {
+        extension_registry: registry,
+      })
       assert.equal(doc.getAttribute('status'), 'DRAFT')
       const result = await doc.convert()
       assert.ok(result.includes('Important'))
-      assert.ok(result.includes('This section is a draft: we need to talk about Y.'))
+      assert.ok(
+        result.includes('This section is a draft: we need to talk about Y.')
+      )
     })
 
     test('should register preprocessor in extension list', async () => {
@@ -127,16 +135,21 @@ describe('Extensions (examples)', () => {
     test('should inject moar footer', async () => {
       const registry = Extensions.create()
       moarFooterDocinfoProcessor(registry)
-      const result = await convert(fixture('moar-footer-docinfo-processor-ex.adoc'), {
-        safe: 'server',
-        header_footer: true,
-        extension_registry: registry,
-      })
+      const result = await convert(
+        fixture('moar-footer-docinfo-processor-ex.adoc'),
+        {
+          safe: 'server',
+          header_footer: true,
+          extension_registry: registry,
+        }
+      )
       assert.ok(result.includes('moar footer'))
     })
 
     test('should not inject footer without extension', async () => {
-      const result = await convert(fixture('moar-footer-docinfo-processor-ex.adoc'))
+      const result = await convert(
+        fixture('moar-footer-docinfo-processor-ex.adoc')
+      )
       assert.ok(!result.includes('moar footer'))
     })
 
@@ -156,7 +169,10 @@ describe('Extensions (examples)', () => {
       assert.ok(!exts.hasInlineMacros())
       assert.ok(!exts.hasIncludeProcessors())
       assert.equal(exts.docinfoProcessors('footer').length, 1)
-      assert.equal(exts.docinfoProcessors('footer')[0].kind, 'docinfo_processor')
+      assert.equal(
+        exts.docinfoProcessors('footer')[0].kind,
+        'docinfo_processor'
+      )
     })
   })
 
@@ -164,7 +180,9 @@ describe('Extensions (examples)', () => {
     test('should uppercase paragraph content', async () => {
       const registry = Extensions.create()
       shoutBlock(registry)
-      const result = await convert(fixture('shout-block-ex.adoc'), { extension_registry: registry })
+      const result = await convert(fixture('shout-block-ex.adoc'), {
+        extension_registry: registry,
+      })
       assert.ok(result.includes('<p>SAY IT LOUD.\nSAY IT PROUD.</p>'))
     })
 
@@ -187,7 +205,9 @@ describe('Extensions (examples)', () => {
     test('should render chart HTML from literal block', async () => {
       const registry = Extensions.create()
       chartBlock(registry)
-      const result = await convert(fixture('chart-block-ex.adoc'), { extension_registry: registry })
+      const result = await convert(fixture('chart-block-ex.adoc'), {
+        extension_registry: registry,
+      })
       assert.ok(result.includes('<div class="chart"'))
       assert.ok(result.includes('data-chart-series-0='))
       assert.ok(result.includes('data-chart-series-1='))
@@ -198,7 +218,9 @@ describe('Extensions (examples)', () => {
     test('should convert smiley macros to emoticons', async () => {
       const registry = Extensions.create()
       smileyInlineMacro(registry)
-      const result = await convert(fixture('smiley-inline-macro-ex.adoc'), { extension_registry: registry })
+      const result = await convert(fixture('smiley-inline-macro-ex.adoc'), {
+        extension_registry: registry,
+      })
       assert.ok(result.includes('<strong>:D</strong>'))
       assert.ok(result.includes('<strong>;)</strong>'))
       assert.ok(result.includes('<strong>:)</strong>'))
@@ -223,7 +245,9 @@ describe('Extensions (examples)', () => {
     test('should render emoji img tags', async () => {
       const registry = Extensions.create()
       emojiInlineMacro(registry)
-      const result = await convert(fixture('emoji-inline-macro-ex.adoc'), { extension_registry: registry })
+      const result = await convert(fixture('emoji-inline-macro-ex.adoc'), {
+        extension_registry: registry,
+      })
       assert.ok(result.includes('1f422.svg'))
       assert.ok(result.includes('2764.svg'))
       assert.ok(result.includes('twemoji.maxcdn.com'))
@@ -234,7 +258,9 @@ describe('Extensions (examples)', () => {
     test('should generate lorem ipsum sentences', async () => {
       const registry = Extensions.create()
       loremBlockMacro(registry)
-      const result = await convert(fixture('lorem-block-macro-ex.adoc'), { extension_registry: registry })
+      const result = await convert(fixture('lorem-block-macro-ex.adoc'), {
+        extension_registry: registry,
+      })
       assert.ok(result.includes('Lorem ipsum dolor sit amet'))
     })
 
@@ -270,7 +296,9 @@ describe('Extensions (examples)', () => {
     test('should transform block content using an async function', async () => {
       const registry = Extensions.create()
       asyncTransformBlock(registry)
-      const result = await convert(fixture('async-block-ex.adoc'), { extension_registry: registry })
+      const result = await convert(fixture('async-block-ex.adoc'), {
+        extension_registry: registry,
+      })
       assert.ok(result.includes('Hello World From Async'))
     })
   })

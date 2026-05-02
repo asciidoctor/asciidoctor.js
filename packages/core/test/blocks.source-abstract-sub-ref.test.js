@@ -3,7 +3,12 @@ import assert from 'node:assert/strict'
 import { Block } from '../src/block.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath, assertMessage } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+  blockFromString,
+} from './harness.js'
 
 describe('Blocks', () => {
   let logger
@@ -52,7 +57,11 @@ puts "Hello, World!"
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.listingblock', 1)
       assertXpath(output, '/*[@class="listingblock"]//pre//code', 1)
-      assertXpath(output, '/*[@class="listingblock"]//pre//code[not(@class)]', 1)
+      assertXpath(
+        output,
+        '/*[@class="listingblock"]//pre//code[not(@class)]',
+        1
+      )
     })
 
     test('should not recognize fenced code blocks with more than three delimiters', async () => {
@@ -85,8 +94,16 @@ alert("Hello, World!")
       assert.equal(block.getAttribute('language'), 'ruby')
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.listingblock', 2)
-      assertXpath(output, '//*[contains(@class,"listingblock")]//code[contains(@class,"language-ruby")][@data-lang="ruby"]', 1)
-      assertXpath(output, '//*[contains(@class,"listingblock")]//code[contains(@class,"language-javascript")][@data-lang="javascript"]', 1)
+      assertXpath(
+        output,
+        '//*[contains(@class,"listingblock")]//code[contains(@class,"language-ruby")][@data-lang="ruby"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[contains(@class,"listingblock")]//code[contains(@class,"language-javascript")][@data-lang="javascript"]',
+        1
+      )
     })
 
     test('should support fenced code blocks with languages and numbering', async () => {
@@ -100,8 +117,16 @@ alert("Hello, World!")
 `
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.listingblock', 2)
-      assertXpath(output, '//*[contains(@class,"listingblock")]//code[contains(@class,"language-ruby")][@data-lang="ruby"]', 1)
-      assertXpath(output, '//*[contains(@class,"listingblock")]//code[contains(@class,"language-javascript")][@data-lang="javascript"]', 1)
+      assertXpath(
+        output,
+        '//*[contains(@class,"listingblock")]//code[contains(@class,"language-ruby")][@data-lang="ruby"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[contains(@class,"listingblock")]//code[contains(@class,"language-javascript")][@data-lang="javascript"]',
+        1
+      )
     })
 
     test('should allow source style to be specified on literal block', async () => {
@@ -211,7 +236,11 @@ Abstract for book without title is invalid.
 `
       const output = await convertString(input)
       assertCss(output, '.abstract', 0)
-      assertMessage(logger, 'warn', 'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.')
+      assertMessage(
+        logger,
+        'warn',
+        'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.'
+      )
     })
 
     test('should make abstract on open block without title converted to DocBook', async () => {
@@ -268,7 +297,11 @@ Abstract for book is invalid.
 `
       const output = await convertString(input, { backend: 'docbook' })
       assertCss(output, 'abstract', 0)
-      assertMessage(logger, 'warn', 'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.')
+      assertMessage(
+        logger,
+        'warn',
+        'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.'
+      )
     })
 
     // TODO partintro shouldn't be recognized if doctype is not book, should be in proper place
@@ -295,8 +328,16 @@ content
       assertCss(output, '.openblock.partintro', 1)
       assertCss(output, '.openblock .title', 0)
       assertCss(output, '.openblock .content', 1)
-      assertXpath(output, '//h1[@id="_part_1"]/following-sibling::*[contains(@class,"openblock")]', 1)
-      assertXpath(output, '//*[contains(@class,"openblock")]/*[@class="content"]/*[@class="paragraph"]', 2)
+      assertXpath(
+        output,
+        '//h1[@id="_part_1"]/following-sibling::*[contains(@class,"openblock")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[contains(@class,"openblock")]/*[@class="content"]/*[@class="paragraph"]',
+        2
+      )
     })
 
     test('should accept partintro on open block with title', async () => {
@@ -321,9 +362,21 @@ content
       assertCss(output, '.openblock.partintro', 1)
       assertCss(output, '.openblock .title', 1)
       assertCss(output, '.openblock .content', 1)
-      assertXpath(output, '//h1[@id="_part_1"]/following-sibling::*[contains(@class,"openblock")]', 1)
-      assertXpath(output, '//*[contains(@class,"openblock")]/*[@class="title"][text()="Intro title"]', 1)
-      assertXpath(output, '//*[contains(@class,"openblock")]/*[@class="content"]/*[@class="paragraph"]', 1)
+      assertXpath(
+        output,
+        '//h1[@id="_part_1"]/following-sibling::*[contains(@class,"openblock")]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[contains(@class,"openblock")]/*[@class="title"][text()="Intro title"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//*[contains(@class,"openblock")]/*[@class="content"]/*[@class="paragraph"]',
+        1
+      )
     })
 
     test('should exclude partintro if not a child of part', async () => {
@@ -336,7 +389,11 @@ part intro paragraph
 `
       const output = await convertString(input)
       assertCss(output, '.partintro', 0)
-      assertMessage(logger, 'error', 'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.')
+      assertMessage(
+        logger,
+        'error',
+        'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
+      )
     })
 
     test('should not allow partintro unless doctype is book', async () => {
@@ -346,7 +403,11 @@ part intro paragraph
 `
       const output = await convertString(input)
       assertCss(output, '.partintro', 0)
-      assertMessage(logger, 'error', 'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.')
+      assertMessage(
+        logger,
+        'error',
+        'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
+      )
     })
 
     test('should accept partintro on open block without title converted to DocBook', async () => {
@@ -407,7 +468,11 @@ part intro paragraph
 `
       const output = await convertString(input, { backend: 'docbook' })
       assertCss(output, 'partintro', 0)
-      assertMessage(logger, 'error', 'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.')
+      assertMessage(
+        logger,
+        'error',
+        'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
+      )
     })
 
     test('should not allow partintro unless doctype is book converted to DocBook', async () => {
@@ -417,7 +482,11 @@ part intro paragraph
 `
       const output = await convertString(input, { backend: 'docbook' })
       assertCss(output, 'partintro', 0)
-      assertMessage(logger, 'error', 'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.')
+      assertMessage(
+        logger,
+        'error',
+        'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
+      )
     })
   })
 
@@ -445,7 +514,11 @@ content
 `
       const doc = await documentFromString(input)
       const block = doc.blocks[0]
-      assert.deepEqual(block.subs, ['specialcharacters', 'attributes', 'macros'])
+      assert.deepEqual(block.subs, [
+        'specialcharacters',
+        'attributes',
+        'macros',
+      ])
     })
 
     test('should be able to prepend subs to default block substitution list', async () => {
@@ -469,7 +542,12 @@ content
 `
       const doc = await documentFromString(input)
       const block = doc.blocks[0]
-      assert.deepEqual(block.subs, ['specialcharacters', 'attributes', 'macros', 'post_replacements'])
+      assert.deepEqual(block.subs, [
+        'specialcharacters',
+        'attributes',
+        'macros',
+        'post_replacements',
+      ])
     })
 
     test('should be able to prepend, append and remove subs from default block substitution list', async () => {
@@ -483,9 +561,17 @@ https://{application}.org[{gt}{gt}] <1>
 `
       const doc = await documentFromString(input, { standalone: false })
       const block = doc.blocks[0]
-      assert.deepEqual(block.subs, ['attributes', 'specialcharacters', 'macros'])
+      assert.deepEqual(block.subs, [
+        'attributes',
+        'specialcharacters',
+        'macros',
+      ])
       const result = await doc.convert()
-      assert.ok(result.includes('<pre><a href="https://asciidoctor.org">&gt;&gt;</a> &lt;1&gt;</pre>'))
+      assert.ok(
+        result.includes(
+          '<pre><a href="https://asciidoctor.org">&gt;&gt;</a> &lt;1&gt;</pre>'
+        )
+      )
     })
 
     test('should be able to set subs then modify them', async () => {
@@ -502,7 +588,9 @@ _hey now_ <1>
 
     test('remove substitution from block', async () => {
       const source = '....\n<foobar>\n....'
-      const literalBlock = (await documentFromString(source)).findBy({ context: 'literal' })[0]
+      const literalBlock = (await documentFromString(source)).findBy({
+        context: 'literal',
+      })[0]
       literalBlock.removeSubstitution('specialcharacters')
       assert.equal(literalBlock.hasSubstitution('specialcharacters'), false)
       assert.equal(await literalBlock.getContent(), '<foobar>')
@@ -521,7 +609,9 @@ content
       const block = doc.blocks[0]
       assert.equal(block.id, null)
       assert.equal(block.getAttribute('reftext'), null)
-      assert.ok(!Object.prototype.hasOwnProperty.call(doc.catalog.refs, 'illegal$id'))
+      assert.ok(
+        !Object.prototype.hasOwnProperty.call(doc.catalog.refs, 'illegal$id')
+      )
     })
 
     test('should not recognize block anchor that starts with digit', async () => {
@@ -614,8 +704,14 @@ paragraph with title
       assert.equal(ref.title, 'foo is bar')
       assert.equal(doc.resolveId('foo is bar'), 'formal-para')
       const output = await doc.convert({ standalone: false })
-      assert.ok(output.includes('<a href="#free-standing">foo is still bar</a>'))
-      assert.ok(output.includes('<h2 id="free-standing" class="discrete">foo is still bar</h2>'))
+      assert.ok(
+        output.includes('<a href="#free-standing">foo is still bar</a>')
+      )
+      assert.ok(
+        output.includes(
+          '<h2 id="free-standing" class="discrete">foo is still bar</h2>'
+        )
+      )
     })
 
     test('should substitute attribute references in reftext when registering block reference', async () => {
@@ -654,14 +750,23 @@ $ apt-get install asciidoctor
   describe('Creating', () => {
     test('create a new Block', async () => {
       const doc = await documentFromString('= Title')
-      const paragraph = Block.create(doc, 'paragraph', { subs: 'normal', source: '_This_ is a <test>', attributes: { foo: 'bar' } })
-      assert.equal(await paragraph.getContent(), '<em>This</em> is a &lt;test&gt;')
+      const paragraph = Block.create(doc, 'paragraph', {
+        subs: 'normal',
+        source: '_This_ is a <test>',
+        attributes: { foo: 'bar' },
+      })
+      assert.equal(
+        await paragraph.getContent(),
+        '<em>This</em> is a &lt;test&gt;'
+      )
       assert.equal(paragraph.getAttribute('foo'), 'bar')
     })
 
     test('create a new paragraph block with verbatim content model', async () => {
       const doc = await documentFromString('= Title')
-      const paragraph = Block.create(doc, 'paragraph', { source: '    _This_ is a <test>' })
+      const paragraph = Block.create(doc, 'paragraph', {
+        source: '    _This_ is a <test>',
+      })
       paragraph.setContentModel('verbatim')
       assert.equal(paragraph.getContentModel(), 'verbatim')
       assert.equal(await paragraph.getContent(), '    _This_ is a <test>')
@@ -669,7 +774,9 @@ $ apt-get install asciidoctor
 
     test('create a new literal block with empty content model', async () => {
       const doc = await documentFromString('= Title')
-      const literal = Block.create(doc, 'literal', { source: '_This_ is a <test>' })
+      const literal = Block.create(doc, 'literal', {
+        source: '_This_ is a <test>',
+      })
       literal.setContentModel('empty')
       assert.equal(literal.getContentModel(), 'empty')
       assert.equal(await literal.getContent(), null)
@@ -677,7 +784,10 @@ $ apt-get install asciidoctor
 
     test('assign a caption on a Block', async () => {
       const doc = await documentFromString('= Title')
-      const image = Block.create(doc, 'image', { content_model: 'empty', attributes: { target: 'cat.png', format: 'png' } })
+      const image = Block.create(doc, 'image', {
+        content_model: 'empty',
+        attributes: { target: 'cat.png', format: 'png' },
+      })
       image.setTitle('A cat')
       image.assignCaption(undefined, 'figure')
       assert.equal(image.getCaptionedTitle(), 'Figure 1. A cat')

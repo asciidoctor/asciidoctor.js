@@ -1,6 +1,9 @@
 // Simulates using an async library (e.g. a code formatter, a markdown converter, etc.)
 async function titleCase(text) {
-  return text.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  return text
+    .split(' ')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
 }
 
 export default function (registry) {

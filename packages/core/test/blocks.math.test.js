@@ -2,7 +2,11 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded } from './harness.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+} from './harness.js'
 
 describe('Blocks', () => {
   let logger
@@ -71,7 +75,9 @@ describe('Blocks', () => {
 <mathphrase><![CDATA[\\sqrt{3x-1}+(1+x)^2 < y]]></mathphrase>
 </informalequation>`
 
-      const output = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       assert.equal(output.trim(), expect.trim())
     })
 
@@ -84,7 +90,9 @@ y = x^2
 ++++`
 
       const output = await convertString(input)
-      assert.ok(output.includes('TeX: { equationNumbers: { autoNumber: "none" } }'))
+      assert.ok(
+        output.includes('TeX: { equationNumbers: { autoNumber: "none" } }')
+      )
     })
 
     test('should set autoNumber option for latexmath to none if eqnums is set to none', async () => {
@@ -97,7 +105,9 @@ y = x^2
 ++++`
 
       const output = await convertString(input)
-      assert.ok(output.includes('TeX: { equationNumbers: { autoNumber: "none" } }'))
+      assert.ok(
+        output.includes('TeX: { equationNumbers: { autoNumber: "none" } }')
+      )
     })
 
     test('should set autoNumber option for latexmath to AMS if eqnums is set', async () => {
@@ -112,7 +122,9 @@ y = x^2
 ++++`
 
       const output = await convertString(input)
-      assert.ok(output.includes('TeX: { equationNumbers: { autoNumber: "AMS" } }'))
+      assert.ok(
+        output.includes('TeX: { equationNumbers: { autoNumber: "AMS" } }')
+      )
     })
 
     test('should set autoNumber option for latexmath to all if eqnums is set to all', async () => {
@@ -125,7 +137,9 @@ y = x^2
 ++++`
 
       const output = await convertString(input)
-      assert.ok(output.includes('TeX: { equationNumbers: { autoNumber: "all" } }'))
+      assert.ok(
+        output.includes('TeX: { equationNumbers: { autoNumber: "all" } }')
+      )
     })
 
     test('should not split equation in AsciiMath block at single newline', async () => {
@@ -236,7 +250,10 @@ x+b/(2a)<+-sqrt((b^2)/(4a^2)-c/a)
 ++++
 ++++`
 
-      const doc = await documentFromString(input, { backend: 'docbook', standalone: false })
+      const doc = await documentFromString(input, {
+        backend: 'docbook',
+        standalone: false,
+      })
       const actual = await doc.convert()
       // TODO: assert MathML output when asciimath library is available in JS
     })
@@ -255,7 +272,11 @@ x+b/(2a)<+-sqrt((b^2)/(4a^2)-c/a)
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.stemblock', 1)
       assertCss(output, '.stemblock .title', 1)
-      assertXpath(output, '//*[@class="title"][text()="The Lorenz Equations"]', 1)
+      assertXpath(
+        output,
+        '//*[@class="title"][text()="The Lorenz Equations"]',
+        1
+      )
     })
 
     test('should output title for asciimath block if defined', async () => {

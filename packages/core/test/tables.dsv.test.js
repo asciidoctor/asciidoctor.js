@@ -23,12 +23,18 @@ nobody:x:99:99:Nobody:/:/sbin/nologin
 |===`
       const doc = await documentFromString(input, { standalone: false })
       const table = doc.blocks[0]
-      const sum = table.columns.map((col) => col.attributes['colpcwidth']).reduce((a, b) => a + b, 0)
+      const sum = table.columns
+        .map((col) => col.attributes['colpcwidth'])
+        .reduce((a, b) => a + b, 0)
       assert.equal(sum, 100)
       const output = await doc.convert()
       assertCss(output, 'table', 1)
       assertCss(output, 'table > colgroup > col[width="14.2857%"]', 6)
-      assertCss(output, 'table > colgroup > col:last-of-type[width="14.2858%"]', 1)
+      assertCss(
+        output,
+        'table > colgroup > col:last-of-type[width="14.2858%"]',
+        1
+      )
       assertCss(output, 'table > tbody > tr', 6)
       assertXpath(output, '//tr[4]/td[5]/p/text()', 0)
       assertXpath(output, '//tr[3]/td[5]/p[text()="MySQL:Server"]', 1)

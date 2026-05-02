@@ -17,8 +17,15 @@ puts "hello"
 `
         const output = await convertStringToEmbedded(input, { safe: 'safe' })
         assertCss(output, '.listingblock pre.highlightjs.highlight', 1)
-        assertXpath(output, '//*[contains(@class,"listingblock")]//pre/code[contains(@class,"language-ruby")]', 1)
-        assert(output.includes('puts &quot;hello&quot;') || output.includes('puts "hello"'))
+        assertXpath(
+          output,
+          '//*[contains(@class,"listingblock")]//pre/code[contains(@class,"language-ruby")]',
+          1
+        )
+        assert(
+          output.includes('puts &quot;hello&quot;') ||
+            output.includes('puts "hello"')
+        )
       })
 
       test('should set data-lang attribute on code element', async () => {
@@ -31,7 +38,11 @@ console.log('hi')
 ----
 `
         const output = await convertStringToEmbedded(input, { safe: 'safe' })
-        assertXpath(output, '//*[contains(@class,"listingblock")]//pre/code[@data-lang="javascript"]', 1)
+        assertXpath(
+          output,
+          '//*[contains(@class,"listingblock")]//pre/code[@data-lang="javascript"]',
+          1
+        )
       })
 
       test('should render source block without language', async () => {
@@ -103,7 +114,11 @@ end
 `
         const output = await convertStringToEmbedded(input, { safe: 'safe' })
         assertCss(output, '.listingblock pre.highlightjs.highlight', 1)
-        assertXpath(output, '//*[contains(@class,"listingblock")]//pre/code[contains(@class,"language-ruby")]', 1)
+        assertXpath(
+          output,
+          '//*[contains(@class,"listingblock")]//pre/code[contains(@class,"language-ruby")]',
+          1
+        )
         assert(output.includes('def greet'))
         assert(output.includes('end'))
       })
@@ -120,7 +135,11 @@ puts "hello"
 ----
 `
         const output = await convertString(input, { safe: 'safe' })
-        assertCss(output, 'html > head > link[rel="stylesheet"][href*="github.min.css"]', 1)
+        assertCss(
+          output,
+          'html > head > link[rel="stylesheet"][href*="github.min.css"]',
+          1
+        )
         assertCss(output, 'html > body > script[src*="highlight.min.js"]', 1)
       })
     })

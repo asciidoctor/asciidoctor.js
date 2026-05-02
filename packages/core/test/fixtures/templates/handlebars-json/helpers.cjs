@@ -1,4 +1,4 @@
-function isString (obj) {
+function isString(obj) {
   return Object.prototype.toString.call(obj) === '[object String]'
 }
 
@@ -8,7 +8,7 @@ function isString (obj) {
  * provided as a class in AsciDoctor
  * @param {AbstractBlock} node the node to test
  */
-function getBlockType (node) {
+function getBlockType(node) {
   const nodeName = node.getNodeName()
   if (['document', 'section'].includes(nodeName)) {
     return nodeName
@@ -19,7 +19,7 @@ function getBlockType (node) {
   }
 }
 
-function getOptions (node) {
+function getOptions(node) {
   const options = {}
   for (const key in node.getAttributes()) {
     if (key.endsWith('-option')) {
@@ -36,7 +36,7 @@ function getOptions (node) {
  * objects
  * @param {AbstractNode} node the node to process
  */
-function getCommonNodeInfo (node) {
+function getCommonNodeInfo(node) {
   return {
     id: node.getId(),
     nodeName: node.getNodeName(),
@@ -48,7 +48,7 @@ function getCommonNodeInfo (node) {
     options: getOptions(node),
     role: node.getRoles().length > 0 ? node.getRole() : '',
     isReftext: node.isReftext(),
-    reftext: node.getReftext()
+    reftext: node.getReftext(),
   }
 }
 
@@ -56,7 +56,7 @@ function getCommonNodeInfo (node) {
  * Return the JSON common to all block objects
  * @param {AbstractNode} node the node to process
  */
-function getAbstractBlockInfo (node) {
+function getAbstractBlockInfo(node) {
   const ret = getCommonNodeInfo(node)
   ret.title = node.getTitle()
   ret.captionedTitle = node.getCaptionedTitle()
@@ -85,7 +85,7 @@ function getAbstractBlockInfo (node) {
  * Return the JSON representation of the document
  * @param {AbstractNode} node the node to process
  */
-function getDocumentInfo (node) {
+function getDocumentInfo(node) {
   const ret = getAbstractBlockInfo(node)
   ret.doctype = node.getDoctype()
   ret.isNested = node.isNested()
@@ -102,7 +102,7 @@ function getDocumentInfo (node) {
       combined: dt.getCombined(),
       subtitle: dt.getSubtitle(),
       isSanitized: dt.isSanitized(),
-      hasSubtitle: dt.hasSubtitle()
+      hasSubtitle: dt.hasSubtitle(),
     }
   }
   const theAuthors = []
@@ -114,7 +114,7 @@ function getDocumentInfo (node) {
       middleName: author.getMiddleName(),
       lastName: author.getLastName(),
       initials: author.getInitials(),
-      email: author.getEmail()
+      email: author.getEmail(),
     })
   })
   ret.authors = theAuthors
@@ -124,7 +124,7 @@ function getDocumentInfo (node) {
       number: node.getRevisionInfo().getNumber() || '',
       date: node.getRevisionInfo().getDate() || '',
       remark: node.getRevisionInfo().getRemark() || '',
-      isEmpty: node.getRevisionInfo().isEmpty()
+      isEmpty: node.getRevisionInfo().isEmpty(),
     }
   } else {
     ret.revison = null
@@ -135,28 +135,25 @@ function getDocumentInfo (node) {
     theFootnotes.push({
       index: footnote.getIndex(),
       id: footnote.getId(),
-      text: footnote.getText()
+      text: footnote.getText(),
     })
   })
   ret.footnotes = theFootnotes
   return ret
 }
 
-function getNumeral (node) {
+function getNumeral(node) {
   const num = node.getNumeral()
   const ret = isString(num) ? num : null
   return ret
 }
 
-function calcSectionNumber (node, delimiter = '.') {
+function calcSectionNumber(node, delimiter = '.') {
   let ret = ''
 
-  const num = getNumeral(node)
-    ? getNumeral(node)
-    : node.getIndex() + 1
+  const num = getNumeral(node) ? getNumeral(node) : node.getIndex() + 1
   if (node.getLevel() > 0 && node.getParent().getNodeName() === 'section') {
-    ret =
-      calcSectionNumber(node.getParent(), delimiter) + delimiter + num
+    ret = calcSectionNumber(node.getParent(), delimiter) + delimiter + num
   } else {
     ret = num
   }
@@ -167,7 +164,7 @@ function calcSectionNumber (node, delimiter = '.') {
  * Return the JSON representation of a Section
  * @param {AbstractNode} node the node to process
  */
-function getSectionInfo (node) {
+function getSectionInfo(node) {
   const ret = getAbstractBlockInfo(node)
   ret.index = node.getIndex()
   ret.sectionName = node.getSectionName()
@@ -184,7 +181,7 @@ function getSectionInfo (node) {
  * Return the JSON representation of a Block
  * @param {AbstractNode} node the node to process
  */
-function getBlockInfo (node) {
+function getBlockInfo(node) {
   const ret = getAbstractBlockInfo(node)
   ret.source = node.getSource()
   ret.sourceLines = node.getSourceLines()
@@ -198,7 +195,7 @@ function getBlockInfo (node) {
  * with the terms and definitions exposed via attributes
  * @param {AbstractNode} node the node to process
  */
-function getListInfo (node) {
+function getListInfo(node) {
   const theItems = []
   node.getItems().forEach((item) => {
     if (node.getNodeName() === 'dlist') {
@@ -207,14 +204,17 @@ function getListInfo (node) {
         theTerms.push(term.getText())
       })
       const theDescription = {
-        ...getCommonNodeInfo(item[1]), ...getAbstractBlockInfo(item[1])
+        ...getCommonNodeInfo(item[1]),
+        ...getAbstractBlockInfo(item[1]),
       }
       theDescription.content = item[1].getContent()
       theItems.push({
         terms: theTerms,
         isDescriptionBlock: !isString(item[1].getText()),
         descText: item[1].getText(),
-        description: theDescription.isBlock ? theDescription : theDescription.text
+        description: theDescription.isBlock
+          ? theDescription
+          : theDescription.text,
       })
     } else {
       const theItem = getAbstractBlockInfo(item)
@@ -235,7 +235,7 @@ function getListInfo (node) {
  * Return a JSON representation of a given node
  * @param {AbstractNode} node the node to convert
  */
-function toJSON (node) {
+function toJSON(node) {
   let ret = getCommonNodeInfo(node)
   if (ret.isInline) {
     ret.document = getDocumentInfo(node.getDocument())
@@ -267,11 +267,11 @@ function toJSON (node) {
  * @param {string} name the name of the attribute
  * @param {value} value the value of the attribute
  */
-function toAttribute (name, value) {
+function toAttribute(name, value) {
   return value !== undefined && value.length !== 0 ? ` ${name}="${value}"` : ''
 }
 
-function configure (options) {
+function configure(options) {
   const handlebars = options.handlebars.environment
   handlebars.registerHelper('concat', function (value1, value2) {
     const val1 = value1 !== undefined ? value1 : ''

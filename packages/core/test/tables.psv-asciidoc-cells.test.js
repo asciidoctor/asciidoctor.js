@@ -7,8 +7,18 @@ import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
 
-import { assertCss, assertXpath, assertMessage, countXpath, usingMemoryLogger } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded } from './harness.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  countXpath,
+  usingMemoryLogger,
+} from './helpers.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+} from './harness.js'
 
 const __dirname = import.meta.url.startsWith('http')
   ? new URL('.', import.meta.url).href.replace(/\/$/, '')
@@ -30,8 +40,16 @@ content
       assertCss(result, 'table.tableblock', 1)
       assertCss(result, 'table.tableblock td.tableblock', 1)
       assertCss(result, 'table.tableblock td.tableblock .openblock', 1)
-      assertCss(result, 'table.tableblock td.tableblock .openblock .admonitionblock', 1)
-      assertCss(result, 'table.tableblock td.tableblock .openblock .paragraph', 1)
+      assertCss(
+        result,
+        'table.tableblock td.tableblock .openblock .admonitionblock',
+        1
+      )
+      assertCss(
+        result,
+        'table.tableblock td.tableblock .openblock .paragraph',
+        1
+      )
     })
 
     test('AsciiDoc table cell should be wrapped in div with class "content"', async () => {
@@ -40,7 +58,11 @@ a|AsciiDoc table cell
 |===`
       const result = await convertStringToEmbedded(input)
       assertCss(result, 'table.tableblock td.tableblock > div.content', 1)
-      assertCss(result, 'table.tableblock td.tableblock > div.content > div.paragraph', 1)
+      assertCss(
+        result,
+        'table.tableblock td.tableblock > div.content > div.paragraph',
+        1
+      )
     })
 
     test('doctype can be set in AsciiDoc table cell', async () => {
@@ -69,7 +91,9 @@ doctype={doctype}
 {backend-html5-doctype-article}
 {backend-html5-doctype-book}
 |===`
-      const result = await convertStringToEmbedded(input, { attributes: { 'attribute-missing': 'skip' } })
+      const result = await convertStringToEmbedded(input, {
+        attributes: { 'attribute-missing': 'skip' },
+      })
       assert.ok(result.includes('doctype=article'))
       assert.ok(!result.includes('{backend-html5-doctype-article}'))
       assert.ok(result.includes('{backend-html5-doctype-book}'))
@@ -90,7 +114,9 @@ doctype={doctype}
 {backend-html5-doctype-book}
 {backend-html5-doctype-article}
 |===`
-      const result = await convertStringToEmbedded(input, { attributes: { 'attribute-missing': 'skip' } })
+      const result = await convertStringToEmbedded(input, {
+        attributes: { 'attribute-missing': 'skip' },
+      })
       assert.ok(result.includes('doctype=book'))
       assert.ok(!result.includes('{backend-html5-doctype-book}'))
       assert.ok(result.includes('{backend-html5-doctype-article}'))
@@ -103,7 +129,10 @@ a|
 
 NOTE: This admonition does not have a font-based icon.
 |===`
-      const result = await convertStringToEmbedded(input, { safe: 'safe', attributes: { icons: 'font' } })
+      const result = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { icons: 'font' },
+      })
       assertCss(result, 'td.icon .title', 0)
       assertCss(result, 'td.icon i.icon-note', 1)
     })
@@ -115,10 +144,17 @@ a|
 
 NOTE: This admonition does not have a font-based icon.
 |===`
-      const result = await convertStringToEmbedded(input, { safe: 'safe', attributes: { icons: null } })
+      const result = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { icons: null },
+      })
       assertCss(result, 'td.icon .title', 1)
       assertCss(result, 'td.icon i.icon-note', 0)
-      assertXpath(result, '//td[@class="icon"]/*[@class="title"][text()="Note"]', 1)
+      assertXpath(
+        result,
+        '//td[@class="icon"]/*[@class="title"][text()="Note"]',
+        1
+      )
     })
 
     test('should keep attribute unset in AsciiDoc table cell if unset in parent document', async () => {
@@ -180,7 +216,9 @@ a|
 
 == Has ID
 |===`
-      const result = await convertStringToEmbedded(input, { attributes: { sectids: null } })
+      const result = await convertStringToEmbedded(input, {
+        attributes: { sectids: null },
+      })
       const { parse } = await import('node-html-parser')
       const root = parse(`<body>${result}</body>`)
       const headings = root.querySelectorAll('h2')
@@ -223,7 +261,7 @@ a|
 content
 |===`
         const result = await convertStringToEmbedded(input, {
-          attributes: { [name]: name === 'showtitle' ? null : '' }
+          attributes: { [name]: name === 'showtitle' ? null : '' },
         })
         assertCss(result, 'h1', 1)
         assertCss(result, '.tableblock h1', 1)
@@ -263,7 +301,7 @@ a|
 content
 |===`
         const result = await convertStringToEmbedded(input, {
-          attributes: { [name]: name === 'showtitle' ? '' : null }
+          attributes: { [name]: name === 'showtitle' ? '' : null },
         })
         assertCss(result, 'h1', 1)
         assertCss(result, '.tableblock h1', 0)
@@ -310,8 +348,16 @@ output file name is used.
       const output = await doc.convert({ standalone: false })
 
       assertCss(output, 'table.tableblock > tbody > tr', 2)
-      assertCss(output, 'table.tableblock > tbody > tr:nth-child(1) > td:nth-child(3) div.admonitionblock', 1)
-      assertCss(output, 'table.tableblock > tbody > tr:nth-child(2) > td:nth-child(3) div.dlist', 1)
+      assertCss(
+        output,
+        'table.tableblock > tbody > tr:nth-child(1) > td:nth-child(3) div.admonitionblock',
+        1
+      )
+      assertCss(
+        output,
+        'table.tableblock > tbody > tr:nth-child(2) > td:nth-child(3) div.dlist',
+        1
+      )
     })
 
     test('should preserve leading indentation in contents of AsciiDoc table cell if contents starts with newline', async () => {
@@ -339,8 +385,14 @@ a| paragraph
       const input = `|===
 a|include::fixtures/include-file.adoc[]
 |===`
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: __dirname })
-      assert.ok(output.includes('included content'), `Expected "included content" in output, got:\n${output}`)
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        base_dir: __dirname,
+      })
+      assert.ok(
+        output.includes('included content'),
+        `Expected "included content" in output, got:\n${output}`
+      )
     })
 
     test('cross reference link in an AsciiDoc table cell should resolve to reference in main document', async () => {
@@ -375,8 +427,16 @@ Grays Peak
       assert.ok(refs['mount-evans'] != null || refs.has?.('mount-evans'))
       assert.ok(refs['grays-peak'] != null || refs.has?.('grays-peak'))
       const output = await doc.convert({ standalone: false })
-      assertXpath(output, '(//p)[1]/a[@href="#grays-peak"][text()="Grays Peak"]', 1)
-      assertXpath(output, '(//p)[1]/a[@href="#mount-evans"][text()="Mount Evans"]', 1)
+      assertXpath(
+        output,
+        '(//p)[1]/a[@href="#grays-peak"][text()="Grays Peak"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(//p)[1]/a[@href="#mount-evans"][text()="Mount Evans"]',
+        1
+      )
       assertXpath(output, '(//table/tbody/tr)[1]//td//a[@id="mount-evans"]', 1)
       assertXpath(output, '(//table/tbody/tr)[2]//th//a[@id="grays-peak"]', 1)
     })
@@ -454,7 +514,9 @@ key: value <1>
 key: value <1>
 ----
 <1> Third callout`
-      const result = await convertStringToEmbedded(input, { backend: 'docbook' })
+      const result = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
       const conums = countXpath(result, '//co')
       assert.equal(conums, 3)
       assertXpath(result, '(//co)[1][@xml:id="CO1-1"]', 1)
@@ -533,7 +595,11 @@ The word 'askew' is emphasized.`
       assertCss(output, 'table', 2)
       assertCss(output, 'table table', 1)
       assertCss(output, 'table > tbody > tr > td:nth-child(2) table', 1)
-      assertCss(output, 'table > tbody > tr > td:nth-child(2) table > tbody > tr > td', 2)
+      assertCss(
+        output,
+        'table > tbody > tr > td:nth-child(2) table > tbody > tr > td',
+        2
+      )
     })
 
     test('can set format of nested table to psv', async () => {
@@ -550,7 +616,11 @@ a|
       assertCss(output, 'table', 2)
       assertCss(output, 'table table', 1)
       assertCss(output, 'table > tbody > tr > td:nth-child(2) table', 1)
-      assertCss(output, 'table > tbody > tr > td:nth-child(2) table > tbody > tr > td', 1)
+      assertCss(
+        output,
+        'table > tbody > tr > td:nth-child(2) table > tbody > tr > td',
+        1
+      )
     })
 
     test('AsciiDoc table cell should not inherit toc setting from parent document', async () => {
@@ -658,10 +728,26 @@ plain
 plain
 |===`
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '(/table/thead/tr/th)[1][@style="background-color: green;"]', 1)
-      assertXpath(output, '(/table/thead/tr/th)[2][@style="background-color: green;"]', 0)
-      assertXpath(output, '(/table/tbody/tr/td)[1][@style="background-color: red;"]', 1)
-      assertXpath(output, '(/table/tbody/tr/td)[2][@style="background-color: green;"]', 0)
+      assertXpath(
+        output,
+        '(/table/thead/tr/th)[1][@style="background-color: green;"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(/table/thead/tr/th)[2][@style="background-color: green;"]',
+        0
+      )
+      assertXpath(
+        output,
+        '(/table/tbody/tr/td)[1][@style="background-color: red;"]',
+        1
+      )
+      assertXpath(
+        output,
+        '(/table/tbody/tr/td)[2][@style="background-color: green;"]',
+        0
+      )
     })
 
     test('should warn if table block is not terminated', async () => {
@@ -677,7 +763,11 @@ eof`
       await usingMemoryLogger(async (logger) => {
         const output = await convertStringToEmbedded(input)
         assertXpath(output, '/table', 1)
-        assertMessage(logger, 'WARN', '<stdin>: line 3: unterminated table block')
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 3: unterminated table block'
+        )
       })
     })
 
@@ -698,7 +788,11 @@ eof`
       await usingMemoryLogger(async (logger) => {
         const output = await convertStringToEmbedded(input)
         assertXpath(output, '//ul//table', 1)
-        assertMessage(logger, 'WARN', '<stdin>: line 9: unterminated example block')
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 9: unterminated example block'
+        )
       })
     })
 
@@ -716,8 +810,16 @@ asciidoctor -o - -s test.adoc | view -
       assertCss(output, 'table > colgroup > col', 2)
       assertCss(output, 'table > tbody > tr', 1)
       assertCss(output, 'table > tbody > tr:nth-child(1) > td', 2)
-      assertCss(output, 'table > tbody > tr:nth-child(1) > td:nth-child(1) p', 1)
-      assertCss(output, 'table > tbody > tr:nth-child(1) > td:nth-child(2) .listingblock', 1)
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(1) > td:nth-child(1) p',
+        1
+      )
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(1) > td:nth-child(2) .listingblock',
+        1
+      )
     })
 
     test('table with breakable option docbook 5', async () => {
@@ -727,8 +829,13 @@ asciidoctor -o - -s test.adoc | view -
 |Item       |Quantity
 |Item 1     |1
 |===`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook5' })
-      assert.ok(output.includes('<?dbfo keep-together="auto"?>'), `Expected keep-together="auto", got:\n${output}`)
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook5',
+      })
+      assert.ok(
+        output.includes('<?dbfo keep-together="auto"?>'),
+        `Expected keep-together="auto", got:\n${output}`
+      )
     })
 
     test('table with unbreakable option docbook 5', async () => {
@@ -738,8 +845,13 @@ asciidoctor -o - -s test.adoc | view -
 |Item       |Quantity
 |Item 1     |1
 |===`
-      const output = await convertStringToEmbedded(input, { backend: 'docbook5' })
-      assert.ok(output.includes('<?dbfo keep-together="always"?>'), `Expected keep-together="always", got:\n${output}`)
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook5',
+      })
+      assert.ok(
+        output.includes('<?dbfo keep-together="always"?>'),
+        `Expected keep-together="always", got:\n${output}`
+      )
     })
 
     test('no implicit header row if cell in first line is quoted and spans multiple lines', async () => {

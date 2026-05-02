@@ -4,7 +4,9 @@ export default function (registry) {
     self.named('shout')
     self.onContext('paragraph')
     self.process(function (parent, reader) {
-      const lines = reader.getLines().map(function (l) { return l.toUpperCase() })
+      const lines = reader.getLines().map(function (l) {
+        return l.toUpperCase()
+      })
       return self.createBlock(parent, 'paragraph', lines)
     })
   })

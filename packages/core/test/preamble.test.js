@@ -22,7 +22,11 @@ Section paragraph 1.`
     assertXpath(result, '//p', 2)
     assertXpath(result, '//*[@id="preamble"]', 1)
     assertXpath(result, '//*[@id="preamble"]//p', 1)
-    assertXpath(result, '//*[@id="preamble"]/following-sibling::*//h2[@id="_first_section"]', 1)
+    assertXpath(
+      result,
+      '//*[@id="preamble"]/following-sibling::*//h2[@id="_first_section"]',
+      1
+    )
     assertXpath(result, '//*[@id="preamble"]/following-sibling::*//p', 1)
   })
 
@@ -69,7 +73,11 @@ Section paragraph 1.`
     assertXpath(result, '//p', 3)
     assertXpath(result, '//*[@id="preamble"]', 1)
     assertXpath(result, '//*[@id="preamble"]//p', 2)
-    assertXpath(result, '//*[@id="preamble"]/following-sibling::*//h2[@id="_first_section"]', 1)
+    assertXpath(
+      result,
+      '//*[@id="preamble"]/following-sibling::*//h2[@id="_first_section"]',
+      1
+    )
     assertXpath(result, '//*[@id="preamble"]/following-sibling::*//p', 1)
   })
 
@@ -80,7 +88,11 @@ paragraph`
     const result = await convertString(input)
     assertXpath(result, '//p', 1)
     assertXpath(result, '//*[@id="content"]/*[@class="paragraph"]/p', 1)
-    assertXpath(result, '//*[@id="content"]/*[@class="paragraph"]/following-sibling::*', 0)
+    assertXpath(
+      result,
+      '//*[@id="content"]/*[@class="paragraph"]/following-sibling::*',
+      0
+    )
   })
 
   test('title and section without preamble', async () => {
@@ -134,7 +146,11 @@ The axe came swinging.`
     assert.equal(await doc.doctype, 'book')
     const output = await doc.convert()
     assertXpath(output, '//h1', 3)
-    assertXpath(output, `//*[@id="preamble"]//p[text() = "Back then${decodeChar(8230)}${decodeChar(8203)}"]`, 1)
+    assertXpath(
+      output,
+      `//*[@id="preamble"]//p[text() = "Back then${decodeChar(8230)}${decodeChar(8203)}"]`,
+      1
+    )
   })
 
   test('should output table of contents in preamble if toc-placement attribute value is preamble', async () => {

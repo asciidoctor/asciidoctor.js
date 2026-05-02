@@ -3,7 +3,12 @@ import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { Compliance } from '../src/compliance.js'
 import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
-import { documentFromString, convertString, convertStringToEmbedded, blockFromString } from './harness.js'
+import {
+  documentFromString,
+  convertString,
+  convertStringToEmbedded,
+  blockFromString,
+} from './harness.js'
 
 describe('Blocks', () => {
   let logger
@@ -60,7 +65,9 @@ describe('Blocks', () => {
     })
 
     test('horizontal rule between blocks', async () => {
-      const output = await convertStringToEmbedded(`Block above\n\n'''\n\nBlock below`)
+      const output = await convertStringToEmbedded(
+        `Block above\n\n'''\n\nBlock below`
+      )
       assertXpath(output, '/hr', 1)
       assertXpath(output, '/hr/preceding-sibling::*', 1)
       assertXpath(output, '/hr/following-sibling::*', 1)
@@ -79,8 +86,16 @@ describe('Blocks', () => {
     test('page break', async () => {
       const output = await convertStringToEmbedded(`page 1\n\n<<<\n\npage 2`)
       assertXpath(output, '/*[@class="page-break"]', 1)
-      assertXpath(output, '/*[@class="page-break"]/preceding-sibling::div/p[text()="page 1"]', 1)
-      assertXpath(output, '/*[@class="page-break"]/following-sibling::div/p[text()="page 2"]', 1)
+      assertXpath(
+        output,
+        '/*[@class="page-break"]/preceding-sibling::div/p[text()="page 1"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/*[@class="page-break"]/following-sibling::div/p[text()="page 2"]',
+        1
+      )
     })
   })
 
@@ -185,7 +200,10 @@ block comment
     test('line starting with three slashes should not be line comment', async () => {
       const input = '/// not a line comment'
       const output = await convertStringToEmbedded(input)
-      assert.ok(output.trim().length > 0, `Line should be emitted => ${input.trimEnd()}`)
+      assert.ok(
+        output.trim().length > 0,
+        `Line should be emitted => ${input.trimEnd()}`
+      )
     })
 
     test('preprocessor directives should not be processed within comment block within block metadata', async () => {
@@ -224,7 +242,11 @@ content that has been disabled
 supposed to be after comment block, except it got swallowed by block comment
 `
       await convertStringToEmbedded(input)
-      assertMessage(logger, 'warn', '<stdin>: line 3: unterminated comment block')
+      assertMessage(
+        logger,
+        'warn',
+        '<stdin>: line 3: unterminated comment block'
+      )
     })
 
     test('should warn if unterminated comment block is detected inside another block', async () => {
@@ -239,7 +261,11 @@ content that has been disabled
 supposed to be after sidebar block, except it got swallowed by block comment
 `
       await convertStringToEmbedded(input)
-      assertMessage(logger, 'warn', '<stdin>: line 4: unterminated comment block')
+      assertMessage(
+        logger,
+        'warn',
+        '<stdin>: line 4: unterminated comment block'
+      )
     })
 
     // WARNING if first line of content is a directive, it will get interpreted before we know it's a comment block
@@ -311,7 +337,11 @@ not this text
 `
       const result = await convertStringToEmbedded(input)
       assertXpath(result, '/*[@class="exampleblock"]', 1)
-      assertXpath(result, '/*[@class="exampleblock"]//*[normalize-space(text())="not this text"]', 1)
+      assertXpath(
+        result,
+        '/*[@class="exampleblock"]//*[normalize-space(text())="not this text"]',
+        1
+      )
     })
 
     // NOTE this test verifies the nil return value of Parser#next_block

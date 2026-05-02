@@ -7,7 +7,9 @@ describe('Timings', () => {
   test('should print timings to an object with a write function', async () => {
     const data = []
     const out = {
-      write (chunk) { data.push(chunk) },
+      write(chunk) {
+        data.push(chunk)
+      },
     }
     const timings = Timings.create()
     await convert('Hello *world*', { timings })
@@ -20,7 +22,9 @@ describe('Timings', () => {
     const defaultLog = console.log
     const data = []
     try {
-      console.log = (...args) => { data.push({ arguments: args }) }
+      console.log = (...args) => {
+        data.push({ arguments: args })
+      }
       const timings = Timings.create()
       await convert('Hello *world*', { timings })
       timings.printReport(console, 'stdin')
@@ -34,7 +38,9 @@ describe('Timings', () => {
   test('should print timings to an object with a log function', async () => {
     const data = []
     const out = {
-      log (message) { data.push(message) },
+      log(message) {
+        data.push(message)
+      },
     }
     const timings = Timings.create()
     await convert('Hello *world*', { timings })
@@ -47,7 +53,9 @@ describe('Timings', () => {
     const defaultLog = console.log
     const data = []
     try {
-      console.log = (...args) => { data.push({ arguments: args }) }
+      console.log = (...args) => {
+        data.push({ arguments: args })
+      }
       const timings = Timings.create()
       await convert('Hello *world*', { timings })
       timings.printReport(undefined, 'stdin')

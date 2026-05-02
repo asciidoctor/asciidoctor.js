@@ -1,4 +1,4 @@
-export function fileURLToPath (url) {
+export function fileURLToPath(url) {
   const href = typeof url === 'string' ? url : url.href
   if (href.startsWith('file://')) {
     return href.replace(/^file:\/\//, '')
@@ -12,6 +12,6 @@ export function fileURLToPath (url) {
   }
 }
 
-export function pathToFileURL (path) {
+export function pathToFileURL(path) {
   return new URL('file://' + path)
 }

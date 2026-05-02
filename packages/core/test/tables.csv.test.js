@@ -6,7 +6,13 @@ import { test, describe } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
 
-import { assertCss, assertXpath, assertMessage, usingMemoryLogger, decodeChar } from './helpers.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  usingMemoryLogger,
+  decodeChar,
+} from './helpers.js'
 import { convertStringToEmbedded } from './harness.js'
 
 const __dirname = import.meta.url.startsWith('http')
@@ -43,7 +49,11 @@ c,"
         assertCss(output, 'table', 1)
         assertCss(output, 'table td', 4)
         assertXpath(output, '(/table/td)[4]/p', 0)
-        assertMessage(logger, 'ERROR', '<stdin>: line 3: unclosed quote in CSV data; setting cell to empty')
+        assertMessage(
+          logger,
+          'ERROR',
+          '<stdin>: line 3: unclosed quote in CSV data; setting cell to empty'
+        )
       })
     })
 
@@ -72,7 +82,11 @@ me"
       assertXpath(output, '/table/tbody/tr[1]/td[2]/p[1][text()="one"]', 1)
       assertXpath(output, '/table/tbody/tr[1]/td[2]/p[2][text()="two"]', 1)
       assertXpath(output, '/table/tbody/tr[1]/td[2]/p[3][text()="three"]', 1)
-      assertXpath(output, `/table/tbody/tr[1]/td[3]//pre[text()="do\n\nre\n\nme"]`, 1)
+      assertXpath(
+        output,
+        `/table/tbody/tr[1]/td[3]//pre[text()="do\n\nre\n\nme"]`,
+        1
+      )
     })
 
     test('should not drop trailing empty cell in TSV data when loaded from an include file', async () => {
@@ -80,12 +94,19 @@ me"
 |===
 include::fixtures/data.tsv[]
 |===`
-      const output = await convertStringToEmbedded(input, { safe: 'safe', base_dir: __dirname })
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        base_dir: __dirname,
+      })
       assertCss(output, 'table > tbody > tr', 3)
       assertCss(output, 'table > tbody > tr:nth-child(1) > td', 3)
       assertCss(output, 'table > tbody > tr:nth-child(2) > td', 3)
       assertCss(output, 'table > tbody > tr:nth-child(3) > td', 3)
-      assertCss(output, 'table > tbody > tr:nth-child(2) > td:nth-child(3):empty', 1)
+      assertCss(
+        output,
+        'table > tbody > tr:nth-child(2) > td:nth-child(3):empty',
+        1
+      )
     })
 
     test('mixed unquoted records and quoted records with escaped quotes, commas, and wrapped lines', async () => {
@@ -105,11 +126,31 @@ air, moon roof, loaded",4799.00
       assertCss(output, 'table > colgroup > col[width="20%"]', 5)
       assertCss(output, 'table > thead > tr', 1)
       assertCss(output, 'table > tbody > tr', 6)
-      assertXpath(output, '((//tbody/tr)[1]/td)[4]/p[text()="ac, abs, moon"]', 1)
-      assertXpath(output, `((//tbody/tr)[2]/td)[3]/p[text()='Venture "Extended Edition"']`, 1)
-      assertXpath(output, `((//tbody/tr)[4]/td)[4]/p[text()="MUST SELL!\nair, moon roof, loaded"]`, 1)
-      assertXpath(output, `((//tbody/tr)[5]/td)[4]/p[text()='"This one${decodeChar(8217)}s gonna to blow you${decodeChar(8217)}re socks off," per the sticker']`, 1)
-      assertXpath(output, `((//tbody/tr)[6]/td)[4]/p[text()='Check it, "this one${decodeChar(8217)}s gonna to blow you${decodeChar(8217)}re socks off", per the sticker']`, 1)
+      assertXpath(
+        output,
+        '((//tbody/tr)[1]/td)[4]/p[text()="ac, abs, moon"]',
+        1
+      )
+      assertXpath(
+        output,
+        `((//tbody/tr)[2]/td)[3]/p[text()='Venture "Extended Edition"']`,
+        1
+      )
+      assertXpath(
+        output,
+        `((//tbody/tr)[4]/td)[4]/p[text()="MUST SELL!\nair, moon roof, loaded"]`,
+        1
+      )
+      assertXpath(
+        output,
+        `((//tbody/tr)[5]/td)[4]/p[text()='"This one${decodeChar(8217)}s gonna to blow you${decodeChar(8217)}re socks off," per the sticker']`,
+        1
+      )
+      assertXpath(
+        output,
+        `((//tbody/tr)[6]/td)[4]/p[text()='Check it, "this one${decodeChar(8217)}s gonna to blow you${decodeChar(8217)}re socks off", per the sticker']`,
+        1
+      )
     })
 
     test('should allow quotes around a CSV value to be on their own lines', async () => {
@@ -214,7 +255,11 @@ paragraph;contiguous lines of words and phrases;"
   "
 ,===`
       const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/table/tbody//*[@class="paragraph"]/p[text()="one sentence, one line"]', 1)
+      assertXpath(
+        output,
+        '/table/tbody//*[@class="paragraph"]/p[text()="one sentence, one line"]',
+        1
+      )
     })
   })
 })

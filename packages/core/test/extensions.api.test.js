@@ -104,11 +104,21 @@ describe('Extensions (API)', () => {
   })
 
   test('should be able to register preferred tree processor', async () => {
-    const SelfSigningTreeProcessor = Extensions.createTreeProcessor('SelfSigningTreeProcessor', {
-      process: function (document) {
-        document.append(this.createBlock(document, 'paragraph', 'SelfSigningTreeProcessor', {}))
+    const SelfSigningTreeProcessor = Extensions.createTreeProcessor(
+      'SelfSigningTreeProcessor',
+      {
+        process: function (document) {
+          document.append(
+            this.createBlock(
+              document,
+              'paragraph',
+              'SelfSigningTreeProcessor',
+              {}
+            )
+          )
+        },
       }
-    })
+    )
     Extensions.register(function () {
       this.treeProcessor(function () {
         const self = this
@@ -123,23 +133,32 @@ describe('Extensions (API)', () => {
           doc.append(self.createBlock(doc, 'paragraph', 'c', {}))
         })
       })
-      this.prefer('tree_processor', Extensions.newTreeProcessor('AwesomeTreeProcessor', {
-        process: function (doc) {
-          doc.append(this.createBlock(doc, 'paragraph', 'b', {}))
-        }
-      }))
-      this.prefer('tree_processor', Extensions.newTreeProcessor({
-        process: function (doc) {
-          doc.append(this.createBlock(doc, 'paragraph', 'a', {}))
-        }
-      }))
+      this.prefer(
+        'tree_processor',
+        Extensions.newTreeProcessor('AwesomeTreeProcessor', {
+          process: function (doc) {
+            doc.append(this.createBlock(doc, 'paragraph', 'b', {}))
+          },
+        })
+      )
+      this.prefer(
+        'tree_processor',
+        Extensions.newTreeProcessor({
+          process: function (doc) {
+            doc.append(this.createBlock(doc, 'paragraph', 'a', {}))
+          },
+        })
+      )
       this.prefer('tree_processor', SelfSigningTreeProcessor)
     })
     const doc = await load('')
     const lines = doc.getBlocks().map(function (block) {
       return block.getSourceLines()[0]
     })
-    assert.deepEqual(lines.sort(), ['SelfSigningTreeProcessor', 'a', 'b', 'c', 'd'].sort())
+    assert.deepEqual(
+      lines.sort(),
+      ['SelfSigningTreeProcessor', 'a', 'b', 'c', 'd'].sort()
+    )
     // Verify prepend ordering: SelfSigningTreeProcessor is first
     assert.equal(lines[0], 'SelfSigningTreeProcessor')
   })
@@ -151,7 +170,11 @@ describe('Extensions (API)', () => {
         self.matchFormat('short')
         self.parseContentAs('text')
         self.process(function (parent, _, attrs) {
-          return self.createInline(parent, 'quoted', `<label>${attrs.text}</label>`)
+          return self.createInline(
+            parent,
+            'quoted',
+            `<label>${attrs.text}</label>`
+          )
         })
       })
     })
@@ -168,21 +191,29 @@ describe('Extensions (API)', () => {
           if (attrs.text === '') {
             text = target
           }
-          const openBlock = self.createBlock(parent, 'open', [], { role: 'external-url' })
+          const openBlock = self.createBlock(parent, 'open', [], {
+            role: 'external-url',
+          })
           openBlock.title = attrs.title
-          const link = self.createInline(parent, 'anchor', text, { type: 'link', target })
+          const link = self.createInline(parent, 'anchor', text, {
+            type: 'link',
+            target,
+          })
           openBlock.append(link)
           return openBlock
         })
       })
     })
     const html = await convert('extlink::http://github.com[title="GitHub"]')
-    assert.equal(html, `<div class="openblock external-url">
+    assert.equal(
+      html,
+      `<div class="openblock external-url">
 <div class="title">GitHub</div>
 <div class="content">
 <a href="http://github.com"></a>
 </div>
-</div>`)
+</div>`
+    )
   })
 
   test('should parse attributes', async () => {
@@ -192,16 +223,28 @@ describe('Extensions (API)', () => {
       this.named('attrs')
       this.onContext('open')
       this.process(async function (parent, reader) {
-        parsedAttrs = await this.parseAttributes(parent, await reader.readLine(), { positional_attributes: ['a', 'b'] })
-        Object.assign(parsedAttrs, await this.parseAttributes(parent, 'foo={foo}', { sub_attributes: true }))
+        parsedAttrs = await this.parseAttributes(
+          parent,
+          await reader.readLine(),
+          { positional_attributes: ['a', 'b'] }
+        )
+        Object.assign(
+          parsedAttrs,
+          await this.parseAttributes(parent, 'foo={foo}', {
+            sub_attributes: true,
+          })
+        )
       })
     })
-    await convert(`:foo: bar
+    await convert(
+      `:foo: bar
 [attrs]
 --
 a,b,c,key=val
 --
-`, { extension_registry: registry })
+`,
+      { extension_registry: registry }
+    )
     assert.equal(parsedAttrs.a, 'a')
     assert.equal(parsedAttrs.b, 'b')
     assert.equal(parsedAttrs.key, 'val')
@@ -246,10 +289,14 @@ content
       registry.block(function () {
         this.named('test')
         this.process(async (parent, reader) => {
-          await this.parseContent(parent, await reader.readLines(), { id: 'foo' })
+          await this.parseContent(parent, await reader.readLines(), {
+            id: 'foo',
+          })
         })
       })
-      const html = await convert('[test]\n*Hello world*', { extension_registry: registry })
+      const html = await convert('[test]\n*Hello world*', {
+        extension_registry: registry,
+      })
       assert.ok(html.includes('<strong>Hello world</strong>'))
       assert.ok(html.includes('<div id="foo" class="paragraph">'))
     })
@@ -266,9 +313,9 @@ content
                 summary: 'Parse content should work',
                 created: '2021-12-28T14:38:12.056',
                 priority: { name: 'High' },
-                assignee: { displayName: 'CK' }
-              }
-            }
+                assignee: { displayName: 'CK' },
+              },
+            },
           ]
           const content = []
           content.push('[options="header",cols="2,1,1,2,6"]')
@@ -278,18 +325,38 @@ content
             content.push('|' + issue.key)
             content.push('|' + issue.fields.priority.name)
             content.push('|' + issue.fields.created)
-            content.push('|' + (issue.fields.assignee && issue.fields.assignee.displayName) || 'Not assigned')
+            content.push(
+              '|' +
+                (issue.fields.assignee && issue.fields.assignee.displayName) ||
+                'Not assigned'
+            )
             content.push('|' + issue.fields.summary)
           }
           content.push('|====')
           await this.parseContent(parent, content.join('\n'), attrs)
         })
       })
-      const html = await convert('jira::DOC[]', { extension_registry: registry })
-      assert.ok(html.includes('<th class="tableblock halign-left valign-top">ID</th>'))
-      assert.ok(html.includes('<th class="tableblock halign-left valign-top">Priority</th>'))
-      assert.ok(html.includes('<td class="tableblock halign-left valign-top"><p class="tableblock">DOC-1234</p></td>'))
-      assert.ok(html.includes('<td class="tableblock halign-left valign-top"><p class="tableblock">Parse content should work</p></td>'))
+      const html = await convert('jira::DOC[]', {
+        extension_registry: registry,
+      })
+      assert.ok(
+        html.includes('<th class="tableblock halign-left valign-top">ID</th>')
+      )
+      assert.ok(
+        html.includes(
+          '<th class="tableblock halign-left valign-top">Priority</th>'
+        )
+      )
+      assert.ok(
+        html.includes(
+          '<td class="tableblock halign-left valign-top"><p class="tableblock">DOC-1234</p></td>'
+        )
+      )
+      assert.ok(
+        html.includes(
+          '<td class="tableblock halign-left valign-top"><p class="tableblock">Parse content should work</p></td>'
+        )
+      )
     })
 
     test('should append blocks to current parent', async () => {
@@ -298,11 +365,15 @@ content
         this.named('csv')
         this.onContext('literal')
         this.process(async (parent, reader) => {
-          this.parseContent(parent, [',==='].concat(...await reader.readLines()).concat(',==='))
+          this.parseContent(
+            parent,
+            [',==='].concat(...(await reader.readLines())).concat(',===')
+          )
           return undefined
         })
       })
-      const doc = await load(`
+      const doc = await load(
+        `
 before
 
 [csv]
@@ -310,7 +381,9 @@ before
 a,b,c
 ....
 
-after`, { extension_registry: registry })
+after`,
+        { extension_registry: registry }
+      )
       assert.equal(doc.getBlocks().length, 3)
       const table = doc.getBlocks()[1]
       assert.equal(table.getContext(), 'table')
@@ -327,7 +400,8 @@ after`, { extension_registry: registry })
           return this.parseContent(wrap, await reader.readLines())
         })
       })
-      const doc = await load(`
+      const doc = await load(
+        `
 [wrap]
 --
 [foo=bar]
@@ -339,7 +413,9 @@ content
 content
 ====
 --
-`, { extension_registry: registry })
+`,
+        { extension_registry: registry }
+      )
       assert.equal(doc.getBlocks().length, 1)
       const wrap = doc.getBlocks()[0]
       assert.equal(wrap.getBlocks().length, 2)
