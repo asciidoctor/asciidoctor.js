@@ -86,27 +86,14 @@ import {
 } from './rx.js'
 
 // ── List continuation identity marker ────────────────────────────────────────
-// Used to distinguish list continuation placeholders from regular strings.
-const LIST_CONTINUATION_SYM = Symbol('ListContinuation')
+class ListContinuation extends String {}
 
 function isListContinuation(v) {
-  return v != null && v[LIST_CONTINUATION_SYM] === true
+  return v instanceof ListContinuation
 }
 
-function makeListContinuationPlaceholder() {
-  const s = new String('') // eslint-disable-line no-new-wrappers
-  s[LIST_CONTINUATION_SYM] = true
-  return s
-}
-
-function makeListContinuationString() {
-  const s = new String(LIST_CONTINUATION) // eslint-disable-line no-new-wrappers
-  s[LIST_CONTINUATION_SYM] = true
-  return s
-}
-
-const ListContinuationPlaceholder = makeListContinuationPlaceholder()
-const ListContinuationString = makeListContinuationString()
+const ListContinuationPlaceholder = new ListContinuation('')
+const ListContinuationString = new ListContinuation(LIST_CONTINUATION)
 
 // Author attribute keys
 const AuthorKeys = new Set([
@@ -1182,7 +1169,7 @@ export class Parser {
           }
           Parser.catalogInlineAnchors(lines.join(LF), block, document, reader)
         }
-      } while (false) // eslint-disable-line no-constant-condition
+      } while (false)
     }
 
     // Delimited block or styled paragraph
@@ -1696,10 +1683,6 @@ export class Parser {
   static catalogInlineAnchors(text, block, document, reader) {
     if (!text.includes('[[') && !text.includes('anchor:')) return
 
-    const _rx = new RegExp(
-      InlineAnchorScanRx.source,
-      'gd' in RegExp.prototype ? 'gdu' : 'gu'
-    )
     let m
     // Reset lastIndex for global search
     InlineAnchorScanRx.lastIndex = 0
@@ -1808,7 +1791,6 @@ export class Parser {
     let nextIndex = 1
     let autonum = 0
 
-    // eslint-disable-next-line no-constant-condition
     while (true) {
       if (!match) {
         const pLine = await reader.peekLine()
@@ -3589,7 +3571,6 @@ export class Parser {
     if (!lines || lines.length === 0) return
 
     if (tabSize > 0 && lines.some((l) => l.includes('\t'))) {
-      const _tabSpace = ' '.repeat(tabSize)
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i]
         if (line === '' || !line.includes('\t')) continue
@@ -3678,5 +3659,3 @@ applyLogging(Parser)
 function _uniform(str, chr, len) {
   return Parser.uniform(str, chr, len)
 }
-
-// Lazy reader resolver to break circular dependency
