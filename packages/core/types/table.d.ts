@@ -94,7 +94,7 @@ declare class Cell extends AbstractBlock<string | string[]> {
         get converter(): object;
         getAttribute(name: string, defaultValue?: any, fallbackName?: string | boolean | null): any;
         hasAttribute(name: string, expectedValue?: any, fallbackName?: string | boolean | null): boolean;
-        setAttribute(name: string, value?: any, overwrite?: boolean): boolean;
+        setAttribute(name: string, value?: any, overwrite?: boolean): string | boolean | null;
         isAttribute(name: any, expectedValue?: any): boolean;
         removeAttribute(name: string): any;
         hasOption(name: string): boolean;
