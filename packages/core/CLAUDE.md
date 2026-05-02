@@ -70,13 +70,16 @@ If TypeDoc warns that a type is referenced but not included in the documentation
 
 ## Linting
 
-The project uses [Biome](https://biomejs.dev/) for linting and formatting:
+The project uses [Biome](https://biomejs.dev/) for linting and formatting.
+
+**Always run after any code change:**
 
 ```
-npx biome check .
+npm run format   # format src/ and test/
+npm run check    # lint + format check src/ and test/
 ```
 
-The Biome config is in `biome.json` (package-level) and the root `biome.json`.
+The Biome config is in `biome.json` (package-level) and the root `biome.json`. The `test/fixtures/` directory is excluded via `files.includes`.
 
 ## Running tests
 

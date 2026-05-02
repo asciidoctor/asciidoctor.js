@@ -332,9 +332,11 @@ export class Document extends AbstractBlock {
       this._timings = options.timings ?? null
       delete options.timings
       this.pathResolver = new PathResolver()
-      this.extensions = options.extension_registry ?? null
-      // If no explicit registry but global extension groups are registered, activate them.
-      if (!this.extensions) {
+      if (options.extension_registry) {
+        this.extensions = options.extension_registry.activate(this)
+      } else {
+        this.extensions = null
+        // If no explicit registry but global extension groups are registered, activate them.
         const globalGroups = Extensions.groups()
         if (Object.keys(globalGroups).length > 0) {
           this.extensions = new Registry()
