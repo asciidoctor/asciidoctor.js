@@ -90,7 +90,6 @@ export class Document extends AbstractBlock<string> {
     syntaxHighlighter: any;
     header: Section;
     options: Readonly<{}>;
-    sourceLocation: any;
     /** Alias catalog as references (backwards compat). */
     get references(): any;
     /** @returns {boolean} True if this is a nested (child) document. */
@@ -178,8 +177,8 @@ export class Document extends AbstractBlock<string> {
     isNested(): boolean;
     isEmbedded(): boolean;
     hasExtensions(): boolean;
-    source(): any;
-    sourceLines(): any;
+    source(): string;
+    sourceLines(): string[];
     basebackend(base: any): boolean;
     /**
      * Resolve the primary title for the document.
@@ -490,6 +489,7 @@ export namespace Document {
 import { Footnote } from './footnote.js';
 import { AttributeEntry } from './attribute_entry.js';
 import { AbstractBlock } from './abstract_block.js';
+import type { Reader } from './reader.js';
 import { Section } from './section.js';
 import { Inline } from './inline.js';
 export { Footnote, AttributeEntry };
