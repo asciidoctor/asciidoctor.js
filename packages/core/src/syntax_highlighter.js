@@ -105,12 +105,13 @@ export class SyntaxHighlighterBase {
    * @param {Object} opts - options
    * @param {boolean} [opts.nowrap] - disable line wrapping
    * @param {Function} [opts.transform] - called with (pre, code) attribute objects before building tags
-   * @returns {string} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags
+   * @returns {Promise<string>} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags
    */
-  format(node, lang, opts) {
+  async format(node, lang, opts) {
     const classAttrVal = opts.nowrap
       ? `${this._preClass} highlight nowrap`
       : `${this._preClass} highlight`
+    const content = await node.content()
     const transform = opts.transform
     if (transform) {
       const pre = { class: classAttrVal }
@@ -126,9 +127,9 @@ export class SyntaxHighlighterBase {
       const codeAttrs = Object.entries(code)
         .map(([k, v]) => ` ${k}="${v}"`)
         .join('')
-      return `<pre${preAttrs}><code${codeAttrs}>${node.content}</code></pre>`
+      return `<pre${preAttrs}><code${codeAttrs}>${content}</code></pre>`
     }
-    return `<pre class="${classAttrVal}"><code${lang ? ` data-lang="${lang}"` : ''}>${node.content}</code></pre>`
+    return `<pre class="${classAttrVal}"><code${lang ? ` data-lang="${lang}"` : ''}>${content}</code></pre>`
   }
 
   /**

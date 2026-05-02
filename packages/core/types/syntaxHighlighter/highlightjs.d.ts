@@ -8,9 +8,9 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
      * @param {object} node - the source Block being processed
      * @param {string|null} lang - the source language string, or falsy if none
      * @param {object} opts - options passed to the base format()
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    format(node: object, lang: string | null, opts: object): string;
+    format(node: object, lang: string | null, opts: object): Promise<string>;
     /**
      * Always returns true — highlight.js injects markup into the document.
      * @param {string} location - 'head' or 'footer'
