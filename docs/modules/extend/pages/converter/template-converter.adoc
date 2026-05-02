@@ -71,7 +71,7 @@ For reference, here's the complete list of node's name:
 include::partial$node-name-list.adoc[]
 
 You don't need to create a template for all the nodes.
-Asciidoctor.js can fallback on a built-in converter.
+Asciidoctor.js can fall back on a built-in converter.
 For instance, we can use the built-in HTML 5 converter for every node except for paragraph nodes where we use a custom template.
 
 == Templates directory
@@ -107,7 +107,7 @@ await convertFile('doc.adoc', { safe: 'safe', backend: 'html5', template_dirs: [
 
 === Conflicts resolution
 
-Here's how Asciidoctor.js resolve conflicts in the following situations:
+Here's how Asciidoctor.js resolves conflicts in the following situations:
 
 Two or more templates are defined for the same node name in the same directory::
 For instance, you have a _paragraph.njk_ and a _paragraph.hbs_ file in your template directory.
@@ -195,7 +195,7 @@ export function configure (context) {
 }
 ----
 
-With the above definition, the value `cdn` will be equals to:
+With the above definition, the value `cdn` will be equal to:
 
 [horizontal]
 `//cdn.web.com`:: if we are using the template directory _web_
@@ -230,7 +230,7 @@ In the above example, the value `version` and the function `getAssetUriScheme` w
 export default function ({ node, _, helpers }) {
   const target = node.getAttribute('target')
   const document = node.getDocument()
-  const src = `${helpers.getAssetUriScheme(document)}//www.youtube.com/embed/${target}}` // <1>
+  const src = `${helpers.getAssetUriScheme(document)}//www.youtube.com/embed/${target}` // <1>
   return `<figure class="video"><iframe src="${src}" frameborder="0"/></figure>`
 }
 ----

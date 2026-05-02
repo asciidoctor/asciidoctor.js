@@ -39,7 +39,7 @@ include::{examplesdir}/test.js[tags=load-file;doctitle-partition]
 include::{examplesdir}/test.js[tags=load-file;author]
 ----
 
-Asciidoctor uses the author's name and email to assign values to a number of built-in attributes that can be used throughout the document's body but also retrieve with the `getAttribute` function:
+Asciidoctor uses the author's name and email to assign values to a number of built-in attributes that can be used throughout the document's body but also retrieved with the `getAttribute` function:
 
 [source,js]
 ----
@@ -87,7 +87,7 @@ You can also check if the document contains revision info with `hasRevisionInfo`
 include::{examplesdir}/test.js[tags=load-file;has-revision-info]
 ----
 
-As with the author, revision information are also available as built-in attributes:
+As with the author, revision information is also available as built-in attributes:
 
 [source,js]
 ----

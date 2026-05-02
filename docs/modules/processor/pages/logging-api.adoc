@@ -74,7 +74,7 @@ if (sourceLocation) {
   console.log(sourceLocation.getPath()) // <7>
 }
 ----
-<1> returns the severity (`'ERROR'` or `'WARNING'`)
+<1> returns the severity (e.g. `'ERROR'`, `'WARN'`, `'INFO'`)
 <2> returns the error or warning text message
 <3> returns the context about the source location (can be undefined)
 <4> returns the source line number associated to the message

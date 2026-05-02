@@ -92,7 +92,7 @@ Some internal properties and options that retained the Ruby `snake_case` style i
 
 | `isReftext()` → `boolean`
 | `hasReftext()` → `boolean`
-| Checks whether the `reftext` attribute is set
+| Checks whether the `reftext` attribute is set. Note: v4 also retains `isReftext()` with broader semantics (returns `true` when `reftext` is set *or* the node has a title).
 |===
 
 === Restructured inner classes

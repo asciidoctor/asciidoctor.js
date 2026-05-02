@@ -4,7 +4,7 @@
 On this page, you'll learn:
 
 * [x] How to install Asciidoctor.js.
-* [x] How to setup Asciidoctor.js in your JavaScript environment.
+* [x] How to set up Asciidoctor.js in your JavaScript environment.
 
 == Install Asciidoctor.js
 
@@ -27,7 +27,7 @@ Import Asciidoctor.js in a `<script type="module">` tag.
 
 ```html
 <script type="module">
-  import asciidoctor from './node_modules/@asciidoctor/core/build/browser/index.js'
+  import { convert } from './node_modules/@asciidoctor/core/build/browser/index.js'
 </script>
 ```
 

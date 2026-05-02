@@ -1,6 +1,6 @@
 = A quick tour
 
-Asciidoctor.js is a _fast_ text processor for converting AsciiDoc content to HTML5, slidedecks and other formats.
+Asciidoctor.js is a _fast_ text processor for converting AsciiDoc content to HTML5, slide decks and other formats.
 This quick tour gives you an overview of how to convert AsciiDoc content to HTML5.
 
 == Your first conversion

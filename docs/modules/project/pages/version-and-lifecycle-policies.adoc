@@ -70,4 +70,4 @@ Not actively maintained, efforts should be put on {uri-graalvm}[GraalVM].
 For reference, please read the JDK Enhancement Proposal (JEP) to {uri-nashorn-jep-deprecated}[Deprecate the Nashorn JavaScript Engine].
 
 GraalVM support::
-Support will be provided on the the latest stable version.
+Support will be provided on the latest stable version.

@@ -46,8 +46,8 @@ class CustomConverter {
 ----
 <1> `node` is a node that extends {url-abstractnode-jsdoc}[AbstractNode].
 <2> `transform` will only be defined when the node is a {url-document-jsdoc}[Document]. +
-The value will be equals to `embedded` if we convert to an embeddable document,
-or `document` if we convert to a standalone document (ie. `standalone` is equals to `true`).
+The value will be equal to `embedded` if we convert to an embeddable document,
+or `document` if we convert to a standalone document (i.e., `standalone` is `true`).
 
 To register a custom converter, use the `register` function on `ConverterFactory`:
 
@@ -69,15 +69,15 @@ Before we continue, let's create a little more advanced custom converter:
 [source,js]
 ----
 class CustomConverter {
-  convert (node, transform) {
+  async convert (node, transform) {
     const nodeName = transform || node.getNodeName()
     if (nodeName === 'embedded') {
       return `<embedded>
-${node.getContent()}
+${await node.getContent()}
 </embedded>` // <1>
     } else if (nodeName === 'document') {
       return `<document>
-${node.getContent()}
+${await node.getContent()}
 </document>` // <2>
     } else if (nodeName === 'section') {
       return `${node.getTitle()}` // <3>
@@ -133,9 +133,9 @@ class SemanticParagraphConverter {
     this.baseConverter = new Html5Converter() // <1>
   }
 
-  convert (node, transform) {
+  async convert (node, transform) {
     if (node.getNodeName() === 'paragraph') {
-      return `<p>${node.getContent()}</p>` // <2>
+      return `<p>${await node.getContent()}</p>` // <2>
     }
     return this.baseConverter.convert(node, transform) // <3>
   }
