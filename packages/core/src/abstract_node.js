@@ -568,7 +568,6 @@ export class AbstractNode {
    * @returns {Promise<string>} a Promise resolving to a String data URI.
    */
   async generateDataUriFromUri(imageUri, cacheUri = false) {
-    // eslint-disable-line no-unused-vars
     try {
       const response = await fetch(imageUri)
       if (response.ok) {

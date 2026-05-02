@@ -434,7 +434,6 @@ function _expandPath(p) {
   if (typeof process !== 'undefined') {
     // Lazy import to avoid top-level await
     try {
-      // eslint-disable-next-line n/no-sync
       const path = require('node:path')
       return path.resolve(p).replace(/\\/g, '/')
     } catch {}

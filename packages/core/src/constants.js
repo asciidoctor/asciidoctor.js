@@ -163,7 +163,7 @@ try {
     USER_HOME =
       process.env.HOME ||
       process.env.USERPROFILE ||
-      (process.cwd ? process.cwd() : '') // eslint-disable-line n/no-process-env
+      (process.cwd ? process.cwd() : '')
   }
 } catch {}
 export { ROOT_DIR, LIB_DIR, DATA_DIR, USER_HOME }

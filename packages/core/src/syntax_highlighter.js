@@ -32,7 +32,6 @@ export class SyntaxHighlighterBase {
    * @param {Object} [opts={}] - options
    */
   constructor(name, backend = 'html5', opts = {}) {
-    // eslint-disable-line no-unused-vars
     this.name = name
     this._preClass = name
   }
@@ -44,7 +43,6 @@ export class SyntaxHighlighterBase {
    * @returns {boolean} false by default; subclasses return true to enable {@link docinfo}
    */
   hasDocinfo(location) {
-    // eslint-disable-line no-unused-vars
     return false
   }
 
@@ -60,7 +58,6 @@ export class SyntaxHighlighterBase {
    * @returns {string} the markup to insert
    */
   docinfo(location, doc, opts) {
-    // eslint-disable-line no-unused-vars
     throw new Error(
       `${this.constructor.name} must implement docinfo() since hasDocinfo() returns true`
     )
@@ -95,7 +92,6 @@ export class SyntaxHighlighterBase {
    * @returns {string|[string, number]} the highlighted source, or a tuple with a line offset
    */
   highlight(node, source, lang, opts) {
-    // eslint-disable-line no-unused-vars
     throw new Error(
       `${this.constructor.name} must implement highlight() since handlesHighlighting() returns true`
     )
@@ -142,7 +138,6 @@ export class SyntaxHighlighterBase {
    * @returns {boolean} false by default; subclasses return true to enable {@link writeStylesheetToDisk}
    */
   writeStylesheet(doc) {
-    // eslint-disable-line no-unused-vars
     return false
   }
 
@@ -153,7 +148,6 @@ export class SyntaxHighlighterBase {
    * @param {string} toDir - the absolute path of the output directory
    */
   writeStylesheetToDisk(doc, toDir) {
-    // eslint-disable-line no-unused-vars
     throw new Error(
       `${this.constructor.name} must implement writeStylesheetToDisk() since writeStylesheet() returns true`
     )
