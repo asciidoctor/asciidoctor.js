@@ -16,6 +16,7 @@ import { AbstractNode } from './abstract_node.js'
 import { AbstractBlock } from './abstract_block.js'
 import {
   Registry,
+  Processor,
   ProcessorExtension,
   Preprocessor,
   TreeProcessor,
@@ -111,6 +112,7 @@ export {
   ContentModel,
   Timings,
   Registry,
+  Processor,
   ProcessorExtension,
   Preprocessor,
   TreeProcessor,

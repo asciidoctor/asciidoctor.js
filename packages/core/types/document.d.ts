@@ -245,13 +245,12 @@ export class Document extends AbstractBlock<string> {
      */
     playbackAttributes(blockAttributes: any): void;
     /**
-     * Set the specified attribute if not locked.
+     * Set the specified attribute if not locked, applying attribute value substitutions.
      * @param {string} name
      * @param {string} [value='']
-     * @param {boolean} [skipSubs=false]
-     * @returns {string|null} The substituted value, or null if locked.
+     * @returns {string|null} The substituted value, or `null` if the attribute is locked.
      */
-    setAttribute(name: string, value?: string, skipSubs?: boolean): string | null;
+    setAttribute(name: string, value?: string): string | null;
     /**
      * Delete the specified attribute if not locked.
      * @param {string} name

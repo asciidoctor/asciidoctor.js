@@ -976,37 +976,13 @@ export class Document extends AbstractBlock {
   }
 
   /**
-   * Set the specified attribute if not locked.
+   * Set the specified attribute if not locked, applying attribute value substitutions.
    * @param {string} name
    * @param {string} [value='']
-   * @param {boolean} [skipSubs=false]
-   * @returns {string|null} The substituted value, or null if locked.
+   * @returns {string|null} The substituted value, or `null` if the attribute is locked.
    */
-  setAttribute(name, value = '', skipSubs = false) {
-    if (this.isAttributeLocked(name)) return null
-    if (!skipSubs && value && value !== '')
-      value = this._applyAttributeValueSubs(value)
-    if (this._headerAttributes) {
-      // Beyond the document header; only update live attributes, not the header snapshot.
-      this.attributes[name] = value
-    } else {
-      switch (name) {
-        case 'backend':
-          this._updateBackendAttributes(
-            value,
-            this._attributesModified.delete('htmlsyntax') &&
-              value === this.backend
-          )
-          break
-        case 'doctype':
-          this._updateDoctypeAttributes(value)
-          break
-        default:
-          this.attributes[name] = value
-      }
-      this._attributesModified.add(name)
-    }
-    return value
+  setAttribute(name, value = '') {
+    return this._setAttributeInternal(name, value, false)
   }
 
   /**
@@ -1047,36 +1023,6 @@ export class Document extends AbstractBlock {
     if (!overwrite && name in target) return false
     target[name] = value
     return true
-  }
-
-  /**
-   * @private
-   * @internal
-   * Walk the block tree in document order and pre-compute the content of
-   * every AsciiDoc-style table cell. Must be called AFTER parse() has finished so
-   * that (a) callouts.rewind() has been called and (b) all cross-references from
-   * the main document are already registered in the catalog.
-   */
-  async _convertAsciiDocCells(block = this) {
-    for (const child of block.blocks ?? []) {
-      if (child.context === 'table') {
-        for (const section of ['head', 'body', 'foot']) {
-          for (const row of child.rows[section] ?? []) {
-            for (const cell of row) {
-              if (
-                cell.style === 'asciidoc' &&
-                cell._innerDocument &&
-                cell._innerContent == null
-              ) {
-                cell._innerContent = await cell._innerDocument.convert()
-              }
-            }
-          }
-        }
-      } else {
-        await this._convertAsciiDocCells(child)
-      }
-    }
   }
 
   /**
@@ -1597,6 +1543,80 @@ export class Document extends AbstractBlock {
   }
 
   // ── Private methods ─────────────────────────────────────────────────────────
+
+  /**
+   * @private
+   * @internal
+   * Set the specified attribute without applying attribute value substitutions.
+   * Used internally by the parser when the value is already resolved.
+   * @param {string} name
+   * @param {string} [value='']
+   * @returns {string|null} The value as-is, or `null` if the attribute is locked.
+   */
+  _setAttributeRaw(name, value = '') {
+    return this._setAttributeInternal(name, value, true)
+  }
+
+  /**
+   * @private
+   * @internal
+   */
+  _setAttributeInternal(name, value, skipSubs) {
+    if (this.isAttributeLocked(name)) return null
+    if (!skipSubs && value && value !== '')
+      value = this._applyAttributeValueSubs(value)
+    if (this._headerAttributes) {
+      // Beyond the document header; only update live attributes, not the header snapshot.
+      this.attributes[name] = value
+    } else {
+      switch (name) {
+        case 'backend':
+          this._updateBackendAttributes(
+            value,
+            this._attributesModified.delete('htmlsyntax') &&
+              value === this.backend
+          )
+          break
+        case 'doctype':
+          this._updateDoctypeAttributes(value)
+          break
+        default:
+          this.attributes[name] = value
+      }
+      this._attributesModified.add(name)
+    }
+    return value
+  }
+
+  /**
+   * @private
+   * @internal
+   * Walk the block tree in document order and pre-compute the content of
+   * every AsciiDoc-style table cell. Must be called AFTER parse() has finished so
+   * that (a) callouts.rewind() has been called and (b) all cross-references from
+   * the main document are already registered in the catalog.
+   */
+  async _convertAsciiDocCells(block = this) {
+    for (const child of block.blocks ?? []) {
+      if (child.context === 'table') {
+        for (const section of ['head', 'body', 'foot']) {
+          for (const row of child.rows[section] ?? []) {
+            for (const cell of row) {
+              if (
+                cell.style === 'asciidoc' &&
+                cell._innerDocument &&
+                cell._innerContent == null
+              ) {
+                cell._innerContent = await cell._innerDocument.convert()
+              }
+            }
+          }
+        }
+      } else {
+        await this._convertAsciiDocCells(child)
+      }
+    }
+  }
 
   /**
    * @private
