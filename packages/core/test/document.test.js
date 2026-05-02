@@ -352,6 +352,39 @@ describe('Catalog', () => {
     await doc.convert() // footnotes are registered during inline substitution at convert time
     assert.ok(doc.hasFootnotes())
   })
+
+  test('getFootnotes returns footnote with index, text and null id', async () => {
+    const doc = await parse('= Title\n\ncontent.footnote:[a note]')
+    await doc.convert()
+    const footnotes = doc.getFootnotes()
+    assert.equal(footnotes.length, 1)
+    assert.equal(footnotes[0].getIndex(), 1)
+    assert.equal(footnotes[0].getText(), 'a note')
+    assert.equal(footnotes[0].getId(), null)
+  })
+
+  test('getFootnotes returns footnote with id when named footnote', async () => {
+    const doc = await parse('= Title\n\ncontent.footnote:fn1[a named note]')
+    await doc.convert()
+    const footnotes = doc.getFootnotes()
+    assert.equal(footnotes.length, 1)
+    assert.equal(footnotes[0].getIndex(), 1)
+    assert.equal(footnotes[0].getText(), 'a named note')
+    assert.equal(footnotes[0].getId(), 'fn1')
+  })
+
+  test('getFootnotes returns multiple footnotes in order', async () => {
+    const doc = await parse(
+      '= Title\n\nfirst.footnote:[one] second.footnote:[two]'
+    )
+    await doc.convert()
+    const footnotes = doc.getFootnotes()
+    assert.equal(footnotes.length, 2)
+    assert.equal(footnotes[0].getIndex(), 1)
+    assert.equal(footnotes[0].getText(), 'one')
+    assert.equal(footnotes[1].getIndex(), 2)
+    assert.equal(footnotes[1].getText(), 'two')
+  })
 })
 
 // ── Backends and Doctypes ─────────────────────────────────────────────────────
