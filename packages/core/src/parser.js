@@ -2987,7 +2987,9 @@ export class Parser {
           }
         }
         // value === '' means set to empty string (Ruby: '' is truthy → setAttribute path)
-        const resolvedValue = doc.setAttribute(name, value, opts.skipSubs)
+        const resolvedValue = opts.skipSubs
+          ? doc._setAttributeRaw(name, value)
+          : doc.setAttribute(name, value)
         if (resolvedValue != null) {
           value = resolvedValue
           if (attrs) new AttributeEntry(name, value).saveTo(attrs)
