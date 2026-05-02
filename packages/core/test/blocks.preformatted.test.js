@@ -207,7 +207,7 @@ last line
     end
 ----
 `
-      const expected = `def names
+      const _expected = `def names
 
   @names.split
 
@@ -234,7 +234,7 @@ end`
 `
       // expected = lines 2..6 (0-based) joined, with trailing newline chopped
       const inputLines = input.split('\n')
-      const expected = inputLines.slice(2, 7).join('\n').replace(/\n$/, '')
+      const _expected = inputLines.slice(2, 7).join('\n').replace(/\n$/, '')
 
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'pre', 1)
@@ -257,7 +257,7 @@ end`
 `
       // expected = lines 2..6 with 4 spaces replaced by 1 space, joined, trailing newline chopped
       const inputLines = input.split('\n')
-      const expected = inputLines
+      const _expected = inputLines
         .slice(2, 7)
         .map((l) => l.replace('    ', ' '))
         .join('\n')
@@ -286,7 +286,7 @@ end`
 `
       // expected = lines 4..8 with 4 spaces replaced by 1 space, joined, trailing newline chopped
       const inputLines = input.split('\n')
-      const expected = inputLines
+      const _expected = inputLines
         .slice(4, 9)
         .map((l) => l.replace('    ', ' '))
         .join('\n')

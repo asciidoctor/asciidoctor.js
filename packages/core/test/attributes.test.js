@@ -60,12 +60,12 @@ describe('Attributes', () => {
   describe('Assignment', () => {
     test('creates an attribute', async () => {
       const doc = await documentFromString(':frog: Tanglefoot')
-      assert.equal(doc.attributes['frog'], 'Tanglefoot')
+      assert.equal(doc.attributes.frog, 'Tanglefoot')
     })
 
     test('requires a space after colon following attribute name', async () => {
       const doc = await documentFromString('foo:bar')
-      assert.equal(doc.attributes['foo'], undefined)
+      assert.equal(doc.attributes.foo, undefined)
     })
 
     test('does not recognize attribute entry if name contains colon', async () => {
@@ -101,7 +101,7 @@ describe('Attributes', () => {
         ':description: This is the first      +\n              Ruby implementation of +\n              AsciiDoc.'
       const doc = await documentFromString(str)
       assert.equal(
-        doc.attributes['description'],
+        doc.attributes.description,
         'This is the first Ruby implementation of AsciiDoc.'
       )
     })
@@ -111,7 +111,7 @@ describe('Attributes', () => {
         ':description: This is the first \\\n              Ruby implementation of \\\n              AsciiDoc.'
       const doc = await documentFromString(str)
       assert.equal(
-        doc.attributes['description'],
+        doc.attributes.description,
         'This is the first Ruby implementation of AsciiDoc.'
       )
     })
@@ -121,7 +121,7 @@ describe('Attributes', () => {
         ':signature: Linus Torvalds + \\\nLinux Hacker + \\\nlinus.torvalds@example.com'
       const doc = await documentFromString(str)
       assert.equal(
-        doc.attributes['signature'],
+        doc.attributes.signature,
         'Linus Torvalds +\nLinux Hacker +\nlinus.torvalds@example.com'
       )
     })
@@ -143,38 +143,38 @@ describe('Attributes', () => {
 
     test('delete an attribute that ends with !', async () => {
       const doc = await documentFromString(':frog: Tanglefoot\n:frog!:')
-      assert.equal(doc.attributes['frog'], undefined)
+      assert.equal(doc.attributes.frog, undefined)
     })
 
     test('delete an attribute that ends with ! set via API', async () => {
       const doc = await documentFromString(':frog: Tanglefoot', {
         attributes: { 'frog!': '' },
       })
-      assert.equal(doc.attributes['frog'], undefined)
+      assert.equal(doc.attributes.frog, undefined)
     })
 
     test('delete an attribute that begins with !', async () => {
       const doc = await documentFromString(':frog: Tanglefoot\n:!frog:')
-      assert.equal(doc.attributes['frog'], undefined)
+      assert.equal(doc.attributes.frog, undefined)
     })
 
     test('delete an attribute that begins with ! set via API', async () => {
       const doc = await documentFromString(':frog: Tanglefoot', {
         attributes: { '!frog': '' },
       })
-      assert.equal(doc.attributes['frog'], undefined)
+      assert.equal(doc.attributes.frog, undefined)
     })
 
     test('delete an attribute set via API to nil value', async () => {
       const doc = await documentFromString(':frog: Tanglefoot', {
         attributes: { frog: null },
       })
-      assert.equal(doc.attributes['frog'], undefined)
+      assert.equal(doc.attributes.frog, undefined)
     })
 
     test('delete a non-existing attribute', async () => {
       const doc = await documentFromString(':frog!:')
-      assert.equal(doc.attributes['frog'], undefined)
+      assert.equal(doc.attributes.frog, undefined)
     })
 
     test('replaces special characters in attribute value', async () => {
@@ -186,7 +186,7 @@ describe('Attributes', () => {
       const doc = await documentFromString(
         ':version: 1.0\n:release: Asciidoctor {version}'
       )
-      assert.equal(doc.attributes['release'], 'Asciidoctor 1.0')
+      assert.equal(doc.attributes.release, 'Asciidoctor 1.0')
     })
 
     test('assigns attribute to empty string if substitution fails to resolve attribute', async () => {
@@ -205,7 +205,7 @@ describe('Attributes', () => {
       const doc = await documentFromString(input, {
         attributes: { 'attribute-missing': 'drop-line' },
       })
-      assert.equal(doc.attributes['release'], '')
+      assert.equal(doc.attributes.release, '')
       assertMessage(
         logger,
         'INFO',
@@ -327,46 +327,46 @@ describe('Attributes', () => {
       const doc = await documentFromString(':cash: money', {
         attributes: { cash: 'heroes' },
       })
-      assert.equal(doc.attributes['cash'], 'heroes')
+      assert.equal(doc.attributes.cash, 'heroes')
     })
 
     test('attribute set via API cannot be unset by document', async () => {
       const doc = await documentFromString(':cash!:', {
         attributes: { cash: 'heroes' },
       })
-      assert.equal(doc.attributes['cash'], 'heroes')
+      assert.equal(doc.attributes.cash, 'heroes')
     })
 
     test('attribute soft set via API using modifier on name can be overridden by document', async () => {
       const doc = await documentFromString(':cash: money', {
         attributes: { 'cash@': 'heroes' },
       })
-      assert.equal(doc.attributes['cash'], 'money')
+      assert.equal(doc.attributes.cash, 'money')
     })
 
     test('attribute soft set via API using modifier on value can be overridden by document', async () => {
       const doc = await documentFromString(':cash: money', {
         attributes: { cash: 'heroes@' },
       })
-      assert.equal(doc.attributes['cash'], 'money')
+      assert.equal(doc.attributes.cash, 'money')
     })
 
     test('attribute soft set via API using modifier on name can be unset by document', async () => {
       let doc = await documentFromString(':cash!:', {
         attributes: { 'cash@': 'heroes' },
       })
-      assert.equal(doc.attributes['cash'], undefined)
+      assert.equal(doc.attributes.cash, undefined)
       doc = await documentFromString(':cash!:', {
         attributes: { 'cash@': true },
       })
-      assert.equal(doc.attributes['cash'], undefined)
+      assert.equal(doc.attributes.cash, undefined)
     })
 
     test('attribute soft set via API using modifier on value can be unset by document', async () => {
       const doc = await documentFromString(':cash!:', {
         attributes: { cash: 'heroes@' },
       })
-      assert.equal(doc.attributes['cash'], undefined)
+      assert.equal(doc.attributes.cash, undefined)
     })
 
     test('attribute unset via API cannot be set by document', async () => {
@@ -376,7 +376,7 @@ describe('Attributes', () => {
         { cash: null },
       ]) {
         const doc = await documentFromString(':cash: money', { attributes })
-        assert.equal(doc.attributes['cash'], undefined)
+        assert.equal(doc.attributes.cash, undefined)
       }
     })
 
@@ -389,7 +389,7 @@ describe('Attributes', () => {
         { cash: false },
       ]) {
         const doc = await documentFromString(':cash: money', { attributes })
-        assert.equal(doc.attributes['cash'], 'money')
+        assert.equal(doc.attributes.cash, 'money')
       }
     })
 
@@ -495,9 +495,9 @@ describe('Attributes', () => {
         safe: SafeMode.SAFE,
         attributes: { backend: 'html5' },
       })
-      assert.equal(doc.attributes['backend'], 'html5')
+      assert.equal(doc.attributes.backend, 'html5')
       assert.ok('backend-html5' in doc.attributes)
-      assert.equal(doc.attributes['basebackend'], 'html')
+      assert.equal(doc.attributes.basebackend, 'html')
       assert.ok('basebackend-html' in doc.attributes)
     })
 
@@ -748,7 +748,7 @@ describe('Attributes', () => {
       const doc = await documentFromString(
         ':google: http://google.com[Google]\n\n{google}'
       )
-      assert.equal(await doc.attributes['google'], 'http://google.com[Google]')
+      assert.equal(await doc.attributes.google, 'http://google.com[Google]')
       const output = await doc.convert()
       assert.ok(output.includes('href="http://google.com"'))
       assert.ok(output.includes('>Google<'))
@@ -837,14 +837,14 @@ describe('Attributes', () => {
     test('interpolates author attribute inside attribute entry in header', async () => {
       const input = '= Title\nAuthor Name\n:name: {author}\n\npreamble'
       const doc = await documentFromString(input, { parse_header_only: true })
-      assert.equal(doc.attributes['name'], 'Author Name')
+      assert.equal(doc.attributes.name, 'Author Name')
     })
 
     test('interpolates revinfo attribute inside attribute entry in header', async () => {
       const input =
         '= Title\nAuthor Name\n2013-01-01\n:date: {revdate}\n\npreamble'
       const doc = await documentFromString(input, { parse_header_only: true })
-      assert.equal(doc.attributes['date'], '2013-01-01')
+      assert.equal(doc.attributes.date, '2013-01-01')
     })
 
     test('attribute entries can resolve previously defined attributes', async () => {
@@ -1026,7 +1026,7 @@ describe('Attributes', () => {
       const input = '{counter:mycounter}'
       const doc = await documentFromString(input)
       const output = await doc.convert()
-      assert.equal(doc.attributes['mycounter'], 1)
+      assert.equal(doc.attributes.mycounter, 1)
       assert.ok(output.includes('>1<'))
     })
 
@@ -1034,7 +1034,7 @@ describe('Attributes', () => {
       const input = '{counter2:mycounter}'
       const doc = await documentFromString(input)
       const output = await doc.convert()
-      assert.equal(doc.attributes['mycounter'], 1)
+      assert.equal(doc.attributes.mycounter, 1)
       assert.ok(!output.includes('>1<'))
     })
 
@@ -1042,14 +1042,14 @@ describe('Attributes', () => {
       const input = '{counter2:mycounter:10}'
       const doc = await documentFromString(input)
       await doc.convert()
-      assert.equal(doc.attributes['mycounter'], 10)
+      assert.equal(doc.attributes.mycounter, 10)
     })
 
     test('creates counter with character seed value', async () => {
       const input = '{counter2:mycounter:A}'
       const doc = await documentFromString(input)
       await doc.convert()
-      assert.equal(doc.attributes['mycounter'], 'A')
+      assert.equal(doc.attributes.mycounter, 'A')
     })
 
     test('can seed counter to start at 1', async () => {
@@ -1069,7 +1069,7 @@ describe('Attributes', () => {
         '[subs=attributes]\n++++\n{counter:mycounter:1}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
       const doc = await documentFromString(input, { standalone: false })
       const output = await doc.convert()
-      assert.equal(doc.attributes['mycounter'], 3)
+      assert.equal(doc.attributes.mycounter, 3)
       const lines = output
         .split('\n')
         .map((l) => l.trimEnd())
@@ -1082,7 +1082,7 @@ describe('Attributes', () => {
         '[subs=attributes]\n++++\n{counter:mycounter:-2}\n{counter:mycounter}\n{counter:mycounter}\n{mycounter}\n++++'
       const doc = await documentFromString(input, { standalone: false })
       const output = await doc.convert()
-      assert.equal(doc.attributes['mycounter'], 0)
+      assert.equal(doc.attributes.mycounter, 0)
       const lines = output
         .split('\n')
         .map((l) => l.trimEnd())
@@ -1138,7 +1138,7 @@ describe('Attributes', () => {
       const input = ':mycounter:\n\n{counter:mycounter}\n\n{mycounter}'
       const doc = await documentFromString(input)
       const output = await doc.convert({ standalone: false })
-      assert.equal(doc.attributes['mycounter'], 1)
+      assert.equal(doc.attributes.mycounter, 1)
       assert.equal(countTag(output, 'p'), 2)
       assert.ok(output.includes('>1<'))
     })
@@ -1148,7 +1148,7 @@ describe('Attributes', () => {
         ':mycounter:\n\nbefore: {counter:mycounter} {counter:mycounter} {counter:mycounter}\n\n:mycounter!:\n\nafter: {counter:mycounter}'
       const doc = await documentFromString(input)
       const output = await doc.convert({ standalone: false })
-      assert.equal(doc.attributes['mycounter'], 1)
+      assert.equal(doc.attributes.mycounter, 1)
       assert.ok(output.includes('before: 1 2 3'))
       assert.ok(output.includes('after: 1'))
     })
@@ -1158,7 +1158,7 @@ describe('Attributes', () => {
         'before: {counter:mycounter}\n\n:mycounter: 10\n\nafter: {counter:mycounter}'
       const doc = await documentFromString(input)
       const output = await doc.convert({ standalone: false })
-      assert.equal(doc.attributes['mycounter'], 11)
+      assert.equal(doc.attributes.mycounter, 11)
       assert.ok(output.includes('before: 1'))
       assert.ok(output.includes('after: 11'))
     })
@@ -1234,8 +1234,8 @@ describe('Attributes', () => {
       assert.equal(qb.style, 'quote')
       assert.equal(qb.getAttribute('attribution'), 'author')
       assert.equal(qb.getAttribute('attribution'), 'author') // symbol key equivalent
-      assert.equal(qb.attributes['attribution'], 'author')
-      assert.equal(qb.attributes['citetitle'], 'source')
+      assert.equal(qb.attributes.attribution, 'author')
+      assert.equal(qb.attributes.citetitle, 'source')
     })
 
     test('normal substitutions are performed on single-quoted positional attribute', async () => {
@@ -1245,11 +1245,9 @@ describe('Attributes', () => {
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
       assert.equal(qb.getAttribute('attribution'), 'author')
-      assert.equal(qb.attributes['attribution'], 'author')
-      assert.ok(
-        qb.attributes['citetitle'].includes('href="http://wikipedia.org"')
-      )
-      assert.ok(qb.attributes['citetitle'].includes('>source<'))
+      assert.equal(qb.attributes.attribution, 'author')
+      assert.ok(qb.attributes.citetitle.includes('href="http://wikipedia.org"'))
+      assert.ok(qb.attributes.citetitle.includes('>source<'))
     })
 
     test('normal substitutions are performed on single-quoted named attribute', async () => {
@@ -1259,11 +1257,9 @@ describe('Attributes', () => {
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
       assert.equal(qb.getAttribute('attribution'), 'author')
-      assert.equal(qb.attributes['attribution'], 'author')
-      assert.ok(
-        qb.attributes['citetitle'].includes('href="http://wikipedia.org"')
-      )
-      assert.ok(qb.attributes['citetitle'].includes('>source<'))
+      assert.equal(qb.attributes.attribution, 'author')
+      assert.ok(qb.attributes.citetitle.includes('href="http://wikipedia.org"'))
+      assert.ok(qb.attributes.citetitle.includes('>source<'))
     })
 
     test('normal substitutions are performed once on single-quoted named title attribute', async () => {
@@ -1284,8 +1280,8 @@ describe('Attributes', () => {
       const doc = await documentFromString(input)
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
-      assert.equal(qb.attributes['attribution'], 'author')
-      assert.equal(qb.attributes['citetitle'], 'source')
+      assert.equal(qb.attributes.attribution, 'author')
+      assert.equal(qb.attributes.citetitle, 'source')
     })
 
     test('first attribute in list may be double quoted', async () => {
@@ -1294,9 +1290,9 @@ describe('Attributes', () => {
       const doc = await documentFromString(input)
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
-      assert.equal(qb.attributes['attribution'], 'author')
-      assert.equal(qb.attributes['citetitle'], 'source')
-      assert.equal(qb.attributes['role'], 'famous')
+      assert.equal(qb.attributes.attribution, 'author')
+      assert.equal(qb.attributes.citetitle, 'source')
+      assert.equal(qb.attributes.role, 'famous')
     })
 
     test('first attribute in list may be single quoted', async () => {
@@ -1305,9 +1301,9 @@ describe('Attributes', () => {
       const doc = await documentFromString(input)
       const qb = doc.blocks[0]
       assert.equal(qb.style, 'quote')
-      assert.equal(qb.attributes['attribution'], 'author')
-      assert.equal(qb.attributes['citetitle'], 'source')
-      assert.equal(qb.attributes['role'], 'famous')
+      assert.equal(qb.attributes.attribution, 'author')
+      assert.equal(qb.attributes.citetitle, 'source')
+      assert.equal(qb.attributes.role, 'famous')
     })
 
     test('attribute with value None without quotes is ignored', async () => {
@@ -1392,7 +1388,7 @@ describe('Attributes', () => {
       const input = ':lead: role="lead"\n\n[{lead}]\nA paragraph'
       const doc = await documentFromString(input)
       const para = doc.blocks[0]
-      assert.equal(para.attributes['role'], 'lead')
+      assert.equal(para.attributes.role, 'lead')
     })
 
     test('id, role and options attributes can be specified on block style using shorthand syntax', async () => {
@@ -1400,8 +1396,8 @@ describe('Attributes', () => {
       const doc = await documentFromString(input)
       const para = doc.blocks[0]
       assert.equal(para.context, 'literal')
-      assert.equal(para.attributes['id'], 'first')
-      assert.equal(para.attributes['role'], 'lead')
+      assert.equal(para.attributes.id, 'first')
+      assert.equal(para.attributes.role, 'lead')
       assert.ok('step-option' in para.attributes)
       assert.ok(!('options' in para.attributes))
     })
@@ -1412,8 +1408,8 @@ describe('Attributes', () => {
       const doc = await documentFromString(input)
       const para = doc.blocks[0]
       assert.equal(para.context, 'literal')
-      assert.equal(para.attributes['id'], 'first')
-      assert.equal(para.attributes['role'], 'lead')
+      assert.equal(para.attributes.id, 'first')
+      assert.equal(para.attributes.role, 'lead')
       assert.ok('step-option' in para.attributes)
       assert.ok(!('options' in para.attributes))
     })
@@ -1422,7 +1418,7 @@ describe('Attributes', () => {
       const input = '[.role1%option1.role2%option2]\nText'
       const doc = await documentFromString(input)
       const para = doc.blocks[0]
-      assert.equal(para.attributes['role'], 'role1 role2')
+      assert.equal(para.attributes.role, 'role1 role2')
       assert.ok('option1-option' in para.attributes)
       assert.ok('option2-option' in para.attributes)
       assert.ok(!('options' in para.attributes))
@@ -1441,14 +1437,14 @@ describe('Attributes', () => {
       const input = '[.role1]\n[.role2.role3]\nText'
       const doc = await documentFromString(input)
       const para = doc.blocks[0]
-      assert.equal(para.attributes['role'], 'role1 role2 role3')
+      assert.equal(para.attributes.role, 'role1 role2 role3')
     })
 
     test('setting a role using the role attribute replaces any existing roles', async () => {
       const input = '[.role1]\n[role=role2]\n[.role3]\nText'
       const doc = await documentFromString(input)
       const para = doc.blocks[0]
-      assert.equal(para.attributes['role'], 'role2 role3')
+      assert.equal(para.attributes.role, 'role2 role3')
     })
 
     test('setting a role using the shorthand syntax on block style should not clear the ID', async () => {
@@ -1464,7 +1460,7 @@ describe('Attributes', () => {
       const para = doc.blocks[0]
       const res = para.addRole('role1')
       assert.ok(res)
-      assert.equal(para.attributes['role'], 'role1')
+      assert.equal(para.attributes.role, 'role1')
       assert.ok(para.hasRole('role1'))
     })
 
@@ -1474,7 +1470,7 @@ describe('Attributes', () => {
       const para = doc.blocks[0]
       const res = para.addRole('role2')
       assert.ok(res)
-      assert.equal(para.attributes['role'], 'role1 role2')
+      assert.equal(para.attributes.role, 'role1 role2')
       assert.ok(para.hasRole('role1'))
       assert.ok(para.hasRole('role2'))
     })
@@ -1485,7 +1481,7 @@ describe('Attributes', () => {
       const para = doc.blocks[0]
       const res = para.addRole('role1')
       assert.ok(!res)
-      assert.equal(para.attributes['role'], 'role1')
+      assert.equal(para.attributes.role, 'role1')
       assert.ok(para.hasRole('role1'))
     })
 
@@ -1495,7 +1491,7 @@ describe('Attributes', () => {
       const para = doc.blocks[0]
       const res = para.removeRole('role1')
       assert.ok(res)
-      assert.equal(para.attributes['role'], 'role2')
+      assert.equal(para.attributes.role, 'role2')
       assert.ok(para.hasRole('role2'))
       assert.ok(!para.hasRole('role1'))
     })
@@ -1507,7 +1503,7 @@ describe('Attributes', () => {
       const res = para.removeRole('role1')
       assert.ok(res)
       assert.ok(!para.hasRoleAttribute())
-      assert.equal(para.attributes['role'], undefined)
+      assert.equal(para.attributes.role, undefined)
       assert.ok(!para.hasRole('role1'))
     })
 
@@ -1517,7 +1513,7 @@ describe('Attributes', () => {
       const para = doc.blocks[0]
       const res = para.removeRole('role2')
       assert.ok(!res)
-      assert.equal(para.attributes['role'], 'role1')
+      assert.equal(para.attributes.role, 'role1')
       assert.ok(para.hasRole('role1'))
       assert.ok(!para.hasRole('role2'))
     })
@@ -1527,7 +1523,7 @@ describe('Attributes', () => {
       const para = doc.blocks[0]
       const res = para.removeRole('role1')
       assert.ok(!res)
-      assert.equal(para.attributes['role'], undefined)
+      assert.equal(para.attributes.role, undefined)
       assert.ok(!para.hasRole('role1'))
     })
 
@@ -1560,7 +1556,7 @@ describe('Attributes', () => {
       const doc = await documentFromString(input)
       const para = doc.blocks[0]
       assert.equal(para.id, 'foo')
-      assert.equal(para.attributes['role'], 'lead')
+      assert.equal(para.attributes.role, 'lead')
     })
 
     test('Last wins for id attribute', async () => {

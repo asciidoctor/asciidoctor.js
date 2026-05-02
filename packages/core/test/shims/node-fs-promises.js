@@ -1,5 +1,5 @@
 function notSupported(name) {
-  return async function () {
+  return async () => {
     throw new Error(
       `node:fs/promises ${name}() is not supported in browser environments`
     )

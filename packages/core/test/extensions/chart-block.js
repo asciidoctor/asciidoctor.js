@@ -1,11 +1,10 @@
 export default function (registry) {
   registry.block(function () {
-    const self = this
-    self.named('chart')
-    self.positionalAttributes(['size', 'width', 'height'])
-    self.onContext('literal')
-    self.parseContentAs('raw')
-    self.process(function (parent, reader, attrs) {
+    this.named('chart')
+    this.positionalAttributes(['size', 'width', 'height'])
+    this.onContext('literal')
+    this.parseContentAs('raw')
+    this.process((parent, reader, attrs) => {
       const lines = reader.getLines()
       const labels = lines[0].split(',')
       lines.shift()
@@ -14,7 +13,7 @@ export default function (registry) {
         (value, index) => `data-chart-series-${index}="${value.join(',')}"`
       )
       const html = `<div class="chart" data-chart-labels="${labels.join(',')}" ${series.join(' ')}></div>`
-      return self.createBlock(parent, 'pass', html, attrs, {})
+      return this.createBlock(parent, 'pass', html, attrs, {})
     })
   })
 }

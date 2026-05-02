@@ -35,13 +35,13 @@ describe('Tables', () => {
 |=======`
       const doc = await documentFromString(input)
       const tableRow0 = doc.blocks[0].rows.body[0]
-      assert.equal(tableRow0[0].attributes['width'], 15)
-      assert.equal(tableRow0[0].attributes['colpcwidth'], 15)
+      assert.equal(tableRow0[0].attributes.width, 15)
+      assert.equal(tableRow0[0].attributes.colpcwidth, 15)
       assert.notEqual(tableRow0[0].attributes['autowidth-option'], '')
       const expectedPcwidths = { 1: 28.3333, 2: 28.3333, 3: 28.3334 }
       for (let i = 1; i <= 3; i++) {
-        assert.equal(tableRow0[i].attributes['width'], 28.3333)
-        assert.equal(tableRow0[i].attributes['colpcwidth'], expectedPcwidths[i])
+        assert.equal(tableRow0[i].attributes.width, 28.3333)
+        assert.equal(tableRow0[i].attributes.colpcwidth, expectedPcwidths[i])
         assert.equal(tableRow0[i].attributes['autowidth-option'], '')
       }
       const output = await doc.convert({ standalone: false })
@@ -61,8 +61,8 @@ describe('Tables', () => {
       const doc = await documentFromString(input)
       const tableRow0 = doc.blocks[0].rows.body[0]
       for (let i = 0; i <= 3; i++) {
-        assert.equal(tableRow0[i].attributes['width'], 25)
-        assert.equal(tableRow0[i].attributes['colpcwidth'], 25)
+        assert.equal(tableRow0[i].attributes.width, 25)
+        assert.equal(tableRow0[i].attributes.colpcwidth, 25)
         assert.equal(tableRow0[i].attributes['autowidth-option'], '')
       }
       const output = await doc.convert({ standalone: false })

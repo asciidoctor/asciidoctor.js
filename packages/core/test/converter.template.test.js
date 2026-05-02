@@ -130,7 +130,6 @@ describe('Using a template converter', () => {
   })
 
   test('should get templates', async () => {
-    const { Block } = await import('../src/block.js')
     const doc = await load('content', {
       safe: 'safe',
       backend: '-',

@@ -148,7 +148,7 @@ y = x^2
 f: bbb"N" -> bbb"N"
 f: x |-> x + 1
 ++++`
-      const expected = `\\$f: bbb"N" -&gt; bbb"N"
+      const _expected = `\\$f: bbb"N" -&gt; bbb"N"
 f: x |-&gt; x + 1\\$`
 
       const output = await convertStringToEmbedded(input)
@@ -164,7 +164,7 @@ f: x |-&gt; x + 1\\$`
 f: bbb"N" -> bbb"N" \\
 f: x |-> x + 1
 ++++`
-      const expected = `\\$f: bbb"N" -&gt; bbb"N"\\$
+      const _expected = `\\$f: bbb"N" -&gt; bbb"N"\\$
 \\$f: x |-&gt; x + 1\\$`
 
       const output = await convertStringToEmbedded(input)
@@ -181,7 +181,7 @@ f: bbb"N" -> bbb"N" \\
 \\
 f: x |-> x + 1
 ++++`
-      const expected = `\\$f: bbb"N" -&gt; bbb"N"\\$
+      const _expected = `\\$f: bbb"N" -&gt; bbb"N"\\$
 <br>
 \\$f: x |-&gt; x + 1\\$`
 
@@ -199,7 +199,7 @@ f: bbb"N" -> bbb"N"
 
 f: x |-> x + 1
 ++++`
-      const expected = `\\$f: bbb"N" -&gt; bbb"N"\\$
+      const _expected = `\\$f: bbb"N" -&gt; bbb"N"\\$
 <br>
 <br>
 \\$f: x |-&gt; x + 1\\$`
@@ -254,7 +254,7 @@ x+b/(2a)<+-sqrt((b^2)/(4a^2)-c/a)
         backend: 'docbook',
         standalone: false,
       })
-      const actual = await doc.convert()
+      const _actual = await doc.convert()
       // TODO: assert MathML output when asciimath library is available in JS
     })
 
@@ -342,7 +342,7 @@ sqrt(3x-1)+(1+x)^2 < y
       const doc = await documentFromString(input)
       const stemblock = doc.blocks[0]
       assert.equal(stemblock.context, 'stem')
-      assert.equal(stemblock.attributes['style'], 'asciimath')
+      assert.equal(stemblock.attributes.style, 'asciimath')
       const output = await doc.convert({ standalone: false })
       assertCss(output, '.stemblock', 1)
       // TODO: needs DOM parser

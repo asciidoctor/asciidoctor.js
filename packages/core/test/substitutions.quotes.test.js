@@ -198,7 +198,7 @@ describe('Substitutions', () => {
     })
 
     test('single-quoted string with inline backquote', async () => {
-      let para = await blockFromString("`Here\`s Johnny!'", {
+      let para = await blockFromString("`Here`s Johnny!'", {
         attributes: { 'compat-mode': '' },
       })
       assert.equal(
@@ -366,7 +366,7 @@ describe('Substitutions', () => {
     })
 
     test('single-quoted string containing an emphasized phrase', async () => {
-      let para = await blockFromString("`I told him, 'Just go for it!'\'", {
+      let para = await blockFromString("`I told him, 'Just go for it!''", {
         attributes: { 'compat-mode': '' },
       })
       assert.equal(

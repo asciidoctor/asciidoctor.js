@@ -481,7 +481,7 @@ ____
 A famous verse
 ____
 `
-      const verse = await blockFromString(input)
+      const _verse = await blockFromString(input)
       // TODO: assert.deepEqual(verse.subs, NORMAL_SUBS)
     })
 

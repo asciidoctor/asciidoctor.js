@@ -1664,15 +1664,13 @@ export default function (registry) {
   }
 
   registry.inlineMacro(function () {
-    const self = this
-
-    self.named('emoji')
-    self.positionalAttributes('size')
+    this.named('emoji')
+    this.positionalAttributes('size')
 
     const sizeMap = { '1x': 17, lg: 24, '2x': 34, '3x': 50, '4x': 68, '5x': 85 }
     const defaultSize = 24
 
-    self.process(function (parent, target, attrs) {
+    this.process((parent, target, attrs) => {
       const sizeAttr = attrs.size
       let size
       if (sizeAttr && sizeMap[sizeAttr]) {

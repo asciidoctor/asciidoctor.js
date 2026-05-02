@@ -219,7 +219,7 @@ See <<_section_baz>>.
 
 That's all, folks!`
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['_section_baz']
+      const ref = doc.catalog.refs._section_baz
       assert.ok(ref != null)
       const output = await doc.convert({ standalone: false })
       assertXpath(output, '//a[@href="#_section_baz"][text()="Section baz"]', 1)
@@ -239,7 +239,7 @@ See <<explicit>>.
 
 That's all, folks!`
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['explicit']
+      const ref = doc.catalog.refs.explicit
       assert.ok(ref != null)
       const output = await doc.convert({ standalone: false })
       assertXpath(output, '//a[@href="#explicit"][text()="Section baz"]', 1)
@@ -292,7 +292,7 @@ That's all, folks!`
 
 content`
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['install']
+      const ref = doc.catalog.refs.install
       assert.ok(ref != null)
       assert.equal(ref.reftext, 'Install Procedure')
       assert.equal(doc.resolveId('Install Procedure'), 'install')
@@ -304,7 +304,7 @@ content`
 
 content`
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['_install']
+      const ref = doc.catalog.refs._install
       assert.ok(ref != null)
       assert.equal(ref.reftext, 'Install Procedure')
       assert.equal(doc.resolveId('Install Procedure'), '_install')
@@ -344,7 +344,7 @@ content`
 
 content`
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['install']
+      const ref = doc.catalog.refs.install
       assert.ok(ref != null)
       assert.equal(ref.reftext, 'install on Linux')
       assert.equal(doc.resolveId('install on Linux'), 'install')
@@ -362,7 +362,7 @@ content
 content`
       await usingMemoryLogger(async (logger) => {
         const doc = await documentFromString(input)
-        const ref = doc.catalog.refs['install']
+        const ref = doc.catalog.refs.install
         assert.ok(ref != null)
         assert.equal(ref.reftext, null)
         assert.equal(ref.title, 'First Install')
@@ -386,7 +386,7 @@ content
 content`
       await usingMemoryLogger(async (logger) => {
         const doc = await documentFromString(input)
-        const ref = doc.catalog.refs['_do_not_repeat_yourself']
+        const ref = doc.catalog.refs._do_not_repeat_yourself
         assert.ok(ref != null)
         assert.equal(ref.reftext, null)
         assert.equal(ref.title, 'Do Not Repeat Yourself')
@@ -417,7 +417,7 @@ content
 content`
       await usingMemoryLogger(async (logger) => {
         const doc = await documentFromString(input)
-        const ref = doc.catalog.refs['install']
+        const ref = doc.catalog.refs.install
         assert.ok(ref != null)
         assert.equal(ref.reftext, null)
         assert.equal(ref.title, 'First Install')

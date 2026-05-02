@@ -8,14 +8,12 @@ import { describe, test, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
 
 import {
-  Processor,
   Preprocessor,
   TreeProcessor,
   Postprocessor,
   IncludeProcessor,
   DocinfoProcessor,
   BlockProcessor,
-  MacroProcessor,
   BlockMacroProcessor,
   InlineMacroProcessor,
   Extension,
@@ -75,7 +73,7 @@ class SampleTreeprocessor extends Treeprocessor {
     return null
   }
 }
-const SampleTreeProcessor = SampleTreeprocessor
+const _SampleTreeProcessor = SampleTreeprocessor
 
 class SamplePostprocessor extends Postprocessor {}
 
@@ -102,7 +100,7 @@ describe('Extensions.Register', () => {
     const groups = Extensions.groups()
     assert.notEqual(groups, null)
     assert.equal(Object.keys(groups).length, 1)
-    assert.equal(groups['sample'], SampleExtensionGroup)
+    assert.equal(groups.sample, SampleExtensionGroup)
   })
 
   test('should self-register extension group class', () => {
@@ -110,7 +108,7 @@ describe('Extensions.Register', () => {
     const groups = Extensions.groups()
     assert.notEqual(groups, null)
     assert.equal(Object.keys(groups).length, 1)
-    assert.equal(groups['sample'], SampleExtensionGroup)
+    assert.equal(groups.sample, SampleExtensionGroup)
   })
 
   test('should register extension group from instance', () => {
@@ -118,18 +116,18 @@ describe('Extensions.Register', () => {
     const groups = Extensions.groups()
     assert.notEqual(groups, null)
     assert.equal(Object.keys(groups).length, 1)
-    assert.ok(groups['sample'] instanceof SampleExtensionGroup)
+    assert.ok(groups.sample instanceof SampleExtensionGroup)
   })
 
   test('should register extension block (function)', () => {
-    const fn = function () {
+    const fn = () => {
       /* intentionally blank */
     }
     Extensions.register('sample', fn)
     const groups = Extensions.groups()
     assert.notEqual(groups, null)
     assert.equal(Object.keys(groups).length, 1)
-    assert.equal(typeof groups['sample'], 'function')
+    assert.equal(typeof groups.sample, 'function')
   })
 
   test('should coerce group name to string when registering', () => {
@@ -137,7 +135,7 @@ describe('Extensions.Register', () => {
     Extensions.register('sample', SampleExtensionGroup)
     const groups = Extensions.groups()
     assert.equal(Object.keys(groups).length, 1)
-    assert.equal(groups['sample'], SampleExtensionGroup)
+    assert.equal(groups.sample, SampleExtensionGroup)
   })
 
   test('should unregister extension group by name', () => {
@@ -165,7 +163,7 @@ describe('Extensions.Register', () => {
     const registry = Extensions.create('sample', function () {
       this.block(function () {
         this.named('whisper')
-        this.process(function (_parent, _reader, _attributes) {})
+        this.process((_parent, _reader, _attributes) => {})
       })
     })
 
@@ -177,8 +175,8 @@ describe('Extensions.Register', () => {
   })
 
   test('should auto-generate name when none given', () => {
-    const g1 = Extensions.register(SampleExtensionGroup)
-    const g2 = Extensions.register(SampleExtensionGroup)
+    const _g1 = Extensions.register(SampleExtensionGroup)
+    const _g2 = Extensions.register(SampleExtensionGroup)
     const keys = Object.keys(Extensions.groups())
     assert.equal(keys.length, 2)
     // Names start with "extgrp" followed by an integer
@@ -242,7 +240,7 @@ describe('Extensions.Activate', () => {
 
   test('should invoke extension block that yields the registry as argument', () => {
     // Block with arity > 0: receives registry as explicit argument
-    Extensions.register('sample', function (reg) {
+    Extensions.register('sample', (reg) => {
       reg.document.attributes['yielded-block-called'] = ''
       reg.preprocessor(SamplePreprocessor)
     })
@@ -448,9 +446,7 @@ describe('Extensions.DSL', () => {
     test('process() with a function stores the process block', () => {
       const proc = new Preprocessor()
       Object.assign(proc, ProcessorDsl)
-      const fn = function (doc, reader) {
-        return reader
-      }
+      const fn = (doc, reader) => reader
       proc.process(fn)
       assert.ok(proc.processBlockGiven())
     })
@@ -459,7 +455,7 @@ describe('Extensions.DSL', () => {
       const proc = new Preprocessor()
       Object.assign(proc, ProcessorDsl)
       let called = false
-      proc.process(function () {
+      proc.process(() => {
         called = true
       })
       proc.process()
@@ -470,7 +466,7 @@ describe('Extensions.DSL', () => {
       const proc = new Preprocessor()
       Object.assign(proc, ProcessorDsl)
       let received
-      proc.process(function (doc) {
+      proc.process((doc) => {
         received = doc
       })
       const doc = makeDoc()
@@ -748,7 +744,7 @@ describe('Registry.blockStyle', () => {
     const registry = new Registry()
     let invoked = false
     registry.preprocessor(function () {
-      this.process(function (_doc, reader) {
+      this.process((_doc, reader) => {
         invoked = true
         return reader
       })
@@ -762,8 +758,8 @@ describe('Registry.blockStyle', () => {
   test('preprocessor registered with block style with arity > 0 yields processor', () => {
     const registry = new Registry()
     let invoked = false
-    registry.preprocessor(function (processor) {
-      processor.process(function (_doc, reader) {
+    registry.preprocessor((processor) => {
+      processor.process((_doc, reader) => {
         invoked = true
         return reader
       })
@@ -777,7 +773,7 @@ describe('Registry.blockStyle', () => {
   test('block registered with block style and explicit name', () => {
     const registry = new Registry()
     registry.block('yell', function () {
-      this.process(function (_parent, _reader, _attrs) {})
+      this.process((_parent, _reader, _attrs) => {})
     })
     registry.activate(makeDoc())
     assert.ok(registry.hasBlocks())
@@ -787,7 +783,7 @@ describe('Registry.blockStyle', () => {
   test('block_macro registered with block style and explicit name', () => {
     const registry = new Registry()
     registry.blockMacro('gist', function () {
-      this.process(function (_parent, _target, _attrs) {})
+      this.process((_parent, _target, _attrs) => {})
     })
     registry.activate(makeDoc())
     assert.ok(registry.hasBlockMacros())
@@ -797,7 +793,7 @@ describe('Registry.blockStyle', () => {
   test('inline_macro registered with block style and explicit name', () => {
     const registry = new Registry()
     registry.inlineMacro('chrome', function () {
-      this.process(function (_parent, _target, _attrs) {})
+      this.process((_parent, _target, _attrs) => {})
     })
     registry.activate(makeDoc())
     assert.ok(registry.hasInlineMacros())
@@ -808,7 +804,7 @@ describe('Registry.blockStyle', () => {
     const registry = new Registry()
     assert.throws(
       () =>
-        registry.preprocessor(function () {
+        registry.preprocessor(() => {
           /* no process() call */
         }),
       { message: /No block specified to process preprocessor extension/ }
@@ -820,7 +816,7 @@ describe('Registry.blockStyle', () => {
     assert.throws(
       () =>
         registry.block(function () {
-          this.process(function () {})
+          this.process(() => {})
           // no named() call
         }),
       { message: /No name specified for block extension/ }
@@ -835,16 +831,12 @@ describe('Registry.prefer', () => {
     const registry = new Registry()
     // Register D first (goes to back)
     registry.treeProcessor(function () {
-      this.process(function (doc) {
-        return doc
-      })
+      this.process((doc) => doc)
     })
     // Register C with DSL prefer (position = '>>' → inserted at front)
     registry.treeProcessor(function () {
       this.prefer()
-      this.process(function (doc) {
-        return doc
-      })
+      this.process((doc) => doc)
     })
     registry.activate(makeDoc())
     const exts = registry.treeprocessors()
@@ -856,15 +848,11 @@ describe('Registry.prefer', () => {
   test('prefer() with method name registers and moves extension to front', () => {
     const registry = new Registry()
     registry.treeProcessor(function () {
-      this.process(function (doc) {
-        return doc
-      })
+      this.process((doc) => doc)
     })
     // prefer registers a new extension and moves it to front
     const extB = registry.prefer('treeProcessor', function () {
-      this.process(function (doc) {
-        return doc
-      })
+      this.process((doc) => doc)
     })
     registry.activate(makeDoc())
     const exts = registry.treeprocessors()
@@ -875,15 +863,11 @@ describe('Registry.prefer', () => {
     const registry = new Registry()
     // Register A first
     registry.treeProcessor(function () {
-      this.process(function (doc) {
-        return doc
-      })
+      this.process((doc) => doc)
     })
     // Register B (to be preferred later)
     const extB = registry.treeProcessor(function () {
-      this.process(function (doc) {
-        return doc
-      })
+      this.process((doc) => doc)
     })
     registry.activate(makeDoc())
     // B is currently at index 1; prefer moves it to 0
@@ -900,9 +884,7 @@ describe('Registry.prefer', () => {
     }
     const registry = new Registry()
     registry.treeProcessor(function () {
-      this.process(function (doc) {
-        return doc
-      })
+      this.process((doc) => doc)
     })
     const extMy = registry.prefer('treeProcessor', MyTree)
     registry.activate(makeDoc())
@@ -923,23 +905,23 @@ describe('Registry.prefer', () => {
 
     // D – registered first, no prefer → goes to back
     registry.treeProcessor(function () {
-      this.process(function () {})
+      this.process(() => {})
     })
 
     // C – DSL prefer, inserted at front immediately → [C, D]
     registry.treeProcessor(function () {
       this.prefer()
-      this.process(function () {})
+      this.process(() => {})
     })
 
     // B – prefer with method name: registered at back [C, D, B] then moved to front → [B, C, D]
     registry.prefer('treeProcessor', function () {
-      this.process(function () {})
+      this.process(() => {})
     })
 
     // A – registered first at back [B, C, D, A], then preferred → [A, B, C, D]
     const extA = registry.treeProcessor(function () {
-      this.process(function () {})
+      this.process(() => {})
     })
     registry.prefer(extA)
 
@@ -989,9 +971,7 @@ describe('IncludeProcessorDsl.handles', () => {
   test('handles with arity-2 function is stored as-is', () => {
     const proc = new IncludeProcessor()
     Object.assign(proc, IncludeProcessorDsl)
-    proc.handles(function (_doc, target) {
-      return target === 'foo.adoc'
-    })
+    proc.handles((_doc, target) => target === 'foo.adoc')
     assert.ok(proc.handles(null, 'foo.adoc'))
     assert.ok(!proc.handles(null, 'bar.adoc'))
   })
@@ -999,9 +979,7 @@ describe('IncludeProcessorDsl.handles', () => {
   test('handles with arity-1 function is wrapped to accept (doc, target)', () => {
     const proc = new IncludeProcessor()
     Object.assign(proc, IncludeProcessorDsl)
-    proc.handles(function (target) {
-      return target.endsWith('.txt')
-    })
+    proc.handles((target) => target.endsWith('.txt'))
     assert.ok(proc.handles(null, 'lorem.txt'))
     assert.ok(!proc.handles(null, 'lorem.adoc'))
   })
@@ -1056,7 +1034,7 @@ describe('Group', () => {
 
   test('Group.register() adds the class to global groups', () => {
     SampleExtensionGroup.register('mygroup')
-    assert.equal(Extensions.groups()['mygroup'], SampleExtensionGroup)
+    assert.equal(Extensions.groups().mygroup, SampleExtensionGroup)
   })
 
   test('Group subclass activate() is called during registry.activate()', () => {

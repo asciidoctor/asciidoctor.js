@@ -476,9 +476,7 @@ not in section`
       const doc = await documentFromString(input)
       const heading = doc.blocks[0]
       assert.equal(heading.title, 'Independent Heading!')
-      assert.ok(
-        !Object.prototype.hasOwnProperty.call(heading.attributes, 'title')
-      )
+      assert.ok(!Object.hasOwn(heading.attributes, 'title'))
     })
 
     test('should use specified id and reftext when registering discrete section reference', async () => {
@@ -488,7 +486,7 @@ not in section`
 
 content`
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['install']
+      const ref = doc.catalog.refs.install
       assert.ok(ref != null)
       assert.equal(ref.reftext, 'Install Procedure')
       assert.equal(doc.resolveId('Install Procedure'), 'install')
@@ -501,7 +499,7 @@ content`
 
 content`
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['_install']
+      const ref = doc.catalog.refs._install
       assert.ok(ref != null)
       assert.equal(ref.reftext, 'Install Procedure')
       assert.equal(doc.resolveId('Install Procedure'), '_install')

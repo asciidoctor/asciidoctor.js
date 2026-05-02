@@ -900,8 +900,8 @@ describe('Links', () => {
         `Here you can read about tigers.${anchor}`
       )
       const output = await doc.convert()
-      assert.ok(doc.catalog.refs['tigers'] instanceof Inline)
-      assert.equal(doc.catalog.refs['tigers'].text, null)
+      assert.ok(doc.catalog.refs.tigers instanceof Inline)
+      assert.equal(doc.catalog.refs.tigers.text, null)
       assertXpath(output, '//a[@id="tigers"]', 1)
       assertXpath(output, '//a[@id="tigers"]/child::text()', 0)
     }
@@ -914,7 +914,7 @@ describe('Links', () => {
         `Here you can read about tigers.\\${anchor}`
       )
       const output = await doc.convert()
-      assert.ok(!doc.catalog.refs['tigers'])
+      assert.ok(!doc.catalog.refs.tigers)
       assertXpath(output, '//a[@id="tigers"]', 0)
     }
   })
@@ -955,8 +955,8 @@ describe('Links', () => {
         `Here you can read about tigers.${anchor}`
       )
       const output = await doc.convert()
-      assert.ok(doc.catalog.refs['tigers'] instanceof Inline)
-      assert.equal(doc.catalog.refs['tigers'].text, 'Tigers')
+      assert.ok(doc.catalog.refs.tigers instanceof Inline)
+      assert.equal(doc.catalog.refs.tigers.text, 'Tigers')
       assertXpath(output, '//a[@id="tigers"]', 1)
       assertXpath(output, '//a[@id="tigers"]/child::text()', 0)
     }
@@ -982,8 +982,8 @@ describe('Links', () => {
         { attributes: { 'label-tigers': 'Tigers' } }
       )
       await doc.convert()
-      assert.ok(doc.catalog.refs['tigers'] instanceof Inline)
-      assert.equal(doc.catalog.refs['tigers'].text, 'Tigers')
+      assert.ok(doc.catalog.refs.tigers instanceof Inline)
+      assert.equal(doc.catalog.refs.tigers.text, 'Tigers')
     }
   })
 
@@ -995,8 +995,8 @@ describe('Links', () => {
         { backend: 'docbook' }
       )
       const output = await doc.convert({ standalone: false })
-      assert.ok(doc.catalog.refs['tigers'] instanceof Inline)
-      assert.equal(doc.catalog.refs['tigers'].text, '<Tigers>')
+      assert.ok(doc.catalog.refs.tigers instanceof Inline)
+      assert.equal(doc.catalog.refs.tigers.text, '<Tigers>')
       assert.ok(
         output.includes('<anchor xml:id="tigers" xreflabel="&lt;Tigers&gt;"/>')
       )
@@ -1007,7 +1007,7 @@ describe('Links', () => {
     const doc = await documentFromString(
       'Use [[[label]]] to assign a label to a bibliography entry, but not in a paragraph.'
     )
-    assert.ok(!doc.catalog.refs['label'])
+    assert.ok(!doc.catalog.refs.label)
   })
 
   test('repeating inline anchor macro with empty reftext', async () => {
@@ -1397,7 +1397,7 @@ describe('Links', () => {
     const doc = await documentFromString('<<tigers#about,About Tigers>>', {
       standalone: false,
     })
-    doc.catalog.includes['tigers'] = true
+    doc.catalog.includes.tigers = true
     const output = await doc.convert()
     assertXpath(output, '//a[@href="#about"][text() = "About Tigers"]', 1)
     assertMessage(logger, 'info', 'possible invalid reference: about')
@@ -1759,14 +1759,14 @@ describe('Links', () => {
 
   test('anchor creates reference', async () => {
     const doc = await documentFromString('[[tigers]]Tigers roam here.')
-    const ref = doc.catalog.refs['tigers']
+    const ref = doc.catalog.refs.tigers
     assert.ok(ref != null)
     assert.equal(ref.text, null)
   })
 
   test('anchor with label creates reference', async () => {
     const doc = await documentFromString('[[tigers,Tigers]]Tigers roam here.')
-    const ref = doc.catalog.refs['tigers']
+    const ref = doc.catalog.refs.tigers
     assert.ok(ref != null)
     assert.equal(ref.text, 'Tigers')
   })
@@ -1775,7 +1775,7 @@ describe('Links', () => {
     const doc = await documentFromString(
       '[[tigers,"Tigers roam here"]]Tigers roam here.'
     )
-    const ref = doc.catalog.refs['tigers']
+    const ref = doc.catalog.refs.tigers
     assert.ok(ref != null)
     assert.equal(ref.text, '"Tigers roam here"')
   })
@@ -1784,7 +1784,7 @@ describe('Links', () => {
     const doc = await documentFromString(
       '[[tigers,Tigers, scary tigers, roam here]]Tigers roam here.'
     )
-    const ref = doc.catalog.refs['tigers']
+    const ref = doc.catalog.refs.tigers
     assert.ok(ref != null)
     assert.equal(ref.text, 'Tigers, scary tigers, roam here')
   })

@@ -5,7 +5,7 @@
 //
 // These tests use a mock fetch to avoid real network requests.
 
-import { test, describe, mock } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { resolveBrowserIncludePath } from '../src/browser/reader.js'

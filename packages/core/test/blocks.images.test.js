@@ -323,7 +323,7 @@ image::images/tiger.png[Tiger]
 `
       const doc = await documentFromString(input)
       const img = doc.blocks[0]
-      assert.ok(!Object.prototype.hasOwnProperty.call(img.attributes, 'style'))
+      assert.ok(!Object.hasOwn(img.attributes, 'style'))
       assert.equal(img.style, null)
     })
 
@@ -484,9 +484,7 @@ image::images/tiger.png[Tiger]
         '//*[@class="imageblock"]/*[@class="title"][text()="Voila! The AsciiDoc Tiger"]',
         1
       )
-      assert.ok(
-        !Object.prototype.hasOwnProperty.call(doc.attributes, 'figure-number')
-      )
+      assert.ok(!Object.hasOwn(doc.attributes, 'figure-number'))
     })
 
     test('can align image in DocBook backend', async () => {
@@ -661,7 +659,7 @@ image::dot.gif[Dot]
         safe: 'safe',
         attributes: { docdir: __dirname },
       })
-      assert.equal(await doc.attributes['imagesdir'], 'fixtures')
+      assert.equal(await doc.attributes.imagesdir, 'fixtures')
       const output = await doc.convert()
       assertXpath(
         output,
@@ -722,7 +720,7 @@ image::unreadable.gif[Dot]
         safe: 'safe',
         attributes: { docdir: __dirname },
       })
-      assert.equal(await doc.attributes['imagesdir'], 'fixtures')
+      assert.equal(await doc.attributes.imagesdir, 'fixtures')
       const output = await doc.convert()
       assertXpath(output, '//img[@src="data:image/gif;base64,"]', 1)
       assertMessage(logger, 'warn', 'image to embed not found or not readable')
@@ -739,7 +737,7 @@ image::dot[Dot]
         safe: 'safe',
         attributes: { docdir: __dirname },
       })
-      assert.equal(await doc.attributes['imagesdir'], 'fixtures')
+      assert.equal(await doc.attributes.imagesdir, 'fixtures')
       const output = await doc.convert()
       assertXpath(
         output,
@@ -785,7 +783,7 @@ image::dot.gif[Dot]
         attributes: { docdir: __dirname },
       })
       assert.equal(
-        await doc.attributes['imagesdir'],
+        await doc.attributes.imagesdir,
         '../..//fixtures/./../../fixtures'
       )
       const output = await doc.convert()
@@ -814,7 +812,7 @@ image::../..//fixtures/./../../fixtures/dot.gif[Dot]
         safe: 'safe',
         attributes: { docdir: __dirname },
       })
-      assert.equal(await doc.attributes['imagesdir'], './')
+      assert.equal(await doc.attributes.imagesdir, './')
       const output = await doc.convert()
       // image target resolves to fixtures/dot.gif relative to docdir (which is explicitly set to the directory of this file)
       // the reference cannot fall outside of the document directory in safe mode

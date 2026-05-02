@@ -5,7 +5,7 @@
 //   - load() and convert() are async → all tests use async/await.
 //   - Assertions use node:assert/strict instead of chai.
 
-import { describe, test, beforeEach, afterEach } from 'node:test'
+import { describe, test, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { Extensions, load, convert } from '../src/index.js'
@@ -18,9 +18,8 @@ describe('Extensions (API)', () => {
   test('should get global extension', async () => {
     Extensions.register(function () {
       this.treeProcessor(function () {
-        const self = this
-        self.process(function (doc) {
-          doc.append(self.createBlock(doc, 'paragraph', 'd', {}))
+        this.process((doc) => {
+          doc.append(this.createBlock(doc, 'paragraph', 'd', {}))
         })
       })
     })
@@ -34,9 +33,8 @@ describe('Extensions (API)', () => {
     const registry = Extensions.create()
     const opts = { extension_registry: registry }
     registry.treeProcessor(function () {
-      const self = this
-      self.process(function (doc) {
-        doc.append(self.createBlock(doc, 'paragraph', 'd', {}))
+      this.process((doc) => {
+        doc.append(this.createBlock(doc, 'paragraph', 'd', {}))
       })
     })
     const doc = await load('test', opts)
@@ -48,8 +46,7 @@ describe('Extensions (API)', () => {
     const registry = Extensions.create()
     const opts = { extension_registry: registry }
     registry.preprocessor(function () {
-      const self = this
-      self.process(function (doc, reader) {
+      this.process((doc, reader) => {
         const lines = reader.lines
         for (let i = 0; i < lines.length; i++) {
           if (lines[i].match(/\/\/ smiley/)) lines[i] = ':)'
@@ -59,9 +56,8 @@ describe('Extensions (API)', () => {
     })
     // This extension is prepended (higher precedence)
     registry.preprocessor(function () {
-      const self = this
-      self.prepend()
-      self.process(function (doc, reader) {
+      this.prepend()
+      this.process((doc, reader) => {
         const lines = reader.lines
         for (let i = 0; i < lines.length; i++) {
           if (lines[i].match(/\/\/ smiley/)) lines[i] = ':('
@@ -78,8 +74,7 @@ describe('Extensions (API)', () => {
     const registry = Extensions.create()
     const opts = { extension_registry: registry }
     registry.preprocessor(function () {
-      const self = this
-      self.process(function (doc, reader) {
+      this.process((doc, reader) => {
         const lines = reader.lines
         for (let i = 0; i < lines.length; i++) {
           if (lines[i].match(/\/\/ smiley/)) lines[i] = ':)'
@@ -89,8 +84,7 @@ describe('Extensions (API)', () => {
     })
     // This extension is appended by default (lower precedence)
     registry.preprocessor(function () {
-      const self = this
-      self.process(function (doc, reader) {
+      this.process((doc, reader) => {
         const lines = reader.lines
         for (let i = 0; i < lines.length; i++) {
           if (lines[i].match(/\/\/ smiley/)) lines[i] = ':('
@@ -121,16 +115,14 @@ describe('Extensions (API)', () => {
     )
     Extensions.register(function () {
       this.treeProcessor(function () {
-        const self = this
-        self.process(function (doc) {
-          doc.append(self.createBlock(doc, 'paragraph', 'd', {}))
+        this.process((doc) => {
+          doc.append(this.createBlock(doc, 'paragraph', 'd', {}))
         })
       })
       this.treeProcessor(function () {
-        const self = this
-        self.prefer()
-        self.process(function (doc) {
-          doc.append(self.createBlock(doc, 'paragraph', 'c', {}))
+        this.prefer()
+        this.process((doc) => {
+          doc.append(this.createBlock(doc, 'paragraph', 'c', {}))
         })
       })
       this.prefer(
@@ -152,9 +144,7 @@ describe('Extensions (API)', () => {
       this.prefer('tree_processor', SelfSigningTreeProcessor)
     })
     const doc = await load('')
-    const lines = doc.getBlocks().map(function (block) {
-      return block.getSourceLines()[0]
-    })
+    const lines = doc.getBlocks().map((block) => block.getSourceLines()[0])
     assert.deepEqual(
       lines.sort(),
       ['SelfSigningTreeProcessor', 'a', 'b', 'c', 'd'].sort()
@@ -166,16 +156,11 @@ describe('Extensions (API)', () => {
   test('should register an inline macro with short format', async () => {
     Extensions.register(function () {
       this.inlineMacro('label', function () {
-        const self = this
-        self.matchFormat('short')
-        self.parseContentAs('text')
-        self.process(function (parent, _, attrs) {
-          return self.createInline(
-            parent,
-            'quoted',
-            `<label>${attrs.text}</label>`
-          )
-        })
+        this.matchFormat('short')
+        this.parseContentAs('text')
+        this.process((parent, _, attrs) =>
+          this.createInline(parent, 'quoted', `<label>${attrs.text}</label>`)
+        )
       })
     })
     const html = await convert('label:[Checkbox]', { doctype: 'inline' })
@@ -185,17 +170,16 @@ describe('Extensions (API)', () => {
   test('should register a block macro that creates a link', async () => {
     Extensions.register(function () {
       this.blockMacro('extlink', function () {
-        const self = this
-        self.process(function (parent, target, attrs) {
+        this.process((parent, target, attrs) => {
           let text
           if (attrs.text === '') {
             text = target
           }
-          const openBlock = self.createBlock(parent, 'open', [], {
+          const openBlock = this.createBlock(parent, 'open', [], {
             role: 'external-url',
           })
           openBlock.title = attrs.title
-          const link = self.createInline(parent, 'anchor', text, {
+          const link = this.createInline(parent, 'anchor', text, {
             type: 'link',
             target,
           })
@@ -322,15 +306,13 @@ content
           content.push('|====')
           content.push('|ID | Priority | Created | Assignee | Summary')
           for (const issue of issues) {
-            content.push('|' + issue.key)
-            content.push('|' + issue.fields.priority.name)
-            content.push('|' + issue.fields.created)
+            content.push(`|${issue.key}`)
+            content.push(`|${issue.fields.priority.name}`)
+            content.push(`|${issue.fields.created}`)
             content.push(
-              '|' +
-                (issue.fields.assignee && issue.fields.assignee.displayName) ||
-                'Not assigned'
+              `|${issue.fields.assignee?.displayName}` || 'Not assigned'
             )
-            content.push('|' + issue.fields.summary)
+            content.push(`|${issue.fields.summary}`)
           }
           content.push('|====')
           await this.parseContent(parent, content.join('\n'), attrs)

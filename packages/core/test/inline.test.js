@@ -55,7 +55,7 @@ describe('Inline', () => {
       const doc = await documentFromString(
         '[bibliography]\n== Refs\n\n- [[[Knuth74,Knuth 1974]]] The Art of Computer Programming.'
       )
-      const inline = doc.catalog.refs['Knuth74']
+      const inline = doc.catalog.refs.Knuth74
       assert.equal(inline.getType(), 'bibref')
     })
   })
@@ -77,7 +77,7 @@ describe('Inline', () => {
       const doc = await documentFromString(
         '[bibliography]\n== Refs\n\n- [[[Knuth74,Knuth 1974]]] The Art of Computer Programming.'
       )
-      const inline = doc.catalog.refs['Knuth74']
+      const inline = doc.catalog.refs.Knuth74
       assert.equal(inline.hasReftext(), true)
     })
 

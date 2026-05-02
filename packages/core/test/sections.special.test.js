@@ -190,7 +190,7 @@ Details`
 Installation details here.`
       const doc = await documentFromString(input)
       assert.ok(!doc.hasHeader())
-      assert.ok(doc.attributes['title'] == null)
+      assert.ok(doc.attributes.title == null)
       const appendix = doc.blocks[0]
       assert.equal(appendix.sectname, 'appendix')
       assert.equal(appendix.caption, 'Appendix A: ')

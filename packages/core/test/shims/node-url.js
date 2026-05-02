@@ -13,5 +13,5 @@ export function fileURLToPath(url) {
 }
 
 export function pathToFileURL(path) {
-  return new URL('file://' + path)
+  return new URL(`file://${path}`)
 }

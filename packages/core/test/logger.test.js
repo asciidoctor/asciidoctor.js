@@ -89,7 +89,7 @@ describe('Logger', () => {
       : null
     let stderrOutput = ''
     if (canInterceptStderr) {
-      process.stderr.write = function (chunk) {
+      process.stderr.write = (chunk) => {
         stderrOutput += chunk
       }
     }
@@ -117,27 +117,25 @@ describe('Logger', () => {
       : null
     let stderrOutput = ''
     if (canInterceptStderr) {
-      process.stderr.write = function (chunk) {
+      process.stderr.write = (chunk) => {
         stderrOutput += chunk
       }
     }
     try {
       defaultLogger.setFormatter(
         LoggerManager.newFormatter('JsonFormatter', {
-          call: function (severity, time, programName, message) {
+          call: (severity, time, programName, message) => {
             const text = message.text
             const sourceLocation = message.source_location
-            return (
-              JSON.stringify({
-                programName,
-                message: text,
-                sourceLocation: {
-                  lineNumber: sourceLocation.getLineNumber(),
-                  path: sourceLocation.getPath(),
-                },
-                severity,
-              }) + '\n'
-            )
+            return `${JSON.stringify({
+              programName,
+              message: text,
+              sourceLocation: {
+                lineNumber: sourceLocation.getLineNumber(),
+                path: sourceLocation.getPath(),
+              },
+              severity,
+            })}\n`
           },
         })
       )
@@ -167,7 +165,7 @@ describe('Logger', () => {
     const stderrWriteFunction = canInterceptStderr ? process.stderr.write : null
     let stderrOutput = ''
     if (canInterceptStderr) {
-      process.stderr.write = function (chunk) {
+      process.stderr.write = (chunk) => {
         stderrOutput += chunk
       }
     }
@@ -232,11 +230,10 @@ describe('Logger', () => {
   test('should print a message with context', async () => {
     const registry = Extensions.create()
     registry.block(function () {
-      const self = this
-      self.named('plantuml')
-      self.onContext(['listing'])
-      self.parseContentAs('raw')
-      self.process(function (parent, reader) {
+      this.named('plantuml')
+      this.onContext(['listing'])
+      this.parseContentAs('raw')
+      this.process((parent, reader) => {
         const lines = reader.getLines()
         if (lines.length === 0) {
           reader.getLogger().log(
@@ -286,7 +283,7 @@ describe('Logger', () => {
   test('should log using a message', () => {
     const logs = []
     const customLogger = LoggerManager.newLogger('CustomLogger', {
-      add: function (severity, message, progname) {
+      add: (severity, message, progname) => {
         logs.push({ severity, message: message || progname })
       },
     })
@@ -299,7 +296,7 @@ describe('Logger', () => {
   test('should log using a message and a program name', () => {
     const logs = []
     const customLogger = LoggerManager.newLogger('CustomLogger', {
-      add: function (severity, message, progname) {
+      add: (severity, message, progname) => {
         logs.push({ severity, message, progname })
       },
     })
@@ -313,7 +310,7 @@ describe('Logger', () => {
   test('should accept a message as block argument', async () => {
     const messages = []
     const memoryLogger = LoggerManager.newLogger('CustomMemoryLogger', {
-      add: function (severity, message, programName, block) {
+      add: (severity, message, programName, block) => {
         if (typeof block === 'function') {
           messages.push(block())
         } else {

@@ -13,7 +13,7 @@ describe('Substitutions', () => {
       const para = await blockFromString(
         '[blue]_http://asciidoc.org[AsciiDoc]_ & [red]*Ruby*\n&#167; Making +++<u>documentation</u>+++ together +\nsince (C) {inception_year}.'
       )
-      para.document.attributes['inception_year'] = '2012'
+      para.document.attributes.inception_year = '2012'
       const result = await para.applySubs(para.source)
       assert.equal(
         result,
@@ -39,7 +39,7 @@ describe('Substitutions', () => {
       )
       para.lines.push('')
       para.lines.push('')
-      para.document.attributes['program'] = 'Asciidoctor'
+      para.document.attributes.program = 'Asciidoctor'
       let result = await para.applySubs(para.lines)
       assert.deepEqual(result, [
         'this<br>',
@@ -54,7 +54,7 @@ describe('Substitutions', () => {
 
     test('should expand subs passed to expandSubs', async () => {
       const para = await blockFromString('{program}\n*bold*\n2 > 1')
-      para.document.attributes['program'] = 'Asciidoctor'
+      para.document.attributes.program = 'Asciidoctor'
       assert.deepEqual(para.expandSubs(['specialchars']), ['specialcharacters'])
       assert.ok(!para.expandSubs(['none']))
       assert.deepEqual(para.expandSubs(['normal']), [

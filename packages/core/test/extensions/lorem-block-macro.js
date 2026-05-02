@@ -32,12 +32,11 @@ function lorem(opts) {
 
 export default function (registry) {
   registry.blockMacro(function () {
-    const self = this
-    self.named('lorem')
-    self.process(function (parent, target, attrs) {
-      const size = parseInt(attrs.size)
+    this.named('lorem')
+    this.process((parent, target, attrs) => {
+      const size = parseInt(attrs.size, 10)
       const result = lorem({ count: size, units: target })
-      return self.createBlock(parent, 'paragraph', result)
+      return this.createBlock(parent, 'paragraph', result)
     })
   })
 }

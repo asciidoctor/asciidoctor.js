@@ -2533,12 +2533,14 @@ describe('Description lists (dlist)', () => {
     })
 
     test('should parse a dlist if term is include and principal text matches macro form', async () => {
+      // biome-ignore lint: lint/suspicious/noTemplateCurlyInString
       const input = 'include:: pass:[${placeholder}]'
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'dl', 1)
       assertCss(output, 'dl > dt', 1)
       assertXpath(
         output,
+        // biome-ignore lint: lint/suspicious/noTemplateCurlyInString
         '(//dl/dt)[1]/following-sibling::dd/p[text() = "${placeholder}"]',
         1
       )
@@ -4298,7 +4300,7 @@ Please read <<Fowler_1997>>.
 `
       const doc = await documentFromString(input)
       assert.ok(
-        doc.catalog.refs['Fowler_1997'] != null,
+        doc.catalog.refs.Fowler_1997 != null,
         'refs should contain Fowler_1997'
       )
     })
@@ -4316,10 +4318,10 @@ Then move on to <<Fowler_1997>>.
 * [[[Fowler_1997,1]]] Fowler M. _Analysis Patterns: Reusable Object Models_. Addison-Wesley. 1997.
 `
       const doc = await documentFromString(input)
-      const tmmm_ref = doc.catalog.refs['TMMM']
+      const tmmm_ref = doc.catalog.refs.TMMM
       assert.ok(tmmm_ref != null, 'TMMM ref should exist')
       assert.equal(tmmm_ref.reftext, null)
-      const fowler_1997_ref = doc.catalog.refs['Fowler_1997']
+      const fowler_1997_ref = doc.catalog.refs.Fowler_1997
       assert.ok(fowler_1997_ref != null, 'Fowler_1997 ref should exist')
       assert.equal(fowler_1997_ref.reftext, '[1]')
       const result = await doc.convert()

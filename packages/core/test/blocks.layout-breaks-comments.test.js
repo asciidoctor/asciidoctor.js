@@ -2,12 +2,11 @@ import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { Compliance } from '../src/compliance.js'
-import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
+import { assertCss, assertXpath, assertMessage } from './helpers.js'
 import {
   documentFromString,
   convertString,
   convertStringToEmbedded,
-  blockFromString,
 } from './harness.js'
 
 describe('Blocks', () => {

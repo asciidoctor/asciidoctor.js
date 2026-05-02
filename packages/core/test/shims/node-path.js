@@ -27,7 +27,7 @@ export function join(...parts) {
 
 export function resolve(...parts) {
   let p = parts.join('/')
-  if (!p.startsWith('/')) p = '/' + p
+  if (!p.startsWith('/')) p = `/${p}`
   return normalize(p)
 }
 
@@ -39,7 +39,7 @@ export function normalize(p) {
     return acc
   }, [])
   const result = segments.join('/')
-  return abs ? '/' + result : result || '.'
+  return abs ? `/${result}` : result || '.'
 }
 
 export function isAbsolute(p) {
