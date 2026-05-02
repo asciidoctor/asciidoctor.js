@@ -1229,7 +1229,7 @@ export class PreprocessorReader extends Reader {
         const pa = attrlist
           ? await doc.parseAttributes(attrlist, [], { subInput: true })
           : {}
-        ext.processMethod(doc, this, expandedTarget, pa)
+        await ext.processMethod(doc, this, expandedTarget, pa)
         return true
       }
     }
