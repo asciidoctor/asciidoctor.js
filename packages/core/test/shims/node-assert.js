@@ -16,11 +16,19 @@ async function rejects (fnOrPromise, errorOrMessage, message) {
   await expect(p).rejects.toThrow()
 }
 
-const assert = {
-  equal, deepEqual, strictEqual, deepStrictEqual,
-  notEqual, notDeepStrictEqual,
-  ok, fail, match, doesNotMatch, throws, rejects,
-}
+function assert (value, message) { ok(value, message) }
+assert.equal = equal
+assert.deepEqual = deepEqual
+assert.strictEqual = strictEqual
+assert.deepStrictEqual = deepStrictEqual
+assert.notEqual = notEqual
+assert.notDeepStrictEqual = notDeepStrictEqual
+assert.ok = ok
+assert.fail = fail
+assert.match = match
+assert.doesNotMatch = doesNotMatch
+assert.throws = throws
+assert.rejects = rejects
 
 export {
   equal, deepEqual, strictEqual, deepStrictEqual,
