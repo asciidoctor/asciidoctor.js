@@ -166,7 +166,7 @@ export async function convert(input, options = {}) {
 
     if (input && typeof input === 'object' && input.path) {
       const absInputPath = nodePath.resolve(input.path)
-      if (outfile === absInputPath) {
+      if (nodePath.normalize(outfile) === nodePath.normalize(absInputPath)) {
         throw new Error(
           `input file and output file cannot be the same: ${outfile}`
         )
