@@ -44,6 +44,18 @@ export class TemplateConverter extends ConverterBase {
     engineOptions: any;
     caches: any;
     /**
+     * Convert an AbstractNode to the backend format using the named template.
+     *
+     * Note: convert() is async because getContent() / applySubs() in the core package
+     * is async throughout. We pre-resolve content here and expose it synchronously to
+     * template engines (which are all synchronous) via a Proxy wrapper.
+     * @param {object} node - the AbstractNode to convert
+     * @param {string|null} [templateName=null] - the template name to use (default: node.nodeName)
+     * @param {object|null} [opts=null] - optional plain object passed as locals to the template
+     * @returns {Promise<string>}
+     */
+    convert(node: object, templateName?: string | null, opts?: object | null): Promise<string>;
+    /**
      * Retrieve a shallow copy of the templates map.
      * @returns {Object} plain object keyed by template name
      */

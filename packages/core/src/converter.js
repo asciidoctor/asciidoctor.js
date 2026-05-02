@@ -412,7 +412,7 @@ export class ConverterBase {
    * @param {object} node - the AbstractNode to convert
    * @param {string|null} [transform=null] - hint for which method to call (default: node.nodeName)
    * @param {object|null} [opts=null] - optional hints
-   * @returns {Promise<string|null>} the converted string or null
+   * @returns {Promise<unknown>} the result of the `convert_<transform>` handler; the actual type depends on the implementation
    */
   async convert(node, transform = null, opts = null) {
     const method = `convert_${transform ?? node.nodeName}`
