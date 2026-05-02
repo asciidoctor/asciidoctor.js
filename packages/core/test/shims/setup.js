@@ -1,6 +1,7 @@
 // Minimal Buffer polyfill for browser tests.
 // Uses TextEncoder for byte-accurate UTF-8 length calculation.
 if (typeof globalThis.Buffer === 'undefined') {
+  // biome-ignore lint: lint/complexity/noStaticOnlyClass
   globalThis.Buffer = class Buffer {
     static byteLength(str, encoding = 'utf8') {
       return new TextEncoder().encode(str).length

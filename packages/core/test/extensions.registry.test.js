@@ -238,9 +238,7 @@ describe('Group', () => {
     class MyGroup extends Group {
       activate(registry) {
         registry.preprocessor(function () {
-          this.process(function (_doc, reader) {
-            return reader
-          })
+          this.process((_doc, reader) => reader)
         })
       }
     }
@@ -261,13 +259,11 @@ describe('Group', () => {
       activate(reg) {
         activated.push(reg)
         reg.preprocessor(function () {
-          this.process(function (_doc, reader) {
-            return reader
-          })
+          this.process((_doc, reader) => reader)
         })
       },
     }
-    const doc = await load('hello', { extension_registry: registry })
+    const _doc = await load('hello', { extension_registry: registry })
     assert.ok(activated.length > 0)
     assert.ok(registry.hasPreprocessors())
   })
@@ -413,9 +409,7 @@ describe('Registry query methods', () => {
     const registry = Extensions.create()
     assert.equal(registry.preprocessors(), null)
     registry.preprocessor(function () {
-      this.process(function (_doc, reader) {
-        return reader
-      })
+      this.process((_doc, reader) => reader)
     })
     assert.ok(registry.preprocessors().length === 1)
     assert.ok(registry.preprocessor_extensions.length === 1)
@@ -427,7 +421,7 @@ describe('Registry query methods', () => {
     assert.equal(registry.treeProcessors(), null)
     assert.ok(!registry.hasTreeProcessors())
     registry.treeProcessor(function () {
-      this.process(function (_doc) {})
+      this.process((_doc) => {})
     })
     assert.ok(registry.treeProcessors().length === 1)
     assert.ok(registry.treeprocessors().length === 1)
@@ -441,9 +435,7 @@ describe('Registry query methods', () => {
     assert.equal(registry.postprocessors(), null)
     assert.ok(!registry.hasPostprocessors())
     registry.postprocessor(function () {
-      this.process(function (_doc, output) {
-        return output
-      })
+      this.process((_doc, output) => output)
     })
     assert.ok(registry.postprocessors().length === 1)
     assert.ok(registry.hasPostprocessors())
@@ -454,7 +446,7 @@ describe('Registry query methods', () => {
     const registry = Extensions.create()
     assert.ok(!registry.hasIncludeProcessors())
     registry.include_processor(function () {
-      this.process(function (_doc, _reader, _target, _attrs) {})
+      this.process((_doc, _reader, _target, _attrs) => {})
     })
     assert.ok(registry.hasIncludeProcessors())
     assert.ok(registry.includeProcessors().length === 1)
@@ -465,14 +457,10 @@ describe('Registry query methods', () => {
     const registry = Extensions.create()
     registry.docinfoProcessor(function () {
       this.atLocation('footer')
-      this.process(function (_doc) {
-        return '<p>footer</p>'
-      })
+      this.process((_doc) => '<p>footer</p>')
     })
     registry.docinfo_processor(function () {
-      this.process(function (_doc) {
-        return '<meta name="x"/>'
-      })
+      this.process((_doc) => '<meta name="x"/>')
     })
     assert.ok(registry.hasDocinfoProcessors())
     assert.ok(registry.hasDocinfoProcessors('footer'))

@@ -24,7 +24,7 @@ nobody:x:99:99:Nobody:/:/sbin/nologin
       const doc = await documentFromString(input, { standalone: false })
       const table = doc.blocks[0]
       const sum = table.columns
-        .map((col) => col.attributes['colpcwidth'])
+        .map((col) => col.attributes.colpcwidth)
         .reduce((a, b) => a + b, 0)
       assert.equal(sum, 100)
       const output = await doc.convert()

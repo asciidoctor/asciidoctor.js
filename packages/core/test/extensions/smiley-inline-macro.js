@@ -1,7 +1,6 @@
 export default function (registry) {
   registry.inlineMacro('smiley', function () {
-    const self = this
-    self.process(function (parent, target) {
+    this.process((parent, target) => {
       let text
       if (target === 'happy') {
         text = ':D'
@@ -10,9 +9,9 @@ export default function (registry) {
       } else {
         text = ':)'
       }
-      return self
-        .createInline(parent, 'quoted', text, { type: 'strong' })
-        .convert()
+      return this.createInline(parent, 'quoted', text, {
+        type: 'strong',
+      }).convert()
     })
   })
 }

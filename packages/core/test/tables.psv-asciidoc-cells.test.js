@@ -450,7 +450,7 @@ Grays Peak
 |===`
       const doc = await documentFromString(input)
       const refs = doc.catalog.refs
-      assert.ok(refs['foo'] != null || refs.has?.('foo'))
+      assert.ok(refs.foo != null || refs.has?.('foo'))
     })
 
     test('should catalog anchor at start of cell in explicit header row when column has a style', async () => {
@@ -461,7 +461,7 @@ Grays Peak
 |===`
       const doc = await documentFromString(input)
       const refs = doc.catalog.refs
-      assert.ok(refs['foo'] != null || refs.has?.('foo'))
+      assert.ok(refs.foo != null || refs.has?.('foo'))
     })
 
     test('should catalog anchor at start of cell in first row', async () => {
@@ -471,7 +471,7 @@ Grays Peak
 |===`
       const doc = await documentFromString(input)
       const refs = doc.catalog.refs
-      assert.ok(refs['foo'] != null || refs.has?.('foo'))
+      assert.ok(refs.foo != null || refs.has?.('foo'))
     })
 
     test('footnotes should not be shared between an AsciiDoc table cell and the main document', async () => {

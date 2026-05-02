@@ -179,7 +179,7 @@ describe('Substitutions', () => {
 
     test('a single-line raw url with attribute as text should be interpreted as a link with resolved attribute', async () => {
       const para = await blockFromString('http://google.com[{google_homepage}]')
-      para.document.attributes['google_homepage'] = 'Google Homepage'
+      para.document.attributes.google_homepage = 'Google Homepage'
       assert.equal(
         await para.subMacros(para.subAttributes(para.source)),
         '<a href="http://google.com">Google Homepage</a>'
@@ -193,7 +193,7 @@ describe('Substitutions', () => {
       }
       for (const [uri, macro] of Object.entries(cases)) {
         const para = await blockFromString(macro)
-        para.document.attributes['google_homepage'] = 'Google Homepage'
+        para.document.attributes.google_homepage = 'Google Homepage'
         assert.equal(
           await para.subMacros(para.subAttributes(para.source)),
           `<a href="${uri}">{google_homepage}</a>`
@@ -1284,7 +1284,7 @@ describe('Substitutions', () => {
       for (const input of inputs) {
         const para = await blockFromString(input)
         const output = await para.subMacros(para.source)
-        assert.equal(output, input.split('\n')[0] + '\n')
+        assert.equal(output, `${input.split('\n')[0]}\n`)
       }
     })
 

@@ -251,7 +251,7 @@ describe('Structure', () => {
     const doc = await parse(input, { parse_header_only: true })
     assert.equal(doc.doctitle(), 'Document Title')
     assert.equal(doc.author, 'Author Name')
-    assert.equal(doc.attributes['foo'], 'bar')
+    assert.equal(doc.attributes.foo, 'bar')
     assert.equal(doc.blocks.length, 0)
   })
 
@@ -277,7 +277,7 @@ describe('Structure', () => {
 
   test('authorcount is 0 when document has no header', async () => {
     const doc = await parse('content')
-    assert.equal(doc.attributes['authorcount'], 0)
+    assert.equal(doc.attributes.authorcount, 0)
   })
 
   test('embedded document when standalone is false', async () => {
@@ -337,8 +337,8 @@ describe('Catalog', () => {
     const doc = await empty()
     doc.register('ids', ['foobar', 'Foo Bar'])
     assert.equal(Object.keys(doc.catalog.ids).length, 0)
-    assert.ok(doc.catalog.refs['foobar'] != null)
-    assert.equal(doc.catalog.refs['foobar'].reftext, 'Foo Bar')
+    assert.ok(doc.catalog.refs.foobar != null)
+    assert.equal(doc.catalog.refs.foobar.reftext, 'Foo Bar')
     assert.equal(doc.resolveId('Foo Bar'), 'foobar')
   })
 
@@ -392,17 +392,17 @@ describe('Catalog', () => {
 describe('Backends and Doctypes', () => {
   test('html5 backend sets expected attributes', async () => {
     const doc = await parse('', { backend: 'html5' })
-    assert.equal(doc.attributes['backend'], 'html5')
+    assert.equal(doc.attributes.backend, 'html5')
     assert.ok('backend-html5' in doc.attributes)
-    assert.equal(doc.attributes['basebackend'], 'html')
+    assert.equal(doc.attributes.basebackend, 'html')
     assert.ok('basebackend-html' in doc.attributes)
   })
 
   test('docbook5 backend sets expected attributes', async () => {
     const doc = await parse('', { attributes: { backend: 'docbook5' } })
-    assert.equal(doc.attributes['backend'], 'docbook5')
+    assert.equal(doc.attributes.backend, 'docbook5')
     assert.ok('backend-docbook5' in doc.attributes)
-    assert.equal(doc.attributes['basebackend'], 'docbook')
+    assert.equal(doc.attributes.basebackend, 'docbook')
   })
 
   test('xhtml5 backend maps to html5 with xml htmlsyntax', async () => {
@@ -493,9 +493,9 @@ describe('MathJax', () => {
 describe('Converter (extended)', () => {
   test('html5 converter has convert methods for all built-in elements', async () => {
     const doc = await parse('')
-    assert.equal(doc.attributes['backend'], 'html5')
+    assert.equal(doc.attributes.backend, 'html5')
     assert.ok('backend-html5' in doc.attributes)
-    assert.equal(doc.attributes['basebackend'], 'html')
+    assert.equal(doc.attributes.basebackend, 'html')
     assert.ok('basebackend-html' in doc.attributes)
     const converter = doc.converter
     for (const element of BUILT_IN_ELEMENTS) {

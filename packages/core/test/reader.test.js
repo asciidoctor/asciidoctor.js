@@ -96,7 +96,7 @@ describe('Reader', () => {
     })
 
     test('should prepare lines from String data with trailing newline', () => {
-      const reader = new Reader(SAMPLE_DATA.join('\n') + '\n')
+      const reader = new Reader(`${SAMPLE_DATA.join('\n')}\n`)
       assert.deepEqual(reader.lines, SAMPLE_DATA)
     })
 
@@ -677,7 +677,7 @@ describe('PreprocessorReader', () => {
       reader.pushInclude(appendLines, '/tmp/lines.adoc')
       assert.equal(reader.file, '/tmp/lines.adoc')
       assert.equal(reader.path, 'lines.adoc')
-      assert.ok(doc.catalog.includes['lines'])
+      assert.ok(doc.catalog.includes.lines)
     })
 
     test('PreprocessorReader#pushInclude method should not fail if data is nil', async () => {

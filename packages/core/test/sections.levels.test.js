@@ -29,12 +29,12 @@ describe('Sections', () => {
         const title = 'My Title'
         const chars = '='.repeat(title.length)
         assertXpath(
-          await convertString(title + '\n' + chars),
+          await convertString(`${title}\n${chars}`),
           '//h1[not(@id)][text() = "My Title"]',
           1
         )
         assertXpath(
-          await convertString(title + '\n' + chars + '\n'),
+          await convertString(`${title}\n${chars}\n`),
           '//h1[not(@id)][text() = "My Title"]',
           1
         )
@@ -44,12 +44,12 @@ describe('Sections', () => {
         const title = 'My Title'
         const chars = '='.repeat(title.length + 1)
         assertXpath(
-          await convertString(title + '\n' + chars),
+          await convertString(`${title}\n${chars}`),
           '//h1[not(@id)][text() = "My Title"]',
           1
         )
         assertXpath(
-          await convertString(title + '\n' + chars + '\n'),
+          await convertString(`${title}\n${chars}\n`),
           '//h1[not(@id)][text() = "My Title"]',
           1
         )
@@ -59,12 +59,12 @@ describe('Sections', () => {
         const title = 'My Title'
         const chars = '='.repeat(title.length - 1)
         assertXpath(
-          await convertString(title + '\n' + chars),
+          await convertString(`${title}\n${chars}`),
           '//h1[not(@id)][text() = "My Title"]',
           1
         )
         assertXpath(
-          await convertString(title + '\n' + chars + '\n'),
+          await convertString(`${title}\n${chars}\n`),
           '//h1[not(@id)][text() = "My Title"]',
           1
         )
@@ -85,11 +85,11 @@ preamble`
         const title = 'My Title'
         const chars = '='.repeat(title.length - 2)
         await usingMemoryLogger(async (logger) => {
-          let output = await convertString(title + '\n' + chars)
+          let output = await convertString(`${title}\n${chars}`)
           assertXpath(output, '//h1', 0)
           assert.ok(logger.messages.length > 0)
           logger.clear()
-          output = await convertString(title + '\n' + chars + '\n')
+          output = await convertString(`${title}\n${chars}\n`)
           assertXpath(output, '//h1', 0)
           assert.ok(logger.messages.length > 0)
         })
@@ -99,11 +99,11 @@ preamble`
         const title = 'My Title'
         const chars = '='.repeat(title.length + 2)
         await usingMemoryLogger(async (logger) => {
-          let output = await convertString(title + '\n' + chars)
+          let output = await convertString(`${title}\n${chars}`)
           assertXpath(output, '//h1', 0)
           assert.ok(logger.messages.length > 0)
           logger.clear()
-          output = await convertString(title + '\n' + chars + '\n')
+          output = await convertString(`${title}\n${chars}\n`)
           assertXpath(output, '//h1', 0)
           assert.ok(logger.messages.length > 0)
         })
@@ -113,7 +113,7 @@ preamble`
         const title = '.My Title'
         const chars = '='.repeat(title.length)
         await usingMemoryLogger(async (logger) => {
-          const output = await convertString(title + '\n' + chars)
+          const output = await convertString(`${title}\n${chars}`)
           assertXpath(output, '//h1', 0)
           assert.ok(logger.messages.length > 0)
         })
@@ -200,8 +200,8 @@ preamble`
 preamble`
         const doc = await documentFromString(input)
         assert.equal(doc.id, 'manual')
-        assert.equal(doc.attributes['reftext'], 'Manual')
-        assert.equal(doc.catalog.refs['manual'], doc)
+        assert.equal(doc.attributes.reftext, 'Manual')
+        assert.equal(doc.catalog.refs.manual, doc)
       })
 
       test('should compute xreftext to document title', async () => {
@@ -227,8 +227,8 @@ content`
             '<stdin>: line 2: level 0 sections can only be used when doctype is book'
           )
           assert.ok(!doc.hasHeader())
-          assert.ok(doc.attributes['title'] == null)
-          assert.equal(doc.blocks[0].attributes['style'], 'glossary')
+          assert.ok(doc.attributes.title == null)
+          assert.equal(doc.blocks[0].attributes.style, 'glossary')
         })
       })
 
@@ -307,7 +307,7 @@ endif::[]`
         const title = '.My Title'
         const chars = '-'.repeat(title.length)
         await usingMemoryLogger(async (logger) => {
-          const output = await convertString(title + '\n' + chars)
+          const output = await convertString(`${title}\n${chars}`)
           assertXpath(output, '//h2', 0)
           assert.ok(logger.messages.length > 0)
         })

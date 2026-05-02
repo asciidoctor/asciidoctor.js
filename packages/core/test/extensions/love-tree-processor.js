@@ -1,8 +1,7 @@
 export default function (registry) {
   registry.treeProcessor(function () {
-    const self = this
-    self.process(function (doc) {
-      doc.getBlocks()[0] = self.createBlock(
+    this.process((doc) => {
+      doc.getBlocks()[0] = this.createBlock(
         doc,
         'paragraph',
         'Made with icon:heart[]'

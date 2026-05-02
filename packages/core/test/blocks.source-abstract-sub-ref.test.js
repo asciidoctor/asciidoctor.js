@@ -609,9 +609,7 @@ content
       const block = doc.blocks[0]
       assert.equal(block.id, null)
       assert.equal(block.getAttribute('reftext'), null)
-      assert.ok(
-        !Object.prototype.hasOwnProperty.call(doc.catalog.refs, 'illegal$id')
-      )
+      assert.ok(!Object.hasOwn(doc.catalog.refs, 'illegal$id'))
     })
 
     test('should not recognize block anchor that starts with digit', async () => {
@@ -646,7 +644,7 @@ $ apt-get install asciidoctor
 ----
 `
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['debian']
+      const ref = doc.catalog.refs.debian
       assert.notEqual(ref, null)
       assert.equal(ref.reftext, 'Debian Install')
       assert.equal(doc.resolveId('Debian Install'), 'debian')
@@ -661,7 +659,7 @@ $ apt-get install asciidoctor
 ----
 `
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['debian']
+      const ref = doc.catalog.refs.debian
       assert.notEqual(ref, null)
       assert.equal(ref.reftext, '[Debian] Install')
       assert.equal(doc.resolveId('[Debian] Install'), 'debian')
@@ -676,7 +674,7 @@ $ apt-get install asciidoctor
 ----
 `
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['debian']
+      const ref = doc.catalog.refs.debian
       assert.notEqual(ref, null)
       assert.equal(ref.reftext, 'Debian, Ubuntu')
       assert.equal(doc.resolveId('Debian, Ubuntu'), 'debian')
@@ -726,7 +724,7 @@ Information about the evolution of the tiger.
       const doc = await documentFromString(input)
       const ref = doc.catalog.refs['tiger-evolution']
       assert.notEqual(ref, null)
-      assert.equal(ref.attributes['reftext'], 'Evolution of the Tiger')
+      assert.equal(ref.attributes.reftext, 'Evolution of the Tiger')
       assert.equal(doc.resolveId('Evolution of the Tiger'), 'tiger-evolution')
     })
 
@@ -740,7 +738,7 @@ $ apt-get install asciidoctor
 ----
 `
       const doc = await documentFromString(input)
-      const ref = doc.catalog.refs['debian']
+      const ref = doc.catalog.refs.debian
       assert.notEqual(ref, null)
       assert.equal(ref.reftext, 'Debian Install')
       assert.equal(doc.resolveId('Debian Install'), 'debian')

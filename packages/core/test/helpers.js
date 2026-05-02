@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict'
 import { parse } from 'node-html-parser'
 import { DOMParser } from '@xmldom/xmldom'
-import { select, useNamespaces } from 'xpath'
+import { useNamespaces } from 'xpath'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 
 /**
