@@ -106,6 +106,7 @@ export class Parser {
     static parseStyleAttribute(attributes: any, reader?: Reader | null): string | null;
     static _yieldBufferedAttribute(attrs: any, name: any, value: any, reader: any): void;
 }
+import { Reader } from './reader.js';
 import { Section } from './section.js';
 import { Block } from './block.js';
 import { List } from './list.js';

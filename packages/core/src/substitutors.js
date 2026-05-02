@@ -34,6 +34,8 @@ import {
   SubModifierSniffRx,
   ASCIIDOC_EXTENSIONS,
   AttributeReferenceRx,
+  BASIC_SUBS,
+  NORMAL_SUBS,
 } from './constants.js'
 import { Compliance } from './compliance.js'
 import { Parser } from './parser.js'
@@ -45,7 +47,7 @@ import {
 } from './helpers.js'
 import { Inline } from './inline.js'
 import { AttributeList } from './attribute_list.js'
-import { Document } from './document.js'
+import { Footnote } from './footnote.js'
 
 // ── Module-level constants ────────────────────────────────────────────────────
 
@@ -58,17 +60,8 @@ const QUOTED_TEXT_SNIFF_RX = {
   true: /[*'_+#^~]/,
 }
 
-const BASIC_SUBS = Object.freeze(['specialcharacters'])
 const HEADER_SUBS = Object.freeze(['specialcharacters', 'attributes'])
 const NO_SUBS = Object.freeze([])
-const NORMAL_SUBS = Object.freeze([
-  'specialcharacters',
-  'quotes',
-  'attributes',
-  'replacements',
-  'macros',
-  'post_replacements',
-])
 const REFTEXT_SUBS = Object.freeze([
   'specialcharacters',
   'quotes',
@@ -1325,10 +1318,7 @@ export const Substitutors = {
                 this.normalizeText(content, true, true)
               )
               index = doc.counter('footnote-number')
-              doc.register(
-                'footnotes',
-                new Document.Footnote(index, id, content)
-              )
+              doc.register('footnotes', new Footnote(index, id, content))
               type = 'ref'
               target = null
             } else {
@@ -1343,7 +1333,7 @@ export const Substitutors = {
               this.normalizeText(content, true, true)
             )
             index = doc.counter('footnote-number')
-            doc.register('footnotes', new Document.Footnote(index, id, content))
+            doc.register('footnotes', new Footnote(index, id, content))
             type = null
             target = null
           } else {
@@ -2246,8 +2236,3 @@ export {
   SPECIAL_CHARS_TR,
   QUOTED_TEXT_SNIFF_RX,
 }
-
-// Apply the Substitutors mixin to AbstractNode so that all nodes (Document,
-// Section, Block, etc.) have subSpecialchars, subAttributes, etc. available.
-import { AbstractNode } from './abstract_node.js'
-Object.assign(AbstractNode.prototype, Substitutors)

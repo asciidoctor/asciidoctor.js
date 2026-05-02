@@ -1,4 +1,3 @@
-/** @import { Reader } from './reader.js' */
 export class ImageReference {
     constructor(target: any, imagesdir: any);
     target: any;
@@ -12,31 +11,6 @@ export class ImageReference {
      */
     getImagesDirectory(): string;
     toString(): any;
-}
-export class Footnote {
-    constructor(index: any, id: any, text: any);
-    index: any;
-    id: any;
-    text: any;
-    /**
-     * @returns {number} the index of this footnote.
-     */
-    getIndex(): number;
-    /**
-     * @returns {string|null} the id of this footnote, or null if not set.
-     */
-    getId(): string | null;
-    /**
-     * @returns {string} the text of this footnote.
-     */
-    getText(): string;
-}
-export class AttributeEntry {
-    constructor(name: any, value: any, negate?: any);
-    name: any;
-    value: any;
-    negate: any;
-    saveTo(blockAttributes: any): this;
 }
 /**
  * Parsed and stores a partitioned title (title & subtitle).
@@ -116,6 +90,7 @@ export class Document extends AbstractBlock<string> {
     syntaxHighlighter: any;
     header: Section;
     options: Readonly<{}>;
+    sourceLocation: any;
     /** Alias catalog as references (backwards compat). */
     get references(): any;
     /** @returns {boolean} True if this is a nested (child) document. */
@@ -203,8 +178,8 @@ export class Document extends AbstractBlock<string> {
     isNested(): boolean;
     isEmbedded(): boolean;
     hasExtensions(): boolean;
-    source(): string;
-    sourceLines(): string[];
+    source(): any;
+    sourceLines(): any;
     basebackend(base: any): boolean;
     /**
      * Resolve the primary title for the document.
@@ -512,8 +487,9 @@ export class Document extends AbstractBlock<string> {
 export namespace Document {
     export { Footnote };
 }
-export const _deps: {};
+import { Footnote } from './footnote.js';
+import { AttributeEntry } from './attribute_entry.js';
 import { AbstractBlock } from './abstract_block.js';
-import type { Reader } from './reader.js';
 import { Section } from './section.js';
 import { Inline } from './inline.js';
+export { Footnote, AttributeEntry };

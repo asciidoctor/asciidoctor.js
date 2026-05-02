@@ -157,10 +157,10 @@ export namespace Substitutors {
     function normalizeText(text: any, normalizeWhitespace?: any, unescapeClosingSquareBrackets?: any): any;
     function splitSimpleCsv(str: any): any;
 }
-export const BASIC_SUBS: readonly string[];
+import { BASIC_SUBS } from './constants.js';
 export const HEADER_SUBS: readonly string[];
 export const NO_SUBS: readonly any[];
-export const NORMAL_SUBS: readonly string[];
+import { NORMAL_SUBS } from './constants.js';
 export const REFTEXT_SUBS: readonly string[];
 export const VERBATIM_SUBS: readonly string[];
 export namespace SUB_GROUPS {
@@ -205,3 +205,4 @@ export namespace QUOTED_TEXT_SNIFF_RX {
     let _true: RegExp;
     export { _true as true };
 }
+export { BASIC_SUBS, NORMAL_SUBS };

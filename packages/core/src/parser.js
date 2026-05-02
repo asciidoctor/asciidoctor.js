@@ -16,7 +16,8 @@ import { List, ListItem } from './list.js'
 import { Table } from './table.js'
 import { Inline } from './inline.js'
 import { AttributeList } from './attribute_list.js'
-import { AttributeEntry, _deps } from './document.js'
+import { AttributeEntry } from './attribute_entry.js'
+import { Reader } from './reader.js'
 import { Compliance } from './compliance.js'
 import { basename, intToRoman, romanToInt } from './helpers.js'
 import {
@@ -1113,7 +1114,7 @@ export class Parser {
                 mapped.pop()
             }
             attributes.style = 'quote'
-            const { Reader: Rdr } = _requireReader()
+            const Rdr = Reader
             block = await Parser.buildBlock(
               'quote',
               'compound',
@@ -1266,7 +1267,7 @@ export class Parser {
         }
         case 'table': {
           const blockCursor = reader.cursor
-          const { Reader: Rdr } = _requireReader()
+          const Rdr = Reader
           const blockReader = new Rdr(
             await reader.readLinesUntil({
               terminator,
@@ -1526,7 +1527,7 @@ export class Parser {
       blockReader = reader
     } else {
       const blockCursor = reader.cursor
-      const { Reader: Rdr } = _requireReader()
+      const Rdr = Reader
       blockReader = new Rdr(
         await reader.readLinesUntil({
           terminator,
@@ -1558,7 +1559,7 @@ export class Parser {
     if (options.extension) {
       const extension = options.extension
       delete attributes.style
-      const { Reader: Rdr } = _requireReader()
+      const Rdr = Reader
       const result = await extension.processMethod(
         parent,
         blockReader ?? new Rdr(lines),
@@ -1967,7 +1968,7 @@ export class Parser {
 
     await reader.readLine()
     const blockCursor = reader.cursor
-    const { Reader: Rdr } = _requireReader()
+    const Rdr = Reader
     const listItemLines = await Parser.readLinesForListItem(
       reader,
       listType,
@@ -3679,6 +3680,3 @@ function _uniform(str, chr, len) {
 }
 
 // Lazy reader resolver to break circular dependency
-function _requireReader() {
-  return _deps['reader.js'] ?? {}
-}

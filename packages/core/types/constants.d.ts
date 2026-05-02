@@ -258,6 +258,8 @@ export namespace QUOTE_SUBS {
     export { _compatQuoteSubs as true };
 }
 export const REPLACEMENTS: (string | RegExp)[][];
+export const BASIC_SUBS: readonly string[];
+export const NORMAL_SUBS: readonly string[];
 export let ROOT_DIR: string;
 export let LIB_DIR: string;
 export let DATA_DIR: string;

@@ -12,9 +12,8 @@ import { AbstractBlock } from './abstract_block.js'
 import { AbstractNode } from './abstract_node.js'
 import { Inline } from './inline.js'
 import { applyLogging } from './logging.js'
-import { LF, ATTR_REF_HEAD } from './constants.js'
+import { LF, ATTR_REF_HEAD, BASIC_SUBS, NORMAL_SUBS } from './constants.js'
 import { BlankLineRx, LeadingInlineAnchorRx } from './rx.js'
-import { BASIC_SUBS, NORMAL_SUBS } from './substitutors.js'
 
 /**
  * Truncate a float to `precision` decimal places (like Ruby's Float#truncate).
