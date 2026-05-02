@@ -18,6 +18,8 @@ import smileyInlineMacro from './extensions/smiley-inline-macro.js'
 import emojiInlineMacro from './extensions/emoji-inline-macro.js'
 import loremBlockMacro from './extensions/lorem-block-macro.js'
 import fooInclude from './extensions/foo-include.js'
+import asyncFsInclude from './extensions/async-fs-include.js'
+import asyncTransformBlock from './extensions/async-transform-block.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const FIXTURES_DIR = join(__dirname, 'fixtures')
@@ -248,6 +250,28 @@ describe('Extensions (examples)', () => {
       assert.ok(!exts.hasBlocks())
       assert.ok(!exts.hasInlineMacros())
       assert.ok(!exts.hasIncludeProcessors())
+    })
+  })
+
+  describe('Include processor (async fs)', () => {
+    test('should read file content asynchronously using fs/promises', async () => {
+      const registry = Extensions.create()
+      asyncFsInclude(registry)
+      const result = await convert('include::hello.txt[]', {
+        safe: 'safe',
+        base_dir: FIXTURES_DIR,
+        extension_registry: registry,
+      })
+      assert.ok(result.includes('Hello from async include!'))
+    })
+  })
+
+  describe('Block processor (async transform)', () => {
+    test('should transform block content using an async function', async () => {
+      const registry = Extensions.create()
+      asyncTransformBlock(registry)
+      const result = await convert(fixture('async-block-ex.adoc'), { extension_registry: registry })
+      assert.ok(result.includes('Hello World From Async'))
     })
   })
 

@@ -1,0 +1,4 @@
+= Async Block Example
+
+[titlecase]
+hello world from async
