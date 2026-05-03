@@ -209,16 +209,17 @@ In addition, extension processors can now be asynchronous: the `process` method 
 
 === Custom converters
 
-If you have a custom converter, its `convert()` method must now be asynchronous and return a `Promise`.
+In v4, `node.getContent()` returns a `Promise`, so any converter that calls it must `await` the result.
+The `convert()` method itself can remain synchronous if it does not call `getContent()` or any other async API.
 
 [source,javascript]
 ----
-// v3 — synchronous
+// v4 — synchronous converter (no async content call)
 convert(node, transform) {
-  return `<p>${node.getContent()}</p>`
+  return node.getTitle()
 }
 
-// v4 — must be async
+// v4 — async converter when getContent() is needed
 async convert(node, transform) {
   return `<p>${await node.getContent()}</p>`
 }
