@@ -96,11 +96,11 @@ line three
         assertXpath(output, '//pre', 1)
         assertXpath(output, '//pre/text()', 1)
         const text = xmlnodesAtXpath('//pre/text()', output, 1).text
-        const lines = text.split('\n').map((l) => l + '\n')
+        const lines = text.split('\n').map((l) => `${l}\n`)
         assert.equal(lines.length, 5)
         const expected = 'line one\n\nline two\n\nline three'
           .split('\n')
-          .map((l) => l + '\n')
+          .map((l) => `${l}\n`)
         assert.deepEqual(lines, expected)
       }
     })
@@ -120,11 +120,11 @@ line three
         assertXpath(output, '//pre', 1)
         assertXpath(output, '//pre/text()', 1)
         const text = xmlnodesAtXpath('//pre/text()', output, 1).text
-        const lines = text.split('\n').map((l) => l + '\n')
+        const lines = text.split('\n').map((l) => `${l}\n`)
         assert.equal(lines.length, 5)
         const expected = 'line one\n\nline two\n\nline three'
           .split('\n')
-          .map((l) => l + '\n')
+          .map((l) => `${l}\n`)
         assert.deepEqual(lines, expected)
       }
     })
@@ -151,11 +151,11 @@ ____
           output,
           1
         ).text
-        const lines = text.split('\n').map((l) => l + '\n')
+        const lines = text.split('\n').map((l) => `${l}\n`)
         assert.equal(lines.length, 5)
         const expected = 'line one\n\nline two\n\nline three'
           .split('\n')
-          .map((l) => l + '\n')
+          .map((l) => `${l}\n`)
         assert.deepEqual(lines, expected)
       }
     })
