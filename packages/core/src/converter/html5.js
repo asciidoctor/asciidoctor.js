@@ -952,7 +952,9 @@ ${titleElement}<div class="content">
         const br = `${LF}<br${this._voidSlash}>`
         equation = equation.replace(StemBreakRx, (match) => {
           const newlineCount = (match.match(/\n/g) || []).length
-          return `${close}${br.repeat(newlineCount - 1)}${LF}${open}`
+          // Blank lines (\n\n+) produce newlineCount <br>; escaped newlines produce newlineCount - 1.
+          const brCount = match[0] === '\n' ? newlineCount : newlineCount - 1
+          return `${close}${br.repeat(brCount)}${LF}${open}`
         })
       }
       if (!equation.startsWith(open) || !equation.endsWith(close)) {
