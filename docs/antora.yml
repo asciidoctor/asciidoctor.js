@@ -1,7 +1,7 @@
 name: asciidoctor.js
 title: Asciidoctor.js
 version: '4.0'
-prerelease: true
+prerelease: '.0-alpha'
 asciidoc:
   attributes:
     url-jsdoc-latest: 'https://asciidoctor.github.io/asciidoctor.js/main/'

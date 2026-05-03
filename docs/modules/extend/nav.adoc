@@ -13,3 +13,4 @@
 ** xref:extensions/ecosystem.adoc[Extensions ecosystem]
 * xref:converter/template-converter.adoc[Template Converter]
 * xref:converter/custom-converter.adoc[Custom Converter]
+* xref:syntax-highlighter/custom-syntax-highlighter.adoc[Custom Syntax Highlighter]

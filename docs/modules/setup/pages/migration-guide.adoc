@@ -1,11 +1,16 @@
 = Migration guide: @asciidoctor/core v3 → v4
-:toc: left
-:toclevels: 3
 :icons: font
 
 `@asciidoctor/core` v4 is a complete rewrite of the library.
 v3 relied on Opal (a Ruby-to-JavaScript transpiler) to produce a JS bundle from the Ruby source.
 v4 is a native JavaScript implementation — no transpilation, no Ruby, pure ESM.
+
+The library source is written in ESM only.
+For compatibility, a CommonJS bundle is also provided and the `package.json` exports field points to the appropriate format automatically — `require()` continues to work.
+
+== Requirements
+
+* *Node.js >= 24* (current LTS)
 
 == Breaking changes
 
@@ -83,7 +88,7 @@ Some internal properties and options that retained the Ruby `snake_case` style i
 | v3 | v4 | Note
 
 | `isRole(expectedValue?)` → `boolean`
-| `hasRoleAttr(expectedValue?)` → `boolean`
+| `hasRoleAttribute(expectedValue?)` → `boolean`
 | Checks whether the `role` attribute is set
 
 | `isOption(name)` → `boolean`
@@ -183,6 +188,48 @@ if (!node.getAttribute('language')) { ... }
 | `xreftext(xrefstyle?)` → `Promise<string\|null>` +
   alias: `getXrefText(xrefstyle?)`
 |===
+
+=== Extensions transpiled with Opal
+
+Extensions written in Ruby and transpiled to JavaScript via Opal will no longer work.
+v4 does not include the Opal runtime, so any Opal-generated code will fail at load time.
+
+Extensions must be rewritten in pure JavaScript (ESM).
+The extension API is largely similar, but some differences may exist — refer to the extension documentation for details.
+
+In addition, extension processors can now be asynchronous: the `process` method may return a `Promise`, which will be properly awaited during conversion.
+
+[cols="1,1"]
+|===
+| v3 | v4
+
+| Extensions written in Ruby, transpiled via Opal
+| Extensions written in pure JavaScript (ESM)
+|===
+
+=== Custom converters
+
+If you have a custom converter, its `convert()` method must now be asynchronous and return a `Promise`.
+
+[source,javascript]
+----
+// v3 — synchronous
+convert(node, transform) {
+  return `<p>${node.getContent()}</p>`
+}
+
+// v4 — must be async
+async convert(node, transform) {
+  return `<p>${await node.getContent()}</p>`
+}
+----
+
+=== Custom syntax highlighters
+
+The syntax highlighter API distinguishes between two methods with different async requirements:
+
+* `highlight(node, source, lang, opts)` — must remain *synchronous*, returns a `string` or `[string, number]`
+* `format(node, lang, opts)` — can be synchronous or asynchronous; returning a `Promise<string>` is recommended for I/O-bound operations, but a plain `string` works too
 
 === Not implemented in v4
 
