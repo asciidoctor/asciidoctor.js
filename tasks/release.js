@@ -92,17 +92,15 @@ function updateChangelog(version) {
   const content = readFileSync(changelogPath, 'utf8')
   const releaseDate = new Date().toISOString().slice(0, 10)
 
-  const author = childProcess
-    .execSync('git config user.name', { cwd: projectRootDirectory })
-    .toString()
-    .trim()
+  const author = execRead('git config user.name', {
+    cwd: projectRootDirectory,
+  }).trim()
 
   let previousTag = ''
   try {
-    previousTag = childProcess
-      .execSync('git describe --abbrev=0 --tags', { cwd: projectRootDirectory })
-      .toString()
-      .trim()
+    previousTag = execRead('git describe --abbrev=0 --tags', {
+      cwd: projectRootDirectory,
+    }).trim()
   } catch {
     // No previous tags exist yet
   }
@@ -124,11 +122,26 @@ function updateChangelog(version) {
   }
 }
 
-function execSync(command, opts) {
+function execRead(command, opts) {
+  return childProcess.execSync(command, { encoding: 'utf8', ...opts })
+}
+
+function updatePackageJson(pkgPath, updater) {
+  const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
+  updater(pkg)
+  const updated = JSON.stringify(pkg, null, 2).concat('\n')
+  if (process.env.DRY_RUN) {
+    console.log(`Dry run! ${pkgPath} will be updated:\n${updated}`)
+  } else {
+    writeFileSync(pkgPath, updated)
+  }
+}
+
+function execRun(command, opts) {
   console.log(command)
   if (!process.env.DRY_RUN) {
-    const stdout = childProcess.execSync(command, opts)
-    process.stdout.write(stdout)
+    const stdout = childProcess.execSync(command, { encoding: 'utf8', ...opts })
+    if (stdout) console.log(stdout.trimEnd())
     return stdout
   }
 }
@@ -140,76 +153,52 @@ const prepareRelease = (releaseVersion) => {
       'Dry run! To perform the release, run the command again without DRY_RUN environment variable'
     )
   }
-  try {
-    childProcess.execSync('git diff-index --quiet HEAD --', {
-      cwd: projectRootDirectory,
-    })
-  } catch {
+  const gitStatus = execRead('git status --porcelain', {
+    cwd: projectRootDirectory,
+  })
+  if (gitStatus) {
     console.error('Git working directory not clean')
-    process.stdout.write(childProcess.execSync('git status -s'))
+    console.error(gitStatus)
     process.exit(1)
   }
-  const branchName = childProcess
-    .execSync('git symbolic-ref --short HEAD', { cwd: projectRootDirectory })
-    .toString('utf-8')
-    .trim()
+  const branchName = execRead('git symbolic-ref --short HEAD', {
+    cwd: projectRootDirectory,
+  }).trim()
   if (branchName !== 'main' && !/^\d+\.\d+\.x$/.test(branchName)) {
     console.error(
       'Release must be performed on main branch or a maintenance branch (e.g. 1.2.x)'
     )
     process.exit(1)
   }
-  // update asciidoctor package version and dependencies
-  const asciidoctorPkgPath = join(
-    projectRootDirectory,
-    'packages',
-    'asciidoctor',
-    'package.json'
+  // update core version
+  updatePackageJson(
+    join(projectRootDirectory, 'packages', 'core', 'package.json'),
+    (pkg) => {
+      pkg.version = releaseVersion
+    }
   )
-  const asciidoctorPkg = JSON.parse(readFileSync(asciidoctorPkgPath, 'utf8'))
-  asciidoctorPkg.version = releaseVersion
-  asciidoctorPkg.dependencies['@asciidoctor/core'] = releaseVersion
-  const asciidoctorPkgUpdated = JSON.stringify(asciidoctorPkg, null, 2).concat(
-    '\n'
+  // update asciidoctor version and its @asciidoctor/core dependency
+  updatePackageJson(
+    join(projectRootDirectory, 'packages', 'asciidoctor', 'package.json'),
+    (pkg) => {
+      pkg.version = releaseVersion
+      pkg.dependencies['@asciidoctor/core'] = releaseVersion
+    }
   )
-  if (process.env.DRY_RUN) {
-    console.log(
-      `Dry run! ${asciidoctorPkgPath} will be updated:\n${asciidoctorPkgUpdated}`
-    )
-  } else {
-    writeFileSync(asciidoctorPkgPath, asciidoctorPkgUpdated)
-  }
-  // update core package version
-  const corePkgPath = join(
-    projectRootDirectory,
-    'packages',
-    'core',
-    'package.json'
-  )
-  const corePkg = JSON.parse(readFileSync(corePkgPath, 'utf8'))
-  corePkg.version = releaseVersion
-  const corePkgUpdated = JSON.stringify(corePkg, null, 2).concat('\n')
-  if (process.env.DRY_RUN) {
-    console.log(`Dry run! ${corePkgPath} will be updated:\n${corePkgUpdated}`)
-  } else {
-    writeFileSync(corePkgPath, corePkgUpdated)
-  }
   // update changelog and generate release notes
   updateChangelog(releaseVersion)
   // git commit and tag
-  execSync(`git commit -a -m "${releaseVersion}"`, {
+  execRun(`git commit -a -m "${releaseVersion}"`, {
     cwd: projectRootDirectory,
   })
-  execSync(`git tag v${releaseVersion} -m "${releaseVersion}"`, {
+  execRun(`git tag v${releaseVersion} -m "${releaseVersion}"`, {
     cwd: projectRootDirectory,
   })
 }
 
 export const pushRelease = () => {
   if (process.env.DRY_RUN || process.env.NO_PUSH) return false
-  const remoteName = childProcess
-    .execSync('git remote -v')
-    .toString('utf8')
+  const remoteName = execRead('git remote -v')
     .split(/\r?\n/)
     .filter(
       (line) =>
@@ -219,8 +208,8 @@ export const pushRelease = () => {
     .map((line) => line.split('\t')[0])
     .reduce((a, b) => a + b, '')
   if (remoteName) {
-    execSync(`git push ${remoteName} main`)
-    execSync(`git push ${remoteName} --tags`)
+    execRun(`git push ${remoteName} main`)
+    execRun(`git push ${remoteName} --tags`)
     return true
   }
   console.warn(

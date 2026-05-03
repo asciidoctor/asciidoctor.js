@@ -8,9 +8,7 @@ let childProcessExecSyncStub
 
 describe('Build', () => {
   beforeEach(() => {
-    childProcessExecSyncStub = sinon
-      .stub(childProcess, 'execSync')
-      .returns(Buffer.from(''))
+    childProcessExecSyncStub = sinon.stub(childProcess, 'execSync').returns('')
   })
 
   afterEach(() => {
