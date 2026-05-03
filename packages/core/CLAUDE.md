@@ -84,7 +84,10 @@ The Biome config is in `biome.json` (package-level) and the root `biome.json`. T
 ## Running tests
 
 ```
-npm test
+npm test                              # all packages (from repo root)
+npm test -w @asciidoctor/core         # core package only
+npm run test:browser -w @asciidoctor/core  # browser tests (Vitest + Playwright)
+npm run test:coverage -w @asciidoctor/core # with coverage report
 ```
 
 Tests use the Node.js built-in test runner (`node:test` / `node:assert/strict`). No additional test framework is required.
