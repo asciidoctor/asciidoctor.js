@@ -30,7 +30,10 @@ import {
 } from './extensions.js'
 import {
   Converter,
+  ConverterBase,
+  CustomFactory,
   DefaultFactory as DefaultConverterFactory,
+  deriveBackendTraits,
 } from './converter.js'
 import { Inline } from './inline.js'
 import { Block } from './block.js'
@@ -125,7 +128,10 @@ export {
   Extensions,
   Cursor,
   Converter as ConverterFactory,
+  ConverterBase,
+  CustomFactory as ConverterCustomFactory,
   DefaultConverterFactory,
+  deriveBackendTraits,
   DefaultSyntaxHighlighterFactory,
   Html5Converter,
   SyntaxHighlighter,
