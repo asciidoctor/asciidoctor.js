@@ -1,7 +1,12 @@
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { assertCss, assertXpath, assertMessage } from './helpers.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  xmlnodesAtXpath,
+} from './helpers.js'
 import {
   documentFromString,
   convertString,
@@ -90,14 +95,13 @@ line three
         const output = await convertString(input, { standalone })
         assertXpath(output, '//pre', 1)
         assertXpath(output, '//pre/text()', 1)
-        // TODO: needs DOM parser
-        // const text = xmlnodes_at_xpath('//pre/text()', output, 1).text
-        // const lines = text.split('\n').map((l) => l + '\n')
-        // assert.equal(lines.length, 5)
-        // const expected = 'line one\n\nline two\n\nline three'.split('\n').map((l) => l + '\n')
-        // assert.deepEqual(lines, expected)
-        const blankLines = (output.match(/\n[ \t]*\n/g) || []).length
-        assert.ok(blankLines >= 2)
+        const text = xmlnodesAtXpath('//pre/text()', output, 1).text
+        const lines = text.split('\n').map((l) => l + '\n')
+        assert.equal(lines.length, 5)
+        const expected = 'line one\n\nline two\n\nline three'
+          .split('\n')
+          .map((l) => l + '\n')
+        assert.deepEqual(lines, expected)
       }
     })
 
@@ -115,14 +119,13 @@ line three
         const output = await convertString(input, { standalone })
         assertXpath(output, '//pre', 1)
         assertXpath(output, '//pre/text()', 1)
-        // TODO: needs DOM parser
-        // const text = xmlnodes_at_xpath('//pre/text()', output, 1).text
-        // const lines = text.split('\n').map((l) => l + '\n')
-        // assert.equal(lines.length, 5)
-        // const expected = 'line one\n\nline two\n\nline three'.split('\n').map((l) => l + '\n')
-        // assert.deepEqual(lines, expected)
-        const blankLines = (output.match(/\n[ \t]*\n/g) || []).length
-        assert.ok(blankLines >= 2)
+        const text = xmlnodesAtXpath('//pre/text()', output, 1).text
+        const lines = text.split('\n').map((l) => l + '\n')
+        assert.equal(lines.length, 5)
+        const expected = 'line one\n\nline two\n\nline three'
+          .split('\n')
+          .map((l) => l + '\n')
+        assert.deepEqual(lines, expected)
       }
     })
 
@@ -143,14 +146,17 @@ ____
         const output = await convertString(input, { standalone })
         assertXpath(output, '//*[@class="verseblock"]/pre', 1)
         assertXpath(output, '//*[@class="verseblock"]/pre/text()', 1)
-        // TODO: needs DOM parser
-        // const text = xmlnodes_at_xpath('//*[@class="verseblock"]/pre/text()', output, 1).text
-        // const lines = text.split('\n').map((l) => l + '\n')
-        // assert.equal(lines.length, 5)
-        // const expected = 'line one\n\nline two\n\nline three'.split('\n').map((l) => l + '\n')
-        // assert.deepEqual(lines, expected)
-        const blankLines = (output.match(/\n[ \t]*\n/g) || []).length
-        assert.ok(blankLines >= 2)
+        const text = xmlnodesAtXpath(
+          '//*[@class="verseblock"]/pre/text()',
+          output,
+          1
+        ).text
+        const lines = text.split('\n').map((l) => l + '\n')
+        assert.equal(lines.length, 5)
+        const expected = 'line one\n\nline two\n\nline three'
+          .split('\n')
+          .map((l) => l + '\n')
+        assert.deepEqual(lines, expected)
       }
     })
 
@@ -207,7 +213,7 @@ last line
     end
 ----
 `
-      const _expected = `def names
+      const expected = `def names
 
   @names.split
 
@@ -216,9 +222,8 @@ end`
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'pre', 1)
       assertCss(output, '.listingblock pre', 1)
-      // TODO: needs DOM parser
-      // const result = xmlnodes_at_xpath('//pre', output, 1).text
-      // assert.equal(result, expected)
+      const result = xmlnodesAtXpath('//pre', output, 1).text
+      assert.equal(result, expected)
     })
 
     test('should not remove block indent if indent attribute is -1', async () => {
@@ -234,14 +239,13 @@ end`
 `
       // expected = lines 2..6 (0-based) joined, with trailing newline chopped
       const inputLines = input.split('\n')
-      const _expected = inputLines.slice(2, 7).join('\n').replace(/\n$/, '')
+      const expected = inputLines.slice(2, 7).join('\n').replace(/\n$/, '')
 
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'pre', 1)
       assertCss(output, '.listingblock pre', 1)
-      // TODO: needs DOM parser
-      // const result = xmlnodes_at_xpath('//pre', output, 1).text
-      // assert.equal(result, expected)
+      const result = xmlnodesAtXpath('//pre', output, 1).text
+      assert.equal(result, expected)
     })
 
     test('should set block indent to value specified by indent attribute', async () => {
@@ -257,7 +261,7 @@ end`
 `
       // expected = lines 2..6 with 4 spaces replaced by 1 space, joined, trailing newline chopped
       const inputLines = input.split('\n')
-      const _expected = inputLines
+      const expected = inputLines
         .slice(2, 7)
         .map((l) => l.replace('    ', ' '))
         .join('\n')
@@ -266,9 +270,8 @@ end`
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'pre', 1)
       assertCss(output, '.listingblock pre', 1)
-      // TODO: needs DOM parser
-      // const result = xmlnodes_at_xpath('//pre', output, 1).text
-      // assert.equal(result, expected)
+      const result = xmlnodesAtXpath('//pre', output, 1).text
+      assert.equal(result, expected)
     })
 
     test('should set block indent to value specified by indent document attribute', async () => {
@@ -286,7 +289,7 @@ end`
 `
       // expected = lines 4..8 with 4 spaces replaced by 1 space, joined, trailing newline chopped
       const inputLines = input.split('\n')
-      const _expected = inputLines
+      const expected = inputLines
         .slice(4, 9)
         .map((l) => l.replace('    ', ' '))
         .join('\n')
@@ -295,9 +298,8 @@ end`
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'pre', 1)
       assertCss(output, '.listingblock pre', 1)
-      // TODO: needs DOM parser
-      // const result = xmlnodes_at_xpath('//pre', output, 1).text
-      // assert.equal(result, expected)
+      const result = xmlnodesAtXpath('//pre', output, 1).text
+      assert.equal(result, expected)
     })
 
     test('should expand tabs if tabsize attribute is positive', async () => {
