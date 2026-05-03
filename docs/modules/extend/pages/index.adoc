@@ -28,3 +28,7 @@ Asciidoctor provides an xref:extensions/index.adoc[extension API] that offers a 
 
 Custom converter::
 A custom converter is a plain JavaScript class that implements the `convert(node, transform)` method.
+
+Custom syntax highlighter::
+A custom syntax highlighter controls how source blocks are rendered.
+You can provide server-side or client-side highlighting by extending xref:syntax-highlighter/custom-syntax-highlighter.adoc[`SyntaxHighlighterBase`].

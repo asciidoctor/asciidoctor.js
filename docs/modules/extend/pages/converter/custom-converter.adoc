@@ -126,21 +126,57 @@ In the example below we will use a custom converter to convert `paragraph` but t
 
 [source,js]
 ----
-import { ConverterFactory, Html5Converter } from '@asciidoctor/core'
+import { Html5Converter } from '@asciidoctor/core'
 
 class SemanticParagraphConverter {
   constructor () {
-    this.baseConverter = new Html5Converter() // <1>
+    this.baseConverter = Html5Converter.create() // <1>
   }
 
-  async convert (node, transform) {
+  async convert (node, transform, opts) {
     if (node.getNodeName() === 'paragraph') {
       return `<p>${await node.getContent()}</p>` // <2>
     }
-    return this.baseConverter.convert(node, transform) // <3>
+    return this.baseConverter.convert(node, transform, opts) // <3>
   }
 }
 ----
 <1> Instantiate the built-in HTML5 converter
 <2> Define how the `paragraph` node will be converted
-<3> By default call the built-in HTML5 converter
+<3> By default, call the built-in HTML5 converter
+
+
+=== Inheritance pattern
+
+As an alternative to composition, you can _extend_ `Html5Converter` directly.
+Because `Html5Converter` dispatches each node to a dedicated `convert_<nodeName>` method, you only need to override the method(s) you care about — all other nodes are handled automatically by the parent class:
+
+[source,js]
+----
+import { Html5Converter } from '@asciidoctor/core'
+
+class SemanticParagraphConverter extends Html5Converter { // <1>
+  async convert_paragraph (node) { // <2>
+    return `<p>${await node.getContent()}</p>`
+  }
+}
+----
+<1> Extend the built-in HTML5 converter
+<2> Override only the `paragraph` node handler — all other nodes fall through to the parent class
+
+If you prefer to override the top-level `convert` method instead, call `super.convert(node, transform)` to delegate to the parent:
+
+[source,js]
+----
+import { Html5Converter } from '@asciidoctor/core'
+
+class SemanticParagraphConverter extends Html5Converter {
+  async convert (node, transform, opts) {
+    if (node.getNodeName() === 'paragraph') {
+      return `<p>${await node.getContent()}</p>`
+    }
+    return super.convert(node, transform, opts) // <1>
+  }
+}
+----
+<1> Delegate to the built-in HTML5 converter for every other node

@@ -1,5 +1,11 @@
 = Asciidoctor.js Documentation
 
+[IMPORTANT]
+====
+This documentation covers an *alpha* version currently under active development.
+Some features may be missing or behave differently from the final release.
+====
+
 Asciidoctor.js brings AsciiDoc to the JavaScript world!
 
 This project is a *native JavaScript implementation* of https://asciidoctor.org[Asciidoctor], the modern AsciiDoc processor.
@@ -14,5 +20,6 @@ Key highlights:
 * *No runtime dependencies* — no Opal, no Ruby, no generated bundle
 * *Fast* — native JavaScript execution with no interpreter overhead
 * *Browser and Node.js* — one library, two environments
+* *Node.js >= 24* — requires Node.js 24 (current LTS) or later
 
 Head to the xref:setup:install.adoc[Install guide] to get started.

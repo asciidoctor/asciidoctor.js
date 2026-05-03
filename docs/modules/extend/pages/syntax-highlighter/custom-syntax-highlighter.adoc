@@ -1,0 +1,140 @@
+= Custom Syntax Highlighter
+:url-syntaxhighlighterbase-jsdoc: {url-jsdoc-latest}/#syntaxhighlighterbase
+:url-block-jsdoc: {url-jsdoc-latest}/#block
+
+On this page, you'll learn how to create and register a custom syntax highlighter.
+
+== Overview
+
+A syntax highlighter controls how source blocks are rendered.
+Asciidoctor.js ships with a https://highlightjs.org[highlight.js] adapter, but you can provide your own implementation by extending {url-syntaxhighlighterbase-jsdoc}[`SyntaxHighlighterBase`].
+
+There are two usage patterns:
+
+Server-side highlighting::
+The highlighter processes the source at conversion time.
+Override `handlesHighlighting()` → `true` and implement `highlight()`.
+
+Client-side highlighting::
+The highlighter injects scripts or stylesheets into the output document.
+Override `hasDocinfo()` → `true` and implement `docinfo()`.
+
+Both patterns can also override `format()` to control the `<pre><code>` wrapper.
+
+== Server-side highlighting
+
+In this pattern, the `highlight()` method receives the raw source text and returns the highlighted markup.
+
+[source,js]
+----
+import { SyntaxHighlighterBase } from '@asciidoctor/core'
+
+class UpperCaseHighlighter extends SyntaxHighlighterBase { // <1>
+  handlesHighlighting() {
+    return true // <2>
+  }
+
+  highlight(node, source, lang, opts) {
+    return source.toUpperCase() // <3>
+  }
+}
+----
+<1> Extend `SyntaxHighlighterBase` to inherit the default `format()` implementation.
+<2> Return `true` to tell Asciidoctor.js that this highlighter processes source at conversion time.
+<3> `source` is the raw source text; return the highlighted markup as a plain `string`.
+    Return a `[string, number]` tuple if the source shifts by one or more lines (e.g. line numbers are prepended).
+
+== Client-side highlighting
+
+In this pattern, the highlighter injects a script or stylesheet into the output document and leaves the source block as-is for the browser to process.
+
+[source,js]
+----
+import { SyntaxHighlighterBase } from '@asciidoctor/core'
+
+class PrismHighlighter extends SyntaxHighlighterBase {
+  hasDocinfo(location) {
+    return location === 'footer' // <1>
+  }
+
+  docinfo(location, doc, opts) {
+    return '<script src="https://cdn.example.com/prism.js"></script>' // <2>
+  }
+}
+----
+<1> Return `true` for the location slots where this highlighter needs to inject markup (`'head'` or `'footer'`).
+<2> Return the HTML markup to inject at the given location.
+
+== Customising the `<pre><code>` wrapper
+
+Both patterns use the `format()` method to wrap the source in `<pre><code>` tags.
+The base class provides a default implementation; override it to change the wrapper.
+
+`format()` may return a plain `string` or a `Promise<string>` — the caller always `await`s the result.
+
+[source,js]
+----
+import { SyntaxHighlighterBase } from '@asciidoctor/core'
+
+class MinimalHighlighter extends SyntaxHighlighterBase {
+  async format(node, lang, opts) {
+    const content = await node.content() // <1>
+    return `<pre><code>${content}</code></pre>` // <2>
+  }
+}
+----
+<1> Call `node.content()` to get the (possibly highlighted) source with all substitutions applied.
+<2> Return the final HTML wrapping the source block.
+
+== Registering a custom syntax highlighter
+
+=== Per-conversion override with `syntax_highlighters`
+
+Pass a `syntax_highlighters` map to `load()` or `convert()` to override a specific highlighter name for a single conversion.
+Setting a name to `null` disables that highlighter.
+
+[source,js]
+----
+import { load } from '@asciidoctor/core'
+
+const doc = await load(input, {
+  safe: 'safe',
+  syntax_highlighters: { 'my-hl': UpperCaseHighlighter }, // <1>
+  attributes: { 'source-highlighter': 'my-hl' },
+})
+----
+<1> Map the name used in `:source-highlighter:` to your class.
+    Other highlighters (e.g. `highlightjs`) remain available.
+
+To disable a highlighter:
+
+[source,js]
+----
+const doc = await load(input, {
+  safe: 'safe',
+  syntax_highlighters: { 'highlightjs': null }, // <1>
+  attributes: { 'source-highlighter': 'highlightjs' },
+})
+// doc.syntaxHighlighter === null
+----
+<1> Setting a name to `null` prevents the highlighter from being resolved.
+
+=== Global registration with a custom factory
+
+For full control over highlighter resolution, pass a `syntax_highlighter_factory` instance.
+
+[source,js]
+----
+import { load, CustomFactory } from '@asciidoctor/core'
+
+const factory = new CustomFactory({ 'my-hl': UpperCaseHighlighter }) // <1>
+
+const doc = await load(input, {
+  safe: 'safe',
+  syntax_highlighter_factory: factory,
+  attributes: { 'source-highlighter': 'my-hl' },
+})
+----
+<1> `CustomFactory` takes a seed registry as a plain object.
+    Only the names registered in this factory are available — built-in adapters are not inherited.
+    Use `syntax_highlighters` instead if you want to keep built-in adapters available.
