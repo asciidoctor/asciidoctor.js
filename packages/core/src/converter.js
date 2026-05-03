@@ -1,3 +1,5 @@
+/** @import { AbstractNode } from './abstract_node.js' */
+
 // ESM conversion of converter.rb
 //
 // Ruby-to-JavaScript notes:
@@ -25,7 +27,18 @@ export function applyBackendTraits(instance) {
   instance._backendTraits = null
 
   instance.basebackend = function (value = null) {
-    if (value) return ((this._backendTraits ??= {}).basebackend = value)
+    if (value) {
+      const traits = (this._backendTraits ??= {})
+      traits.basebackend = value
+      // Derive filetype/outfilesuffix/htmlsyntax from the new basebackend when not already set
+      // (mirrors Ruby's Converter::Base#derive_backend_traits behaviour)
+      const derived = deriveBackendTraits(value)
+      if (!traits.outfilesuffix) traits.outfilesuffix = derived.outfilesuffix
+      if (!traits.filetype) traits.filetype = derived.filetype
+      if (derived.htmlsyntax && !traits.htmlsyntax)
+        traits.htmlsyntax = derived.htmlsyntax
+      return value
+    }
     return this._getBackendTraits().basebackend
   }
   instance.filetype = function (value = null) {
@@ -125,7 +138,13 @@ export function normalizeConverter(converter, backend) {
 
   // Apply the BackendTraits mixin so Document can call the standard accessor methods.
   applyBackendTraits(converter)
-  if (traits) converter._backendTraits = traits
+  if (traits) {
+    converter._backendTraits = traits
+  } else if (backend && !('backend' in converter)) {
+    // Converter has no explicit traits and no backend property: derive traits
+    // from the backend name so that filetype/outfilesuffix are not left empty.
+    converter._backendTraits = deriveBackendTraits(backend)
+  }
   return converter
 }
 
@@ -409,12 +428,12 @@ export class ConverterBase {
   /**
    * Convert a node by dispatching to a `convert_<transform>` method.
    *
-   * @param {object} node - the AbstractNode to convert
-   * @param {string|null} [transform=null] - hint for which method to call (default: node.nodeName)
-   * @param {object|null} [opts=null] - optional hints
-   * @returns {Promise<unknown>} the result of the `convert_<transform>` handler; the actual type depends on the implementation
+   * @param {AbstractNode} node - the AbstractNode to convert
+   * @param {string|null=} transform - hint for which method to call (default: node.nodeName)
+   * @param {object|null=} opts - optional hints
+   * @returns {Promise<unknown>|unknown} the result of the `convert_<transform>` handler; the actual type depends on the implementation
    */
-  async convert(node, transform = null, opts = null) {
+  convert(node, transform = null, opts = null) {
     const method = `convert_${transform ?? node.nodeName}`
     if (typeof this[method] === 'function') {
       return opts ? this[method](node, opts) : this[method](node)

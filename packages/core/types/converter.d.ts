@@ -124,12 +124,12 @@ export class ConverterBase {
     /**
      * Convert a node by dispatching to a `convert_<transform>` method.
      *
-     * @param {object} node - the AbstractNode to convert
-     * @param {string|null} [transform=null] - hint for which method to call (default: node.nodeName)
-     * @param {object|null} [opts=null] - optional hints
-     * @returns {Promise<unknown>} the result of the `convert_<transform>` handler; the actual type depends on the implementation
+     * @param {AbstractNode} node - the AbstractNode to convert
+     * @param {string|null=} transform - hint for which method to call (default: node.nodeName)
+     * @param {object|null=} opts - optional hints
+     * @returns {Promise<unknown>|unknown} the result of the `convert_<transform>` handler; the actual type depends on the implementation
      */
-    convert(node: object, transform?: string | null, opts?: object | null): Promise<unknown>;
+    convert(node: AbstractNode, transform?: (string | null) | undefined, opts?: (object | null) | undefined): Promise<unknown> | unknown;
     /**
      * Report whether this converter can handle the given transform.
      *
@@ -147,3 +147,4 @@ export class ConverterBase {
     /** Skip conversion (no-op). */
     skip(_node: any): void;
 }
+import type { AbstractNode } from './abstract_node.js';
