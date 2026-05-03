@@ -3,7 +3,7 @@
 
 import assert from 'node:assert/strict'
 import { parse } from 'node-html-parser'
-import { DOMParser } from '@xmldom/xmldom'
+import { DOMParser, XMLSerializer } from '@xmldom/xmldom'
 import { useNamespaces } from 'xpath'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
 
@@ -65,10 +65,9 @@ export function assertCss(html, selector, expected) {
 }
 
 /**
- * Count occurrences of an XPath expression in an HTML string.
- * Ruby: assert_xpath '//p', html, 2
+ * Select XPath nodes from an HTML/XML string. Returns an array of raw xmldom nodes.
  */
-export function countXpath(html, xpath) {
+function _selectXpathNodes(html, xpath) {
   const trimmed = html.trimStart()
   let xmlSrc
   if (
@@ -108,8 +107,68 @@ export function countXpath(html, xpath) {
   const selectFn = useNamespaces({
     xml: 'http://www.w3.org/XML/1998/namespace',
   })
-  const nodes = selectFn(xpath, /** @type {any} */ (doc))
-  return Array.isArray(nodes) ? nodes.length : nodes ? 1 : 0
+  const result = selectFn(xpath, /** @type {any} */ (doc))
+  return Array.isArray(result) ? result : result ? [result] : []
+}
+
+function _wrapNode(node) {
+  return {
+    get text() {
+      if (node.nodeType === 3 || node.nodeType === 4)
+        return node.nodeValue ?? ''
+      return node.textContent ?? ''
+    },
+    get innerHtml() {
+      const serializer = new XMLSerializer()
+      return Array.from(node.childNodes ?? [])
+        .map((n) => serializer.serializeToString(n))
+        .join('')
+    },
+    get children() {
+      return Array.from(node.childNodes ?? []).map(_wrapNode)
+    },
+    getAttribute(name) {
+      return node.getAttribute?.(name) ?? null
+    },
+    toString() {
+      return new XMLSerializer().serializeToString(node)
+    },
+  }
+}
+
+/**
+ * Count occurrences of an XPath expression in an HTML string.
+ * Ruby: assert_xpath '//p', html, 2
+ */
+export function countXpath(html, xpath) {
+  return _selectXpathNodes(html, xpath).length
+}
+
+/**
+ * Select nodes at an XPath in an HTML string and return wrapped node object(s).
+ * When expectedCount is provided, asserts the count and returns the first node.
+ * When omitted, returns an array of wrapped nodes.
+ *
+ * Each wrapped node exposes:
+ *   .text        — decoded text content (entities decoded, like Nokogiri .content)
+ *   .innerHtml   — serialized inner HTML (entities re-encoded, like Nokogiri .inner_html)
+ *   .children    — all child nodes as wrapped nodes (like Nokogiri .children)
+ *   .getAttribute(name) — attribute value
+ *   .toString()  — serialized form of the node (entities re-encoded, like Nokogiri .to_s)
+ *
+ * Argument order matches Ruby's xmlnodes_at_xpath: (xpath, html, expectedCount)
+ */
+export function xmlnodesAtXpath(xpath, html, expectedCount) {
+  const rawNodes = _selectXpathNodes(html, xpath)
+  if (expectedCount !== undefined) {
+    assert.equal(
+      rawNodes.length,
+      expectedCount,
+      `Expected ${expectedCount} node(s) at XPath "${xpath}" but found ${rawNodes.length}`
+    )
+    return _wrapNode(rawNodes[0])
+  }
+  return rawNodes.map(_wrapNode)
 }
 
 /**

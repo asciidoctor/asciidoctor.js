@@ -1,7 +1,7 @@
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { assertCss, assertXpath } from './helpers.js'
+import { assertCss, assertXpath, xmlnodesAtXpath } from './helpers.js'
 import {
   documentFromString,
   convertString,
@@ -46,9 +46,14 @@ describe('Blocks', () => {
 
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.stemblock', 1)
-      // TODO: needs DOM parser
-      // nodes = xmlnodes_at_xpath '//*[@class="content"]/child::text()', output
-      // assert.equal(nodes.first.to_s.strip, '\\[\\sqrt{3x-1}+(1+x)^2 &lt; y\\]')
+      const nodes1 = xmlnodesAtXpath(
+        '//*[@class="content"]/child::text()',
+        output
+      )
+      assert.equal(
+        nodes1[0].toString().trim(),
+        '\\[\\sqrt{3x-1}+(1+x)^2 &lt; y\\]'
+      )
     })
 
     test('should not add LaTeX math delimiters around latexmath block content if already present', async () => {
@@ -59,9 +64,14 @@ describe('Blocks', () => {
 
       const output = await convertStringToEmbedded(input)
       assertCss(output, '.stemblock', 1)
-      // TODO: needs DOM parser
-      // nodes = xmlnodes_at_xpath '//*[@class="content"]/child::text()', output
-      // assert.equal(nodes.first.to_s.strip, '\\[\\sqrt{3x-1}+(1+x)^2 &lt; y\\]')
+      const nodes2 = xmlnodesAtXpath(
+        '//*[@class="content"]/child::text()',
+        output
+      )
+      assert.equal(
+        nodes2[0].toString().trim(),
+        '\\[\\sqrt{3x-1}+(1+x)^2 &lt; y\\]'
+      )
     })
 
     test('should display latexmath block in alt of equation in DocBook backend', async () => {
@@ -148,14 +158,13 @@ y = x^2
 f: bbb"N" -> bbb"N"
 f: x |-> x + 1
 ++++`
-      const _expected = `\\$f: bbb"N" -&gt; bbb"N"
+      const expected3a = `\\$f: bbb"N" -&gt; bbb"N"
 f: x |-&gt; x + 1\\$`
 
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, '.stemblock', 1)
-      // TODO: needs DOM parser
-      // nodes = xmlnodes_at_xpath '//*[@class="content"]', output
-      // assert.equal(nodes.first.inner_html.strip, expected)
+      const output3a = await convertStringToEmbedded(input)
+      assertCss(output3a, '.stemblock', 1)
+      const nodes3a = xmlnodesAtXpath('//*[@class="content"]', output3a)
+      assert.equal(nodes3a[0].innerHtml.trim(), expected3a)
     })
 
     test('should split equation in AsciiMath block at escaped newline', async () => {
@@ -164,14 +173,13 @@ f: x |-&gt; x + 1\\$`
 f: bbb"N" -> bbb"N" \\
 f: x |-> x + 1
 ++++`
-      const _expected = `\\$f: bbb"N" -&gt; bbb"N"\\$
+      const expected3b = `\\$f: bbb"N" -&gt; bbb"N"\\$
 \\$f: x |-&gt; x + 1\\$`
 
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, '.stemblock', 1)
-      // TODO: needs DOM parser
-      // nodes = xmlnodes_at_xpath '//*[@class="content"]', output
-      // assert.equal(nodes.first.inner_html.strip, expected)
+      const output3b = await convertStringToEmbedded(input)
+      assertCss(output3b, '.stemblock', 1)
+      const nodes3b = xmlnodesAtXpath('//*[@class="content"]', output3b)
+      assert.equal(nodes3b[0].innerHtml.trim(), expected3b)
     })
 
     test('should split equation in AsciiMath block at sequence of escaped newlines', async () => {
@@ -181,15 +189,14 @@ f: bbb"N" -> bbb"N" \\
 \\
 f: x |-> x + 1
 ++++`
-      const _expected = `\\$f: bbb"N" -&gt; bbb"N"\\$
-<br>
+      const expected3c = `\\$f: bbb"N" -&gt; bbb"N"\\$
+<br/>
 \\$f: x |-&gt; x + 1\\$`
 
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, '.stemblock', 1)
-      // TODO: needs DOM parser
-      // nodes = xmlnodes_at_xpath '//*[@class="content"]', output
-      // assert.equal(nodes.first.inner_html.strip, expected)
+      const output3c = await convertStringToEmbedded(input)
+      assertCss(output3c, '.stemblock', 1)
+      const nodes3c = xmlnodesAtXpath('//*[@class="content"]', output3c)
+      assert.equal(nodes3c[0].innerHtml.trim(), expected3c)
     })
 
     test('should split equation in AsciiMath block at newline sequence and preserve breaks', async () => {
@@ -199,16 +206,15 @@ f: bbb"N" -> bbb"N"
 
 f: x |-> x + 1
 ++++`
-      const _expected = `\\$f: bbb"N" -&gt; bbb"N"\\$
-<br>
-<br>
+      const expected3d = `\\$f: bbb"N" -&gt; bbb"N"\\$
+<br/>
+<br/>
 \\$f: x |-&gt; x + 1\\$`
 
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, '.stemblock', 1)
-      // TODO: needs DOM parser
-      // nodes = xmlnodes_at_xpath '//*[@class="content"]', output
-      // assert.equal(nodes.first.inner_html.strip, expected)
+      const output3d = await convertStringToEmbedded(input)
+      assertCss(output3d, '.stemblock', 1)
+      const nodes3d = xmlnodesAtXpath('//*[@class="content"]', output3d)
+      assert.equal(nodes3d[0].innerHtml.trim(), expected3d)
     })
 
     test('should add AsciiMath delimiters around asciimath block content', async () => {
@@ -217,11 +223,16 @@ f: x |-> x + 1
 sqrt(3x-1)+(1+x)^2 < y
 ++++`
 
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, '.stemblock', 1)
-      // TODO: needs DOM parser
-      // nodes = xmlnodes_at_xpath '//*[@class="content"]/child::text()', output
-      // assert.equal(nodes.first.to_s.strip, '\\$sqrt(3x-1)+(1+x)^2 &lt; y\\$')
+      const output4a = await convertStringToEmbedded(input)
+      assertCss(output4a, '.stemblock', 1)
+      const nodes4a = xmlnodesAtXpath(
+        '//*[@class="content"]/child::text()',
+        output4a
+      )
+      assert.equal(
+        nodes4a[0].toString().trim(),
+        '\\$sqrt(3x-1)+(1+x)^2 &lt; y\\$'
+      )
     })
 
     test('should not add AsciiMath delimiters around asciimath block content if already present', async () => {
@@ -230,11 +241,16 @@ sqrt(3x-1)+(1+x)^2 < y
 \\$sqrt(3x-1)+(1+x)^2 < y\\$
 ++++`
 
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, '.stemblock', 1)
-      // TODO: needs DOM parser
-      // nodes = xmlnodes_at_xpath '//*[@class="content"]/child::text()', output
-      // assert.equal(nodes.first.to_s.strip, '\\$sqrt(3x-1)+(1+x)^2 &lt; y\\$')
+      const output4b = await convertStringToEmbedded(input)
+      assertCss(output4b, '.stemblock', 1)
+      const nodes4b = xmlnodesAtXpath(
+        '//*[@class="content"]/child::text()',
+        output4b
+      )
+      assert.equal(
+        nodes4b[0].toString().trim(),
+        '\\$sqrt(3x-1)+(1+x)^2 &lt; y\\$'
+      )
     })
 
     test('should convert contents of asciimath block to MathML in DocBook output if asciimath gem is available', async () => {
@@ -306,9 +322,14 @@ sqrt(3x-1)+(1+x)^2 < y
       ]) {
         const output = await convertStringToEmbedded(input, { attributes })
         assertCss(output, '.stemblock', 1)
-        // TODO: needs DOM parser
-        // nodes = xmlnodes_at_xpath '//*[@class="content"]/child::text()', output
-        // assert.equal(nodes.first.to_s.strip, '\\$sqrt(3x-1)+(1+x)^2 &lt; y\\$')
+        const nodes5a = xmlnodesAtXpath(
+          '//*[@class="content"]/child::text()',
+          output
+        )
+        assert.equal(
+          nodes5a[0].toString().trim(),
+          '\\$sqrt(3x-1)+(1+x)^2 &lt; y\\$'
+        )
       }
     })
 
@@ -325,9 +346,14 @@ sqrt(3x-1)+(1+x)^2 < y
       ]) {
         const output = await convertStringToEmbedded(input, { attributes })
         assertCss(output, '.stemblock', 1)
-        // TODO: needs DOM parser
-        // nodes = xmlnodes_at_xpath '//*[@class="content"]/child::text()', output
-        // assert.equal(nodes.first.to_s.strip, '\\[\\sqrt{3x-1}+(1+x)^2 &lt; y\\]')
+        const nodes5b = xmlnodesAtXpath(
+          '//*[@class="content"]/child::text()',
+          output
+        )
+        assert.equal(
+          nodes5b[0].toString().trim(),
+          '\\[\\sqrt{3x-1}+(1+x)^2 &lt; y\\]'
+        )
       }
     })
 
@@ -345,9 +371,14 @@ sqrt(3x-1)+(1+x)^2 < y
       assert.equal(stemblock.attributes.style, 'asciimath')
       const output = await doc.convert({ standalone: false })
       assertCss(output, '.stemblock', 1)
-      // TODO: needs DOM parser
-      // nodes = xmlnodes_at_xpath '//*[@class="content"]/child::text()', output
-      // assert.equal(nodes.first.to_s.strip, '\\$sqrt(3x-1)+(1+x)^2 &lt; y\\$')
+      const nodes5c = xmlnodesAtXpath(
+        '//*[@class="content"]/child::text()',
+        output
+      )
+      assert.equal(
+        nodes5c[0].toString().trim(),
+        '\\$sqrt(3x-1)+(1+x)^2 &lt; y\\$'
+      )
     })
   })
 })

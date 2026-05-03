@@ -1,7 +1,13 @@
 import { test, describe, beforeEach, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { assertCss, assertXpath, assertMessage } from './helpers.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  xmlnodesAtXpath,
+  decodeChar,
+} from './helpers.js'
 import {
   convertString,
   convertStringToEmbedded,
@@ -59,10 +65,15 @@ ____
         '//*[@class="quoteblock"]/*[@class="attribution"]/cite[text()="Famous Book (1999)"]',
         1
       )
-      // TODO: needs DOM parser
-      // const attribution = xmlnodes_at_xpath('//*[@class="quoteblock"]/*[@class="attribution"]', output, 1)
-      // const author = attribution.children.first
-      // assert.equal(author.text.strip, `${decodeChar(8212)} Famous Person`)
+      const attribution1 = xmlnodesAtXpath(
+        '//*[@class="quoteblock"]/*[@class="attribution"]',
+        output,
+        1
+      )
+      assert.equal(
+        attribution1.children[0].text.trim(),
+        `${decodeChar(8212)} Famous Person`
+      )
     })
 
     test('quote block with attribute and id and role shorthand', async () => {
@@ -128,10 +139,12 @@ ____
         '//blockquote/attribution/citetitle[text()="Famous Book (1999)"]',
         1
       )
-      // TODO: needs DOM parser
-      // const attribution = xmlnodes_at_xpath('//blockquote/attribution', output, 1)
-      // const author = attribution.children.first
-      // assert.equal(author.text.strip, 'Famous Person')
+      const attribution2 = xmlnodesAtXpath(
+        '//blockquote/attribution',
+        output,
+        1
+      )
+      assert.equal(attribution2.children[0].text.trim(), 'Famous Person')
     })
 
     test('epigraph quote block with attribution converted to DocBook', async () => {
@@ -151,10 +164,8 @@ ____
         '//epigraph/attribution/citetitle[text()="Famous Book (1999)"]',
         1
       )
-      // TODO: needs DOM parser
-      // const attribution = xmlnodes_at_xpath('//epigraph/attribution', output, 1)
-      // const author = attribution.children.first
-      // assert.equal(author.text.strip, 'Famous Person')
+      const attribution3 = xmlnodesAtXpath('//epigraph/attribution', output, 1)
+      assert.equal(attribution3.children[0].text.trim(), 'Famous Person')
     })
 
     test('markdown-style quote block with single paragraph and no attribution', async () => {
@@ -261,10 +272,15 @@ Some more inspiring words.
         '//*[@class="quoteblock"]/*[@class="attribution"]/cite[text()="Famous Source, Volume 1 (1999)"]',
         1
       )
-      // TODO: needs DOM parser
-      // const attribution = xmlnodes_at_xpath('//*[@class="quoteblock"]/*[@class="attribution"]', output, 1)
-      // const author = attribution.children.first
-      // assert.equal(author.text.strip, `${decodeChar(8212)} Famous Person`)
+      const attribution4 = xmlnodesAtXpath(
+        '//*[@class="quoteblock"]/*[@class="attribution"]',
+        output,
+        1
+      )
+      assert.equal(
+        attribution4.children[0].text.trim(),
+        `${decodeChar(8212)} Famous Person`
+      )
     })
 
     test('markdown-style quote block with only attribution', async () => {
@@ -318,10 +334,15 @@ Some more inspiring words."
         '//*[@class="quoteblock"]/*[@class="attribution"]/cite[text()="Famous Source, Volume 1 (1999)"]',
         1
       )
-      // TODO: needs DOM parser
-      // const attribution = xmlnodes_at_xpath('//*[@class="quoteblock"]/*[@class="attribution"]', output, 1)
-      // const author = attribution.children.first
-      // assert.equal(author.text.strip, `${decodeChar(8212)} Famous Person`)
+      const attribution5 = xmlnodesAtXpath(
+        '//*[@class="quoteblock"]/*[@class="attribution"]',
+        output,
+        1
+      )
+      assert.equal(
+        attribution5.children[0].text.trim(),
+        `${decodeChar(8212)} Famous Person`
+      )
     })
 
     test('should parse credit line in quoted paragraph-style quote block like positional block attributes', async () => {
@@ -377,10 +398,15 @@ ____
         '//*[@class="verseblock"]/*[@class="attribution"]/cite[text()="Famous Poem"]',
         1
       )
-      // TODO: needs DOM parser
-      // const attribution = xmlnodes_at_xpath('//*[@class="verseblock"]/*[@class="attribution"]', output, 1)
-      // const author = attribution.children.first
-      // assert.equal(author.text.strip, `${decodeChar(8212)} Famous Poet`)
+      const attribution6 = xmlnodesAtXpath(
+        '//*[@class="verseblock"]/*[@class="attribution"]',
+        output,
+        1
+      )
+      assert.equal(
+        attribution6.children[0].text.trim(),
+        `${decodeChar(8212)} Famous Poet`
+      )
     })
 
     test('single-line verse block with attribution converted to DocBook', async () => {
@@ -401,10 +427,12 @@ ____
         '//blockquote/attribution/citetitle[text()="Famous Poem"]',
         1
       )
-      // TODO: needs DOM parser
-      // const attribution = xmlnodes_at_xpath('//blockquote/attribution', output, 1)
-      // const author = attribution.children.first
-      // assert.equal(author.text.strip, 'Famous Poet')
+      const attribution7 = xmlnodesAtXpath(
+        '//blockquote/attribution',
+        output,
+        1
+      )
+      assert.equal(attribution7.children[0].text.trim(), 'Famous Poet')
     })
 
     test('single-line epigraph verse block with attribution converted to DocBook', async () => {
@@ -425,10 +453,8 @@ ____
         '//epigraph/attribution/citetitle[text()="Famous Poem"]',
         1
       )
-      // TODO: needs DOM parser
-      // const attribution = xmlnodes_at_xpath('//epigraph/attribution', output, 1)
-      // const author = attribution.children.first
-      // assert.equal(author.text.strip, 'Famous Poet')
+      const attribution8 = xmlnodesAtXpath('//epigraph/attribution', output, 1)
+      assert.equal(attribution8.children[0].text.trim(), 'Famous Poet')
     })
 
     test('multi-stanza verse block', async () => {

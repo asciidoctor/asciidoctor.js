@@ -3,7 +3,13 @@ import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  decodeChar,
+  xmlnodesAtXpath,
+} from './helpers.js'
 import {
   documentFromString,
   convertString,
@@ -231,21 +237,16 @@ image::no-such-image.svg[Alt Text]
     test('can convert block image with alt text defined in macro containing square bracket', async () => {
       const input = 'image::images/tiger.png[A [Bengal] Tiger]'
       const output = await convertString(input)
-      // TODO: needs DOM parser
-      // const img = xmlnodes_at_xpath('//img', output, 1)
-      // assert.equal(img.getAttribute('alt'), 'A [Bengal] Tiger')
-      assert.ok(output.includes('alt="A [Bengal] Tiger"'))
+      const img1 = xmlnodesAtXpath('//img', output, 1)
+      assert.equal(img1.getAttribute('alt'), 'A [Bengal] Tiger')
     })
 
     test('can convert block image with target containing spaces', async () => {
       const input = 'image::images/big tiger.png[A Big Tiger]'
       const output = await convertString(input)
-      // TODO: needs DOM parser
-      // const img = xmlnodes_at_xpath('//img', output, 1)
-      // assert.equal(img.getAttribute('src'), 'images/big%20tiger.png')
-      // assert.equal(img.getAttribute('alt'), 'A Big Tiger')
-      assert.ok(output.includes('src="images/big%20tiger.png"'))
-      assert.ok(output.includes('alt="A Big Tiger"'))
+      const img2 = xmlnodesAtXpath('//img', output, 1)
+      assert.equal(img2.getAttribute('src'), 'images/big%20tiger.png')
+      assert.equal(img2.getAttribute('alt'), 'A Big Tiger')
     })
 
     test('do not recognize block image if target has leading or trailing spaces', async () => {
