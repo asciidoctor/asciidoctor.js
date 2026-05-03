@@ -1,19 +1,29 @@
-// Port of the 'Registering converter' describe block from packages/core/test/node/asciidoctor.test.js
+// Port of converter_test.rb (Custom backends / Custom converters contexts).
 //
-// Ruby interop tests ($==, $send, $handles?, $respond_to?, $new) are not ported because
-// they are specific to the Opal bridge and have no equivalent in the core JS implementation.
-// Template-driven composite converter tests are also omitted as they require external fixtures.
+// Omitted (not portable to JS):
+//   - View options / Custom backends template tests: require Haml/Slim/ERB template engines
+//   - Ruby interop: $==, $send, $handles?, $respond_to? — Opal-bridge specific
+//   - method_missing delegation tests: no equivalent in JS
+//   - DefaultFactoryProxy proxy semantics: new DefaultFactory() in JS is a standalone factory,
+//     not a proxy over the global registry
 
 import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 
 import {
   ConverterFactory,
+  ConverterBase,
+  ConverterCustomFactory,
   convert,
   load,
   Block,
   Html5Converter,
 } from '../src/index.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const fixturesDir = join(__dirname, 'fixtures')
 
 // ── Converter classes used across multiple tests ───────────────────────────────
 
@@ -335,5 +345,205 @@ In other words, it's about discovering writing zen.`
       result.includes('<span class="blog-author">Guillaume Grossetie</span>')
     ) // custom blog converter
     assert.ok(result.includes('<div class="sect1">')) // built-in HTML5 converter
+  })
+})
+
+describe('Custom backends', () => {
+  afterEach(() => {
+    ConverterFactory.unregisterAll()
+  })
+
+  test('should set outfilesuffix according to backend info', async () => {
+    const doc = await load('content')
+    await doc.convert()
+    assert.equal(doc.getAttribute('outfilesuffix'), '.html')
+  })
+
+  test('should not override outfilesuffix attribute if locked', async () => {
+    const doc = await load('content', { attributes: { outfilesuffix: '.foo' } })
+    await doc.convert()
+    assert.equal(doc.getAttribute('outfilesuffix'), '.foo')
+  })
+})
+
+describe('Custom converters', () => {
+  afterEach(() => {
+    ConverterFactory.unregisterAll()
+  })
+
+  test('should derive backend traits for the given backend', () => {
+    const expected = {
+      basebackend: 'dita',
+      filetype: 'dita',
+      outfilesuffix: '.dita',
+    }
+    assert.deepEqual(ConverterFactory.deriveBackendTraits('dita2'), expected)
+  })
+
+  test('should use specified converter for current backend', async () => {
+    class CustomHtmlConverterA {
+      convert(_node) {
+        return 'document'
+      }
+    }
+    const doc = await load('= Title\n\n== Section\n\ncontent', {
+      converter: CustomHtmlConverterA,
+    })
+    assert.ok(doc.converter instanceof CustomHtmlConverterA)
+    assert.equal(doc.getAttribute('filetype'), 'html')
+    assert.equal(await doc.convert(), 'document')
+  })
+
+  test('should use specified converter for specified backend', async () => {
+    class CustomTextConverterA {
+      convert(_node) {
+        return 'document'
+      }
+    }
+    const doc = await load('= Title\n\n== Section\n\ncontent', {
+      backend: 'text',
+      converter: CustomTextConverterA,
+    })
+    assert.ok(doc.converter instanceof CustomTextConverterA)
+    assert.equal(doc.getAttribute('filetype'), 'text')
+    assert.equal(await doc.convert(), 'document')
+  })
+
+  test('should get converter from specified converter factory', async () => {
+    class MyConverter extends ConverterBase {
+      async convert(_node, _transform, _opts) {
+        return 'document'
+      }
+    }
+    const converterFactory = new ConverterCustomFactory({ html5: MyConverter })
+    const doc = await load('= Title\n\n== Section\n\ncontent', {
+      converter_factory: converterFactory,
+    })
+    assert.ok(doc.converter instanceof MyConverter)
+    assert.equal(doc.getAttribute('filetype'), 'html')
+    assert.equal(await doc.convert(), 'document')
+  })
+
+  test('should allow converter to set htmlsyntax when basebackend is html', async () => {
+    const converter = Html5Converter.create('html5', { htmlsyntax: 'xml' })
+    const doc = await load('image::sunset.jpg[]', { converter })
+    assert.equal(doc.converter, converter)
+    assert.equal(doc.getAttribute('htmlsyntax'), 'xml')
+    const output = await doc.convert({ standalone: false })
+    assert.ok(output.includes('<img src="sunset.jpg" alt="sunset"/>'))
+  })
+
+  test('should use converter registered for backend via ConverterBase.registerFor', async () => {
+    class CustomConverterB extends ConverterBase {
+      constructor(backend, opts) {
+        super(backend, opts)
+        this.basebackend('text')
+        this.filetype('text')
+        this.outfilesuffix('.fb')
+      }
+
+      convert(_node) {
+        return 'foobar content'
+      }
+    }
+    CustomConverterB.registerFor('foobar')
+
+    assert.equal(ConverterFactory.for('foobar'), CustomConverterB)
+    const registry = ConverterFactory.converters()
+    assert.ok('foobar' in registry)
+    assert.equal(registry.foobar, CustomConverterB)
+    const output = await convert('content', { backend: 'foobar' })
+    assert.equal(output, 'foobar content')
+  })
+
+  test('should be able to register converter class via registerFor with string', async () => {
+    class FooBazConverter extends ConverterBase {
+      constructor(backend, opts) {
+        super(backend, opts)
+        this.basebackend('text')
+        this.filetype('text')
+        this.outfilesuffix('.fb')
+      }
+    }
+    FooBazConverter.registerFor('foobaz')
+    assert.equal(ConverterFactory.for('foobaz'), FooBazConverter)
+  })
+
+  test('should use basebackend to compute filetype and outfilesuffix', async () => {
+    class SlidesConverter extends ConverterBase {
+      constructor(backend, opts) {
+        super(backend, opts)
+        this.basebackend('html')
+      }
+    }
+    SlidesConverter.registerFor('slides')
+
+    const doc = await load('content', { backend: 'slides' })
+    assert.equal(doc.outfilesuffix, '.html')
+    assert.equal(doc.getAttribute('basebackend'), 'html')
+    assert.equal(doc.getAttribute('filetype'), 'html')
+    assert.equal(doc.getAttribute('htmlsyntax'), 'html')
+    assert.equal(doc.getAttribute('outfilesuffix'), '.html')
+  })
+
+  test('should be able to register converter from the converter class itself', async () => {
+    class AnotherCustomConverter extends ConverterBase {}
+    assert.equal(ConverterFactory.for('another'), undefined)
+    AnotherCustomConverter.registerFor('another')
+    assert.equal(ConverterFactory.for('another'), AnotherCustomConverter)
+  })
+
+  test('should default to catch-all converter', async () => {
+    class CustomConverterF {
+      convert(_node) {
+        return 'foobaz content'
+      }
+    }
+    ConverterFactory.register(CustomConverterF, '*')
+
+    assert.equal(ConverterFactory.for('all'), CustomConverterF)
+    assert.equal(ConverterFactory.for('whatever'), CustomConverterF)
+    // html5 is in _defaultRegistry (loaded by earlier tests) — catch-all must not shadow it
+    assert.notEqual(ConverterFactory.for('html5'), CustomConverterF)
+    const registry = ConverterFactory.converters()
+    assert.equal(registry['*'], undefined)
+    assert.equal(ConverterFactory._catchAll, CustomConverterF)
+    const output = await convert('content', { backend: 'foobaz' })
+    assert.equal(output, 'foobaz content')
+  })
+
+  test('should use catch-all converter from custom factory only if no other converter matches', () => {
+    class FooConverter extends ConverterBase {}
+    class CatchAllConverter extends ConverterBase {}
+
+    const factory = new ConverterCustomFactory({
+      foo: FooConverter,
+      '*': CatchAllConverter,
+    })
+    assert.equal(factory.for('foo'), FooConverter)
+    assert.equal(factory.for('nada'), CatchAllConverter)
+    assert.equal(factory.for('html5'), CatchAllConverter)
+  })
+
+  test('should create a new ConverterCustomFactory with seeded converters', () => {
+    class MyConverter extends ConverterBase {}
+    const factory = new ConverterCustomFactory({ mine: MyConverter })
+    assert.ok(factory instanceof ConverterCustomFactory)
+    assert.equal(factory.for('mine'), MyConverter)
+  })
+
+  test('can call readSvgContents on built-in HTML5 converter', async () => {
+    const doc = await load('image::circle.svg[]', {
+      base_dir: fixturesDir,
+      safe: 'safe',
+    })
+    const result = await doc.converter.readSvgContents(
+      doc.blocks[0],
+      'circle.svg'
+    )
+    // In browser environments the SVG file cannot be read via node:fs;
+    // using this message triggers the shim's isBrowserIncompatible check → test is skipped.
+    assert.ok(result != null, 'SVG does not exist or cannot be read')
+    assert.ok(result.startsWith('<svg'))
   })
 })
