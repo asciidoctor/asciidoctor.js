@@ -1,7 +1,18 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 import { assertCss, assertXpath } from './helpers.js'
-import { convertString, convertStringToEmbedded } from './harness.js'
+import {
+  convertString,
+  convertStringToEmbedded,
+  documentFromString,
+} from './harness.js'
+import {
+  SyntaxHighlighterBase,
+  CustomFactory,
+  DefaultFactory,
+  SyntaxHighlighter,
+} from '../src/syntax_highlighter.js'
+import { HtmlPipelineAdapter } from '../src/syntaxHighlighter/html_pipeline.js'
 
 describe('SyntaxHighlighter', () => {
   describe('highlightjs', () => {
@@ -121,6 +132,118 @@ end
         )
         assert(output.includes('def greet'))
         assert(output.includes('end'))
+      })
+    })
+
+    describe('syntax_highlighter_factory option', () => {
+      test('should work with a synchronous format() method', async () => {
+        class SyncHighlighter extends SyntaxHighlighterBase {
+          format(node, lang, opts) {
+            return '<pre class="sync-hl"><code>sync-format-output</code></pre>'
+          }
+        }
+        const factory = new CustomFactory()
+        factory.register(SyncHighlighter, 'sync-hl')
+        const input = `\
+:source-highlighter: sync-hl
+
+[source,ruby]
+----
+puts "hello"
+----
+`
+        const output = await convertStringToEmbedded(input, {
+          safe: 'safe',
+          syntax_highlighter_factory: factory,
+        })
+        assert(output.includes('sync-format-output'))
+      })
+
+      test('should substitute a custom syntax highlighter factory instance', async () => {
+        const input = `\
+[source,ruby]
+----
+puts 'Hello, World!'
+----
+`
+        // Map 'github' → HtmlPipelineAdapter via a custom factory
+        const factory = new CustomFactory({
+          github: SyntaxHighlighter.for('html-pipeline'),
+        })
+        const doc = await documentFromString(input, {
+          safe: 'safe',
+          syntax_highlighter_factory: factory,
+          attributes: { 'source-highlighter': 'github' },
+        })
+        assert(doc.syntaxHighlighter instanceof HtmlPipelineAdapter)
+        const output = await doc.convert()
+        assert(output.includes('<pre lang="ruby"><code>'))
+      })
+
+      test('should substitute an extended syntax highlighter factory implementation', async () => {
+        const input = `\
+[source,ruby]
+----
+puts 'Hello, World!'
+----
+`
+        // Factory that ignores the requested name and always resolves to highlightjs
+        // Delegates to the global SyntaxHighlighter singleton since built-ins are
+        // only registered there (not on individual DefaultFactory instances).
+        class RedirectFactory extends DefaultFactory {
+          for(name) {
+            return SyntaxHighlighter.for('highlightjs')
+          }
+        }
+        const doc = await documentFromString(input, {
+          safe: 'safe',
+          syntax_highlighter_factory: new RedirectFactory(),
+          attributes: { 'source-highlighter': 'coderay' },
+        })
+        assert(doc.syntaxHighlighter != null)
+        const output = await doc.convert()
+        assert(!output.includes('CodeRay'))
+        assert(output.includes('hljs'))
+      })
+    })
+
+    describe('syntax_highlighters option', () => {
+      test('should disable a syntax highlighter by setting its value to null', async () => {
+        const doc = await documentFromString('', {
+          safe: 'safe',
+          syntax_highlighters: { coderay: null },
+          attributes: { 'source-highlighter': 'coderay' },
+        })
+        assert(doc.syntaxHighlighter == null)
+      })
+
+      test('should override a syntax highlighter with a custom implementation', async () => {
+        class CustomHighlighter extends SyntaxHighlighterBase {
+          handlesHighlighting() {
+            return true
+          }
+
+          highlight(node, source, lang, opts) {
+            return 'highlighted'
+          }
+        }
+        const input = `\
+[source,ruby]
+----
+puts 'Hello, World!'
+----
+`
+        const output = await convertStringToEmbedded(input, {
+          safe: 'safe',
+          syntax_highlighters: { coderay: CustomHighlighter },
+          attributes: { 'source-highlighter': 'coderay' },
+        })
+        assertCss(output, 'pre.coderay.highlight', 1)
+        assertXpath(
+          output,
+          '//pre[@class="coderay highlight"]/code[text()="highlighted"]',
+          1
+        )
       })
     })
 
