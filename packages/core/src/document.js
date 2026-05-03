@@ -33,7 +33,7 @@ import { Converter, CustomFactory, deriveBackendTraits } from './converter.js'
 import { XmlSanitizeRx, AttributeEntryPassMacroRx } from './rx.js'
 import { LF } from './constants.js'
 import { applyLogging } from './logging.js'
-import { SyntaxHighlighter } from './syntax_highlighter.js'
+import { SyntaxHighlighter, DefaultFactoryProxy } from './syntax_highlighter.js'
 import { PreprocessorReader, Cursor } from './reader.js'
 import { Parser } from './parser.js'
 import { Extensions, Registry } from './extensions.js'
@@ -1836,12 +1836,18 @@ export class Document extends AbstractBlock {
           // SyntaxHighlighter — optional integration, handle gracefully
           try {
             const factory = this.options.syntax_highlighter_factory
+            const syntaxHls = this.options.syntax_highlighters
             if (factory) {
               this.syntaxHighlighter = factory.create(
                 syntaxHlName,
                 this.backend,
                 { document: this }
               )
+            } else if (syntaxHls) {
+              this.syntaxHighlighter = new DefaultFactoryProxy(
+                syntaxHls,
+                SyntaxHighlighter
+              ).create(syntaxHlName, this.backend, { document: this })
             } else {
               this.syntaxHighlighter = SyntaxHighlighter.create(
                 syntaxHlName,
@@ -1981,7 +1987,7 @@ export class Document extends AbstractBlock {
       newBasebackend = converter.basebackend()
       newFiletype = converter.filetype()
       const htmlsyntax = converter.htmlsyntax()
-      if (htmlsyntax) attrs.htmlsyntax ??= htmlsyntax
+      if (htmlsyntax) attrs.htmlsyntax = htmlsyntax
       if (init) {
         attrs.outfilesuffix ??= converter.outfilesuffix()
       } else if (!this.isAttributeLocked('outfilesuffix')) {

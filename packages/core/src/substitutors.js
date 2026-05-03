@@ -1468,7 +1468,7 @@ export const Substitutors = {
       )
     }
 
-    const [highlighted, sourceOffset] = syntaxHl.highlight(
+    const hlResult = syntaxHl.highlight(
       this,
       source,
       this.getAttribute('language'),
@@ -1481,6 +1481,9 @@ export const Substitutors = {
         style: docAttrs[`${syntaxHlName}-style`],
       }
     )
+    const [highlighted, sourceOffset] = Array.isArray(hlResult)
+      ? hlResult
+      : [hlResult, undefined]
 
     let result = highlighted
     if (this.passthroughs.length > 0) {

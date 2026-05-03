@@ -105,31 +105,33 @@ export class SyntaxHighlighterBase {
    * @param {Object} opts - options
    * @param {boolean} [opts.nowrap] - disable line wrapping
    * @param {Function} [opts.transform] - called with (pre, code) attribute objects before building tags
-   * @returns {Promise<string>} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags
+   * @returns {Promise<string>|string} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags.
+   *   Subclasses may return a plain `string` — the caller always `await`s the result.
    */
-  async format(node, lang, opts) {
+  format(node, lang, opts) {
     const classAttrVal = opts.nowrap
       ? `${this._preClass} highlight nowrap`
       : `${this._preClass} highlight`
-    const content = await node.content()
-    const transform = opts.transform
-    if (transform) {
-      const pre = { class: classAttrVal }
-      const code = lang ? { 'data-lang': lang } : {}
-      transform(pre, code)
-      // NOTE keep data-lang as the last attribute on <code> to match Ruby 1.5.x behaviour
-      const dataLang = code['data-lang']
-      delete code['data-lang']
-      if (dataLang) code['data-lang'] = dataLang
-      const preAttrs = Object.entries(pre)
-        .map(([k, v]) => ` ${k}="${v}"`)
-        .join('')
-      const codeAttrs = Object.entries(code)
-        .map(([k, v]) => ` ${k}="${v}"`)
-        .join('')
-      return `<pre${preAttrs}><code${codeAttrs}>${content}</code></pre>`
-    }
-    return `<pre class="${classAttrVal}"><code${lang ? ` data-lang="${lang}"` : ''}>${content}</code></pre>`
+    return node.content().then((content) => {
+      const transform = opts.transform
+      if (transform) {
+        const pre = { class: classAttrVal }
+        const code = lang ? { 'data-lang': lang } : {}
+        transform(pre, code)
+        // NOTE keep data-lang as the last attribute on <code> to match Ruby 1.5.x behaviour
+        const dataLang = code['data-lang']
+        delete code['data-lang']
+        if (dataLang) code['data-lang'] = dataLang
+        const preAttrs = Object.entries(pre)
+          .map(([k, v]) => ` ${k}="${v}"`)
+          .join('')
+        const codeAttrs = Object.entries(code)
+          .map(([k, v]) => ` ${k}="${v}"`)
+          .join('')
+        return `<pre${preAttrs}><code${codeAttrs}>${content}</code></pre>`
+      }
+      return `<pre class="${classAttrVal}"><code${lang ? ` data-lang="${lang}"` : ''}>${content}</code></pre>`
+    })
   }
 
   /**
@@ -210,6 +212,31 @@ export class CustomFactory {
       )
     }
     return syntaxHl
+  }
+}
+
+// ── DefaultFactoryProxy ───────────────────────────────────────────────────────
+
+// Wraps a `syntax_highlighters` hash (per-load overrides) and falls back to a
+// delegate factory (typically the global SyntaxHighlighter singleton) for names
+// not present in the overrides. Setting a name to null disables that highlighter.
+
+export class DefaultFactoryProxy extends CustomFactory {
+  /**
+   * @param {Object} overrides - map of name → class/instance/null
+   * @param {CustomFactory} fallback - factory to delegate to when name is not overridden
+   */
+  constructor(overrides, fallback) {
+    super(overrides)
+    this._fallback = fallback
+  }
+
+  for(name) {
+    // Use hasOwnProperty so that null (disabled) is returned as-is
+    if (Object.hasOwn(this._registry, name)) {
+      return this._registry[name]
+    }
+    return this._fallback.for(name)
   }
 }
 
