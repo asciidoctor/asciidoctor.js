@@ -81,12 +81,13 @@ export class SyntaxHighlighterBase {
      * @param {Object} opts - options
      * @param {boolean} [opts.nowrap] - disable line wrapping
      * @param {Function} [opts.transform] - called with (pre, code) attribute objects before building tags
-     * @returns {Promise<string>} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags
+     * @returns {Promise<string>|string} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags.
+     *   Subclasses may return a plain `string` — the caller always `await`s the result.
      */
     format(node: Block, lang: string, opts: {
         nowrap?: boolean;
         transform?: Function;
-    }): Promise<string>;
+    }): Promise<string> | string;
     /**
      * Indicates whether this highlighter wants to write a stylesheet to disk.
      *
@@ -134,6 +135,15 @@ export class CustomFactory {
      * @returns {SyntaxHighlighterBase|null} a highlighter instance, or null if not registered
      */
     create(name: string, backend?: string, opts?: any): SyntaxHighlighterBase | null;
+}
+export class DefaultFactoryProxy extends CustomFactory {
+    /**
+     * @param {Object} overrides - map of name → class/instance/null
+     * @param {CustomFactory} fallback - factory to delegate to when name is not overridden
+     */
+    constructor(overrides: any, fallback: CustomFactory);
+    _fallback: CustomFactory;
+    for(name: any): any;
 }
 export class DefaultFactory extends CustomFactory {
     constructor();
