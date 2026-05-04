@@ -1,6 +1,6 @@
 {
   "name": "asciidoctor",
-  "version": "4.0.0-alpha.0",
+  "version": "4.0.0-alpha.1",
   "description": "A JavaScript AsciiDoc processor powered by Asciidoctor",
   "type": "module",
   "main": "index.js",
@@ -53,7 +53,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "dependencies": {
-    "@asciidoctor/core": "^4.0.0-alpha"
+    "@asciidoctor/core": "4.0.0-alpha.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.13",

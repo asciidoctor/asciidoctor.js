@@ -1,6 +1,6 @@
 {
   "name": "@asciidoctor/core",
-  "version": "4.0.0-alpha.0",
+  "version": "4.0.0-alpha.1",
   "description": "Asciidoctor.js: AsciiDoc in JavaScript powered by Asciidoctor",
   "type": "module",
   "main": "build/node/index.cjs",

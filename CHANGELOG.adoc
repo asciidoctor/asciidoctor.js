@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.0-alpha.1 (2026-05-04)
+
 This release is a complete rewrite of Asciidoctor.js — the Opal runtime and transpiled Ruby code have been replaced by a native JavaScript implementation.
 The public API has been preserved as closely as possible from version 3, but there are breaking changes.
 Please refer to the https://github.com/asciidoctor/asciidoctor.js/blob/main/docs/modules/setup/pages/migration-guide.adoc[migration guide] before upgrading.
