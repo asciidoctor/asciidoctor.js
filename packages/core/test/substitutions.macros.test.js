@@ -339,7 +339,7 @@ describe('Substitutions', () => {
     test('an image macro with an SVG image should not use an object element when safe mode is secure', async () => {
       const para = await blockFromString(
         'image:tiger.svg[Tiger,opts=interactive]',
-        { attributes: { imagesdir: 'images' } }
+        { safe: 'secure', attributes: { imagesdir: 'images' } }
       )
       assert.equal(
         normalizeTagSpaces(await para.subMacros(para.source)),

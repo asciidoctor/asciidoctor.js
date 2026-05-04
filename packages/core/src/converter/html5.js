@@ -840,10 +840,7 @@ ${await node.content()}
         img =
           (await this.readSvgContents(node, target)) ||
           `<span class="alt">${node.getAlt()}</span>`
-      } else if (
-        node.hasOption('interactive') &&
-        node.document.safe >= SafeMode.SERVER
-      ) {
+      } else if (node.hasOption('interactive')) {
         const fallback = node.hasAttribute('fallback')
           ? `<img src="${await node.imageUri(node.getAttribute('fallback'))}" alt="${this._encodeAttrValue(node.getAlt())}"${widthAttr}${heightAttr}${slash}>`
           : `<span class="alt">${node.getAlt()}</span>`
@@ -1684,10 +1681,7 @@ Your browser does not support the video tag.
           img =
             (await this.readSvgContents(node, target)) ||
             `<span class="alt">${node.getAlt()}</span>`
-        } else if (
-          node.hasOption('interactive') &&
-          node.document.safe >= SafeMode.SERVER
-        ) {
+        } else if (node.hasOption('interactive')) {
           const fallback = node.hasAttribute('fallback')
             ? `<img src="${await node.imageUri(node.getAttribute('fallback'))}" alt="${this._encodeAttrValue(node.getAlt())}"${attrs}${this._voidSlash}>`
             : `<span class="alt">${node.getAlt()}</span>`

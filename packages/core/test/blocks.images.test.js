@@ -75,7 +75,7 @@ image::tiger.svg[Tiger,100]
 [%interactive]
 image::images/tiger.svg[Tiger,100]
 `
-      const output = await convertStringToEmbedded(input)
+      const output = await convertStringToEmbedded(input, { safe: 'secure' })
       assertXpath(
         output,
         '/*[@class="imageblock"]//img[@src="images/tiger.svg"][@alt="Tiger"]',
