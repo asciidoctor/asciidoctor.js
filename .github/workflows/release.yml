@@ -8,6 +8,7 @@ on:
 
 permissions:
   id-token: write  # Required for OIDC
+  contents: write  # Required by docs job in build.yml
 
 jobs:
   build:
