@@ -34,9 +34,8 @@ jobs:
           npm install
           npm run build:binary -w asciidoctor
 
-      - name: Cache native image
-        uses: actions/cache/save@v5
+      - name: Upload native image artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: "native-image-${{ matrix.platform }}"
           path: "packages/asciidoctor/dist/asciidoctor-${{ matrix.platform }}*"
-          key: "native-image-${{ matrix.platform }}-${{ github.run_id }}"
-          enableCrossOsArchive: true

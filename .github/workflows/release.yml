@@ -55,34 +55,12 @@ jobs:
         run: npm ci
       - name: Generate release notes
         run: node tasks/changelog.js ${{ github.ref_name }}
-      - name: Restore Native-image-win-amd64 cache
-        uses: actions/cache/restore@v5
+      - name: Download native image artifacts
+        uses: actions/download-artifact@v4
         with:
-          path: "packages/asciidoctor/dist/asciidoctor-win-amd64.exe"
-          key: "native-image-win-amd64-${{ github.run_id }}"
-          fail-on-cache-miss: true
-          enableCrossOsArchive: true
-      - name: Restore Native-image-linux-amd64 cache
-        uses: actions/cache/restore@v5
-        with:
-          path: "packages/asciidoctor/dist/asciidoctor-linux-amd64"
-          key: "native-image-linux-amd64-${{ github.run_id }}"
-          fail-on-cache-miss: true
-          enableCrossOsArchive: true
-      - name: Restore Native-image-linux-arm64 cache
-        uses: actions/cache/restore@v5
-        with:
-          path: "packages/asciidoctor/dist/asciidoctor-linux-arm64"
-          key: "native-image-linux-arm64-${{ github.run_id }}"
-          fail-on-cache-miss: true
-          enableCrossOsArchive: true
-      - name: Restore Native-image-darwin-arm64 cache
-        uses: actions/cache/restore@v5
-        with:
-          path: "packages/asciidoctor/dist/asciidoctor-darwin-arm64"
-          key: "native-image-darwin-arm64-${{ github.run_id }}"
-          fail-on-cache-miss: true
-          enableCrossOsArchive: true
+          pattern: native-image-*
+          path: packages/asciidoctor/dist
+          merge-multiple: true
       # create the GitHub release
       - name: Create release
         id: create_release
