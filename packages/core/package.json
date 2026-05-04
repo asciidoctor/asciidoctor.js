@@ -60,7 +60,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
   "volta": {
-    "node": "24.14.1"
+    "node": "24.15.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.13",
