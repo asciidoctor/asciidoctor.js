@@ -61,55 +61,17 @@ jobs:
           pattern: native-image-*
           path: packages/asciidoctor/dist
           merge-multiple: true
-      # create the GitHub release
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1.1.4
+      - name: Create release and upload assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body_path: RELEASE_NOTES.md
-          draft: false
-          prerelease: false
-      # upload assets
-      - name: Upload Linux arm64 binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/asciidoctor/dist/asciidoctor-linux-arm64
-          asset_name: asciidoctor-linux-arm64
-          asset_content_type: application/octet-stream
-      - name: Upload Linux amd64 binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/asciidoctor/dist/asciidoctor-linux-amd64
-          asset_name: asciidoctor-linux-amd64
-          asset_content_type: application/octet-stream
-      - name: Upload macOS binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/asciidoctor/dist/asciidoctor-darwin-arm64
-          asset_name: asciidoctor-darwin-arm64
-          asset_content_type: application/octet-stream
-      - name: Upload Windows binary
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/asciidoctor/dist/asciidoctor-win-amd64.exe
-          asset_name: asciidoctor-win-amd64.exe
-          asset_content_type: application/octet-stream
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --notes-file RELEASE_NOTES.md \
+            packages/asciidoctor/dist/asciidoctor-linux-arm64 \
+            packages/asciidoctor/dist/asciidoctor-linux-amd64 \
+            packages/asciidoctor/dist/asciidoctor-darwin-arm64 \
+            packages/asciidoctor/dist/asciidoctor-win-amd64.exe
       - name: Set release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Announcement
