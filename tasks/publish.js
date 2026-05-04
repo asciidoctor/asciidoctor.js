@@ -17,7 +17,10 @@ const publish = async (directory) => {
     await fsp.writeFile(outputReadme, `${downdoc(asciidoc)}\n`, 'utf8')
     await fsp.rename(inputReadme, hiddenReadme)
     const [{ filename }] = JSON.parse(
-      execFileSync('npm', ['pack', '--json'], { cwd: directory, encoding: 'utf8' })
+      execFileSync('npm', ['pack', '--json'], {
+        cwd: directory,
+        encoding: 'utf8',
+      })
     )
     const tgzPath = join(directory, filename)
     const args = ['publish', '--provenance', '--access', 'public', tgzPath]
