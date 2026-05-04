@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v2.1.3
   workflow_dispatch:
+    inputs:
+      skip_publish:
+        description: 'Skip publish (e.g. if already published)'
+        type: boolean
+        default: false
 
 permissions:
   id-token: write  # Required for OIDC
@@ -15,7 +20,7 @@ jobs:
     if: github.repository_owner == 'asciidoctor'
     uses: ./.github/workflows/build.yml
   publish:
-    if: github.repository_owner == 'asciidoctor'
+    if: github.repository_owner == 'asciidoctor' && !inputs.skip_publish
     needs: [build]
     runs-on: ubuntu-latest
     steps:
@@ -39,6 +44,7 @@ jobs:
           timeout 60s ./scripts/wait-asciidoctor-core-published.sh
   upload:
     needs: [ publish ]
+    if: always() && (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -143,7 +149,7 @@ jobs:
             https://github.com/asciidoctor/asciidoctor.js/releases/tag/${{ env.RELEASE_VERSION }}
 
   docs:
-    if: github.repository_owner == 'asciidoctor'
+    if: always() && github.repository_owner == 'asciidoctor' && (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     needs: [publish]
     runs-on: ubuntu-latest
     permissions:
