@@ -58,7 +58,7 @@ jobs:
       - name: Restore Native-image-win-amd64 cache
         uses: actions/cache/restore@v5
         with:
-          path: "packages/asciidoctor/dist/asciidoctor-win-adm64.exe"
+          path: "packages/asciidoctor/dist/asciidoctor-win-amd64.exe"
           key: "native-image-win-amd64-${{ github.run_id }}"
           fail-on-cache-miss: true
           enableCrossOsArchive: true
