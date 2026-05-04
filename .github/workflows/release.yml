@@ -43,8 +43,8 @@ jobs:
         run: |
           timeout 60s ./scripts/wait-asciidoctor-core-published.sh
   upload:
-    needs: [ publish ]
-    if: always() && (needs.publish.result == 'success' || needs.publish.result == 'skipped')
+    needs: [ build, publish ]
+    if: always() && needs.build.result == 'success' && (needs.publish.result == 'success' || needs.publish.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -149,8 +149,8 @@ jobs:
             https://github.com/asciidoctor/asciidoctor.js/releases/tag/${{ env.RELEASE_VERSION }}
 
   docs:
-    if: always() && github.repository_owner == 'asciidoctor' && (needs.publish.result == 'success' || needs.publish.result == 'skipped')
-    needs: [publish]
+    if: always() && github.repository_owner == 'asciidoctor' && needs.build.result == 'success' && (needs.publish.result == 'success' || needs.publish.result == 'skipped')
+    needs: [build, publish]
     runs-on: ubuntu-latest
     permissions:
       contents: write
