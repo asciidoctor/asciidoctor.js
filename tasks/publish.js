@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { promises as fsp } from 'node:fs'
 import { join } from 'node:path'
+import { execFileSync } from 'node:child_process'
 import semver from 'semver'
 import pacote from 'pacote'
 import { publish as npmPublish } from 'libnpmpublish'
@@ -17,8 +18,12 @@ const publish = async (directory) => {
     const asciidoc = await fsp.readFile(inputReadme, 'utf8')
     await fsp.writeFile(outputReadme, `${downdoc(asciidoc)}\n`, 'utf8')
     await fsp.rename(inputReadme, hiddenReadme)
-    const manifest = await pacote.manifest(directory)
-    const tarData = await pacote.tarball(directory)
+    const [{ filename }] = JSON.parse(
+      execFileSync('npm', ['pack', '--json'], { cwd: directory })
+    )
+    const tgzPath = join(directory, filename)
+    const manifest = await pacote.manifest(`file:${tgzPath}`)
+    const tarData = await pacote.tarball(`file:${tgzPath}`)
     const tag = semver.prerelease(pkg.version) ? 'testing' : 'latest'
     await npmPublish(manifest, tarData, {
       access: 'public',
@@ -27,6 +32,7 @@ const publish = async (directory) => {
     })
     await fsp.rename(hiddenReadme, inputReadme)
     await fsp.unlink(outputReadme)
+    await fsp.unlink(tgzPath)
   }
 }
 
