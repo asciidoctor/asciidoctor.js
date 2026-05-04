@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
     steps:
       - uses: actions/checkout@v6
         with:
@@ -37,3 +38,7 @@ jobs:
         run: |
           git push origin ${{ github.ref_name }}
           git push origin v${{ inputs.version }}
+      - name: Trigger release workflow
+        run: gh workflow run release.yml --ref v${{ inputs.version }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
