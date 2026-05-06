@@ -9,9 +9,14 @@
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
-      "require": "./build/node/index.cjs",
-      "import": "./src/index.js",
-      "types": "./types/index.d.ts"
+      "require": {
+        "types": "./types/index.d.cts",
+        "default": "./build/node/index.cjs"
+      },
+      "import": {
+        "types": "./types/index.d.ts",
+        "default": "./src/index.js"
+      }
     }
   },
   "engines": {

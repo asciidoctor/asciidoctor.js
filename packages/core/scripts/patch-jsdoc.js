@@ -181,3 +181,10 @@ function walk(dir) {
 }
 
 walk(typesDir)
+
+// Generate index.d.cts for CJS consumers (moduleResolution: Node16 + module: commonjs).
+// Prepend a node reference directive so that Node.js globals (Buffer, etc.) are in scope
+// when TypeScript processes this file outside of a tsconfig that includes @types/node.
+const indexDts = readFileSync(join(typesDir, 'index.d.ts'), 'utf-8')
+writeFileSync(join(typesDir, 'index.d.cts'), '/// <reference types="node" />\n' + indexDts, 'utf-8')
+console.log('generated types/index.d.cts')
