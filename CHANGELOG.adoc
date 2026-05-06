@@ -8,6 +8,15 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Bug Fixes::
+
+* Fix SVG interactive option being silently ignored in UNSAFE and SAFE modes — the check now correctly allows all safe modes below SECURE, aligning with the Ruby reference implementation
+* Add CJS type declarations (`types/index.d.cts`) for TypeScript consumers using `moduleResolution: Node16` — exposed via the `require` condition in the exports map so the compiler no longer rejects the entry point under `require()`
+
+Infrastructure::
+
+* Replace deprecated `create-release` and `upload-release-asset` GitHub Actions with the `gh` CLI in the release workflow
+
 == v4.0.0-alpha.1 (2026-05-04)
 
 This release is a complete rewrite of Asciidoctor.js — the Opal runtime and transpiled Ruby code have been replaced by a native JavaScript implementation.
