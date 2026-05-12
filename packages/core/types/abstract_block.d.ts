@@ -201,7 +201,7 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
      * - `'reject'` → skip the node and its children
      * - `'stop'` → include the node (if it matched) and stop the entire traversal
      *
-     * @param {Object} [selector={}] - Selector criteria object.
+     * @param {Object|Function} [selector={}] - Selector criteria object, or a filter callback when called as `findBy(callback)`.
      * @param {Function|null} [filter=null] - Per-node filter callback.
      * @returns {AbstractBlock[]} array of matching block-level nodes.
      *
@@ -216,8 +216,11 @@ export abstract class AbstractBlock<TContent extends string | any[] = string> ex
      *
      * @example <caption>All image blocks including those inside AsciiDoc table cells</caption>
      * const images = doc.findBy({ context: 'image', traverseDocuments: true })
+     *
+     * @example <caption>Filter-only shorthand (no selector)</caption>
+     * const verbatim = doc.findBy((b) => b.contentModel === ContentModel.VERBATIM)
      */
-    findBy(selector?: any, filter?: Function | null): AbstractBlock[];
+    findBy(selector?: any | Function, filter?: Function | null): AbstractBlock[];
     /** Alias for {@link findBy}. */
     query(selector?: {}, filter?: any): AbstractBlock<string>[];
     /**
