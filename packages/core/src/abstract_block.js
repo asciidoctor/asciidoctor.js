@@ -502,7 +502,7 @@ export class AbstractBlock extends AbstractNode {
    * - `'reject'` → skip the node and its children
    * - `'stop'` → include the node (if it matched) and stop the entire traversal
    *
-   * @param {Object} [selector={}] - Selector criteria object.
+   * @param {Object|Function} [selector={}] - Selector criteria object, or a filter callback when called as `findBy(callback)`.
    * @param {Function|null} [filter=null] - Per-node filter callback.
    * @returns {AbstractBlock[]} array of matching block-level nodes.
    *
@@ -517,6 +517,9 @@ export class AbstractBlock extends AbstractNode {
    *
    * @example <caption>All image blocks including those inside AsciiDoc table cells</caption>
    * const images = doc.findBy({ context: 'image', traverseDocuments: true })
+   *
+   * @example <caption>Filter-only shorthand (no selector)</caption>
+   * const verbatim = doc.findBy((b) => b.contentModel === ContentModel.VERBATIM)
    */
   findBy(selector = {}, filter = null) {
     const result = []
@@ -525,8 +528,13 @@ export class AbstractBlock extends AbstractNode {
       selector && typeof selector === 'object' && !Array.isArray(selector)
         ? selector
         : {}
-    // Normalise: filter must be a function; ignore string/non-function values (mirrors core API).
-    const normFilter = typeof filter === 'function' ? filter : null
+    // Normalise: support findBy(callback) shorthand — selector is the filter when it's a function.
+    const normFilter =
+      typeof filter === 'function'
+        ? filter
+        : typeof selector === 'function'
+          ? selector
+          : null
     try {
       this.#findByInternal(normSelector, result, normFilter)
     } catch (e) {

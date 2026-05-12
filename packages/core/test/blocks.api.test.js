@@ -35,6 +35,39 @@ describe('Block', () => {
     })
   })
 
+  describe('findBy()', () => {
+    test('findBy(callback) shorthand applies the callback as filter with empty selector', async () => {
+      const doc = await documentFromString('----\ncode\n----\n\nA paragraph.')
+      const matches = doc.findBy((b) => b.context === 'listing')
+      assert.equal(matches.length, 1)
+      assert.equal(matches[0].context, 'listing')
+    })
+
+    test('findBy(callback) shorthand traverses the full document tree', async () => {
+      const doc = await documentFromString(
+        'Intro paragraph.\n\n== Section\n\nBody paragraph.'
+      )
+      const all = doc.findBy(() => true)
+      // document (compound) → intro paragraph → section (compound) → body paragraph
+      assert.equal(all.length, 4)
+      assert.equal(all[0].context, 'document')
+      assert.equal(all[0].contentModel, 'compound')
+      assert.equal(all[1].context, 'paragraph')
+      assert.equal(all[2].context, 'section')
+      assert.equal(all[2].contentModel, 'compound')
+      assert.equal(all[3].context, 'paragraph')
+    })
+
+    test('findBy(selector, callback) still works alongside the shorthand', async () => {
+      const doc = await documentFromString('----\ncode\n----\n\nA paragraph.')
+      const matches = doc.findBy(
+        { context: 'listing' },
+        (b) => b.context === 'listing'
+      )
+      assert.equal(matches.length, 1)
+    })
+  })
+
   describe('toString()', () => {
     test('toString() includes context, content_model and style', async () => {
       const doc = await documentFromString('----\nsome code\n----')

@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* `AbstractBlock#findBy()` now accepts a callback as its first argument — `findBy(callback)` is equivalent to `findBy({}, callback)`
+
 Bug Fixes::
 
 * Fix SVG interactive option being silently ignored in UNSAFE and SAFE modes — the check now correctly allows all safe modes below SECURE, aligning with the Ruby reference implementation
