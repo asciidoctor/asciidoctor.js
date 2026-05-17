@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.0-alpha.2 (2026-05-17)
+
 Improvements::
 
 * `AbstractBlock#findBy()` now accepts a callback as its first argument — `findBy(callback)` is equivalent to `findBy({}, callback)`
