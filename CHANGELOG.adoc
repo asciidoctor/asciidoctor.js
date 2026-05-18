@@ -8,6 +8,14 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* Add `Registry#getGroups()` and `Extensions#getGroups()` as JavaScript-style accessor aliases for the `groups` property, following the dual accessor pattern
+
+Bug Fixes::
+
+* `NullLogger` now properly extends `Logger` — `instanceof Logger` checks on a `NullLogger` instance now return `true`
+
 == v4.0.0-alpha.2 (2026-05-17)
 
 Improvements::
