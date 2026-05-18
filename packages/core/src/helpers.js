@@ -38,7 +38,16 @@ const rstrip = (line) => line.replace(/[ \t\r\n\f\v]+$/, '')
  */
 export function prepareSourceArray(data, trimEnd = true) {
   if (!data.length) return []
-  if (data[0].startsWith(BOM)) data[0] = data[0].slice(1)
+  if (data[0].startsWith(BOM)) {
+    data[0] = data[0].slice(1)
+  } else if (
+    data[0].charCodeAt(0) === 0xef &&
+    data[0].charCodeAt(1) === 0xbb &&
+    data[0].charCodeAt(2) === 0xbf
+  ) {
+    // Strip UTF-8 BOM encoded as three raw characters (ï»¿ / \xEF\xBB\xBF) if not already decoded to U+FEFF
+    data[0] = data[0].slice(3)
+  }
   // Strip trailing \r to normalize Windows CRLF line endings (lines were split on \n, leaving \r).
   return trimEnd
     ? data.map(rstrip)
@@ -58,7 +67,16 @@ export function prepareSourceArray(data, trimEnd = true) {
  */
 export function prepareSourceString(data, trimEnd = true) {
   if (!data) return []
-  if (data.startsWith(BOM)) data = data.slice(1)
+  if (data.startsWith(BOM)) {
+    data = data.slice(1)
+  } else if (
+    data.charCodeAt(0) === 0xef &&
+    data.charCodeAt(1) === 0xbb &&
+    data.charCodeAt(2) === 0xbf
+  ) {
+    // Strip UTF-8 BOM encoded as three raw characters (ï»¿ / \xEF\xBB\xBF) if not already decoded to U+FEFF
+    data = data.slice(3)
+  }
   // Normalize Windows CRLF to LF so that split('\n') does not leave trailing \r on each line.
   if (data.includes('\r'))
     data = data.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
