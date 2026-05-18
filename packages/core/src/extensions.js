@@ -1414,6 +1414,13 @@ export class Registry {
     return extension
   }
 
+  // ── JavaScript-style accessors ───────────────────────────────────────────────
+
+  /** @returns {object} the plain Object that maps names to groups for this registry. */
+  getGroups() {
+    return this.groups
+  }
+
   // ── Private helpers ──────────────────────────────────────────────────────────
 
   /** @internal */
@@ -1637,6 +1644,15 @@ export const Extensions = {
    */
   groups() {
     return _groups
+  },
+
+  /**
+   * Alias for {@link groups}.
+   *
+   * @returns {object}
+   */
+  getGroups() {
+    return this.groups()
   },
 
   /**
