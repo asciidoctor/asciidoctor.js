@@ -120,12 +120,10 @@ export class MemoryLogger {
     empty(): boolean;
 }
 /** Logger that discards all messages but still tracks the maximum severity. */
-export class NullLogger {
+export class NullLogger extends Logger {
     static create(): NullLogger;
+    constructor();
     level: number;
-    _maxSeverity: number;
-    get maxSeverity(): number;
-    getMaxSeverity(): number;
     add(severity: any): boolean;
     log(severity: any): boolean;
     debug(): boolean;

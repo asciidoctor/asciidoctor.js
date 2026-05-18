@@ -347,8 +347,9 @@ export class MemoryLogger {
 // ── NullLogger ────────────────────────────────────────────────────────────────
 
 /** Logger that discards all messages but still tracks the maximum severity. */
-export class NullLogger {
+export class NullLogger extends Logger {
   constructor() {
+    super()
     this.level = Severity.UNKNOWN
     this._maxSeverity = null
   }

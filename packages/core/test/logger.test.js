@@ -5,6 +5,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import {
+  Logger,
   LoggerManager,
   MemoryLogger,
   NullLogger,
@@ -178,6 +179,11 @@ describe('Logger', () => {
       if (canInterceptStderr) process.stderr.write = stderrWriteFunction
       LoggerManager.setLogger(defaultLogger)
     }
+  })
+
+  test('NullLogger should extend Logger', () => {
+    const nullLogger = NullLogger.create()
+    assert.ok(nullLogger instanceof Logger)
   })
 
   test('should create a custom Logger', async () => {
