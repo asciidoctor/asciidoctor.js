@@ -15,6 +15,8 @@ Improvements::
 Bug Fixes::
 
 * `NullLogger` now properly extends `Logger` — `instanceof Logger` checks on a `NullLogger` instance now return `true`
+* Strip UTF-8 BOM when it appears as three raw Latin-1 characters (ï»¿ / `\xEF\xBB\xBF`) rather than the decoded U+FEFF codepoint — fixes loading of BOM-prefixed content passed through a binary/Latin-1 decoder
+* `load()` now accepts a `Uint8Array` (including browser shim instances returned by `Buffer.concat`) in addition to Node.js `Buffer` — fixes "unsupported input type: object" error in browser environments
 
 == v4.0.0-alpha.2 (2026-05-17)
 

@@ -100,11 +100,9 @@ export async function load(input, options = {}) {
       attrs.docname = basename(inputPath, docfilesuffix)
     }
     source = await _readStream(input)
-  } else if (
-    typeof input === 'object' &&
-    input?.constructor?.name === 'Buffer'
-  ) {
-    source = input.toString('utf8')
+  } else if (input instanceof Uint8Array) {
+    // Covers both Node.js Buffer (a Uint8Array subclass) and browser Uint8Array shims.
+    source = new TextDecoder('utf-8').decode(input)
   } else if (typeof input === 'string') {
     source = input
   } else if (Array.isArray(input)) {
