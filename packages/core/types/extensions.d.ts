@@ -700,6 +700,8 @@ export class Registry {
      * @returns {ProcessorExtension} the Extension stored in the registry.
      */
     prefer(...args: any[]): ProcessorExtension;
+    /** @returns {object} the plain Object that maps names to groups for this registry. */
+    getGroups(): object;
 }
 export namespace Extensions {
     /**
@@ -708,6 +710,12 @@ export namespace Extensions {
      * @returns {object}
      */
     function groups(): object;
+    /**
+     * Alias for {@link groups}.
+     *
+     * @returns {object}
+     */
+    function getGroups(): object;
     /**
      * Create a new Registry, optionally pre-populated with a named block.
      *

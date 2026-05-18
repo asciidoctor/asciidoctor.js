@@ -174,6 +174,16 @@ describe('Extensions.Register', () => {
     assert.equal(Object.keys(Extensions.groups()).length, 0)
   })
 
+  test('registry.getGroups is an alias for registry.groups', () => {
+    const registry = Extensions.create('sample', function () {
+      this.block(function () {
+        this.named('whisper')
+        this.process((_parent, _reader, _attributes) => {})
+      })
+    })
+    assert.equal(registry.getGroups(), registry.groups)
+  })
+
   test('should auto-generate name when none given', () => {
     const _g1 = Extensions.register(SampleExtensionGroup)
     const _g2 = Extensions.register(SampleExtensionGroup)
@@ -188,6 +198,11 @@ describe('Extensions.Register', () => {
     assert.throws(() => Extensions.register(), {
       message: /Extension group to register not specified/,
     })
+  })
+
+  test('getGroups is an alias for groups', () => {
+    Extensions.register('sample', SampleExtensionGroup)
+    assert.equal(Extensions.getGroups(), Extensions.groups())
   })
 })
 
