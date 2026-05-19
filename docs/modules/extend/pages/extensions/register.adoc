@@ -45,25 +45,23 @@ import { Extensions, convert } from '@asciidoctor/core'
 Extensions.register(function () {
   this.block(function () {
     const self = this
-    self.named('shout')
+    self.named('callout')
     self.onContext('paragraph')
     self.process(function (parent, reader) {
-      const lines = reader.getLines().map(l => l.toUpperCase())
-      return self.createBlock(parent, 'paragraph', lines)
+      const lines = reader.getLines()
+      return self.createBlock(parent, 'paragraph', lines, { role: 'callout' })
     })
   })
 })
 
-const text = `[shout]
-Say it loud.
-Say it proud.`
+const text = `[callout]
+Deploy to production only after all tests pass.`
 
 const html = await convert(text)
 console.log(html)
 
-// <div class="paragraph">
-// <p>SAY IT LOUD.
-// SAY IT PROUD.</p>
+// <div class="paragraph callout">
+// <p>Deploy to production only after all tests pass.</p>
 // </div>
 ----
 
@@ -85,43 +83,39 @@ const registryB = Extensions.create()
 
 registryA.block(function () {
   const self = this
-  self.named('shout')
+  self.named('callout')
   self.onContext('paragraph')
   self.process(function (parent, reader) {
-    // Transform text to uppercase
-    const lines = reader.getLines().map(l => l.toUpperCase())
-    return self.createBlock(parent, 'paragraph', lines)
+    // Render as a paragraph with a CSS role
+    const lines = reader.getLines()
+    return self.createBlock(parent, 'paragraph', lines, { role: 'callout' })
   })
 })
 
 registryB.block(function () {
   const self = this
-  self.named('shout')
+  self.named('callout')
   self.onContext('paragraph')
   self.process(function (parent, reader) {
-    // Replace period at end of line with three exclamation marks
-    const lines = reader.getLines().map(l => l.replace(/\.$/g, ' !!!'))
-    return self.createBlock(parent, 'paragraph', lines)
+    // Render as a semantic <aside> element
+    const lines = reader.getLines()
+    const html = `<aside class="callout">${lines.join('\n')}</aside>`
+    return self.createBlock(parent, 'pass', html)
   })
 })
 
-const text = `[shout]
-Say it loud.
-Say it proud.`
+const text = `[callout]
+Deploy to production only after all tests pass.`
 
 console.log(await convert(text, { extension_registry: registryA }))
 console.log('')
 console.log(await convert(text, { extension_registry: registryB }))
 
-// <div class="paragraph">
-// <p>SAY IT LOUD.
-// SAY IT PROUD.</p>
+// <div class="paragraph callout">
+// <p>Deploy to production only after all tests pass.</p>
 // </div>
 //
-// <div class="paragraph">
-// <p>Say it loud !!!
-// Say it proud !!!</p>
-// </div>
+// <aside class="callout">Deploy to production only after all tests pass.</aside>
 ----
 
 In the example above, we've created two registries:
@@ -129,7 +123,7 @@ In the example above, we've created two registries:
 * `registryA`
 * `registryB`
 
-Both registries have a `[shout]` block extension registered with a specific implementation.
+Both registries have a `[callout]` block extension registered with a specific implementation.
 
-The first block extension is registered in `registryA` and transforms the text to uppercase.
-The other is registered in `registryB` and replaces `.` with `{nbsp}!!!`.
+The first block extension is registered in `registryA` and renders the content as a paragraph with a `callout` CSS role.
+The other is registered in `registryB` and wraps the content in a semantic `<aside>` element.

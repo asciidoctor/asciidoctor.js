@@ -1,23 +1,25 @@
 = Inline Macro Processor Extension Example
 
 Purpose::
-Replace the macro `emoticon` with the corresponding text emoticon.
+Render `npm:PACKAGE[]` as a hyperlink to the package page on https://www.npmjs.com[npmjs.com].
+An optional `version` attribute appends the version to the link text.
 
-== sample-emoticon-doc.adoc
+== sample-npm-doc.adoc
 
 [source,adoc]
 ----
-emoticon:wink[]
-emoticon:grin[]
-emoticon:x[]
+= Dependencies
+
+Install npm:lodash[version=4.17.21] for utility functions
+and npm:axios[] for HTTP requests.
 ----
 
-== EmoticonInlineMacroProcessor
+== NpmInlineMacroProcessor
 
-.emoticon-inline-macro-processor.js
+.npm-inline-macro-processor.js
 [source,js]
 ----
-include::example$extensions/emoticon-inline-macro-processor.js[]
+include::example$extensions/npm-inline-macro-processor.js[]
 ----
 
 == Usage
@@ -25,11 +27,13 @@ include::example$extensions/emoticon-inline-macro-processor.js[]
 [source,js]
 ----
 import { Extensions, convertFile } from '@asciidoctor/core'
-import registerEmoticonInlineMacro from './emoticon-inline-macro-processor.js'
+import registerNpmInlineMacro from './npm-inline-macro-processor.js'
 
 const registry = Extensions.create()
-registerEmoticonInlineMacro(registry)
+registerNpmInlineMacro(registry)
 
-const html = await convertFile('sample-emoticon-doc.adoc', { to_file: false, extension_registry: registry })
+const html = await convertFile('sample-npm-doc.adoc', { to_file: false, extension_registry: registry })
 console.log(html)
+// <p>Install <a href="https://www.npmjs.com/package/lodash">lodash@4.17.21</a> for utility functions
+// and <a href="https://www.npmjs.com/package/axios">axios</a> for HTTP requests.</p>
 ----

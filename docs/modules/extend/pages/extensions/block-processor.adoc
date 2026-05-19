@@ -1,23 +1,26 @@
 = Block Extension Example
 
 Purpose::
-Capitalize the text in a `shout` block paragraph as if the author was yelling!
+Process a `[callout]` block and render it as a semantic `<aside>` element.
+The `type` attribute controls the visual style (e.g., `note`, `tip`, `warning`).
 
-== sample-shout-doc.adoc
+== sample-callout-doc.adoc
 
 [source,adoc]
 ----
-[shout]
-Say it loud.
-Say it proud.
+[callout,type=warning]
+Make sure you have Node.js 18 or later installed before running the setup script.
+
+[callout,type=tip]
+You can skip this step if you already have the dependencies installed.
 ----
 
-== ShoutBlock
+== CalloutBlock
 
-.shout-block.js
+.callout-block.js
 [source,js]
 ----
-include::example$extensions/shout-block.js[]
+include::example$extensions/callout-block.js[]
 ----
 
 == Usage
@@ -25,15 +28,13 @@ include::example$extensions/shout-block.js[]
 [source,js]
 ----
 import { Extensions, convertFile } from '@asciidoctor/core'
-import registerShoutBlock from './shout-block.js'
+import registerCalloutBlock from './callout-block.js'
 
 const registry = Extensions.create()
-registerShoutBlock(registry)
+registerCalloutBlock(registry)
 
-const html = await convertFile('sample-shout-doc.adoc', { to_file: false, extension_registry: registry })
+const html = await convertFile('sample-callout-doc.adoc', { to_file: false, extension_registry: registry })
 console.log(html)
-// <div class="paragraph">
-// <p>SAY IT LOUD.
-// SAY IT PROUD.</p>
-// </div>
+// <aside class="callout callout-warning">Make sure you have Node.js 18 or later installed before running the setup script.</aside>
+// <aside class="callout callout-tip">You can skip this step if you already have the dependencies installed.</aside>
 ----

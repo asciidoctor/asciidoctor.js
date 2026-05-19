@@ -1,21 +1,37 @@
 = Include Processor Extension Example
 
 Purpose::
-Return the content "foo" if the file extension of the include directive target is "foo".
+Handle `include` directives targeting remote JSON files over HTTPS.
+When the `as=attributes` option is set, each key-value pair in the JSON object is injected as an AsciiDoc document attribute (`:key: value`).
+Without this option, the raw JSON content is included as-is.
 
-== sample-foo-doc.adoc
+== versions.json
+
+[source,json]
+----
+{
+  "version": "3.1.0",
+  "node-min": "18"
+}
+----
+
+== sample-versions-doc.adoc
 
 [source,adoc]
 ----
-\include::./test.foo[]
+include::https://raw.githubusercontent.com/org/repo/main/versions.json[as=attributes]
+
+= Release Notes {version}
+
+Requires Node.js >= {node-min}.
 ----
 
-== FooIncludeProcessor
+== JsonIncludeProcessor
 
-.foo-include-processor.js
+.json-include-processor.js
 [source,js]
 ----
-include::example$extensions/foo-include-processor.js[]
+include::example$extensions/json-include-processor.js[]
 ----
 
 == Usage
@@ -23,14 +39,16 @@ include::example$extensions/foo-include-processor.js[]
 [source,js]
 ----
 import { Extensions, convert } from '@asciidoctor/core'
-import registerFooIncludeProcessor from './foo-include-processor.js'
+import registerJsonIncludeProcessor from './json-include-processor.js'
 
 const registry = Extensions.create()
-registerFooIncludeProcessor(registry)
+registerJsonIncludeProcessor(registry)
 
-const html = await convert('include::./test.foo[]', { extension_registry: registry })
-console.log(html)
-// <div class="paragraph">
-// <p>foo</p>
-// </div>
+const html = await convert(
+  'include::https://raw.githubusercontent.com/org/repo/main/versions.json[as=attributes]',
+  { extension_registry: registry }
+)
+// The JSON keys are now available as document attributes:
+// :version: 3.1.0
+// :node-min: 18
 ----
