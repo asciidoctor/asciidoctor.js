@@ -28,6 +28,18 @@ import {
   BlockMacroProcessor,
   Extensions,
 } from './extensions.js'
+
+// Re-export DSL interface types for TypeScript consumers.
+/**
+ * @typedef {import('./extensions.js').ProcessorDslInterface} ProcessorDslInterface
+ * @typedef {import('./extensions.js').DocumentProcessorDslInterface} DocumentProcessorDslInterface
+ * @typedef {import('./extensions.js').SyntaxProcessorDslInterface} SyntaxProcessorDslInterface
+ * @typedef {import('./extensions.js').IncludeProcessorDslInterface} IncludeProcessorDslInterface
+ * @typedef {import('./extensions.js').DocinfoProcessorDslInterface} DocinfoProcessorDslInterface
+ * @typedef {import('./extensions.js').BlockProcessorDslInterface} BlockProcessorDslInterface
+ * @typedef {import('./extensions.js').MacroProcessorDslInterface} MacroProcessorDslInterface
+ * @typedef {import('./extensions.js').InlineMacroProcessorDslInterface} InlineMacroProcessorDslInterface
+ */
 import {
   Converter,
   ConverterBase,
