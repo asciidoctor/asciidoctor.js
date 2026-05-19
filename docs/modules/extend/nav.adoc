@@ -1,4 +1,5 @@
 .xref:index.adoc[Extend & Customize]
+* xref:customization-overview.adoc[Customization Overview]
 * xref:stylesheets/index.adoc[Stylesheets]
 * xref:extensions/index.adoc[Extensions]
 ** xref:extensions/register.adoc[Register Extensions]

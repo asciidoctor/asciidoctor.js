@@ -1,9 +1,10 @@
 = Stylesheets
+:url-asciidoctor-stylesheets: https://github.com/asciidoctor/asciidoctor/tree/main/src/stylesheets
 
 On this page, you'll learn:
 
 * [x] How to apply a theme.
-//* [x] How to create a new theme.
+* [x] How to customize the default stylesheet.
 
 [#apply-theme]
 == Applying a theme
@@ -11,7 +12,7 @@ On this page, you'll learn:
 A custom stylesheet can be stored in the same directory as your document or in a separate directory.
 Like the default stylesheet, you can have the output document link to your custom stylesheet or embed it.
 
-If the stylesheet is in the same directory as your document, you can apply it when converting your document to HTML from the API.
+If the stylesheet is in the same directory as your document, you can apply it via the API:
 
 [source,js]
 ----
@@ -20,13 +21,14 @@ import { convertFile } from '@asciidoctor/core'
 await convertFile('file.adoc', { attributes: { stylesheet: 'styles.css' } })
 ----
 
-. Save your custom stylesheet in the same directory as `file.adoc`
-. Call the `convertFile` function
-. Set the attribute `stylesheet`
-. Assign the stylesheet file's name to the `stylesheet` attribute
-. Enter your document file's name.
+Via the xref:cli:options.adoc[CLI]:
 
-Alternatively, let's set the `stylesheet` attribute in the header of `file.adoc`.
+[source,console]
+----
+$ asciidoctor -a stylesheet=styles.css file.adoc
+----
+
+Alternatively, set the `stylesheet` attribute in the header of `file.adoc`.
 
 ----
 include::{examplesdir}/sample-stylesheet.adoc[]
@@ -59,6 +61,41 @@ include::{examplesdir}/sample-stylesdir-link.adoc[]
 After your document is converted, notice that a copy of `styles.css` was not created in the `docs/` directory.
 Unlike when you link to the default Asciidoctor stylesheet, any custom stylesheets you link to are not copied to the directory where your output is saved.
 
-//== Creating a theme
-// TODO: Explain how to create a new theme using https://github.com/mogztter/asciidoctor-stylesheets
-// TIP: If you are not familiar with https://sass-lang.com/[Sass], it might be easier to adapt an existing theme rather than creating a new one from scratch.
+== Customizing the default stylesheet
+
+The default Asciidoctor stylesheet source is available in the {url-asciidoctor-stylesheets}[asciidoctor/asciidoctor repository^].
+You can use it as a reference or a starting point for your own theme.
+
+The Asciidoctor project no longer maintains a stylesheet factory or official alternative themes.
+Community-shared themes can be found online, but they are not officially supported.
+
+There are two common approaches to customization:
+
+Override specific rules::
+The `stylesheet` attribute replaces the default Asciidoctor stylesheet entirely.
+To keep the default styles and only override specific rules, you have two options:
++
+Use CSS `@import` at the top of your stylesheet to pull in the default one first, then add your overrides below:
++
+[source,css]
+----
+@import "https://cdn.jsdelivr.net/npm/@asciidoctor/core/data/asciidoctor-default.css";
+
+/* your overrides below */
+h1, h2, h3 { font-family: Georgia, serif; }
+----
++
+tAlternatively, use a docinfo file to inject a `<link>` tag in the document `<head>` without writing any JavaScript.
+Create a file named `docinfo.html` next to your document and add your `<link>` tag:
++
+[source,html]
+----
+<link rel="stylesheet" href="overrides.css">
+----
++
+This keeps the default stylesheet in place and loads your override stylesheet on top of it.
+See the xref:asciidoc::docinfo.adoc[Docinfo files documentation^] for the full list of naming conventions and placement options.
+
+Start from the default stylesheet::
+Copy the {url-asciidoctor-stylesheets}[default stylesheet^] and modify it directly.
+This gives you full control but means you are responsible for keeping up with upstream changes.
