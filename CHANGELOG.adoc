@@ -8,6 +8,11 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Documentation::
+
+* Add customization overview page listing all extension levels from built-in attributes to custom converter
+* Update stylesheets page to reflect that the stylesheet factory is deprecated and the default stylesheet no longer uses Sass
+
 Improvements::
 
 * Add `Registry#getGroups()` and `Extensions#getGroups()` as JavaScript-style accessor aliases for the `groups` property, following the dual accessor pattern
