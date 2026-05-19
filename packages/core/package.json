@@ -28,6 +28,7 @@
     "build:types": "tsc && node scripts/strip-internal.js && node scripts/patch-jsdoc.js",
     "docs": "typedoc --tsconfig tsconfig.docs.json",
     "test": "node --test test/**.test.js",
+    "test:deno": "deno test --allow-env --no-check --allow-read --allow-sys --allow-write --allow-run --allow-net test/*.test.js",
     "test:coverage": "node --test --experimental-test-coverage --test-coverage-include='src/**' test/**.test.js",
     "test:browser": "vitest run --config vitest.browser.config.js",
     "lint": "biome lint src test",

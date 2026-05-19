@@ -1,11 +1,11 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import {
   assertCss,
   assertXpath,
   assertMessage,
   xmlnodesAtXpath,
+  usingMemoryLogger,
 } from './helpers.js'
 import {
   documentFromString,
@@ -15,18 +15,6 @@ import {
 } from './harness.js'
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Preformatted Blocks', () => {
     test('should separate adjacent paragraphs and listing into blocks', async () => {
       const input = `\
@@ -47,7 +35,8 @@ paragraph 2
     })
 
     test('should warn if listing block is not terminated', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 outside
 
 ----
@@ -57,13 +46,14 @@ still inside
 
 eof
 `
-      const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="listingblock"]', 1)
-      assertMessage(
-        logger,
-        'warn',
-        '<stdin>: line 3: unterminated listing block'
-      )
+        const output = await convertStringToEmbedded(input)
+        assertXpath(output, '/*[@class="listingblock"]', 1)
+        assertMessage(
+          logger,
+          'warn',
+          '<stdin>: line 3: unterminated listing block'
+        )
+      })
     })
 
     test('should not crash when converting verbatim block that has no lines', async () => {

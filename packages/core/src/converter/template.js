@@ -276,7 +276,7 @@ export class TemplateConverter extends ConverterBase {
 
     let entries
     try {
-      entries = await fsp.readdir(templateDir)
+      entries = (await fsp.readdir(templateDir)).sort()
     } catch {
       return result
     }

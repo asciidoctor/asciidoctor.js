@@ -1,12 +1,12 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import {
   assertCss,
   assertXpath,
   assertMessage,
   xmlnodesAtXpath,
   decodeChar,
+  usingMemoryLogger,
 } from './helpers.js'
 import {
   convertString,
@@ -15,18 +15,6 @@ import {
 } from './harness.js'
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Quote and Verse Blocks', () => {
     test('quote block with no attribution', async () => {
       const input = `\
@@ -512,16 +500,22 @@ ____
     })
 
     test('should not recognize callouts in a verse', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 [verse]
 ____
 La la la <1>
 ____
 <1> Not pointing to a callout
 `
-      const output = await convertStringToEmbedded(input)
-      assertXpath(output, '//pre[text()="La la la <1>"]', 1)
-      assertMessage(logger, 'warn', '<stdin>: line 5: no callout found for <1>')
+        const output = await convertStringToEmbedded(input)
+        assertXpath(output, '//pre[text()="La la la <1>"]', 1)
+        assertMessage(
+          logger,
+          'warn',
+          '<stdin>: line 5: no callout found for <1>'
+        )
+      })
     })
 
     test('should perform normal subs on a verse block', async () => {

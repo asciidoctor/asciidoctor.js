@@ -661,7 +661,7 @@ export class Reader {
     return this.source()
   }
   getLogger() {
-    return LoggerManager.logger
+    return this._document?.logger ?? LoggerManager.logger
   }
   createLogMessage(text, context = {}) {
     return Logger.AutoFormattingMessage.attach({ text, ...context })

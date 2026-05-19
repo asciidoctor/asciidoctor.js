@@ -1,6 +1,5 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath } from './helpers.js'
 import {
   documentFromString,
@@ -10,18 +9,6 @@ import {
 } from './harness.js'
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Open Blocks', () => {
     test('can convert open block', async () => {
       const input = `--

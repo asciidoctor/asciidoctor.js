@@ -32,6 +32,7 @@ export default defineConfig({
       { find: 'node:fs',            replacement: shim('node-fs') },
       { find: 'node:os',            replacement: shim('node-os') },
       { find: 'node:http',          replacement: shim('node-http') },
+      { find: 'node:async_hooks',   replacement: shim('node-async-hooks') },
     ],
   },
 })

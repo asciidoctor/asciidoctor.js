@@ -39,6 +39,65 @@ function resolveSeverity(severity) {
   return severity ?? Severity.UNKNOWN
 }
 
+// ── Per-execution logger context ─────────────────────────────────────────────
+
+// Holds an AsyncLocalStorage instance once it is lazily initialised.
+// Allows per-execution logger isolation without mutating the global singleton,
+// making concurrent test execution (e.g. Deno's node:test) safe.
+let _loggerStore = null
+
+// Promise singleton — ensures AsyncLocalStorage is initialised at most once.
+let _loggerStorePromise = null
+
+/**
+ * Lazily initialise an AsyncLocalStorage for per-execution logger context.
+ * Falls back to null in environments that do not support node:async_hooks (e.g. browsers).
+ * @returns {Promise<import('node:async_hooks').AsyncLocalStorage|null>}
+ */
+async function _ensureLoggerStore() {
+  if (_loggerStorePromise === null) {
+    _loggerStorePromise = import('node:async_hooks')
+      .then(({ AsyncLocalStorage }) => {
+        const store = new AsyncLocalStorage()
+        _loggerStore = store
+        return store
+      })
+      .catch(() => null)
+  }
+  return _loggerStorePromise
+}
+
+/** @internal — returns the logger bound to the current async context, or null */
+export function getContextLogger() {
+  return _loggerStore?.getStore() ?? null
+}
+
+/**
+ * Run fn() within an async-local logger context so that all log calls via
+ * `this.logger` (from applyLogging) automatically route to the provided logger
+ * for the duration of the async execution chain.
+ *
+ * Falls back to global mutation in environments without node:async_hooks (e.g. browsers).
+ *
+ * @param {Logger|MemoryLogger|NullLogger} logger - The logger to activate.
+ * @param {() => any} fn - The function to execute within the logger context.
+ * @returns {Promise<any>}
+ */
+export async function withLogger(logger, fn) {
+  const store = await _ensureLoggerStore()
+  if (store) {
+    return store.run(logger, fn)
+  }
+  // Fallback for environments without node:async_hooks (browsers).
+  const prev = LoggerManager.logger
+  if (logger !== prev) LoggerManager.logger = logger
+  try {
+    return await fn()
+  } finally {
+    if (logger !== prev) LoggerManager.logger = prev
+  }
+}
+
 // ── Logger ────────────────────────────────────────────────────────────────────
 
 /** Standard logger that writes formatted messages to stderr or a custom pipe. */
@@ -494,12 +553,12 @@ export const LoggerManager = (() => {
 export function applyLogging(proto) {
   Object.defineProperty(proto, 'logger', {
     get() {
-      return LoggerManager.logger
+      return _loggerStore?.getStore() ?? LoggerManager.logger
     },
     configurable: true,
   })
 
-  proto.getLogger = () => LoggerManager.logger
+  proto.getLogger = () => _loggerStore?.getStore() ?? LoggerManager.logger
 
   proto.messageWithContext = (text, context = {}) =>
     Logger.AutoFormattingMessage.attach({ text, ...context })
@@ -513,10 +572,10 @@ export function applyLogging(proto) {
  */
 export const Logging = {
   get logger() {
-    return LoggerManager.logger
+    return _loggerStore?.getStore() ?? LoggerManager.logger
   },
   getLogger() {
-    return LoggerManager.logger
+    return _loggerStore?.getStore() ?? LoggerManager.logger
   },
   messageWithContext(text, context = {}) {
     return Logger.AutoFormattingMessage.attach({ text, ...context })

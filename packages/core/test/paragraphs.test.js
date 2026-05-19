@@ -1,12 +1,17 @@
 // ESM conversion of paragraphs_test.rb
 // Tests for paragraph handling in Asciidoctor.
 
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { MemoryLogger, LoggerManager, Severity } from '../src/logging.js'
+import { Severity } from '../src/logging.js'
 import { ADMONITION_STYLES } from '../src/constants.js'
-import { assertXpath, assertCss, assertMessage } from './helpers.js'
+import {
+  assertXpath,
+  assertCss,
+  assertMessage,
+  usingMemoryLogger,
+} from './helpers.js'
 import {
   convertString,
   convertStringToEmbedded,
@@ -611,55 +616,40 @@ Wise words from a wise person.`
 
       test('should output nil and warn if first block is not a paragraph', async () => {
         const input = '* bullet'
-        let logger
-        const defaultLogger = LoggerManager.logger
-        try {
-          LoggerManager.logger = logger = new MemoryLogger()
+        await usingMemoryLogger(async (logger) => {
           const output = await convertString(input, { doctype: 'inline' })
           assert.ok(
             output == null || output === '',
             `Expected nil/empty output but got: ${output}`
           )
           assertMessage(logger, 'WARN', 'no inline candidate')
-        } finally {
-          LoggerManager.logger = defaultLogger
-        }
+        })
       })
     })
   })
 
   describe('Custom', () => {
-    let defaultLogger
-
-    beforeEach(() => {
-      defaultLogger = LoggerManager.logger
-    })
-
-    afterEach(() => {
-      LoggerManager.logger = defaultLogger
-    })
-
     test('should not warn if paragraph style is unregisted', async () => {
       const input = `[foo]
 bar`
-      const logger = new MemoryLogger()
-      LoggerManager.logger = logger
-      await convertStringToEmbedded(input)
-      assert.equal(
-        logger.messages.length,
-        0,
-        `Expected no log messages but got: ${JSON.stringify(logger.messages)}`
-      )
+      await usingMemoryLogger(async (logger) => {
+        await convertStringToEmbedded(input)
+        assert.equal(
+          logger.messages.length,
+          0,
+          `Expected no log messages but got: ${JSON.stringify(logger.messages)}`
+        )
+      })
     })
 
     test('should log debug message if paragraph style is unknown and debug level is enabled', async () => {
       const input = `[foo]
 bar`
-      const logger = new MemoryLogger()
-      logger.level = Severity.DEBUG
-      LoggerManager.logger = logger
-      await convertStringToEmbedded(input)
-      assertMessage(logger, 'DEBUG', 'unknown style for paragraph: foo')
+      await usingMemoryLogger(async (logger) => {
+        logger.level = Severity.DEBUG
+        await convertStringToEmbedded(input)
+        assertMessage(logger, 'DEBUG', 'unknown style for paragraph: foo')
+      })
     })
   })
 })

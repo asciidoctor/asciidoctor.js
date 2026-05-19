@@ -1,6 +1,5 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { assertCss, assertXpath, xmlnodesAtXpath } from './helpers.js'
 import {
   documentFromString,
@@ -9,18 +8,6 @@ import {
 } from './harness.js'
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Math blocks', () => {
     test('should not crash when converting stem block that has no lines', async () => {
       const input = `[stem]

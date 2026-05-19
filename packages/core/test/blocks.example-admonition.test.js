@@ -1,7 +1,11 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { assertCss, assertXpath, assertMessage } from './helpers.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  usingMemoryLogger,
+} from './helpers.js'
 import {
   documentFromString,
   convertString,
@@ -9,18 +13,6 @@ import {
 } from './harness.js'
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Example Blocks', () => {
     test('can convert example block', async () => {
       const input = `\
@@ -351,7 +343,8 @@ after
     })
 
     test('should warn if example block is not terminated', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 outside
 
 ====
@@ -362,13 +355,14 @@ still inside
 eof
 `
 
-      const output = await convertStringToEmbedded(input)
-      assertXpath(output, '/*[@class="exampleblock"]', 1)
-      assertMessage(
-        logger,
-        'warn',
-        '<stdin>: line 3: unterminated example block'
-      )
+        const output = await convertStringToEmbedded(input)
+        assertXpath(output, '/*[@class="exampleblock"]', 1)
+        assertMessage(
+          logger,
+          'warn',
+          '<stdin>: line 3: unterminated example block'
+        )
+      })
     })
   })
 

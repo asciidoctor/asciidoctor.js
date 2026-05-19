@@ -1,16 +1,16 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { load } from '../src/load.js'
 import { Block } from '../src/block.js'
 import { SafeMode, INTRINSIC_ATTRIBUTES, USER_HOME } from '../src/constants.js'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import {
   documentFromString,
   convertString,
   convertStringToEmbedded,
   blockFromString,
 } from './harness.js'
+import { usingMemoryLogger } from './helpers.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -43,18 +43,6 @@ function countTag(html, tag) {
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('Attributes', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   // ── Assignment ─────────────────────────────────────────────────────────────
 
   describe('Assignment', () => {
@@ -190,27 +178,31 @@ describe('Attributes', () => {
     })
 
     test('assigns attribute to empty string if substitution fails to resolve attribute', async () => {
-      await documentFromString(':release: Asciidoctor {version}', {
-        attributes: { 'attribute-missing': 'drop-line' },
+      await usingMemoryLogger(async (logger) => {
+        await documentFromString(':release: Asciidoctor {version}', {
+          attributes: { 'attribute-missing': 'drop-line' },
+        })
+        assertMessage(
+          logger,
+          'INFO',
+          'dropping line containing reference to missing attribute: version'
+        )
       })
-      assertMessage(
-        logger,
-        'INFO',
-        'dropping line containing reference to missing attribute: version'
-      )
     })
 
     test('assigns multi-line attribute to empty string if substitution fails to resolve attribute', async () => {
-      const input = ':release: Asciidoctor +\n          {version}'
-      const doc = await documentFromString(input, {
-        attributes: { 'attribute-missing': 'drop-line' },
+      await usingMemoryLogger(async (logger) => {
+        const input = ':release: Asciidoctor +\n          {version}'
+        const doc = await documentFromString(input, {
+          attributes: { 'attribute-missing': 'drop-line' },
+        })
+        assert.equal(doc.attributes.release, '')
+        assertMessage(
+          logger,
+          'INFO',
+          'dropping line containing reference to missing attribute: version'
+        )
       })
-      assert.equal(doc.attributes.release, '')
-      assertMessage(
-        logger,
-        'INFO',
-        'dropping line containing reference to missing attribute: version'
-      )
     })
 
     test('resolves attributes inside attribute value within header', async () => {
@@ -733,15 +725,17 @@ describe('Attributes', () => {
     })
 
     test('ignores lines with bad attributes if attribute-missing is drop-line', async () => {
-      const input =
-        ':attribute-missing: drop-line\n\nThis is\nblah blah {foobarbaz}\nall there is.'
-      const output = await convertStringToEmbedded(input)
-      assert.ok(!output.includes('blah blah'))
-      assertMessage(
-        logger,
-        'INFO',
-        'dropping line containing reference to missing attribute: foobarbaz'
-      )
+      await usingMemoryLogger(async (logger) => {
+        const input =
+          ':attribute-missing: drop-line\n\nThis is\nblah blah {foobarbaz}\nall there is.'
+        const output = await convertStringToEmbedded(input)
+        assert.ok(!output.includes('blah blah'))
+        assertMessage(
+          logger,
+          'INFO',
+          'dropping line containing reference to missing attribute: foobarbaz'
+        )
+      })
     })
 
     test('attribute value gets interpreted when converting', async () => {
@@ -755,16 +749,18 @@ describe('Attributes', () => {
     })
 
     test('drop line with reference to missing attribute if attribute-missing attribute is drop-line', async () => {
-      const input =
-        ':attribute-missing: drop-line\n\nLine 1: This line should appear in the output.\nLine 2: Oh no, a {bogus-attribute}! This line should not appear in the output.'
-      const output = await convertStringToEmbedded(input)
-      assert.ok(output.includes('Line 1'))
-      assert.ok(!output.includes('Line 2'))
-      assertMessage(
-        logger,
-        'INFO',
-        'dropping line containing reference to missing attribute: bogus-attribute'
-      )
+      await usingMemoryLogger(async (logger) => {
+        const input =
+          ':attribute-missing: drop-line\n\nLine 1: This line should appear in the output.\nLine 2: Oh no, a {bogus-attribute}! This line should not appear in the output.'
+        const output = await convertStringToEmbedded(input)
+        assert.ok(output.includes('Line 1'))
+        assert.ok(!output.includes('Line 2'))
+        assertMessage(
+          logger,
+          'INFO',
+          'dropping line containing reference to missing attribute: bogus-attribute'
+        )
+      })
     })
 
     test('do not drop line with reference to missing attribute by default', async () => {
@@ -861,10 +857,13 @@ describe('Attributes', () => {
     })
 
     test('warn if unterminated block comment is detected in document header', async () => {
-      const input = '= Document Title\n:foo: bar\n////\n:hey: there\n\ncontent'
-      const doc = await documentFromString(input)
-      assert.equal(doc.getAttribute('hey'), null)
-      assertMessage(logger, 'WARN', 'unterminated comment block')
+      await usingMemoryLogger(async (logger) => {
+        const input =
+          '= Document Title\n:foo: bar\n////\n:hey: there\n\ncontent'
+        const doc = await documentFromString(input)
+        assert.equal(doc.getAttribute('hey'), null)
+        assertMessage(logger, 'WARN', 'unterminated comment block')
+      })
     })
 
     test('substitutes inside block title', async () => {
@@ -987,15 +986,17 @@ describe('Attributes', () => {
     })
 
     test('unassigns attribute defined in attribute reference with set prefix', async () => {
-      const input =
-        ':attribute-missing: drop-line\n:foo:\n\n{set:foo!}\n{foo}yes'
-      const output = await convertStringToEmbedded(input)
-      assert.equal(countTag(output, 'p'), 1)
-      assertMessage(
-        logger,
-        'INFO',
-        'dropping line containing reference to missing attribute: foo'
-      )
+      await usingMemoryLogger(async (logger) => {
+        const input =
+          ':attribute-missing: drop-line\n:foo:\n\n{set:foo!}\n{foo}yes'
+        const output = await convertStringToEmbedded(input)
+        assert.equal(countTag(output, 'p'), 1)
+        assertMessage(
+          logger,
+          'INFO',
+          'dropping line containing reference to missing attribute: foo'
+        )
+      })
     })
   })
 

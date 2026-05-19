@@ -1549,7 +1549,7 @@ export class Parser {
       const Rdr = Reader
       const result = await extension.processMethod(
         parent,
-        blockReader ?? new Rdr(lines),
+        blockReader ?? new Rdr(lines, null, { document: parent.document }),
         { ...attributes }
       )
       if (!result || result === parent) return null

@@ -1,8 +1,12 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 import { Block } from '../src/block.js'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { assertCss, assertXpath, assertMessage } from './helpers.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  usingMemoryLogger,
+} from './helpers.js'
 import {
   documentFromString,
   convertString,
@@ -11,18 +15,6 @@ import {
 } from './harness.js'
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Image paths', () => {
     test('restricts access to ancestor directories when safe mode level is at least SAFE', async () => {
       // NOTE: normalize_asset_path is a Ruby-specific method tied to file system; skipping path assertions
@@ -228,19 +220,21 @@ Abstract for book with title is valid
     })
 
     test('should not allow abstract as direct child of document if doctype is book', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :doctype: book
 
 [abstract]
 Abstract for book without title is invalid.
 `
-      const output = await convertString(input)
-      assertCss(output, '.abstract', 0)
-      assertMessage(
-        logger,
-        'warn',
-        'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.'
-      )
+        const output = await convertString(input)
+        assertCss(output, '.abstract', 0)
+        assertMessage(
+          logger,
+          'warn',
+          'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.'
+        )
+      })
     })
 
     test('should make abstract on open block without title converted to DocBook', async () => {
@@ -289,19 +283,21 @@ Abstract for book with title is valid
     })
 
     test('should not allow abstract as direct child of document if doctype is book converted to DocBook', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :doctype: book
 
 [abstract]
 Abstract for book is invalid.
 `
-      const output = await convertString(input, { backend: 'docbook' })
-      assertCss(output, 'abstract', 0)
-      assertMessage(
-        logger,
-        'warn',
-        'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.'
-      )
+        const output = await convertString(input, { backend: 'docbook' })
+        assertCss(output, 'abstract', 0)
+        assertMessage(
+          logger,
+          'warn',
+          'abstract block cannot be used in a document without a doctitle when doctype is book. Excluding block content.'
+        )
+      })
     })
 
     // TODO partintro shouldn't be recognized if doctype is not book, should be in proper place
@@ -380,34 +376,38 @@ content
     })
 
     test('should exclude partintro if not a child of part', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 = Book
 :doctype: book
 
 [partintro]
 part intro paragraph
 `
-      const output = await convertString(input)
-      assertCss(output, '.partintro', 0)
-      assertMessage(
-        logger,
-        'error',
-        'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
-      )
+        const output = await convertString(input)
+        assertCss(output, '.partintro', 0)
+        assertMessage(
+          logger,
+          'error',
+          'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
+        )
+      })
     })
 
     test('should not allow partintro unless doctype is book', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 [partintro]
 part intro paragraph
 `
-      const output = await convertString(input)
-      assertCss(output, '.partintro', 0)
-      assertMessage(
-        logger,
-        'error',
-        'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
-      )
+        const output = await convertString(input)
+        assertCss(output, '.partintro', 0)
+        assertMessage(
+          logger,
+          'error',
+          'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
+        )
+      })
     })
 
     test('should accept partintro on open block without title converted to DocBook', async () => {
@@ -459,34 +459,38 @@ content
     })
 
     test('should exclude partintro if not a child of part converted to DocBook', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 = Book
 :doctype: book
 
 [partintro]
 part intro paragraph
 `
-      const output = await convertString(input, { backend: 'docbook' })
-      assertCss(output, 'partintro', 0)
-      assertMessage(
-        logger,
-        'error',
-        'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
-      )
+        const output = await convertString(input, { backend: 'docbook' })
+        assertCss(output, 'partintro', 0)
+        assertMessage(
+          logger,
+          'error',
+          'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
+        )
+      })
     })
 
     test('should not allow partintro unless doctype is book converted to DocBook', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 [partintro]
 part intro paragraph
 `
-      const output = await convertString(input, { backend: 'docbook' })
-      assertCss(output, 'partintro', 0)
-      assertMessage(
-        logger,
-        'error',
-        'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
-      )
+        const output = await convertString(input, { backend: 'docbook' })
+        assertCss(output, 'partintro', 0)
+        assertMessage(
+          logger,
+          'error',
+          'partintro block can only be used when doctype is book and must be a child of a book part. Excluding block content.'
+        )
+      })
     })
   })
 
