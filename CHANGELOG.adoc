@@ -15,6 +15,8 @@ Documentation::
 
 Improvements::
 
+* Export named TypeScript DSL interface types (`ProcessorDslInterface`, `DocumentProcessorDslInterface`, `SyntaxProcessorDslInterface`, `IncludeProcessorDslInterface`, `DocinfoProcessorDslInterface`, `BlockProcessorDslInterface`, `MacroProcessorDslInterface`, `InlineMacroProcessorDslInterface`) from `@asciidoctor/core` — TypeScript consumers can now use these as `this` context types in block-style extension registrations
+* Type the `process` method precisely on each processor class: `Preprocessor`, `TreeProcessor`, `Postprocessor`, `IncludeProcessor`, `DocinfoProcessor`, `BlockProcessor`, `MacroProcessor`, `BlockMacroProcessor`, and `InlineMacroProcessor` now have fully typed parameter and return types instead of `any`
 * Add `Registry#getGroups()` and `Extensions#getGroups()` as JavaScript-style accessor aliases for the `groups` property, following the dual accessor pattern
 
 Bug Fixes::

@@ -224,7 +224,12 @@ export class Processor {
  * Extensions.register(function () { this.preprocessor(CommentStripPreprocessor) })
  */
 export class Preprocessor extends Processor {
-    process(_document: any, _reader: any): void;
+    /**
+     * @param {Document} document - The document being parsed.
+     * @param {Reader} reader - The reader positioned at the beginning of the source.
+     * @returns {Reader|undefined} The same or a substitute Reader, or undefined to use the original.
+     */
+    process(document: Document, reader: Reader): Reader | undefined;
 }
 export namespace Preprocessor {
     export { DocumentProcessorDsl as DSL };
@@ -246,7 +251,11 @@ export namespace Preprocessor {
  * Extensions.register(function () { this.treeProcessor(ShoutTreeProcessor) })
  */
 export class TreeProcessor extends Processor {
-    process(_document: any): void;
+    /**
+     * @param {Document} document - The parsed document.
+     * @returns {void}
+     */
+    process(document: Document): void;
 }
 export namespace TreeProcessor {
     export { DocumentProcessorDsl as DSL };
@@ -271,7 +280,12 @@ export const Treeprocessor: typeof TreeProcessor;
  * Extensions.register(function () { this.postprocessor(FooterPostprocessor) })
  */
 export class Postprocessor extends Processor {
-    process(_document: any, _output: any): void;
+    /**
+     * @param {Document} document - The converted document.
+     * @param {string} output - The converted output string.
+     * @returns {string} The (possibly modified) output string.
+     */
+    process(document: Document, output: string): string;
 }
 export namespace Postprocessor {
     export { DocumentProcessorDsl as DSL };
@@ -282,8 +296,20 @@ export namespace Postprocessor {
  * Implementations must extend IncludeProcessor.
  */
 export class IncludeProcessor extends Processor {
-    process(_document: any, _reader: any, _target: any, _attributes: any): void;
-    handles(_doc: any, _target: any): boolean;
+    /**
+     * @param {Document} document - The document being parsed.
+     * @param {Reader} reader - The reader for the including document.
+     * @param {string} target - The target of the include directive.
+     * @param {Record<string, string>} attributes - The parsed include attributes.
+     * @returns {void}
+     */
+    process(document: Document, reader: Reader, target: string, attributes: Record<string, string>): void;
+    /**
+     * @param {Document} doc - The document being parsed.
+     * @param {string} target - The target of the include directive.
+     * @returns {boolean} true if this processor handles the given target.
+     */
+    handles(doc: Document, target: string): boolean;
 }
 export namespace IncludeProcessor {
     export { IncludeProcessorDsl as DSL };
@@ -295,7 +321,11 @@ export namespace IncludeProcessor {
  * Implementations must extend DocinfoProcessor.
  */
 export class DocinfoProcessor extends Processor {
-    process(_document: any): void;
+    /**
+     * @param {Document} document - The document being converted.
+     * @returns {string} The docinfo content to inject into the document.
+     */
+    process(document: Document): string;
 }
 export namespace DocinfoProcessor {
     export { DocinfoProcessorDsl as DSL };
@@ -331,7 +361,13 @@ export namespace DocinfoProcessor {
 export class BlockProcessor extends Processor {
     constructor(name?: any, config?: {});
     name: any;
-    process(_parent: any, _reader: any, _attributes: any): void;
+    /**
+     * @param {AbstractBlock} parent - The enclosing block.
+     * @param {Reader} reader - The reader positioned at the block content.
+     * @param {Record<string, unknown>} attributes - The parsed block attributes.
+     * @returns {Block|void} A block node, or void to let the parser handle it.
+     */
+    process(parent: AbstractBlock, reader: Reader, attributes: Record<string, unknown>): Block | void;
 }
 export namespace BlockProcessor {
     export { BlockProcessorDsl as DSL };
@@ -342,7 +378,13 @@ export namespace BlockProcessor {
 export class MacroProcessor extends Processor {
     constructor(name?: any, config?: {});
     name: any;
-    process(_parent: any, _target: any, _attributes: any): void;
+    /**
+     * @param {AbstractBlock} parent - The enclosing block.
+     * @param {string} target - The macro target (text between `name:` and `[`).
+     * @param {Record<string, unknown>} attributes - The parsed macro attributes.
+     * @returns {Block|Inline|void}
+     */
+    process(parent: AbstractBlock, target: string, attributes: Record<string, unknown>): Block | Inline | void;
 }
 /**
  * BlockMacroProcessors handle block macros with a custom name.
@@ -370,6 +412,13 @@ export class MacroProcessor extends Processor {
  */
 export class BlockMacroProcessor extends MacroProcessor {
     _name: any;
+    /**
+     * @param {AbstractBlock} parent - The enclosing block.
+     * @param {string} target - The macro target.
+     * @param {Record<string, unknown>} attributes - The parsed macro attributes.
+     * @returns {Block} A block node created with one of the `createBlock` helpers.
+     */
+    process(parent: AbstractBlock, target: string, attributes: Record<string, unknown>): Block;
 }
 export namespace BlockMacroProcessor {
     export { MacroProcessorDsl as DSL };
@@ -407,6 +456,13 @@ export class InlineMacroProcessor extends MacroProcessor {
      * @returns {RegExp}
      */
     get regexp(): RegExp;
+    /**
+     * @param {AbstractBlock} parent - The enclosing block.
+     * @param {string} target - The macro target.
+     * @param {Record<string, unknown>} attributes - The parsed macro attributes.
+     * @returns {Inline} An Inline node created with `this.createInline(...)`.
+     */
+    process(parent: AbstractBlock, target: string, attributes: Record<string, unknown>): Inline;
     resolveRegexp(name: any, format: any): any;
 }
 export namespace InlineMacroProcessor {
@@ -456,7 +512,7 @@ export class Registry {
      * @returns {Registry} this Registry.
      */
     activate(document: Document): Registry;
-    document: any;
+    document: import("./document.js").Document;
     /**
      * Register a Preprocessor with the extension registry.
      *
@@ -876,6 +932,85 @@ export namespace Extensions {
      */
     function newBlockMacroProcessor(name?: string, functions?: object, ...args: any[]): BlockMacroProcessor;
 }
+export type Document = import("./document.js").Document;
+export type AbstractBlock = import("./abstract_block.js").AbstractBlock;
+/**
+ * DSL interface for configuring a {@link Processor} instance.
+ * Applied to a processor instance via `Object.assign(instance, DslMixin)`.
+ *
+ * The `process` property behaves as a setter when called with a single Function
+ * argument (stores the process block), or as a passthrough caller otherwise.
+ */
+export type ProcessorDslInterface = {
+    /**
+     * - Set a config option.
+     */
+    option: (key: string, value: unknown) => void;
+    /**
+     * - Register the process function.
+     */
+    process: (fn: (...args: unknown[]) => unknown) => void;
+    /**
+     * - Returns true if a process function has been registered.
+     */
+    processBlockGiven: () => boolean;
+};
+/**
+ * DSL interface for document processors (Preprocessor, TreeProcessor, Postprocessor, DocinfoProcessor).
+ */
+export type DocumentProcessorDslInterface = ProcessorDslInterface & {
+    prefer(): void;
+    prepend(): void;
+};
+/**
+ * DSL interface for syntax processors (BlockProcessor, BlockMacroProcessor, InlineMacroProcessor).
+ */
+export type SyntaxProcessorDslInterface = ProcessorDslInterface & {
+    named(value: string): void;
+    contentModel(value: string): void;
+    parseContentAs(value: string): void;
+    positionalAttributes(...value: string[]): void;
+    namePositionalAttributes(...value: string[]): void;
+    positionalAttrs(...value: string[]): void;
+    defaultAttributes(value: Record<string, string>): void;
+    defaultAttrs(value: Record<string, string>): void;
+    resolveAttributes(...args: unknown[]): void;
+    resolvesAttributes(...args: unknown[]): void;
+};
+/**
+ * DSL interface for include processors.
+ */
+export type IncludeProcessorDslInterface = DocumentProcessorDslInterface & {
+    handles(fn: (doc: Document, target: string) => boolean): void;
+};
+/**
+ * DSL interface for docinfo processors.
+ */
+export type DocinfoProcessorDslInterface = DocumentProcessorDslInterface & {
+    atLocation(value: string): void;
+};
+/**
+ * DSL interface for block processors.
+ */
+export type BlockProcessorDslInterface = SyntaxProcessorDslInterface & {
+    contexts(...value: (string | string[])[]): void;
+    onContexts(...value: (string | string[])[]): void;
+    onContext(...value: (string | string[])[]): void;
+    bindTo(...value: (string | string[])[]): void;
+};
+/**
+ * DSL interface for macro processors (block and inline macros).
+ */
+export type MacroProcessorDslInterface = SyntaxProcessorDslInterface;
+/**
+ * DSL interface for inline macro processors.
+ */
+export type InlineMacroProcessorDslInterface = MacroProcessorDslInterface & {
+    format(value: string): void;
+    matchFormat(value: string): void;
+    usingFormat(value: string): void;
+    match(value: RegExp): void;
+};
 import { Section } from './section.js';
 import { Block } from './block.js';
 import { List } from './list.js';
