@@ -1,8 +1,12 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { Compliance } from '../src/compliance.js'
-import { assertCss, assertXpath, assertMessage } from './helpers.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  usingMemoryLogger,
+} from './helpers.js'
 import {
   documentFromString,
   convertString,
@@ -10,18 +14,6 @@ import {
 } from './harness.js'
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Layout Breaks', () => {
     test('horizontal rule', async () => {
       for (const line of ["'''", "''''", "'''''"]) {
@@ -232,7 +224,8 @@ line should be shown
     })
 
     test('should warn if unterminated comment block is detected in body', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 before comment block
 
 ////
@@ -240,16 +233,18 @@ content that has been disabled
 
 supposed to be after comment block, except it got swallowed by block comment
 `
-      await convertStringToEmbedded(input)
-      assertMessage(
-        logger,
-        'warn',
-        '<stdin>: line 3: unterminated comment block'
-      )
+        await convertStringToEmbedded(input)
+        assertMessage(
+          logger,
+          'warn',
+          '<stdin>: line 3: unterminated comment block'
+        )
+      })
     })
 
     test('should warn if unterminated comment block is detected inside another block', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 before sidebar block
 
 ****
@@ -259,12 +254,13 @@ content that has been disabled
 
 supposed to be after sidebar block, except it got swallowed by block comment
 `
-      await convertStringToEmbedded(input)
-      assertMessage(
-        logger,
-        'warn',
-        '<stdin>: line 4: unterminated comment block'
-      )
+        await convertStringToEmbedded(input)
+        assertMessage(
+          logger,
+          'warn',
+          '<stdin>: line 4: unterminated comment block'
+        )
+      })
     })
 
     // WARNING if first line of content is a directive, it will get interpreted before we know it's a comment block

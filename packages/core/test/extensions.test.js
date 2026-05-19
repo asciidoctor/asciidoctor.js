@@ -90,11 +90,13 @@ class SampleExtensionGroup extends Group {
   }
 }
 
+// Ensure a clean global extensions registry before every test in this file.
+// beforeEach inside a describe is not supported in Deno's node:test compat layer.
+beforeEach(() => Extensions.unregisterAll())
+
 // ── Register ──────────────────────────────────────────────────────────────────
 
 describe('Extensions.Register', () => {
-  beforeEach(() => Extensions.unregisterAll())
-
   test('should register extension group class', () => {
     Extensions.register('sample', SampleExtensionGroup)
     const groups = Extensions.groups()
@@ -209,8 +211,6 @@ describe('Extensions.Register', () => {
 // ── Activate ──────────────────────────────────────────────────────────────────
 
 describe('Extensions.Activate', () => {
-  beforeEach(() => Extensions.unregisterAll())
-
   test('should call activate on extension group class', () => {
     Extensions.register('sample', SampleExtensionGroup)
     const doc = makeDoc()
@@ -1045,8 +1045,6 @@ describe('Processor.staticConfig', () => {
 // ── Group ─────────────────────────────────────────────────────────────────────
 
 describe('Group', () => {
-  beforeEach(() => Extensions.unregisterAll())
-
   test('Group.register() adds the class to global groups', () => {
     SampleExtensionGroup.register('mygroup')
     assert.equal(Extensions.groups().mygroup, SampleExtensionGroup)

@@ -10,7 +10,7 @@ import { tmpdir } from 'node:os'
 
 import { load } from '../src/load.js'
 import { Reader, PreprocessorReader } from '../src/reader.js'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
+import { MemoryLogger, withLogger } from '../src/logging.js'
 import { assertCss } from './helpers.js'
 import { documentFromString, convertStringToEmbedded } from './harness.js'
 
@@ -67,16 +67,11 @@ function assertMessage(logger, severity, text) {
   )
 }
 
-// Helper: use a MemoryLogger for the duration of a callback, then restore.
+// Helper: use a MemoryLogger in an isolated async-local context.
+// Uses AsyncLocalStorage so concurrent Deno test subtests don't interfere.
 async function usingMemoryLogger(fn) {
-  const defaultLogger = LoggerManager.logger
-  const logger = new MemoryLogger()
-  LoggerManager.logger = logger
-  try {
-    await fn(logger)
-  } finally {
-    LoggerManager.logger = defaultLogger
-  }
+  const logger = MemoryLogger.create()
+  return withLogger(logger, () => fn(logger))
 }
 
 // ── Reader ────────────────────────────────────────────────────────────────────
@@ -434,10 +429,7 @@ describe('Reader', () => {
       ]
       const expected = lines.slice(1)
 
-      const defaultLogger = LoggerManager.logger
-      const logger = new MemoryLogger()
-      LoggerManager.logger = logger
-      try {
+      await usingMemoryLogger(async (logger) => {
         const doc = await emptyDocument()
         const reader = new PreprocessorReader(doc, lines, null, {
           normalize: true,
@@ -459,9 +451,7 @@ describe('Reader', () => {
           found,
           `Expected WARN about unterminated block but got: ${JSON.stringify(logger.messages)}`
         )
-      } finally {
-        LoggerManager.logger = defaultLogger
-      }
+      })
     })
   })
 })

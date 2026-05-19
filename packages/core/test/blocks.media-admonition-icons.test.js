@@ -1,10 +1,14 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import { FONT_AWESOME_VERSION, HIGHLIGHT_JS_VERSION } from '../src/constants.js'
-import { assertCss, assertXpath, assertMessage } from './helpers.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  usingMemoryLogger,
+} from './helpers.js'
 import {
   convertString,
   convertStringToEmbedded,
@@ -16,18 +20,6 @@ const __dirname = import.meta.url.startsWith('http')
   : path.dirname(fileURLToPath(import.meta.url))
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Media', () => {
     test('should detect and convert video macro', async () => {
       const input = 'video::cats-vs-dogs.avi[]'
@@ -470,7 +462,8 @@ You can use icons for admonitions by setting the 'icons' attribute.
     })
 
     test('cleans reference to ancestor directories before reading icon if safe mode level is at least SAFE', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :icons:
 :iconsdir: ../fixtures
 :icontype: gif
@@ -479,20 +472,21 @@ You can use icons for admonitions by setting the 'icons' attribute.
 [TIP]
 You can use icons for admonitions by setting the 'icons' attribute.
 `
-      const output = await convertString(input, {
-        safe: 'safe',
-        attributes: { docdir: __dirname, 'allow-uri-read': '' },
+        const output = await convertString(input, {
+          safe: 'safe',
+          attributes: { docdir: __dirname, 'allow-uri-read': '' },
+        })
+        assertXpath(
+          output,
+          '//*[@class="admonitionblock tip"]//*[@class="icon"]/img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Tip"]',
+          1
+        )
+        assertMessage(
+          logger,
+          'warn',
+          'image has illegal reference to ancestor of jail; recovering automatically'
+        )
       })
-      assertXpath(
-        output,
-        '//*[@class="admonitionblock tip"]//*[@class="icon"]/img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Tip"]',
-        1
-      )
-      assertMessage(
-        logger,
-        'warn',
-        'image has illegal reference to ancestor of jail; recovering automatically'
-      )
     })
 
     test('should import Font Awesome and use font-based icons when value of icons attribute is font', async () => {

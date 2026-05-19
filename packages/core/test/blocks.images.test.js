@@ -1,14 +1,14 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
 import {
   assertCss,
   assertXpath,
   assertMessage,
   decodeChar,
   xmlnodesAtXpath,
+  usingMemoryLogger,
 } from './helpers.js'
 import {
   documentFromString,
@@ -22,18 +22,6 @@ const __dirname = import.meta.url.startsWith('http')
   : path.dirname(fileURLToPath(import.meta.url))
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Images', () => {
     test('can convert block image with alt text defined in macro', async () => {
       const input = 'image::images/tiger.png[Tiger]'
@@ -204,14 +192,16 @@ image::circle.svg[Tiger,100]
     })
 
     test('do not throw exception if SVG to inline is empty', async () => {
-      const input = 'image::empty.svg[nada,opts=inline]'
-      const output = await convertStringToEmbedded(input, {
-        safe: 'safe',
-        attributes: { docdir: __dirname, imagesdir: 'fixtures' },
+      await usingMemoryLogger(async (logger) => {
+        const input = 'image::empty.svg[nada,opts=inline]'
+        const output = await convertStringToEmbedded(input, {
+          safe: 'safe',
+          attributes: { docdir: __dirname, imagesdir: 'fixtures' },
+        })
+        assertXpath(output, '//svg', 0)
+        assertXpath(output, '//span[@class="alt"][text()="nada"]', 1)
+        assertMessage(logger, 'warn', 'contents of SVG is empty:')
       })
-      assertXpath(output, '//svg', 0)
-      assertXpath(output, '//span[@class="alt"][text()="nada"]', 1)
-      assertMessage(logger, 'warn', 'contents of SVG is empty:')
     })
 
     test('do not throw exception if SVG to inline contains an incomplete start tag and explicit width is specified', async () => {
@@ -225,13 +215,15 @@ image::circle.svg[Tiger,100]
     })
 
     test('converts to alt text for SVG with inline option set if SVG cannot be read', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 [%inline]
 image::no-such-image.svg[Alt Text]
 `
-      const output = await convertStringToEmbedded(input, { safe: 'server' })
-      assertXpath(output, '//span[@class="alt"][text()="Alt Text"]', 1)
-      assertMessage(logger, 'warn', 'SVG does not exist or cannot be read')
+        const output = await convertStringToEmbedded(input, { safe: 'server' })
+        assertXpath(output, '//span[@class="alt"][text()="Alt Text"]', 1)
+        assertMessage(logger, 'warn', 'SVG does not exist or cannot be read')
+      })
     })
 
     test('can convert block image with alt text defined in macro containing square bracket', async () => {
@@ -544,70 +536,80 @@ image::images/tiger.png[Tiger]
     })
 
     test('keeps attribute reference unprocessed if image target is missing attribute reference and attribute-missing is skip', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :attribute-missing: skip
 
 image::{bogus}[]
 `
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, 'img[src="{bogus}"]', 1)
-      assert.equal(logger.messages.length, 0)
+        const output = await convertStringToEmbedded(input)
+        assertCss(output, 'img[src="{bogus}"]', 1)
+        assert.equal(logger.messages.length, 0)
+      })
     })
 
     test('do not drop line if image target is missing attribute reference and attribute-missing is drop', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :attribute-missing: drop
 
 image::{bogus}/photo.jpg[]
 `
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, 'img[src="/photo.jpg"]', 1)
-      assert.equal(logger.messages.length, 0)
+        const output = await convertStringToEmbedded(input)
+        assertCss(output, 'img[src="/photo.jpg"]', 1)
+        assert.equal(logger.messages.length, 0)
+      })
     })
 
     test('drops line if image target is missing attribute reference and attribute-missing is drop-line', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :attribute-missing: drop-line
 
 image::{bogus}[]
 `
-      const output = await convertStringToEmbedded(input)
-      assert.equal(output.trim(), '')
-      assertMessage(
-        logger,
-        'info',
-        'dropping line containing reference to missing attribute: bogus'
-      )
+        const output = await convertStringToEmbedded(input)
+        assert.equal(output.trim(), '')
+        assertMessage(
+          logger,
+          'info',
+          'dropping line containing reference to missing attribute: bogus'
+        )
+      })
     })
 
     test('do not drop line if image target resolves to blank and attribute-missing is drop-line', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :attribute-missing: drop-line
 
 image::{blank}[]
 `
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, 'img[src=""]', 1)
-      assert.equal(logger.messages.length, 0)
+        const output = await convertStringToEmbedded(input)
+        assertCss(output, 'img[src=""]', 1)
+        assert.equal(logger.messages.length, 0)
+      })
     })
 
     test('dropped image does not break processing of following section and attribute-missing is drop-line', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :attribute-missing: drop-line
 
 image::{bogus}[]
 
 == Section Title
 `
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, 'img', 0)
-      assertCss(output, 'h2', 1)
-      assert.ok(!output.includes('== Section Title'))
-      assertMessage(
-        logger,
-        'info',
-        'dropping line containing reference to missing attribute: bogus'
-      )
+        const output = await convertStringToEmbedded(input)
+        assertCss(output, 'img', 0)
+        assertCss(output, 'h2', 1)
+        assert.ok(!output.includes('== Section Title'))
+        assertMessage(
+          logger,
+          'info',
+          'dropping line containing reference to missing attribute: bogus'
+        )
+      })
     })
 
     test('pass through image that references uri', async () => {
@@ -711,20 +713,26 @@ image::circle.svg[Tiger,100,link=self]
     })
 
     test('embeds empty base64-encoded data uri for unreadable image when data-uri attribute is set', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :data-uri:
 :imagesdir: fixtures
 
 image::unreadable.gif[Dot]
 `
-      const doc = await documentFromString(input, {
-        safe: 'safe',
-        attributes: { docdir: __dirname },
+        const doc = await documentFromString(input, {
+          safe: 'safe',
+          attributes: { docdir: __dirname },
+        })
+        assert.equal(await doc.attributes.imagesdir, 'fixtures')
+        const output = await doc.convert()
+        assertXpath(output, '//img[@src="data:image/gif;base64,"]', 1)
+        assertMessage(
+          logger,
+          'warn',
+          'image to embed not found or not readable'
+        )
       })
-      assert.equal(await doc.attributes.imagesdir, 'fixtures')
-      const output = await doc.convert()
-      assertXpath(output, '//img[@src="data:image/gif;base64,"]', 1)
-      assertMessage(logger, 'warn', 'image to embed not found or not readable')
     })
 
     test('embeds base64-encoded data uri with application/octet-stream mimetype when file extension is missing', async () => {
@@ -773,60 +781,64 @@ image::data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=[Do
     })
 
     test('cleans reference to ancestor directories in imagesdir before reading image if safe mode level is at least SAFE', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :data-uri:
 :imagesdir: ../..//fixtures/./../../fixtures
 
 image::dot.gif[Dot]
 `
-      const doc = await documentFromString(input, {
-        safe: 'safe',
-        attributes: { docdir: __dirname },
+        const doc = await documentFromString(input, {
+          safe: 'safe',
+          attributes: { docdir: __dirname },
+        })
+        assert.equal(
+          await doc.attributes.imagesdir,
+          '../..//fixtures/./../../fixtures'
+        )
+        const output = await doc.convert()
+        // image target resolves to fixtures/dot.gif relative to docdir (which is explicitly set to the directory of this file)
+        // the reference cannot fall outside of the document directory in safe mode
+        assertXpath(
+          output,
+          '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]',
+          1
+        )
+        assertMessage(
+          logger,
+          'warn',
+          'image has illegal reference to ancestor of jail; recovering automatically'
+        )
       })
-      assert.equal(
-        await doc.attributes.imagesdir,
-        '../..//fixtures/./../../fixtures'
-      )
-      const output = await doc.convert()
-      // image target resolves to fixtures/dot.gif relative to docdir (which is explicitly set to the directory of this file)
-      // the reference cannot fall outside of the document directory in safe mode
-      assertXpath(
-        output,
-        '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]',
-        1
-      )
-      assertMessage(
-        logger,
-        'warn',
-        'image has illegal reference to ancestor of jail; recovering automatically'
-      )
     })
 
     test('cleans reference to ancestor directories in target before reading image if safe mode level is at least SAFE', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 :data-uri:
 :imagesdir: ./
 
 image::../..//fixtures/./../../fixtures/dot.gif[Dot]
 `
-      const doc = await documentFromString(input, {
-        safe: 'safe',
-        attributes: { docdir: __dirname },
+        const doc = await documentFromString(input, {
+          safe: 'safe',
+          attributes: { docdir: __dirname },
+        })
+        assert.equal(await doc.attributes.imagesdir, './')
+        const output = await doc.convert()
+        // image target resolves to fixtures/dot.gif relative to docdir (which is explicitly set to the directory of this file)
+        // the reference cannot fall outside of the document directory in safe mode
+        assertXpath(
+          output,
+          '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]',
+          1
+        )
+        assertMessage(
+          logger,
+          'warn',
+          'image has illegal reference to ancestor of jail; recovering automatically'
+        )
       })
-      assert.equal(await doc.attributes.imagesdir, './')
-      const output = await doc.convert()
-      // image target resolves to fixtures/dot.gif relative to docdir (which is explicitly set to the directory of this file)
-      // the reference cannot fall outside of the document directory in safe mode
-      assertXpath(
-        output,
-        '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]',
-        1
-      )
-      assertMessage(
-        logger,
-        'warn',
-        'image has illegal reference to ancestor of jail; recovering automatically'
-      )
     })
 
     test('use the imagesdir attribute set on the node when resolving the image path', async () => {

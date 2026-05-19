@@ -28,6 +28,13 @@ Bug Fixes::
 * `NullLogger` now properly extends `Logger` — `instanceof Logger` checks on a `NullLogger` instance now return `true`
 * Strip UTF-8 BOM when it appears as three raw Latin-1 characters (ï»¿ / `\xEF\xBB\xBF`) rather than the decoded U+FEFF codepoint — fixes loading of BOM-prefixed content passed through a binary/Latin-1 decoder
 * `load()` now accepts a `Uint8Array` (including browser shim instances returned by `Buffer.concat`) in addition to Node.js `Buffer` — fixes "unsupported input type: object" error in browser environments
+* `TemplateConverter` now sorts directory entries from `readdir` before scanning — ensures consistent template precedence when multiple engines provide the same node template (previously, a non-deterministic `readdir` order could pick Handlebars over Nunjucks depending on the runtime)
+
+Infrastructure::
+
+* Add Deno compatibility shim for `node:test` (via `deno.json` import map): redirects `node:test` to a `@std/testing/bdd`-backed shim that provides working `beforeEach`/`afterEach` hooks — the full `packages/core` test suite now runs under Deno with 0 failures
+* Replace shared `LoggerManager` mutation in tests with `AsyncLocalStorage`-based isolation via `withLogger()` — eliminates race conditions when tests run concurrently under Deno
+* Add `test-deno` job to the CI workflow, gating `native_images` on both Node.js and Deno test results
 
 == v4.0.0-alpha.2 (2026-05-17)
 

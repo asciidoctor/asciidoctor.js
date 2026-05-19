@@ -1,13 +1,12 @@
 // ESM conversion of lists_test.rb
 // Tests for list handling in Asciidoctor.
 
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 import { DOMParser } from '@xmldom/xmldom'
 import { select } from 'xpath'
 
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { assertXpath, assertCss } from './helpers.js'
+import { assertXpath, assertCss, usingMemoryLogger } from './helpers.js'
 import {
   documentFromString,
   convertString,
@@ -48,18 +47,6 @@ function getTextAtXpath(html, xpath) {
 // ── Bulleted lists (:ulist) ───────────────────────────────────────────────────
 
 describe('Bulleted lists (ulist)', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Simple lists', () => {
     test('dash elements with no blank lines', async () => {
       const input = `List
@@ -2096,11 +2083,13 @@ Item one, paragraph two
 example
 * swallowed item
 `
-      const output = await convertStringToEmbedded(input)
-      assertXpath(output, '//ul/li', 1)
-      assertXpath(output, '//ul/li/*[@class="exampleblock"]', 1)
-      assertXpath(output, `//p[text()="example\n* swallowed item"]`, 1)
-      assertMessage(logger, 'WARN', 'unterminated example block')
+      await usingMemoryLogger(async (logger) => {
+        const output = await convertStringToEmbedded(input)
+        assertXpath(output, '//ul/li', 1)
+        assertXpath(output, '//ul/li/*[@class="exampleblock"]', 1)
+        assertXpath(output, `//p[text()="example\n* swallowed item"]`, 1)
+        assertMessage(logger, 'WARN', 'unterminated example block')
+      })
     })
   })
 })
@@ -2108,18 +2097,6 @@ example
 // ── Ordered lists (:olist) ────────────────────────────────────────────────────
 
 describe('Ordered lists (olist)', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Simple lists', () => {
     test('dot elements with no blank lines', async () => {
       const input = `List
@@ -2394,11 +2371,13 @@ more text
 7. item 7
 8. item 8
 `
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, 'ol[start=7]', 1)
-      assertCss(output, 'ol.arabic', 1)
-      assertCss(output, 'ol li', 2)
-      assert.equal(logger.messages.length, 0)
+      await usingMemoryLogger(async (logger) => {
+        const output = await convertStringToEmbedded(input)
+        assertCss(output, 'ol[start=7]', 1)
+        assertCss(output, 'ol.arabic', 1)
+        assertCss(output, 'ol li', 2)
+        assert.equal(logger.messages.length, 0)
+      })
     })
 
     test('should implicitly set start on ordered list if explicit arabic numbering does not start at 1', async () => {
@@ -2407,11 +2386,13 @@ more text
 7. item 7
 8. item 8
 `
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, 'ol[start=7]', 1)
-      assertCss(output, 'ol.arabic', 1)
-      assertCss(output, 'ol li', 2)
-      assert.equal(logger.messages.length, 0)
+      await usingMemoryLogger(async (logger) => {
+        const output = await convertStringToEmbedded(input)
+        assertCss(output, 'ol[start=7]', 1)
+        assertCss(output, 'ol.arabic', 1)
+        assertCss(output, 'ol li', 2)
+        assert.equal(logger.messages.length, 0)
+      })
     })
 
     test('should implicitly set start on ordered list if explicit roman numbering does not start at 1', async () => {
@@ -2420,11 +2401,13 @@ more text
 IV) item 4
 V) item 5
 `
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, 'ol[start=4]', 1)
-      assertCss(output, 'ol.upperroman', 1)
-      assertCss(output, 'ol li', 2)
-      assert.equal(logger.messages.length, 0)
+      await usingMemoryLogger(async (logger) => {
+        const output = await convertStringToEmbedded(input)
+        assertCss(output, 'ol[start=4]', 1)
+        assertCss(output, 'ol.upperroman', 1)
+        assertCss(output, 'ol li', 2)
+        assert.equal(logger.messages.length, 0)
+      })
     })
 
     test('should warn if item with explicit numbering in ordered list is out of sequence', async () => {
@@ -2433,11 +2416,13 @@ V) item 5
 x. x
 z. z
 `
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, 'ol[start=24]', 1)
-      assertCss(output, 'ol.loweralpha', 1)
-      assertCss(output, 'ol li', 2)
-      assertMessage(logger, 'WARN', 'list item index: expected y, got z')
+      await usingMemoryLogger(async (logger) => {
+        const output = await convertStringToEmbedded(input)
+        assertCss(output, 'ol[start=24]', 1)
+        assertCss(output, 'ol.loweralpha', 1)
+        assertCss(output, 'ol li', 2)
+        assertMessage(logger, 'WARN', 'list item index: expected y, got z')
+      })
     })
 
     test('should match trailing line separator in text of list item', async () => {
@@ -2467,36 +2452,28 @@ z. z
     const input = `I) one
 III) three
 `
-    const output = await convertStringToEmbedded(input)
-    assertXpath(output, '//ol/li', 2)
-    assertMessage(logger, 'WARN', 'list item index: expected II, got III')
+    await usingMemoryLogger(async (logger) => {
+      const output = await convertStringToEmbedded(input)
+      assertXpath(output, '//ol/li', 2)
+      assertMessage(logger, 'WARN', 'list item index: expected II, got III')
+    })
   })
 
   test('should warn if explicit lowercase roman numerals in list are out of sequence', async () => {
     const input = `i) one
 iii) three
 `
-    const output = await convertStringToEmbedded(input)
-    assertXpath(output, '//ol/li', 2)
-    assertMessage(logger, 'WARN', 'list item index: expected ii, got iii')
+    await usingMemoryLogger(async (logger) => {
+      const output = await convertStringToEmbedded(input)
+      assertXpath(output, '//ol/li', 2)
+      assertMessage(logger, 'WARN', 'list item index: expected ii, got iii')
+    })
   })
 })
 
 // ── Description lists (:dlist) ────────────────────────────────────────────────
 
 describe('Description lists (dlist)', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Simple lists', () => {
     test('should not parse a bare dlist delimiter as a dlist', async () => {
       const input = '::'
@@ -4231,15 +4208,25 @@ Addison-Wesley. 1997.
 * [[[Fowler]]] Fowler M. _Analysis Patterns: Reusable Object Models_.
 Addison-Wesley. 1997.
 `
-      const output = await convertStringToEmbedded(input)
-      assertCss(output, '.ulist.bibliography', 1)
-      assertCss(output, '.ulist.bibliography ul li:nth-child(1) p a#Fowler', 1)
-      assertCss(output, '.ulist.bibliography ul li:nth-child(2) p a#Fowler', 1)
-      assertMessage(
-        logger,
-        'WARN',
-        'id assigned to bibliography anchor already in use: Fowler'
-      )
+      await usingMemoryLogger(async (logger) => {
+        const output = await convertStringToEmbedded(input)
+        assertCss(output, '.ulist.bibliography', 1)
+        assertCss(
+          output,
+          '.ulist.bibliography ul li:nth-child(1) p a#Fowler',
+          1
+        )
+        assertCss(
+          output,
+          '.ulist.bibliography ul li:nth-child(2) p a#Fowler',
+          1
+        )
+        assertMessage(
+          logger,
+          'WARN',
+          'id assigned to bibliography anchor already in use: Fowler'
+        )
+      })
     })
 
     test('should automatically add bibliography style to top-level lists in bibliography section', async () => {
@@ -5711,18 +5698,6 @@ term2:: def2
 // ── Callout lists ─────────────────────────────────────────────────────────────
 
 describe('Callout lists', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   test('does not recognize callout list denoted by markers that only have a trailing bracket', async () => {
     const input = `----
 require 'asciidoctor' # <1>
@@ -6162,11 +6137,13 @@ Second line <2-->
 
 <1> Not pointing to a callout
 `
-    const output = await convertStringToEmbedded(input)
-    assertXpath(output, '//dl//b', 0)
-    assertXpath(output, '//dl/dd/p[text()="bar <1>"]', 1)
-    assertXpath(output, '//ol/li/p[text()="Not pointing to a callout"]', 1)
-    assertMessage(logger, 'WARN', 'no callout found for <1>')
+    await usingMemoryLogger(async (logger) => {
+      const output = await convertStringToEmbedded(input)
+      assertXpath(output, '//dl//b', 0)
+      assertXpath(output, '//dl/dd/p[text()="bar <1>"]', 1)
+      assertXpath(output, '//ol/li/p[text()="Not pointing to a callout"]', 1)
+      assertMessage(logger, 'WARN', 'no callout found for <1>')
+    })
   })
 
   test('should not recognize callouts in an indented outline list paragraph', async () => {
@@ -6175,11 +6152,13 @@ Second line <2-->
 
 <1> Not pointing to a callout
 `
-    const output = await convertStringToEmbedded(input)
-    assertXpath(output, '//ul//b', 0)
-    assertXpath(output, `//ul/li/p[text()="foo\nbar <1>"]`, 1)
-    assertXpath(output, '//ol/li/p[text()="Not pointing to a callout"]', 1)
-    assertMessage(logger, 'WARN', 'no callout found for <1>')
+    await usingMemoryLogger(async (logger) => {
+      const output = await convertStringToEmbedded(input)
+      assertXpath(output, '//ul//b', 0)
+      assertXpath(output, `//ul/li/p[text()="foo\nbar <1>"]`, 1)
+      assertXpath(output, '//ol/li/p[text()="Not pointing to a callout"]', 1)
+      assertMessage(logger, 'WARN', 'no callout found for <1>')
+    })
   })
 
   test('should warn if numbers in callout list are out of sequence', async () => {
@@ -6192,10 +6171,16 @@ Second line <2-->
 Beans are fun.
 <3> An actual bean.
 `
-    const output = await convertStringToEmbedded(input)
-    assertXpath(output, '//ol/li', 2)
-    assertMessage(logger, 'WARN', 'callout list item index: expected 2, got 3')
-    assertMessage(logger, 'WARN', 'no callout found for <2>')
+    await usingMemoryLogger(async (logger) => {
+      const output = await convertStringToEmbedded(input)
+      assertXpath(output, '//ol/li', 2)
+      assertMessage(
+        logger,
+        'WARN',
+        'callout list item index: expected 2, got 3'
+      )
+      assertMessage(logger, 'WARN', 'no callout found for <2>')
+    })
   })
 
   test('should preserve line comment chars that precede callout number if icons is not set', async () => {

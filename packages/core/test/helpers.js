@@ -5,7 +5,7 @@ import assert from 'node:assert/strict'
 import { parse } from 'node-html-parser'
 import { DOMParser, XMLSerializer } from '@xmldom/xmldom'
 import { useNamespaces } from 'xpath'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
+import { MemoryLogger, withLogger } from '../src/logging.js'
 
 /**
  * Decode a Unicode character by code point.
@@ -218,16 +218,12 @@ export function assertMessages(logger, expected) {
 }
 
 /**
- * Run fn with a fresh MemoryLogger installed, then restore the original logger.
+ * Run fn with a fresh MemoryLogger in an isolated async-local context.
+ * Uses AsyncLocalStorage so concurrent test executions each see their own logger
+ * without mutating the global LoggerManager singleton.
  * Ruby: using_memory_logger { |logger| ... }
  */
 export async function usingMemoryLogger(fn) {
-  const defaultLogger = LoggerManager.logger
-  const logger = new MemoryLogger()
-  LoggerManager.logger = logger
-  try {
-    await fn(logger)
-  } finally {
-    LoggerManager.logger = defaultLogger
-  }
+  const logger = MemoryLogger.create()
+  return withLogger(logger, () => fn(logger))
 }

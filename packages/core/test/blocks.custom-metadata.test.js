@@ -1,7 +1,13 @@
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import { MemoryLogger, LoggerManager, Severity } from '../src/logging.js'
-import { assertCss, assertXpath, assertMessage, decodeChar } from './helpers.js'
+import { Severity } from '../src/logging.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  decodeChar,
+  usingMemoryLogger,
+} from './helpers.js'
 import {
   documentFromString,
   convertString,
@@ -9,38 +15,30 @@ import {
 } from './harness.js'
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Custom Blocks', () => {
     test('should not warn if block style is unknown', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 [foo]
 --
 bar
 --`
-      await convertStringToEmbedded(input)
-      assert.equal(logger.messages.length, 0)
+        await convertStringToEmbedded(input)
+        assert.equal(logger.messages.length, 0)
+      })
     })
 
     test('should log debug message if block style is unknown and debug level is enabled', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 [foo]
 --
 bar
 --`
-      logger.level = Severity.DEBUG
-      await convertStringToEmbedded(input)
-      assertMessage(logger, 'debug', 'unknown style for open block: foo')
+        logger.level = Severity.DEBUG
+        await convertStringToEmbedded(input)
+        assertMessage(logger, 'debug', 'unknown style for open block: foo')
+      })
     })
   })
 
@@ -62,26 +60,28 @@ paragraph`
     })
 
     test('block title above document title demotes document title to a section title', async () => {
-      const input = `\
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
 .Block title
 = Section Title
 
 section paragraph`
-      const output = await convertString(input)
-      assertXpath(output, '//*[@id="header"]/*', 0)
-      assertXpath(output, '//*[@id="preamble"]/*', 0)
-      assertXpath(output, '//*[@id="content"]/h1[text()="Section Title"]', 1)
-      assertXpath(output, '//*[@class="paragraph"]', 1)
-      assertXpath(
-        output,
-        '//*[@class="paragraph"]/*[@class="title"][text()="Block title"]',
-        1
-      )
-      assertMessage(
-        logger,
-        'error',
-        'level 0 sections can only be used when doctype is book'
-      )
+        const output = await convertString(input)
+        assertXpath(output, '//*[@id="header"]/*', 0)
+        assertXpath(output, '//*[@id="preamble"]/*', 0)
+        assertXpath(output, '//*[@id="content"]/h1[text()="Section Title"]', 1)
+        assertXpath(output, '//*[@class="paragraph"]', 1)
+        assertXpath(
+          output,
+          '//*[@class="paragraph"]/*[@class="title"][text()="Block title"]',
+          1
+        )
+        assertMessage(
+          logger,
+          'error',
+          'level 0 sections can only be used when doctype is book'
+        )
+      })
     })
 
     test('block title above document title gets carried over to first block in first section if no preamble', async () => {

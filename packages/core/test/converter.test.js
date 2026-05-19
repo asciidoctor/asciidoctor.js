@@ -194,12 +194,11 @@ getAttribute('fragment'): ${node.getAttribute('fragment') === null}`
 }
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
+// Clean up global converter registry after every test.
+// afterEach inside a describe is not supported in Deno's node:test compat layer.
+afterEach(() => ConverterFactory.unregisterAll())
 
 describe('Registering converter', () => {
-  afterEach(() => {
-    ConverterFactory.unregisterAll()
-  })
-
   test('should get inline anchor attributes', async () => {
     ConverterFactory.register(new XrefConverter(), ['xref'])
     const html = await convert('xref:file.adoc[]', { backend: 'xref' })
@@ -349,10 +348,6 @@ In other words, it's about discovering writing zen.`
 })
 
 describe('Custom backends', () => {
-  afterEach(() => {
-    ConverterFactory.unregisterAll()
-  })
-
   test('should set outfilesuffix according to backend info', async () => {
     const doc = await load('content')
     await doc.convert()
@@ -367,10 +362,6 @@ describe('Custom backends', () => {
 })
 
 describe('Custom converters', () => {
-  afterEach(() => {
-    ConverterFactory.unregisterAll()
-  })
-
   test('should derive backend traits for the given backend', () => {
     const expected = {
       basebackend: 'dita',

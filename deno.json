@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "node:test": "./packages/core/test/shims/deno-node-test.js"
+  }
+}

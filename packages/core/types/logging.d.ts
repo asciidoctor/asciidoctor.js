@@ -1,3 +1,16 @@
+
+/**
+ * Run fn() within an async-local logger context so that all log calls via
+ * `this.logger` (from applyLogging) automatically route to the provided logger
+ * for the duration of the async execution chain.
+ *
+ * Falls back to global mutation in environments without node:async_hooks (e.g. browsers).
+ *
+ * @param {Logger|MemoryLogger|NullLogger} logger - The logger to activate.
+ * @param {() => any} fn - The function to execute within the logger context.
+ * @returns {Promise<any>}
+ */
+export function withLogger(logger: Logger | MemoryLogger | NullLogger, fn: () => any): Promise<any>;
 /**
  * Apply the Logging mixin to a class prototype.
  *

@@ -14,6 +14,7 @@
   },
   "scripts": {
     "test": "node --test test/cli.test.js",
+    "test:deno": "deno test --allow-env --no-check --allow-read --allow-sys --allow-write --allow-run --allow-net test/cli.test.js",
     "lint": "biome lint bin lib tasks index.js rollup.config.js",
     "format": "biome format --write bin lib tasks index.js rollup.config.js",
     "build:bundle": "rollup -c",

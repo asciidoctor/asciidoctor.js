@@ -17,7 +17,7 @@
 
 import { SpaceDelimiterRx, EscapedSpaceRx } from './rx.js'
 import { NULL, BACKEND_ALIASES } from './constants.js'
-import { LoggerManager, NullLogger } from './logging.js'
+import { NullLogger, withLogger, getContextLogger } from './logging.js'
 import { basename, extname } from './helpers.js'
 import { Document } from './document.js'
 import { Converter } from './converter.js'
@@ -58,16 +58,22 @@ export async function load(input, options = {}) {
   // Shallow-copy options so we don't mutate the caller's object.
   options = Object.assign({}, options)
 
+  // ── Logger override ───────────────────────────────────────────────────────
+  // When a logger option is supplied, run the conversion in an async-local
+  // context so the logger is scoped to this call only — no global mutation,
+  // which makes concurrent callers (e.g. parallel Deno tests) safe.
+  if ('logger' in options) {
+    const newLogger = options.logger ?? new NullLogger()
+    delete options.logger
+    return withLogger(newLogger, () => _doLoad(input, options, newLogger))
+  }
+
+  return _doLoad(input, options)
+}
+
+async function _doLoad(input, options, explicitLogger = null) {
   const timings = options.timings ?? null
   if (timings) timings.start('read')
-
-  // ── Logger override ───────────────────────────────────────────────────────
-  if ('logger' in options) {
-    const logger = options.logger
-    if (logger !== LoggerManager.logger) {
-      LoggerManager.logger = logger ?? new NullLogger()
-    }
-  }
 
   // ── Attributes normalisation ──────────────────────────────────────────────
   let attrs = options.attributes
@@ -165,6 +171,19 @@ export async function load(input, options = {}) {
   }
 
   if (timings) timings.record('parse')
+
+  // Persist the logger on the Document instance so that doc.convert()
+  // (called by convert.js after the async-local context ends) still routes
+  // logging through the caller-supplied logger.
+  // ALS provides it in Node.js/Deno; the explicit parameter covers browser fallback.
+  const contextLogger = getContextLogger() ?? explicitLogger
+  if (contextLogger) {
+    Object.defineProperty(doc, 'logger', {
+      get: () => contextLogger,
+      configurable: true,
+    })
+  }
+
   return doc
 }
 

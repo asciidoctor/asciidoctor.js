@@ -1,19 +1,23 @@
 // ESM conversion of links_test.rb
 // Tests for link and cross-reference handling in Asciidoctor.
 
-import { test, describe, beforeEach, afterEach } from 'node:test'
+import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { Inline } from '../src/inline.js'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { assertXpath, assertMessage, decodeChar } from './helpers.js'
+import { Severity } from '../src/logging.js'
+import {
+  assertXpath,
+  assertMessage,
+  decodeChar,
+  usingMemoryLogger,
+} from './helpers.js'
 import {
   documentFromString,
   convertString,
   convertStringToEmbedded,
   blockFromString,
 } from './harness.js'
-import { Severity } from '../src/logging.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -25,18 +29,6 @@ const convertInlineString = (input, opts = {}) =>
 // ── URL link tests ────────────────────────────────────────────────────────────
 
 describe('Links', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   test('qualified url inline with text', async () => {
     const output = await convertString(
       'The AsciiDoc project is located at http://asciidoc.org.'
@@ -1121,16 +1113,18 @@ describe('Links', () => {
   })
 
   test('should not interpret path sans extension in xref with angled bracket syntax in compat mode', async () => {
-    const doc = await documentFromString('<<tigers#>>', {
-      standalone: false,
-      attributes: { 'compat-mode': '' },
+    await usingMemoryLogger(async (logger) => {
+      const doc = await documentFromString('<<tigers#>>', {
+        standalone: false,
+        attributes: { 'compat-mode': '' },
+      })
+      assertXpath(
+        await doc.convert(),
+        '//a[@href="#tigers#"][text() = "[tigers#]"]',
+        1
+      )
+      assert.equal(logger.messages.length, 0)
     })
-    assertXpath(
-      await doc.convert(),
-      '//a[@href="#tigers#"][text() = "[tigers#]"]',
-      1
-    )
-    assert.equal(logger.messages.length, 0)
   })
 
   test('xref using angled bracket syntax with path sans extension', async () => {
@@ -1289,15 +1283,17 @@ describe('Links', () => {
   })
 
   test('xref using angled bracket syntax with path and extension', async () => {
-    const doc = await documentFromString('<<tigers.adoc>>', {
-      standalone: false,
+    await usingMemoryLogger(async (logger) => {
+      const doc = await documentFromString('<<tigers.adoc>>', {
+        standalone: false,
+      })
+      assertXpath(
+        await doc.convert(),
+        '//a[@href="#tigers.adoc"][text() = "[tigers.adoc]"]',
+        1
+      )
+      assert.equal(logger.messages.length, 0)
     })
-    assertXpath(
-      await doc.convert(),
-      '//a[@href="#tigers.adoc"][text() = "[tigers.adoc]"]',
-      1
-    )
-    assert.equal(logger.messages.length, 0)
   })
 
   test('xref using angled bracket syntax with path and extension with hash', async () => {
@@ -1323,16 +1319,18 @@ describe('Links', () => {
   })
 
   test('xref using macro syntax with path and extension in compat mode', async () => {
-    const doc = await documentFromString('xref:tigers.adoc[]', {
-      standalone: false,
-      attributes: { 'compat-mode': '' },
+    await usingMemoryLogger(async (logger) => {
+      const doc = await documentFromString('xref:tigers.adoc[]', {
+        standalone: false,
+        attributes: { 'compat-mode': '' },
+      })
+      assertXpath(
+        await doc.convert(),
+        '//a[@href="#tigers.adoc"][text() = "[tigers.adoc]"]',
+        1
+      )
+      assert.equal(logger.messages.length, 0)
     })
-    assertXpath(
-      await doc.convert(),
-      '//a[@href="#tigers.adoc"][text() = "[tigers.adoc]"]',
-      1
-    )
-    assert.equal(logger.messages.length, 0)
   })
 
   test('xref using macro syntax with path and extension', async () => {
@@ -1393,26 +1391,30 @@ describe('Links', () => {
   })
 
   test('xref using angled bracket syntax with path which has been included in this document', async () => {
-    logger.level = Severity.INFO
-    const doc = await documentFromString('<<tigers#about,About Tigers>>', {
-      standalone: false,
+    await usingMemoryLogger(async (logger) => {
+      logger.level = Severity.INFO
+      const doc = await documentFromString('<<tigers#about,About Tigers>>', {
+        standalone: false,
+      })
+      doc.catalog.includes.tigers = true
+      const output = await doc.convert()
+      assertXpath(output, '//a[@href="#about"][text() = "About Tigers"]', 1)
+      assertMessage(logger, 'info', 'possible invalid reference: about')
     })
-    doc.catalog.includes.tigers = true
-    const output = await doc.convert()
-    assertXpath(output, '//a[@href="#about"][text() = "About Tigers"]', 1)
-    assertMessage(logger, 'info', 'possible invalid reference: about')
   })
 
   test('xref using angled bracket syntax with nested path which has been included in this document', async () => {
-    logger.level = Severity.INFO
-    const doc = await documentFromString(
-      '<<part1/tigers#about,About Tigers>>',
-      { standalone: false }
-    )
-    doc.catalog.includes['part1/tigers'] = true
-    const output = await doc.convert()
-    assertXpath(output, '//a[@href="#about"][text() = "About Tigers"]', 1)
-    assertMessage(logger, 'info', 'possible invalid reference: about')
+    await usingMemoryLogger(async (logger) => {
+      logger.level = Severity.INFO
+      const doc = await documentFromString(
+        '<<part1/tigers#about,About Tigers>>',
+        { standalone: false }
+      )
+      doc.catalog.includes['part1/tigers'] = true
+      const output = await doc.convert()
+      assertXpath(output, '//a[@href="#about"][text() = "About Tigers"]', 1)
+      assertMessage(logger, 'info', 'possible invalid reference: about')
+    })
   })
 
   test('xref using angled bracket syntax inline with text', async () => {
@@ -1551,39 +1553,47 @@ describe('Links', () => {
   })
 
   test('should warn and create link if verbose flag is set and reference is not found', async () => {
-    logger.level = Severity.INFO
-    const input = '[#foobar]\n== Foobar\n\n== Section B\n\nSee <<foobaz>>.'
-    const output = await convertStringToEmbedded(input)
-    assertXpath(output, '//a[@href="#foobaz"][text() = "[foobaz]"]', 1)
-    assertMessage(logger, 'info', 'possible invalid reference: foobaz')
+    await usingMemoryLogger(async (logger) => {
+      logger.level = Severity.INFO
+      const input = '[#foobar]\n== Foobar\n\n== Section B\n\nSee <<foobaz>>.'
+      const output = await convertStringToEmbedded(input)
+      assertXpath(output, '//a[@href="#foobaz"][text() = "[foobaz]"]', 1)
+      assertMessage(logger, 'info', 'possible invalid reference: foobaz')
+    })
   })
 
   test('should not warn if reference is found in compat mode', async () => {
-    const input = '[[foobar]]\n== Foobar\n\n== Section B\n\nSee <<foobar>>.'
-    const output = await convertStringToEmbedded(input, {
-      attributes: { 'compat-mode': '' },
+    await usingMemoryLogger(async (logger) => {
+      const input = '[[foobar]]\n== Foobar\n\n== Section B\n\nSee <<foobar>>.'
+      const output = await convertStringToEmbedded(input, {
+        attributes: { 'compat-mode': '' },
+      })
+      assertXpath(output, '//a[@href="#foobar"][text() = "Foobar"]', 1)
+      assert.equal(logger.messages.length, 0)
     })
-    assertXpath(output, '//a[@href="#foobar"][text() = "Foobar"]', 1)
-    assert.equal(logger.messages.length, 0)
   })
 
   test('should warn and create link if reference using # notation is not found', async () => {
-    logger.level = Severity.INFO
-    const input = '[#foobar]\n== Foobar\n\n== Section B\n\nSee <<#foobaz>>.'
-    const output = await convertStringToEmbedded(input)
-    assertXpath(output, '//a[@href="#foobaz"][text() = "[foobaz]"]', 1)
-    assertMessage(logger, 'info', 'possible invalid reference: foobaz')
+    await usingMemoryLogger(async (logger) => {
+      logger.level = Severity.INFO
+      const input = '[#foobar]\n== Foobar\n\n== Section B\n\nSee <<#foobaz>>.'
+      const output = await convertStringToEmbedded(input)
+      assertXpath(output, '//a[@href="#foobaz"][text() = "[foobaz]"]', 1)
+      assertMessage(logger, 'info', 'possible invalid reference: foobaz')
+    })
   })
 
   test('should warn and create link if inter-document xref points to current doc and reference not found', async () => {
-    logger.level = Severity.INFO
-    const input =
-      '[#foobar]\n== Foobar\n\n== Section B\n\nSee <<test.adoc#foobaz>>.'
-    const output = await convertStringToEmbedded(input, {
-      attributes: { docname: 'test' },
+    await usingMemoryLogger(async (logger) => {
+      logger.level = Severity.INFO
+      const input =
+        '[#foobar]\n== Foobar\n\n== Section B\n\nSee <<test.adoc#foobaz>>.'
+      const output = await convertStringToEmbedded(input, {
+        attributes: { docname: 'test' },
+      })
+      assertXpath(output, '//a[@href="#foobaz"][text() = "[foobaz]"]', 1)
+      assertMessage(logger, 'info', 'possible invalid reference: foobaz')
     })
-    assertXpath(output, '//a[@href="#foobaz"][text() = "[foobaz]"]', 1)
-    assertMessage(logger, 'info', 'possible invalid reference: foobaz')
   })
 
   test('should use doctitle as fallback link text if inter-document xref points to current doc and no link text is provided', async () => {
