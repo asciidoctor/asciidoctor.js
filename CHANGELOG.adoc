@@ -16,6 +16,7 @@ Documentation::
 Improvements::
 
 * Add `Registry#getGroups()` and `Extensions#getGroups()` as JavaScript-style accessor aliases for the `groups` property, following the dual accessor pattern
+* Replace generic extension documentation examples with practical, real-world examples — block processor now demonstrates a `callout` block, include processor uses JSON data, inline macro renders npm badge links, postprocessor adds a copy button, tree processor computes reading time, block macro embeds GitHub Gists, and docinfo processor injects Open Graph metadata
 
 Bug Fixes::
 

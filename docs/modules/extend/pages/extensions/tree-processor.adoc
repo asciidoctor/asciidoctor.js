@@ -1,23 +1,34 @@
 = Tree Processor Extension Example
 
 Purpose::
-Make the document GDPR compliant by replacing the first block (paragraph) with the sentence "GDPR compliant :)"
+Walk all paragraph blocks in the parsed document, count the total number of words, and set a `reading-time` document attribute (e.g., `2 min`) that authors can reference anywhere in the document with `{reading-time}`.
 
-== sample-gdpr-doc.adoc
+== sample-guide-doc.adoc
 
 [source,adoc]
 ----
-= Privacy agreement
+= Getting Started Guide
 
-We track you for your own safety!
+Estimated reading time: {reading-time}
+
+== Installation
+
+Download and install the package using your preferred package manager.
+Run `npm install @asciidoctor/core` to add Asciidoctor.js to your project.
+
+== Configuration
+
+Open the configuration file and set your API key.
+Make sure to keep your credentials private and never commit them to version control.
+You can also configure the base URL and timeout values in this file.
 ----
 
-== GDPRTreeProcessor
+== ReadingTimeTreeProcessor
 
-.gdpr-tree-processor.js
+.reading-time-tree-processor.js
 [source,js]
 ----
-include::example$extensions/gdpr-tree-processor.js[]
+include::example$extensions/reading-time-tree-processor.js[]
 ----
 
 == Usage
@@ -25,11 +36,11 @@ include::example$extensions/gdpr-tree-processor.js[]
 [source,js]
 ----
 import { Extensions, convertFile } from '@asciidoctor/core'
-import registerGdprTreeProcessor from './gdpr-tree-processor.js'
+import registerReadingTimeTreeProcessor from './reading-time-tree-processor.js'
 
 const registry = Extensions.create()
-registerGdprTreeProcessor(registry)
+registerReadingTimeTreeProcessor(registry)
 
-const doc = await convertFile('sample-gdpr-doc.adoc', { extension_registry: registry })
-console.log(doc.getBlocks()[0].getSource()) // 'GDPR compliant :)'
+const html = await convertFile('sample-guide-doc.adoc', { to_file: false, extension_registry: registry })
+// <p>Estimated reading time: 1 min</p>
 ----

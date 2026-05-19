@@ -1,19 +1,19 @@
 = Preprocessor Extension Example
 
 Purpose::
-Set the status of the document to `DRAFT` (using Document attributes) if it contains a comment that starts with `draft`.
+Detect a `// draft:` comment anywhere in the document, set the `status` attribute to `DRAFT`, and inject a visible warning banner at the top of the document before parsing begins.
 
-== sample-draft-doc.adoc
+== sample-release-notes.adoc
 
 [source,adoc]
 ----
-= This documentation is not ready yet
+= Release Notes
 
-== First section
+== New Features
 
-// draft: we need to talk about Y.
+// draft: section incomplete, need to add more details
 
-In this section, we are going to talk about X.
+In this release, we introduced the following features.
 ----
 
 == DraftPreprocessor
@@ -34,7 +34,8 @@ import registerDraftPreprocessor from './draft-preprocessor.js'
 const registry = Extensions.create()
 registerDraftPreprocessor(registry)
 
-const doc = await loadFile('sample-draft-doc.adoc', { extension_registry: registry })
+const doc = await loadFile('sample-release-notes.adoc', { extension_registry: registry })
 console.log(doc.getAttribute('status')) // 'DRAFT'
 const html = await doc.convert()
+// The rendered document starts with a WARNING admonition block
 ----

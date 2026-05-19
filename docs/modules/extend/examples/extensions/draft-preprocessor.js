@@ -1,12 +1,10 @@
 export default function (registry) {
   registry.preprocessor(function () {
-    const self = this
-    self.process(function (doc, reader) {
-      const lines = reader.lines
-      for (const line of lines) {
-        if (line.match(/^\/\/\s?draft.*/)) {
-          doc.setAttribute('status', 'DRAFT')
-        }
+    this.process(function (doc, reader) {
+      const isDraft = reader.lines.some(l => /^\/\/\s*draft:/i.test(l))
+      if (isDraft) {
+        doc.setAttribute('status', 'DRAFT')
+        reader.lines.unshift('WARNING: This document is a draft and may change without notice.', '')
       }
       return reader
     })

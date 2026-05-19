@@ -1,25 +1,28 @@
 = Docinfo Extension Example
 
 Purpose::
-Add the sentence "Made with <3" in the footer.
+Inject Open Graph `<meta>` tags in the document `<head>` to control how the page appears when shared on social media.
+The tags are generated dynamically from the document title and optional `description` and `og-image` attributes.
 
-== sample-love-doc.adoc
+== sample-article-doc.adoc
 
 [source,adoc]
 ----
-= Title
+= Introduction to Asciidoctor.js
+:description: Learn how to convert AsciiDoc documents to HTML using Asciidoctor.js.
+:og-image: https://example.com/images/asciidoctorjs-preview.png
 
-== First section
+== Getting Started
 
-This is a paragraph.
+Asciidoctor.js is a JavaScript implementation of Asciidoctor.
 ----
 
-== LoveFooterDocinfoProcessor
+== OpenGraphDocinfoProcessor
 
-.love-footer-docinfo-processor.js
+.open-graph-docinfo-processor.js
 [source,js]
 ----
-include::example$extensions/love-footer-docinfo-processor.js[]
+include::example$extensions/open-graph-docinfo-processor.js[]
 ----
 
 == Usage
@@ -27,11 +30,14 @@ include::example$extensions/love-footer-docinfo-processor.js[]
 [source,js]
 ----
 import { Extensions, convertFile } from '@asciidoctor/core'
-import registerLoveFooterDocinfoProcessor from './love-footer-docinfo-processor.js'
+import registerOpenGraphDocinfoProcessor from './open-graph-docinfo-processor.js'
 
 const registry = Extensions.create()
-registerLoveFooterDocinfoProcessor(registry)
+registerOpenGraphDocinfoProcessor(registry)
 
-const html = await convertFile('sample-love-doc.adoc', { to_file: false, extension_registry: registry })
-console.log(html)
+await convertFile('sample-article-doc.adoc', { to_file: false, extension_registry: registry })
+// The <head> now contains:
+// <meta property="og:title" content="Introduction to Asciidoctor.js">
+// <meta property="og:description" content="Learn how to convert AsciiDoc documents to HTML using Asciidoctor.js.">
+// <meta property="og:image" content="https://example.com/images/asciidoctorjs-preview.png">
 ----

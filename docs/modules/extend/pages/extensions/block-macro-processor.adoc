@@ -1,21 +1,30 @@
 = Block Macro Extension Example
 
 Purpose::
-Generate lorem ipsum text.
+Embed a GitHub Gist by ID using the `gist::` block macro.
+An optional `file` attribute restricts the embed to a single file within the Gist.
 
-== sample-lorem-doc.adoc
+== sample-gist-doc.adoc
 
 [source,adoc]
 ----
-lorem::sentences[size=2]
+= Code Examples
+
+The following Gist shows how to configure the client:
+
+gist::mojombo/4ae3f9bc20c6b67e06a7[]
+
+Or a single file from a multi-file Gist:
+
+gist::mojombo/4ae3f9bc20c6b67e06a7[file=hello_world.rb]
 ----
 
-== LoremBlockMacro
+== GistBlockMacro
 
-.lorem-block-macro.js
+.gist-block-macro.js
 [source,js]
 ----
-include::example$extensions/lorem-block-macro.js[]
+include::example$extensions/gist-block-macro.js[]
 ----
 
 == Usage
@@ -23,14 +32,12 @@ include::example$extensions/lorem-block-macro.js[]
 [source,js]
 ----
 import { Extensions, convert } from '@asciidoctor/core'
-import registerLoremBlockMacro from './lorem-block-macro.js'
+import registerGistBlockMacro from './gist-block-macro.js'
 
 const registry = Extensions.create()
-registerLoremBlockMacro(registry)
+registerGistBlockMacro(registry)
 
-const html = await convert('lorem::sentences[size=2]', { extension_registry: registry })
+const html = await convert('gist::mojombo/4ae3f9bc20c6b67e06a7[]', { extension_registry: registry })
 console.log(html)
-// <div class="paragraph">
-// <p>Lorem ipsum dolor sit amet...</p>
-// </div>
+// <script src="https://gist.github.com/mojombo/4ae3f9bc20c6b67e06a7.js"></script>
 ----
