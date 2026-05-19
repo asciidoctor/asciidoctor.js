@@ -8,6 +8,7 @@ import { load } from '../src/load.js'
 import { Parser } from '../src/parser.js'
 import { Reader } from '../src/reader.js'
 import { MemoryLogger, LoggerManager } from '../src/logging.js'
+import { getAttributeEntries } from '../src/attribute_entry.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -75,10 +76,11 @@ describe('Parser', () => {
     assert.equal(attrName, 'foo')
     assert.equal(attrValue, 'bar')
     assert.equal(doc.getAttribute('foo'), 'bar')
-    assert.ok('attribute_entries' in attrs)
-    assert.equal(attrs.attribute_entries.length, 1)
-    assert.equal(attrs.attribute_entries[0].name, 'foo')
-    assert.equal(attrs.attribute_entries[0].value, 'bar')
+    assert.ok(getAttributeEntries(attrs) != null)
+    assert.equal(getAttributeEntries(attrs).length, 1)
+    assert.equal(getAttributeEntries(attrs)[0].name, 'foo')
+    assert.equal(getAttributeEntries(attrs)[0].value, 'bar')
+    assert.ok(!('attribute_entries' in attrs))
   })
 
   test('store accessible attribute on document with value that contains attribute reference', async () => {
@@ -95,10 +97,11 @@ describe('Parser', () => {
     assert.equal(attrName, 'foo')
     assert.equal(attrValue, 'ultramega')
     assert.equal(doc.getAttribute('foo'), 'ultramega')
-    assert.ok('attribute_entries' in attrs)
-    assert.equal(attrs.attribute_entries.length, 1)
-    assert.equal(attrs.attribute_entries[0].name, 'foo')
-    assert.equal(attrs.attribute_entries[0].value, 'ultramega')
+    assert.ok(getAttributeEntries(attrs) != null)
+    assert.equal(getAttributeEntries(attrs).length, 1)
+    assert.equal(getAttributeEntries(attrs)[0].name, 'foo')
+    assert.equal(getAttributeEntries(attrs)[0].value, 'ultramega')
+    assert.ok(!('attribute_entries' in attrs))
   })
 
   test('store inaccessible attribute on document with value', async () => {
@@ -113,6 +116,7 @@ describe('Parser', () => {
     assert.equal(attrName, 'foo')
     assert.equal(attrValue, 'bar')
     assert.equal(doc.getAttribute('foo'), 'baz')
+    assert.ok(getAttributeEntries(attrs) == null)
     assert.ok(!('attribute_entries' in attrs))
   })
 
@@ -133,10 +137,11 @@ describe('Parser', () => {
       )
       assert.equal(attrName, name.replace('!', ''))
       assert.equal(attrValue, null)
-      assert.ok('attribute_entries' in attrs)
-      assert.equal(attrs.attribute_entries.length, 1)
-      assert.equal(attrs.attribute_entries[0].name, 'foo')
-      assert.equal(attrs.attribute_entries[0].value, null)
+      assert.ok(getAttributeEntries(attrs) != null)
+      assert.equal(getAttributeEntries(attrs).length, 1)
+      assert.equal(getAttributeEntries(attrs)[0].name, 'foo')
+      assert.equal(getAttributeEntries(attrs)[0].value, null)
+      assert.ok(!('attribute_entries' in attrs))
     }
   })
 
@@ -156,6 +161,7 @@ describe('Parser', () => {
       )
       assert.equal(attrName, name.replace('!', ''))
       assert.equal(attrValue, null)
+      assert.ok(getAttributeEntries(attrs) == null)
       assert.ok(!('attribute_entries' in attrs))
     }
   })
