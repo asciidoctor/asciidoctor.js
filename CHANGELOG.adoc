@@ -14,6 +14,7 @@ Improvements::
 
 Bug Fixes::
 
+* `AbstractBlock#getAttributes()` no longer exposes the internal `attribute_entries` bookkeeping key — attribute entries are now stored under a private Symbol key invisible to `Object.keys()`, `for…in`, and `JSON.stringify()`
 * `doc.doctitle()` and `doc.xreftext()` now apply typographic substitutions (e.g., `'` → `&#8217;`) to the document title and reftext, matching the Ruby reference implementation
 * `NullLogger` now properly extends `Logger` — `instanceof Logger` checks on a `NullLogger` instance now return `true`
 * Strip UTF-8 BOM when it appears as three raw Latin-1 characters (ï»¿ / `\xEF\xBB\xBF`) rather than the decoded U+FEFF codepoint — fixes loading of BOM-prefixed content passed through a binary/Latin-1 decoder

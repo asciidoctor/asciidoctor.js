@@ -68,7 +68,11 @@ export class ImageReference {
 import { Footnote } from './footnote.js'
 export { Footnote }
 
-import { AttributeEntry } from './attribute_entry.js'
+import {
+  AttributeEntry,
+  getAttributeEntries,
+  ATTR_ENTRIES_KEY,
+} from './attribute_entry.js'
 export { AttributeEntry }
 
 /**
@@ -927,8 +931,9 @@ export class Document extends AbstractBlock {
    * @param {Object} blockAttributes
    */
   playbackAttributes(blockAttributes) {
-    if (!('attribute_entries' in blockAttributes)) return
-    for (const entry of blockAttributes.attribute_entries) {
+    const entries = getAttributeEntries(blockAttributes)
+    if (!entries) return
+    for (const entry of entries) {
       if (entry.negate) {
         delete this.attributes[entry.name]
         if (entry.name === 'compat-mode') this.compatMode = false
@@ -1746,7 +1751,7 @@ export class Document extends AbstractBlock {
    * @internal
    */
   _clearPlaybackAttributes(attributes) {
-    delete attributes.attribute_entries
+    delete attributes[ATTR_ENTRIES_KEY]
   }
 
   /**
