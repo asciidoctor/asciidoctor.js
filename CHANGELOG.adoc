@@ -14,6 +14,7 @@ Improvements::
 
 Bug Fixes::
 
+* `doc.doctitle()` and `doc.xreftext()` now apply typographic substitutions (e.g., `'` → `&#8217;`) to the document title and reftext, matching the Ruby reference implementation
 * `NullLogger` now properly extends `Logger` — `instanceof Logger` checks on a `NullLogger` instance now return `true`
 
 == v4.0.0-alpha.2 (2026-05-17)

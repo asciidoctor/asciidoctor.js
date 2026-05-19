@@ -185,6 +185,19 @@ describe('Structure', () => {
     assert.ok(doc.header != null)
   })
 
+  test('doctitle applies replacements substitution (apostrophe → &#8217;)', async () => {
+    const input = "= Let's Go!\n\npreamble"
+    const doc = await parse(input)
+    assert.equal(doc.doctitle(), 'Let&#8217;s Go!')
+  })
+
+  test('xreftext with reftext applies quotes and replacements substitutions', async () => {
+    const input = "[#go,reftext=\"Let's get goin`'!\"]\n= Let's Go!\n\npreamble"
+    const doc = await parse(input)
+    assert.equal(doc.doctitle(), 'Let&#8217;s Go!')
+    assert.equal(doc.xreftext(), 'Let&#8217;s get goin&#8217;!')
+  })
+
   test('document with legacy doctitle enables compat mode', async () => {
     const input = 'Document Title\n==============\n\n+content+'
     const doc = await parse(input)

@@ -1657,6 +1657,12 @@ export class Document extends AbstractBlock {
    * Handles titles (AbstractBlock), list item text, table cell text, and reftexts.
    */
   async _resolveAllTexts(block) {
+    // The header section lives outside document.blocks; pre-compute its title here so
+    // that doc.doctitle() returns the fully-substituted title (with replacements applied,
+    // e.g. ' → &#8217;) rather than the header-subs-only fallback.
+    if (block === this && this.header) {
+      await this.header.precomputeTitle?.()
+    }
     // Skip title pre-computation for blocks with an explicit empty id ([id=]).
     // In Ruby, apply_title_subs is lazy: it is never called during parsing for such
     // blocks because section.title is never accessed.  An explicit empty id is
