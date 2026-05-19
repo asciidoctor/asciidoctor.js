@@ -94,6 +94,10 @@ Tests use the Node.js built-in test runner (`node:test` / `node:assert/strict`).
 
 Test files live in `test/` and are named `*.test.js`. Fixtures (sample `.adoc` files) live in `test/fixtures/`.
 
+## Changelog
+
+After every bug fix, improvement, or breaking change, add an entry to `/CHANGELOG.adoc` (repo root) under the `== Unreleased` section in the appropriate category (`Bug Fixes`, `Improvements`, `Breaking Changes`, or `Infrastructure`).
+
 ## Adding a new source file
 
 1. Create `src/<name>.js` mirroring the structure of an existing file.
