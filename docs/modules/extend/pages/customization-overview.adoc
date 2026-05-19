@@ -1,0 +1,314 @@
+= Customization Overview
+:url-asciidoctor-stylesheets: https://github.com/asciidoctor/asciidoctor/tree/main/src/stylesheets
+:url-builtin-attributes: https://docs.asciidoctor.org/asciidoc/latest/attributes/document-attributes-ref/
+
+Asciidoctor.js is highly customizable.
+There are many ways to tailor the output to your needs, ranging from simple document attributes to building a fully custom converter.
+
+This page provides an overview of all available customization levels, ordered from the simplest to the most advanced.
+Use it to find the right approach for your use case.
+
+== Quick reference
+
+[cols="1,3,2,2",options="header"]
+|===
+|Level |Approach |Skills required |HTML5 only
+
+|1
+|xref:#built-in-attributes[Built-in attributes]
+|AsciiDoc
+|No
+
+|2
+|xref:#use-a-theme[Use a theme (stylesheet)]
+|AsciiDoc
+|Yes
+
+|3
+|xref:#override-stylesheet[Override the default stylesheet]
+|CSS
+|Yes
+
+|4
+|xref:#create-stylesheet[Create your own stylesheet]
+|CSS
+|Yes
+
+|5
+|xref:#docinfo-processor[Docinfo processor]
+|JavaScript, HTML
+|No
+
+|6
+|xref:#postprocessor[Postprocessor]
+|JavaScript
+|No
+
+|7
+|xref:#block-macro[Custom block or macro extension]
+|JavaScript, AsciiDoc
+|No
+
+|8
+|xref:#custom-templates[Custom templates]
+|JavaScript, template engine
+|No
+
+|9
+|xref:#custom-converter[Custom converter]
+|JavaScript, Asciidoctor AST
+|No
+|===
+
+[#built-in-attributes]
+== Level 1 — Built-in attributes
+
+The simplest customization: toggle built-in document attributes to control the output.
+No programming required.
+
+.Examples
+* Change the table of contents position with `toc`
+* Enable section numbering with `sectnums`
+* Set the document language with `lang`
+* Control syntax highlighting with `source-highlighter`
+
+[discrete]
+=== Skills required
+
+AsciiDoc syntax::
+You need to know how to set document attributes either in the document header or via the API's `attributes` option.
+
+The {url-builtin-attributes}[built-in document attributes reference^] lists every available attribute.
+
+[#use-a-theme]
+== Level 2 — Use a theme (stylesheet)
+
+_(HTML5 backend only)_
+
+Apply an alternative stylesheet by pointing the `stylesheet` attribute at a CSS file.
+The Asciidoctor project no longer maintains official themes, but community-shared themes are available online.
+
+Via the API:
+
+[source,js]
+----
+import { convertFile } from '@asciidoctor/core'
+
+await convertFile('file.adoc', { attributes: { stylesheet: 'mytheme.css' } })
+----
+
+Via the CLI:
+
+[source,console]
+----
+$ asciidoctor -a stylesheet=mytheme.css file.adoc
+----
+
+[discrete]
+=== Skills required
+
+AsciiDoc::
+Setting document attributes via the document header, the API's `attributes` option, or the `-a` flag of the xref:cli:options.adoc[CLI].
+
+See xref:stylesheets/index.adoc[Stylesheets] for the full configuration options.
+
+[#override-stylesheet]
+== Level 3 — Override the default stylesheet
+
+_(HTML5 backend only)_
+
+The `stylesheet` attribute replaces the default Asciidoctor stylesheet entirely.
+To keep the default styles and only override specific rules, you have two options:
+
+* Use CSS `@import` at the top of your stylesheet to pull in the default one first, then add your overrides below.
+* Use a docinfo file — a plain HTML file named `docinfo.html` placed next to your document — to inject a `<link>` tag in the `<head>` without writing any JavaScript.
+
+[source,css]
+----
+@import "https://cdn.jsdelivr.net/npm/@asciidoctor/core/data/asciidoctor-default.css";
+
+/* your overrides below */
+h1, h2, h3 { font-family: Georgia, serif; }
+----
+
+The {url-asciidoctor-stylesheets}[default stylesheet source^] is a good reference for identifying the selectors you want to change.
+
+[discrete]
+=== Skills required
+
+CSS::
+You need to know CSS selectors and the cascade to override the right rules without unintended side effects.
+
+See xref:stylesheets/index.adoc[Stylesheets] for the configuration options.
+
+[#create-stylesheet]
+== Level 4 — Create your own stylesheet
+
+_(HTML5 backend only)_
+
+Build a completely custom stylesheet from scratch or use the {url-asciidoctor-stylesheets}[default Asciidoctor stylesheet^] as a starting point.
+
+[discrete]
+=== Skills required
+
+CSS::
+Solid understanding of CSS is required.
+
+See xref:stylesheets/index.adoc[Stylesheets] for the configuration options.
+
+[#docinfo-processor]
+== Level 5 — Docinfo processor
+
+A docinfo processor injects custom content into the `<head>` element or at the end of the `<body>` of the generated document.
+This is a lightweight way to add analytics scripts, custom meta tags, or extra stylesheets without touching the converter.
+
+[source,js]
+----
+import asciidoctor from '@asciidoctor/core'
+
+const registry = asciidoctor.Extensions.create()
+registry.docinfoProcessor(function () {
+  this.atLocation('head')
+  this.process(function (doc) {
+    return '<meta name="description" content="My custom page">'
+  })
+})
+----
+
+[discrete]
+=== Skills required
+
+JavaScript::
+You write the extension as a JavaScript class or function.
+
+HTML::
+The processor returns a raw HTML string that is injected verbatim into the document.
+
+Learn how to write a xref:extensions/docinfo-processor.adoc[Docinfo Processor].
+
+[#postprocessor]
+== Level 6 — Postprocessor
+
+A postprocessor receives the fully converted output as a string and returns a modified version.
+Use it to add a banner, strip generated content, or apply output-level transformations that are not tied to any specific node.
+
+[source,js]
+----
+import asciidoctor from '@asciidoctor/core'
+
+const registry = asciidoctor.Extensions.create()
+registry.postprocessor(function () {
+  this.process(function (doc, output) {
+    return output.replace('</body>', '<footer>Custom footer</footer></body>')
+  })
+})
+----
+
+[discrete]
+=== Skills required
+
+JavaScript::
+You write the postprocessor as a JavaScript class or function.
+
+Output format knowledge::
+You manipulate the raw output string, so you need to understand the target format (HTML, DocBook, …) to make safe transformations.
+
+Learn how to write a xref:extensions/postprocessor.adoc[Postprocessor].
+
+[#block-macro]
+== Level 7 — Custom block or macro extension
+
+Extend the AsciiDoc syntax itself by registering a new block, block macro, or inline macro.
+The extension receives the parsed attributes and the raw source of the custom block, and returns converted output.
+
+Use a block processor when you want to wrap a delimited block with custom rendering, and a macro processor when you want a call-site shorthand (e.g., `video::id[]`).
+
+[source,js]
+----
+import asciidoctor from '@asciidoctor/core'
+
+const registry = asciidoctor.Extensions.create()
+registry.blockMacro('shoutout', function () {
+  this.process(function (parent, target, attrs) {
+    const text = `Shoutout to ${target}!`
+    return this.createBlock(parent, 'paragraph', text)
+  })
+})
+----
+
+[discrete]
+=== Skills required
+
+JavaScript::
+You write the extension as a JavaScript class or function.
+
+AsciiDoc syntax::
+You need to understand how AsciiDoc blocks and macros are defined to design a consistent syntax for your new element.
+
+Asciidoctor API (basic)::
+Creating and returning nodes uses the Asciidoctor content model API (`createBlock`, `createList`, etc.).
+
+See the xref:extensions/block-processor.adoc[Block Processor], xref:extensions/block-macro-processor.adoc[Block Macro Processor], and xref:extensions/inline-macro-processor.adoc[Inline Macro Processor] pages for complete examples.
+
+[#custom-templates]
+== Level 8 — Custom templates
+
+A template converter lets you override the rendering of individual AsciiDoc elements (paragraph, section, table, listing block, …) with template files.
+You only need to provide templates for the elements you want to change; all other elements fall back to the built-in converter.
+
+Supported template engines: EJS, Handlebars, Nunjucks, Pug.
+
+[discrete]
+=== Skills required
+
+JavaScript::
+You configure the template converter and install the template engine dependency.
+
+Template engine::
+You write template files in the engine of your choice.
+Each template receives the node object and can call the Asciidoctor API to read attributes and content.
+
+Asciidoctor node attributes (basic)::
+You need to know which attributes and methods are available on each node type to produce the right output.
+
+Learn how to set up a xref:converter/template-converter.adoc[Template Converter].
+
+[#custom-converter]
+== Level 9 — Custom converter
+
+A custom converter is a JavaScript class that implements the `convert(node, transform)` method.
+The converter is called for every node in the document tree, giving you complete, fine-grained control over the output.
+This is the right choice when the target format is not HTML or when the built-in converter cannot be adapted through templates alone.
+
+[source,js]
+----
+import asciidoctor from '@asciidoctor/core'
+
+class TextConverter {
+  convert (node, transform) {
+    const nodeName = transform || node.getNodeName()
+    if (nodeName === 'document') return node.getContent()
+    if (nodeName === 'section') return `${node.getTitle()}\n${node.getContent()}`
+    if (nodeName === 'paragraph') return `${node.getContent()}\n`
+    return node.getContent ? node.getContent() : ''
+  }
+}
+
+asciidoctor.ConverterFactory.register(new TextConverter(), ['text'])
+----
+
+[discrete]
+=== Skills required
+
+JavaScript::
+A converter is a plain JavaScript class.
+Comfort with object-oriented patterns helps.
+
+Asciidoctor AST::
+You will interact with every node type in the document tree (Document, Section, Block, List, Table, …).
+Understanding which methods are available on each node is essential.
+
+Target format::
+You produce the raw output yourself, so you need to understand the format you are generating.
+
+Learn how to build a xref:converter/custom-converter.adoc[Custom Converter].
