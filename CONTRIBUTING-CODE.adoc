@@ -12,6 +12,7 @@
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
 :uri-biome: https://biomejs.dev
 :uri-vitest: https://vitest.dev
+:uri-deno: https://deno.com
 :uri-claude-code: https://claude.ai/code
 
 This guide will give you all the necessary information you need to become a successful Asciidoctor.js developer and code contributor!
@@ -88,7 +89,7 @@ npm test -w @asciidoctor/core
 ----
 
 Tests use the Node.js built-in runner (`node:test` / `node:assert/strict`).
-The suite contains over 2,300 tests ported from the Asciidoctor Ruby test suite.
+The suite contains over 2,600 tests ported from the Asciidoctor Ruby test suite.
 
 === Running the CLI test suite
 
@@ -108,6 +109,27 @@ This runs the same test files through {uri-vitest}[Vitest] with a Playwright/Chr
 Node.js built-ins (`node:fs`, `node:path`, etc.) are shimmed so that browser-incompatible code paths are exercised via their browser equivalents (`fetch`, `URL`, etc.).
 
 A small number of test files are excluded from the browser run because they require a running Node.js HTTP server or Node.js-specific infrastructure (see `vitest.browser.config.js`).
+
+=== Running the Deno test suite
+
+{uri-deno}[Deno] must be installed on your system before running these commands.
+See the {uri-deno}[Deno website] for installation instructions.
+
+To run the core test suite under Deno:
+
+[source,bash]
+----
+npm run test:deno -w @asciidoctor/core
+----
+
+To run the CLI test suite under Deno:
+
+[source,bash]
+----
+npm run test:deno -w asciidoctor
+----
+
+Deno runs the same test files as the Node.js suite using `deno test` with the required permissions (`--allow-env`, `--allow-read`, `--allow-write`, `--allow-sys`, `--allow-run`, `--allow-net`).
 
 == Linting and formatting
 

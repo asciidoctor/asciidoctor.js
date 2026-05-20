@@ -10,6 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Documentation::
 
+* Document how to run the test suite under Deno in `CONTRIBUTING-CODE.adoc`, including the installation prerequisite and the per-package commands
 * Add customization overview page listing all extension levels from built-in attributes to custom converter
 * Update stylesheets page to reflect that the stylesheet factory is deprecated and the default stylesheet no longer uses Sass
 
