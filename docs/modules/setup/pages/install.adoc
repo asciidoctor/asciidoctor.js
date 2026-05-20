@@ -39,6 +39,19 @@ You need to do your testing through a server.
 Learn more about https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules[JavaScript modules].
 ====
 
+[NOTE]
+====
+If you're loading an AsciiDoc file from a `file://` URI and that document contains `include` directives, Chrome will block the `fetch` requests used to read the included files.
+To allow this, start Chrome with the following flag:
+
+[source,console]
+----
+--allow-file-access-from-files
+----
+
+This restriction does not apply when serving the page through a local HTTP server, which is the recommended approach.
+====
+
 == Node
 
 [source,js]
