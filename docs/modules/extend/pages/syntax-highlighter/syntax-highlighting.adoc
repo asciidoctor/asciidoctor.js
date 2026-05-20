@@ -1,0 +1,168 @@
+= Syntax Highlighting
+
+This page explains how to enable syntax highlighting for source blocks in Asciidoctor.js.
+
+== Default behavior
+
+Without a syntax highlighter configured, Asciidoctor.js renders a source block like this:
+
+[source,asciidoc]
+----
+[source,java]
+....
+public class Kalle {
+  public Kalle(final String pelle) {}
+}
+....
+----
+
+as plain HTML with language metadata on the `<code>` element:
+
+[source,html]
+----
+<div class="content">
+  <pre class="highlight">
+    <code class="language-java" data-lang="java">public class Kalle {
+  public Kalle(final String pelle) {}
+}</code>
+  </pre>
+</div>
+----
+
+The class and `data-lang` attributes are present, but there is no highlighted markup.
+To get visual syntax highlighting you need either a client-side library that runs in the browser, or a server-side highlighter that processes the source at conversion time.
+
+== Client-side highlighting with highlight.js
+
+Asciidoctor.js ships with a built-in https://highlightjs.org[highlight.js] adapter.
+When enabled, Asciidoctor.js injects the highlight.js stylesheet and script into the output document, and the browser applies highlighting when the page loads.
+
+=== Standalone documents
+
+To use the built-in adapter, convert with `standalone: true` and set the `source-highlighter` attribute to `highlightjs` (or `highlight.js`):
+
+[source,js]
+----
+import { convert } from '@asciidoctor/core'
+
+const content = `= Sample Java
+[source,java]
+....
+public class Kalle {
+  public Kalle(final String pelle) {}
+}
+....`
+
+const html = await convert(content, {
+  standalone: true, // <1>
+  attributes: { 'source-highlighter': 'highlightjs' }, // <2>
+})
+----
+<1> The `standalone` option wraps the body in a full HTML document (`<html>`, `<head>`, `<body>`).
+    The highlight.js `<link>` and `<script>` tags are injected via the docinfo mechanism, which only runs in standalone mode.
+<2> Tells Asciidoctor.js to use the built-in highlight.js adapter.
+
+The generated document loads highlight.js from a CDN and calls `hljs.highlightBlock()` on every `pre.highlight > code[data-lang]` element.
+
+[NOTE]
+====
+If you set `source-highlighter` but omit `standalone: true` (which is the default for `convert()`), the docinfo scripts are not injected and highlighting will not work.
+====
+
+=== Customizing the theme
+
+Override the default `github` theme by setting the `highlightjs-theme` attribute:
+
+[source,js]
+----
+await convert(content, {
+  standalone: true,
+  attributes: {
+    'source-highlighter': 'highlightjs',
+    'highlightjs-theme': 'monokai',
+  },
+})
+----
+
+Any theme name from the https://highlightjs.org/demo[highlight.js theme gallery] is accepted.
+
+=== Self-hosted highlight.js
+
+To serve highlight.js from your own host instead of the CDN, set the `highlightjsdir` attribute to the base URL of your installation:
+
+[source,js]
+----
+await convert(content, {
+  standalone: true,
+  attributes: {
+    'source-highlighter': 'highlightjs',
+    'highlightjsdir': '/assets/highlight.js',
+  },
+})
+----
+
+Asciidoctor.js will load `styles/github.min.css` and `highlight.min.js` relative to that URL.
+
+=== Embedding in an existing page
+
+If you are inserting the converted fragment into an existing HTML page (i.e. without `standalone: true`), you must include highlight.js yourself and initialize it after inserting the fragment:
+
+[source,html]
+----
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
+----
+
+[source,js]
+----
+import { convert } from '@asciidoctor/core'
+
+const html = await convert(content) // standalone is false by default
+
+document.getElementById('content').innerHTML = html
+
+// Highlight all source blocks that Asciidoctor.js produced
+document.querySelectorAll('pre.highlight > code[data-lang]').forEach((el) => {
+  hljs.highlightBlock(el)
+})
+----
+
+== Server-side (conversion-time) highlighting
+
+Server-side highlighting processes the source at conversion time so the highlighted markup is embedded directly in the output HTML.
+This approach does not require any client-side JavaScript.
+
+Asciidoctor.js does not ship a built-in server-side highlighter, but you can implement one by extending xref:custom-syntax-highlighter.adoc#server-side-highlighting[`SyntaxHighlighterBase`] and overriding `handlesHighlighting()` → `true` and `highlight()`.
+
+Here is a minimal example using the https://www.npmjs.com/package/highlight.js[`highlight.js`] npm package to highlight at conversion time:
+
+[source,js]
+----
+import { load, SyntaxHighlighterBase } from '@asciidoctor/core'
+import hljs from 'highlight.js' // npm install highlight.js
+
+class HljsServerHighlighter extends SyntaxHighlighterBase {
+  handlesHighlighting() {
+    return true // <1>
+  }
+
+  highlight(node, source, lang, opts) {
+    if (lang && hljs.getLanguage(lang)) {
+      return hljs.highlight(source, { language: lang }).value // <2>
+    }
+    return hljs.highlightAuto(source).value
+  }
+}
+
+const doc = await load(content, {
+  safe: 'safe',
+  syntax_highlighters: { 'hljs-server': HljsServerHighlighter }, // <3>
+  attributes: { 'source-highlighter': 'hljs-server' },
+})
+const html = await doc.convert()
+----
+<1> Returning `true` tells Asciidoctor.js that this highlighter processes source at conversion time.
+<2> `source` is the raw source text; return the highlighted markup as a plain `string`.
+<3> Register the highlighter under the name used in `source-highlighter`.
+
+See xref:custom-syntax-highlighter.adoc[Custom Syntax Highlighter] for the full API.
