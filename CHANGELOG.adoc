@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.0-alpha.3 (2026-05-20)
+
 Documentation::
 
 * Add syntax highlighting guide explaining client-side (highlight.js via `standalone` + `source-highlighter`) and server-side (conversion-time) approaches, including the "embedding in an existing page" pattern
