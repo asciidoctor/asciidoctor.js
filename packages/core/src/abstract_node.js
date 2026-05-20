@@ -765,7 +765,7 @@ export class AbstractNode {
       })
     }
 
-    if (contents && opts.warnIfEmpty && contents.length === 0) {
+    if (contents != null && opts.warnIfEmpty && contents.length === 0) {
       this.logger.warn(`contents of ${label} is empty: ${resolvedTarget}`)
     }
     return contents
