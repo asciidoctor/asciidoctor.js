@@ -666,6 +666,12 @@ export class Registry {
      */
     hasBlocks(): boolean;
     /**
+     * Retrieve all BlockProcessor Extension proxy objects.
+     *
+     * @returns {ProcessorExtension[]}
+     */
+    blocks(): ProcessorExtension[];
+    /**
      * Check whether a BlockProcessor is registered for the given name and context.
      *
      * @param {string} name - The block name.
@@ -695,6 +701,12 @@ export class Registry {
      * @returns {boolean}
      */
     hasBlockMacros(): boolean;
+    /**
+     * Retrieve all BlockMacroProcessor Extension proxy objects.
+     *
+     * @returns {ProcessorExtension[]}
+     */
+    blockMacros(): ProcessorExtension[];
     /**
      * Check whether a BlockMacroProcessor is registered for the given name.
      *
@@ -758,6 +770,45 @@ export class Registry {
     prefer(...args: any[]): ProcessorExtension;
     /** @returns {object} the plain Object that maps names to groups for this registry. */
     getGroups(): object;
+    /** Alias for {@link preprocessors}. */
+    getPreprocessors(): ProcessorExtension[];
+    /** Alias for {@link treeProcessors}. */
+    getTreeProcessors(): ProcessorExtension[];
+    /** Alias for {@link includeProcessors}. */
+    getIncludeProcessors(): ProcessorExtension[];
+    /** Alias for {@link postprocessors}. */
+    getPostprocessors(): ProcessorExtension[];
+    /**
+     * Alias for {@link docinfoProcessors}.
+     *
+     * @param {string|null} [location=null]
+     */
+    getDocinfoProcessors(location?: string | null): ProcessorExtension[];
+    /** Alias for {@link blocks}. */
+    getBlocks(): ProcessorExtension[];
+    /** Alias for {@link blockMacros}. */
+    getBlockMacros(): ProcessorExtension[];
+    /** Alias for {@link inlineMacros}. */
+    getInlineMacros(): ProcessorExtension[];
+    /**
+     * Alias for {@link registeredForInlineMacro}.
+     *
+     * @param {string} name
+     */
+    getInlineMacroFor(name: string): false | ProcessorExtension;
+    /**
+     * Alias for {@link registeredForBlock}.
+     *
+     * @param {string} name
+     * @param {string} context
+     */
+    getBlockFor(name: string, context: string): false | ProcessorExtension;
+    /**
+     * Alias for {@link registeredForBlockMacro}.
+     *
+     * @param {string} name
+     */
+    getBlockMacroFor(name: string): false | ProcessorExtension;
 }
 export namespace Extensions {
     /**

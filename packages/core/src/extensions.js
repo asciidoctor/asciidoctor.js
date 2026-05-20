@@ -1414,6 +1414,15 @@ export class Registry {
   }
 
   /**
+   * Retrieve all BlockProcessor Extension proxy objects.
+   *
+   * @returns {ProcessorExtension[]}
+   */
+  blocks() {
+    return this._block_extensions ? Object.values(this._block_extensions) : []
+  }
+
+  /**
    * Check whether a BlockProcessor is registered for the given name and context.
    *
    * @param {string} name - The block name.
@@ -1457,6 +1466,17 @@ export class Registry {
    */
   hasBlockMacros() {
     return !!this._block_macro_extensions
+  }
+
+  /**
+   * Retrieve all BlockMacroProcessor Extension proxy objects.
+   *
+   * @returns {ProcessorExtension[]}
+   */
+  blockMacros() {
+    return this._block_macro_extensions
+      ? Object.values(this._block_macro_extensions)
+      : []
   }
 
   /**
@@ -1569,6 +1589,78 @@ export class Registry {
   /** @returns {object} the plain Object that maps names to groups for this registry. */
   getGroups() {
     return this.groups
+  }
+
+  /** Alias for {@link preprocessors}. */
+  getPreprocessors() {
+    return this.preprocessors()
+  }
+
+  /** Alias for {@link treeProcessors}. */
+  getTreeProcessors() {
+    return this.treeProcessors()
+  }
+
+  /** Alias for {@link includeProcessors}. */
+  getIncludeProcessors() {
+    return this.includeProcessors()
+  }
+
+  /** Alias for {@link postprocessors}. */
+  getPostprocessors() {
+    return this.postprocessors()
+  }
+
+  /**
+   * Alias for {@link docinfoProcessors}.
+   *
+   * @param {string|null} [location=null]
+   */
+  getDocinfoProcessors(location = null) {
+    return this.docinfoProcessors(location)
+  }
+
+  /** Alias for {@link blocks}. */
+  getBlocks() {
+    return this.blocks()
+  }
+
+  /** Alias for {@link blockMacros}. */
+  getBlockMacros() {
+    return this.blockMacros()
+  }
+
+  /** Alias for {@link inlineMacros}. */
+  getInlineMacros() {
+    return this.inlineMacros()
+  }
+
+  /**
+   * Alias for {@link registeredForInlineMacro}.
+   *
+   * @param {string} name
+   */
+  getInlineMacroFor(name) {
+    return this.registeredForInlineMacro(name)
+  }
+
+  /**
+   * Alias for {@link registeredForBlock}.
+   *
+   * @param {string} name
+   * @param {string} context
+   */
+  getBlockFor(name, context) {
+    return this.registeredForBlock(name, context)
+  }
+
+  /**
+   * Alias for {@link registeredForBlockMacro}.
+   *
+   * @param {string} name
+   */
+  getBlockMacroFor(name) {
+    return this.registeredForBlockMacro(name)
   }
 
   // ── Private helpers ──────────────────────────────────────────────────────────
