@@ -8,6 +8,11 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* Align `readSvgContents` with the Ruby reference implementation by delegating entirely to `node.readContents`, removing the manual `isUriish`/`normalizeSystemPath` split
+* Fix `warnIfEmpty` in `AbstractNode#readContents` — the empty-string check now correctly uses `!= null` instead of a truthy guard, so a warning is emitted for empty local SVG assets
+
 == v4.0.0-alpha.3 (2026-05-20)
 
 Documentation::

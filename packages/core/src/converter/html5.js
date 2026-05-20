@@ -29,7 +29,7 @@ import {
   INLINE_MATH_DELIMITERS,
 } from '../constants.js'
 import { XmlSanitizeRx } from '../rx.js'
-import { extname, isUriish } from '../helpers.js'
+import { extname } from '../helpers.js'
 import { Stylesheets } from '../stylesheets.js'
 
 // ── Local regex constants ─────────────────────────────────────────────────────
@@ -1767,32 +1767,13 @@ Your browser does not support the video tag.
 
   // NOTE expose readSvgContents for Bespoke converter
   async readSvgContents(node, target) {
-    const imagesdir = node.document.getAttribute('imagesdir')
-    let resolvedPath
-    let svg
-    if (isUriish(target) || (imagesdir && isUriish(imagesdir))) {
-      svg = await node.readContents(target, {
-        start: imagesdir,
-        normalize: true,
-        warnOnFailure: true,
-        label: 'SVG',
-      })
-      resolvedPath = target
-    } else {
-      resolvedPath = node.normalizeSystemPath(target, imagesdir, null, {
-        targetName: 'image',
-      })
-      svg = await node.readAsset(resolvedPath, {
-        normalize: true,
-        warnOnFailure: true,
-        label: 'SVG',
-      })
-    }
-    if (svg == null) return null // file not found/readable; warning already emitted
-    if (!svg) {
-      node.logger.warn(`contents of SVG is empty: ${resolvedPath}`)
-      return null
-    }
+    let svg = await node.readContents(target, {
+      start: node.document.getAttribute('imagesdir'),
+      normalize: true,
+      label: 'SVG',
+      warnIfEmpty: true,
+    })
+    if (!svg) return null
     if (!svg.startsWith('<svg')) svg = svg.replace(SvgPreambleRx, '')
     // Fix incomplete SVG start tag (missing closing >) by inserting > before the first child element.
     // This handles cases like: <svg width="500"\n<circle .../> where the > is missing.
