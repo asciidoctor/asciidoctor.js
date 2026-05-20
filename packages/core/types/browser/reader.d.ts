@@ -7,7 +7,7 @@
  * 1. target starts with file:// → inc_path = relpath = target
  * 2. target is a URI → must descend from baseDir or allow-uri-read; else → link
  * 3. target is an absolute OS path → prepend file:// (or file:///)
- * 4. baseDir == '.' → inc_path = relpath = target  (resolved by XMLHttpRequest/fetch)
+ * 4. baseDir == '.' → inc_path = relpath = target  (resolved by fetch)
  * 5. baseDir starts with file:// OR baseDir is not a URI → inc_path = baseDir/target; relpath = target
  * 6. baseDir is an absolute URL → inc_path = baseDir/target; relpath = target
  *

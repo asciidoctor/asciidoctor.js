@@ -1,8 +1,22 @@
 = Include directive processing in the browser
 
-This document describes how the include directive is processed in the browser environment (xmlhttprequest IO module).
+This document describes how the include directive is processed in the browser environment.
 This handling has slightly different rules than when a file-based document.
 The rules are listed in the order in which they are applied.
+
+[NOTE]
+====
+When converting a document loaded from a `file://` URI, `include` directives are resolved using `fetch`.
+Chrome blocks these requests by default.
+To allow local file access, start Chrome with:
+
+[source,console]
+----
+--allow-file-access-from-files
+----
+
+This restriction does not apply when serving files through a local HTTP server.
+====
 
 In these definitions, there are several commonly occurring terms that pertain to the include directive:
 
@@ -28,13 +42,13 @@ If both these tests fail, the include is replaced with a link.
 In this case, the base dir value has no impact.
 
 * If the target is relative and the base dir equals `.`, the target is used as both the include path and the relative path.
-The include path will be resolved relative to the window.location.href (per the behavior of XMLHttpRequest).
+The include path will be resolved relative to the window.location.href (per the behavior of fetch).
 
 * If the target is relative and the base dir begins with file://, the base dir is prepended to the target to create the include path.
 The target is used as the relative path.
 
 * If the target is relative and the base dir is relative, the base dir is prepended to the target to create the include path.
-The include path will be resolved relative to the window.location.href (per the behavior of XMLHttpRequest).
+The include path will be resolved relative to the window.location.href (per the behavior of fetch).
 The target is used as the relative path.
 
 * If the target is relative and the base dir is an absolute URL (i.e., starts with http:// or https:// scheme), the base dir is prepended to the target and used as the include path.
@@ -53,14 +67,14 @@ If either test succeeds, the target is used as both the include path and the rel
 In this case, the base dir value has no impact.
 
 * If the target is relative and the parent dir equals `.`, the target is used as both the include path and the relative path.
-The include path will be resolved relative to window.location.href (per the behavior of XMLHttpRequest).
+The include path will be resolved relative to window.location.href (per the behavior of fetch).
 
 * If the target is relative and the parent dir begins with file://, the parent dir is prepended to the target to create the include path.
 If the base dir equals `.`, or the include path does not descend from the base dir, the include path is used as the relative path.
 If the include path descends from the base dir, the relative path is the path difference.
 
 * If the target is relative and the parent dir is relative, the parent dir is prepended to the target to create the include path.
-The include path will be resolved relative to the window.location.href (per the behavior of XMLHttpRequest).
+The include path will be resolved relative to the window.location.href (per the behavior of fetch).
 If the base dir equals `.`, or the include path does not descend from the base dir, the include path is used as the relative path.
 If the include path descends from the base dir, the relative path is the path difference.
 
