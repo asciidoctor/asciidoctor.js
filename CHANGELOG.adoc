@@ -32,6 +32,7 @@ Improvements::
 
 Bug Fixes::
 
+* `convert()` now copies `asciidoctor.css` to the output directory when `linkcss` and `copycss` are active and `stylesheet` is `''` (empty string, the default in standalone mode) — aligns with the Ruby reference implementation where an empty string is truthy; also implements `Stylesheets#writePrimaryStylesheet`, which was previously a no-op stub; in browser environments where the filesystem is unavailable the copy is skipped and an info message is logged
 * `AbstractBlock#getAttributes()` no longer exposes the internal `attribute_entries` bookkeeping key — attribute entries are now stored under a private Symbol key invisible to `Object.keys()`, `for…in`, and `JSON.stringify()`
 * `doc.doctitle()` and `doc.xreftext()` now apply typographic substitutions (e.g., `'` → `&#8217;`) to the document title and reftext, matching the Ruby reference implementation
 * `NullLogger` now properly extends `Logger` — `instanceof Logger` checks on a `NullLogger` instance now return `true`

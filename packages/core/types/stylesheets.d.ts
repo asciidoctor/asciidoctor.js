@@ -6,5 +6,6 @@ declare class StylesheetsClass {
     get primaryStylesheetName(): string;
     primaryStylesheetData(): Promise<string>;
     embedPrimaryStylesheet(): Promise<string>;
+    writePrimaryStylesheet(stylesoutdir: any): Promise<boolean>;
 }
 export {};

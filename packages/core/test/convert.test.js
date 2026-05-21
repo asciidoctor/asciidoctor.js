@@ -254,14 +254,14 @@ describe('stylesheet copying (linkcss + copycss)', () => {
   // Helper: file-like input object for a path whose content is already in memory
   const fileInput = (path, content) => ({ path, read: () => content })
 
-  test('default stylesheet (asciidoctor.css) is not written — feature not yet ported', async () => {
+  test('default stylesheet (asciidoctor.css) is copied when stylesheet="" (default)', async () => {
     await withTmpDir(async (dir) => {
       const inputPath = join(dir, 'doc.adoc')
       const content = '= Doc\n\nHello.'
       await writeFile(inputPath, content, 'utf8')
       const outDir = join(dir, 'out')
       await mkdir(outDir)
-      // stylesheet='' (default) → falsy → DEFAULT_STYLESHEET_KEYS block is skipped entirely
+      // stylesheet='' (default in standalone mode) → DEFAULT_STYLESHEET_KEYS.has('') → copy default stylesheet
       await convert(fileInput(inputPath, content), {
         safe: 'unsafe',
         to_dir: outDir,
@@ -269,20 +269,20 @@ describe('stylesheet copying (linkcss + copycss)', () => {
       })
       const files = await readdir(outDir)
       assert.ok(
-        !files.some((f) => f.endsWith('.css')),
-        'asciidoctor.css should not be written (not yet ported)'
+        files.includes('asciidoctor.css'),
+        'asciidoctor.css should be written to the output directory'
       )
     })
   })
 
-  test('stylesheet=DEFAULT (truthy key) triggers copyAsciidoctorStylesheet but writes no file', async () => {
+  test('stylesheet=DEFAULT copies default asciidoctor.css', async () => {
     await withTmpDir(async (dir) => {
       const inputPath = join(dir, 'doc.adoc')
       const content = '= Doc\n\nHello.'
       await writeFile(inputPath, content, 'utf8')
       const outDir = join(dir, 'out')
       await mkdir(outDir)
-      // 'DEFAULT' is in DEFAULT_STYLESHEET_KEYS → copyAsciidoctorStylesheet = true (not yet ported)
+      // 'DEFAULT' is in DEFAULT_STYLESHEET_KEYS → copy default stylesheet
       await convert(fileInput(inputPath, content), {
         safe: 'unsafe',
         to_dir: outDir,
@@ -290,8 +290,8 @@ describe('stylesheet copying (linkcss + copycss)', () => {
       })
       const files = await readdir(outDir)
       assert.ok(
-        !files.some((f) => f.endsWith('.css')),
-        'no CSS file written (not yet ported)'
+        files.includes('asciidoctor.css'),
+        'asciidoctor.css should be written to the output directory'
       )
     })
   })
