@@ -11,7 +11,7 @@
 //   - Ruby File.write → async writeFile() via node:fs/promises.
 //   - Ruby Helpers.mkdir_p → mkdirP() from helpers.js.
 //   - Ruby Helpers.uriish? → isUriish() from helpers.js.
-//   - Ruby Stylesheets.instance.write_primary_stylesheet → not yet ported to JS; skipped.
+//   - Ruby Stylesheets.instance.write_primary_stylesheet → Stylesheets.instance.writePrimaryStylesheet() in stylesheets.js; returns false in browser environments.
 //   - Ruby doc.syntax_highlighter → doc.syntaxHighlighter.
 //   - Ruby syntax_hl.write_stylesheet? doc → syntaxHl.writeStylesheet(doc).
 //   - Ruby syntax_hl.write_stylesheet doc, dir → syntaxHl.writeStylesheetToDisk(doc, dir).
@@ -24,6 +24,7 @@
 import { load } from './load.js'
 import { isUriish, mkdirP } from './helpers.js'
 import { SafeMode, DEFAULT_STYLESHEET_KEYS } from './constants.js'
+import { Stylesheets } from './stylesheets.js'
 
 // ── convert ───────────────────────────────────────────────────────────────────
 
@@ -214,7 +215,7 @@ export async function convert(input, options = {}) {
       let copyAsciidoctorStylesheet = false
       let copyUserStylesheet = false
       const stylesheet = doc.getAttribute('stylesheet')
-      if (stylesheet) {
+      if (stylesheet != null) {
         if (DEFAULT_STYLESHEET_KEYS.has(stylesheet)) {
           copyAsciidoctorStylesheet = true
         } else if (!isUriish(stylesheet)) {
@@ -246,7 +247,13 @@ export async function convert(input, options = {}) {
         }
 
         if (copyAsciidoctorStylesheet) {
-          // NOTE Stylesheets.instance.write_primary_stylesheet is not yet ported to JS
+          if (
+            !(await Stylesheets.instance.writePrimaryStylesheet(stylesoutdir))
+          ) {
+            doc.logger.info(
+              'skipping default stylesheet copy: filesystem writes are not supported in this environment'
+            )
+          }
         } else if (copyUserStylesheet) {
           let stylesheetSrc = doc.getAttribute('copycss')
           if (stylesheetSrc === '' || stylesheetSrc === true) {

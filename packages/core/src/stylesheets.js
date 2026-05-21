@@ -23,6 +23,21 @@ class StylesheetsClass {
   async embedPrimaryStylesheet() {
     return `<style>\n${defaultStylesheetData}\n</style>`
   }
+
+  async writePrimaryStylesheet(stylesoutdir) {
+    try {
+      const { writeFile } = await import('node:fs/promises')
+      const { join } = await import('node:path')
+      await writeFile(
+        join(stylesoutdir, StylesheetsClass.DEFAULT_STYLESHEET_NAME),
+        defaultStylesheetData,
+        'utf8'
+      )
+      return true
+    } catch {
+      return false
+    }
+  }
 }
 
 export const Stylesheets = {
