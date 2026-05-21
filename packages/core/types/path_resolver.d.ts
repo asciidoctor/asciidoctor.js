@@ -55,11 +55,6 @@ export class PathResolver {
      */
     posixify(path: string): string;
     /**
-     * @param {string} path
-     * @returns {string}
-     */
-    posixfy(path: string): string;
-    /**
      * Expand the path by resolving parent references (..) and removing self references (.).
      * @param {string} path
      * @returns {string} The expanded path.

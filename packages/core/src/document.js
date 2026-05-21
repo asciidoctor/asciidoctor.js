@@ -2091,11 +2091,10 @@ export class Document extends AbstractBlock {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function _expandPath(p) {
-  try {
-    return require('node:path').resolve(p)
-  } catch {
-    return p
-  }
+  const resolver = new PathResolver()
+  const posixed = p.replace(/\\/g, '/')
+  if (resolver.absolutePath(posixed)) return resolver.expandPath(posixed)
+  return resolver.expandPath(`${resolver.workingDir}/${posixed}`)
 }
 
 function _cwd() {

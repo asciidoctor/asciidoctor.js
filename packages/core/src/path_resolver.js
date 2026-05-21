@@ -124,14 +124,6 @@ export class PathResolver {
   }
 
   /**
-   * @param {string} path
-   * @returns {string}
-   */
-  posixfy(path) {
-    return this.posixify(path)
-  }
-
-  /**
    * Expand the path by resolving parent references (..) and removing self references (.).
    * @param {string} path
    * @returns {string} The expanded path.
@@ -431,14 +423,27 @@ function _platformSeparator() {
  * @internal
  */
 function _expandPath(p) {
-  if (typeof process !== 'undefined') {
-    // Lazy import to avoid top-level await
-    try {
-      const path = require('node:path')
-      return path.resolve(p).replace(/\\/g, '/')
-    } catch {}
+  if (typeof process === 'undefined') return p
+  const cwd = process.cwd().replace(/\\/g, '/')
+  const full = `${cwd}/${p.replace(/\\/g, '/')}`
+  let root, rest
+  if (full.startsWith('//')) {
+    root = '//'
+    rest = full.slice(2)
+  } else if (full.startsWith('/')) {
+    root = '/'
+    rest = full.slice(1)
+  } else {
+    const slash = full.indexOf('/')
+    root = full.slice(0, slash + 1)
+    rest = full.slice(slash + 1)
   }
-  return p
+  const resolved = []
+  for (const seg of rest.split('/')) {
+    if (seg === '..') resolved.pop()
+    else if (seg && seg !== '.') resolved.push(seg)
+  }
+  return root + resolved.join('/')
 }
 
 /**

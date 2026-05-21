@@ -8,6 +8,11 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Bug Fixes::
+
+* Fix Windows UNC path handling (`\\server\share\...`) in `PathResolver` and `Document` — `base_dir` is now correctly posixified (`\\` → `//`) and `..` segments are expanded; previously `_expandPath` silently fell back to returning the path unchanged because `require()` is not available in ESM modules
+* Remove unused `posixfy()` alias on `PathResolver` (duplicate of `posixify()`)
+
 Improvements::
 
 * Align `readSvgContents` with the Ruby reference implementation by delegating entirely to `node.readContents`, removing the manual `isUriish`/`normalizeSystemPath` split
