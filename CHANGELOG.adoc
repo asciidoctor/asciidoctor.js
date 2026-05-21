@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.0-alpha.4 (2026-05-21)
+
 Bug Fixes::
 
 * Fix Windows UNC path handling (`\\server\share\...`) in `PathResolver` and `Document` — `base_dir` is now correctly posixified (`\\` → `//`) and `..` segments are expanded; previously `_expandPath` silently fell back to returning the path unchanged because `require()` is not available in ESM modules
