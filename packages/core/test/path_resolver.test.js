@@ -8,6 +8,7 @@
 
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
+import { isAbsolute } from 'node:path'
 
 import { PathResolver } from '../src/path_resolver.js'
 import { MemoryLogger, withLogger } from '../src/logging.js'
@@ -418,10 +419,7 @@ const describeNode = import.meta.url.startsWith('http')
 describeNode('PathResolver constructor — relative workingDir', () => {
   test('relative workingDir is resolved to an absolute path ending with the segment', () => {
     const pr = new PathResolver('/', 'subdir')
-    assert.ok(
-      posix().absolutePath(pr.workingDir),
-      'workingDir must be absolute'
-    )
+    assert.ok(isAbsolute(pr.workingDir), 'workingDir must be absolute')
     assert.ok(
       pr.workingDir.endsWith('/subdir'),
       `expected to end with /subdir, got: ${pr.workingDir}`
@@ -430,10 +428,7 @@ describeNode('PathResolver constructor — relative workingDir', () => {
 
   test('relative workingDir with ".." is expanded — no ".." left, ends with resolved segment', () => {
     const pr = new PathResolver('/', 'subdir/../other')
-    assert.ok(
-      posix().absolutePath(pr.workingDir),
-      'workingDir must be absolute'
-    )
+    assert.ok(isAbsolute(pr.workingDir), 'workingDir must be absolute')
     assert.ok(
       !pr.workingDir.includes('..'),
       `expected no ".." in: ${pr.workingDir}`
