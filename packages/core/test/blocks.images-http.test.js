@@ -1,27 +1,19 @@
-import { test, describe, before, after, beforeEach, afterEach } from 'node:test'
+import { test, describe, before, after } from 'node:test'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
-import { assertCss, assertXpath, assertMessage } from './helpers.js'
+import {
+  assertCss,
+  assertXpath,
+  assertMessage,
+  usingMemoryLogger,
+} from './helpers.js'
 import { convertStringToEmbedded } from './harness.js'
 import { startServer } from './http-server.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('Blocks', () => {
-  let logger
-  let defaultLogger
-
-  beforeEach(() => {
-    defaultLogger = LoggerManager.logger
-    LoggerManager.logger = logger = new MemoryLogger()
-  })
-
-  afterEach(() => {
-    LoggerManager.logger = defaultLogger
-  })
-
   describe('Images (HTTP)', () => {
     let server
     let baseUri
@@ -91,18 +83,24 @@ describe('Blocks', () => {
     })
 
     test('uses remote image uri when data-uri attribute is set and image cannot be retrieved', async () => {
-      const imageUri = `${baseUri}/fixtures/missing-image.gif`
-      const input = `:data-uri:\n\nimage::${imageUri}[Missing image]`
-      const output = await convertStringToEmbedded(input, {
-        safe: 'safe',
-        attributes: { 'allow-uri-read': '' },
+      await usingMemoryLogger(async (logger) => {
+        const imageUri = `${baseUri}/fixtures/missing-image.gif`
+        const input = `:data-uri:\n\nimage::${imageUri}[Missing image]`
+        const output = await convertStringToEmbedded(input, {
+          safe: 'safe',
+          attributes: { 'allow-uri-read': '' },
+        })
+        assertXpath(
+          output,
+          `/*[@class="imageblock"]//img[@src="data:image/gif;base64,"][@alt="Missing image"]`,
+          1
+        )
+        assertMessage(
+          logger,
+          'warn',
+          'image to embed not found or not readable'
+        )
       })
-      assertXpath(
-        output,
-        `/*[@class="imageblock"]//img[@src="data:image/gif;base64,"][@alt="Missing image"]`,
-        1
-      )
-      assertMessage(logger, 'warn', 'image to embed not found or not readable')
     })
 
     test('uses remote image uri when data-uri attribute is set and allow-uri-read is not set', async () => {

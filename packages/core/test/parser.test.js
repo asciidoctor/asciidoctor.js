@@ -7,7 +7,7 @@ import assert from 'node:assert/strict'
 import { load } from '../src/load.js'
 import { Parser } from '../src/parser.js'
 import { Reader } from '../src/reader.js'
-import { MemoryLogger, LoggerManager } from '../src/logging.js'
+import { usingMemoryLogger, assertMessage } from './helpers.js'
 import { getAttributeEntries } from '../src/attribute_entry.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -741,23 +741,13 @@ Another paragraph
 [[in-use]]that uses an id
 which is already in use.`
 
-    const defaultLogger = LoggerManager.logger
-    const logger = new MemoryLogger()
-    LoggerManager.logger = logger
-    try {
+    await usingMemoryLogger(async (logger) => {
       await load(input, { safe: 'safe' })
-      const found = logger.messages.some((m) => {
-        if (m.severity !== 'WARN') return false
-        const msg =
-          typeof m.message === 'string' ? m.message : String(m.message)
-        return msg.includes('id assigned to anchor already in use: in-use')
-      })
-      assert.ok(
-        found,
-        `Expected WARN about duplicate anchor but got: ${JSON.stringify(logger.messages)}`
+      assertMessage(
+        logger,
+        'warn',
+        'id assigned to anchor already in use: in-use'
       )
-    } finally {
-      LoggerManager.logger = defaultLogger
-    }
+    })
   })
 })
