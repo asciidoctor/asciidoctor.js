@@ -113,7 +113,7 @@ declare class Cell extends AbstractBlock<string | string[]> {
         imageUri(targetImage: string, assetDirKey?: string): Promise<string>;
         mediaUri(target: string, assetDirKey?: string): string;
         generateDataUri(targetImage: string, assetDirKey?: string | null): Promise<string>;
-        generateDataUriFromUri(imageUri: string, cacheUri?: boolean): Promise<string>;
+        generateDataUriFromUri(imageUri: string): Promise<string>;
         normalizeAssetPath(assetRef: string, assetName?: string, autocorrect?: boolean): string;
         normalizeSystemPath(target: string, start?: string | null, jail?: string | null, opts?: any): string;
         normalizeWebPath(target: string, start?: string | null, preserveUriTarget?: boolean): string;

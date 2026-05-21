@@ -42,6 +42,7 @@ import {
   isUriish,
 } from './helpers.js'
 import { LoggerManager, Logger } from './logging.js'
+import { fetchUri } from './http_cache.js'
 import { Compliance } from './compliance.js'
 import { resolveBrowserIncludePath } from './browser/reader.js'
 
@@ -1309,7 +1310,7 @@ export class PreprocessorReader extends Reader {
     if (targetType === 'uri') {
       let uriContent
       try {
-        const response = await fetch(incPath)
+        const response = await fetchUri(incPath, this._document)
         if (!response.ok)
           throw new Error(`HTTP ${response.status} ${response.statusText}`)
         uriContent = await response.text()

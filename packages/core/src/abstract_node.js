@@ -31,6 +31,7 @@ import {
   extname,
   prepareSourceString,
 } from './helpers.js'
+import { fetchUri } from './http_cache.js'
 
 // ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
 // Loaded on first use in Node.js; silently absent in browser/WebWorker environments.
@@ -485,10 +486,7 @@ export class AbstractNode {
           (targetImage = this.normalizeWebPath(targetImage, imagesBase, false)))
       ) {
         return doc.hasAttribute('allow-uri-read')
-          ? this.generateDataUriFromUri(
-              targetImage,
-              doc.hasAttribute('cache-uri')
-            )
+          ? this.generateDataUriFromUri(targetImage)
           : targetImage
       }
       return this.generateDataUri(targetImage, assetDirKey)
@@ -541,10 +539,7 @@ export class AbstractNode {
         )
       : this.normalizeSystemPath(targetImage)
     if (isUriish(imagePath)) {
-      return await this.generateDataUriFromUri(
-        imagePath,
-        this.document.hasAttribute('cache-uri')
-      )
+      return await this.generateDataUriFromUri(imagePath)
     }
     if (await isReadable(imagePath)) {
       const data = await _fsp.readFile(imagePath)
@@ -564,12 +559,12 @@ export class AbstractNode {
    * imageUri, the caller must await the returned Promise.
    *
    * @param {string} imageUri - The URI from which to read the image data (http/https/ftp).
-   * @param {boolean} [cacheUri=false] - A Boolean to control caching (not yet supported in JS).
    * @returns {Promise<string>} a Promise resolving to a String data URI.
    */
-  async generateDataUriFromUri(imageUri, cacheUri = false) {
+  async generateDataUriFromUri(imageUri) {
     try {
-      const response = await fetch(imageUri)
+      const doc = this.document
+      const response = await fetchUri(imageUri, doc)
       if (response.ok) {
         const mimetype = (
           response.headers.get('content-type') || 'application/octet-stream'
@@ -740,7 +735,7 @@ export class AbstractNode {
     ) {
       if (doc.hasAttribute('allow-uri-read')) {
         try {
-          const response = await fetch(resolvedTarget)
+          const response = await fetchUri(resolvedTarget, doc)
           const text = await response.text()
           contents = opts.normalize ? prepareSourceString(text).join(LF) : text
         } catch {
