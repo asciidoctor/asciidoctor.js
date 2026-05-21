@@ -17,7 +17,7 @@ import { convertStringToEmbedded } from './harness.js'
 function makeRegistry(fileMap, captured = []) {
   const registry = Extensions.create()
   registry.includeProcessor(function () {
-    this.process(function (doc, reader, target, attrs) {
+    this.process((doc, reader, target, attrs) => {
       const dir = reader._dir
       captured.push({ target, dir })
       const content = fileMap[target] ?? fileMap['*'] ?? ['']
@@ -58,7 +58,7 @@ describe('UNC include — reader._dir reflects base_dir', () => {
 
     const registry = Extensions.create()
     registry.includeProcessor(function () {
-      this.process(function (doc, reader, target, attrs) {
+      this.process((doc, reader, target, attrs) => {
         const dir = reader._dir
         callCount++
         captured.push({ call: callCount, target, dir })
@@ -111,7 +111,7 @@ describe('UNC include — pushInclude sets a UNC _dir for subsequent includes', 
 
     const registry = Extensions.create()
     registry.includeProcessor(function () {
-      this.process(function (doc, reader, target, attrs) {
+      this.process((doc, reader, target, attrs) => {
         callCount++
         captured.push({ call: callCount, dir: reader._dir, target })
 
@@ -183,7 +183,7 @@ describe('UNC include — document output contains included content', () => {
     let callCount = 0
     const registry = Extensions.create()
     registry.includeProcessor(function () {
-      this.process(function (doc, reader, target, attrs) {
+      this.process((doc, reader, target, attrs) => {
         callCount++
         if (callCount === 1) {
           const file = `${reader._dir}/${target}`
