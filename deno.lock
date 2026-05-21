@@ -5,7 +5,6 @@
     "jsr:@std/internal@^1.0.13": "1.0.13",
     "jsr:@std/testing@*": "1.0.18",
     "npm:@biomejs/biome@^2.4.13": "2.4.15",
-    "npm:@rollup/plugin-commonjs@^28.0.9": "28.0.9_rollup@4.60.4",
     "npm:@rollup/plugin-json@^6.1.0": "6.1.0_rollup@4.60.4",
     "npm:@rollup/plugin-node-resolve@^16.0.3": "16.0.3_rollup@4.60.4",
     "npm:@types/node@^25.6.0": "25.9.0",
@@ -1554,9 +1553,9 @@
       "packages/asciidoctor": {
         "packageJson": {
           "dependencies": [
-            "npm:@asciidoctor/core@4.0.0-alpha.2",
+            "npm:@asciidoctor/core@4.0.0-alpha.3",
             "npm:@biomejs/biome@^2.4.13",
-            "npm:@rollup/plugin-commonjs@^28.0.9",
+            "npm:@rollup/plugin-commonjs@29",
             "npm:@rollup/plugin-node-resolve@^16.0.3",
             "npm:ejs@^3.1.10",
             "npm:handlebars@^4.7.8",
