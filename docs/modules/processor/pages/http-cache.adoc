@@ -1,0 +1,161 @@
+= HTTP Cache
+
+When a document uses the `allow-uri-read` attribute, Asciidoctor.js fetches remote URIs for `include` directives, embedded images, and general content reads.
+By default every URI is fetched from the network on each use.
+The `cache-uri` attribute activates HTTP caching to avoid redundant network requests.
+
+== Activating the cache
+
+Set both `allow-uri-read` and `cache-uri` when converting a document:
+
+[source,js]
+----
+import { convert } from '@asciidoctor/core'
+
+await convert(input, {
+  safe: 'safe',
+  attributes: {
+    'allow-uri-read': '',
+    'cache-uri': '',
+  },
+})
+----
+
+When `cache-uri` is set, Asciidoctor.js creates an ephemeral in-memory cache for the duration of the conversion.
+If the same URI appears multiple times in a document (multiple includes, repeated images), it is fetched from the network only once.
+
+NOTE: The ephemeral cache is discarded when the conversion finishes.
+Each call to `convert` or `load` gets its own independent cache.
+
+== Persistent process-level cache
+
+To share a cache across multiple conversions in the same process, register a `MemoryHttpCache` via `HttpCacheManager` before converting:
+
+[source,js]
+----
+import { convert, MemoryHttpCache, HttpCacheManager } from '@asciidoctor/core'
+
+HttpCacheManager.setCache(new MemoryHttpCache()) // <1>
+
+await convert(firstDocument, {
+  safe: 'safe',
+  attributes: { 'allow-uri-read': '', 'cache-uri': '' },
+})
+
+await convert(secondDocument, { // <2>
+  safe: 'safe',
+  attributes: { 'allow-uri-read': '', 'cache-uri': '' },
+})
+
+HttpCacheManager.setCache(null) // <3>
+----
+<1> Register a process-level cache once at application startup.
+<2> Subsequent conversions reuse the same cache — a URI fetched in the first conversion is served from cache in the second.
+<3> Unregister the cache to revert to the default ephemeral behaviour.
+
+NOTE: `HttpCacheManager.setCache()` is global to the process.
+In a server or batch context, take care to unregister the cache (or register it once at startup and leave it in place) depending on your caching strategy.
+
+== Custom cache
+
+To implement file-system caching, a Redis-backed cache, or any other strategy, extend `HttpCache` and override the `read(uri)` method.
+The method must return a `Promise<Response>` compatible with the https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API[Fetch API].
+
+[source,js]
+----
+import { createHash } from 'node:crypto'
+import { readFile, writeFile, mkdir } from 'node:fs/promises'
+import { join } from 'node:path'
+import { HttpCache, HttpCacheManager } from '@asciidoctor/core'
+
+class FileSystemHttpCache extends HttpCache { // <1>
+  #cacheDir
+
+  constructor(cacheDir) {
+    super()
+    this.#cacheDir = cacheDir
+  }
+
+  async read(uri) {
+    const key = createHash('sha1').update(uri).digest('hex') // <2>
+    const metaPath = join(this.#cacheDir, `${key}.json`)
+    const bodyPath = join(this.#cacheDir, `${key}.bin`)
+
+    try {
+      const meta = JSON.parse(await readFile(metaPath, 'utf8')) // <3>
+      const buffer = await readFile(bodyPath)
+      return new Response(buffer, { status: meta.status, headers: meta.headers })
+    } catch {
+      // cache miss — fetch from network and store
+    }
+
+    const response = await fetch(uri) // <4>
+    if (response.ok) {
+      const buffer = await response.arrayBuffer()
+      const headers = Object.fromEntries(response.headers.entries())
+      await mkdir(this.#cacheDir, { recursive: true })
+      await writeFile(metaPath, JSON.stringify({ status: response.status, headers }))
+      await writeFile(bodyPath, Buffer.from(buffer))
+      return new Response(buffer.slice(0), { status: response.status, headers })
+    }
+    return response
+  }
+}
+
+HttpCacheManager.setCache(new FileSystemHttpCache('./cache')) // <5>
+----
+<1> Extend `HttpCache` and override `read(uri)`.
+<2> Hash the URI to produce a stable, filesystem-safe key.
+<3> On a cache hit, reconstruct the response from stored metadata and body.
+<4> On a cache miss, fetch from the network and persist the result.
+<5> Register the custom cache before any conversions run.
+
+== API reference
+
+=== `HttpCache`
+
+Base class. The default `read(uri)` implementation delegates to `fetch(uri)` with no caching.
+Extend it and override `read(uri)` to implement any caching strategy.
+
+[source,js]
+----
+import { HttpCache } from '@asciidoctor/core'
+
+class MyCache extends HttpCache {
+  async read(uri) {
+    // … return a Response
+  }
+}
+----
+
+=== `MemoryHttpCache`
+
+Built-in in-memory cache. Stores successful responses (HTTP 2xx) as `ArrayBuffer` entries keyed by URI.
+Non-OK responses are never cached and always trigger a new network request.
+
+[source,js]
+----
+import { MemoryHttpCache } from '@asciidoctor/core'
+
+const cache = new MemoryHttpCache()
+----
+
+=== `HttpCacheManager`
+
+Singleton that manages the process-level cache.
+
+[cols="25m,75a"]
+|====
+|Method |Description
+
+|setCache(cache)
+|Register a process-level `HttpCache` instance.
+Pass `null` to unregister and revert to the default ephemeral-per-conversion behaviour.
+
+|getCache()
+|Return the currently registered cache, or `null` if none is set.
+
+|getCacheForDocument(doc)
+|Return the cache to use for a specific document.
+Returns the registered cache if one exists; otherwise creates (or reuses) an ephemeral `MemoryHttpCache` scoped to the document instance.
+|====

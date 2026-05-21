@@ -278,10 +278,9 @@ export abstract class AbstractNode {
      * imageUri, the caller must await the returned Promise.
      *
      * @param {string} imageUri - The URI from which to read the image data (http/https/ftp).
-     * @param {boolean} [cacheUri=false] - A Boolean to control caching (not yet supported in JS).
      * @returns {Promise<string>} a Promise resolving to a String data URI.
      */
-    generateDataUriFromUri(imageUri: string, cacheUri?: boolean): Promise<string>;
+    generateDataUriFromUri(imageUri: string): Promise<string>;
     /**
      * Normalize the asset file or directory to a concrete and rinsed path.
      *

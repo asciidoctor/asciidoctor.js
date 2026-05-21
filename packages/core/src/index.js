@@ -10,6 +10,7 @@ import {
   RevisionInfo,
 } from './document.js'
 import { Logger, LoggerManager, MemoryLogger, NullLogger } from './logging.js'
+import { HttpCache, MemoryHttpCache, HttpCacheManager } from './http_cache.js'
 import { SafeMode, ContentModel } from './constants.js'
 import { Timings } from './timings.js'
 import { AbstractNode } from './abstract_node.js'
@@ -123,6 +124,9 @@ export {
   LoggerManager,
   MemoryLogger,
   NullLogger,
+  HttpCache,
+  MemoryHttpCache,
+  HttpCacheManager,
   SafeMode,
   ContentModel,
   Timings,
