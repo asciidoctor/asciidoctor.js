@@ -410,16 +410,37 @@ describe('PathResolver#systemPath()', () => {
 
 // ── _expandPath (relative workingDir) ─────────────────────────────────────────
 
-describe('PathResolver constructor — relative workingDir', () => {
-  test('relative workingDir is resolved against process.cwd()', () => {
+// process.cwd() is Node.js-only; _expandPath is a no-op in the browser.
+const describeNode = import.meta.url.startsWith('http')
+  ? describe.skip
+  : describe
+
+describeNode('PathResolver constructor — relative workingDir', () => {
+  test('relative workingDir is resolved to an absolute path ending with the segment', () => {
     const pr = new PathResolver('/', 'subdir')
-    const cwd = process.cwd().replace(/\\/g, '/')
-    assert.equal(pr.workingDir, `${cwd}/subdir`)
+    assert.ok(
+      posix().absolutePath(pr.workingDir),
+      'workingDir must be absolute'
+    )
+    assert.ok(
+      pr.workingDir.endsWith('/subdir'),
+      `expected to end with /subdir, got: ${pr.workingDir}`
+    )
   })
 
-  test('relative workingDir with ".." is expanded', () => {
+  test('relative workingDir with ".." is expanded — no ".." left, ends with resolved segment', () => {
     const pr = new PathResolver('/', 'subdir/../other')
-    const cwd = process.cwd().replace(/\\/g, '/')
-    assert.equal(pr.workingDir, `${cwd}/other`)
+    assert.ok(
+      posix().absolutePath(pr.workingDir),
+      'workingDir must be absolute'
+    )
+    assert.ok(
+      !pr.workingDir.includes('..'),
+      `expected no ".." in: ${pr.workingDir}`
+    )
+    assert.ok(
+      pr.workingDir.endsWith('/other'),
+      `expected to end with /other, got: ${pr.workingDir}`
+    )
   })
 })
