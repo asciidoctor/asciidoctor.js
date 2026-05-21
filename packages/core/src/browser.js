@@ -10,6 +10,7 @@ import {
   RevisionInfo,
 } from './document.js'
 import { Logger, LoggerManager, MemoryLogger, NullLogger } from './logging.js'
+import { HttpCache, MemoryHttpCache, HttpCacheManager } from './http_cache.js'
 import { SafeMode, ContentModel } from './constants.js'
 import { Timings } from './timings.js'
 import { AbstractNode } from './abstract_node.js'
@@ -28,9 +29,23 @@ import {
   BlockMacroProcessor,
   Extensions,
 } from './extensions.js'
+// Re-export DSL interface types for TypeScript consumers.
+/**
+ * @typedef {import('./extensions.js').ProcessorDslInterface} ProcessorDslInterface
+ * @typedef {import('./extensions.js').DocumentProcessorDslInterface} DocumentProcessorDslInterface
+ * @typedef {import('./extensions.js').SyntaxProcessorDslInterface} SyntaxProcessorDslInterface
+ * @typedef {import('./extensions.js').IncludeProcessorDslInterface} IncludeProcessorDslInterface
+ * @typedef {import('./extensions.js').DocinfoProcessorDslInterface} DocinfoProcessorDslInterface
+ * @typedef {import('./extensions.js').BlockProcessorDslInterface} BlockProcessorDslInterface
+ * @typedef {import('./extensions.js').MacroProcessorDslInterface} MacroProcessorDslInterface
+ * @typedef {import('./extensions.js').InlineMacroProcessorDslInterface} InlineMacroProcessorDslInterface
+ */
 import {
   Converter,
+  ConverterBase,
+  CustomFactory,
   DefaultFactory as DefaultConverterFactory,
+  deriveBackendTraits,
 } from './converter.js'
 import { Inline } from './inline.js'
 import { Block } from './block.js'
@@ -97,6 +112,9 @@ export {
   LoggerManager,
   MemoryLogger,
   NullLogger,
+  HttpCache,
+  MemoryHttpCache,
+  HttpCacheManager,
   SafeMode,
   ContentModel,
   Timings,
@@ -114,7 +132,10 @@ export {
   Extensions,
   Cursor,
   Converter as ConverterFactory,
+  ConverterBase,
+  CustomFactory as ConverterCustomFactory,
   DefaultConverterFactory,
+  deriveBackendTraits,
   DefaultSyntaxHighlighterFactory,
   Html5Converter,
   SyntaxHighlighter,

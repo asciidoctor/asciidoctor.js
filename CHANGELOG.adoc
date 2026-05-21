@@ -16,6 +16,7 @@ Bug Fixes::
 Improvements::
 
 * Add pluggable HTTP cache system (`HttpCache`, `MemoryHttpCache`, `HttpCacheManager`) activated by the `cache-uri` document attribute, mirroring Ruby's `open-uri/cached` behaviour. When `cache-uri` is set, an ephemeral in-memory cache is used per conversion by default; register a custom `HttpCache` implementation via `HttpCacheManager.setCache()` for persistent or file-system-backed caching.
+* Export `HttpCache`, `MemoryHttpCache`, and `HttpCacheManager` from the browser entry point (`browser.js`), keeping it in sync with `index.js`
 * Align `readSvgContents` with the Ruby reference implementation by delegating entirely to `node.readContents`, removing the manual `isUriish`/`normalizeSystemPath` split
 * Fix `warnIfEmpty` in `AbstractNode#readContents` — the empty-string check now correctly uses `!= null` instead of a truthy guard, so a warning is emitted for empty local SVG assets
 
