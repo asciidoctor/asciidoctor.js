@@ -20,6 +20,6 @@ Key highlights:
 * *No runtime dependencies* — no Opal, no Ruby, no generated bundle
 * *Fast* — native JavaScript execution with no interpreter overhead
 * *Browser and Node.js* — one library, two environments
-* *Node.js >= 24* — requires Node.js 24 (current LTS) or later
+* *Node.js >= 22* — requires Node.js 22 (LTS) or later
 
 Head to the xref:setup:install.adoc[Install guide] to get started.

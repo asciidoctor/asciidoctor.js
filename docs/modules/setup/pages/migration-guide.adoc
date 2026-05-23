@@ -10,7 +10,7 @@ For compatibility, a CommonJS bundle is also provided and the `package.json` exp
 
 == Requirements
 
-* *Node.js >= 24* (current LTS)
+* *Node.js >= 22* (LTS)
 
 == Breaking changes
 
