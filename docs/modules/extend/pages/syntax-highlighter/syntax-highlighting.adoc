@@ -132,7 +132,7 @@ document.querySelectorAll('pre.highlight > code[data-lang]').forEach((el) => {
 Server-side highlighting processes the source at conversion time so the highlighted markup is embedded directly in the output HTML.
 This approach does not require any client-side JavaScript.
 
-Asciidoctor.js does not ship a built-in server-side highlighter, but you can implement one by extending xref:custom-syntax-highlighter.adoc#server-side-highlighting[`SyntaxHighlighterBase`] and overriding `handlesHighlighting()` → `true` and `highlight()`.
+Asciidoctor.js does not ship a built-in server-side highlighter, but you can implement one by extending xref:syntax-highlighter/custom-syntax-highlighter.adoc#server-side-highlighting[`SyntaxHighlighterBase`] and overriding `handlesHighlighting()` → `true` and `highlight()`.
 
 Here is a minimal example using the https://www.npmjs.com/package/highlight.js[`highlight.js`] npm package to highlight at conversion time:
 
@@ -165,4 +165,4 @@ const html = await doc.convert()
 <2> `source` is the raw source text; return the highlighted markup as a plain `string`.
 <3> Register the highlighter under the name used in `source-highlighter`.
 
-See xref:custom-syntax-highlighter.adoc[Custom Syntax Highlighter] for the full API.
+See xref:syntax-highlighter/custom-syntax-highlighter.adoc[Custom Syntax Highlighter] for the full API.

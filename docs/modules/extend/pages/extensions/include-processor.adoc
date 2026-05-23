@@ -19,7 +19,7 @@ Without this option, the raw JSON content is included as-is.
 
 [source,adoc]
 ----
-include::https://raw.githubusercontent.com/org/repo/main/versions.json[as=attributes]
+\include::https://raw.githubusercontent.com/org/repo/main/versions.json[as=attributes]
 
 = Release Notes {version}
 

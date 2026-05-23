@@ -94,7 +94,7 @@ Create a file named `docinfo.html` next to your document and add your `<link>` t
 ----
 +
 This keeps the default stylesheet in place and loads your override stylesheet on top of it.
-See the xref:asciidoc::docinfo.adoc[Docinfo files documentation^] for the full list of naming conventions and placement options.
+See the xref:asciidoc:docinfo:index.adoc[Docinfo files documentation^] for the full list of naming conventions and placement options.
 
 Start from the default stylesheet::
 Copy the {url-asciidoctor-stylesheets}[default stylesheet^] and modify it directly.

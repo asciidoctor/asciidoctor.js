@@ -21,6 +21,7 @@ Override `hasDocinfo()` → `true` and implement `docinfo()`.
 
 Both patterns can also override `format()` to control the `<pre><code>` wrapper.
 
+[#server-side-highlighting]
 == Server-side highlighting
 
 In this pattern, the `highlight()` method receives the raw source text and returns the highlighted markup.

@@ -5,7 +5,7 @@ Walk all paragraph blocks in the parsed document, count the total number of word
 
 == sample-guide-doc.adoc
 
-[source,adoc]
+[source,adoc,subs="-attributes"]
 ----
 = Getting Started Guide
 
