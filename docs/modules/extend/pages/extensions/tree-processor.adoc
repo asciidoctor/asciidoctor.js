@@ -1,11 +1,11 @@
 = Tree Processor Extension Example
 
 Purpose::
-Walk all paragraph blocks in the parsed document, count the total number of words, and set a `reading-time` document attribute (e.g., `2 min`) that authors can reference anywhere in the document with `{reading-time}`.
+Walk all paragraph blocks in the parsed document, count the total number of words, and set a `reading-time` document attribute (e.g., `2 min`) that authors can reference anywhere in the document with `\{reading-time}`.
 
 == sample-guide-doc.adoc
 
-[source,adoc,subs="-attributes"]
+[source,adoc,subs=-attributes]
 ----
 = Getting Started Guide
 
