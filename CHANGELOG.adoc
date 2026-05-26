@@ -10,6 +10,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Improvements::
 
+* Fix 8 TypeDoc warnings about DSL interface types referenced but not included in the documentation — `patch-jsdoc.js` now converts `export type X = import("./extensions.js").X` re-exports in `types/index.d.ts` to `export type { X } from './extensions.js'` so TypeDoc follows the re-export chain and documents the definitions inline
+* Add CLI doc generation and copy step to the `docs` job in `build.yml` so the main-branch docs push (under `/main/`) also includes the CLI API docs under `/main/cli/`, consistent with the release workflow
 * Restore CLI extensibility — `Options` and `Invoker` classes are now exported from `asciidoctor/cli`, allowing third-party tools to extend the CLI by subclassing: add custom options via `Options#addOption()` and override `Invoker#invoke()`, `Invoker#version()`, or `Invoker#convertFiles()` to customize behavior
 * Add JSDoc to the `Options` and `Invoker` classes and generate TypeScript declarations (`types/cli.d.ts`) via `tsc` — the `asciidoctor/cli` export now ships with types
 * Publish CLI API documentation to gh-pages under `/\{version}/cli/` alongside the core API docs, with cross-navigation links between the two sites
