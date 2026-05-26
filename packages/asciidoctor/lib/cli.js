@@ -25,120 +25,127 @@ const FAILURE_LEVELS = {
 
 const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${sep.replace('\\', '\\\\')}]`)
 
-const HELP_TEXT = `asciidoctor [options...] files...
+const HELP_PREAMBLE = `asciidoctor [options...] files...
 Translate the AsciiDoc source file or file(s) into the backend output format (e.g., HTML 5, DocBook 5, etc.)
 By default, the output is written to a file with the basename of the source file and the appropriate extension
 
-Options:
-  -b, --backend <backend>           set output format backend
-  -d, --doctype <doctype>           document type [article, book, manpage, inline]
-  -o, --out-file <file>             output file; use '' or '-' for STDOUT
-  -S, --safe-mode <mode>            safe mode level [unsafe, safe, server, secure]
-  -e, --embedded                    suppress enclosing document structure
-  -s, --no-header-footer            suppress enclosing document structure
-  -n, --section-numbers             auto-number section titles in the HTML backend
-  -B, --base-dir <dir>              base directory containing the document and resources
-  -D, --destination-dir <dir>       destination output directory
-      --failure-level <level>       minimum logging level that triggers non-zero exit code [INFO, WARN, ERROR, FATAL]
-  -q, --quiet                       suppress warnings
-      --trace                       include backtrace information on errors
-  -v, --verbose                     enable verbose mode
-  -t, --timings                     enable timings mode
-  -T, --template-dir <dir>          directory with custom converter templates (repeatable)
-  -E, --template-engine <engine>    template engine to use for custom converter templates
-  -a, --attribute <key[=value]>     document attribute to set (repeatable)
-  -r, --require <library>           require the specified library before executing the processor (repeatable)
-  -V, --version                     display the version and runtime environment
-      --help [syntax]               show this help; show AsciiDoc syntax overview if topic is 'syntax'`
+Options:`
 
-function parseCliArgs(argv) {
-  const args = argv.slice(2)
-  const { values, positionals } = parseArgs({
-    args,
-    allowPositionals: true,
-    strict: false,
-    options: {
-      backend: { type: 'string', short: 'b' },
-      doctype: { type: 'string', short: 'd' },
-      'out-file': { type: 'string', short: 'o' },
-      'safe-mode': { type: 'string', short: 'S' },
-      embedded: { type: 'boolean', short: 'e' },
-      'no-header-footer': { type: 'boolean', short: 's' },
-      'section-numbers': { type: 'boolean', short: 'n' },
-      'base-dir': { type: 'string', short: 'B' },
-      'destination-dir': { type: 'string', short: 'D' },
-      'failure-level': { type: 'string' },
-      quiet: { type: 'boolean', short: 'q' },
-      trace: { type: 'boolean' },
-      verbose: { type: 'boolean', short: 'v' },
-      timings: { type: 'boolean', short: 't' },
-      'template-dir': { type: 'string', short: 'T', multiple: true },
-      'template-engine': { type: 'string', short: 'E' },
-      attribute: { type: 'string', short: 'a', multiple: true },
-      require: { type: 'string', short: 'r', multiple: true },
-      version: { type: 'boolean', short: 'V' },
-      help: { type: 'boolean' },
-    },
-  })
-  return { values, positionals, args }
+const HELP_COLUMN = 36
+
+const BASE_OPTION_DEFINITIONS = {
+  backend: {
+    type: 'string',
+    short: 'b',
+    describe: 'set output format backend',
+    metavar: '<backend>',
+  },
+  doctype: {
+    type: 'string',
+    short: 'd',
+    describe: 'document type [article, book, manpage, inline]',
+    metavar: '<doctype>',
+  },
+  'out-file': {
+    type: 'string',
+    short: 'o',
+    describe: "output file; use '' or '-' for STDOUT",
+    metavar: '<file>',
+  },
+  'safe-mode': {
+    type: 'string',
+    short: 'S',
+    describe: 'safe mode level [unsafe, safe, server, secure]',
+    metavar: '<mode>',
+  },
+  embedded: {
+    type: 'boolean',
+    short: 'e',
+    describe: 'suppress enclosing document structure',
+  },
+  'no-header-footer': {
+    type: 'boolean',
+    short: 's',
+    describe: 'suppress enclosing document structure',
+  },
+  'section-numbers': {
+    type: 'boolean',
+    short: 'n',
+    describe: 'auto-number section titles in the HTML backend',
+  },
+  'base-dir': {
+    type: 'string',
+    short: 'B',
+    describe: 'base directory containing the document and resources',
+    metavar: '<dir>',
+  },
+  'destination-dir': {
+    type: 'string',
+    short: 'D',
+    describe: 'destination output directory',
+    metavar: '<dir>',
+  },
+  'failure-level': {
+    type: 'string',
+    describe:
+      'minimum logging level that triggers non-zero exit code [INFO, WARN, ERROR, FATAL]',
+    metavar: '<level>',
+  },
+  quiet: { type: 'boolean', short: 'q', describe: 'suppress warnings' },
+  trace: {
+    type: 'boolean',
+    describe: 'include backtrace information on errors',
+  },
+  verbose: { type: 'boolean', short: 'v', describe: 'enable verbose mode' },
+  timings: { type: 'boolean', short: 't', describe: 'enable timings mode' },
+  'template-dir': {
+    type: 'string',
+    short: 'T',
+    multiple: true,
+    describe: 'directory with custom converter templates (repeatable)',
+    metavar: '<dir>',
+  },
+  'template-engine': {
+    type: 'string',
+    short: 'E',
+    describe: 'template engine to use for custom converter templates',
+    metavar: '<engine>',
+  },
+  attribute: {
+    type: 'string',
+    short: 'a',
+    multiple: true,
+    describe: 'document attribute to set (repeatable)',
+    metavar: '<key[=value]>',
+  },
+  require: {
+    type: 'string',
+    short: 'r',
+    multiple: true,
+    describe:
+      'require the specified library before executing the processor (repeatable)',
+    metavar: '<library>',
+  },
+  version: {
+    type: 'boolean',
+    short: 'V',
+    describe: 'display the version and runtime environment',
+  },
+  help: {
+    type: 'boolean',
+    describe:
+      "show this help; show AsciiDoc syntax overview if topic is 'syntax'",
+    metavar: '[syntax]',
+  },
 }
 
-function buildOptions(values, extraAttrs = []) {
-  const {
-    backend,
-    doctype,
-    'safe-mode': safeMode,
-    embedded,
-    'no-header-footer': noHeaderFooter,
-    'section-numbers': sectionNumbers,
-    'base-dir': baseDir,
-    'destination-dir': destinationDir,
-    'out-file': outFile,
-    'template-dir': templateDir,
-    'template-engine': templateEngine,
-    quiet,
-    verbose,
-    timings,
-    trace,
-    'failure-level': failureLevelStr = 'FATAL',
-    attribute: cliAttributes,
-  } = values
-
-  const level = failureLevelStr.toUpperCase()
-  const failureLevel = FAILURE_LEVELS[level] ?? FAILURE_LEVELS.FATAL
-
-  const attributes = [...extraAttrs]
-  if (sectionNumbers) attributes.push('sectnums')
-  if (cliAttributes) attributes.push(...cliAttributes)
-
-  const standalone = !(embedded || noHeaderFooter)
-  const verboseMode = quiet ? 0 : verbose ? 2 : 1
-
-  const options = {
-    standalone,
-    safe: safeMode ?? 'unsafe',
-    verbose: verboseMode,
-    timings: timings ?? false,
-    trace: trace ?? false,
-    attributes,
-    mkdirs: true,
-  }
-
-  if (backend) options.backend = backend
-  if (doctype) options.doctype = doctype
-  if (baseDir != null) options.base_dir = baseDir
-  if (destinationDir != null) options.to_dir = destinationDir
-  if (templateDir) options.template_dirs = templateDir
-  if (templateEngine) options.template_engine = templateEngine
-
-  const toStdout = outFile === '' || outFile === "''" || outFile === '-'
-  if (toStdout) {
-    options.to_file = false
-  } else if (outFile !== undefined) {
-    options.to_file = outFile
-  }
-
-  return { options, failureLevel, toStdout }
+function buildHelpLine(key, def) {
+  const shortPart = def.short ? `-${def.short}, ` : '    '
+  const metavar = def.type === 'boolean' ? '' : ` ${def.metavar ?? `<${key}>`}`
+  const keyPart = `--${key}${metavar}`
+  const left = `  ${shortPart}${keyPart}`
+  const padding = Math.max(2, HELP_COLUMN - left.length)
+  return `${left}${' '.repeat(padding)}${def.describe ?? ''}`
 }
 
 function requireLibrary(requirePath, cwd = process.cwd()) {
@@ -153,27 +160,230 @@ function requireLibrary(requirePath, cwd = process.cwd()) {
   return require(requirePath)
 }
 
-function prepareProcessor(values) {
-  const requirePaths = values.require
-  if (!requirePaths) return
-  for (const requirePath of requirePaths) {
-    const lib = requireLibrary(requirePath)
-    if (lib && typeof lib.register === 'function') {
-      lib.register(Extensions)
+export class Options {
+  constructor() {
+    this._definitions = { ...BASE_OPTION_DEFINITIONS }
+    this.argv = null
+    this.values = {}
+    this.positionals = []
+    this.stdin = false
+    this.options = {}
+    this.failureLevel = FAILURE_LEVELS.FATAL
+  }
+
+  addOption(key, opt) {
+    this._definitions[key] = opt
+    return this
+  }
+
+  parse(argv) {
+    this.argv = argv
+    const args = argv.slice(2)
+    const parseArgsOptions = {}
+    for (const [key, def] of Object.entries(this._definitions)) {
+      const entry = { type: def.type }
+      if (def.short) entry.short = def.short
+      if (def.multiple) entry.multiple = def.multiple
+      if (def.default !== undefined) entry.default = def.default
+      parseArgsOptions[key] = entry
     }
+    const { values, positionals } = parseArgs({
+      args,
+      allowPositionals: true,
+      strict: false,
+      options: parseArgsOptions,
+    })
+    this.values = values
+    this.positionals = positionals
+    this.stdin =
+      positionals.includes('-') ||
+      (positionals.length === 0 && args[args.length - 1] === '-')
+    if (this.stdin) {
+      this.values['out-file'] = this.values['out-file'] ?? '-'
+    }
+    const built = this._buildConvertOptions()
+    this.options = built.options
+    this.failureLevel = built.failureLevel
+    return this
+  }
+
+  _buildConvertOptions(extraAttrs = []) {
+    const {
+      backend,
+      doctype,
+      'safe-mode': safeMode,
+      embedded,
+      'no-header-footer': noHeaderFooter,
+      'section-numbers': sectionNumbers,
+      'base-dir': baseDir,
+      'destination-dir': destinationDir,
+      'out-file': outFile,
+      'template-dir': templateDir,
+      'template-engine': templateEngine,
+      quiet,
+      verbose,
+      timings,
+      trace,
+      'failure-level': failureLevelStr = 'FATAL',
+      attribute: cliAttributes,
+    } = this.values
+
+    const level = failureLevelStr.toUpperCase()
+    const failureLevel = FAILURE_LEVELS[level] ?? FAILURE_LEVELS.FATAL
+
+    const attributes = [...extraAttrs]
+    if (sectionNumbers) attributes.push('sectnums')
+    if (cliAttributes) attributes.push(...cliAttributes)
+
+    const standalone = !(embedded || noHeaderFooter)
+    const verboseMode = quiet ? 0 : verbose ? 2 : 1
+
+    const options = {
+      standalone,
+      safe: safeMode ?? 'unsafe',
+      verbose: verboseMode,
+      timings: timings ?? false,
+      trace: trace ?? false,
+      attributes,
+      mkdirs: true,
+    }
+
+    if (backend) options.backend = backend
+    if (doctype) options.doctype = doctype
+    if (baseDir != null) options.base_dir = baseDir
+    if (destinationDir != null) options.to_dir = destinationDir
+    if (templateDir) options.template_dirs = templateDir
+    if (templateEngine) options.template_engine = templateEngine
+
+    const toStdout = outFile === '' || outFile === "''" || outFile === '-'
+    if (toStdout) {
+      options.to_file = false
+    } else if (outFile !== undefined) {
+      options.to_file = outFile
+    }
+
+    return { options, failureLevel }
+  }
+
+  buildHelpText() {
+    const lines = [HELP_PREAMBLE]
+    for (const [key, def] of Object.entries(this._definitions)) {
+      lines.push(buildHelpLine(key, def))
+    }
+    return lines.join('\n')
   }
 }
 
-function getVersion() {
-  const pkg = JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf8')
-  )
-  return `Asciidoctor.js ${_getVersion()} (Asciidoctor ${getCoreVersion()}) [https://asciidoctor.org]
+export class Invoker {
+  constructor(options) {
+    this.options = options
+  }
+
+  async invoke() {
+    const { values, positionals, argv, stdin } = this.options
+    const args = argv.slice(2)
+
+    if (values.version || (values.verbose && args.length === 1)) {
+      this.showVersion()
+      process.exit(0)
+    }
+
+    if (values.help) {
+      this.showHelp(positionals[0])
+      process.exit(0)
+    }
+
+    this._prepareProcessor(values)
+    const { options, failureLevel } = this.options
+
+    const logger = LoggerManager.getLogger()
+    if (values.quiet) logger.setLevel(3)
+    else if (values.verbose) logger.setLevel(0)
+
+    const files = positionals.filter((f) => f !== '-')
+
+    if (stdin) {
+      await this._convertFromStdin(options)
+    } else if (files.length > 0) {
+      await this.convertFiles(files, options, values)
+    } else {
+      this.showHelp()
+      process.exit(0)
+    }
+
+    await this._exit(failureLevel)
+  }
+
+  version() {
+    const pkg = JSON.parse(
+      readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf8')
+    )
+    return `Asciidoctor.js ${_getVersion()} (Asciidoctor ${getCoreVersion()}) [https://asciidoctor.org]
 Runtime Environment (node ${process.version} on ${process.platform})
 CLI version ${pkg.version}`
+  }
+
+  showVersion() {
+    console.log(this.version())
+  }
+
+  showHelp(topic) {
+    if (topic === 'syntax') {
+      console.log(
+        readFileSync(
+          join(import.meta.dirname, '..', 'data', 'reference', 'syntax.adoc'),
+          'utf8'
+        )
+      )
+    } else {
+      console.error(this.options.buildHelpText())
+    }
+  }
+
+  async convertFiles(files, options, values) {
+    for (const file of files) {
+      if (values.verbose) console.log(`converting file ${file}`)
+      if (values.timings) {
+        const timings = Timings.create()
+        const fileOptions = { ...options, timings }
+        const result = await convertFile(file, fileOptions)
+        if (options.to_file === false && typeof result === 'string')
+          process.stdout.write(result)
+        timings.printReport(process.stderr, file)
+      } else {
+        const result = await convertFile(file, options)
+        if (options.to_file === false && typeof result === 'string')
+          process.stdout.write(result)
+      }
+    }
+  }
+
+  _prepareProcessor(values) {
+    const requirePaths = values.require
+    if (!requirePaths) return
+    for (const requirePath of requirePaths) {
+      const lib = requireLibrary(requirePath)
+      if (lib && typeof lib.register === 'function') {
+        lib.register(Extensions)
+      }
+    }
+  }
+
+  async _convertFromStdin(options) {
+    const data = await _readFromStdin()
+    const output = await convert(data, { ...options, to_file: false })
+    process.stdout.write(output)
+  }
+
+  async _exit(failureLevel) {
+    const logger = LoggerManager.getLogger()
+    const maxSeverity = logger.getMaxSeverity()
+    const code = maxSeverity !== null && maxSeverity >= failureLevel ? 1 : 0
+    process.exit(code)
+  }
 }
 
-function readFromStdin() {
+function _readFromStdin() {
   return new Promise((resolve, reject) => {
     let data = ''
     process.stdin.setEncoding('utf8')
@@ -186,72 +396,6 @@ function readFromStdin() {
   })
 }
 
-async function exit(failureLevel) {
-  const logger = LoggerManager.getLogger()
-  const maxSeverity = logger.getMaxSeverity()
-  const code = maxSeverity !== null && maxSeverity >= failureLevel ? 1 : 0
-  process.exit(code)
-}
-
 export async function run(argv = process.argv) {
-  const { values, positionals, args } = parseCliArgs(argv)
-
-  if (values.version || (values.verbose && args.length === 1)) {
-    console.log(getVersion())
-    process.exit(0)
-  }
-
-  if (values.help) {
-    if (positionals[0] === 'syntax') {
-      console.log(
-        readFileSync(
-          join(import.meta.dirname, '..', 'data', 'reference', 'syntax.adoc'),
-          'utf8'
-        )
-      )
-    } else {
-      console.error(HELP_TEXT)
-    }
-    process.exit(0)
-  }
-
-  prepareProcessor(values)
-  const { options, failureLevel, toStdout } = buildOptions(values)
-
-  // Configure logger verbosity
-  const logger = LoggerManager.getLogger()
-  if (values.quiet)
-    logger.setLevel(3) // ERROR
-  else if (values.verbose) logger.setLevel(0) // DEBUG
-
-  const files = positionals.filter((f) => f !== '-')
-  const isStdin =
-    positionals.includes('-') ||
-    (files.length === 0 && args[args.length - 1] === '-')
-
-  if (isStdin) {
-    const data = await readFromStdin()
-    const output = await convert(data, { ...options, to_file: false })
-    process.stdout.write(output)
-  } else if (files.length > 0) {
-    for (const file of files) {
-      if (values.verbose) console.log(`converting file ${file}`)
-      if (values.timings) {
-        const timings = Timings.create()
-        const fileOptions = { ...options, timings }
-        if (toStdout) fileOptions.to_file = false
-        const result = await convertFile(file, fileOptions)
-        if (toStdout && typeof result === 'string') process.stdout.write(result)
-        timings.printReport(process.stderr, file)
-      } else {
-        const result = await convertFile(file, options)
-        if (toStdout && typeof result === 'string') process.stdout.write(result)
-      }
-    }
-  } else {
-    console.error(HELP_TEXT)
-    process.exit(0)
-  }
-
-  await exit(failureLevel)
+  return new Invoker(new Options().parse(argv)).invoke()
 }
