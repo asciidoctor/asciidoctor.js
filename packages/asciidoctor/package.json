@@ -6,7 +6,8 @@
   "main": "index.js",
   "types": "types",
   "exports": {
-    ".": "./index.js"
+    ".": "./index.js",
+    "./cli": "./lib/cli.js"
   },
   "bin": {
     "asciidoctor": "bin/asciidoctor",

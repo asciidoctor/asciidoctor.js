@@ -10,6 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Improvements::
 
+* Restore CLI extensibility — `Options` and `Invoker` classes are now exported from `asciidoctor/cli`, allowing third-party tools to extend the CLI by subclassing: add custom options via `Options#addOption()` and override `Invoker#invoke()`, `Invoker#version()`, or `Invoker#convertFiles()` to customize behavior
 * Lower the minimum required Node.js version from 24 to 22 — the CI matrix now runs tests on Node 22 (all platforms) and Node 24 (Linux) to ensure both versions remain supported
 
 == v4.0.0-alpha.4 (2026-05-21)
