@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.0-alpha.5 (2026-05-26)
+
 Improvements::
 
 * Fix 8 TypeDoc warnings about DSL interface types referenced but not included in the documentation — `patch-jsdoc.js` now converts `export type X = import("./extensions.js").X` re-exports in `types/index.d.ts` to `export type { X } from './extensions.js'` so TypeDoc follows the re-export chain and documents the definitions inline
