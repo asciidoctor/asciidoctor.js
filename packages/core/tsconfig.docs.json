@@ -8,6 +8,9 @@
   "files": ["types/index.d.ts"],
   "typedocOptions": {
     "entryPoints": ["types/index.d.ts"],
-    "out": "build/docs"
+    "out": "build/docs",
+    "navigationLinks": {
+      "CLI": "./cli/"
+    }
   }
 }

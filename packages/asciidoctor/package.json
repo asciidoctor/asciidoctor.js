@@ -36,11 +36,6 @@
     "index.js",
     "types"
   ],
-  "typesVersions": {
-    "*": {
-      "cli": ["types/cli.d.ts"]
-    }
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/asciidoctor/asciidoctor.js.git"
