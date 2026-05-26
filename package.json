@@ -7,7 +7,7 @@
     "packages/asciidoctor"
   ],
   "engines": {
-    "node": ">=22"
+    "node": ">=20"
   },
   "scripts": {
     "test": "npm run test:root && npm run test --workspaces",

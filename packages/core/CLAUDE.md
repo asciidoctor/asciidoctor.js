@@ -2,7 +2,7 @@
 
 ## Overview
 
-This package is a **native JavaScript implementation of Asciidoctor**, converted from the original [Ruby source](https://github.com/asciidoctor/asciidoctor) by Claude. It is a pure ESM library targeting Node.js ≥ 22 with no Opal/Ruby compilation step.
+This package is a **native JavaScript implementation of Asciidoctor**, converted from the original [Ruby source](https://github.com/asciidoctor/asciidoctor) by Claude. It is a pure ESM library targeting Node.js ≥ 20 with no Opal/Ruby compilation step.
 
 This `@asciidoctor/core` package replaces the previous version that relied on Opal (a Ruby-to-JavaScript transpiler) to produce a JS bundle. It is now implemented with handwritten/AI-translated JavaScript modules that follow the same public API.
 
