@@ -27,7 +27,7 @@
     "build:binary": "node tasks/build-sea.js"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=20"
   },
   "files": [
     "bin",
