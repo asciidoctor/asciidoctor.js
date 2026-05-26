@@ -113,7 +113,10 @@ jobs:
         run: |
           npm ci
       - name: Generate API documentation
-        run: npm run docs -w @asciidoctor/core
+        run: |
+          npm run docs -w @asciidoctor/core
+          npm run docs -w asciidoctor
+          cp -r packages/asciidoctor/build/docs packages/core/build/docs/cli
       - name: Publish to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
