@@ -56,7 +56,7 @@ jobs:
       - name: Generate release notes
         run: node tasks/changelog.js ${{ github.ref_name }}
       - name: Download native image artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: native-image-*
           path: packages/asciidoctor/dist
