@@ -27,14 +27,14 @@ export function load(input: string | string[] | Buffer, options?: any): Promise<
  * @returns {Promise<Document>} - the parsed Document
  */
 export function loadFile(filename: string, options?: any): Promise<Document>;
-export type ProcessorDslInterface = import("./extensions.js").ProcessorDslInterface;
-export type DocumentProcessorDslInterface = import("./extensions.js").DocumentProcessorDslInterface;
-export type SyntaxProcessorDslInterface = import("./extensions.js").SyntaxProcessorDslInterface;
-export type IncludeProcessorDslInterface = import("./extensions.js").IncludeProcessorDslInterface;
-export type DocinfoProcessorDslInterface = import("./extensions.js").DocinfoProcessorDslInterface;
-export type BlockProcessorDslInterface = import("./extensions.js").BlockProcessorDslInterface;
-export type MacroProcessorDslInterface = import("./extensions.js").MacroProcessorDslInterface;
-export type InlineMacroProcessorDslInterface = import("./extensions.js").InlineMacroProcessorDslInterface;
+export type { ProcessorDslInterface } from './extensions.js';
+export type { DocumentProcessorDslInterface } from './extensions.js';
+export type { SyntaxProcessorDslInterface } from './extensions.js';
+export type { IncludeProcessorDslInterface } from './extensions.js';
+export type { DocinfoProcessorDslInterface } from './extensions.js';
+export type { BlockProcessorDslInterface } from './extensions.js';
+export type { MacroProcessorDslInterface } from './extensions.js';
+export type { InlineMacroProcessorDslInterface } from './extensions.js';
 import { Document } from './document.js';
 import { convert } from './convert.js';
 import { convertFile } from './convert.js';

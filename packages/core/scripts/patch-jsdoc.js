@@ -182,9 +182,26 @@ function walk(dir) {
 
 walk(typesDir)
 
+// Convert `export type X = import("./Y.js").X;` lines in index.d.ts to
+// `export type { X } from './Y.js';` so TypeDoc follows the re-export chain
+// and includes the definitions in the documentation instead of warning.
+const indexDtsPath = join(typesDir, 'index.d.ts')
+let indexDts = readFileSync(indexDtsPath, 'utf-8')
+const converted = indexDts.replace(
+  /^export type (\w+) = import\("([^"]+)"\)\.(\w+);$/gm,
+  (_, alias, modulePath, original) =>
+    alias === original
+      ? `export type { ${alias} } from '${modulePath}';`
+      : `export type { ${original} as ${alias} } from '${modulePath}';`
+)
+if (converted !== indexDts) {
+  writeFileSync(indexDtsPath, converted, 'utf-8')
+  indexDts = converted
+  console.log('converted import() re-exports to export { } from in index.d.ts')
+}
+
 // Generate index.d.cts for CJS consumers (moduleResolution: Node16 + module: commonjs).
 // Prepend a node reference directive so that Node.js globals (Buffer, etc.) are in scope
 // when TypeScript processes this file outside of a tsconfig that includes @types/node.
-const indexDts = readFileSync(join(typesDir, 'index.d.ts'), 'utf-8')
 writeFileSync(join(typesDir, 'index.d.cts'), '/// <reference types="node" />\n' + indexDts, 'utf-8')
 console.log('generated types/index.d.cts')
