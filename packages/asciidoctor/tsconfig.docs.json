@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "strict": false,
+    "types": ["node"]
+  },
+  "files": ["types/cli.d.ts"],
+  "typedocOptions": {
+    "entryPoints": ["types/cli.d.ts"],
+    "out": "build/docs"
+  }
+}

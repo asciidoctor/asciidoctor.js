@@ -7,7 +7,10 @@
   "types": "types",
   "exports": {
     ".": "./index.js",
-    "./cli": "./lib/cli.js"
+    "./cli": {
+      "types": "./types/cli.d.ts",
+      "default": "./lib/cli.js"
+    }
   },
   "bin": {
     "asciidoctor": "bin/asciidoctor",
@@ -15,6 +18,8 @@
   },
   "scripts": {
     "test": "node --test test/cli.test.js",
+    "build:types": "tsc",
+    "docs": "typedoc --tsconfig tsconfig.docs.json",
     "test:deno": "deno test --allow-env --no-check --allow-read --allow-sys --allow-write --allow-run --allow-net test/cli.test.js",
     "lint": "biome lint bin lib tasks index.js rollup.config.js",
     "format": "biome format --write bin lib tasks index.js rollup.config.js",
@@ -31,6 +36,11 @@
     "index.js",
     "types"
   ],
+  "typesVersions": {
+    "*": {
+      "cli": ["types/cli.d.ts"]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/asciidoctor/asciidoctor.js.git"
