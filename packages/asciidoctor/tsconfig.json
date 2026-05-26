@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "checkJs": false,
+    "outDir": "types",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "rootDir": "lib",
+    "strict": false,
+    "skipLibCheck": true,
+    "stripInternal": true,
+    "noEmitOnError": false,
+    "lib": ["ES2022"]
+  },
+  "include": ["lib/cli.js"]
+}

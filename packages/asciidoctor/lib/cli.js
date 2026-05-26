@@ -160,22 +160,61 @@ function requireLibrary(requirePath, cwd = process.cwd()) {
   return require(requirePath)
 }
 
+/**
+ * Definition of a CLI option used by {@link Options#addOption}.
+ *
+ * @typedef {Object} OptionDefinition
+ * @property {'string'|'boolean'} type - the value type of the option
+ * @property {string} [short] - single character short alias (without -)
+ * @property {boolean} [multiple] - whether the option can be repeated
+ * @property {string|boolean} [default] - default value when the option is absent
+ * @property {string} [describe] - description shown in --help output
+ * @property {string} [metavar] - value placeholder shown in --help for string options (e.g. `<theme>`)
+ */
+
+/**
+ * Parses command-line arguments and builds Asciidoctor convert options.
+ * Extend this class to add custom options via {@link Options#addOption}.
+ */
 export class Options {
   constructor() {
+    /** @internal */
     this._definitions = { ...BASE_OPTION_DEFINITIONS }
+    /** @type {string[]|null} */
     this.argv = null
+    /** @type {Record<string, unknown>} */
     this.values = {}
+    /** @type {string[]} */
     this.positionals = []
+    /** @type {boolean} */
     this.stdin = false
+    /** @type {Object} */
     this.options = {}
+    /** @type {number} */
     this.failureLevel = FAILURE_LEVELS.FATAL
   }
 
+  /**
+   * Register a custom CLI option.
+   * Call this in your subclass constructor before invoking {@link Options#parse}.
+   *
+   * @param {string} key - the long option name (without --)
+   * @param {OptionDefinition} opt - the option definition
+   * @returns {this}
+   */
   addOption(key, opt) {
     this._definitions[key] = opt
     return this
   }
 
+  /**
+   * Parse the command-line arguments.
+   * Populates {@link Options#values}, {@link Options#positionals}, {@link Options#stdin},
+   * {@link Options#options}, and {@link Options#failureLevel}.
+   *
+   * @param {string[]} argv - the process arguments (typically `process.argv`)
+   * @returns {this}
+   */
   parse(argv) {
     this.argv = argv
     const args = argv.slice(2)
@@ -207,6 +246,7 @@ export class Options {
     return this
   }
 
+  /** @internal */
   _buildConvertOptions(extraAttrs = []) {
     const {
       backend,
@@ -265,6 +305,11 @@ export class Options {
     return { options, failureLevel }
   }
 
+  /**
+   * Build the help text from all registered option definitions.
+   *
+   * @returns {string}
+   */
   buildHelpText() {
     const lines = [HELP_PREAMBLE]
     for (const [key, def] of Object.entries(this._definitions)) {
@@ -274,11 +319,23 @@ export class Options {
   }
 }
 
+/**
+ * Executes the CLI after options have been parsed.
+ * Extend this class to customize the conversion workflow.
+ */
 export class Invoker {
+  /**
+   * @param {Options} options - the parsed options instance
+   */
   constructor(options) {
     this.options = options
   }
 
+  /**
+   * Run the CLI: handle `--version`, `--help`, stdin, and file conversion.
+   *
+   * @returns {Promise<void>}
+   */
   async invoke() {
     const { values, positionals, argv, stdin } = this.options
     const args = argv.slice(2)
@@ -314,6 +371,12 @@ export class Invoker {
     await this._exit(failureLevel)
   }
 
+  /**
+   * Return the version string printed by `--version`.
+   * Override to prepend your tool's own version.
+   *
+   * @returns {string}
+   */
   version() {
     const pkg = JSON.parse(
       readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf8')
@@ -323,10 +386,18 @@ Runtime Environment (node ${process.version} on ${process.platform})
 CLI version ${pkg.version}`
   }
 
+  /**
+   * Print the version string to stdout.
+   */
   showVersion() {
     console.log(this.version())
   }
 
+  /**
+   * Print help to stderr, or the AsciiDoc syntax reference if `topic` is `'syntax'`.
+   *
+   * @param {string} [topic]
+   */
   showHelp(topic) {
     if (topic === 'syntax') {
       console.log(
@@ -340,6 +411,15 @@ CLI version ${pkg.version}`
     }
   }
 
+  /**
+   * Convert the given files.
+   * Override this method to implement custom conversion logic (e.g. PDF generation).
+   *
+   * @param {string[]} files - input files to convert
+   * @param {Object} options - Asciidoctor convert options built from the CLI flags
+   * @param {Record<string, unknown>} values - all parsed CLI values, including custom options
+   * @returns {Promise<void>}
+   */
   async convertFiles(files, options, values) {
     for (const file of files) {
       if (values.verbose) console.log(`converting file ${file}`)
@@ -358,6 +438,7 @@ CLI version ${pkg.version}`
     }
   }
 
+  /** @internal */
   _prepareProcessor(values) {
     const requirePaths = values.require
     if (!requirePaths) return
@@ -369,12 +450,14 @@ CLI version ${pkg.version}`
     }
   }
 
+  /** @internal */
   async _convertFromStdin(options) {
     const data = await _readFromStdin()
     const output = await convert(data, { ...options, to_file: false })
     process.stdout.write(output)
   }
 
+  /** @internal */
   async _exit(failureLevel) {
     const logger = LoggerManager.getLogger()
     const maxSeverity = logger.getMaxSeverity()
@@ -396,6 +479,13 @@ function _readFromStdin() {
   })
 }
 
+/**
+ * Run the CLI.
+ * Equivalent to `new Invoker(new Options().parse(argv)).invoke()`.
+ *
+ * @param {string[]} [argv=process.argv]
+ * @returns {Promise<void>}
+ */
 export async function run(argv = process.argv) {
   return new Invoker(new Options().parse(argv)).invoke()
 }
