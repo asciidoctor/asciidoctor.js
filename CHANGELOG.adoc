@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Bug Fixes::
+
+* Fix named exports from `asciidoctor` package — remove the redundant `export { default } from '@asciidoctor/core'` line in `index.js` that was shadowing named exports and preventing `import { Document, ... } from 'asciidoctor'` from resolving correctly
+
 == v4.0.0-alpha.5 (2026-05-26)
 
 Improvements::
