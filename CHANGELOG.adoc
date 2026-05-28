@@ -14,6 +14,7 @@ Build::
 
 Bug Fixes::
 
+* Fix `findBy` throwing `TypeError: Receiver must be an instance of class AbstractBlock` when traversing a document that contains a description list (`dlist`) — `Array.flat()` (depth 1) was leaving the inner terms arrays unflattened, so iterating over them passed a plain array instead of a `ListItem` to the private `#findByInternal` method; changed to `flat(Infinity)` to match Ruby's `Array#flatten` behaviour
 * Fix named exports from `asciidoctor` package — remove the redundant `export { default } from '@asciidoctor/core'` line in `index.js` that was shadowing named exports and preventing `import { Document, ... } from 'asciidoctor'` from resolving correctly
 
 == v4.0.0-alpha.5 (2026-05-26)

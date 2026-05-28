@@ -66,6 +66,24 @@ describe('Block', () => {
       )
       assert.equal(matches.length, 1)
     })
+
+    test('findBy traverses dlist items without throwing', async () => {
+      const doc = await documentFromString(
+        '[horizontal.contact]\ng+:: plus.google.com/1234567890\ntwitter:: @yourhandle'
+      )
+      // must not throw "Receiver must be an instance of class AbstractBlock"
+      const results = doc.findBy({ context: 'image', role: 'canvas' })
+      assert.equal(results.length, 0)
+    })
+
+    test('findBy traverses dlist and finds matching blocks inside descriptions', async () => {
+      const doc = await documentFromString(
+        'term1:: description one\nterm2:: description two'
+      )
+      const items = doc.findBy({ context: 'list_item' })
+      // 2 terms + 2 descriptions
+      assert.equal(items.length, 4)
+    })
   })
 
   describe('toString()', () => {

@@ -626,7 +626,7 @@ export class AbstractBlock extends AbstractNode {
       if (anyContext || contextSelector !== 'section') {
         // optimisation
         // NOTE dlist items can be null
-        for (const b of this.blocks.flat()) {
+        for (const b of this.blocks.flat(Infinity)) {
           if (b) b.#findByInternal(selector, result, filter)
         }
       }
