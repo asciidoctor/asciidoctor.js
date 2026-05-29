@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Build::
+
+* Bump `playwright` from 1.59.1 to 1.60.0 and `@vitest/browser`, `@vitest/browser-playwright`, `@vitest/ui` from 4.1.4 to 4.1.7
+
 Bug Fixes::
 
 * Fix named exports from `asciidoctor` package — remove the redundant `export { default } from '@asciidoctor/core'` line in `index.js` that was shadowing named exports and preventing `import { Document, ... } from 'asciidoctor'` from resolving correctly
