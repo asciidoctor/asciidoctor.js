@@ -14,6 +14,7 @@ Build::
 
 Bug Fixes::
 
+* Fix escaped include directive (`\include::file.adoc[]`) inside a listing block in an AsciiDoc table cell logging a spurious "include file not found" error — nested documents now use a plain `Reader` (no include/conditional processing) matching Ruby Asciidoctor behaviour; the first-line preprocessor directive expansion is handled explicitly as Ruby does
 * Fix `findBy` throwing `TypeError: Receiver must be an instance of class AbstractBlock` when traversing a document that contains a description list (`dlist`) — `Array.flat()` (depth 1) was leaving the inner terms arrays unflattened, so iterating over them passed a plain array instead of a `ListItem` to the private `#findByInternal` method; changed to `flat(Infinity)` to match Ruby's `Array#flatten` behaviour
 * Fix named exports from `asciidoctor` package — remove the redundant `export { default } from '@asciidoctor/core'` line in `index.js` that was shadowing named exports and preventing `import { Document, ... } from 'asciidoctor'` from resolving correctly
 

@@ -14,6 +14,7 @@ import { Inline } from './inline.js'
 import { applyLogging } from './logging.js'
 import { LF, ATTR_REF_HEAD, BASIC_SUBS, NORMAL_SUBS } from './constants.js'
 import { BlankLineRx, LeadingInlineAnchorRx } from './rx.js'
+import { PreprocessorReader } from './reader.js'
 
 /**
  * Truncate a float to `precision` decimal places (like Ruby's Float#truncate).
@@ -474,6 +475,25 @@ class Cell extends AbstractBlock {
     if (cell._innerDocSetup) {
       const { lines, parentDoc, parentDoctitle, options } = cell._innerDocSetup
       cell._innerDocSetup = null
+      // If the first line may be a preprocessor directive (include, ifdef…), expand it using a
+      // temporary PreprocessorReader — matching the Ruby behaviour in table.rb.
+      if (lines.length > 0 && lines[0].includes('::')) {
+        const firstLine = lines[0]
+        const tmpReader = new PreprocessorReader(
+          parentDoc,
+          [firstLine],
+          options.cursor
+        )
+        const preprocessedLines = await tmpReader.readLines()
+        if (
+          !(
+            preprocessedLines.length === 1 && preprocessedLines[0] === firstLine
+          )
+        ) {
+          lines.shift()
+          if (preprocessedLines.length > 0) lines.unshift(...preprocessedLines)
+        }
+      }
       const innerDoc = await parentDoc.constructor.create(lines, options)
       if (parentDoctitle) parentDoc.attributes.doctitle = parentDoctitle
       cell._innerDocument = innerDoc

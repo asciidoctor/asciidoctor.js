@@ -34,7 +34,7 @@ import { XmlSanitizeRx, AttributeEntryPassMacroRx } from './rx.js'
 import { LF } from './constants.js'
 import { applyLogging } from './logging.js'
 import { SyntaxHighlighter, DefaultFactoryProxy } from './syntax_highlighter.js'
-import { PreprocessorReader, Cursor } from './reader.js'
+import { Reader, PreprocessorReader, Cursor } from './reader.js'
 import { Parser } from './parser.js'
 import { Extensions, Registry } from './extensions.js'
 
@@ -483,8 +483,8 @@ export class Document extends AbstractBlock {
       if ((this.doctype = attrs.doctype = parentDoctype) !== DEFAULT_DOCTYPE) {
         this._updateDoctypeAttributes(DEFAULT_DOCTYPE)
       }
-      // Set up reader only — parsing is deferred to Document.create() / doc.parse().
-      this.reader = new PreprocessorReader(this, data, options.cursor)
+      // Nested documents use a plain Reader (no include/conditional processing), matching Ruby behaviour.
+      this.reader = new Reader(data, options.cursor, { document: this })
       if (this.sourcemap) this.sourceLocation = this.reader.cursor
     } else {
       this.backend = null
