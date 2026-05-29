@@ -489,7 +489,7 @@ export namespace Document {
 import { Footnote } from './footnote.js';
 import { AttributeEntry } from './attribute_entry.js';
 import { AbstractBlock } from './abstract_block.js';
-import type { Reader } from './reader.js';
+import { Reader } from './reader.js';
 import { Section } from './section.js';
 import { Inline } from './inline.js';
 export { Footnote, AttributeEntry };

@@ -395,6 +395,31 @@ a|include::fixtures/include-file.adoc[]
       )
     })
 
+    test('escaped include directive in a listing block inside an AsciiDoc table cell should not be processed', async () => {
+      const input = `|===
+a|
+[source,asciidoc]
+----
+\\include::intro.adoc[]
+----
+|===`
+      await usingMemoryLogger(async (logger) => {
+        const output = await convertStringToEmbedded(input, {
+          safe: 'unsafe',
+          base_dir: '/tmp',
+        })
+        assert.ok(
+          output.includes('include::intro.adoc[]'),
+          `Expected escaped include as literal text in output, got:\n${output}`
+        )
+        assert.strictEqual(
+          logger.messages.length,
+          0,
+          `Expected no log messages, got: ${JSON.stringify(logger.messages)}`
+        )
+      })
+    })
+
     test('cross reference link in an AsciiDoc table cell should resolve to reference in main document', async () => {
       const input = `== Some
 
