@@ -1284,8 +1284,8 @@ export class Parser {
           const admStyle = attributes.style ?? blockContext
           attributes.name = admStyle.toLowerCase()
           attributes.textlabel =
-            (attributes.caption && delete attributes.caption) ??
-            docAttrs[`${attributes.name}-caption`]
+            attributes.caption ?? docAttrs[`${attributes.name}-caption`]
+          delete attributes.caption
           block = await Parser.buildBlock(
             blockContext,
             'compound',
