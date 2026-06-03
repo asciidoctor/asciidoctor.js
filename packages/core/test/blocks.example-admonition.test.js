@@ -383,6 +383,44 @@ TIP: Override the caption of an admonition block using an attribute entry
       )
     })
 
+    test('caption attribute on delimited admonition block should be used as textlabel', async () => {
+      const input = `\
+[TIP, caption='ProTip(TM)']
+====
+Use includes.
+====
+`
+
+      const doc = await documentFromString(input)
+      const block = doc.getBlocks()[0]
+      assert.equal(block.getAttribute('textlabel'), 'ProTip&#8482;')
+      assert.equal(block.getAttribute('caption'), null)
+      const output = await convertStringToEmbedded(input)
+      assertXpath(
+        output,
+        '/*[@class="admonitionblock tip"]//*[@class="icon"]/*[@class="title"][text()="ProTip™"]',
+        1
+      )
+    })
+
+    test('caption attribute on delimited admonition block should be used as icon title with font icons', async () => {
+      const input = `\
+[TIP, caption='ProTip(TM)']
+====
+Use includes.
+====
+`
+
+      const output = await convertStringToEmbedded(input, {
+        attributes: { icons: 'font' },
+      })
+      assertXpath(
+        output,
+        '/*[@class="admonitionblock tip"]//*[@class="icon"]/i[@title="ProTip™"]',
+        1
+      )
+    })
+
     test('can override caption of admonition block using document attribute', async () => {
       const input = `\
 :tip-caption: Pro Tip
