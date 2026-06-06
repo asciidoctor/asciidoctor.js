@@ -1102,22 +1102,48 @@ export class ProcessorExtension extends Extension {
     super(kind, instance, instance.config)
     this.processMethod =
       processMethod || ((...args) => instance.process(...args))
+    /** @internal */
+    this._direct = false
   }
 }
 
 // ── Group ─────────────────────────────────────────────────────────────────────
 
 /**
- * A Group registers one or more extensions with a Registry.
+ * A Group bundles one or more extension registrations that are re-executed on
+ * every document conversion, making the registry safe to reuse.
  *
- * Subclass Group and pass the subclass to Extensions.register(), or call
- * the static register() method directly.
+ * Subclass Group, override {@link Group#activate}, and either call
+ * {@link Group.register} to add it globally or pass the subclass to
+ * {@link Extensions.create} / {@link Extensions.register}.
+ *
+ * @example
+ * class MyGroup extends Group {
+ *   activate (registry) {
+ *     registry.preprocessor(MyPreprocessor)
+ *   }
+ * }
+ * MyGroup.register()
  */
 export class Group {
+  /**
+   * Register this Group class globally under the given name.
+   *
+   * Equivalent to calling `Extensions.register(name, this)`.
+   *
+   * @param {string|null} [name] - Optional name for the group.
+   */
   static register(name = null) {
     Extensions.register(name, this)
   }
 
+  /**
+   * Called by {@link Registry#activate} on every document conversion.
+   *
+   * Override this method to register extensions with the provided registry.
+   *
+   * @param {Registry} _registry - The registry to register extensions with.
+   */
   activate(_registry) {
     throw new Error(
       `${this.constructor.name} must implement the activate method`
@@ -1150,32 +1176,23 @@ const SYNTAX_PROCESSOR_CLASSES = {
  * methods for registering or defining a processor and looks up extensions
  * stored in the registry during parsing.
  *
- * **Registry reuse across conversions**
+ * A registry can be reused across multiple conversions. Extensions registered
+ * via a group block (passed to {@link Extensions.create} or
+ * {@link Extensions.register}) are re-executed on every activation. Extensions
+ * registered directly on the registry instance (e.g. `registry.preprocessor(fn)`)
+ * are preserved across activations.
  *
- * A registry *can* be reused across multiple conversions, but only when extensions
- * are registered via a group block (passed to {@link Extensions.create} or
- * {@link Extensions.register}). Group blocks are stored in `groups` and survive
- * the internal reset that happens on each activation.
- *
- * Extensions registered *directly* on the registry instance (e.g.
- * `registry.preprocessor(fn)` called outside a group block) are stored in
- * transient internal state that is cleared on every activation. They will be
- * silently lost from the second conversion onwards.
- *
- * Use the group-block form for reusable registries:
- * @example <caption>Safe — group block survives reset</caption>
+ * @example
  * const registry = Extensions.create('my-ext', function () {
  *   this.preprocessor(function () { ... })
  * })
  * // registry can be passed to multiple conversions safely
- *
- * @example <caption>Unsafe — direct registration is lost on reuse</caption>
- * const registry = Extensions.create()
- * registry.preprocessor(function () { ... }) // lost after 1st conversion!
  */
 export class Registry {
   constructor(groups = {}) {
     this.groups = groups
+    /** @internal */
+    this._activating = false
     this._reset()
   }
 
@@ -1192,18 +1209,26 @@ export class Registry {
       ...Object.values(Extensions.groups()),
       ...Object.values(this.groups),
     ]
-    for (const group of extGroups) {
-      if (typeof group === 'function') {
-        // Check if it is a class (constructor) with an activate prototype method.
-        if (group.prototype && typeof group.prototype.activate === 'function') {
-          new group().activate(this)
-        } else {
-          // Plain function — call in the context of this registry (like instance_exec).
-          group.length === 0 ? group.call(this) : group(this)
+    this._activating = true
+    try {
+      for (const group of extGroups) {
+        if (typeof group === 'function') {
+          // Check if it is a class (constructor) with an activate prototype method.
+          if (
+            group.prototype &&
+            typeof group.prototype.activate === 'function'
+          ) {
+            new group().activate(this)
+          } else {
+            // Plain function — call in the context of this registry (like instance_exec).
+            group.length === 0 ? group.call(this) : group(this)
+          }
+        } else if (group && typeof group.activate === 'function') {
+          group.activate(this)
         }
-      } else if (group && typeof group.activate === 'function') {
-        group.activate(this)
       }
+    } finally {
+      this._activating = false
     }
     return this
   }
@@ -1779,6 +1804,7 @@ export class Registry {
     }
 
     const extension = new ProcessorExtension(kind, processorInstance)
+    extension._direct = !this._activating
     extension.config.position === '>>'
       ? store.unshift(extension)
       : store.push(extension)
@@ -1850,27 +1876,44 @@ export class Registry {
     }
 
     store[name] = new ProcessorExtension(kind, processorInstance)
+    store[name]._direct = !this._activating
     return store[name]
   }
 
   /** @internal */
   _reset() {
+    // Keep extensions registered directly (outside a group); only clear group-registered ones.
+    // Extensions tagged with _direct=true survive across activations.
+    const keepArr = (arr) => {
+      const kept = arr?.filter((e) => e._direct) ?? []
+      return kept.length ? kept : null
+    }
+    const keepMap = (map) => {
+      if (!map) return null
+      const kept = Object.create(null)
+      for (const [k, v] of Object.entries(map)) if (v._direct) kept[k] = v
+      return Object.keys(kept).length ? kept : null
+    }
     /** @internal */
-    this._preprocessor_extensions = null
+    this._preprocessor_extensions = keepArr(this._preprocessor_extensions)
     /** @internal */
-    this._tree_processor_extensions = null
+    this._tree_processor_extensions = keepArr(this._tree_processor_extensions)
     /** @internal */
-    this._postprocessor_extensions = null
+    this._postprocessor_extensions = keepArr(this._postprocessor_extensions)
     /** @internal */
-    this._include_processor_extensions = null
+    this._include_processor_extensions = keepArr(
+      this._include_processor_extensions
+    )
     /** @internal */
-    this._docinfo_processor_extensions = null
+    this._docinfo_processor_extensions = keepArr(
+      this._docinfo_processor_extensions
+    )
     /** @internal */
-    this._block_extensions = null
+    this._block_extensions = keepMap(this._block_extensions)
     /** @internal */
-    this._block_macro_extensions = null
+    this._block_macro_extensions = keepMap(this._block_macro_extensions)
     /** @internal */
-    this._inline_macro_extensions = null
+    this._inline_macro_extensions = keepMap(this._inline_macro_extensions)
     this.document = null
   }
 
