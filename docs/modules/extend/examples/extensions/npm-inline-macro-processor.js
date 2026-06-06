@@ -1,4 +1,4 @@
-export default function (registry) {
+export function register(registry) {
   registry.inlineMacro('npm', function () {
     this.process(function (parent, target, attrs) {
       const version = attrs.version ? `@${attrs.version}` : ''

@@ -97,6 +97,51 @@ describe('CLI smoke tests', () => {
   })
 })
 
+const POSTPROCESSOR_EXTENSION = join(__dirname, 'fixtures', 'postprocessor-extension.js')
+
+describe('--extension option', () => {
+  test('--extension loads and registers the extension', () => {
+    const result = cli(['--extension', POSTPROCESSOR_EXTENSION, '-'], {
+      input: '= Hello\n\nParagraph.',
+    })
+    assert.equal(result.status, 0)
+    assert.match(result.stdout, /<!-- postprocessor-extension -->/)
+  })
+
+  test('--require does not call the register export', () => {
+    const result = cli(['--require', POSTPROCESSOR_EXTENSION, '-'], {
+      input: '= Hello\n\nParagraph.',
+    })
+    assert.equal(result.status, 0)
+    assert.doesNotMatch(result.stdout, /<!-- postprocessor-extension -->/)
+  })
+
+  test('--extension applies to all input files', () => {
+    const tmpDir = mkdtempSync(join(tmpdir(), 'asciidoctor-test-'))
+    try {
+      const fileA = join(tmpDir, 'a.adoc')
+      const fileB = join(tmpDir, 'b.adoc')
+      writeFileSync(fileA, '= Doc A\n\nFirst.')
+      writeFileSync(fileB, '= Doc B\n\nSecond.')
+      const result = cli(['--extension', POSTPROCESSOR_EXTENSION, '-D', tmpDir, fileA, fileB])
+      assert.equal(result.status, 0)
+      assert.match(readFileSync(join(tmpDir, 'a.html'), 'utf8'), /<!-- postprocessor-extension -->/)
+      assert.match(readFileSync(join(tmpDir, 'b.html'), 'utf8'), /<!-- postprocessor-extension -->/)
+    } finally {
+      rmSync(tmpDir, { recursive: true })
+    }
+  })
+
+  test('--extension can be repeated to load multiple extensions', () => {
+    const result = cli(
+      ['--extension', POSTPROCESSOR_EXTENSION, '--extension', POSTPROCESSOR_EXTENSION, '-'],
+      { input: '= Hello\n\nParagraph.' }
+    )
+    assert.equal(result.status, 0)
+    assert.match(result.stdout, /<!-- postprocessor-extension -->/)
+  })
+})
+
 const EXTENDED_CLI = join(__dirname, 'fixtures', 'extended-cli.js')
 
 function extendedCli(args, opts = {}) {

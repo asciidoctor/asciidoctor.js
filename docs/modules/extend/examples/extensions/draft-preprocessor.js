@@ -1,4 +1,4 @@
-export default function (registry) {
+export function register(registry) {
   registry.preprocessor(function () {
     this.process(function (doc, reader) {
       const isDraft = reader.lines.some(l => /^\/\/\s*draft:/i.test(l))

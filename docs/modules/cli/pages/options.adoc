@@ -60,8 +60,16 @@ This option may be specified more than once.
   If _OUT_FILE_ is _-_ then the standard output is also used.
   If specified, the file is resolved relative to the working directory.
 
+*--extension*=_EXTENSION_::
+  Require the specified extension file and register it before executing the processor.
+  The file must export a `register(registry)` function.
+  See xref:extend:extensions/register.adoc#cli[Use extensions with the CLI] for details.
+  This option may be specified more than once.
+
 *-r, --require*=_LIBRARY_::
   Require the specified library before executing the processor, using the standard Node `require`.
+  Use this option to load libraries that configure themselves as a side effect (e.g., syntax highlighter plugins, polyfills).
+  For Asciidoctor extensions, prefer `--extension`, which handles registration automatically.
   This option may be specified more than once.
 
 *-s, --no-header-footer*::

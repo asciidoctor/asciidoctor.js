@@ -1,4 +1,4 @@
-export default function (registry) {
+export function register(registry) {
   registry.blockMacro(function () {
     this.named('gist')
     this.process(function (parent, target, attrs) {

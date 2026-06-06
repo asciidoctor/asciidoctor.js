@@ -29,15 +29,21 @@ include::example$extensions/gist-block-macro.js[]
 
 == Usage
 
+=== API
+
 [source,js]
 ----
 import { Extensions, convert } from '@asciidoctor/core'
-import registerGistBlockMacro from './gist-block-macro.js'
+import { register } from './gist-block-macro.js'
 
 const registry = Extensions.create()
-registerGistBlockMacro(registry)
+register(registry)
 
 const html = await convert('gist::mojombo/4ae3f9bc20c6b67e06a7[]', { extension_registry: registry })
 console.log(html)
 // <script src="https://gist.github.com/mojombo/4ae3f9bc20c6b67e06a7.js"></script>
 ----
+
+=== CLI
+
+ $ asciidoctor --extension ./gist-block-macro.js sample-gist-doc.adoc

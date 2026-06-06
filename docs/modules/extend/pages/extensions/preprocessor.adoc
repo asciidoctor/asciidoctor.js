@@ -26,16 +26,22 @@ include::example$extensions/draft-preprocessor.js[]
 
 == Usage
 
+=== API
+
 [source,js]
 ----
 import { Extensions, loadFile } from '@asciidoctor/core'
-import registerDraftPreprocessor from './draft-preprocessor.js'
+import { register } from './draft-preprocessor.js'
 
 const registry = Extensions.create()
-registerDraftPreprocessor(registry)
+register(registry)
 
 const doc = await loadFile('sample-release-notes.adoc', { extension_registry: registry })
 console.log(doc.getAttribute('status')) // 'DRAFT'
 const html = await doc.convert()
 // The rendered document starts with a WARNING admonition block
 ----
+
+=== CLI
+
+ $ asciidoctor --extension ./draft-preprocessor.js sample-release-notes.adoc

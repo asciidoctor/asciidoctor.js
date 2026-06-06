@@ -29,13 +29,15 @@ include::example$extensions/copy-button-postprocessor.js[]
 
 == Usage
 
+=== API
+
 [source,js]
 ----
 import { Extensions, convertFile } from '@asciidoctor/core'
-import registerCopyButtonPostprocessor from './copy-button-postprocessor.js'
+import { register } from './copy-button-postprocessor.js'
 
 const registry = Extensions.create()
-registerCopyButtonPostprocessor(registry)
+register(registry)
 
 const html = await convertFile('sample-api-doc.adoc', { to_file: false, extension_registry: registry })
 // Every <pre> element is now wrapped with a copy button:
@@ -44,3 +46,7 @@ const html = await convertFile('sample-api-doc.adoc', { to_file: false, extensio
 // <pre class="highlight"><code ...>curl ...</code></pre>
 // </div>
 ----
+
+=== CLI
+
+ $ asciidoctor --extension ./copy-button-postprocessor.js sample-api-doc.adoc

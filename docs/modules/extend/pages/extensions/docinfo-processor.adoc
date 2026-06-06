@@ -27,13 +27,15 @@ include::example$extensions/open-graph-docinfo-processor.js[]
 
 == Usage
 
+=== API
+
 [source,js]
 ----
 import { Extensions, convertFile } from '@asciidoctor/core'
-import registerOpenGraphDocinfoProcessor from './open-graph-docinfo-processor.js'
+import { register } from './open-graph-docinfo-processor.js'
 
 const registry = Extensions.create()
-registerOpenGraphDocinfoProcessor(registry)
+register(registry)
 
 await convertFile('sample-article-doc.adoc', { to_file: false, extension_registry: registry })
 // The <head> now contains:
@@ -41,3 +43,7 @@ await convertFile('sample-article-doc.adoc', { to_file: false, extension_registr
 // <meta property="og:description" content="Learn how to convert AsciiDoc documents to HTML using Asciidoctor.js.">
 // <meta property="og:image" content="https://example.com/images/asciidoctorjs-preview.png">
 ----
+
+=== CLI
+
+ $ asciidoctor --extension ./open-graph-docinfo-processor.js sample-article-doc.adoc

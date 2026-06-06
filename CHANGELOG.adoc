@@ -8,6 +8,15 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* Add `--extension` CLI option to load and register Asciidoctor extension files — the option calls the `register(registry)` named export of the loaded module with a shared registry; can be repeated to load multiple extensions
+* Clarify `--require` CLI option — it now only loads the module as a side effect and no longer auto-calls any exported function; use `--extension` to register Asciidoctor extensions, and `--require` for libraries that configure themselves on load (syntax highlighters, polyfills, etc.)
+
+Breaking Changes::
+
+* `--require` no longer inspects or calls a `register` export from the loaded module — this auto-call was already broken (it passed the `Extensions` namespace instead of a registry instance); any extension that relied on this behaviour must be updated to either export a `register(registry)` function and be loaded via `--extension`, or self-register using `Extensions.register()` at the top level to remain loadable via `--require`
+
 == v4.0.0-alpha.6 (2026-06-03)
 
 Build::

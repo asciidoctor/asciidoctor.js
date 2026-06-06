@@ -1,4 +1,4 @@
-export default function (registry) {
+export function register(registry) {
   registry.block(function () {
     this.named('callout')
     this.onContext('paragraph')
