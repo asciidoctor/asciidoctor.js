@@ -659,3 +659,77 @@ describe('Processor helper methods', () => {
     assert.ok(html.includes('world'))
   })
 })
+
+// ── Registry reuse across conversions ─────────────────────────────────────────
+
+describe('Registry reuse across conversions', () => {
+  test('group-block registry is active on every conversion', async () => {
+    // Extensions registered via the block passed to Extensions.create() are
+    // stored as a group and re-executed on each activation — safe to reuse.
+    const registry = Extensions.create('counter', function () {
+      this.preprocessor(function () {
+        this.process((doc, reader) => {
+          doc.setAttribute(
+            'ext-called',
+            String(parseInt(doc.getAttribute('ext-called', '0'), 10) + 1)
+          )
+          return reader
+        })
+      })
+    })
+
+    const doc1 = await load('= First', { extension_registry: registry })
+    assert.equal(
+      doc1.getAttribute('ext-called'),
+      '1',
+      'preprocessor should run on 1st conversion'
+    )
+    assert.equal(
+      registry.preprocessors().length,
+      1,
+      'should have exactly one preprocessor after 1st conversion'
+    )
+
+    const doc2 = await load('= Second', { extension_registry: registry })
+    assert.equal(
+      doc2.getAttribute('ext-called'),
+      '1',
+      'preprocessor should run on 2nd conversion'
+    )
+    assert.equal(
+      registry.preprocessors().length,
+      1,
+      'should have exactly one preprocessor after 2nd conversion'
+    )
+  })
+
+  test('directly-registered extensions are lost after the first conversion', async () => {
+    // Extensions registered directly on the registry instance (outside a group
+    // block) are stored in transient state that is cleared on every activation.
+    // This documents the known limitation: reuse is not safe with this pattern.
+    const registry = Extensions.create()
+    registry.preprocessor(function () {
+      this.process((doc, reader) => {
+        doc.setAttribute(
+          'ext-called',
+          String(parseInt(doc.getAttribute('ext-called', '0'), 10) + 1)
+        )
+        return reader
+      })
+    })
+
+    const doc1 = await load('= First', { extension_registry: registry })
+    assert.equal(
+      doc1.getAttribute('ext-called'),
+      '1',
+      'preprocessor should run on 1st conversion'
+    )
+
+    const doc2 = await load('= Second', { extension_registry: registry })
+    assert.equal(
+      doc2.getAttribute('ext-called'),
+      null,
+      'preprocessor is lost after reset — known limitation'
+    )
+  })
+})
