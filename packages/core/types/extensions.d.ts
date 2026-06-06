@@ -504,14 +504,38 @@ export class ProcessorExtension extends Extension {
     processMethod: any;
 }
 /**
- * A Group registers one or more extensions with a Registry.
+ * A Group bundles one or more extension registrations that are re-executed on
+ * every document conversion, making the registry safe to reuse.
  *
- * Subclass Group and pass the subclass to Extensions.register(), or call
- * the static register() method directly.
+ * Subclass Group, override {@link Group#activate}, and either call
+ * {@link Group.register} to add it globally or pass the subclass to
+ * {@link Extensions.create} / {@link Extensions.register}.
+ *
+ * @example
+ * class MyGroup extends Group {
+ *   activate (registry) {
+ *     registry.preprocessor(MyPreprocessor)
+ *   }
+ * }
+ * MyGroup.register()
  */
 export class Group {
-    static register(name?: any): void;
-    activate(_registry: any): void;
+    /**
+     * Register this Group class globally under the given name.
+     *
+     * Equivalent to calling `Extensions.register(name, this)`.
+     *
+     * @param {string|null} [name] - Optional name for the group.
+     */
+    static register(name?: string | null): void;
+    /**
+     * Called by {@link Registry#activate} on every document conversion.
+     *
+     * Override this method to register extensions with the provided registry.
+     *
+     * @param {Registry} _registry - The registry to register extensions with.
+     */
+    activate(_registry: Registry): void;
 }
 /**
  * The primary entry point into the extension system.
@@ -520,28 +544,17 @@ export class Group {
  * methods for registering or defining a processor and looks up extensions
  * stored in the registry during parsing.
  *
- * **Registry reuse across conversions**
+ * A registry can be reused across multiple conversions. Extensions registered
+ * via a group block (passed to {@link Extensions.create} or
+ * {@link Extensions.register}) are re-executed on every activation. Extensions
+ * registered directly on the registry instance (e.g. `registry.preprocessor(fn)`)
+ * are preserved across activations.
  *
- * A registry *can* be reused across multiple conversions, but only when extensions
- * are registered via a group block (passed to {@link Extensions.create} or
- * {@link Extensions.register}). Group blocks are stored in `groups` and survive
- * the internal reset that happens on each activation.
- *
- * Extensions registered *directly* on the registry instance (e.g.
- * `registry.preprocessor(fn)` called outside a group block) are stored in
- * transient internal state that is cleared on every activation. They will be
- * silently lost from the second conversion onwards.
- *
- * Use the group-block form for reusable registries:
- * @example <caption>Safe — group block survives reset</caption>
+ * @example
  * const registry = Extensions.create('my-ext', function () {
  *   this.preprocessor(function () { ... })
  * })
  * // registry can be passed to multiple conversions safely
- *
- * @example <caption>Unsafe — direct registration is lost on reuse</caption>
- * const registry = Extensions.create()
- * registry.preprocessor(function () { ... }) // lost after 1st conversion!
  */
 export class Registry {
     constructor(groups?: {});
