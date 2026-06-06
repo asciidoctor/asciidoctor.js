@@ -99,6 +99,7 @@ describe('CLI smoke tests', () => {
 
 const POSTPROCESSOR_EXTENSION = join(__dirname, 'fixtures', 'postprocessor-extension.js')
 const POSTPROCESSOR_EXTENSION_CJS = join(__dirname, 'fixtures', 'postprocessor-extension.cjs')
+const NO_REGISTER_EXTENSION = join(__dirname, 'fixtures', 'no-register-extension.js')
 
 describe('--extension option', () => {
   test('--extension loads and registers the extension', () => {
@@ -148,6 +149,14 @@ describe('--extension option', () => {
     )
     assert.equal(result.status, 0)
     assert.match(result.stdout, /<!-- postprocessor-extension -->/)
+  })
+
+  test('--extension logs a warning when the extension does not export a register function', () => {
+    const result = cli(['--extension', NO_REGISTER_EXTENSION, '-'], {
+      input: '= Hello\n\nParagraph.',
+    })
+    assert.equal(result.status, 0)
+    assert.match(result.stderr, /does not export a register function/)
   })
 })
 
