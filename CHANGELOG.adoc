@@ -10,6 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Improvements::
 
+* Document registry reuse behaviour — extensions registered via a group block (`Extensions.create(name, block)`) survive the internal reset and are safe to reuse across multiple conversions; extensions registered directly on a registry instance are cleared on every activation and will be silently lost after the first conversion
 * Add `--extension` CLI option to load and register Asciidoctor extension files — the option calls the `register(registry)` named export of the loaded module with a shared registry; can be repeated to load multiple extensions
 * Clarify `--require` CLI option — it now only loads the module as a side effect and no longer auto-calls any exported function; use `--extension` to register Asciidoctor extensions, and `--require` for libraries that configure themselves on load (syntax highlighters, polyfills, etc.)
 * Improve JSDoc for `IncludeProcessorDsl#handles` — add `@overload` signatures documenting the two setter forms (arity-1 `(target)` and arity-2 `(doc, target)`) and the invoker form; update `IncludeProcessorDslInterface` typedef to expose both setter overloads

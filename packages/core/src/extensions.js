@@ -126,7 +126,7 @@ import { MacroNameRx, CC_ANY } from './rx.js'
  *   - Called with a single Function argument → stores it as the process block.
  *   - Called with non-Function arguments   → invokes the stored process block.
  *
- * The this context inside a stored process function is bound to the processor
+ * The `this` context inside a stored process function is bound to the processor
  * instance at definition time.
  */
 export const ProcessorDsl = {
@@ -1149,6 +1149,29 @@ const SYNTAX_PROCESSOR_CLASSES = {
  * Registry holds the extensions which have been registered and activated, has
  * methods for registering or defining a processor and looks up extensions
  * stored in the registry during parsing.
+ *
+ * **Registry reuse across conversions**
+ *
+ * A registry *can* be reused across multiple conversions, but only when extensions
+ * are registered via a group block (passed to {@link Extensions.create} or
+ * {@link Extensions.register}). Group blocks are stored in `groups` and survive
+ * the internal reset that happens on each activation.
+ *
+ * Extensions registered *directly* on the registry instance (e.g.
+ * `registry.preprocessor(fn)` called outside a group block) are stored in
+ * transient internal state that is cleared on every activation. They will be
+ * silently lost from the second conversion onwards.
+ *
+ * Use the group-block form for reusable registries:
+ * @example <caption>Safe — group block survives reset</caption>
+ * const registry = Extensions.create('my-ext', function () {
+ *   this.preprocessor(function () { ... })
+ * })
+ * // registry can be passed to multiple conversions safely
+ *
+ * @example <caption>Unsafe — direct registration is lost on reuse</caption>
+ * const registry = Extensions.create()
+ * registry.preprocessor(function () { ... }) // lost after 1st conversion!
  */
 export class Registry {
   constructor(groups = {}) {
@@ -1929,6 +1952,13 @@ export const Extensions = {
 
   /**
    * Create a new Registry, optionally pre-populated with a named block.
+   *
+   * When a `block` is provided it is stored as a group and re-executed on every
+   * activation, making the registry safe to reuse across multiple conversions.
+   * Without a `block`, any extensions registered directly on the returned registry
+   * (e.g. `registry.preprocessor(fn)`) are stored in transient state that is
+   * cleared on every activation — those registrations will be lost from the second
+   * conversion onwards. Prefer the block form when the registry may be reused.
    *
    * @param {string|null} [name=null] - Optional name for the group; auto-generated if omitted.
    * @param {Function|null} [block=null] - Optional function to register as the group.
