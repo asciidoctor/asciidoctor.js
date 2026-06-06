@@ -75,6 +75,7 @@ import { MacroNameRx, CC_ANY } from './rx.js'
  * DSL interface for include processors.
  *
  * @typedef {DocumentProcessorDslInterface & {
+ *   handles(fn: (target: string) => boolean): void;
  *   handles(fn: (doc: Document, target: string) => boolean): void;
  * }} IncludeProcessorDslInterface
  */
@@ -299,6 +300,35 @@ export const SyntaxProcessorDsl = {
 export const IncludeProcessorDsl = {
   ...DocumentProcessorDsl,
 
+  /**
+   * @overload
+   * @param {(target: string) => boolean} fn - Predicate that receives only the include target.
+   * @returns {void}
+   */
+  /**
+   * @overload
+   * @param {(doc: Document, target: string) => boolean} fn - Predicate that receives the document and the include target.
+   * @returns {void}
+   */
+  /**
+   * @overload
+   * @param {Document} doc - The document being parsed.
+   * @param {string} target - The include target.
+   * @returns {boolean}
+   */
+  /**
+   * Register a function that decides whether this include processor handles a given target,
+   * or invoke the registered handler.
+   *
+   * **Setter form** — register a predicate. The callback may accept either just the target
+   * string (arity 1) or both the document and the target string (arity 2).
+   *
+   * **Invoker form** — call the registered predicate with `(doc, target)` and return its
+   * result, or return `true` if no predicate has been registered.
+   *
+   * @param {...*} args
+   * @returns {boolean | void}
+   */
   handles(...args) {
     if (args.length === 1 && typeof args[0] === 'function') {
       const fn = args[0]
