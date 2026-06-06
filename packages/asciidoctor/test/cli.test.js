@@ -98,6 +98,7 @@ describe('CLI smoke tests', () => {
 })
 
 const POSTPROCESSOR_EXTENSION = join(__dirname, 'fixtures', 'postprocessor-extension.js')
+const POSTPROCESSOR_EXTENSION_CJS = join(__dirname, 'fixtures', 'postprocessor-extension.cjs')
 
 describe('--extension option', () => {
   test('--extension loads and registers the extension', () => {
@@ -130,6 +131,14 @@ describe('--extension option', () => {
     } finally {
       rmSync(tmpDir, { recursive: true })
     }
+  })
+
+  test('--extension works with a CommonJS extension (module.exports.register)', () => {
+    const result = cli(['--extension', POSTPROCESSOR_EXTENSION_CJS, '-'], {
+      input: '= Hello\n\nParagraph.',
+    })
+    assert.equal(result.status, 0)
+    assert.match(result.stdout, /<!-- cjs-postprocessor-extension -->/)
   })
 
   test('--extension can be repeated to load multiple extensions', () => {

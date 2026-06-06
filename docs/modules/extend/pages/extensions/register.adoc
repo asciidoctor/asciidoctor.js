@@ -146,8 +146,10 @@ An extension can also be loaded this way if it self-registers as a side effect b
 
 === Extension file structure
 
-An extension loaded via `--extension` must export a named `register` function:
+An extension loaded via `--extension` must export a named `register` function.
+Both ES module and CommonJS formats are supported.
 
+.ES module (recommended)
 [source,js]
 ----
 export function register(registry) {
@@ -164,8 +166,18 @@ export function register(registry) {
 }
 ----
 
+.CommonJS
+[source,js]
+----
+module.exports.register = function (registry) {
+  registry.block(function () {
+    // ...
+  })
+}
+----
+
  $ asciidoctor --extension ./callout-block.js my-document.adoc
 
-The `--extension` option can be repeated to load several extensions, all sharing the same registry:
+The `--extension` option can be repeated to load several extensions:
 
  $ asciidoctor --extension ./callout-block.js --extension ./draft-preprocessor.js my-document.adoc
