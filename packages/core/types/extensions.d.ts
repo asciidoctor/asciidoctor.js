@@ -38,7 +38,25 @@ export namespace SyntaxProcessorDsl {
     function resolvesAttributes(...args: any[]): void;
 }
 export namespace IncludeProcessorDsl {
-    function handles(...args: any[]): any;
+    /**
+     * @overload
+     * @param {(target: string) => boolean} fn - Predicate that receives only the include target.
+     * @returns {void}
+     */
+    function handles(fn: (target: string) => boolean): void;
+    /**
+     * @overload
+     * @param {(doc: Document, target: string) => boolean} fn - Predicate that receives the document and the include target.
+     * @returns {void}
+     */
+    function handles(fn: (doc: Document, target: string) => boolean): void;
+    /**
+     * @overload
+     * @param {Document} doc - The document being parsed.
+     * @param {string} target - The include target.
+     * @returns {boolean}
+     */
+    function handles(doc: Document, target: string): boolean;
 }
 export namespace DocinfoProcessorDsl {
     function atLocation(value: any): void;
@@ -1032,6 +1050,7 @@ export type SyntaxProcessorDslInterface = ProcessorDslInterface & {
  * DSL interface for include processors.
  */
 export type IncludeProcessorDslInterface = DocumentProcessorDslInterface & {
+    handles(fn: (target: string) => boolean): void;
     handles(fn: (doc: Document, target: string) => boolean): void;
 };
 /**
