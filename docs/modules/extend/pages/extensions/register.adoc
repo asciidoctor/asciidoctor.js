@@ -127,3 +127,45 @@ Both registries have a `[callout]` block extension registered with a specific im
 
 The first block extension is registered in `registryA` and renders the content as a paragraph with a `callout` CSS role.
 The other is registered in `registryB` and wraps the content in a semantic `<aside>` element.
+
+[#cli]
+== Use extensions with the CLI
+
+The CLI provides two options for loading external files:
+
+`--extension`::
+Loads the file and registers it as an Asciidoctor extension.
+The file must export a `register(registry)` function, which the CLI calls with a shared registry before conversion.
+This is the recommended way to load extensions.
+
+`-r` / `--require`::
+Loads the file as a plain Node.js module, executing any top-level side effects.
+The CLI does *not* call any exported function.
+Use this for libraries that configure themselves on load (syntax highlighter plugins, polyfills, etc.).
+An extension can also be loaded this way if it self-registers as a side effect by calling `Extensions.register()` at the top level, but `--extension` is preferred when the file follows the `register(registry)` export convention.
+
+=== Extension file structure
+
+An extension loaded via `--extension` must export a named `register` function:
+
+[source,js]
+----
+export function register(registry) {
+  registry.block(function () {
+    this.named('callout')
+    this.onContext('paragraph')
+    this.process(function (parent, reader, attrs) {
+      const type = attrs.type || 'note'
+      const lines = reader.getLines()
+      const html = `<aside class="callout callout-${type}">${lines.join('\n')}</aside>`
+      return this.createBlock(parent, 'pass', html)
+    })
+  })
+}
+----
+
+ $ asciidoctor --extension ./callout-block.js my-document.adoc
+
+The `--extension` option can be repeated to load several extensions, all sharing the same registry:
+
+ $ asciidoctor --extension ./callout-block.js --extension ./draft-preprocessor.js my-document.adoc

@@ -25,16 +25,22 @@ include::example$extensions/callout-block.js[]
 
 == Usage
 
+=== API
+
 [source,js]
 ----
 import { Extensions, convertFile } from '@asciidoctor/core'
-import registerCalloutBlock from './callout-block.js'
+import { register } from './callout-block.js'
 
 const registry = Extensions.create()
-registerCalloutBlock(registry)
+register(registry)
 
 const html = await convertFile('sample-callout-doc.adoc', { to_file: false, extension_registry: registry })
 console.log(html)
 // <aside class="callout callout-warning">Make sure you have Node.js 18 or later installed before running the setup script.</aside>
 // <aside class="callout callout-tip">You can skip this step if you already have the dependencies installed.</aside>
 ----
+
+=== CLI
+
+ $ asciidoctor --extension ./callout-block.js sample-callout-doc.adoc

@@ -1,4 +1,4 @@
-export default function (registry) {
+export function register(registry) {
   registry.treeProcessor(function () {
     this.process(function (doc) {
       const words = doc.findBy({ context: 'paragraph' })

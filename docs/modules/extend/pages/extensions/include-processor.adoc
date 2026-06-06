@@ -36,13 +36,15 @@ include::example$extensions/json-include-processor.js[]
 
 == Usage
 
+=== API
+
 [source,js]
 ----
 import { Extensions, convert } from '@asciidoctor/core'
-import registerJsonIncludeProcessor from './json-include-processor.js'
+import { register } from './json-include-processor.js'
 
 const registry = Extensions.create()
-registerJsonIncludeProcessor(registry)
+register(registry)
 
 const html = await convert(
   'include::https://raw.githubusercontent.com/org/repo/main/versions.json[as=attributes]',
@@ -52,3 +54,7 @@ const html = await convert(
 // :version: 3.1.0
 // :node-min: 18
 ----
+
+=== CLI
+
+ $ asciidoctor --extension ./json-include-processor.js sample-versions-doc.adoc

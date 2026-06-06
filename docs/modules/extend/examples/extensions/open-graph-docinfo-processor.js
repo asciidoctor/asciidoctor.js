@@ -1,4 +1,4 @@
-export default function (registry) {
+export function register(registry) {
   registry.docinfoProcessor(function () {
     this.atLocation('head')
     this.process(function (doc) {

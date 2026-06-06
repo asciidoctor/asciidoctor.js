@@ -1,4 +1,4 @@
-export default function (registry) {
+export function register(registry) {
   registry.includeProcessor(function () {
     this.handles(target => target.startsWith('https://') && target.endsWith('.json'))
     this.process(async function (doc, reader, target, attrs) {

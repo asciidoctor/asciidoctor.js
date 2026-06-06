@@ -24,16 +24,22 @@ include::example$extensions/npm-inline-macro-processor.js[]
 
 == Usage
 
+=== API
+
 [source,js]
 ----
 import { Extensions, convertFile } from '@asciidoctor/core'
-import registerNpmInlineMacro from './npm-inline-macro-processor.js'
+import { register } from './npm-inline-macro-processor.js'
 
 const registry = Extensions.create()
-registerNpmInlineMacro(registry)
+register(registry)
 
 const html = await convertFile('sample-npm-doc.adoc', { to_file: false, extension_registry: registry })
 console.log(html)
 // <p>Install <a href="https://www.npmjs.com/package/lodash">lodash@4.17.21</a> for utility functions
 // and <a href="https://www.npmjs.com/package/axios">axios</a> for HTTP requests.</p>
 ----
+
+=== CLI
+
+ $ asciidoctor --extension ./npm-inline-macro-processor.js sample-npm-doc.adoc

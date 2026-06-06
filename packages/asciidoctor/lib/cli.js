@@ -126,6 +126,13 @@ const BASE_OPTION_DEFINITIONS = {
       'require the specified library before executing the processor (repeatable)',
     metavar: '<library>',
   },
+  extension: {
+    type: 'string',
+    multiple: true,
+    describe:
+      'require the specified extension and register it before executing the processor (repeatable)',
+    metavar: '<extension>',
+  },
   version: {
     type: 'boolean',
     short: 'V',
@@ -351,6 +358,7 @@ export class Invoker {
     }
 
     this._prepareProcessor(values)
+    this._prepareExtensions(values)
     const { options, failureLevel } = this.options
 
     const logger = LoggerManager.getLogger()
@@ -443,9 +451,21 @@ CLI version ${pkg.version}`
     const requirePaths = values.require
     if (!requirePaths) return
     for (const requirePath of requirePaths) {
-      const lib = requireLibrary(requirePath)
-      if (lib && typeof lib.register === 'function') {
-        lib.register(Extensions)
+      requireLibrary(requirePath)
+    }
+  }
+
+  /** @internal */
+  _prepareExtensions(values) {
+    const extensionPaths = values.extension
+    if (!extensionPaths || extensionPaths.length === 0) return
+    for (const extensionPath of extensionPaths) {
+      const lib = requireLibrary(extensionPath)
+      const registerFn = lib?.register ?? lib?.default
+      if (typeof registerFn === 'function') {
+        Extensions.register(function () {
+          registerFn(this)
+        })
       }
     }
   }

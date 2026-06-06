@@ -33,14 +33,20 @@ include::example$extensions/reading-time-tree-processor.js[]
 
 == Usage
 
+=== API
+
 [source,js]
 ----
 import { Extensions, convertFile } from '@asciidoctor/core'
-import registerReadingTimeTreeProcessor from './reading-time-tree-processor.js'
+import { register } from './reading-time-tree-processor.js'
 
 const registry = Extensions.create()
-registerReadingTimeTreeProcessor(registry)
+register(registry)
 
 const html = await convertFile('sample-guide-doc.adoc', { to_file: false, extension_registry: registry })
 // <p>Estimated reading time: 1 min</p>
 ----
+
+=== CLI
+
+ $ asciidoctor --extension ./reading-time-tree-processor.js sample-guide-doc.adoc
