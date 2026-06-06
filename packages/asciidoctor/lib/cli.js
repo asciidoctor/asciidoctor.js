@@ -459,13 +459,17 @@ CLI version ${pkg.version}`
   _prepareExtensions(values) {
     const extensionPaths = values.extension
     if (!extensionPaths || extensionPaths.length === 0) return
+    const logger = LoggerManager.getLogger()
     for (const extensionPath of extensionPaths) {
       const lib = requireLibrary(extensionPath)
-      const registerFn = lib?.register ?? lib?.default
-      if (typeof registerFn === 'function') {
+      if (typeof lib?.register === 'function') {
         Extensions.register(function () {
-          registerFn(this)
+          lib.register(this)
         })
+      } else {
+        logger.warn(
+          `Extension '${extensionPath}' does not export a register function and will be ignored.`
+        )
       }
     }
   }
