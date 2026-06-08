@@ -133,15 +133,9 @@ The other is registered in `registryB` and wraps the content in a semantic `<asi
 === Reusing a registry across multiple conversions
 
 A registry can be reused across multiple conversions by passing it as the `extension_registry` option.
-However, the way you register extensions determines whether reuse is safe.
+Both registration styles are safe to reuse.
 
-When a block function is passed to `Extensions.create()`, that block is stored internally as a group.
-On each conversion, the registry resets its transient state and re-executes all groups, so extensions are correctly re-activated every time.
-
-When extensions are registered *directly* on a registry instance (e.g. `registry.preprocessor(fn)` called outside any block), they are stored in transient state that is cleared on every activation.
-*Those registrations will be silently lost from the second conversion onwards.*
-
-.Safe — block is stored as a group and re-executed on every conversion
+.Group block — stored as a group and re-executed on every conversion
 [source,js]
 ----
 import { Extensions, convert } from '@asciidoctor/core'
@@ -164,13 +158,13 @@ await convert('= Second Doc', { extension_registry: registry }) // <2>
 <1> First conversion — registry is activated, group block is executed, preprocessor is registered.
 <2> Second conversion — registry resets, group block is re-executed, preprocessor is registered again.
 
-.Unsafe — direct registration is lost after the first conversion
+.Direct registration — preserved across conversions
 [source,js]
 ----
 import { Extensions, convert } from '@asciidoctor/core'
 
 const registry = Extensions.create()
-// Registering directly on the instance stores the preprocessor in transient state.
+// Extensions registered directly on the instance are preserved across activations.
 registry.preprocessor(function () {
   this.process(function (doc, reader) {
     // ...
@@ -180,14 +174,10 @@ registry.preprocessor(function () {
 
 await convert('= First Doc',  { extension_registry: registry }) // <1>
 await convert('= Second Doc', { extension_registry: registry }) // <2>
-// The preprocessor is only active for the first conversion!
+// The preprocessor is active for both conversions.
 ----
-<1> First conversion — preprocessor is in transient state, it runs.
-<2> Second conversion — registry resets, transient state is cleared, preprocessor is gone.
-
-NOTE: This behaviour is identical to Ruby Asciidoctor.
-A registry is not designed to be reused with direct registrations.
-When in doubt, create a new registry per conversion, or use the block form of `Extensions.create()`.
+<1> First conversion — preprocessor runs.
+<2> Second conversion — preprocessor is preserved across the reset and runs again.
 
 [#cli]
 == Use extensions with the CLI
