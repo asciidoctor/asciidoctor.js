@@ -160,7 +160,9 @@ function arrayDiff(a, b) {
 }
 
 /**
- * Make a regex global if it isn't already.
+ * Make a regex with `global` flag.
+ * @param {RegExp} rx - The regex to make global.
+ * @returns {RegExp} The global regex.
  */
 function globalRx(rx) {
   return rx.global ? rx : new RegExp(rx.source, `${rx.flags}g`)
@@ -2009,34 +2011,36 @@ export const Substitutors = {
   },
 
   extractCallouts(source) {
-    const calloutMarks = {}
+    const calloutMarks = []
     let autonum = 0
-    let lineno = 0
-    let lastLineno = null
+    let removedLength = 0
+    let lastCalloutOnLastLine = false
     const calloutRx = this.hasAttribute('line-comment')
       ? CalloutExtractRxMap[this.getAttribute('line-comment')]
       : CalloutExtractRx
 
-    const lines = source.split(LF).map((line) => {
-      lineno++
-      return line.replace(globalRx(calloutRx), (match, p1, p2, p3, p4) => {
+    const result = source.replace(
+      globalRx(calloutRx),
+      (match, p1, p2, p3, p4, offset) => {
         if (p2) {
+          removedLength++
           return match.replace(RS, '')
         }
         const guard = p1 || (p3 === '--' ? ['<!--', '-->'] : null)
         const numeral = p4 === '.' ? String(++autonum) : p4
-        ;(calloutMarks[lineno] = calloutMarks[lineno] || []).push([
+        calloutMarks.push([
           guard,
           numeral,
+          offset - removedLength,
         ])
-        lastLineno = lineno
+        removedLength += match.length
+        lastCalloutOnLastLine = source.indexOf(LF, offset + match.length) === -1
         return ''
-      })
-    })
+      }
+    )
 
-    let result = lines.join(LF)
-    if (lastLineno !== null) {
-      if (lastLineno === lineno) result = `${result}${LF}`
+    if (calloutMarks.length > 0) {
+      if (lastCalloutOnLastLine) return [`${result}${LF}`, calloutMarks]
     } else {
       return [result, null]
     }
@@ -2049,34 +2053,42 @@ export const Substitutors = {
       preamble = source.slice(0, sourceOffset)
       source = source.slice(sourceOffset)
     }
-    let lineno = 0
-    const result = await Promise.all(
-      source.split(LF).map(async (line) => {
-        const conums = calloutMarks[++lineno]
-        if (conums) {
-          delete calloutMarks[lineno]
-          if (conums.length === 1) {
-            const [guard, numeral] = conums[0]
-            return `${line}${await new Inline(this, 'callout', numeral, {
+    const byOffset = new Map()
+    for (const [guard, numeral, offset] of calloutMarks) {
+      const conums = byOffset.get(offset) ?? []
+      conums.push([guard, numeral])
+      byOffset.set(offset, conums)
+    }
+
+    let result = source
+    for (const [offset, conums] of [...byOffset.entries()].sort(
+      ([a], [b]) => b - a
+    )) {
+      if (conums.length === 1) {
+        const [guard, numeral] = conums[0]
+        result = `${result.slice(0, offset)}${await new Inline(
+          this,
+          'callout',
+          numeral,
+          {
+            id: this.document.callouts.readNextId(),
+            attributes: { guard },
+          }
+        ).convert()}${result.slice(offset)}`
+      } else {
+        const converted = await Promise.all(
+          conums.map(([guard, numeral]) =>
+            new Inline(this, 'callout', numeral, {
               id: this.document.callouts.readNextId(),
               attributes: { guard },
-            }).convert()}`
-          } else {
-            const converted = await Promise.all(
-              conums.map(([guard, numeral]) =>
-                new Inline(this, 'callout', numeral, {
-                  id: this.document.callouts.readNextId(),
-                  attributes: { guard },
-                }).convert()
-              )
-            )
-            return `${line}${converted.join(' ')}`
-          }
-        }
-        return line
-      })
-    )
-    return preamble + result.join(LF)
+            }).convert()
+          )
+        )
+        result = `${result.slice(0, offset)}${converted.join(' ')}${result.slice(offset)}`
+      }
+    }
+    calloutMarks.length = 0
+    return preamble + result
   },
 
   async convertQuotedText(args, type, scope) {

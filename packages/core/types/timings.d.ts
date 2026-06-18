@@ -21,5 +21,8 @@ export class Timings {
         write?: (s: string) => void;
         log?: (s: string) => void;
     }, subject?: string | null): void;
-    _now(): any;
+    /**
+     * @returns {number}
+     */
+    _now(): number;
 }

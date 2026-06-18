@@ -42,6 +42,10 @@ export class MemoryHttpCache extends HttpCache {
   /** @type {Map<string, {buffer: ArrayBuffer, status: number, statusText: string, headers: Record<string,string>}>} */
   #cache = new Map()
 
+  /**
+   * @param {string} uri
+   * @returns {Promise<Response>}
+   */
   async read(uri) {
     const entry = this.#cache.get(uri)
     if (entry) {

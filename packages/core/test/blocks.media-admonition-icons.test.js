@@ -549,7 +549,7 @@ puts "AsciiDoc, FTW!"
       )
       assertCss(
         output,
-        `html > body > script[src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/${HIGHLIGHT_JS_VERSION}/highlight.min.js"]`,
+        `html > head > link[rel="stylesheet"][href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/${HIGHLIGHT_JS_VERSION}/styles/github.min.css"]`,
         1
       )
     })
@@ -573,7 +573,7 @@ puts "AsciiDoc, FTW!"
       )
       assertCss(
         output,
-        `html > body > script[src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/${HIGHLIGHT_JS_VERSION}/highlight.min.js"]`,
+        `html > head > link[rel="stylesheet"][href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/${HIGHLIGHT_JS_VERSION}/styles/github.min.css"]`,
         1
       )
     })

@@ -1,5 +1,11 @@
 import json from '@rollup/plugin-json'
 
+const external = (id) =>
+  id.startsWith('node:') ||
+  id === 'highlight.js' ||
+  id === 'highlight.js/package.json' ||
+  id === 'linkedom'
+
 // Converts `await import('node:X')` → `require('node:X')` so that
 // top-level await (used for optional Node.js module loading) is
 // compatible with CJS output format.
@@ -43,7 +49,7 @@ export default [
       inlineDynamicImports: true,
       generatedCode: { constBindings: true },
     },
-    external: (id) => id.startsWith('node:'),
+    external,
     plugins: [
       nodeAwaitImportToRequire(),
       json(),
@@ -57,7 +63,7 @@ export default [
       inlineDynamicImports: true,
       generatedCode: { constBindings: true },
     },
-    external: (id) => id.startsWith('node:'),
+    external,
     plugins: [
       browserTemplateConverterStub(),
       json(),

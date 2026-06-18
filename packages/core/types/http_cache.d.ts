@@ -30,11 +30,9 @@ export class HttpCache {
  * cache when registered via HttpCacheManager.setCache().
  */
 export class MemoryHttpCache extends HttpCache {
-    read(uri: any): Promise<any>;
     #private;
 }
 export namespace HttpCacheManager {
-    /** @type {HttpCache|null} */
     let _cache: HttpCache | null;
     /**
      * Register a cache to use for all conversions.

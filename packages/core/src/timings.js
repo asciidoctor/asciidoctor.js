@@ -72,6 +72,9 @@ export class Timings {
     )
   }
 
+  /**
+   * @returns {number}
+   */
   _now() {
     return typeof performance !== 'undefined' ? performance.now() : Date.now()
   }

@@ -11,14 +11,10 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
      * @returns {Promise<string>}
      */
     format(node: object, lang: string | null, opts: object): Promise<string>;
+    /** @inheritdoc */
+    highlight(node: any, source: any, lang: any, opts?: {}): any;
     /**
-     * Always returns true — highlight.js injects markup into the document.
-     * @param {string} location - 'head' or 'footer'
-     * @returns {true}
-     */
-    hasDocinfo(location: string): true;
-    /**
-     * Returns the CSS `<link>` tag (head) or the `<script>` tags (footer).
+     * Returns the CSS `<link>` tag.
      * @param {string} location - 'head' or 'footer'
      * @param {object} doc - the Document being converted
      * @param {{ cdn_base_url: string, self_closing_tag_slash: string }} opts

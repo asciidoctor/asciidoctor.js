@@ -25,6 +25,7 @@ import {
   CG_ALPHA,
   QuoteAttributeListRxt,
 } from './rx.js'
+import hljsPackage from 'highlight.js/package.json' with { type: 'json' }
 
 // Local helper – same as the one inside rx.js (not exported there).
 const ru = (src, flags = '') => new RegExp(src, `u${flags}`)
@@ -389,7 +390,7 @@ export const STEM_TYPE_ALIASES = new Proxy(
 
 // ── Third-party library versions ──────────────────────────────────────────────
 export const FONT_AWESOME_VERSION = '4.7.0'
-export const HIGHLIGHT_JS_VERSION = '9.18.3'
+export const HIGHLIGHT_JS_VERSION = hljsPackage.version
 export const MATHJAX_VERSION = '2.7.9'
 
 // ── Default document attributes ───────────────────────────────────────────────

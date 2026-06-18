@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import { assertCss, assertXpath } from './helpers.js'
+import { assertCss, assertXpath, xmlnodesAtXpath } from './helpers.js'
 import {
   convertString,
   convertStringToEmbedded,
@@ -33,10 +33,12 @@ puts "hello"
           '//*[contains(@class,"listingblock")]//pre/code[contains(@class,"language-ruby")]',
           1
         )
-        assert(
-          output.includes('puts &quot;hello&quot;') ||
-            output.includes('puts "hello"')
+        const code = xmlnodesAtXpath(
+          '//*[contains(@class,"listingblock")]//pre/code',
+          output,
+          1
         )
+        assert.equal(code.text.trim(), 'puts "hello"')
       })
 
       test('should set data-lang attribute on code element', async () => {
@@ -68,7 +70,12 @@ some code
         const output = await convertStringToEmbedded(input, { safe: 'safe' })
         assertCss(output, '.listingblock pre.highlightjs.highlight', 1)
         assertXpath(output, '//*[contains(@class,"listingblock")]//pre/code', 1)
-        assert(output.includes('some code'))
+        const code = xmlnodesAtXpath(
+          '//*[contains(@class,"listingblock")]//pre/code',
+          output,
+          1
+        )
+        assert.equal(code.text.trim(), 'some code')
       })
 
       test('should add nowrap class to pre element when nowrap option is set', async () => {
@@ -130,8 +137,44 @@ end
           '//*[contains(@class,"listingblock")]//pre/code[contains(@class,"language-ruby")]',
           1
         )
-        assert(output.includes('def greet'))
-        assert(output.includes('end'))
+        const code = xmlnodesAtXpath(
+          '//*[contains(@class,"listingblock")]//pre/code',
+          output,
+          1
+        )
+        assert(code.text.includes('def greet'))
+        assert(code.text.includes('end'))
+      })
+
+      test('should restore callouts into highlighted source', async () => {
+        const input = `\
+:source-highlighter: highlightjs
+
+[source,ruby]
+----
+puts 'hi' # <1>
+warn 'bye' # <2>
+----
+<1> First callout
+<2> Second callout
+`
+        const output = await convertStringToEmbedded(input, { safe: 'safe' })
+        const code = xmlnodesAtXpath(
+          '//*[contains(@class,"listingblock")]//pre/code',
+          output,
+          1
+        )
+        assert.equal(
+          code.text,
+          "puts 'hi' # (1)\nwarn 'bye' # (2)"
+        )
+        assertXpath(
+          output,
+          '//*[contains(@class,"listingblock")]//pre/code/b[@class="conum"]',
+          2
+        )
+        assert(!code.innerHtml.includes('&lt;1&gt;'))
+        assert(!code.innerHtml.includes('&lt;2&gt;'))
       })
     })
 
@@ -248,7 +291,7 @@ puts 'Hello, World!'
     })
 
     describe('docinfo', () => {
-      test('should add highlight.js script and stylesheet to document', async () => {
+      test('should add highlight.js stylesheet to document', async () => {
         const input = `\
 :source-highlighter: highlightjs
 
@@ -263,7 +306,12 @@ puts "hello"
           'html > head > link[rel="stylesheet"][href*="github.min.css"]',
           1
         )
-        assertCss(output, 'html > body > script[src*="highlight.min.js"]', 1)
+        assertCss(output, 'html > body > script[src*="highlight.min.js"]', 0)
+        assertCss(
+          output,
+          'html > body > link[rel="stylesheet"][href*="github.min.css"]',
+          0
+        )
       })
     })
   })

@@ -1599,10 +1599,12 @@ go to \\c
 
 describe('Environment', () => {
   test('uses SOURCE_DATE_EPOCH as modified time of input file', async (t) => {
-    if (typeof process === 'undefined' || typeof process.env === 'undefined')
+    if (!process?.env)
       return t.skip()
+    const oldTZ = process.env.TZ;
     const oldSourceDateEpoch = process.env.SOURCE_DATE_EPOCH
     try {
+      process.env.TZ = 'UTC';
       process.env.SOURCE_DATE_EPOCH = '1234123412'
       const result = await manpage(SAMPLE_MANPAGE_HEADER)
       assert.match(result, /Date: 2009-02-08/)
@@ -1615,6 +1617,11 @@ describe('Environment', () => {
         delete process.env.SOURCE_DATE_EPOCH
       } else {
         process.env.SOURCE_DATE_EPOCH = oldSourceDateEpoch
+      }
+      if (oldTZ === undefined) {
+        delete process.env.TZ
+      } else {
+        process.env.TZ = oldTZ
       }
     }
   })
