@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.0 (2026-06-22)
+
 Bug Fixes::
 
 * Fix registry reuse — extensions registered directly on a registry instance (e.g. `registry.preprocessor(fn)`) now survive the internal reset and are preserved across multiple conversions, matching the behaviour of group-block registrations (`Extensions.create(name, block)`); both patterns are now safe to reuse
