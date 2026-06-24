@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Bug Fixes::
+
+* Fix incorrect generated type declarations for `async` substitutor methods — `applySubs`, `subQuotes`, `subMacros`, `subPostReplacements`, `subSource`, `subCallouts`, `highlightSource`, `restorePassthroughs` and `parseAttributes` are all `async` but their JSDoc `@returns` declared the unwrapped type (e.g. `string`), so the emitted `.d.ts` advertised `string` instead of `Promise<string>`; callers following the types could concatenate the returned Promise and produce `[object Promise]`. The JSDoc now declares `Promise<…>` and the `.d.ts` was regenerated
+
 == v4.0.0 (2026-06-22)
 
 Bug Fixes::

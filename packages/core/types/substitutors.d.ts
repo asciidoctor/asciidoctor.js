@@ -4,9 +4,9 @@ export namespace Substitutors {
      *
      * @param {string|string[]} text - The text to process; must not be null.
      * @param {string[]} [subs=NORMAL_SUBS] - The substitutions to perform.
-     * @returns {string|string[]} Text with substitutions applied.
+     * @returns {Promise<string|string[]>} Text with substitutions applied.
      */
-    function applySubs(text: string | string[], subs?: string[]): string | string[];
+    function applySubs(text: string | string[], subs?: string[]): Promise<string | string[]>;
     /** Apply normal substitutions (alias for applySubs with default args). */
     function applyNormalSubs(text: any): Promise<string | string[]>;
     /** Apply substitutions for header metadata and attribute assignments.
@@ -32,9 +32,9 @@ export namespace Substitutors {
      * Substitute quoted text (emphasis, strong, monospaced, etc.)
      *
      * @param {string} text
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    function subQuotes(text: string): string;
+    function subQuotes(text: string): Promise<string>;
     /**
      * Substitute attribute references in the specified text.
      *
@@ -54,39 +54,39 @@ export namespace Substitutors {
      * Substitute inline macros (links, images, etc.)
      *
      * @param {string} text
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    function subMacros(text: string): string;
+    function subMacros(text: string): Promise<string>;
     /**
      * Substitute post replacements (hard line breaks).
      *
      * @param {string} text
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    function subPostReplacements(text: string): string;
+    function subPostReplacements(text: string): Promise<string>;
     /**
      * Apply verbatim substitutions on source.
      *
      * @param {string} source
      * @param {boolean} processCallouts
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    function subSource(source: string, processCallouts: boolean): string;
+    function subSource(source: string, processCallouts: boolean): Promise<string>;
     /**
      * Substitute callout source references.
      *
      * @param {string} text
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    function subCallouts(text: string): string;
+    function subCallouts(text: string): Promise<string>;
     /**
      * Highlight (colorize) the source code using a syntax highlighter.
      *
      * @param {string} source
      * @param {boolean} processCallouts
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    function highlightSource(source: string, processCallouts: boolean): string;
+    function highlightSource(source: string, processCallouts: boolean): Promise<string>;
     /**
      * Resolve line numbers to highlight from a test string.
      *
@@ -107,9 +107,9 @@ export namespace Substitutors {
      * Restore passthrough text by reinserting into placeholder positions.
      *
      * @param {string} text
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    function restorePassthroughs(text: string): string;
+    function restorePassthroughs(text: string): Promise<string>;
     /**
      * Resolve the list of comma-delimited subs against the possible options.
      *
@@ -143,9 +143,9 @@ export namespace Substitutors {
      * @param {string} attrlist
      * @param {string[]} [posattrs=[]]
      * @param {Object} [opts={}]
-     * @returns {Object}
+     * @returns {Promise<Object>}
      */
-    function parseAttributes(attrlist: string, posattrs?: string[], opts?: any): any;
+    function parseAttributes(attrlist: string, posattrs?: string[], opts?: any): Promise<any>;
     function extractAttributesFromText(text: any, defaultText?: any): Promise<any[]>;
     function extractCallouts(source: any): any[];
     function restoreCallouts(source: any, calloutMarks: any, sourceOffset?: any): Promise<string>;

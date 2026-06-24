@@ -176,7 +176,7 @@ export const Substitutors = {
    *
    * @param {string|string[]} text - The text to process; must not be null.
    * @param {string[]} [subs=NORMAL_SUBS] - The substitutions to perform.
-   * @returns {string|string[]} Text with substitutions applied.
+   * @returns {Promise<string|string[]>} Text with substitutions applied.
    */
   async applySubs(text, subs = NORMAL_SUBS) {
     const isEmpty = Array.isArray(text) ? text.length === 0 : text.length === 0
@@ -290,7 +290,7 @@ export const Substitutors = {
    * Substitute quoted text (emphasis, strong, monospaced, etc.)
    *
    * @param {string} text
-   * @returns {string}
+   * @returns {Promise<string>}
    */
   async subQuotes(text) {
     const compat = this.document.compatMode
@@ -462,7 +462,7 @@ export const Substitutors = {
    * Substitute inline macros (links, images, etc.)
    *
    * @param {string} text
-   * @returns {string}
+   * @returns {Promise<string>}
    */
   async subMacros(text) {
     const foundSquareBracket = text.includes('[')
@@ -1357,7 +1357,7 @@ export const Substitutors = {
    * Substitute post replacements (hard line breaks).
    *
    * @param {string} text
-   * @returns {string}
+   * @returns {Promise<string>}
    */
   async subPostReplacements(text) {
     if (
@@ -1395,7 +1395,7 @@ export const Substitutors = {
    *
    * @param {string} source
    * @param {boolean} processCallouts
-   * @returns {string}
+   * @returns {Promise<string>}
    */
   async subSource(source, processCallouts) {
     return processCallouts
@@ -1407,7 +1407,7 @@ export const Substitutors = {
    * Substitute callout source references.
    *
    * @param {string} text
-   * @returns {string}
+   * @returns {Promise<string>}
    */
   async subCallouts(text) {
     const calloutRx = this.hasAttribute('line-comment')
@@ -1436,7 +1436,7 @@ export const Substitutors = {
    *
    * @param {string} source
    * @param {boolean} processCallouts
-   * @returns {string}
+   * @returns {Promise<string>}
    */
   async highlightSource(source, processCallouts) {
     const syntaxHl = this.document.syntaxHighlighter
@@ -1782,7 +1782,7 @@ export const Substitutors = {
    * Restore passthrough text by reinserting into placeholder positions.
    *
    * @param {string} text
-   * @returns {string}
+   * @returns {Promise<string>}
    */
   async restorePassthroughs(text) {
     if (!text.includes(PASS_START)) return text
@@ -1974,7 +1974,7 @@ export const Substitutors = {
    * @param {string} attrlist
    * @param {string[]} [posattrs=[]]
    * @param {Object} [opts={}]
-   * @returns {Object}
+   * @returns {Promise<Object>}
    */
   async parseAttributes(attrlist, posattrs = [], opts = {}) {
     if (!attrlist || attrlist.length === 0) return {}
