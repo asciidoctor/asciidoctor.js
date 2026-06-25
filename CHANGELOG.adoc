@@ -25,6 +25,10 @@ Improvements::
 
 * Improve typing of `MemoryLogger#getMessages()` — it previously returned `any[]`; the `LogMessage` wrapper class is now exported and `getMessages()` is declared to return `LogMessage[]`, so consumers get typed `getSeverity()` (`string`), `getText()` (`string`) and `getSourceLocation()` (`Cursor | undefined`) accessors. The wrapper's internal `_text`/`_sourceLocation` fields were renamed to public `text`/`sourceLocation` properties (consistent with `severity`), providing dual property/getter access
 
+Infrastructure::
+
+* Fix the browser-test `Buffer` polyfill so `Buffer.from(str).toString('base64')` actually returns Base64 instead of the original string; previously the data-URI SVG tests built a malformed `data:…;base64,<svg …>` target that made the browser's `atob` throw `InvalidCharacterError`
+
 == v4.0.0 (2026-06-22)
 
 Bug Fixes::

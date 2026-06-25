@@ -10,7 +10,16 @@ if (typeof globalThis.Buffer === 'undefined') {
     static from(data, encoding) {
       if (typeof data === 'string') {
         const encoded = new TextEncoder().encode(data)
-        return Object.assign(encoded, { toString: () => data })
+        return Object.assign(encoded, {
+          toString: (enc = 'utf8') => {
+            if (enc === 'base64') {
+              let binary = ''
+              for (const byte of encoded) binary += String.fromCharCode(byte)
+              return btoa(binary)
+            }
+            return data
+          },
+        })
       }
       return new Uint8Array(data)
     }
