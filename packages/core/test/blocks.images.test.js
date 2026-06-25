@@ -191,6 +191,19 @@ image::circle.svg[Tiger,100]
       assert.match(output, /<svg\s[^>]*width="100">/)
     })
 
+    test('passes a data URI image target through to the img src unchanged', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const dataUri =
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+        const output = await convertStringToEmbedded(`image::${dataUri}[Dot]`, {
+          safe: 'safe',
+          attributes: { 'data-uri': '', 'allow-uri-read': '' },
+        })
+        assertCss(output, `img[src="${dataUri}"]`, 1)
+        assert.equal(logger.messages.length, 0)
+      })
+    })
+
     test('do not throw exception if SVG to inline is empty', async () => {
       await usingMemoryLogger(async (logger) => {
         const input = 'image::empty.svg[nada,opts=inline]'
