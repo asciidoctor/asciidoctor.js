@@ -833,7 +833,9 @@ ${await node.content()}
     const slash = this._voidSlash
     let img, src
     if (
-      (node.hasAttribute('format', 'svg') || target.includes('.svg')) &&
+      (node.hasAttribute('format', 'svg') ||
+        target.includes('.svg') ||
+        target.startsWith('data:image/svg+xml')) &&
       node.document.safe < SafeMode.SECURE
     ) {
       if (node.hasOption('inline')) {
@@ -1674,7 +1676,9 @@ Your browser does not support the video tag.
       if (node.hasAttribute('title'))
         attrs += ` title="${node.getAttribute('title')}"`
       if (
-        (node.hasAttribute('format', 'svg') || target.includes('.svg')) &&
+        (node.hasAttribute('format', 'svg') ||
+          target.includes('.svg') ||
+          target.startsWith('data:image/svg+xml')) &&
         node.document.safe < SafeMode.SECURE
       ) {
         if (node.hasOption('inline')) {
@@ -1767,12 +1771,17 @@ Your browser does not support the video tag.
 
   // NOTE expose readSvgContents for Bespoke converter
   async readSvgContents(node, target) {
-    let svg = await node.readContents(target, {
-      start: node.document.getAttribute('imagesdir'),
-      normalize: true,
-      label: 'SVG',
-      warnIfEmpty: true,
-    })
+    // A data-URI carries the SVG in the target itself (e.g. an embedded diagram
+    // produced with `:data-uri:`), so decode it directly rather than trying to
+    // read it as a file or remote URI.
+    let svg = target.startsWith('data:')
+      ? this._decodeDataUri(target)
+      : await node.readContents(target, {
+          start: node.document.getAttribute('imagesdir'),
+          normalize: true,
+          label: 'SVG',
+          warnIfEmpty: true,
+        })
     if (!svg) return null
     if (!svg.startsWith('<svg')) svg = svg.replace(SvgPreambleRx, '')
     // Fix incomplete SVG start tag (missing closing >) by inserting > before the first child element.
@@ -1803,6 +1812,27 @@ Your browser does not support the video tag.
   }
 
   // ── Private helpers ─────────────────────────────────────────────────────────
+
+  /**
+   * Decode an inline `data:` URI to its text contents (e.g. an SVG document) so
+   * an image whose target is a data-URI can be embedded inline. Supports both
+   * Base64 (`;base64,`) and percent-encoded payloads. Returns null when the
+   * payload is missing.
+   *
+   * @internal
+   * @private
+   */
+  _decodeDataUri(target) {
+    const comma = target.indexOf(',')
+    if (comma === -1) return null
+    const meta = target.slice('data:'.length, comma)
+    const data = target.slice(comma + 1)
+    if (/;base64\b/i.test(meta)) {
+      const bytes = Uint8Array.from(atob(data), (c) => c.charCodeAt(0))
+      return new TextDecoder('utf-8').decode(bytes)
+    }
+    return decodeURIComponent(data)
+  }
 
   /**
    * @internal

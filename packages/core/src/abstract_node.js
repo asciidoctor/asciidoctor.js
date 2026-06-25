@@ -461,9 +461,10 @@ export class AbstractNode {
    * Construct a URI reference or data URI to the target image.
    *
    * If the target image is already a URI it is left untouched (unless data-uri
-   * conversion is requested). The image is resolved relative to the directory
-   * named by assetDirKey. When data-uri is enabled and the safe level permits,
-   * the image is embedded as a Base64 data URI.
+   * conversion is requested). If the target image is a data URI, then it is
+   * already an embedded image, so it is returned as-is. The image is resolved
+   * relative to the directory named by assetDirKey. When data-uri is enabled and
+   * the safe level permits, the image is embedded as a Base64 data URI.
    *
    * NOTE: When the document has both 'data-uri' and 'allow-uri-read' enabled
    * and the resolved image URL is a remote URI, this method returns a Promise
@@ -474,6 +475,8 @@ export class AbstractNode {
    * @returns {Promise<string>} a Promise resolving to a String reference or data URI.
    */
   async imageUri(targetImage, assetDirKey = 'imagesdir') {
+    // A data URI is already an embedded image, so use it as-is rather than reading or re-encoding it.
+    if (targetImage.startsWith('data:')) return targetImage
     const doc = this.document
     if (doc.safe < SafeMode.SECURE && doc.hasAttribute('data-uri')) {
       let imagesBase
