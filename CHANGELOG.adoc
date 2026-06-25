@@ -8,8 +8,13 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* The HTML5 converter can now inline an SVG image whose target is a `data:` URI (e.g. `image::data:image/svg+xml;base64,…[opts=inline]`). `readSvgContents` decodes both Base64 and percent-encoded `data:` payloads instead of only reading from a file or remote URI, so a diagram or image embedded as a data-URI can be rendered as inline `<svg>` without writing a file or enabling `allow-uri-read`. The SVG format is inferred from the `image/svg+xml` media type, so an explicit `format=svg` attribute is no longer required on a `data:` URI target
+
 Bug Fixes::
 
+* `imageUri` now returns a `data:` URI image target as-is instead of attempting to read it as a file or fetch it via the Fetch API; previously, with both `data-uri` and `allow-uri-read` set, a `data:` URI target (e.g. `data:image/png;base64,…`) triggered a spurious "could not retrieve image data from URI" warning
 * Fix the built-in `asciidoctor-version` attribute reporting the hard-coded upstream Ruby version (`3.0.0.dev`) instead of the actual library version — it now resolves to the `@asciidoctor/core` package version (e.g. `4.0.1`), so references such as `{asciidoctor-version}` reflect the real release
 * Report `Asciidoctor.js` (instead of `Asciidoctor`) in the HTML5 `<meta name="generator">` and manpage `Generator:` metadata, so the generated output identifies the JavaScript library and its version (e.g. `Asciidoctor.js 4.0.1`)
 * Fix natural cross-references (e.g. `<<Some section title>>`) not resolving inside list items, description list items and table cells — they rendered as `<a href="#Some section title">[Some section title]</a>` instead of linking to the section's generated ID. Unlike paragraph text (substituted lazily during conversion, after the reftext→id map is built), list/cell/dlist text is pre-computed eagerly in `_resolveAllTexts`, which ran *before* the map existed; the synchronous `resolveId` fallback then matched against the raw `reftext` attribute rather than the computed `xreftext` (a section's title), so the lookup failed. Text pre-computation now runs in two passes — titles and reftexts first, then the reftext→id map is built, then list/cell/dlist content text — restoring Ruby's invariant that all references are known before any content substitution resolves a natural cross-reference
