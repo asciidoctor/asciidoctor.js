@@ -28,6 +28,7 @@ function makeDoc({
     },
     hasAttribute: (name) => {
       if (name === 'compat-mode') return compatMode
+      if (name === 'allow-uri-read') return allowUriRead
       return false
     },
   }

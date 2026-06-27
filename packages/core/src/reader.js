@@ -1448,7 +1448,7 @@ export class PreprocessorReader extends Reader {
     }
 
     if (isUriish(target) || typeof this._dir !== 'string') {
-      if (!doc.getAttribute('allow-uri-read')) {
+      if (!doc.hasAttribute('allow-uri-read')) {
         this._logWarn(
           `cannot include contents of URI: ${target} (allow-uri-read attribute not enabled)`,
           { sourceLocation: this.cursor }

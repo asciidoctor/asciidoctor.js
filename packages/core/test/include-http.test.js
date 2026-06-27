@@ -56,6 +56,16 @@ describe('Include http URI', () => {
     assert.ok(html.includes('Foo'), `Expected "Foo" in:\n${html}`)
   })
 
+  test('should include file with an absolute http URI when allow-uri-read has an empty value', async () => {
+    // Asciidoctor treats the mere presence of an attribute (even with an empty
+    // value) as "enabled"; '' is falsy in JS so presence must be checked, not truthiness.
+    const html = await convert(`include::${baseUri}/foo.adoc[]`, {
+      safe: 'safe',
+      attributes: { 'allow-uri-read': '' },
+    })
+    assert.ok(html.includes('Foo'), `Expected "Foo" in:\n${html}`)
+  })
+
   test('should include file with an absolute http URI when base_dir is an absolute http URI', async () => {
     const html = await convert(`include::${baseUri}/foo.adoc[]`, {
       safe: 'safe',
