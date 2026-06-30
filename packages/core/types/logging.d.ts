@@ -105,12 +105,49 @@ export namespace Logger {
         }): typeof obj;
     }
 }
+/** Wrapper stored by MemoryLogger; provides getSeverity/getText/getSourceLocation. */
+export class LogMessage {
+    /**
+     * @param {string} severity - Severity label, e.g. 'ERROR'.
+     * @param {string|{text: string, source_location?: import('./reader.js').Cursor}|null} message
+     */
+    constructor(severity: string, message: string | {
+        text: string;
+        source_location?: import("./reader.js").Cursor;
+    } | null);
+    message: string | {
+        text: string;
+        source_location?: import("./reader.js").Cursor;
+    };
+    /** @type {string} */
+    severity: string;
+    /** @type {string} */
+    text: string;
+    /** @type {import('./reader.js').Cursor|null} */
+    sourceLocation: import("./reader.js").Cursor | null;
+    /**
+     * @returns {string} The severity label, e.g. 'ERROR'.
+     */
+    getSeverity(): string;
+    /**
+     * @returns {string} The message text.
+     */
+    getText(): string;
+    /**
+     * @returns {import('./reader.js').Cursor|undefined} The source location, if any.
+     */
+    getSourceLocation(): import("./reader.js").Cursor | undefined;
+}
 /** In-memory logger that stores all log messages for later inspection. */
 export class MemoryLogger {
     static create(): MemoryLogger;
     level: number;
-    messages: any[];
-    getMessages(): any[];
+    /** @type {LogMessage[]} */
+    messages: LogMessage[];
+    /**
+     * @returns {LogMessage[]} The log messages recorded so far, in order.
+     */
+    getMessages(): LogMessage[];
     getMaxSeverity(): number;
     add(severity: any, message?: any, progname?: any): boolean;
     debug(msg: any, pn: any): boolean;
