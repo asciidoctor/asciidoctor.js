@@ -675,22 +675,34 @@ export class Reader {
   }
 
   /** @param {string} msg @param {{ sourceLocation?: any, includeLocation?: any }} [opts] */
-  _logWarn(msg, { sourceLocation, includeLocation } = {}) {
-    let text = sourceLocation ? `${sourceLocation.lineInfo}: ${msg}` : msg
-    if (includeLocation) text += ` (${includeLocation.lineInfo})`
-    this.logger.warn(text)
+  _logWarn(msg, opts = {}) {
+    this.logger.warn(this._messageWithContext(msg, opts))
   }
   _logError(msg, opts = {}) {
-    let text = opts.sourceLocation
-      ? `${opts.sourceLocation.lineInfo}: ${msg}`
-      : msg
-    if (opts.includeLocation) text += ` (${opts.includeLocation.lineInfo})`
-    this.logger.error(text)
+    this.logger.error(this._messageWithContext(msg, opts))
   }
   /** @param {string} msg @param {{ sourceLocation?: any }} [opts] */
-  _logInfo(msg, { sourceLocation } = {}) {
-    const text = sourceLocation ? `${sourceLocation.lineInfo}: ${msg}` : msg
-    this.logger.info(text)
+  _logInfo(msg, opts = {}) {
+    this.logger.info(this._messageWithContext(msg, opts))
+  }
+
+  /**
+   * Build an auto-formatting message that keeps the cursor as a structured
+   * source_location (rather than baking it into the text). When displayed by a
+   * stderr Logger the location is rendered as a "<path>: line <N>: " prefix, but
+   * a MemoryLogger records it separately on the LogMessage so consumers can call
+   * getSourceLocation(). Mirrors Ruby's Logging#message_with_context.
+   * @param {string} msg
+   * @param {{ sourceLocation?: any, includeLocation?: any }} [opts]
+   * @internal
+   */
+  _messageWithContext(msg, { sourceLocation, includeLocation } = {}) {
+    if (!sourceLocation && !includeLocation) return msg
+    return Logger.AutoFormattingMessage.attach({
+      text: msg,
+      source_location: sourceLocation ?? null,
+      include_location: includeLocation ?? null,
+    })
   }
 }
 

@@ -95,13 +95,20 @@ export namespace Logger {
     export { BasicFormatter };
     export namespace AutoFormattingMessage {
         /**
-         * Attach auto-formatting to any plain object carrying { text, source_location }.
-         * @param {{text: string, source_location?: string}} obj
+         * Attach auto-formatting to any plain object carrying
+         * { text, source_location, include_location }.
+         *
+         * The location(s) are rendered only by inspect()/toString() (used when a
+         * stderr Logger formats the line); the structured `source_location` /
+         * `include_location` remain on the object so a MemoryLogger can record them
+         * on the resulting LogMessage without duplicating them inside `text`.
+         * @param {{text: string, source_location?: any, include_location?: any}} obj
          * @returns {typeof obj} The same object with inspect() and toString() added.
          */
         function attach(obj: {
             text: string;
-            source_location?: string;
+            source_location?: any;
+            include_location?: any;
         }): typeof obj;
     }
 }

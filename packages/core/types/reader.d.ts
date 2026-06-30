@@ -123,13 +123,13 @@ export class Reader {
     createLogMessage(text: any, context?: {}): any;
     get logger(): any;
     /** @param {string} msg @param {{ sourceLocation?: any, includeLocation?: any }} [opts] */
-    _logWarn(msg: string, { sourceLocation, includeLocation }?: {
+    _logWarn(msg: string, opts?: {
         sourceLocation?: any;
         includeLocation?: any;
     }): void;
     _logError(msg: any, opts?: {}): void;
     /** @param {string} msg @param {{ sourceLocation?: any }} [opts] */
-    _logInfo(msg: string, { sourceLocation }?: {
+    _logInfo(msg: string, opts?: {
         sourceLocation?: any;
     }): void;
 }
