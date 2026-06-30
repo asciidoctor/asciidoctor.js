@@ -9,7 +9,13 @@ import {
   ImageReference,
   RevisionInfo,
 } from './document.js'
-import { Logger, LoggerManager, MemoryLogger, NullLogger } from './logging.js'
+import {
+  Logger,
+  LoggerManager,
+  LogMessage,
+  MemoryLogger,
+  NullLogger,
+} from './logging.js'
 import { HttpCache, MemoryHttpCache, HttpCacheManager } from './http_cache.js'
 import { SafeMode, ContentModel } from './constants.js'
 import { Timings } from './timings.js'
@@ -110,6 +116,7 @@ export {
   Reader,
   SyntaxHighlighterBase,
   LoggerManager,
+  LogMessage,
   MemoryLogger,
   NullLogger,
   HttpCache,

@@ -294,28 +294,46 @@ Logger.AutoFormattingMessage = {
 // ── LogMessage ────────────────────────────────────────────────────────────────
 
 /** Wrapper stored by MemoryLogger; provides getSeverity/getText/getSourceLocation. */
-class LogMessage {
+export class LogMessage {
+  /**
+   * @param {string} severity - Severity label, e.g. 'ERROR'.
+   * @param {string|{text: string, source_location?: import('./reader.js').Cursor}|null} message
+   */
   constructor(severity, message) {
     this.message = message
+    /** @type {string} */
     this.severity = severity // string label, e.g. 'ERROR'
     // AutoFormattingMessage objects carry { text, source_location }
     if (message !== null && typeof message === 'object' && 'text' in message) {
-      this._text = message.text
-      this._sourceLocation = message.source_location ?? null
+      /** @type {string} */
+      this.text = message.text
+      /** @type {import('./reader.js').Cursor|null} */
+      this.sourceLocation = message.source_location ?? null
     } else {
-      this._text = message != null ? String(message) : ''
-      this._sourceLocation = null
+      this.text = message != null ? String(message) : ''
+      this.sourceLocation = null
     }
   }
 
+  /**
+   * @returns {string} The severity label, e.g. 'ERROR'.
+   */
   getSeverity() {
     return this.severity
   }
+
+  /**
+   * @returns {string} The message text.
+   */
   getText() {
-    return this._text
+    return this.text
   }
+
+  /**
+   * @returns {import('./reader.js').Cursor|undefined} The source location, if any.
+   */
   getSourceLocation() {
-    return this._sourceLocation ?? undefined
+    return this.sourceLocation ?? undefined
   }
 }
 
@@ -328,6 +346,7 @@ export class MemoryLogger {
     // matching Ruby's MemoryLogger (level: UNKNOWN). The add() method stores all
     // messages unconditionally — level is only used by the isDebug() guard.
     this.level = Severity.UNKNOWN
+    /** @type {LogMessage[]} */
     this.messages = []
   }
 
@@ -335,6 +354,9 @@ export class MemoryLogger {
     return new MemoryLogger()
   }
 
+  /**
+   * @returns {LogMessage[]} The log messages recorded so far, in order.
+   */
   getMessages() {
     return this.messages
   }
