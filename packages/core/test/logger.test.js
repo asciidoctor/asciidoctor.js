@@ -51,6 +51,44 @@ describe('Logger', () => {
     assert.equal(sourceLocation.getPath(), '<stdin>')
   })
 
+  test('should attach a structured source location to a missing include error', async () => {
+    const memoryLogger = MemoryLogger.create()
+    await convert('= Title\n\nText\n\ninclude::not-found.adoc[]\n', {
+      safe: 'unsafe',
+      sourcemap: true,
+      logger: memoryLogger,
+      attributes: { docdir: '/tmp', docfile: '/tmp/test.adoc' },
+    })
+    const errorMessage = memoryLogger.getMessages()[0]
+    assert.equal(errorMessage.getSeverity(), 'ERROR')
+    // The text stays clean — the location is not baked into it.
+    assert.equal(
+      errorMessage.getText(),
+      'include file not found: /tmp/not-found.adoc'
+    )
+    const sourceLocation = errorMessage.getSourceLocation()
+    assert.ok(sourceLocation, 'expected a structured source location')
+    assert.equal(sourceLocation.getFile(), '/tmp/test.adoc')
+    assert.equal(sourceLocation.getLineNumber(), 5)
+  })
+
+  test('should attach a structured source location to an unterminated block warning', async () => {
+    const memoryLogger = MemoryLogger.create()
+    await convert('= Title\n\n----\nunclosed\n', {
+      safe: 'unsafe',
+      sourcemap: true,
+      logger: memoryLogger,
+      attributes: { docdir: '/tmp', docfile: '/tmp/test.adoc' },
+    })
+    const warnMessage = memoryLogger.getMessages()[0]
+    assert.equal(warnMessage.getSeverity(), 'WARN')
+    assert.equal(warnMessage.getText(), 'unterminated listing block')
+    const sourceLocation = warnMessage.getSourceLocation()
+    assert.ok(sourceLocation, 'expected a structured source location')
+    assert.equal(sourceLocation.getFile(), '/tmp/test.adoc')
+    assert.equal(sourceLocation.getLineNumber(), 3)
+  })
+
   test('should be able to set program name', () => {
     const logger = new Logger()
     assert.equal(logger.getProgramName(), 'asciidoctor')

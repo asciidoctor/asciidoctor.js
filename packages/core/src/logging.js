@@ -277,14 +277,23 @@ Logger.BasicFormatter = class {
 
 Logger.AutoFormattingMessage = {
   /**
-   * Attach auto-formatting to any plain object carrying { text, source_location }.
-   * @param {{text: string, source_location?: string}} obj
+   * Attach auto-formatting to any plain object carrying
+   * { text, source_location, include_location }.
+   *
+   * The location(s) are rendered only by inspect()/toString() (used when a
+   * stderr Logger formats the line); the structured `source_location` /
+   * `include_location` remain on the object so a MemoryLogger can record them
+   * on the resulting LogMessage without duplicating them inside `text`.
+   * @param {{text: string, source_location?: any, include_location?: any}} obj
    * @returns {typeof obj} The same object with inspect() and toString() added.
    */
   attach(obj) {
     obj.inspect = function () {
       const sloc = this.source_location
-      return sloc ? `${sloc}: ${this.text}` : this.text
+      const iloc = this.include_location
+      let text = sloc ? `${sloc}: ${this.text}` : this.text
+      if (iloc) text += ` (${iloc})`
+      return text
     }
     obj.toString = obj.inspect
     return obj
