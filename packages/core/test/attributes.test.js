@@ -63,6 +63,22 @@ describe('Attributes', () => {
       assert.ok(result.includes('Second: two.'), result)
     })
 
+    test('resolves a reassigned attribute referenced from list items and table cells', async () => {
+      // List item / table cell text is resolved eagerly (precomputeText). The block must
+      // still see the attribute value in scope at its position, mirroring Ruby's lazy,
+      // playback-driven conversion.
+      const listInput = 'Intro.\n\n:x: 1\n\n* item {x}\n\n:x: 2\n\n* item {x}'
+      const listResult = await convertStringToEmbedded(listInput)
+      assert.ok(listResult.includes('item 1'), listResult)
+      assert.ok(listResult.includes('item 2'), listResult)
+
+      const cellInput =
+        'Intro.\n\n:c: red\n\n|===\n|cell {c}\n|===\n\n:c: blue\n\n|===\n|cell {c}\n|==='
+      const cellResult = await convertStringToEmbedded(cellInput)
+      assert.ok(cellResult.includes('cell red'), cellResult)
+      assert.ok(cellResult.includes('cell blue'), cellResult)
+    })
+
     test('requires a space after colon following attribute name', async () => {
       const doc = await documentFromString('foo:bar')
       assert.equal(doc.attributes.foo, undefined)
