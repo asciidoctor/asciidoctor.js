@@ -471,8 +471,24 @@ export class Document extends AbstractBlock<string> {
     private _resolveDocinfoSubs;
     /**
      * @private
+     * Restore the document attributes to a previously captured snapshot, discarding any
+     * body-level (re)assignments replayed while pre-computing text. Mirrors Ruby's
+     * restore_attributes-before-convert invariant.
+     * @param {Object} snapshot - The attributes snapshot to restore.
+     */
+    private _restoreAttributeSnapshot;
+    /**
+     * @private
      * Walk the block tree and pre-compute all async text values.
      * Handles titles (AbstractBlock), list item text, table cell text, and reftexts.
+     *
+     * Runs in two passes (see {@link parse}): with `resolveContent` false only titles and
+     * reftexts are substituted (so the reftext→id map can be built); with `resolveContent`
+     * true the list item / table cell / dlist text is substituted, resolving any natural
+     * cross-references against the now-complete map. Title/reftext pre-computation is
+     * idempotent (results are cached), so running it in both passes is a no-op the second time.
+     * @param {AbstractBlock} block - The block to resolve.
+     * @param {boolean} resolveContent - Whether to substitute list item / cell / dlist text.
      */
     private _resolveAllTexts;
     /**

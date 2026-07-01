@@ -592,16 +592,16 @@ export class Document extends AbstractBlock {
     // attribute (re)assignments are in scope; snapshot and restore the document
     // attributes so the downstream steps and conversion still start from the restored
     // (header) state, matching Ruby's restore_attributes-before-convert invariant.
+    //
+    // This runs in two passes because list item / table cell / dlist text may contain
+    // natural cross-references (e.g. <<Some section title>>) that resolve against the
+    // reftext→id map. Pass 1 substitutes titles and reftexts only, so every section
+    // reftext is known; the map is then built; pass 2 substitutes the block content
+    // text, where resolveId() can now match those natural references.
     const attributesSnapshot = { ...this.attributes }
-    await this._resolveAllTexts(this)
-    for (const key of Reflect.ownKeys(this.attributes))
-      delete this.attributes[key]
-    Object.assign(this.attributes, attributesSnapshot)
-    // Reset the footnote counter so that body-content footnotes (processed during conversion)
-    // start numbering from 1, reproducing Ruby's "out of sequence" quirk: title footnotes are
-    // numbered during parsing via apply_title_subs, then the counter restarts for body content.
-    delete this.attributes['footnote-number']
-    delete this._counters['footnote-number']
+    // Pass 1: titles + reftexts (no block content text yet).
+    await this._resolveAllTexts(this, false)
+    this._restoreAttributeSnapshot(attributesSnapshot)
     // Pre-compute reftext for all registered inline anchor nodes.
     for (const ref of Object.values(this.catalog.refs)) {
       if (ref && typeof ref.precomputeReftext === 'function') {
@@ -610,6 +610,15 @@ export class Document extends AbstractBlock {
     }
     // Build the reftext→id lookup map so that resolveId() is synchronous.
     await this._buildReftextsMap()
+    // Pass 2: list item / table cell / dlist text, now that natural cross-references
+    // can be resolved against the reftext→id map.
+    await this._resolveAllTexts(this, true)
+    this._restoreAttributeSnapshot(attributesSnapshot)
+    // Reset the footnote counter so that body-content footnotes (processed during conversion)
+    // start numbering from 1, reproducing Ruby's "out of sequence" quirk: title footnotes are
+    // numbered during parsing via apply_title_subs, then the counter restarts for body content.
+    delete this.attributes['footnote-number']
+    delete this._counters['footnote-number']
 
     this._parsed = true
     return this
@@ -1666,10 +1675,31 @@ export class Document extends AbstractBlock {
 
   /**
    * @private
+   * Restore the document attributes to a previously captured snapshot, discarding any
+   * body-level (re)assignments replayed while pre-computing text. Mirrors Ruby's
+   * restore_attributes-before-convert invariant.
+   * @param {Object} snapshot - The attributes snapshot to restore.
+   */
+  _restoreAttributeSnapshot(snapshot) {
+    for (const key of Reflect.ownKeys(this.attributes))
+      delete this.attributes[key]
+    Object.assign(this.attributes, snapshot)
+  }
+
+  /**
+   * @private
    * Walk the block tree and pre-compute all async text values.
    * Handles titles (AbstractBlock), list item text, table cell text, and reftexts.
+   *
+   * Runs in two passes (see {@link parse}): with `resolveContent` false only titles and
+   * reftexts are substituted (so the reftext→id map can be built); with `resolveContent`
+   * true the list item / table cell / dlist text is substituted, resolving any natural
+   * cross-references against the now-complete map. Title/reftext pre-computation is
+   * idempotent (results are cached), so running it in both passes is a no-op the second time.
+   * @param {AbstractBlock} block - The block to resolve.
+   * @param {boolean} resolveContent - Whether to substitute list item / cell / dlist text.
    */
-  async _resolveAllTexts(block) {
+  async _resolveAllTexts(block, resolveContent) {
     // Replay this block's attribute entries (in document order, since the walk is
     // depth-first pre-order like conversion) so that body-level attribute assignments
     // and reassignments are in scope when the block's — and its descendants' and later
@@ -1695,12 +1725,12 @@ export class Document extends AbstractBlock {
       // dlist.blocks is an array of [[term, ...], item_or_null] pairs.
       for (const [terms, item] of block.blocks ?? []) {
         for (const term of terms ?? []) {
-          await term.precomputeText?.()
-          await this._resolveAllTexts(term)
+          if (resolveContent) await term.precomputeText?.()
+          await this._resolveAllTexts(term, resolveContent)
         }
         if (item) {
-          await item.precomputeText?.()
-          await this._resolveAllTexts(item)
+          if (resolveContent) await item.precomputeText?.()
+          await this._resolveAllTexts(item, resolveContent)
         }
       }
     } else if (ctx === 'table') {
@@ -1710,14 +1740,14 @@ export class Document extends AbstractBlock {
         ...(block.rows?.foot ?? []),
       ]) {
         for (const cell of row) {
-          await cell.precomputeText?.()
+          if (resolveContent) await cell.precomputeText?.()
           await cell.precomputeReftext?.()
         }
       }
     } else {
       for (const child of block.blocks ?? []) {
-        await child.precomputeText?.()
-        await this._resolveAllTexts(child)
+        if (resolveContent) await child.precomputeText?.()
+        await this._resolveAllTexts(child, resolveContent)
       }
     }
   }
