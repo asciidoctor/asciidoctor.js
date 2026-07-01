@@ -100,6 +100,77 @@ describe('Using a template converter', () => {
     )
   })
 
+  // https://github.com/asciidoctor/asciidoctor.js/issues/1841
+  // A JavaScript template must be applied regardless of its file extension
+  // (.js, .cjs, .mjs) and of the module format of the project (ESM or CJS).
+  describe('should apply a JavaScript template regardless of extension/format', () => {
+    for (const { name, dir, cssClass } of [
+      {
+        name: 'a .cjs file (always CommonJS)',
+        dir: 'js',
+        cssClass: 'paragraph-js',
+      },
+      {
+        name: 'a .js file in a "type": "commonjs" project (CommonJS)',
+        dir: 'js-cjs',
+        cssClass: 'paragraph-js-cjs',
+      },
+      {
+        name: 'a .js file in a "type": "module" project (ESM)',
+        dir: 'js-esm',
+        cssClass: 'paragraph-js-esm',
+      },
+      {
+        name: 'a .mjs file (always ESM)',
+        dir: 'mjs',
+        cssClass: 'paragraph-mjs',
+      },
+    ]) {
+      test(name, async () => {
+        const result = await convert('content', {
+          safe: 'safe',
+          backend: 'html5',
+          template_dir: join(TEMPLATES_DIR, dir),
+        })
+        assert.ok(
+          result.includes(`<p class="${cssClass}">content</p>`),
+          `Unexpected output:\n${result}`
+        )
+      })
+    }
+  })
+
+  // A helpers file must be loaded regardless of its extension and module
+  // format, just like the render templates it supports.
+  describe('should load a helpers file regardless of extension/format', () => {
+    for (const { name, dir, cssClass, greeting } of [
+      {
+        name: 'ESM helpers.js with named exports',
+        dir: 'js-esm-helpers',
+        cssClass: 'paragraph-esm-helpers',
+        greeting: 'esm-helper',
+      },
+      {
+        name: 'ESM helpers.mjs with a default export object',
+        dir: 'mjs-helpers',
+        cssClass: 'paragraph-mjs-helpers',
+        greeting: 'mjs-helper',
+      },
+    ]) {
+      test(name, async () => {
+        const result = await convert('content', {
+          safe: 'safe',
+          backend: 'html5',
+          template_dir: join(TEMPLATES_DIR, dir),
+        })
+        assert.ok(
+          result.includes(`<p class="${cssClass}">${greeting}:content</p>`),
+          `Unexpected output:\n${result}`
+        )
+      })
+    }
+  })
+
   test('should handle a given node', async () => {
     const doc = await load('content', {
       safe: 'safe',

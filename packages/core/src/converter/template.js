@@ -8,8 +8,7 @@
 //   - Ruby File.directory?/File.file? → fsp.stat().isDirectory()/isFile() (async).
 //   - Ruby File.basename / File.expand_path → node:path basename / resolve.
 //   - PathResolver.system_path → pathResolver.systemPath().
-//   - template.render(node, opts) → template.render({node, opts, helpers}).
-//   - Helpers loaded from helpers.js/helpers.cjs; can export configure(enginesContext).
+//   - template.render(node, opts) → template.render({node, opts, helpers}).//   - Helpers loaded from helpers.js/helpers.cjs/helpers.mjs; can export configure(enginesContext).
 //   - Custom engines registered via TemplateConverter.TemplateEngine.register(ext, adapter).
 //   - Thread safety / Mutex → not needed (single-threaded JS).
 //   - load_eruby / eRuby support → not applicable in JS environment.
@@ -19,6 +18,7 @@
 import { ConverterBase } from '../converter.js'
 import { PathResolver } from '../path_resolver.js'
 import { createRequire } from 'node:module'
+import { pathToFileURL } from 'node:url'
 import { promises as fsp } from 'node:fs'
 import path from 'node:path'
 
@@ -288,7 +288,11 @@ export class TemplateConverter extends ConverterBase {
       if (!(await _isFile(file))) continue
 
       // Collect helpers separately; process after all templates.
-      if (basename === 'helpers.js' || basename === 'helpers.cjs') {
+      if (
+        basename === 'helpers.js' ||
+        basename === 'helpers.cjs' ||
+        basename === 'helpers.mjs'
+      ) {
         helpersFile = file
         continue
       }
@@ -356,8 +360,8 @@ export class TemplateConverter extends ConverterBase {
         const pugOpts = { ...(this.engineOptions.pug ?? {}), filename: file }
         const renderFn = pug.compileFile(file, pugOpts)
         template = { render: renderFn, file }
-      } else if (ext === 'js' || ext === 'cjs') {
-        const renderFn = _require(file)
+      } else if (ext === 'js' || ext === 'cjs' || ext === 'mjs') {
+        const renderFn = await _loadModule(file, ext)
         template = { render: renderFn, file }
       } else {
         // Fall back to custom TemplateEngine registry.
@@ -372,16 +376,20 @@ export class TemplateConverter extends ConverterBase {
       result[name] = template
     }
 
-    // Load helpers if found (or if a helpers.js exists at the top of the dir).
-    const fallbackHelpers = path.join(templateDir, 'helpers.js')
-    const fallbackHelpersCjs = path.join(templateDir, 'helpers.cjs')
-    if (!helpersFile && (await _isFile(fallbackHelpers)))
-      helpersFile = fallbackHelpers
-    if (!helpersFile && (await _isFile(fallbackHelpersCjs)))
-      helpersFile = fallbackHelpersCjs
+    // Load helpers if found (or if a helpers file exists at the top of the dir).
+    if (!helpersFile) {
+      for (const ext of ['js', 'cjs', 'mjs']) {
+        const fallback = path.join(templateDir, `helpers.${ext}`)
+        if (await _isFile(fallback)) {
+          helpersFile = fallback
+          break
+        }
+      }
+    }
 
     if (helpersFile) {
-      const ctx = _require(helpersFile)
+      const helpersExt = helpersFile.slice(helpersFile.lastIndexOf('.') + 1)
+      const ctx = await _loadModule(helpersFile, helpersExt)
       if (typeof ctx.configure === 'function') ctx.configure(enginesCtx)
       result['helpers.js'] = { file: helpersFile, ctx }
     }
@@ -408,6 +416,32 @@ export class TemplateConverter extends ConverterBase {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+/**
+ * Load a JavaScript module (template render function or helpers object) by
+ * file extension.
+ *
+ * - `.cjs` files are always CommonJS: require() returns `module.exports`.
+ * - `.js` and `.mjs` files are loaded with a dynamic `import()`, which Node
+ *   resolves as either ES modules or CommonJS. The export is taken from the
+ *   module's default export (`export default …` in ESM, `module.exports = …`
+ *   in CommonJS via interop); when there is no default export the module
+ *   namespace is returned instead, so ESM helpers exposing named exports
+ *   (`export function configure() {}`) work too.
+ * @param {string} file - absolute path to the module file
+ * @param {string} ext - file extension without the leading dot ('js' | 'cjs' | 'mjs')
+ * @returns {Promise<*>} the module's default export, or its namespace
+ * @internal
+ * @private
+ */
+async function _loadModule(file, ext) {
+  if (ext === 'cjs') {
+    const mod = _require(file)
+    return mod?.default ? mod.default : mod
+  }
+  const mod = await import(pathToFileURL(file).href)
+  return mod.default ?? mod
+}
 
 /**
  * @internal
