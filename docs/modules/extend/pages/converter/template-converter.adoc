@@ -47,6 +47,36 @@ export default ({ node }) => `<p class="paragraph">${node.getContent()}</p>`
 
 This function will be called with a <<template-context>> as argument.
 
+[#file-extensions-and-module-formats]
+=== File extensions and module formats
+
+A plain JavaScript template can use the `.js`, `.mjs` or `.cjs` extension, and can be written either as an ES module or as CommonJS.
+Asciidoctor.js loads the file with a dynamic https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import[`import()`] and lets Node.js resolve the module.
+
+This means Node.js decides how the file is interpreted following its usual https://nodejs.org/api/packages.html#determining-module-system[module system determination] rules.
+In short: `.mjs` is always an ES module, `.cjs` is always CommonJS, and `.js` depends on the surrounding project (mainly the `"type"` field of the nearest _package.json_).
+You don't need to configure anything: whatever format Node.js resolves, Asciidoctor.js uses the module's *default export* as the render function.
+
+So both of the following are valid, regardless of the extension you choose:
+
+.ES module (`export default`)
+[source,js]
+----
+export default ({ node }) => `<p class="paragraph">${node.getContent()}</p>`
+----
+
+.CommonJS (`module.exports`)
+[source,js]
+----
+module.exports = ({ node }) => `<p class="paragraph">${node.getContent()}</p>`
+----
+
+[TIP]
+====
+If you want to remove any ambiguity, use the explicit extensions `.mjs` (always an ES module) or `.cjs` (always CommonJS).
+Unlike `.js`, they don't depend on the `"type"` field of the nearest _package.json_.
+====
+
 == Naming convention
 
 Let's say, we want to use Nunjucks to write templates.
@@ -141,6 +171,7 @@ Please note that it's not a recommended practice, and you should try to avoid co
 
 You can create a `helpers.js` file in your template directory.
 This file can be used to declare utility functions that can be used in the templates.
+Like plain JavaScript templates, the helpers file can use the `.js`, `.mjs` or `.cjs` extension and be written as an ES module or as CommonJS (see <<file-extensions-and-module-formats>>).
 For instance, if you are using Handlebars, you might want to register {url-handlebars-register-partials}[partials] or {url-handlebars-register-helpers}[helpers].
 Similarly, if you are using Nunjucks, you might want to {url-nunjucks-add-filter}[add custom filters].
 
