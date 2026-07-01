@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.1 (2026-07-01)
+
 Bug Fixes::
 
 * Fix reassigned document-body attributes all resolving to their final value — a custom attribute redefined in the body (e.g. `:reassigned: one` … `:reassigned: two`) must resolve to the value in scope at each reference (Ruby renders `one` then `two`), but every reference rendered the last value when any content preceded the entries (including a document header). The parser reset the shared block-attributes object between blocks with `Object.keys(...)`, which skips the `Symbol`-keyed `ATTR_ENTRIES_KEY`, so the array of `AttributeEntry` objects leaked and accumulated across blocks; each block's attribute-entry playback then replayed *every* assignment. The reset now uses `Reflect.ownKeys(...)` so the entries are cleared too
