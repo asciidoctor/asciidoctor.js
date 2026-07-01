@@ -51,6 +51,18 @@ describe('Attributes', () => {
       assert.equal(doc.attributes.frog, 'Tanglefoot')
     })
 
+    test('resolves a reassigned body attribute to its value at each reference', async () => {
+      // A custom attribute redefined in the document body must resolve to the value
+      // in scope at the point of each reference (playback), not the final value.
+      const input =
+        ':reassigned: one\n\nFirst: {reassigned}.\n\n:reassigned: two\n\nSecond: {reassigned}.'
+      // Preceding content forces the entries into the body (not the document header),
+      // which is where the attribute-entry playback leak used to surface.
+      const result = await convertStringToEmbedded(`Intro.\n\n${input}`)
+      assert.ok(result.includes('First: one.'), result)
+      assert.ok(result.includes('Second: two.'), result)
+    })
+
     test('requires a space after colon following attribute name', async () => {
       const doc = await documentFromString('foo:bar')
       assert.equal(doc.attributes.foo, undefined)
