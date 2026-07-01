@@ -598,7 +598,12 @@ export class Parser {
             }
           }
           ;(intro ?? section).blocks.push(newBlock)
-          for (const key of Object.keys(attributes)) delete attributes[key]
+          // Reset the shared attributes object for the next block. Use Reflect.ownKeys
+          // (not Object.keys) so the Symbol-keyed attribute entries (ATTR_ENTRIES_KEY)
+          // are cleared too; otherwise the array of AttributeEntry objects leaks and
+          // accumulates across blocks, causing reassigned attributes (e.g. a body-level
+          // `:name:` redefined later) to all resolve to the final value at playback time.
+          for (const key of Reflect.ownKeys(attributes)) delete attributes[key]
         }
       }
 
