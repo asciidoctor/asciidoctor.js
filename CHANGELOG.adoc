@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Bug Fixes::
+
+* Fix JavaScript templates not being applied depending on their file extension and the project's module format ({uri-repo}/issues/1841[#1841]) — a `.js` template in a `"type": "module"` (ESM) project crashed with `template.render is not a function`, and `.mjs` templates were silently ignored (the extension was not even recognised). The template loader used a CommonJS `require()` for `.js`/`.cjs` files, which returned the ESM namespace object (not the render function) for ESM `.js` files and did not handle `.mjs` at all. `.js` and `.mjs` templates are now loaded with a dynamic `import()` (which Node resolves as either ESM or CommonJS) and the render function is taken from the module's default export, so all combinations of extension (`.js`, `.cjs`, `.mjs`) and module format (ESM or CommonJS) work. The same loading is applied to the optional `helpers` file (`helpers.js`/`helpers.cjs`/`helpers.mjs`), which can now also be an ES module
+
 == v4.0.1 (2026-07-01)
 
 Bug Fixes::
