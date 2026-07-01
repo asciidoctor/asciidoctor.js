@@ -1454,7 +1454,13 @@ export class Parser {
       }
     }
 
-    if (Object.keys(attributes).length > 0) block.updateAttributes(attributes)
+    // Reflect.ownKeys (not Object.keys) so a block carrying only Symbol-keyed
+    // attribute entries (ATTR_ENTRIES_KEY) — e.g. an `:attr:` entry immediately
+    // preceding a list or table — still receives them, matching Ruby's
+    // `attributes.empty?` where the `:attribute_entries` key is counted. Without this
+    // the entries are dropped and the attribute is not played back for that block.
+    if (Reflect.ownKeys(attributes).length > 0)
+      block.updateAttributes(attributes)
     block.commitSubs()
 
     if (block.hasSub('callouts')) {

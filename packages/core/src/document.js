@@ -587,8 +587,16 @@ export class Document extends AbstractBlock {
     }
 
     // Pre-compute all async text values (titles, list item text, cell text, reftexts)
-    // so that synchronous getters work correctly during conversion.
+    // so that synchronous getters work correctly during conversion. _resolveAllTexts
+    // replays attribute entries in document order (mirroring conversion) so body-level
+    // attribute (re)assignments are in scope; snapshot and restore the document
+    // attributes so the downstream steps and conversion still start from the restored
+    // (header) state, matching Ruby's restore_attributes-before-convert invariant.
+    const attributesSnapshot = { ...this.attributes }
     await this._resolveAllTexts(this)
+    for (const key of Reflect.ownKeys(this.attributes))
+      delete this.attributes[key]
+    Object.assign(this.attributes, attributesSnapshot)
     // Reset the footnote counter so that body-content footnotes (processed during conversion)
     // start numbering from 1, reproducing Ruby's "out of sequence" quirk: title footnotes are
     // numbered during parsing via apply_title_subs, then the counter restarts for body content.
@@ -1662,6 +1670,12 @@ export class Document extends AbstractBlock {
    * Handles titles (AbstractBlock), list item text, table cell text, and reftexts.
    */
   async _resolveAllTexts(block) {
+    // Replay this block's attribute entries (in document order, since the walk is
+    // depth-first pre-order like conversion) so that body-level attribute assignments
+    // and reassignments are in scope when the block's — and its descendants' and later
+    // siblings' — title / list item / table cell / reftext values are substituted.
+    // Mirrors AbstractBlock#convert, which calls playbackAttributes before converting.
+    this.playbackAttributes(block.attributes)
     // The header section lives outside document.blocks; pre-compute its title here so
     // that doc.doctitle() returns the fully-substituted title (with replacements applied,
     // e.g. ' → &#8217;) rather than the header-subs-only fallback.
