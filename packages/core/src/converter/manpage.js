@@ -108,7 +108,7 @@ export default class ManPageConverter extends ConverterBase {
       `'\\" t
 .\\"     Title: ${mantitle}
 .\\"    Author: ${node.hasAttribute('authors') ? node.getAttribute('authors') : '[see the "AUTHOR(S)" section]'}
-.\\" Generator: Asciidoctor ${node.getAttribute('asciidoctor-version')}`,
+.\\" Generator: Asciidoctor.js ${node.getAttribute('asciidoctor-version')}`,
     ]
 
     if (docdate) result.push(`.\\"      Date: ${docdate}`)
