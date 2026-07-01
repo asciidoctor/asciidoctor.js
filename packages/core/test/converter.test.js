@@ -537,4 +537,40 @@ describe('Custom converters', () => {
     assert.ok(result != null, 'SVG does not exist or cannot be read')
     assert.ok(result.startsWith('<svg'))
   })
+
+  test('readSvgContents decodes a base64 data-URI target', async () => {
+    const doc = await load('image::diagram[format=svg,opts=inline]', {
+      safe: 'safe',
+    })
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg"><circle r="1"/></svg>'
+    const target = `data:image/svg+xml;base64,${Buffer.from(svg, 'utf8').toString('base64')}`
+    const result = await doc.converter.readSvgContents(doc.blocks[0], target)
+    assert.equal(result, svg)
+  })
+
+  test('readSvgContents decodes a percent-encoded data-URI target', async () => {
+    const doc = await load('image::diagram[format=svg,opts=inline]', {
+      safe: 'safe',
+    })
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg"><circle r="1"/></svg>'
+    const target = `data:image/svg+xml,${encodeURIComponent(svg)}`
+    const result = await doc.converter.readSvgContents(doc.blocks[0], target)
+    assert.equal(result, svg)
+  })
+
+  test('an inline SVG image with a data-URI target is embedded, inferring the SVG format from the media type', async () => {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg"><circle r="1"/></svg>'
+    const target = `data:image/svg+xml;base64,${Buffer.from(svg, 'utf8').toString('base64')}`
+    const doc = await load(`image::${target}[opts=inline]`, {
+      safe: 'safe',
+    })
+    assert.ok(
+      !doc.blocks[0].hasAttribute('format'),
+      'expected no explicit format attribute'
+    )
+    const html = await doc.convert()
+    assert.ok(html.includes('<svg'), 'expected inline <svg> in the output')
+    assert.ok(html.includes('<circle r="1"/>'), 'expected SVG contents inline')
+    assert.ok(!html.includes('<img'), 'expected no <img> fallback')
+  })
 })

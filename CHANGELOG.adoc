@@ -8,8 +8,13 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* The HTML5 converter can now inline an SVG image whose target is a `data:` URI (e.g. `image::data:image/svg+xml;base64,…[opts=inline]`). `readSvgContents` decodes both Base64 and percent-encoded `data:` payloads instead of only reading from a file or remote URI, so a diagram or image embedded as a data-URI can be rendered as inline `<svg>` without writing a file or enabling `allow-uri-read`. The SVG format is inferred from the `image/svg+xml` media type, so an explicit `format=svg` attribute is no longer required on a `data:` URI target
+
 Bug Fixes::
 
+* `imageUri` now returns a `data:` URI image target as-is instead of attempting to read it as a file or fetch it via the Fetch API; previously, with both `data-uri` and `allow-uri-read` set, a `data:` URI target (e.g. `data:image/png;base64,…`) triggered a spurious "could not retrieve image data from URI" warning
 * Fix reassigned document-body attributes all resolving to their final value — a custom attribute redefined in the body (e.g. `:reassigned: one` … `:reassigned: two`) must resolve to the value in scope at each reference (Ruby renders `one` then `two`), but every reference rendered the last value when any content preceded the entries (including a document header). The parser reset the shared block-attributes object between blocks with `Object.keys(...)`, which skips the `Symbol`-keyed `ATTR_ENTRIES_KEY`, so the array of `AttributeEntry` objects leaked and accumulated across blocks; each block's attribute-entry playback then replayed *every* assignment. The reset now uses `Reflect.ownKeys(...)` so the entries are cleared too
 * Fix reassigned attributes not resolving correctly when referenced from list item or table cell text (e.g. `:x: 1` … `* item {x}` … `:x: 2` … `* item {x}`) — unlike paragraph content (resolved lazily during conversion with attribute-entry playback), list item and table cell text is pre-computed eagerly after `restoreAttributes()` reverted the document to its header state, so body-level attributes were out of scope and rendered as unresolved (`{x}`) or with the wrong value. `_resolveAllTexts` now replays each block's attribute entries in document order (mirroring `AbstractBlock#convert`) while pre-computing, then restores the header state. In addition, a block carrying *only* `Symbol`-keyed attribute entries (an `:attr:` entry immediately preceding a list or table) now still receives them — the parser's transfer guard used `Object.keys(...).length` (0 for entry-only attributes) instead of `Reflect.ownKeys(...).length`, matching Ruby's `attributes.empty?` where `:attribute_entries` is counted
 * Fix loss of the structured `source_location` on log messages emitted through the reader/preprocessor path (e.g. `include file not found`, `unterminated <type> block`, unterminated preprocessor conditionals) — these were logged as a plain string with the cursor baked into the text as a `"<path>: line <N>: "` prefix, so `message.getSourceLocation()` returned `null` (regression from 2.x). The reader now logs an auto-formatting message that keeps the cursor as a structured `source_location`, so `getSourceLocation()` (`getFile()`/`getLineNumber()`) is populated again and `getText()` stays clean; the stderr `Logger` still renders the `"<path>: line <N>: "` prefix. This restores line-anchored diagnostics for downstream tooling (IDE integrations, linters, CI annotations)
@@ -19,6 +24,10 @@ Bug Fixes::
 Improvements::
 
 * Improve typing of `MemoryLogger#getMessages()` — it previously returned `any[]`; the `LogMessage` wrapper class is now exported and `getMessages()` is declared to return `LogMessage[]`, so consumers get typed `getSeverity()` (`string`), `getText()` (`string`) and `getSourceLocation()` (`Cursor | undefined`) accessors. The wrapper's internal `_text`/`_sourceLocation` fields were renamed to public `text`/`sourceLocation` properties (consistent with `severity`), providing dual property/getter access
+
+Infrastructure::
+
+* Fix the browser-test `Buffer` polyfill so `Buffer.from(str).toString('base64')` actually returns Base64 instead of the original string; previously the data-URI SVG tests built a malformed `data:…;base64,<svg …>` target that made the browser's `atob` throw `InvalidCharacterError`
 
 == v4.0.0 (2026-06-22)
 
