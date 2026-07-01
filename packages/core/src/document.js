@@ -12,6 +12,7 @@
 //   - Mutex / thread-safety not applicable in single-threaded JS.
 //   - `instance_variable_get :@attribute_overrides` → direct property access.
 
+import packageJson from '../package.json' with { type: 'json' }
 import { AbstractBlock } from './abstract_block.js'
 import { Section } from './section.js'
 import { Inline } from './inline.js'
@@ -400,7 +401,7 @@ export class Document extends AbstractBlock {
 
     const attrOverrides = this._attributeOverrides
     attrOverrides.asciidoctor = ''
-    attrOverrides['asciidoctor-version'] = '3.0.0.dev' // matches Ruby VERSION
+    attrOverrides['asciidoctor-version'] = packageJson.version
 
     const safeModeName = SafeMode.nameForValue(this.safe)
     attrOverrides['safe-mode-name'] = safeModeName

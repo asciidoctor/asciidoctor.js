@@ -947,7 +947,7 @@ describe('ManPageConverter convert_document', () => {
 ls - list directory contents`
     const result = await manpage(input)
     assert.match(result, /\.\\" {5}Title: ls/)
-    assert.match(result, /\.\\" Generator: Asciidoctor/)
+    assert.match(result, /\.\\" Generator: Asciidoctor\.js \d/)
   })
 
   test('includes portability macros', async () => {

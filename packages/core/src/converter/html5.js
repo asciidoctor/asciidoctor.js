@@ -116,7 +116,7 @@ export default class Html5Converter extends ConverterBase {
     let reproducible
     if (!(reproducible = node.hasAttribute('reproducible'))) {
       result.push(
-        `<meta name="generator" content="Asciidoctor ${node.getAttribute('asciidoctor-version')}"${slash}>`
+        `<meta name="generator" content="Asciidoctor.js ${node.getAttribute('asciidoctor-version')}"${slash}>`
       )
     }
     if (node.hasAttribute('app-name')) {
