@@ -1748,6 +1748,42 @@ describe('Links', () => {
     assertXpath(output, '//a[@href="#s1"][text()="Section Title"]', 1)
   })
 
+  test('should resolve natural xref inside a list item', async () => {
+    const input =
+      '== Some "section"\n\n* Inside a list, <<Some "section">> resolves.'
+    const output = await convertStringToEmbedded(input)
+    assertXpath(output, '//li//a[@href="#_some_section"]', 1)
+    assertXpath(
+      output,
+      '//li//a[@href="#_some_section"][text()=\'Some "section"\']',
+      1
+    )
+  })
+
+  test('should resolve natural xref inside a description list item', async () => {
+    const input =
+      '== Some "section"\n\nterm:: Inside a dlist, <<Some "section">> resolves.'
+    const output = await convertStringToEmbedded(input)
+    assertXpath(output, '//dd//a[@href="#_some_section"]', 1)
+    assertXpath(
+      output,
+      '//dd//a[@href="#_some_section"][text()=\'Some "section"\']',
+      1
+    )
+  })
+
+  test('should resolve natural xref inside a table cell', async () => {
+    const input =
+      '== Some "section"\n\n|===\n| Inside a cell, <<Some "section">> resolves.\n|==='
+    const output = await convertStringToEmbedded(input)
+    assertXpath(output, '//td//a[@href="#_some_section"]', 1)
+    assertXpath(
+      output,
+      '//td//a[@href="#_some_section"][text()=\'Some "section"\']',
+      1
+    )
+  })
+
   test('should not match numeric character references while searching for fragment in xref target', async () => {
     const input = 'see <<Cub => Tiger>>\n\n== Cub => Tiger'
     const output = await convertStringToEmbedded(input)
