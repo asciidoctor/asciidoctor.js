@@ -363,7 +363,7 @@ ${await node.content()}
     // JavaScript (and auxiliary stylesheets) loaded at end of body for performance
     if (syntaxHl) {
       if (syntaxHl.hasDocinfo('head')) {
-        result[syntaxHlDocinfoHeadIdx] = syntaxHl.docinfo('head', node, {
+        result[syntaxHlDocinfoHeadIdx] = await syntaxHl.docinfo('head', node, {
           cdn_base_url: cdnBaseUrl,
           linkcss,
           self_closing_tag_slash: slash,
@@ -373,7 +373,7 @@ ${await node.content()}
       }
       if (syntaxHl.hasDocinfo('footer')) {
         result.push(
-          syntaxHl.docinfo('footer', node, {
+          await syntaxHl.docinfo('footer', node, {
             cdn_base_url: cdnBaseUrl,
             linkcss,
             self_closing_tag_slash: slash,

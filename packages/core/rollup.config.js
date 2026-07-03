@@ -32,6 +32,27 @@ function browserTemplateConverterStub () {
   }
 }
 
+// Replaces the Node-only highlightjs build engine with a stub that reports build
+// mode as unsupported, so the browser bundle never carries the highlight.js
+// loading / filesystem code. The highlightjs adapter then falls back to
+// client-side highlighting (and warns) when :highlightjs-mode: build is set.
+function browserHighlightjsBuildStub () {
+  const STUB_ID = '\0browser:highlightjs-build'
+  return {
+    name: 'browser-highlightjs-build-stub',
+    resolveId (id) {
+      if (id === './highlightjs-build.js' || id.endsWith('/syntaxHighlighter/highlightjs-build.js')) {
+        return STUB_ID
+      }
+    },
+    load (id) {
+      if (id === STUB_ID) {
+        return 'export const buildEngine = { supported: false }'
+      }
+    },
+  }
+}
+
 /** @type {import('rollup').RollupOptions[]} */
 export default [
   {
@@ -60,6 +81,7 @@ export default [
     external: (id) => id.startsWith('node:'),
     plugins: [
       browserTemplateConverterStub(),
+      browserHighlightjsBuildStub(),
       json(),
     ],
   },

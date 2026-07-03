@@ -1,5 +1,23 @@
 export class HighlightJsAdapter extends SyntaxHighlighterBase {
     constructor(...args: any[]);
+    _document: any;
+    /**
+     * True when the document opted into build-time highlighting AND the current
+     * environment supports it. When build mode is requested but unsupported (the
+     * browser), warn once and fall back to client-side highlighting.
+     */
+    _buildMode(): boolean;
+    _warnedBuildUnsupported: boolean;
+    /**
+     * Colourise the (already callout-free) source with highlight.js (build mode).
+     *
+     * @param {Object} node - the source Block being highlighted
+     * @param {string} source - source WITHOUT callout marks (the core strips them first)
+     * @param {string} lang - the source language, or null
+     * @param {Object} opts - { callouts, cssMode, highlightLines, numberLines, startLineNumber, style }
+     * @returns {Promise<string|[string, number]>} the highlighted HTML, or a [html, offset] tuple
+     */
+    highlight(node: any, source: string, lang: string, opts: any): Promise<string | [string, number]>;
     /**
      * Wrap the source block in `<pre><code>` with highlight.js CSS classes.
      *
@@ -12,22 +30,34 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
      */
     format(node: object, lang: string | null, opts: object): Promise<string>;
     /**
-     * Always returns true — highlight.js injects markup into the document.
-     * @param {string} location - 'head' or 'footer'
-     * @returns {true}
-     */
-    hasDocinfo(location: string): true;
-    /**
-     * Returns the CSS `<link>` tag (head) or the `<script>` tags (footer).
+     * Returns the docinfo markup for the given location.
+     *
+     * In build mode (head only): the theme stylesheet, embedded in a `<style>` tag
+     * by default (read from the installed highlight.js package) or linked from the
+     * CDN when `:highlightjs-stylesheet: link` is set. In client mode: the CSS
+     * `<link>` (head) or the hljs runtime `<script>` tags (footer).
+     *
      * @param {string} location - 'head' or 'footer'
      * @param {object} doc - the Document being converted
      * @param {{ cdn_base_url: string, self_closing_tag_slash: string }} opts
-     * @returns {string}
+     * @returns {Promise<string>}
      */
     docinfo(location: string, doc: object, opts: {
         cdn_base_url: string;
         self_closing_tag_slash: string;
-    }): string;
+    }): Promise<string>;
+    /**
+     * docinfo for build mode: the theme stylesheet, embedded (read from the
+     * installed highlight.js package) or linked from the CDN.
+     * @param {string} location - 'head'
+     * @param {object} doc - the Document being converted
+     * @param {{ cdn_base_url: string, self_closing_tag_slash: string }} opts
+     * @returns {Promise<string>}
+     */
+    _buildDocinfo(location: string, doc: object, opts: {
+        cdn_base_url: string;
+        self_closing_tag_slash: string;
+    }): Promise<string>;
 }
 export default HighlightJsAdapter;
 import { SyntaxHighlighterBase } from '../syntax_highlighter.js';

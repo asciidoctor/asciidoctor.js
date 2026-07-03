@@ -55,7 +55,8 @@ export class SyntaxHighlighterBase {
    * @param {boolean} [opts.linkcss] - link stylesheet instead of embedding
    * @param {string} [opts.cdn_base_url] - base URL for CDN assets
    * @param {string} [opts.self_closing_tag_slash] - '/' for self-closing tags
-   * @returns {string} the markup to insert
+   * @returns {string|Promise<string>} the markup to insert. The caller always `await`s the
+   *   result, so implementations may be async (e.g. to read a stylesheet from disk).
    */
   docinfo(location, doc, opts) {
     throw new Error(
@@ -89,7 +90,9 @@ export class SyntaxHighlighterBase {
    * @param {string} [opts.number_lines] - 'table' or 'inline' if lines should be numbered
    * @param {number} [opts.start_line_number] - starting line number (default: 1)
    * @param {string} [opts.style] - theme name
-   * @returns {string|[string, number]} the highlighted source, or a tuple with a line offset
+   * @returns {string|[string, number]|Promise<string|[string, number]>} the highlighted
+   *   source, or a tuple with a line offset. The caller always `await`s the result, so
+   *   implementations may be async (e.g. to load a highlighting library on demand).
    */
   highlight(node, source, lang, opts) {
     throw new Error(
@@ -105,6 +108,8 @@ export class SyntaxHighlighterBase {
    * @param {Object} opts - options
    * @param {boolean} [opts.nowrap] - disable line wrapping
    * @param {Function} [opts.transform] - called with (pre, code) attribute objects before building tags
+   * @param {Function} [opts.transformContent] - called with the highlighted content string,
+   *   returning the (possibly rewritten) content, before it is wrapped in the tags
    * @returns {Promise<string>|string} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags.
    *   Subclasses may return a plain `string` — the caller always `await`s the result.
    */
@@ -112,7 +117,10 @@ export class SyntaxHighlighterBase {
     const classAttrVal = opts.nowrap
       ? `${this._preClass} highlight nowrap`
       : `${this._preClass} highlight`
-    return node.content().then((content) => {
+    return node.content().then((rawContent) => {
+      const content = opts.transformContent
+        ? opts.transformContent(rawContent)
+        : rawContent
       const transform = opts.transform
       if (transform) {
         const pre = { class: classAttrVal }
