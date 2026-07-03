@@ -69,11 +69,20 @@
   "volta": {
     "node": "24.18.0"
   },
+  "peerDependencies": {
+    "highlight.js": "^11.0.0"
+  },
+  "peerDependenciesMeta": {
+    "highlight.js": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.4.13",
     "typedoc": "^0.28.4",
     "@rollup/plugin-json": "^6.1.0",
     "@types/node": "^25.6.0",
+    "highlight.js": "^11.11.1",
     "@vitest/browser": "^4.1.7",
     "@vitest/browser-playwright": "^4.1.7",
     "@vitest/ui": "^4.1.7",

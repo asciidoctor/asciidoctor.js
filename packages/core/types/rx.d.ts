@@ -185,6 +185,7 @@ export const UnorderedListRx: RegExp;
  * . Foo    1. Foo    a. Foo    I. Foo
  */
 export const OrderedListRx: RegExp;
+/** Ordinal pattern for each ordered list type. */
 export namespace OrderedListMarkerRxMap {
     let arabic: RegExp;
     let loweralpha: RegExp;
@@ -250,6 +251,7 @@ export const CalloutSourceRx: RegExp;
 export const CalloutSourceRxt: "(\\\\)?&lt;()([\\d]+|\\.)&gt;(?=(?: ?\\\\?&lt;(?:\\d+|\\.)&gt;)*$)";
 /** Lazy map: line-comment string → callout-source regex. */
 export const CalloutSourceRxMap: any;
+/** Dynamic map from list context to its regex. */
 export namespace ListRxMap {
     export { UnorderedListRx as ulist };
     export { OrderedListRx as olist };
@@ -412,6 +414,37 @@ export const InlineMenuMacroRx: RegExp;
  * "File > New..."
  */
 export const InlineMenuRx: RegExp;
+/**
+ * Matches an inline passthrough (may span multiple lines).
+ *
+ * Group layout (false / non-compat):
+ *   1 – preceding context or escape boundary
+ *   2 – '[' captured by lookahead (back-reference trick for attribute list detection)
+ *   3 – x- / 'attrlist x-' content
+ *   4 – QuoteAttributeListRxt content
+ *   5 – optional backslash before opening delimiter
+ *   6 – full quoted span (including delimiters)
+ *   7 – opening/closing delimiter (+ or `)
+ *   8 – span content
+ *
+ * Group layout (true / compat):
+ *   1 – preceding char or start-of-line
+ *   2 – ($) end-of-string sentinel  (never matches in inline text, preserves group count)
+ *   3 – empty group paired with sentinel
+ *   4 – QuoteAttributeListRxt content
+ *   5 – optional backslash before opening delimiter
+ *   6 – full quoted span
+ *   7 – opening/closing delimiter (`)
+ *   8 – span content
+ *
+ * NOTE: 'u' flag used, but the 'm' flag is also set so that ^ is a line anchor.
+ *   Unset optional back-references (\5?) with 'u' flag: the '?' quantifier
+ *   allows 0 occurrences, so the match continues even when the group is unset.
+ * @example
+ * +text+
+ * [x-]+text+
+ * `text`  (compat only)
+ */
 export namespace InlinePassRx {
     let _false: (string | RegExp)[];
     export { _false as false };
