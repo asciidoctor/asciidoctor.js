@@ -1,13 +1,5 @@
 export class HighlightJsAdapter extends SyntaxHighlighterBase {
     constructor(...args: any[]);
-    _document: any;
-    /**
-     * True when the document opted into build-time highlighting AND the current
-     * environment supports it. When build mode is requested but unsupported (the
-     * browser), warn once and fall back to client-side highlighting.
-     */
-    _buildMode(): boolean;
-    _warnedBuildUnsupported: boolean;
     /**
      * Colourise the (already callout-free) source with highlight.js (build mode).
      *
@@ -43,18 +35,6 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
      * @returns {Promise<string>}
      */
     docinfo(location: string, doc: object, opts: {
-        cdn_base_url: string;
-        self_closing_tag_slash: string;
-    }): Promise<string>;
-    /**
-     * docinfo for build mode: the theme stylesheet, embedded (read from the
-     * installed highlight.js package) or linked from the CDN.
-     * @param {string} location - 'head'
-     * @param {object} doc - the Document being converted
-     * @param {{ cdn_base_url: string, self_closing_tag_slash: string }} opts
-     * @returns {Promise<string>}
-     */
-    _buildDocinfo(location: string, doc: object, opts: {
         cdn_base_url: string;
         self_closing_tag_slash: string;
     }): Promise<string>;

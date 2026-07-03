@@ -72,6 +72,7 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
     this.name = 'highlightjs'
     this._preClass = 'highlightjs'
     // opts is the third constructor argument; the factory passes { document }.
+    /** @internal */
     this._document = args[2]?.document ?? null
   }
 
@@ -79,12 +80,14 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
    * True when the document opted into build-time highlighting AND the current
    * environment supports it. When build mode is requested but unsupported (the
    * browser), warn once and fall back to client-side highlighting.
+   * @internal
    */
   _buildMode() {
     if (this._document?.getAttribute('highlightjs-mode') !== 'build')
       return false
     if (!buildEngine.supported) {
       if (!this._warnedBuildUnsupported) {
+        /** @internal */
         this._warnedBuildUnsupported = true
         this._document?.logger?.warn(
           'highlightjs-mode=build is not supported in this environment (it requires a server runtime); falling back to client-side highlighting'
@@ -201,6 +204,7 @@ if (!hljs.initHighlighting.called) {
    * @param {object} doc - the Document being converted
    * @param {{ cdn_base_url: string, self_closing_tag_slash: string }} opts
    * @returns {Promise<string>}
+   * @internal
    */
   async _buildDocinfo(location, doc, opts) {
     const theme = doc.getAttribute('highlightjs-theme') ?? 'github'
