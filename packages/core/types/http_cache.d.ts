@@ -33,6 +33,17 @@ export class MemoryHttpCache extends HttpCache {
     read(uri: any): Promise<any>;
     #private;
 }
+/**
+ * Singleton manager for the HTTP cache.
+ *
+ * Register a process-level cache:
+ *   HttpCacheManager.setCache(new MemoryHttpCache())
+ *   HttpCacheManager.setCache(new MyFileSystemCache('./cache'))
+ *   HttpCacheManager.setCache(null)  // revert to default ephemeral behaviour
+ *
+ * When no cache is registered and `cache-uri` is set, an ephemeral
+ * MemoryHttpCache is created per Document instance.
+ */
 export namespace HttpCacheManager {
     /** @type {HttpCache|null} */
     let _cache: HttpCache | null;

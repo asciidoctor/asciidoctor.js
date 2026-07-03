@@ -7,14 +7,14 @@ This page explains how to enable syntax highlighting for source blocks in Asciid
 Without a syntax highlighter configured, Asciidoctor.js renders a source block like this:
 
 [source,asciidoc]
-----
-[source,java]
 ....
+[source,java]
+----
 public class Kalle {
   public Kalle(final String pelle) {}
 }
-....
 ----
+....
 
 as plain HTML with language metadata on the `<code>` element:
 
@@ -42,22 +42,22 @@ When enabled, Asciidoctor.js injects the highlight.js stylesheet and script into
 To use the built-in adapter, convert with `standalone: true` and set the `source-highlighter` attribute to `highlightjs` (or `highlight.js`):
 
 [source,js]
-----
+------
 import { convert } from '@asciidoctor/core'
 
 const content = `= Sample Java
 [source,java]
-....
+----
 public class Kalle {
   public Kalle(final String pelle) {}
 }
-....`
+----`
 
 const html = await convert(content, {
   standalone: true, // <1>
   attributes: { 'source-highlighter': 'highlightjs' }, // <2>
 })
-----
+------
 <1> The `standalone` option wraps the body in a full HTML document (`<html>`, `<head>`, `<body>`).
     The highlight.js `<link>` and `<script>` tags are injected via the docinfo mechanism, which only runs in standalone mode.
 <2> Tells Asciidoctor.js to use the built-in highlight.js adapter.
@@ -127,14 +127,121 @@ document.querySelectorAll('pre.highlight > code[data-lang]').forEach((el) => {
 })
 ----
 
-== Server-side (conversion-time) highlighting
+[#build-time-highlighting]
+== Build-time (server-side) highlighting with highlight.js
 
-Server-side highlighting processes the source at conversion time so the highlighted markup is embedded directly in the output HTML.
-This approach does not require any client-side JavaScript.
+Build-time highlighting processes the source at conversion time, so the highlighted markup is embedded directly in the output HTML.
+The result is self-contained: no highlight.js script runs in the browser, and no client-side JavaScript is required to see the colors.
 
-Asciidoctor.js does not ship a built-in server-side highlighter, but you can implement one by extending xref:syntax-highlighter/custom-syntax-highlighter.adoc#server-side-highlighting[`SyntaxHighlighterBase`] and overriding `handlesHighlighting()` → `true` and `highlight()`.
+The built-in `highlightjs` adapter can run in this mode.
+Enable it by setting the `highlightjs-mode` attribute to `build`:
 
-Here is a minimal example using the https://www.npmjs.com/package/highlight.js[`highlight.js`] npm package to highlight at conversion time:
+[source,js]
+------
+import { convert } from '@asciidoctor/core'
+
+const content = `= Sample Java
+[source,java]
+----
+public class Kalle {
+  public Kalle(final String pelle) {}
+}
+----`
+
+const html = await convert(content, {
+  standalone: true, // <1>
+  attributes: {
+    'source-highlighter': 'highlightjs', // <2>
+    'highlightjs-mode': 'build', // <3>
+  },
+})
+------
+<1> The theme stylesheet is injected via the docinfo mechanism, which only runs in standalone mode.
+    The highlighted markup itself is produced regardless of `standalone` — see <<embedding-in-an-existing-page-build>>.
+<2> Use the built-in highlight.js adapter.
+<3> Colorize source blocks at conversion time instead of in the browser.
+
+Instead of the raw source, the `<code>` element now contains highlight.js markup (`<span class="hljs-…">…`), and the theme stylesheet is embedded in a `<style>` tag in the document head.
+
+[IMPORTANT]
+====
+highlight.js is an *optional* peer dependency: it is not installed with Asciidoctor.js.
+To use build mode, install it in your project:
+
+[source,console]
+----
+$ npm install highlight.js
+----
+
+It is loaded only when build mode is used.
+If it is missing, conversion fails with a clear error.
+Build mode runs on server runtimes (Node.js, Deno, Bun).
+In the browser it is not available: the adapter logs a warning and falls back to client-side highlighting.
+====
+
+=== Options
+
+Build mode is configured with the following document attributes:
+
+[cols="1,1,3"]
+|===
+|Attribute |Default |Description
+
+|`highlightjs-mode`
+|_(unset)_
+|Set to `build` to highlight at conversion time. When unset, the adapter highlights client-side (see above).
+
+|`highlightjs-theme`
+|`github`
+|Any theme name from the https://highlightjs.org/demo[highlight.js theme gallery] (e.g. `github-dark`, `monokai`).
+
+|`highlightjs-stylesheet`
+|`embed`
+|`embed` reads the theme CSS from the installed highlight.js package and inlines it in a `<style>` tag (self-contained output). `link` emits a `<link>` to the CDN (or to `highlightjsdir`) instead. If a theme cannot be read in `embed` mode (e.g. an unknown theme name), a warning is logged and the CDN stylesheet is linked instead.
+|===
+
+[NOTE]
+====
+Line numbers render as a two-column CSS grid — an auto-sized gutter of `counter()`-generated numbers and the code — with no `<table>` and no number text in the DOM (so numbers are never selected or copied).
+Whether a long line *wraps* (staying clear of the number gutter) or *scrolls* horizontally follows the block's standard `nowrap` option (or the `prewrap` document attribute) — the same control as any other source block.
+The `highlightjs-linenums-mode` attribute (Rouge's `table`/`inline` distinction) is therefore not used by this adapter.
+====
+
+The usual source block features are supported through the standard AsciiDoc syntax:
+
+[source,asciidoc]
+------
+[source,ruby,linenums,highlight=2..3,start=10]
+----
+require 'json'
+data = JSON.parse(input)
+puts data.fetch('name', '?')
+----
+------
+
+- `linenums` adds line numbers (one row per line, number in a left gutter); add the `nowrap` option (e.g. `[source%nowrap,ruby,linenums]`) to scroll long lines instead of wrapping them.
+- `highlight=` emphasizes one or more lines or ranges (e.g. `highlight=2..3`).
+- `start=` sets the first line number.
+- Callouts (`<1>`, `<.>`, …) are stripped before highlighting and re-inserted afterwards, so a conum never ends up colored as part of the code — even inside a multi-line comment.
+
+[#embedding-in-an-existing-page-build]
+=== Embedding in an existing page
+
+The highlighted markup is embedded in the `<code>` element whether or not you convert in standalone mode, so highlighting works even when you insert the fragment into an existing page.
+Only the theme stylesheet requires `standalone: true` (it is added via docinfo).
+When embedding a fragment, add the theme stylesheet to your page yourself, for example:
+
+[source,html]
+----
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css">
+----
+
+Unlike client-side mode, you do *not* need to load the highlight.js script or call `hljs.highlightBlock()` — the colors are already in the markup.
+
+== Implementing your own server-side highlighter
+
+To highlight with a different library, extend xref:syntax-highlighter/custom-syntax-highlighter.adoc#server-side-highlighting[`SyntaxHighlighterBase`] and override `handlesHighlighting()` → `true` and `highlight()`.
+Here is a minimal example:
 
 [source,js]
 ----
@@ -146,7 +253,7 @@ class HljsServerHighlighter extends SyntaxHighlighterBase {
     return true // <1>
   }
 
-  highlight(node, source, lang, opts) {
+  async highlight(node, source, lang, opts) {
     if (lang && hljs.getLanguage(lang)) {
       return hljs.highlight(source, { language: lang }).value // <2>
     }
@@ -162,7 +269,7 @@ const doc = await load(content, {
 const html = await doc.convert()
 ----
 <1> Returning `true` tells Asciidoctor.js that this highlighter processes source at conversion time.
-<2> `source` is the raw source text; return the highlighted markup as a plain `string`.
+<2> `source` is the raw source text; return the highlighted markup as a `string`. `highlight()` may be `async` (the return value is awaited).
 <3> Register the highlighter under the name used in `source-highlighter`.
 
 See xref:syntax-highlighter/custom-syntax-highlighter.adoc[Custom Syntax Highlighter] for the full API.

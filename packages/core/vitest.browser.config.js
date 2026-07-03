@@ -17,7 +17,9 @@ export default defineConfig({
     setupFiles: ['shims/setup.js'],
     include: ['**/*.test.js'],
     // Exclude tests that require a running Node.js HTTP server or Node.js test infrastructure
-    exclude: ['include-http.test.js', 'blocks.images-http.test.js', 'http-cache-http.test.js', 'browser.reader.test.js', 'converter.template.test.js', 'convert.test.js'],
+    // (highlightjs-build: build mode is Node-only — it loads highlight.js via node:module —
+    // and is stubbed to `unsupported` in the browser build)
+    exclude: ['include-http.test.js', 'blocks.images-http.test.js', 'http-cache-http.test.js', 'browser.reader.test.js', 'converter.template.test.js', 'convert.test.js', 'highlightjs-build.test.js'],
   },
   resolve: {
     alias: [

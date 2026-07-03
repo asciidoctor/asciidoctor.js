@@ -12,6 +12,15 @@ Bug Fixes::
 
 * Fix the warning issued when an asset cannot be found or read (e.g. `image::does-not-exist.svg[opts=inline]`) always reporting the document as `<stdin>`. The `docfile` attribute was looked up on the node instead of on the document, and since `docfile` is only ever set as a document attribute the lookup never resolved (https://github.com/asciidoctor/asciidoctor/issues/4873[asciidoctor#4873])
 
+Improvements::
+
+* Add an experimental build-time mode to the built-in `highlightjs` source highlighter, based on https://highlightjs.org[highlight.js]. Setting `:highlightjs-mode: build` colourises source blocks at conversion time on the server instead of shipping the hljs runtime for the browser to colourise; without the attribute the behaviour is unchanged (client-side), so no registration or extra setup is required. `highlight.js` is an *optional* `peerDependency`, loaded lazily on first use, so it is never bundled -- including in the browser build, where build mode is unsupported and the adapter falls back to client-side highlighting with a warning. Callouts, line numbering (`linenums`, both `table` and `inline` mode), `highlight=` line emphasis and `start=` are all supported. The theme stylesheet is read from the installed highlight.js package and embedded in a `<style>` tag by default (self-contained output); set `:highlightjs-stylesheet: link` to link the CDN instead, and `:highlightjs-theme:` to pick a theme (default `github`)
+* The syntax highlighter `highlight()` and `docinfo()` methods are now awaited by the core, so adapter implementations may be asynchronous (e.g. to load a highlighting library such as Shiki, or to read a stylesheet from disk, on demand). Existing synchronous adapters are unaffected since the returned value is awaited either way
+
+Infrastructure::
+
+* Fix the type-generation post-processing (`scripts/patch-jsdoc.js`) losing the JSDoc of exported object literals that TypeScript synthesizes as namespaces: the comment on the declaration itself was never restored (only the per-property ones), and files in `types/` subdirectories were never matched back to their `src/` source. The published declarations now carry the previously dropped documentation for `ContentModel`, `Extensions`, `HttpCacheManager`, `Logging`, several `rx` namespaces and the experimental `buildEngine`
+
 == v4.0.11 (2026-08-18)
 
 Improvements::
