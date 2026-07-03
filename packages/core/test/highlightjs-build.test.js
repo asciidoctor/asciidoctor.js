@@ -315,6 +315,34 @@ puts 'hi'
       assert.doesNotMatch(output, /highlight\.min\.js/)
     })
 
+    test('should warn and link the CDN when the theme stylesheet cannot be read', async () => {
+      const logger = MemoryLogger.create()
+      const output = await withLogger(logger, () =>
+        renderStandalone(
+          `
+[source,ruby]
+----
+puts 'hi'
+----
+`,
+          { 'highlightjs-theme': 'this-theme-does-not-exist' }
+        )
+      )
+      // fell back to a CDN link for the (missing) theme
+      assert.match(
+        output,
+        /<link[^>]+styles\/this-theme-does-not-exist\.min\.css/
+      )
+      const warnings = logger
+        .getMessages()
+        .filter((m) =>
+          /could not read the 'this-theme-does-not-exist' theme/.test(
+            m.getText()
+          )
+        )
+      assert.equal(warnings.length, 1)
+    })
+
     test('should inject helper CSS for line numbers and emphasis (embed)', async () => {
       const output = await renderStandalone(`
 [source,ruby,linenums,highlight=1]

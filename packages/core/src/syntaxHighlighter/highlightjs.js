@@ -213,6 +213,10 @@ if (!hljs.initHighlighting.called) {
       const css = await buildEngine.readThemeStylesheet(theme)
       // embed the theme + the build-markup helper CSS in a single <style>
       if (css) return `<style>\n${css}\n${BUILD_HELPER_CSS}\n</style>`
+      // embed requested but the theme could not be read — warn and fall back to a CDN link
+      doc?.logger?.warn(
+        `highlightjs (build mode): could not read the '${theme}' theme stylesheet from the installed highlight.js package; linking it from the CDN instead (check the highlightjs-theme attribute)`
+      )
     }
     const version = (await buildEngine.version()) ?? HIGHLIGHT_JS_VERSION
     const baseUrl =

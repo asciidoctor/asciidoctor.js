@@ -197,7 +197,7 @@ Build mode is configured with the following document attributes:
 
 |`highlightjs-stylesheet`
 |`embed`
-|`embed` reads the theme CSS from the installed highlight.js package and inlines it in a `<style>` tag (self-contained output). `link` emits a `<link>` to the CDN (or to `highlightjsdir`) instead.
+|`embed` reads the theme CSS from the installed highlight.js package and inlines it in a `<style>` tag (self-contained output). `link` emits a `<link>` to the CDN (or to `highlightjsdir`) instead. If a theme cannot be read in `embed` mode (e.g. an unknown theme name), a warning is logged and the CDN stylesheet is linked instead.
 
 |`highlightjs-linenums-mode`
 |`table`

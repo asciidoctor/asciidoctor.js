@@ -211,7 +211,7 @@ export const buildEngine = {
         `highlight.js/styles/${theme}.min.css`
       )
       const { readFile } = await import('node:fs/promises')
-      return await readFile(cssPath, 'utf8')
+      return await readFile(cssPath, { encoding: 'utf8' })
     } catch {
       return null
     }
