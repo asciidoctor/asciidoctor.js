@@ -26,7 +26,18 @@ import { TrailingDigitsRx } from './rx.js'
 export function applyBackendTraits(instance) {
   instance._backendTraits = null
 
-  instance.basebackend = function (value = null) {
+  // Install a Ruby-style trait accessor method, but never clobber a flat string
+  // property the converter already declared (convention #2). Overwriting e.g.
+  // `converter.outfilesuffix = '.html'` with a method would silently turn the
+  // author's string into a function; the backend traits stay reachable through
+  // `_getBackendTraits()` instead.
+  const defineTraitAccessor = (name, fn) => {
+    const existing = Object.getOwnPropertyDescriptor(instance, name)
+    if (existing && typeof existing.value !== 'function') return
+    instance[name] = fn
+  }
+
+  defineTraitAccessor('basebackend', function (value = null) {
     if (value) {
       const traits = (this._backendTraits ??= {})
       traits.basebackend = value
@@ -40,19 +51,19 @@ export function applyBackendTraits(instance) {
       return value
     }
     return this._getBackendTraits().basebackend
-  }
-  instance.filetype = function (value = null) {
+  })
+  defineTraitAccessor('filetype', function (value = null) {
     if (value) return (this._getBackendTraits().filetype = value)
     return this._getBackendTraits().filetype
-  }
-  instance.htmlsyntax = function (value = null) {
+  })
+  defineTraitAccessor('htmlsyntax', function (value = null) {
     if (value) return (this._getBackendTraits().htmlsyntax = value)
     return this._getBackendTraits().htmlsyntax
-  }
-  instance.outfilesuffix = function (value = null) {
+  })
+  defineTraitAccessor('outfilesuffix', function (value = null) {
     if (value) return (this._getBackendTraits().outfilesuffix = value)
     return this._getBackendTraits().outfilesuffix
-  }
+  })
   instance.supportsTemplates = function (value = true) {
     this._getBackendTraits().supportsTemplates = value
   }
@@ -136,7 +147,9 @@ export function normalizeConverter(converter, backend) {
     }
   }
 
-  // Apply the BackendTraits mixin so Document can call the standard accessor methods.
+  // Apply the BackendTraits mixin so Document can read traits via
+  // _getBackendTraits(). Flat string properties (convention #2) are preserved:
+  // applyBackendTraits does not overwrite an existing same-named data property.
   applyBackendTraits(converter)
   if (traits) {
     converter._backendTraits = traits

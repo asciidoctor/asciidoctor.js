@@ -278,6 +278,22 @@ getAttribute('fragment'): true`
     assert.ok(result.includes('<xml>content</xml>'))
   })
 
+  test('should preserve flat string properties on the converter instance after conversion', async () => {
+    // Regression: normalizing a convention #2 converter used to clobber its flat
+    // string properties with accessor methods, so callers reading
+    // `converter.outfilesuffix` got a function instead of the declared string.
+    const converter = new XMLConverter()
+    ConverterFactory.register(converter, ['xml'])
+    const doc = await load('content', { safe: 'safe', backend: 'xml' })
+    await doc.convert()
+    assert.equal(typeof converter.outfilesuffix, 'string')
+    assert.equal(converter.outfilesuffix, '.xml')
+    assert.equal(typeof converter.filetype, 'string')
+    assert.equal(converter.filetype, 'xml')
+    assert.equal(typeof converter.basebackend, 'string')
+    assert.equal(converter.htmlsyntax, 'xml')
+  })
+
   test('should retrieve backend traits from a converter class using plain properties', async () => {
     ConverterFactory.register(new EPUB3Converter(), ['epub3'])
     const doc = await load('content', { safe: 'safe', backend: 'epub3' })
