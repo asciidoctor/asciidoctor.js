@@ -2040,14 +2040,19 @@ export class Document extends AbstractBlock {
     let newBasebackend, newFiletype
 
     if (converter && typeof converter._getBackendTraits === 'function') {
-      newBasebackend = converter.basebackend()
-      newFiletype = converter.filetype()
-      const htmlsyntax = converter.htmlsyntax()
+      // Read the traits object directly rather than the same-named accessor
+      // methods. A user converter that declares flat string properties
+      // (`converter.outfilesuffix = '.html'`, convention #2) keeps them intact,
+      // so callers reading `converter.outfilesuffix` still see the string.
+      const traits = converter._getBackendTraits()
+      newBasebackend = traits.basebackend
+      newFiletype = traits.filetype
+      const htmlsyntax = traits.htmlsyntax
       if (htmlsyntax) attrs.htmlsyntax = htmlsyntax
       if (init) {
-        attrs.outfilesuffix ??= converter.outfilesuffix()
+        attrs.outfilesuffix ??= traits.outfilesuffix
       } else if (!this.isAttributeLocked('outfilesuffix')) {
-        attrs.outfilesuffix = converter.outfilesuffix()
+        attrs.outfilesuffix = traits.outfilesuffix
       }
     } else if (converter) {
       const traits = deriveBackendTraits(newBackend)
