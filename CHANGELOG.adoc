@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.2 (2026-07-06)
+
 Improvements::
 
 * The HTML5 converter can now inline an SVG image whose target is a `data:` URI (e.g. `image::data:image/svg+xml;base64,…[opts=inline]`). `readSvgContents` decodes both Base64 and percent-encoded `data:` payloads instead of only reading from a file or remote URI, so a diagram or image embedded as a data-URI can be rendered as inline `<svg>` without writing a file or enabling `allow-uri-read`. The SVG format is inferred from the `image/svg+xml` media type, so an explicit `format=svg` attribute is no longer required on a `data:` URI target
