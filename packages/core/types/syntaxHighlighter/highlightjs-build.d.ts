@@ -4,10 +4,10 @@ export namespace buildEngine {
      * Colourise the (already callout-free) source with highlight.js.
      * @param {string} source - source WITHOUT callout marks (the core strips them first)
      * @param {string} lang - the source language, or null
-     * @param {Object} opts - { highlightLines, numberLines, startLineNumber, ... }
-     * @returns {Promise<string|[string, number]>} the highlighted HTML, or a [html, offset] tuple
+     * @param {Object} opts - { highlightLines, numberLines, ... }
+     * @returns {Promise<string>} the highlighted HTML
      */
-    function highlight(source: string, lang: string, opts: any): Promise<string | [string, number]>;
+    function highlight(source: string, lang: string, opts: any): Promise<string>;
     /**
      * Read a highlight.js theme stylesheet from the installed package.
      * @param {string} theme - theme name (e.g. 'github', 'github-dark')

@@ -99,45 +99,38 @@ function splitLines(html) {
 }
 
 /**
- * Build a `<table>` gutter/code layout.
+ * Split each line into a two-cell CSS-grid row: an (empty) gutter cell `.ln` and
+ * a code cell `.line`. The `<code>` is laid out as a two-column grid (see
+ * BUILD_HELPER_CSS); the line numbers are generated with a CSS `counter()` on the
+ * `.ln` cells (so they are never selected or copied, and the gutter auto-sizes to
+ * the widest number — the `counter-reset` for `start=` is set on the `<code>` in
+ * format()). This single layout replaces the old `<table>`/`inline` split:
+ * whether a long line wraps (hanging indent) or scrolls horizontally is a CSS
+ * concern driven by the block's standard `nowrap` option, not a numbering mode.
+ *
+ * Because the highlight lives in the code column only, it never covers the number,
+ * and the gutter cell stretches to the row height so its separator spans a wrapped
+ * line — both for free from the grid. Since the rows are plain `\n`-separated
+ * lines, callouts need no `[html, offset]` realignment (the core appends the conum
+ * after the row; format() then tucks it inside the `.line` cell).
+ *
  * @param {string} html - per-line highlighted HTML
- * @param {number} start - first line number
- * @returns {[string, number]} the table markup and the character offset of the first code line
- */
-function wrapNumberedTable(html, start) {
-  const { lines, trailingNewline } = splitLines(html)
-  const gutter = lines.map((_, i) => start + i).join('\n')
-  // Keep the trailing newline so a callout on the LAST code line stays clean
-  // (its conum is appended before the closing tags, not after them).
-  const codeInner = lines.join('\n') + (trailingNewline ? '\n' : '')
-  const preamble =
-    '<table class="linenotable"><tbody><tr>' +
-    `<td class="linenos"><pre class="lineno">${gutter}</pre></td>` +
-    '<td class="code"><pre>'
-  const suffix = '</pre></td></tr></tbody></table>'
-  return [preamble + codeInner + suffix, preamble.length]
-}
-
-/**
- * Prepend a line-number span to each line; no line shift.
- * @param {string} html - per-line highlighted HTML
- * @param {number} start - first line number
  * @returns {string}
  */
-function wrapNumberedInline(html, start) {
+function wrapNumberedRows(html) {
   const { lines, trailingNewline } = splitLines(html)
+  const openTag = '<span class="hljs-ln-highlight">'
   const numbered = lines
-    .map((line, i) => {
-      const ln = `<span class="linenos">${start + i}</span>`
-      // For an emphasised line, put the number INSIDE the highlight span so the
-      // full-width span isn't pushed to the next line by a preceding number.
-      if (line.startsWith('<span class="hljs-ln-highlight">')) {
-        return line.replace(
-          '<span class="hljs-ln-highlight">',
-          `<span class="hljs-ln-highlight">${ln}`
-        )
-      }
-      return `${ln}${line}`
+    .map((line) => {
+      // Emphasised lines arrive wrapped in a full-line hljs-ln-highlight span;
+      // move that class onto the code cell so the highlight fills the code column
+      // (and only the code column — the number is a separate grid cell).
+      const emphasised = line.startsWith(openTag) && line.endsWith('</span>')
+      const codeClass = emphasised ? 'line hljs-ln-highlight' : 'line'
+      const inner = emphasised
+        ? line.slice(openTag.length, -'</span>'.length)
+        : line
+      return `<span class="ln"></span><span class="${codeClass}">${inner}</span>`
     })
     .join('\n')
   return numbered + (trailingNewline ? '\n' : '')
@@ -152,8 +145,8 @@ export const buildEngine = {
    * Colourise the (already callout-free) source with highlight.js.
    * @param {string} source - source WITHOUT callout marks (the core strips them first)
    * @param {string} lang - the source language, or null
-   * @param {Object} opts - { highlightLines, numberLines, startLineNumber, ... }
-   * @returns {Promise<string|[string, number]>} the highlighted HTML, or a [html, offset] tuple
+   * @param {Object} opts - { highlightLines, numberLines, ... }
+   * @returns {Promise<string>} the highlighted HTML
    */
   async highlight(source, lang, opts) {
     const hljs = await loadHljs()
@@ -178,24 +171,13 @@ export const buildEngine = {
         .join('\n')
     }
 
-    const start = opts.startLineNumber || 1
-    if (opts.numberLines === 'table') {
-      // Table mode shifts the code down by the gutter markup, so we return a
-      // [html, offset] tuple. restoreCallouts() treats everything before `offset`
-      // (a CHARACTER index) as an untouched preamble and starts counting source
-      // lines at `offset` — so the offset points at the first character of the
-      // first code line and the gutter lives entirely in the preamble.
-      return wrapNumberedTable(html, start)
-    }
-    if (opts.numberLines === 'inline') {
-      // Inline mode prepends a line-number span to each line without shifting
-      // lines, so no offset is needed — a plain string is fine.
-      return wrapNumberedInline(html, start)
-    }
+    // A single numbered layout: per-line grid rows (a plain string the core can
+    // split on \n to reattach callouts). The first line number (`start=`) is
+    // applied as a `counter-reset` on the <code> in format(); wrap vs. horizontal
+    // scroll is a CSS concern driven by the block's `nowrap` option, so the
+    // specific `-linenums-mode` value (table/inline) no longer changes anything.
+    if (opts.numberLines) return wrapNumberedRows(html)
 
-    // NOTE: opts.cssMode 'inline' is out of scope — highlight.js only emits
-    // class-based markup. The build-mode equivalent is embedding the theme
-    // stylesheet in <style> (see readThemeStylesheet).
     return html
   },
 

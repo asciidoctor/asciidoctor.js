@@ -29,37 +29,50 @@ import { HIGHLIGHT_JS_VERSION } from '../constants.js'
 import { buildEngine } from './highlightjs-build.js'
 
 // Styling for the build-mode markup that highlight.js themes (and the default
-// AsciiDoc stylesheet's pygments-scoped rules) do not cover: the inline and table
-// line-number gutters and the emphasised-line wrapper. Injected in build mode
-// alongside the theme so the output is self-contained.
-const BUILD_HELPER_CSS = `pre.highlightjs .linenos{display:inline-block;margin-right:1em;text-align:right;opacity:.35;-webkit-user-select:none;user-select:none}
-pre.highlightjs table.linenotable{border-collapse:collapse;margin:0;width:100%}
-pre.highlightjs table.linenotable td{padding:0;vertical-align:top}
-pre.highlightjs table.linenotable td.linenos{padding-right:1em;text-align:right;opacity:.35;-webkit-user-select:none;user-select:none}
-pre.highlightjs table.linenotable td.code{width:100%}
-/* keep numbered table code from wrapping so each line stays aligned with its
-   number (the gutter is a separate column); long lines scroll with the block */
-pre.highlightjs table.linenotable pre{margin:0;padding:0;background:none;white-space:pre}
-pre.highlightjs .hljs-ln-highlight{display:inline-block;width:100%;background-color:rgba(255,229,100,.28)}`
+// AsciiDoc stylesheet's pygments-scoped rules) do not cover: the line-number grid
+// and the emphasised-line wrapper. Numbered source is a two-column CSS grid — an
+// auto-sized gutter of CSS-counter numbers and the code — with no <table> and no
+// emitted number text. Whether a long line wraps or scrolls horizontally follows
+// the block's standard `nowrap` option (the core adds a `nowrap` class to the
+// <pre>). Injected in build mode alongside the theme so the output is self-contained.
+const BUILD_HELPER_CSS = `pre.highlightjs{overflow-x:auto}
+/* non-numbered emphasis: a full-width highlighted line */
+pre.highlightjs .hljs-ln-highlight{display:inline-block;width:100%;background-color:rgba(255,229,100,.28)}
+/* line numbers: a two-column grid (auto-sized gutter | code). The number is a CSS
+   counter on the gutter cell, so it is never selected/copied and the column sizes
+   itself to the widest number. The gutter cell stretches to the row height, so its
+   separator spans a wrapped line; the emphasis lives in the code column only, so it
+   never covers the number and its background fills the column width */
+pre.highlightjs code.linenums{display:grid;grid-template-columns:auto 1fr}
+pre.highlightjs .ln{counter-increment:line;grid-column:1;text-align:right;padding:0 .8ch;border-right:1px solid;opacity:.3;-webkit-user-select:none;user-select:none}
+pre.highlightjs .ln::before{content:counter(line)}
+pre.highlightjs .line{grid-column:2;padding-left:.8ch}
+pre.highlightjs .line.hljs-ln-highlight{background-color:rgba(255,229,100,.28)}
+/* nowrap blocks: the code column grows to its content so the whole grid (numbers
+   included) scrolls horizontally instead of wrapping */
+pre.highlightjs.nowrap code.linenums{grid-template-columns:auto max-content}`
 
 /**
- * Move whatever the core appended after an emphasised line (the callout guard
- * and one or more conums) back INSIDE the `hljs-ln-highlight` span, so the
- * full-width highlight covers them and they stay on the line instead of the
- * width:100% span pushing them to the next line. For an emphasised line the only
- * post-span content is callout markup, so the whole tail is moved when it
- * contains a conum. Other lines are untouched.
+ * Move whatever the core appended after a line's wrapper span (the callout guard
+ * and one or more conums) back INSIDE that span. In numbered output the conum
+ * would otherwise land after the `.line` grid cell — a stray grid item that would
+ * shift every following cell; in non-numbered emphasis it would fall outside the
+ * full-width highlight span. The core appends the conum after the outermost
+ * closing tag, so we hoist the trailing conum tail before that tag. Lines without
+ * a matching wrapper (or without a conum) are untouched.
  * @param {string} content
  * @returns {string}
  */
-function moveConumsIntoEmphasis(content) {
+function moveConumsIntoLineWrapper(content) {
   return content
     .split('\n')
     .map((line) => {
+      // numbered grid: conum sits after the `.line` code cell's closing tag
+      let m = line.match(/^(.*<span class="line[ "].*)<\/span>(.+)$/)
+      if (m?.[2].includes('class="conum"')) return `${m[1]}${m[2]}</span>`
+      // non-numbered emphasis: conum sits after the highlight span
       if (!line.includes('hljs-ln-highlight')) return line
-      const m = line.match(
-        /^(.*<span class="hljs-ln-highlight">.*)<\/span>(.+)$/
-      )
+      m = line.match(/^(.*<span class="hljs-ln-highlight">.*)<\/span>(.+)$/)
       if (m?.[2].includes('class="conum"')) return `${m[1]}${m[2]}</span>`
       return line
     })
@@ -109,8 +122,8 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
    * @param {Object} node - the source Block being highlighted
    * @param {string} source - source WITHOUT callout marks (the core strips them first)
    * @param {string} lang - the source language, or null
-   * @param {Object} opts - { callouts, cssMode, highlightLines, numberLines, startLineNumber, style }
-   * @returns {Promise<string|[string, number]>} the highlighted HTML, or a [html, offset] tuple
+   * @param {Object} opts - { callouts, highlightLines, numberLines, startLineNumber }
+   * @returns {Promise<string>} the highlighted HTML
    */
   async highlight(node, source, lang, opts) {
     return buildEngine.highlight(source, lang, opts)
@@ -121,21 +134,29 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
    *
    * Adds `language-<lang>` and `hljs` to the `<code>` class attribute, and strips
    * the `highlight` class from `<pre>` when the `nohighlight-option` attribute is set.
+   * In build mode with line numbers, marks the `<code>` as the numbering grid
+   * (`linenums` class) and seeds the CSS line counter from the `start=` attribute.
    * @param {object} node - the source Block being processed
    * @param {string|null} lang - the source language string, or falsy if none
    * @param {object} opts - options passed to the base format()
    * @returns {Promise<string>}
    */
   async format(node, lang, opts) {
+    const numbered = this._buildMode() && node.hasOption('linenums')
     const transform = (pre, code) => {
       if (node.hasAttribute('nohighlight-option')) {
         pre.class = pre.class.replace(' highlight', '')
       }
-      code.class = `language-${lang || 'none'} hljs`
+      code.class = `language-${lang || 'none'} hljs${numbered ? ' linenums' : ''}`
+      if (numbered) {
+        // seed the CSS counter so the first `.ln` cell shows `start` (default 1)
+        const start = parseInt(node.getAttribute('start', 1), 10) || 1
+        code.style = `counter-reset:line ${start - 1}`
+      }
     }
-    // In build mode, pull any trailing callouts inside the full-width emphasis span.
+    // In build mode, pull any trailing callouts inside the line/emphasis wrapper.
     const transformContent = this._buildMode()
-      ? moveConumsIntoEmphasis
+      ? moveConumsIntoLineWrapper
       : undefined
     return super.format(node, lang, { ...opts, transform, transformContent })
   }

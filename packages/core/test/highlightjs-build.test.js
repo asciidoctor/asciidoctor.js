@@ -143,7 +143,7 @@ x = [1, 2] # <1> <2>
   })
 
   describe('line numbers', () => {
-    test('table mode: gutter numbers and callout on middle line', async () => {
+    test('two-column grid rows (no <table>), numbers via CSS counter', async () => {
       const output = await render(`
 [source,ruby,linenums]
 ----
@@ -153,17 +153,23 @@ c = 3
 ----
 <1> middle line
 `)
-      assert.match(output, /<table class="linenotable">/)
-      assert.match(output, /<pre class="lineno">1\n2\n3<\/pre>/)
-      // conum lands on line 2, inside the code cell (before the table closes)
+      // <code> is the numbering grid, seeded to start at line 1
       assert.match(
         output,
-        /b = <span class="hljs-number">2<\/span> # <b class="conum">\(1\)<\/b>\n/
+        /<code class="[^"]*\blinenums\b[^"]*" style="counter-reset:line 0"/
       )
-      assert.match(output, /<\/pre><\/td><\/tr><\/tbody><\/table>/)
+      assert.doesNotMatch(output, /<table class="linenotable">/)
+      // each line is an (empty) gutter cell + a code cell; numbers are not in the DOM
+      assert.match(output, /<span class="ln"><\/span><span class="line">a = /)
+      assert.doesNotMatch(output, /class="linenos"/)
+      // conum lands on line 2, inside its code cell (before the cell closes)
+      assert.match(
+        output,
+        /<span class="line">b = <span class="hljs-number">2<\/span> # <b class="conum">\(1\)<\/b><\/span>/
+      )
     })
 
-    test('table mode: start= offsets the gutter and last-line callout stays clean', async () => {
+    test('start= seeds the counter and last-line callout stays clean', async () => {
       const output = await render(`
 [source,ruby,linenums,start=10]
 ----
@@ -173,12 +179,16 @@ last # <1>
 ----
 <1> last line, numbering starts at 10
 `)
-      assert.match(output, /<pre class="lineno">10\n11\n12<\/pre>/)
-      // conum for the LAST line is appended before </pre></td>, not after the table
-      assert.match(output, /last # <b class="conum">\(1\)<\/b>\n<\/pre><\/td>/)
+      // counter-reset is start-1, so the first .ln cell renders as 10
+      assert.match(output, /style="counter-reset:line 9"/)
+      // conum on the last line is tucked inside its code cell
+      assert.match(
+        output,
+        /<span class="line">last # <b class="conum">\(1\)<\/b><\/span>/
+      )
     })
 
-    test('table mode: multiline comment + callout keeps line count in sync', async () => {
+    test('multiline comment + callout keeps line count in sync', async () => {
       const output = await render(`
 [source,java,linenums]
 ----
@@ -189,30 +199,50 @@ int x = 0;
 ----
 <1> callout inside multiline comment
 `)
-      assert.match(output, /<pre class="lineno">1\n2\n3\n4<\/pre>/)
+      // four gutter cells (one per line); the conum stays on line 2 (comment line)
+      assert.equal((output.match(/<span class="ln"><\/span>/g) || []).length, 4)
       assert.match(
         output,
         /<span class="hljs-comment"> \* multiline <\/span><b class="conum">\(1\)<\/b>/
       )
     })
 
-    test('inline mode: prepends line-number spans without shifting lines', async () => {
+    test('wrap vs. scroll follows the nowrap option, not a numbering mode', async () => {
+      const wrapped = await render(`
+[source,ruby,linenums]
+----
+a = 1
+----
+`)
+      // default: the <pre> wraps (no nowrap class)
+      assert.match(wrapped, /<pre class="highlightjs highlight"/)
+      assert.doesNotMatch(wrapped, /nowrap/)
+
+      const scrolled = await render(`
+[source%nowrap,ruby,linenums]
+----
+a = 1
+----
+`)
+      // nowrap option: the <pre> scrolls long lines instead of wrapping
+      assert.match(scrolled, /<pre class="highlightjs highlight nowrap"/)
+      // same grid markup either way
+      assert.match(scrolled, /<span class="ln"><\/span><span class="line">a = /)
+    })
+
+    test('legacy -linenums-mode value is ignored (still numbers)', async () => {
+      // the table/inline distinction is gone; any value just enables numbering
       const output = await render(
         `
 [source,ruby,linenums]
 ----
 a = 1
-b = 2 # <1>
 ----
-<1> inline numbering
 `,
         { 'highlightjs-linenums-mode': 'inline' }
       )
-      assert.match(output, /<span class="linenos">1<\/span>a = /)
-      assert.match(
-        output,
-        /<span class="linenos">2<\/span>b = <span class="hljs-number">2<\/span> # <b class="conum">\(1\)<\/b>/
-      )
+      assert.match(output, /<code class="[^"]*\blinenums\b/)
+      assert.match(output, /<span class="ln"><\/span><span class="line">a = /)
     })
   })
 
@@ -259,23 +289,23 @@ x = [1, 2] # <1> <2>
       )
     })
 
-    test('inline linenums + emphasis + callout: number and conum both inside the span', async () => {
-      const output = await render(
-        `
+    test('numbered + emphasis + callout: highlight on the code cell, conum inside', async () => {
+      const output = await render(`
 [source,ruby,linenums,highlight=2]
 ----
 a = 1
 b = 2 # <1>
 ----
 <1> combo
-`,
-        { 'highlightjs-linenums-mode': 'inline' }
-      )
-      // the line number opens the emphasis span and the conum closes inside it
+`)
+      // the emphasis class sits on the .line code cell (not the gutter cell), and
+      // the conum closes inside that cell so it never becomes a stray grid item
       assert.match(
         output,
-        /<span class="hljs-ln-highlight"><span class="linenos">2<\/span>.*<b class="conum">\(1\)<\/b><\/span>/
+        /<span class="ln"><\/span><span class="line hljs-ln-highlight">b = <span class="hljs-number">2<\/span> # <b class="conum">\(1\)<\/b><\/span>/
       )
+      // the gutter cell is always empty (the number is a CSS counter)
+      assert.doesNotMatch(output, /<span class="ln">[^<]/)
     })
   })
 
@@ -350,7 +380,7 @@ puts 'hi'
 puts 'hi'
 ----
 `)
-      assert.match(output, /pre\.highlightjs \.linenos\{/)
+      assert.match(output, /pre\.highlightjs \.ln\{/)
       assert.match(output, /pre\.highlightjs \.hljs-ln-highlight\{/)
     })
 
@@ -365,7 +395,7 @@ puts 'hi'
         { 'highlightjs-stylesheet': 'link' }
       )
       assert.match(output, /<link[^>]+styles\/github\.min\.css/)
-      assert.match(output, /pre\.highlightjs \.linenos\{/)
+      assert.match(output, /pre\.highlightjs \.ln\{/)
     })
   })
 })
