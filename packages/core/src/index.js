@@ -40,11 +40,15 @@ import {
 /**
  * @typedef {import('./extensions.js').ProcessorDslInterface} ProcessorDslInterface
  * @typedef {import('./extensions.js').DocumentProcessorDslInterface} DocumentProcessorDslInterface
+ * @typedef {import('./extensions.js').PreprocessorDslInterface} PreprocessorDslInterface
+ * @typedef {import('./extensions.js').TreeProcessorDslInterface} TreeProcessorDslInterface
+ * @typedef {import('./extensions.js').PostprocessorDslInterface} PostprocessorDslInterface
  * @typedef {import('./extensions.js').SyntaxProcessorDslInterface} SyntaxProcessorDslInterface
  * @typedef {import('./extensions.js').IncludeProcessorDslInterface} IncludeProcessorDslInterface
  * @typedef {import('./extensions.js').DocinfoProcessorDslInterface} DocinfoProcessorDslInterface
  * @typedef {import('./extensions.js').BlockProcessorDslInterface} BlockProcessorDslInterface
  * @typedef {import('./extensions.js').MacroProcessorDslInterface} MacroProcessorDslInterface
+ * @typedef {import('./extensions.js').BlockMacroProcessorDslInterface} BlockMacroProcessorDslInterface
  * @typedef {import('./extensions.js').InlineMacroProcessorDslInterface} InlineMacroProcessorDslInterface
  */
 import {

@@ -31,6 +31,7 @@
     "test:deno": "deno test --allow-env --no-check --allow-read --allow-sys --allow-write --allow-run --allow-net test/*.test.js",
     "test:coverage": "node --test --experimental-test-coverage --test-coverage-include='src/**' test/**.test.js",
     "test:browser": "vitest run --config vitest.browser.config.js",
+    "test:types": "tsc -p test/types/tsconfig.json",
     "lint": "biome lint src test",
     "format": "biome format --write src test",
     "check": "biome check src test"
