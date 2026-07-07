@@ -7,6 +7,8 @@
 import {
   type BlockProcessorDslInterface,
   BlockProcessor,
+  type Document,
+  IncludeProcessor,
   Registry,
 } from '../../types/index.js'
 
@@ -96,6 +98,22 @@ registry.includeProcessor(function () {
     void reader.getLines()
   })
 })
+
+// ── IncludeProcessor#handles: both the arity-1 (target-only, Ruby-style) and ──
+//    the arity-2 (doc, target) override forms must type-check.
+class HttpInclude extends IncludeProcessor {
+  handles(target: string): boolean {
+    return target.startsWith('http')
+  }
+}
+class ScopedInclude extends IncludeProcessor {
+  handles(doc: Document, target: string): boolean {
+    void doc
+    return target.startsWith('http')
+  }
+}
+registry.includeProcessor(HttpInclude)
+registry.includeProcessor(ScopedInclude)
 
 // ── docinfoProcessor(fn): (document) → string ─────────────────────────────────
 registry.docinfoProcessor(function () {
