@@ -887,7 +887,15 @@ export class IncludeProcessor extends Processor {
   }
 
   /**
-   * @param {Document} doc - The document being parsed.
+   * Decide whether this include processor handles the given target.
+   *
+   * Override this method in a subclass. The override may accept either just the
+   * target string (Ruby-style, arity 1) or both the document and the target
+   * (arity 2) — an arity-1 override is adapted at registration time so the
+   * parser can always invoke it as `handles(doc, target)`. The first parameter
+   * is therefore typed `Document | string` so both override shapes type-check.
+   *
+   * @param {Document|string} doc - The document being parsed, or (for a Ruby-style arity-1 override) the include target.
    * @param {string} target - The target of the include directive.
    * @returns {boolean} true if this processor handles the given target.
    */
