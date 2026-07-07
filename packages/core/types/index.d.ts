@@ -28,11 +28,15 @@ export function load(input: string | string[] | Buffer, options?: any): Promise<
 export function loadFile(filename: string, options?: any): Promise<Document>;
 export type { ProcessorDslInterface } from './extensions.js';
 export type { DocumentProcessorDslInterface } from './extensions.js';
+export type { PreprocessorDslInterface } from './extensions.js';
+export type { TreeProcessorDslInterface } from './extensions.js';
+export type { PostprocessorDslInterface } from './extensions.js';
 export type { SyntaxProcessorDslInterface } from './extensions.js';
 export type { IncludeProcessorDslInterface } from './extensions.js';
 export type { DocinfoProcessorDslInterface } from './extensions.js';
 export type { BlockProcessorDslInterface } from './extensions.js';
 export type { MacroProcessorDslInterface } from './extensions.js';
+export type { BlockMacroProcessorDslInterface } from './extensions.js';
 export type { InlineMacroProcessorDslInterface } from './extensions.js';
 import { Document } from './document.js';
 import { convert } from './convert.js';

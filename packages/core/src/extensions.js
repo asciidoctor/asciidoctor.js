@@ -55,6 +55,30 @@ import { MacroNameRx, CC_ANY } from './rx.js'
  */
 
 /**
+ * DSL interface for preprocessors.
+ *
+ * @typedef {Omit<DocumentProcessorDslInterface, 'process'> & {
+ *   process(fn: (this: PreprocessorDslInterface, document: Document, reader: Reader) => Reader | void): void;
+ * }} PreprocessorDslInterface
+ */
+
+/**
+ * DSL interface for tree processors.
+ *
+ * @typedef {Omit<DocumentProcessorDslInterface, 'process'> & {
+ *   process(fn: (this: TreeProcessorDslInterface, document: Document) => Document | void): void;
+ * }} TreeProcessorDslInterface
+ */
+
+/**
+ * DSL interface for postprocessors.
+ *
+ * @typedef {Omit<DocumentProcessorDslInterface, 'process'> & {
+ *   process(fn: (this: PostprocessorDslInterface, document: Document, output: string) => string): void;
+ * }} PostprocessorDslInterface
+ */
+
+/**
  * DSL interface for syntax processors (BlockProcessor, BlockMacroProcessor, InlineMacroProcessor).
  *
  * @typedef {ProcessorDslInterface & {
@@ -74,28 +98,35 @@ import { MacroNameRx, CC_ANY } from './rx.js'
 /**
  * DSL interface for include processors.
  *
- * @typedef {DocumentProcessorDslInterface & {
+ * @typedef {Omit<DocumentProcessorDslInterface, 'process'> & {
  *   handles(fn: (target: string) => boolean): void;
  *   handles(fn: (doc: Document, target: string) => boolean): void;
+ *   process(fn: (this: IncludeProcessorDslInterface, document: Document, reader: Reader, target: string, attributes: Record<string, string>) => void): void;
  * }} IncludeProcessorDslInterface
  */
 
 /**
  * DSL interface for docinfo processors.
  *
- * @typedef {DocumentProcessorDslInterface & {
+ * @typedef {Omit<DocumentProcessorDslInterface, 'process'> & {
  *   atLocation(value: string): void;
+ *   process(fn: (this: DocinfoProcessorDslInterface, document: Document) => string): void;
  * }} DocinfoProcessorDslInterface
  */
 
 /**
  * DSL interface for block processors.
  *
- * @typedef {SyntaxProcessorDslInterface & {
+ * The `process` callback is bound to the processor instance, so `this` inside it
+ * (and inside the registration function) exposes the `createBlock` helpers.
+ *
+ * @typedef {Omit<SyntaxProcessorDslInterface, 'process'> & {
  *   contexts(...value: (string | string[])[]): void;
  *   onContexts(...value: (string | string[])[]): void;
  *   onContext(...value: (string | string[])[]): void;
  *   bindTo(...value: (string | string[])[]): void;
+ *   createBlock(parent: AbstractBlock, context: string, source?: string | string[] | null, attrs?: object, opts?: object): Block;
+ *   process(fn: (this: BlockProcessorDslInterface, parent: AbstractBlock, reader: Reader, attributes: Record<string, unknown>) => AbstractBlock | void): void;
  * }} BlockProcessorDslInterface
  */
 
@@ -106,13 +137,30 @@ import { MacroNameRx, CC_ANY } from './rx.js'
  */
 
 /**
+ * DSL interface for block macro processors.
+ *
+ * The `process` callback is bound to the processor instance, so `this` inside it
+ * (and inside the registration function) exposes the `createBlock` helpers.
+ *
+ * @typedef {Omit<MacroProcessorDslInterface, 'process'> & {
+ *   createBlock(parent: AbstractBlock, context: string, source?: string | string[] | null, attrs?: object, opts?: object): Block;
+ *   process(fn: (this: BlockMacroProcessorDslInterface, parent: AbstractBlock, target: string, attributes: Record<string, unknown>) => AbstractBlock | void): void;
+ * }} BlockMacroProcessorDslInterface
+ */
+
+/**
  * DSL interface for inline macro processors.
  *
- * @typedef {MacroProcessorDslInterface & {
+ * The `process` callback is bound to the processor instance, so `this` inside it
+ * (and inside the registration function) exposes the `createInline` helper.
+ *
+ * @typedef {Omit<MacroProcessorDslInterface, 'process'> & {
  *   format(value: string): void;
  *   matchFormat(value: string): void;
  *   usingFormat(value: string): void;
  *   match(value: RegExp): void;
+ *   createInline(parent: AbstractBlock, context: string, text: string, opts?: object): Inline;
+ *   process(fn: (this: InlineMacroProcessorDslInterface, parent: AbstractBlock, target: string, attributes: Record<string, unknown>) => Inline | void): void;
  * }} InlineMacroProcessorDslInterface
  */
 
@@ -1251,6 +1299,14 @@ export class Registry {
    *   this.process(function (doc, reader) { ... })
    * })
    *
+   * @overload
+   * @param {typeof Preprocessor} processor - A Preprocessor subclass or instance.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
+   * @overload
+   * @param {(this: PreprocessorDslInterface) => void} fn - Registration function bound to the preprocessor DSL.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
    * @param {...*} args - Class constructor, instance, or block function.
    * @returns {ProcessorExtension} the Extension stored in the registry.
    */
@@ -1283,6 +1339,14 @@ export class Registry {
 
   /**
    * Register a TreeProcessor with the extension registry.
+   *
+   * @overload
+   * @param {typeof TreeProcessor} processor - A TreeProcessor subclass or instance.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
+   * @overload
+   * @param {(this: TreeProcessorDslInterface) => void} fn - Registration function bound to the tree processor DSL.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
    *
    * @param {...*} args - Class constructor, instance, or block function.
    * @returns {ProcessorExtension} the Extension stored in the registry.
@@ -1337,6 +1401,14 @@ export class Registry {
   /**
    * Register a Postprocessor with the extension registry.
    *
+   * @overload
+   * @param {typeof Postprocessor} processor - A Postprocessor subclass or instance.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
+   * @overload
+   * @param {(this: PostprocessorDslInterface) => void} fn - Registration function bound to the postprocessor DSL.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
    * @param {...*} args - Class constructor, instance, or block function.
    * @returns {ProcessorExtension} the Extension stored in the registry.
    */
@@ -1369,6 +1441,14 @@ export class Registry {
 
   /**
    * Register an IncludeProcessor with the extension registry.
+   *
+   * @overload
+   * @param {typeof IncludeProcessor} processor - An IncludeProcessor subclass or instance.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
+   * @overload
+   * @param {(this: IncludeProcessorDslInterface) => void} fn - Registration function bound to the include processor DSL.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
    *
    * @param {...*} args - Class constructor, instance, or block function.
    * @returns {ProcessorExtension} the Extension stored in the registry.
@@ -1407,6 +1487,14 @@ export class Registry {
 
   /**
    * Register a DocinfoProcessor with the extension registry.
+   *
+   * @overload
+   * @param {typeof DocinfoProcessor} processor - A DocinfoProcessor subclass or instance.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
+   * @overload
+   * @param {(this: DocinfoProcessorDslInterface) => void} fn - Registration function bound to the docinfo processor DSL.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
    *
    * @param {...*} args - Class constructor, instance, or block function.
    * @returns {ProcessorExtension} the Extension stored in the registry.
@@ -1475,6 +1563,20 @@ export class Registry {
    *   this.process(function (parent, reader, attrs) { ... })
    * })
    *
+   * @overload
+   * @param {typeof BlockProcessor} processor - A BlockProcessor subclass.
+   * @param {string} [name] - Optional explicit block name.
+   * @returns {ProcessorExtension} an Extension proxy object.
+   *
+   * @overload
+   * @param {string} name - The block name.
+   * @param {(this: BlockProcessorDslInterface) => void} fn - Registration function bound to the block DSL.
+   * @returns {ProcessorExtension} an Extension proxy object.
+   *
+   * @overload
+   * @param {(this: BlockProcessorDslInterface) => void} fn - Registration function bound to the block DSL.
+   * @returns {ProcessorExtension} an Extension proxy object.
+   *
    * @param {...*} args - Class constructor, instance, block function, or name + one of those.
    * @returns {ProcessorExtension} an Extension proxy object.
    */
@@ -1524,6 +1626,20 @@ export class Registry {
 
   /**
    * Register a BlockMacroProcessor with the extension registry.
+   *
+   * @overload
+   * @param {typeof BlockMacroProcessor} processor - A BlockMacroProcessor subclass.
+   * @param {string} [name] - Optional explicit macro name.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
+   * @overload
+   * @param {string} name - The macro name.
+   * @param {(this: BlockMacroProcessorDslInterface) => void} fn - Registration function bound to the block macro DSL.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
+   * @overload
+   * @param {(this: BlockMacroProcessorDslInterface) => void} fn - Registration function bound to the block macro DSL.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
    *
    * @param {...*} args - Class constructor, instance, or block function.
    * @returns {ProcessorExtension} the Extension stored in the registry.
@@ -1579,6 +1695,20 @@ export class Registry {
 
   /**
    * Register an InlineMacroProcessor with the extension registry.
+   *
+   * @overload
+   * @param {typeof InlineMacroProcessor} processor - An InlineMacroProcessor subclass.
+   * @param {string} [name] - Optional explicit macro name.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
+   * @overload
+   * @param {string} name - The macro name.
+   * @param {(this: InlineMacroProcessorDslInterface) => void} fn - Registration function bound to the inline macro DSL.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
+   *
+   * @overload
+   * @param {(this: InlineMacroProcessorDslInterface) => void} fn - Registration function bound to the inline macro DSL.
+   * @returns {ProcessorExtension} the Extension stored in the registry.
    *
    * @param {...*} args - Class constructor, instance, or block function.
    * @returns {ProcessorExtension} the Extension stored in the registry.
