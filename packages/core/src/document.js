@@ -1594,6 +1594,10 @@ export class Document extends AbstractBlock {
                 cell._innerDocument &&
                 cell._innerContent == null
               ) {
+                // Recurse into the inner document first so that AsciiDoc cells
+                // of any nested table have their content computed before the
+                // inner document (and the nested table) is rendered.
+                await this._convertAsciiDocCells(cell._innerDocument)
                 cell._innerContent = await cell._innerDocument.convert()
               }
             }
