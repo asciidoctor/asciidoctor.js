@@ -627,6 +627,26 @@ The word 'askew' is emphasized.`
       )
     })
 
+    test('AsciiDoc cell inside a nested table should render its content', async () => {
+      const input = `[cols="2a"]
+|===
+a|
+[cols="1,1a"]
+!===
+!label
+!nested asciidoc content
+!===
+|===`
+      const output = await convertStringToEmbedded(input)
+      assertCss(output, 'table table', 1)
+      // The nested AsciiDoc cell must render its paragraph, not an empty div.
+      assertXpath(
+        output,
+        '//table//table//td/div[@class="content"]/div[@class="paragraph"]/p[text()="nested asciidoc content"]',
+        1
+      )
+    })
+
     test('can set format of nested table to psv', async () => {
       const input = `[cols="2*"]
 |===
