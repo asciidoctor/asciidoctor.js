@@ -1,0 +1,445 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Styling semantic admonitions — one markup, five looks</title>
+<style>
+/* ── Page tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --bg: #fdfdfc;
+  --surface: #ffffff;
+  --canvas: #f6f5f3;
+  --fg: #23282e;
+  --muted: #5c646e;
+  --line: #e5e3df;
+  --accent: #e40046;
+  --code-bg: #f4f3f0;
+  /* semantic hues (per admonition type) */
+  --hue-note: #0969da;
+  --hue-tip: #1a7f37;
+  --hue-important: #8250df;
+  --hue-warning: #9a6700;
+  --hue-caution: #cf222e;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16181c;
+    --surface: #1d2026;
+    --canvas: #1c1f24;
+    --fg: #e6e7e9;
+    --muted: #9aa2ac;
+    --line: #2c313a;
+    --accent: #ff5c85;
+    --code-bg: #21252c;
+    --hue-note: #4493f8;
+    --hue-tip: #3fb950;
+    --hue-important: #ab7df8;
+    --hue-warning: #d29922;
+    --hue-caution: #f85149;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #fdfdfc;
+  --surface: #ffffff;
+  --canvas: #f6f5f3;
+  --fg: #23282e;
+  --muted: #5c646e;
+  --line: #e5e3df;
+  --accent: #e40046;
+  --code-bg: #f4f3f0;
+  --hue-note: #0969da;
+  --hue-tip: #1a7f37;
+  --hue-important: #8250df;
+  --hue-warning: #9a6700;
+  --hue-caution: #cf222e;
+}
+:root[data-theme="dark"] {
+  --bg: #16181c;
+  --surface: #1d2026;
+  --canvas: #1c1f24;
+  --fg: #e6e7e9;
+  --muted: #9aa2ac;
+  --line: #2c313a;
+  --accent: #ff5c85;
+  --code-bg: #21252c;
+  --hue-note: #4493f8;
+  --hue-tip: #3fb950;
+  --hue-important: #ab7df8;
+  --hue-warning: #d29922;
+  --hue-caution: #f85149;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.6 system-ui, "Segoe UI", "Helvetica Neue", sans-serif;
+}
+main { max-width: 58rem; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+code, pre { font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace; }
+code { font-size: .875em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: .8125rem;
+  line-height: 1.55;
+}
+pre code { background: none; padding: 0; font-size: inherit; }
+
+/* ── Page chrome ─────────────────────────────────────────────────────────── */
+.eyebrow {
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 .75rem;
+}
+h1 {
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+  line-height: 1.15;
+  letter-spacing: -.015em;
+  margin: 0 0 1rem;
+  text-wrap: balance;
+}
+.lede { font-size: 1.0625rem; color: var(--muted); max-width: 44rem; margin: 0 0 2.5rem; }
+.lede strong { color: var(--fg); }
+
+.markup-note { font-size: .875rem; color: var(--muted); margin: .75rem 0 0; }
+
+.themes { display: flex; flex-direction: column; gap: 3.5rem; margin-top: 3.5rem; }
+
+.demo header { display: flex; align-items: baseline; gap: .75rem; flex-wrap: wrap; margin-bottom: .35rem; }
+.demo h2 { font-size: 1.25rem; letter-spacing: -.01em; margin: 0; }
+.demo .source { font-size: .8125rem; color: var(--muted); }
+.demo .how {
+  font-size: .875rem;
+  color: var(--muted);
+  margin: 0 0 1.1rem;
+  max-width: 46rem;
+}
+.demo .how code { font-size: .8em; }
+.canvas { border: 1px solid var(--line); border-radius: 10px; padding: 1.25rem 1.5rem; }
+
+footer.colophon {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+  font-size: .875rem;
+  color: var(--muted);
+}
+
+/* ── Shared: map each admonition type to its hue ─────────────────────────── */
+.admonition { --c: var(--fg); }
+.admonition.note { --c: var(--hue-note); }
+.admonition.tip { --c: var(--hue-tip); }
+.admonition.important { --c: var(--hue-important); }
+.admonition.warning { --c: var(--hue-warning); }
+.admonition.caution { --c: var(--hue-caution); }
+.admonition { margin: 1rem 0; }
+.admonition:first-child { margin-top: 0; }
+.admonition:last-child { margin-bottom: 0; }
+
+/* Icons — pure CSS, no markup change: a masked pseudo-element on the label. */
+.icon-label .admonition .label::before {
+  content: "";
+  display: inline-block;
+  width: 1.05em;
+  height: 1.05em;
+  margin-right: .5em;
+  vertical-align: -.16em;
+  background: currentColor;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+.icon-label .admonition.note .label::before {
+  mask-image: var(--i-note); -webkit-mask-image: var(--i-note);
+}
+.icon-label .admonition.tip .label::before {
+  mask-image: var(--i-tip); -webkit-mask-image: var(--i-tip);
+}
+.icon-label .admonition.important .label::before {
+  mask-image: var(--i-important); -webkit-mask-image: var(--i-important);
+}
+.icon-label .admonition.warning .label::before {
+  mask-image: var(--i-warning); -webkit-mask-image: var(--i-warning);
+}
+.icon-label .admonition.caution .label::before {
+  mask-image: var(--i-caution); -webkit-mask-image: var(--i-caution);
+}
+:root {
+  --i-note: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.25' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cline x1='8' y1='7.4' x2='8' y2='11.2' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='4.8' r='1' fill='black'/%3E%3C/svg%3E");
+  --i-tip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='6' r='4.25' fill='none' stroke='black' stroke-width='1.5'/%3E%3Cpath d='M6.3 10.5h3.4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M6.6 12.7h2.8' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M7.1 14.6h1.8' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  --i-important: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 1.75h9A1.75 1.75 0 0 1 14.25 3.5v6A1.75 1.75 0 0 1 12.5 11.25H8.5l-3 3v-3h-2A1.75 1.75 0 0 1 1.75 9.5v-6A1.75 1.75 0 0 1 3.5 1.75Z' fill='none' stroke='black' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cline x1='8' y1='4' x2='8' y2='6.8' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='8.9' r='1' fill='black'/%3E%3C/svg%3E");
+  --i-warning: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2.2 14.5 13.6H1.5Z' fill='none' stroke='black' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cline x1='8' y1='6.6' x2='8' y2='9.6' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.7' r='1' fill='black'/%3E%3C/svg%3E");
+  --i-caution: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M5 1.5h6L14.5 5v6L11 14.5H5L1.5 11V5Z' fill='none' stroke='black' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cline x1='8' y1='4.6' x2='8' y2='8.4' stroke='black' stroke-width='1.6' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='10.9' r='1' fill='black'/%3E%3C/svg%3E");
+}
+
+/* ── Theme 1: GitHub alerts ──────────────────────────────────────────────── */
+.theme-github .admonition {
+  border-left: .25rem solid var(--c);
+  padding: .5rem 1rem;
+}
+.theme-github .admonition .label {
+  display: block;
+  color: var(--c);
+  font-weight: 600;
+  margin-bottom: .3rem;
+}
+
+/* ── Theme 2: Just the Docs callouts ─────────────────────────────────────── */
+.theme-jtd .admonition {
+  background: color-mix(in srgb, var(--c) 7%, var(--bg));
+  border-left: .25rem solid var(--c);
+  border-radius: 4px;
+  padding: .8rem 1rem;
+}
+.theme-jtd .admonition .label {
+  display: block;
+  color: var(--c);
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  margin-bottom: .35rem;
+}
+
+/* ── Theme 3: Bootstrap alerts ───────────────────────────────────────────── */
+.theme-bootstrap .admonition {
+  background: color-mix(in srgb, var(--c) 12%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--c) 32%, var(--bg));
+  border-radius: .5rem;
+  padding: 1rem 1.25rem;
+  color: color-mix(in srgb, var(--c) 72%, var(--fg));
+}
+.theme-bootstrap .admonition .label { font-weight: 700; }
+.theme-bootstrap .admonition .label::after { content: " — "; font-weight: 400; }
+
+/* ── Theme 4: Shoelace alerts ────────────────────────────────────────────── */
+.theme-shoelace .canvas { background: var(--canvas); }
+.theme-shoelace .admonition {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--c);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / .07), 0 2px 6px rgb(0 0 0 / .05);
+  padding: .9rem 1.1rem .9rem 2.9rem;
+}
+.theme-shoelace .admonition .label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: .1rem;
+}
+.theme-shoelace .admonition .label::before {
+  position: absolute;
+  left: 1rem;
+  top: 1.05rem;
+  width: 1.25em;
+  height: 1.25em;
+  margin: 0;
+  color: var(--c);
+  background: var(--c);
+}
+.theme-shoelace .admonition { color: var(--muted); }
+.theme-shoelace .admonition .label { color: var(--fg); }
+
+/* ── Theme 5: WHATWG spec notes ──────────────────────────────────────────── */
+.theme-spec .admonition {
+  position: relative;
+  background: color-mix(in srgb, var(--c) 11%, var(--bg));
+  color: color-mix(in srgb, var(--c) 82%, var(--fg));
+  font-style: italic;
+  padding: 1rem 1rem .85rem;
+  margin-top: 1.9rem;
+}
+.theme-spec .admonition:first-child { margin-top: .9rem; }
+.theme-spec .admonition .label {
+  position: absolute;
+  top: -.8em;
+  left: -.35em;
+  background: var(--c);
+  color: var(--bg);
+  font-style: normal;
+  font-weight: 600;
+  font-size: .875rem;
+  line-height: 1.4;
+  padding: .1em .5em;
+}
+.theme-spec .admonition.warning,
+.theme-spec .admonition.caution {
+  font-style: normal;
+}
+.theme-spec .admonition.warning .label::after,
+.theme-spec .admonition.caution .label::after { content: "!"; }
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Asciidoctor.js · semantic-html5 backend</p>
+<h1>One admonition markup, five resolved styles</h1>
+<p class="lede">The point of the semantic converter is that styling stays <strong>easy</strong>: every section below styles the <strong>exact same HTML</strong> — the raw output of the <code>semantic-html5</code> backend — with a few scoped CSS rules. No wrapper <code>&lt;div&gt;</code>s, no layout <code>&lt;table&gt;</code>, no markup changes; even the icons are added in pure CSS (a masked pseudo-element on <code>.label</code>).</p>
+
+<pre><code>&lt;aside class="admonition note" role="note"&gt;
+&lt;strong class="label"&gt;Note&lt;/strong&gt;
+Useful information that users should know, even when skimming content.
+&lt;/aside&gt;</code></pre>
+<p class="markup-note">Generated from <code>NOTE: Useful information…</code> — this fragment (× 5 types) is repeated verbatim in each themed section below.</p>
+
+<div class="themes">
+
+<section class="demo theme-github icon-label">
+<header><h2>GitHub alerts</h2><span class="source">after <a href="https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts">github.com</a></span></header>
+<p class="how">Left border + colored label with a CSS mask icon. 3 rules: <code>.admonition</code>, <code>.label</code>, <code>.label::before</code>.</p>
+<div class="canvas">
+<aside class="admonition note" role="note">
+<strong class="label">Note</strong>
+Useful information that users should know, even when skimming content.
+</aside>
+<aside class="admonition tip" role="note">
+<strong class="label">Tip</strong>
+Helpful advice for doing things better or more easily.
+</aside>
+<aside class="admonition important" role="note">
+<strong class="label">Important</strong>
+Key information users need to know to achieve their goal.
+</aside>
+<aside class="admonition warning" role="note">
+<strong class="label">Warning</strong>
+Urgent info that needs immediate user attention to avoid problems.
+</aside>
+<aside class="admonition caution" role="note">
+<strong class="label">Caution</strong>
+Advises about risks or negative outcomes of certain actions.
+</aside>
+</div>
+</section>
+
+<section class="demo theme-jtd">
+<header><h2>Just the Docs callouts</h2><span class="source">after <a href="https://just-the-docs.com/docs/ui-components/callouts/">just-the-docs.com</a></span></header>
+<p class="how">Tinted background (<code>color-mix</code> from the type hue) + uppercase label. No icon — the icon really is optional.</p>
+<div class="canvas">
+<aside class="admonition note" role="note">
+<strong class="label">Note</strong>
+Useful information that users should know, even when skimming content.
+</aside>
+<aside class="admonition tip" role="note">
+<strong class="label">Tip</strong>
+Helpful advice for doing things better or more easily.
+</aside>
+<aside class="admonition important" role="note">
+<strong class="label">Important</strong>
+Key information users need to know to achieve their goal.
+</aside>
+<aside class="admonition warning" role="note">
+<strong class="label">Warning</strong>
+Urgent info that needs immediate user attention to avoid problems.
+</aside>
+<aside class="admonition caution" role="note">
+<strong class="label">Caution</strong>
+Advises about risks or negative outcomes of certain actions.
+</aside>
+</div>
+</section>
+
+<section class="demo theme-bootstrap">
+<header><h2>Bootstrap alerts</h2><span class="source">after <a href="https://getbootstrap.com/docs/5.3/components/alerts/">getbootstrap.com</a></span></header>
+<p class="how">Soft filled box, text tinted toward the type hue, label kept inline (<code>.label::after</code> adds the dash — content stays untouched).</p>
+<div class="canvas">
+<aside class="admonition note" role="note">
+<strong class="label">Note</strong>
+Useful information that users should know, even when skimming content.
+</aside>
+<aside class="admonition tip" role="note">
+<strong class="label">Tip</strong>
+Helpful advice for doing things better or more easily.
+</aside>
+<aside class="admonition important" role="note">
+<strong class="label">Important</strong>
+Key information users need to know to achieve their goal.
+</aside>
+<aside class="admonition warning" role="note">
+<strong class="label">Warning</strong>
+Urgent info that needs immediate user attention to avoid problems.
+</aside>
+<aside class="admonition caution" role="note">
+<strong class="label">Caution</strong>
+Advises about risks or negative outcomes of certain actions.
+</aside>
+</div>
+</section>
+
+<section class="demo theme-shoelace icon-label">
+<header><h2>Shoelace alerts</h2><span class="source">after <a href="https://shoelace.style/components/alert">shoelace.style</a></span></header>
+<p class="how">Elevated cards on a muted canvas: top accent, shadow, icon in the gutter (same masked pseudo-element, absolutely positioned).</p>
+<div class="canvas">
+<aside class="admonition note" role="note">
+<strong class="label">Note</strong>
+Useful information that users should know, even when skimming content.
+</aside>
+<aside class="admonition tip" role="note">
+<strong class="label">Tip</strong>
+Helpful advice for doing things better or more easily.
+</aside>
+<aside class="admonition important" role="note">
+<strong class="label">Important</strong>
+Key information users need to know to achieve their goal.
+</aside>
+<aside class="admonition warning" role="note">
+<strong class="label">Warning</strong>
+Urgent info that needs immediate user attention to avoid problems.
+</aside>
+<aside class="admonition caution" role="note">
+<strong class="label">Caution</strong>
+Advises about risks or negative outcomes of certain actions.
+</aside>
+</div>
+</section>
+
+<section class="demo theme-spec">
+<header><h2>WHATWG spec notes</h2><span class="source">after <a href="https://html.spec.whatwg.org/multipage/dom.html#the-title-attribute">html.spec.whatwg.org</a></span></header>
+<p class="how">Tinted background, italic colored body, and the spec’s signature solid label badge overhanging the top-left corner (the label element, absolutely positioned — still no markup change).</p>
+<div class="canvas">
+<aside class="admonition note" role="note">
+<strong class="label">Note</strong>
+Useful information that users should know, even when skimming content.
+</aside>
+<aside class="admonition tip" role="note">
+<strong class="label">Tip</strong>
+Helpful advice for doing things better or more easily.
+</aside>
+<aside class="admonition important" role="note">
+<strong class="label">Important</strong>
+Key information users need to know to achieve their goal.
+</aside>
+<aside class="admonition warning" role="note">
+<strong class="label">Warning</strong>
+Urgent info that needs immediate user attention to avoid problems.
+</aside>
+<aside class="admonition caution" role="note">
+<strong class="label">Caution</strong>
+Advises about risks or negative outcomes of certain actions.
+</aside>
+</div>
+</section>
+
+</div>
+
+<footer class="colophon">
+<p>Markup generated by <code>Asciidoctor.convert(input, { backend: 'semantic-html5' })</code>. Each theme scopes its rules under a section class (e.g. <code>.theme-github .admonition</code>); the per-type hue is resolved once via <code>.admonition.note { --c: var(--hue-note) }</code> and every theme just uses <code>var(--c)</code>. Rationale for the <code>&lt;aside role="note"&gt;</code> structure: <code>devdocs/semantic-html5-converter.adoc</code>.</p>
+</footer>
+</main>
+</body>
+</html>
