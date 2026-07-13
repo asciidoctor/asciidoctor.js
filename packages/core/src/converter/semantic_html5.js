@@ -29,6 +29,7 @@ import {
 } from '../constants.js'
 import { XmlSanitizeRx } from '../rx.js'
 import { extname } from '../helpers.js'
+import { Stylesheets } from '../stylesheets.js'
 
 // ── Local regex constants ─────────────────────────────────────────────────────
 
@@ -154,16 +155,23 @@ export default class SemanticHtml5Converter extends ConverterBase {
       `<title>${node.doctitle({ sanitize: true, use_fallback: true })}</title>`
     )
 
-    // NOTE the default stylesheet (asciidoctor-default.css) targets the html5
-    // backend's structure and is not compatible with the semantic output, so it
-    // is never included; only a user-provided stylesheet is linked or embedded
-    // (a dedicated default stylesheet may be introduced later)
+    // NOTE the html5 backend's default stylesheet (asciidoctor-default.css)
+    // targets that backend's structure and is not compatible with the semantic
+    // output; the semantic backend has its own default stylesheet
+    // (asciidoctor-semantic.css)
     const stylesheetRawVal =
       'stylesheet' in node.attributes ? node.attributes.stylesheet : null
-    if (
-      !DEFAULT_STYLESHEET_KEYS.has(stylesheetRawVal) &&
-      node.hasAttribute('stylesheet')
-    ) {
+    if (DEFAULT_STYLESHEET_KEYS.has(stylesheetRawVal)) {
+      if (linkcss) {
+        result.push(
+          `<link rel="stylesheet" href="${node.normalizeWebPath(Stylesheets.instance.semanticStylesheetName, node.getAttribute('stylesdir'), false)}"${slash}>`
+        )
+      } else {
+        result.push(
+          `<style>\n${await Stylesheets.instance.semanticStylesheetData()}\n</style>`
+        )
+      }
+    } else if (node.hasAttribute('stylesheet')) {
       if (linkcss) {
         result.push(
           `<link rel="stylesheet" href="${node.normalizeWebPath(node.getAttribute('stylesheet'), node.getAttribute('stylesdir'))}"${slash}>`

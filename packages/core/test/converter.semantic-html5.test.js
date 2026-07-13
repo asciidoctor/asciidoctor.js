@@ -51,6 +51,7 @@ More content.
 `
     const result = await convertString(input, {
       backend: 'semantic-html5',
+      attributes: { 'stylesheet!': '' },
     })
     assert.equal(
       result,
@@ -122,6 +123,7 @@ Content.
 `
     const result = await convertString(input, {
       backend: 'semantic-html5',
+      attributes: { 'stylesheet!': '' },
     })
     assert.ok(
       result.includes(`<main>
@@ -135,9 +137,33 @@ Content.
     assert.ok(!result.includes('<footer>'))
   })
 
-  test('does not include the default stylesheet (not compatible with the semantic output)', async () => {
+  test('embeds the dedicated semantic stylesheet by default (not the html5 one)', async () => {
     const result = await convertString('content', {
       backend: 'semantic-html5',
+    })
+    assert.ok(
+      result.includes('/*! Asciidoctor semantic HTML5 default stylesheet')
+    )
+    assert.ok(!result.includes('/*! Asciidoctor default stylesheet'))
+  })
+
+  test('links the semantic stylesheet with linkcss', async () => {
+    const result = await convertString('content', {
+      backend: 'semantic-html5',
+      attributes: { linkcss: '' },
+    })
+    assert.ok(
+      result.includes(
+        '<link rel="stylesheet" href="./asciidoctor-semantic.css">'
+      )
+    )
+    assert.ok(!result.includes('<style>'))
+  })
+
+  test('omits the stylesheet when unset', async () => {
+    const result = await convertString('content', {
+      backend: 'semantic-html5',
+      attributes: { 'stylesheet!': '' },
     })
     assert.ok(!result.includes('<style>'))
     assert.ok(!result.includes('<link rel="stylesheet"'))

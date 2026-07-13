@@ -41,9 +41,10 @@ With `-a htmlsyntax=xml` the output is well-formed XML: void elements are self-c
 This keeps the output consumable with an XML parser, XPath or XSLT (the use case that kept XHTML support alive upstream — see https://github.com/asciidoctor/asciidoctor/issues/4309[asciidoctor#4309]).
 The default HTML syntax uses clean HTML5 voids (no `/>`).
 
-No default stylesheet::
-`data/asciidoctor-default.css` targets the `html5` backend's structure and is *not compatible* with this output, so standalone documents never include it (a dedicated default stylesheet may be introduced later).
-Only a user-provided `:stylesheet:` is linked (`:linkcss:`) or embedded.
+Dedicated default stylesheet::
+Standalone documents embed `data/asciidoctor-semantic.css` — a stylesheet written for this output (the `html5` backend's `asciidoctor-default.css` targets a different structure and is never used).
+It is dependency-free (system font stacks, no webfonts), adapts to light and dark automatically (`color-scheme` + `prefers-color-scheme`, tokens under the `--asciidoctor-*` prefix), styles every class in <<Built-in classes reference>> (CSS counters for qanda questions and callout lists, a responsive revision line via the `data-title` attributes, kbd keycaps, table frame/grid/stripes) and includes print rules (`page-break` honored, `break-inside` guards, printed link URLs).
+With `:linkcss:` it is linked as `asciidoctor-semantic.css` instead of embedded; `:stylesheet!:` omits it; a user `:stylesheet:` replaces it.
 
 == Document structure
 
@@ -583,7 +584,7 @@ Features of the `html5` backend intentionally *not* carried over (everything els
 
 == Built-in classes reference
 
-Classes the converter emits, for the future dedicated stylesheet:
+Classes the converter emits — the contract implemented by the default stylesheet (`data/asciidoctor-semantic.css`):
 
 [cols="1m,2",opts=header]
 |===
