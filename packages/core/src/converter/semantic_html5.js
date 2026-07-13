@@ -199,7 +199,7 @@ export default class SemanticHtml5Converter extends ConverterBase {
       result.push('<footer>')
       if (node.hasAttribute('revnumber')) {
         result.push(
-          `<span class="revnumber">${node.getAttribute('version-label')} ${node.getAttribute('revnumber')}</span>`
+          `<span class="rev-number">${node.getAttribute('version-label')} ${node.getAttribute('revnumber')}</span>`
         )
       }
       if (node.hasAttribute('last-update-label') && !reproducible) {
@@ -364,7 +364,7 @@ ${title}${await syntaxHl.format(node, lang, opts)}
       content = (await node.content()) || ''
     }
     return `<figure${attributes}>
-${title}<pre${nowrap ? ' class="nowrap"' : ''}>${content}</pre>
+${title}<pre${nowrap ? ' class="no-wrap"' : ''}>${content}</pre>
 </figure>`
   }
 
@@ -492,7 +492,7 @@ ${blockquote}
     const nowrap =
       !node.document.hasAttribute('prewrap') || node.hasOption('nowrap')
     return `<figure${attributes}>
-${title}<pre${nowrap ? ' class="nowrap"' : ''}>${await node.content()}</pre>
+${title}<pre${nowrap ? ' class="no-wrap"' : ''}>${await node.content()}</pre>
 </figure>`
   }
 
@@ -634,8 +634,8 @@ ${title}${equation}
   async convert_colist(node) {
     const result = []
     const attributes = node.hasTitle()
-      ? this._commonHtmlAttributes(null, null, 'colist')
-      : this._commonHtmlAttributes(node.id, node.role, 'colist')
+      ? this._commonHtmlAttributes(null, null, 'callout-list')
+      : this._commonHtmlAttributes(node.id, node.role, 'callout-list')
     result.push(`<ol${attributes}>`)
     for (const item of node.getItems()) {
       result.push(`<li>
@@ -787,7 +787,7 @@ ${title}${equation}
       }
     }
 
-    const result = [`<ol class="sectlevel${sectlevel}">`]
+    const result = [`<ol class="sect-level-${sectlevel}">`]
     for (const section of sections) {
       const slevel = section.level
       const stoclevels = section.hasAttribute('toclevels')
@@ -1090,9 +1090,9 @@ ${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${s
   async convert_inline_callout(node) {
     const guard = node.attributes.guard
     if (Array.isArray(guard)) {
-      return `&lt;!--<b class="conum">(${node.text})</b>--&gt;`
+      return `&lt;!--<b class="callout-num">(${node.text})</b>--&gt;`
     }
-    return `${guard ?? ''}<b class="conum">(${node.text})</b>`
+    return `${guard ?? ''}<b class="callout-num">(${node.text})</b>`
   }
 
   async convert_inline_footnote(node) {
@@ -1119,7 +1119,7 @@ ${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${s
     if (keys.length === 1) {
       return `<kbd>${keys[0]}</kbd>`
     }
-    return `<span class="keyseq"><kbd>${keys.join('</kbd>+<kbd>')}</kbd></span>`
+    return `<span class="key-seq"><kbd>${keys.join('</kbd>+<kbd>')}</kbd></span>`
   }
 
   async convert_inline_quoted(node) {
@@ -1141,14 +1141,14 @@ ${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${s
         attributes = this._commonHtmlAttributes(
           node.id,
           node.role,
-          'singlequote'
+          'single-quote'
         )
         return `<span${attributes}>&#8216;${node.text}&#8217;</span>`
       case 'double':
         attributes = this._commonHtmlAttributes(
           node.id,
           node.role,
-          'doublequote'
+          'double-quote'
         )
         return `<span${attributes}>&#8220;${node.text}&#8221;</span>`
       case 'asciimath':
@@ -1177,11 +1177,11 @@ ${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${s
     if (submenus.length === 0) {
       const menuitem = node.getAttribute('menuitem')
       if (menuitem) {
-        return `<span class="menuseq"><b class="menu">${menu}</b>${caret}<b class="menuitem">${menuitem}</b></span>`
+        return `<span class="menu-seq"><b class="menu">${menu}</b>${caret}<b class="menu-item">${menuitem}</b></span>`
       }
-      return `<span class="menuseq"><b class="menu">${menu}</b></span>`
+      return `<span class="menu-seq"><b class="menu">${menu}</b></span>`
     }
-    return `<span class="menuseq"><b class="menu">${menu}</b>${caret}<b class="submenu">${submenus.join(submenuJoiner)}</b>${caret}<b class="menuitem">${node.getAttribute('menuitem')}</b></span>`
+    return `<span class="menu-seq"><b class="menu">${menu}</b>${caret}<b class="submenu">${submenus.join(submenuJoiner)}</b>${caret}<b class="menu-item">${node.getAttribute('menuitem')}</b></span>`
   }
 
   // ── Header generation ───────────────────────────────────────────────────────
@@ -1198,15 +1198,15 @@ ${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${s
       switch (node.sectname) {
         case 'chapter':
           signifier = docAttrs['chapter-signifier']
-          return `${signifier ? `${signifier} ` : ''}<span class="sectnum">${node.sectnum()}</span>`
+          return `${signifier ? `${signifier} ` : ''}<span class="sect-num">${node.sectnum()}</span>`
         case 'part':
           signifier = docAttrs['part-signifier']
-          return `${signifier ? `${signifier} ` : ''}<span class="sectnum">${node.sectnum(null, ':')}</span>`
+          return `${signifier ? `${signifier} ` : ''}<span class="sect-num">${node.sectnum(null, ':')}</span>`
         default:
-          return `<span class="sectnum">${node.sectnum()}</span>`
+          return `<span class="sect-num">${node.sectnum()}</span>`
       }
     }
-    return `<span class="sectnum">${node.sectnum()}</span>`
+    return `<span class="sect-num">${node.sectnum()}</span>`
   }
 
   async _generateHeader(node) {
