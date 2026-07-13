@@ -306,6 +306,8 @@ export class CustomFactory {
 // Static per-backend imports allow bundlers (Rollup/Vite) to inline each module.
 async function _importBuiltinConverter(backend) {
   if (backend === 'html5') return import('./converter/html5.js')
+  if (backend === 'semantic-html5')
+    return import('./converter/semantic_html5.js')
   if (backend === 'docbook5') return import('./converter/docbook5.js')
   if (backend === 'manpage') return import('./converter/manpage.js')
   return null
