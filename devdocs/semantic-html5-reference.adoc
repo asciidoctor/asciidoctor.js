@@ -1,0 +1,302 @@
+= AsciiDoc Syntax Reference: Semantic Edition
+Doc Writer <doc.writer@example.org>; Jane Smith <jane.smith@example.org>
+v2.1, 2026-07-13: Stylesheet evaluation build
+:description: A kitchen-sink document exercising most AsciiDoc syntax, used to evaluate the semantic-html5 default stylesheet.
+:toc:
+:sectnums:
+:sectanchors:
+:sectlinks:
+:experimental:
+:reproducible:
+:svg-sample: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgODAiPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iODAiIHJ4PSI4IiBmaWxsPSIjMDk2OWRhIiBvcGFjaXR5PSIuMTUiLz48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSIxOCIgZmlsbD0iIzA5NjlkYSIvPjxyZWN0IHg9IjcwIiB5PSIyMiIgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiByeD0iNiIgZmlsbD0iIzFhN2YzNyIvPjwvc3ZnPg==
+:svg-dot: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiNjZjIyMmUiLz48L3N2Zz4=
+
+This document exercises most of the AsciiDoc syntax so the default stylesheet of the `semantic-html5` backend can be evaluated at a glance.
+It is the preamble: it precedes the first section and contains a footnote.footnote:[Footnotes collect into a semantic list at the end of the document.]
+
+== Text formatting
+
+Regular paragraph text with *bold*, _italic_, `monospace`, *_bold italic_*, `*bold mono*`, #highlighted#, ^super^script, ~sub~script, "double curved quotes", 'single curved quotes', and an en&#8211;dash&#8201;&#8212;&#8201;style replacement.
+
+Styled spans: [.underline]#underlined#, [.line-through]#struck through#, and [.nowrap]#a span that refuses to wrap#.
+
+A sentence ending with a hard line break +
+lands on the next line.
+
+.A paragraph with a block title
+The title renders above the paragraph as a strong element.
+
+=== Links and cross references
+
+An automatic link: https://asciidoctor.org.
+A link with text: https://docs.asciidoctor.org[the documentation].
+One that opens in a new window: https://asciidoctor.org[Asciidoctor^].
+An email: doc.writer@example.org.
+A cross reference to <<tables>> and one with custom text: <<lists,the lists section>>.
+An inline anchor sits [[bookmark-a]]right here.
+
+=== Keyboard, buttons and menus
+
+Press kbd:[Ctrl+Shift+P] to open the palette, or the single key kbd:[F11].
+Click btn:[Save] and confirm with btn:[OK].
+Select menu:File[] then menu:File[Save], or the deep path menu:View[Zoom > Zoom In].
+
+== Admonitions
+
+NOTE: Useful information that users should know, even when skimming content.
+
+TIP: Helpful advice for doing things better or more easily.
+
+IMPORTANT: Key information users need to know to achieve their goal.
+
+WARNING: Urgent info that needs immediate user attention to avoid problems.
+
+CAUTION: Advises about risks or negative outcomes of certain actions.
+
+.An admonition with a title and block content
+[NOTE]
+====
+Admonitions can hold any block content:
+
+* a list item
+* another item
+
+And a closing paragraph.
+====
+
+== Blocks
+
+.Sidebar title
+****
+A sidebar holds auxiliary content, visually set apart from the main flow.
+It can contain any block content.
+****
+
+.Compute the answer
+[source,js]
+----
+const answer = 6 * 7 // <1>
+if (answer !== 42) {
+  throw new Error('panic') // <2>
+}
+----
+<1> The multiplication is the hard part.
+<2> This should never happen.
+
+A plain listing without a language:
+
+----
+$ asciidoctor -b semantic-html5 reference.adoc
+----
+
+A literal block:
+
+....
+literal block: keep    my    spacing
+      and my indentation
+....
+
+.Example caption gets a number
+====
+An example block, captioned and numbered automatically.
+====
+
+[%collapsible]
+====
+This content is revealed on demand (a collapsed details element).
+====
+
+[%collapsible%open]
+.Already expanded
+====
+This collapsible starts open.
+====
+
+.After landing the cloaked Klingon bird of prey in Golden Gate park
+[quote,Captain James T. Kirk,Star Trek IV: The Voyage Home]
+Everybody remember where we parked.
+
+[quote]
+A quote without attribution stays a bare blockquote.
+
+[verse,Carl Sandburg,two lines from the poem Fog]
+____
+The fog comes
+on little cat feet.
+____
+
+--
+An open block groups content without any styling of its own.
+--
+
+A thematic break:
+
+'''
+
+And a page break (a dinkus on screen, a real break in print):
+
+<<<
+
+[[lists]]
+== Lists
+
+=== Unordered
+
+* Item one
+* Item two with nested items
+** Nested item
+*** Deeply nested item
+* Item three with an attached paragraph
++
+This paragraph is attached to the list item.
+
+=== Checklists
+
+* [x] Design the converter
+* [x] Write the stylesheet
+* [ ] Ship it
+
+[%interactive]
+* [x] An interactive checked task
+* [ ] An interactive unchecked task
+
+=== Ordered
+
+. Step one
+. Step two with substeps
+.. Substep A
+.. Substep B
+
+[start=10]
+. Numbering can start at ten
+. And continue from there
+
+[%reversed]
+. Three
+. Two
+. One
+
+[loweralpha]
+. First
+. Second
+
+=== Description lists
+
+CPU:: The brain of the computer.
+RAM::
+Temporary storage, described on the next line.
+CPU socket::
+Motherboard::
+Two terms sharing one description.
+
+[qanda]
+What is AsciiDoc?::
+A plain-text writing format with a concise, readable syntax.
+Why semantic HTML?::
+Easier styling, better accessibility, cleaner diffs.
+
+[horizontal]
+input:: What you write.
+output:: What readers see.
+processor:: What sits in between.
+
+[[tables]]
+== Tables
+
+.Ingredients for one loaf
+[%header%footer,cols="3,^1,>1",stripes=even]
+|===
+|Item |Unit |Quantity
+
+|Flour
+|g
+|200
+
+|Sugar
+|g
+|100
+
+|Butter _(softened)_
+|g
+|150
+
+|Total
+|g
+|450
+|===
+
+.Spans and alignments
+|===
+2+^|Spanning two columns
+.2+.^|Two rows (middle) |Regular cell
+|Regular cell
+|===
+
+[%autowidth]
+|===
+|An autowidth table |hugs |its content
+|===
+
+.Cell styles
+[cols="h,m,l,a"]
+|===
+|Header cell
+|Monospace cell
+|Literal
+  cell
+a|AsciiDoc cell
+
+* with a list
+|===
+
+[frame=ends,grid=rows]
+|===
+|frame=ends |grid=rows
+|Only horizontal |rules here
+|===
+
+== Media
+
+.A sample figure, captioned and numbered
+image::{svg-sample}[Abstract shapes,240,160]
+
+An inline image image:{svg-dot}[red dot,14,14] sits in the middle of this sentence.
+
+.A block image with a link, floated right
+[link=https://asciidoctor.org,float=right]
+image::{svg-dot}[A dot that links,48,48]
+
+The paragraph next to the floated image wraps around it. Clear the float before continuing so the layout stays tidy. This sentence pads the line a little more so the wrap is visible.
+
+[.text-center]
+image::{svg-dot}[Centered dot,32,32]
+
+== STEM
+
+:stem: latexmath
+
+The area of a circle is stem:[A = \pi r^2] (inline).
+
+[stem]
+++++
+x = {-b \pm \sqrt{b^2-4ac} \over 2a}
+++++
+
+== Footnotes and index
+
+The hail-and-rainbow protocol can be initiated at five levels.footnote:disclaimer[Opinions are my own; the protocol is fictional.]
+A reused footnote reference.footnote:disclaimer[]
+The indexterm2:[panther] is a visible index term; a hidden one follows.indexterm:[big cat]
+
+[discrete]
+== A discrete heading
+
+A discrete heading is not numbered, not in the TOC, and opens no section.
+
+[appendix]
+== Bibliography-ish
+
+* [[semantic,1]] The semantic HTML5 converter design document, 2026.
+* [[wip,2]] The upstream feature/html-converter-next branch, 2022.
+
+See <<semantic>> and <<wip>>.
