@@ -386,8 +386,25 @@ ${title}<pre${nowrap ? ' class="no-wrap"' : ''}>${content}</pre>
     const titleElement = node.hasTitle()
       ? `<strong class="title">${node.title}</strong>\n`
       : ''
-    return `<aside${attributes}>
-<strong class="label">${node.getAttribute('textlabel')}</strong>
+    // NOTE role="note" (a non-landmark structuring role) demarcates the
+    // admonition for assistive technologies without polluting the landmark
+    // navigation; see the rationale in devdocs/semantic-html5-converter.adoc
+    // and the discussion in https://github.com/whatwg/html/issues/10100
+    let label
+    if (node.document.hasAttribute('icons')) {
+      if (
+        node.document.hasAttribute('icons', 'font') &&
+        !node.hasAttribute('icon')
+      ) {
+        label = `<i class="fa icon-${name}" title="${node.getAttribute('textlabel')}"></i>`
+      } else {
+        label = `<img class="icon" src="${await node.iconUri(name)}" alt="${node.getAttribute('textlabel')}">`
+      }
+    } else {
+      label = `<strong class="label">${node.getAttribute('textlabel')}</strong>`
+    }
+    return `<aside${attributes} role="note">
+${label}
 ${titleElement}${await node.content()}
 </aside>`
   }

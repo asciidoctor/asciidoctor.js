@@ -1,0 +1,3 @@
+:icons: font
+
+WARNING: Watch out for dragons!
