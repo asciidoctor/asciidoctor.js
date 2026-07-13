@@ -1,0 +1,3 @@
+:icons: font
+
+Do you icon:heart[] Asciidoctor? icon:shield[rotate=90] icon:flag[flip=horizontal,role=red] icon:fire[2x]

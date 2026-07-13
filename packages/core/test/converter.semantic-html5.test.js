@@ -143,6 +143,17 @@ Content.
     assert.ok(!result.includes('<link rel="stylesheet"'))
   })
 
+  test('links the Font Awesome stylesheet when icons=font', async () => {
+    const result = await convertString('NOTE: Remember the milk.', {
+      backend: 'semantic-html5',
+      attributes: { icons: 'font', 'iconfont-remote': '' },
+    })
+    assert.match(
+      result,
+      /<link rel="stylesheet" href="https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/[^"]+\/css\/font-awesome\.min\.css">/
+    )
+  })
+
   test('embeds a user-provided stylesheet in the head', async () => {
     const result = await convertString('content', {
       backend: 'semantic-html5',
@@ -153,5 +164,86 @@ Content.
       },
     })
     assert.ok(result.includes('<style>'))
+  })
+})
+
+describe('Semantic HTML 5 converter — XML syntax (XHTML)', () => {
+  // htmlsyntax=xml produces well-formed XML so the output can be consumed
+  // with an XML parser or XPath (see asciidoctor/asciidoctor#4309)
+  const opts = {
+    backend: 'semantic-html5',
+    attributes: { htmlsyntax: 'xml' },
+  }
+
+  test('self-closes void elements', async () => {
+    const input = `first +
+second
+
+<<<
+
+image::dot.gif[A dot]
+`
+    const result = await convertStringToEmbedded(input, opts)
+    assert.ok(result.includes('first<br/>'))
+    assert.ok(result.includes('<hr class="page-break"/>'))
+    assert.ok(result.includes('<img src="dot.gif" alt="A dot"/>'))
+  })
+
+  test('expands boolean attributes', async () => {
+    const input = `[%interactive]
+* [x] Done
+
+[%reversed]
+. Higher
+`
+    const result = await convertStringToEmbedded(input, opts)
+    assert.ok(result.includes('checked="checked"/>'))
+    assert.ok(result.includes('<ol class="arabic" reversed="reversed">'))
+  })
+
+  test('declares the XHTML namespace on the root element', async () => {
+    const result = await convertString('content', {
+      backend: 'semantic-html5',
+      attributes: { htmlsyntax: 'xml' },
+    })
+    assert.ok(
+      result.includes('<html xmlns="http://www.w3.org/1999/xhtml" lang="en">')
+    )
+    assert.ok(result.includes('<meta charset="UTF-8"/>'))
+  })
+
+  test('produces well-formed markup an XML parser accepts (embedded)', async () => {
+    const input = `= Title
+:sectanchors:
+
+first +
+second
+
+== Section
+
+* [x] task
+* [ ] other
+
+|===
+|A |B
+|===
+
+image::dot.gif[A dot,100,100]
+
+'''
+
+NOTE: An admonition.
+`
+    const result = await convertStringToEmbedded(input, opts)
+    // wrap in a root element (embedded output is a fragment) and parse strictly
+    const { DOMParser } = await import('@xmldom/xmldom')
+    let error = null
+    const parser = new DOMParser({
+      onError: (level, msg) => {
+        if (level === 'error' || level === 'fatalError') error = msg
+      },
+    })
+    parser.parseFromString(`<root>${result}</root>`, 'application/xml')
+    assert.equal(error, null)
   })
 })
