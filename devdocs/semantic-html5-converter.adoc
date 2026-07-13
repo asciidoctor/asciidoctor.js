@@ -578,7 +578,7 @@ Features of the `html5` backend intentionally *not* carried over (everything els
 * *`webfonts` attribute* — tied to the default stylesheet, which is not included.
 * *horizontal dlist layout attributes* (`labelwidth`/`itemwidth` `<col>` widths, `%strong` terms) — the `horizontal` class is the styling hook; column widths belong to the stylesheet.
 * *qanda `<em>` on questions and `<ol>` structure* — a qanda list stays a `<dl class="qanda">`; numbering is the stylesheet's job.
-* *TOC position body classes* (`toc2`, `toc-left`, …) — the TOC is a `<nav id="toc">` inside `<main>`; placing it is the stylesheet's job.
+* *TOC position body classes* (`toc2`, `toc-left`, …) — the TOC is a `<nav id="toc">` inside `<main>`; placing it is the stylesheet's job. link:semantic-html5-toc.html[`semantic-html5-toc.html`] (in this directory) is the live proof: the same converted document laid out five ways — in flow, left rail, right rail, sticky rail, and the classic `toc2` fixed panel via `body:has(#toc)` — each with a handful of CSS rules and zero markup changes.
 * *level-0 `sect0` headings outside sections* — a level-0 (book part) title renders as a regular `<section>` with an `<h1>`.
 
 == Built-in classes reference
