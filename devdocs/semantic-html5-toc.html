@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Positioning the semantic TOC — one markup, five layouts</title>
+<style>
+:root {
+  --bg: #fdfdfc; --surface: #ffffff; --fg: #23282e; --muted: #5c646e;
+  --line: #e5e3df; --accent: #e40046; --code-bg: #f4f3f0;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #16181c; --surface: #1d2026; --fg: #e6e7e9; --muted: #9aa2ac;
+  --line: #2c313a; --accent: #ff5c85; --code-bg: #21252c; }
+}
+:root[data-theme="light"] {
+  --bg: #fdfdfc; --surface: #ffffff; --fg: #23282e; --muted: #5c646e;
+  --line: #e5e3df; --accent: #e40046; --code-bg: #f4f3f0;
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --surface: #1d2026; --fg: #e6e7e9; --muted: #9aa2ac;
+  --line: #2c313a; --accent: #ff5c85; --code-bg: #21252c;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+  font: 16px/1.6 system-ui, "Segoe UI", "Helvetica Neue", sans-serif; }
+main { max-width: 62rem; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, pre { font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace; }
+code { font-size: .875em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 1rem 1.25rem; overflow-x: auto; font-size: .8125rem; line-height: 1.55; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.eyebrow { font-size: .75rem; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent); margin: 0 0 .75rem; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.15;
+  letter-spacing: -.015em; margin: 0 0 1rem; text-wrap: balance; }
+.lede { font-size: 1.0625rem; color: var(--muted); max-width: 46rem; margin: 0 0 2.5rem; }
+.lede strong { color: var(--fg); }
+.markup-note { font-size: .875rem; color: var(--muted); margin: .75rem 0 0; }
+.demo { margin-top: 3.5rem; }
+.demo h2 { font-size: 1.25rem; letter-spacing: -.01em; margin: 0 0 .35rem; }
+.demo .how { font-size: .875rem; color: var(--muted); margin: 0 0 1rem; max-width: 48rem; }
+.frame-wrap { border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+  background: var(--surface); }
+iframe { display: block; width: 100%; height: 30rem; border: 0; }
+details { margin-top: .6rem; font-size: .875rem; color: var(--muted); }
+summary { cursor: pointer; }
+summary:hover { color: var(--fg); }
+details pre { margin: .6rem 0 0; }
+footer.colophon { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
+  font-size: .875rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Asciidoctor.js · semantic-html5 backend</p>
+<h1>Positioning the TOC without body classes</h1>
+<p class="lede">The <code>html5</code> backend stamps <code>toc2 toc-left</code> classes on <code>&lt;body&gt;</code> because its stylesheet cannot find the TOC otherwise. The semantic backend emits the TOC as a plain <code>&lt;nav id="toc"&gt;</code>, first child of <code>&lt;main&gt;</code> — already addressable. Every frame below embeds the <strong>same converted document, byte for byte</strong>; only a small stylesheet changes. The fixed-panel variant shows <code>body:has(#toc)</code> doing precisely the job the body class used to do.</p>
+
+<pre><code>&lt;body class="article"&gt;
+&lt;header&gt;…&lt;/header&gt;
+&lt;main&gt;
+&lt;nav id="toc" class="toc"&gt;
+&lt;strong class="title" id="toctitle"&gt;Contents&lt;/strong&gt;
+&lt;ol class="sect-level-1"&gt;…&lt;/ol&gt;
+&lt;/nav&gt;
+…
+&lt;/main&gt;
+&lt;/body&gt;</code></pre>
+<p class="markup-note">Generated with <code>backend: 'semantic-html5'</code>, <code>standalone: true</code>, <code>:toc:</code> — identical in all five frames.</p>
+
+<section class="demo">
+<header><h2>In flow (default)</h2></header>
+<p class="how">The TOC stays where the converter put it: first element of <code>&lt;main&gt;</code>. Two rules make it a quiet box.</p>
+<div class="frame-wrap">
+<iframe title="In flow (default)" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Writing with AsciiDoc&lt;/title&gt;
+&lt;style&gt;
+:root { --bg:#fdfdfc; --fg:#23282e; --muted:#5c646e; --line:#e5e3df; --accent:#0958b0; --toc-bg:#f6f5f3; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#16181c; --fg:#e6e7e9; --muted:#9aa2ac; --line:#2c313a; --accent:#6cb0f5; --toc-bg:#1c1f24; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+  font: 15px/1.6 system-ui, &quot;Segoe UI&quot;, sans-serif; }
+header, main { max-width: 60rem; margin: 0 auto; padding: 0 1.5rem; }
+header { padding-top: 1.5rem; }
+h1 { font-size: 1.6rem; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; margin: 2rem 0 .5rem; }
+h3 { font-size: 1rem; margin: 1.5rem 0 .5rem; }
+p { margin: .6rem 0; color: var(--muted); }
+p code { font-family: ui-monospace, Menlo, monospace; font-size: .85em; }
+main { padding-bottom: 2rem; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* the TOC itself — shared cosmetics; the LAYOUT comes from each variant below */
+#toc .title { display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:.5rem; }
+#toc ol { list-style:none; margin:0; padding:0; }
+#toc ol ol { padding-left: .9rem; }
+#toc li { margin: .2rem 0; }
+#toc a { color: var(--fg); font-size: .875rem; }
+#toc a:hover { color: var(--accent); }
+
+#toc {
+  background: var(--toc-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body class=&quot;article&quot;&gt;
+&lt;header&gt;
+&lt;h1&gt;Writing with AsciiDoc&lt;/h1&gt;
+&lt;/header&gt;
+&lt;main&gt;
+&lt;nav id=&quot;toc&quot; class=&quot;toc&quot;&gt;
+&lt;strong class=&quot;title&quot; id=&quot;toctitle&quot;&gt;Contents&lt;/strong&gt;
+&lt;ol class=&quot;sect-level-1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_introduction&quot;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_blocks&quot;&gt;Blocks&lt;/a&gt;
+&lt;ol class=&quot;sect-level-2&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_delimited_blocks&quot;&gt;Delimited blocks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_block_attributes&quot;&gt;Block attributes&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_inline_formatting&quot;&gt;Inline formatting&lt;/a&gt;
+&lt;ol class=&quot;sect-level-2&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_macros&quot;&gt;Macros&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_document_header&quot;&gt;Document header&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_going_further&quot;&gt;Going further&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/nav&gt;
+&lt;section id=&quot;_introduction&quot;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;
+AsciiDoc is a plain-text writing format with a concise, readable syntax. A processor such as Asciidoctor converts it to HTML, PDF, EPUB and other formats.
+&lt;/p&gt;
+&lt;p&gt;
+This page was converted with the semantic-html5 backend: the table of contents below is a plain &lt;code&gt;&amp;lt;nav id=&quot;toc&quot;&amp;gt;&lt;/code&gt; inside &lt;code&gt;&amp;lt;main&amp;gt;&lt;/code&gt; — where it lands on screen is entirely up to the stylesheet.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_blocks&quot;&gt;
+&lt;h2&gt;Blocks&lt;/h2&gt;
+&lt;p&gt;
+Paragraphs, lists, tables, listings and admonitions are all expressed as blocks. A block starts with optional metadata lines followed by its content.
+&lt;/p&gt;
+&lt;section id=&quot;_delimited_blocks&quot;&gt;
+&lt;h3&gt;Delimited blocks&lt;/h3&gt;
+&lt;p&gt;
+A delimited block encloses its content between two delimiter lines, such as &lt;code&gt;----&lt;/code&gt; for listings or &lt;code&gt;====&lt;/code&gt; for examples.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_block_attributes&quot;&gt;
+&lt;h3&gt;Block attributes&lt;/h3&gt;
+&lt;p&gt;
+Attributes attached to a block refine how it is converted: an id, roles, options or named attributes such as the source language.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_inline_formatting&quot;&gt;
+&lt;h2&gt;Inline formatting&lt;/h2&gt;
+&lt;p&gt;
+Bold, italic, monospace, highlights, superscripts and custom styled spans are marked with lightweight punctuation around the text.
+&lt;/p&gt;
+&lt;section id=&quot;_macros&quot;&gt;
+&lt;h3&gt;Macros&lt;/h3&gt;
+&lt;p&gt;
+Inline macros such as links, images, footnotes, keyboard shortcuts and buttons follow the &lt;code&gt;name:target[attrlist]&lt;/code&gt; form.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_document_header&quot;&gt;
+&lt;h2&gt;Document header&lt;/h2&gt;
+&lt;p&gt;
+The header carries the title, authors and revision information, plus attribute entries that configure the conversion.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_going_further&quot;&gt;
+&lt;h2&gt;Going further&lt;/h2&gt;
+&lt;p&gt;
+The documentation at docs.asciidoctor.org covers the full syntax, processor extensions, and the converter API used to build custom output formats.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;" loading="lazy"></iframe>
+</div>
+<details>
+<summary>The variant's entire CSS</summary>
+<pre><code>#toc {
+  background: var(--toc-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}</code></pre>
+</details>
+</section>
+<section class="demo">
+<header><h2>Left rail</h2></header>
+<p class="how">A grid on <code>&lt;main&gt;</code>: the TOC takes the first column, every other child flows in the second. No body class — the converter output is untouched.</p>
+<div class="frame-wrap">
+<iframe title="Left rail" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Writing with AsciiDoc&lt;/title&gt;
+&lt;style&gt;
+:root { --bg:#fdfdfc; --fg:#23282e; --muted:#5c646e; --line:#e5e3df; --accent:#0958b0; --toc-bg:#f6f5f3; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#16181c; --fg:#e6e7e9; --muted:#9aa2ac; --line:#2c313a; --accent:#6cb0f5; --toc-bg:#1c1f24; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+  font: 15px/1.6 system-ui, &quot;Segoe UI&quot;, sans-serif; }
+header, main { max-width: 60rem; margin: 0 auto; padding: 0 1.5rem; }
+header { padding-top: 1.5rem; }
+h1 { font-size: 1.6rem; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; margin: 2rem 0 .5rem; }
+h3 { font-size: 1rem; margin: 1.5rem 0 .5rem; }
+p { margin: .6rem 0; color: var(--muted); }
+p code { font-family: ui-monospace, Menlo, monospace; font-size: .85em; }
+main { padding-bottom: 2rem; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* the TOC itself — shared cosmetics; the LAYOUT comes from each variant below */
+#toc .title { display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:.5rem; }
+#toc ol { list-style:none; margin:0; padding:0; }
+#toc ol ol { padding-left: .9rem; }
+#toc li { margin: .2rem 0; }
+#toc a { color: var(--fg); font-size: .875rem; }
+#toc a:hover { color: var(--accent); }
+
+main {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: 0 3rem;
+}
+main &gt; * { grid-column: 2; }
+main &gt; #toc { grid-column: 1; grid-row: 1 / 999; }&lt;/style&gt;
+&lt;/head&gt;
+&lt;body class=&quot;article&quot;&gt;
+&lt;header&gt;
+&lt;h1&gt;Writing with AsciiDoc&lt;/h1&gt;
+&lt;/header&gt;
+&lt;main&gt;
+&lt;nav id=&quot;toc&quot; class=&quot;toc&quot;&gt;
+&lt;strong class=&quot;title&quot; id=&quot;toctitle&quot;&gt;Contents&lt;/strong&gt;
+&lt;ol class=&quot;sect-level-1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_introduction&quot;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_blocks&quot;&gt;Blocks&lt;/a&gt;
+&lt;ol class=&quot;sect-level-2&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_delimited_blocks&quot;&gt;Delimited blocks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_block_attributes&quot;&gt;Block attributes&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_inline_formatting&quot;&gt;Inline formatting&lt;/a&gt;
+&lt;ol class=&quot;sect-level-2&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_macros&quot;&gt;Macros&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_document_header&quot;&gt;Document header&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_going_further&quot;&gt;Going further&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/nav&gt;
+&lt;section id=&quot;_introduction&quot;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;
+AsciiDoc is a plain-text writing format with a concise, readable syntax. A processor such as Asciidoctor converts it to HTML, PDF, EPUB and other formats.
+&lt;/p&gt;
+&lt;p&gt;
+This page was converted with the semantic-html5 backend: the table of contents below is a plain &lt;code&gt;&amp;lt;nav id=&quot;toc&quot;&amp;gt;&lt;/code&gt; inside &lt;code&gt;&amp;lt;main&amp;gt;&lt;/code&gt; — where it lands on screen is entirely up to the stylesheet.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_blocks&quot;&gt;
+&lt;h2&gt;Blocks&lt;/h2&gt;
+&lt;p&gt;
+Paragraphs, lists, tables, listings and admonitions are all expressed as blocks. A block starts with optional metadata lines followed by its content.
+&lt;/p&gt;
+&lt;section id=&quot;_delimited_blocks&quot;&gt;
+&lt;h3&gt;Delimited blocks&lt;/h3&gt;
+&lt;p&gt;
+A delimited block encloses its content between two delimiter lines, such as &lt;code&gt;----&lt;/code&gt; for listings or &lt;code&gt;====&lt;/code&gt; for examples.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_block_attributes&quot;&gt;
+&lt;h3&gt;Block attributes&lt;/h3&gt;
+&lt;p&gt;
+Attributes attached to a block refine how it is converted: an id, roles, options or named attributes such as the source language.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_inline_formatting&quot;&gt;
+&lt;h2&gt;Inline formatting&lt;/h2&gt;
+&lt;p&gt;
+Bold, italic, monospace, highlights, superscripts and custom styled spans are marked with lightweight punctuation around the text.
+&lt;/p&gt;
+&lt;section id=&quot;_macros&quot;&gt;
+&lt;h3&gt;Macros&lt;/h3&gt;
+&lt;p&gt;
+Inline macros such as links, images, footnotes, keyboard shortcuts and buttons follow the &lt;code&gt;name:target[attrlist]&lt;/code&gt; form.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_document_header&quot;&gt;
+&lt;h2&gt;Document header&lt;/h2&gt;
+&lt;p&gt;
+The header carries the title, authors and revision information, plus attribute entries that configure the conversion.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_going_further&quot;&gt;
+&lt;h2&gt;Going further&lt;/h2&gt;
+&lt;p&gt;
+The documentation at docs.asciidoctor.org covers the full syntax, processor extensions, and the converter API used to build custom output formats.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;" loading="lazy"></iframe>
+</div>
+<details>
+<summary>The variant's entire CSS</summary>
+<pre><code>main {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: 0 3rem;
+}
+main &gt; * { grid-column: 2; }
+main &gt; #toc { grid-column: 1; grid-row: 1 / 999; }</code></pre>
+</details>
+</section>
+<section class="demo">
+<header><h2>Right rail</h2></header>
+<p class="how">Same grid, columns swapped. Switching sides is one property, not a converter re-run with a different <code>toc-position</code> attribute.</p>
+<div class="frame-wrap">
+<iframe title="Right rail" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Writing with AsciiDoc&lt;/title&gt;
+&lt;style&gt;
+:root { --bg:#fdfdfc; --fg:#23282e; --muted:#5c646e; --line:#e5e3df; --accent:#0958b0; --toc-bg:#f6f5f3; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#16181c; --fg:#e6e7e9; --muted:#9aa2ac; --line:#2c313a; --accent:#6cb0f5; --toc-bg:#1c1f24; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+  font: 15px/1.6 system-ui, &quot;Segoe UI&quot;, sans-serif; }
+header, main { max-width: 60rem; margin: 0 auto; padding: 0 1.5rem; }
+header { padding-top: 1.5rem; }
+h1 { font-size: 1.6rem; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; margin: 2rem 0 .5rem; }
+h3 { font-size: 1rem; margin: 1.5rem 0 .5rem; }
+p { margin: .6rem 0; color: var(--muted); }
+p code { font-family: ui-monospace, Menlo, monospace; font-size: .85em; }
+main { padding-bottom: 2rem; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* the TOC itself — shared cosmetics; the LAYOUT comes from each variant below */
+#toc .title { display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:.5rem; }
+#toc ol { list-style:none; margin:0; padding:0; }
+#toc ol ol { padding-left: .9rem; }
+#toc li { margin: .2rem 0; }
+#toc a { color: var(--fg); font-size: .875rem; }
+#toc a:hover { color: var(--accent); }
+
+main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 13rem;
+  gap: 0 3rem;
+}
+main &gt; * { grid-column: 1; }
+main &gt; #toc { grid-column: 2; grid-row: 1 / 999; }&lt;/style&gt;
+&lt;/head&gt;
+&lt;body class=&quot;article&quot;&gt;
+&lt;header&gt;
+&lt;h1&gt;Writing with AsciiDoc&lt;/h1&gt;
+&lt;/header&gt;
+&lt;main&gt;
+&lt;nav id=&quot;toc&quot; class=&quot;toc&quot;&gt;
+&lt;strong class=&quot;title&quot; id=&quot;toctitle&quot;&gt;Contents&lt;/strong&gt;
+&lt;ol class=&quot;sect-level-1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_introduction&quot;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_blocks&quot;&gt;Blocks&lt;/a&gt;
+&lt;ol class=&quot;sect-level-2&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_delimited_blocks&quot;&gt;Delimited blocks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_block_attributes&quot;&gt;Block attributes&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_inline_formatting&quot;&gt;Inline formatting&lt;/a&gt;
+&lt;ol class=&quot;sect-level-2&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_macros&quot;&gt;Macros&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_document_header&quot;&gt;Document header&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_going_further&quot;&gt;Going further&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/nav&gt;
+&lt;section id=&quot;_introduction&quot;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;
+AsciiDoc is a plain-text writing format with a concise, readable syntax. A processor such as Asciidoctor converts it to HTML, PDF, EPUB and other formats.
+&lt;/p&gt;
+&lt;p&gt;
+This page was converted with the semantic-html5 backend: the table of contents below is a plain &lt;code&gt;&amp;lt;nav id=&quot;toc&quot;&amp;gt;&lt;/code&gt; inside &lt;code&gt;&amp;lt;main&amp;gt;&lt;/code&gt; — where it lands on screen is entirely up to the stylesheet.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_blocks&quot;&gt;
+&lt;h2&gt;Blocks&lt;/h2&gt;
+&lt;p&gt;
+Paragraphs, lists, tables, listings and admonitions are all expressed as blocks. A block starts with optional metadata lines followed by its content.
+&lt;/p&gt;
+&lt;section id=&quot;_delimited_blocks&quot;&gt;
+&lt;h3&gt;Delimited blocks&lt;/h3&gt;
+&lt;p&gt;
+A delimited block encloses its content between two delimiter lines, such as &lt;code&gt;----&lt;/code&gt; for listings or &lt;code&gt;====&lt;/code&gt; for examples.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_block_attributes&quot;&gt;
+&lt;h3&gt;Block attributes&lt;/h3&gt;
+&lt;p&gt;
+Attributes attached to a block refine how it is converted: an id, roles, options or named attributes such as the source language.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_inline_formatting&quot;&gt;
+&lt;h2&gt;Inline formatting&lt;/h2&gt;
+&lt;p&gt;
+Bold, italic, monospace, highlights, superscripts and custom styled spans are marked with lightweight punctuation around the text.
+&lt;/p&gt;
+&lt;section id=&quot;_macros&quot;&gt;
+&lt;h3&gt;Macros&lt;/h3&gt;
+&lt;p&gt;
+Inline macros such as links, images, footnotes, keyboard shortcuts and buttons follow the &lt;code&gt;name:target[attrlist]&lt;/code&gt; form.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_document_header&quot;&gt;
+&lt;h2&gt;Document header&lt;/h2&gt;
+&lt;p&gt;
+The header carries the title, authors and revision information, plus attribute entries that configure the conversion.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_going_further&quot;&gt;
+&lt;h2&gt;Going further&lt;/h2&gt;
+&lt;p&gt;
+The documentation at docs.asciidoctor.org covers the full syntax, processor extensions, and the converter API used to build custom output formats.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;" loading="lazy"></iframe>
+</div>
+<details>
+<summary>The variant's entire CSS</summary>
+<pre><code>main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 13rem;
+  gap: 0 3rem;
+}
+main &gt; * { grid-column: 1; }
+main &gt; #toc { grid-column: 2; grid-row: 1 / 999; }</code></pre>
+</details>
+</section>
+<section class="demo">
+<header><h2>Sticky rail</h2></header>
+<p class="how">The left rail plus <code>position: sticky</code> — the TOC follows the reader. Scroll inside the frame to see it hold.</p>
+<div class="frame-wrap">
+<iframe title="Sticky rail" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Writing with AsciiDoc&lt;/title&gt;
+&lt;style&gt;
+:root { --bg:#fdfdfc; --fg:#23282e; --muted:#5c646e; --line:#e5e3df; --accent:#0958b0; --toc-bg:#f6f5f3; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#16181c; --fg:#e6e7e9; --muted:#9aa2ac; --line:#2c313a; --accent:#6cb0f5; --toc-bg:#1c1f24; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+  font: 15px/1.6 system-ui, &quot;Segoe UI&quot;, sans-serif; }
+header, main { max-width: 60rem; margin: 0 auto; padding: 0 1.5rem; }
+header { padding-top: 1.5rem; }
+h1 { font-size: 1.6rem; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; margin: 2rem 0 .5rem; }
+h3 { font-size: 1rem; margin: 1.5rem 0 .5rem; }
+p { margin: .6rem 0; color: var(--muted); }
+p code { font-family: ui-monospace, Menlo, monospace; font-size: .85em; }
+main { padding-bottom: 2rem; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* the TOC itself — shared cosmetics; the LAYOUT comes from each variant below */
+#toc .title { display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:.5rem; }
+#toc ol { list-style:none; margin:0; padding:0; }
+#toc ol ol { padding-left: .9rem; }
+#toc li { margin: .2rem 0; }
+#toc a { color: var(--fg); font-size: .875rem; }
+#toc a:hover { color: var(--accent); }
+
+main {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: 0 3rem;
+}
+main &gt; * { grid-column: 2; }
+main &gt; #toc {
+  grid-column: 1; grid-row: 1 / 999;
+  position: sticky; top: 1rem;
+  align-self: start;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body class=&quot;article&quot;&gt;
+&lt;header&gt;
+&lt;h1&gt;Writing with AsciiDoc&lt;/h1&gt;
+&lt;/header&gt;
+&lt;main&gt;
+&lt;nav id=&quot;toc&quot; class=&quot;toc&quot;&gt;
+&lt;strong class=&quot;title&quot; id=&quot;toctitle&quot;&gt;Contents&lt;/strong&gt;
+&lt;ol class=&quot;sect-level-1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_introduction&quot;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_blocks&quot;&gt;Blocks&lt;/a&gt;
+&lt;ol class=&quot;sect-level-2&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_delimited_blocks&quot;&gt;Delimited blocks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_block_attributes&quot;&gt;Block attributes&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_inline_formatting&quot;&gt;Inline formatting&lt;/a&gt;
+&lt;ol class=&quot;sect-level-2&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_macros&quot;&gt;Macros&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_document_header&quot;&gt;Document header&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_going_further&quot;&gt;Going further&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/nav&gt;
+&lt;section id=&quot;_introduction&quot;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;
+AsciiDoc is a plain-text writing format with a concise, readable syntax. A processor such as Asciidoctor converts it to HTML, PDF, EPUB and other formats.
+&lt;/p&gt;
+&lt;p&gt;
+This page was converted with the semantic-html5 backend: the table of contents below is a plain &lt;code&gt;&amp;lt;nav id=&quot;toc&quot;&amp;gt;&lt;/code&gt; inside &lt;code&gt;&amp;lt;main&amp;gt;&lt;/code&gt; — where it lands on screen is entirely up to the stylesheet.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_blocks&quot;&gt;
+&lt;h2&gt;Blocks&lt;/h2&gt;
+&lt;p&gt;
+Paragraphs, lists, tables, listings and admonitions are all expressed as blocks. A block starts with optional metadata lines followed by its content.
+&lt;/p&gt;
+&lt;section id=&quot;_delimited_blocks&quot;&gt;
+&lt;h3&gt;Delimited blocks&lt;/h3&gt;
+&lt;p&gt;
+A delimited block encloses its content between two delimiter lines, such as &lt;code&gt;----&lt;/code&gt; for listings or &lt;code&gt;====&lt;/code&gt; for examples.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_block_attributes&quot;&gt;
+&lt;h3&gt;Block attributes&lt;/h3&gt;
+&lt;p&gt;
+Attributes attached to a block refine how it is converted: an id, roles, options or named attributes such as the source language.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_inline_formatting&quot;&gt;
+&lt;h2&gt;Inline formatting&lt;/h2&gt;
+&lt;p&gt;
+Bold, italic, monospace, highlights, superscripts and custom styled spans are marked with lightweight punctuation around the text.
+&lt;/p&gt;
+&lt;section id=&quot;_macros&quot;&gt;
+&lt;h3&gt;Macros&lt;/h3&gt;
+&lt;p&gt;
+Inline macros such as links, images, footnotes, keyboard shortcuts and buttons follow the &lt;code&gt;name:target[attrlist]&lt;/code&gt; form.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_document_header&quot;&gt;
+&lt;h2&gt;Document header&lt;/h2&gt;
+&lt;p&gt;
+The header carries the title, authors and revision information, plus attribute entries that configure the conversion.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_going_further&quot;&gt;
+&lt;h2&gt;Going further&lt;/h2&gt;
+&lt;p&gt;
+The documentation at docs.asciidoctor.org covers the full syntax, processor extensions, and the converter API used to build custom output formats.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;" loading="lazy"></iframe>
+</div>
+<details>
+<summary>The variant's entire CSS</summary>
+<pre><code>main {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: 0 3rem;
+}
+main &gt; * { grid-column: 2; }
+main &gt; #toc {
+  grid-column: 1; grid-row: 1 / 999;
+  position: sticky; top: 1rem;
+  align-self: start;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}</code></pre>
+</details>
+</section>
+<section class="demo">
+<header><h2>Fixed panel (classic toc2)</h2></header>
+<p class="how">The full-height fixed sidebar the html5 backend needs <code>body.toc2.toc-left</code> for. <code>body:has(#toc)</code> applies the page offset only when a TOC exists — <code>:has()</code> is exactly what replaces the body class.</p>
+<div class="frame-wrap">
+<iframe title="Fixed panel (classic toc2)" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Writing with AsciiDoc&lt;/title&gt;
+&lt;style&gt;
+:root { --bg:#fdfdfc; --fg:#23282e; --muted:#5c646e; --line:#e5e3df; --accent:#0958b0; --toc-bg:#f6f5f3; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#16181c; --fg:#e6e7e9; --muted:#9aa2ac; --line:#2c313a; --accent:#6cb0f5; --toc-bg:#1c1f24; }
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg);
+  font: 15px/1.6 system-ui, &quot;Segoe UI&quot;, sans-serif; }
+header, main { max-width: 60rem; margin: 0 auto; padding: 0 1.5rem; }
+header { padding-top: 1.5rem; }
+h1 { font-size: 1.6rem; margin: 0; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; margin: 2rem 0 .5rem; }
+h3 { font-size: 1rem; margin: 1.5rem 0 .5rem; }
+p { margin: .6rem 0; color: var(--muted); }
+p code { font-family: ui-monospace, Menlo, monospace; font-size: .85em; }
+main { padding-bottom: 2rem; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* the TOC itself — shared cosmetics; the LAYOUT comes from each variant below */
+#toc .title { display:block; font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:.5rem; }
+#toc ol { list-style:none; margin:0; padding:0; }
+#toc ol ol { padding-left: .9rem; }
+#toc li { margin: .2rem 0; }
+#toc a { color: var(--fg); font-size: .875rem; }
+#toc a:hover { color: var(--accent); }
+
+body:has(#toc) { padding-left: 16rem; }
+#toc {
+  position: fixed; inset: 0 auto 0 0;
+  width: 15rem;
+  padding: 1.5rem 1.25rem;
+  overflow-y: auto;
+  background: var(--toc-bg);
+  border-right: 1px solid var(--line);
+}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body class=&quot;article&quot;&gt;
+&lt;header&gt;
+&lt;h1&gt;Writing with AsciiDoc&lt;/h1&gt;
+&lt;/header&gt;
+&lt;main&gt;
+&lt;nav id=&quot;toc&quot; class=&quot;toc&quot;&gt;
+&lt;strong class=&quot;title&quot; id=&quot;toctitle&quot;&gt;Contents&lt;/strong&gt;
+&lt;ol class=&quot;sect-level-1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_introduction&quot;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_blocks&quot;&gt;Blocks&lt;/a&gt;
+&lt;ol class=&quot;sect-level-2&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_delimited_blocks&quot;&gt;Delimited blocks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_block_attributes&quot;&gt;Block attributes&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_inline_formatting&quot;&gt;Inline formatting&lt;/a&gt;
+&lt;ol class=&quot;sect-level-2&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;#_macros&quot;&gt;Macros&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_document_header&quot;&gt;Document header&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#_going_further&quot;&gt;Going further&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/nav&gt;
+&lt;section id=&quot;_introduction&quot;&gt;
+&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;
+AsciiDoc is a plain-text writing format with a concise, readable syntax. A processor such as Asciidoctor converts it to HTML, PDF, EPUB and other formats.
+&lt;/p&gt;
+&lt;p&gt;
+This page was converted with the semantic-html5 backend: the table of contents below is a plain &lt;code&gt;&amp;lt;nav id=&quot;toc&quot;&amp;gt;&lt;/code&gt; inside &lt;code&gt;&amp;lt;main&amp;gt;&lt;/code&gt; — where it lands on screen is entirely up to the stylesheet.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_blocks&quot;&gt;
+&lt;h2&gt;Blocks&lt;/h2&gt;
+&lt;p&gt;
+Paragraphs, lists, tables, listings and admonitions are all expressed as blocks. A block starts with optional metadata lines followed by its content.
+&lt;/p&gt;
+&lt;section id=&quot;_delimited_blocks&quot;&gt;
+&lt;h3&gt;Delimited blocks&lt;/h3&gt;
+&lt;p&gt;
+A delimited block encloses its content between two delimiter lines, such as &lt;code&gt;----&lt;/code&gt; for listings or &lt;code&gt;====&lt;/code&gt; for examples.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_block_attributes&quot;&gt;
+&lt;h3&gt;Block attributes&lt;/h3&gt;
+&lt;p&gt;
+Attributes attached to a block refine how it is converted: an id, roles, options or named attributes such as the source language.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_inline_formatting&quot;&gt;
+&lt;h2&gt;Inline formatting&lt;/h2&gt;
+&lt;p&gt;
+Bold, italic, monospace, highlights, superscripts and custom styled spans are marked with lightweight punctuation around the text.
+&lt;/p&gt;
+&lt;section id=&quot;_macros&quot;&gt;
+&lt;h3&gt;Macros&lt;/h3&gt;
+&lt;p&gt;
+Inline macros such as links, images, footnotes, keyboard shortcuts and buttons follow the &lt;code&gt;name:target[attrlist]&lt;/code&gt; form.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_document_header&quot;&gt;
+&lt;h2&gt;Document header&lt;/h2&gt;
+&lt;p&gt;
+The header carries the title, authors and revision information, plus attribute entries that configure the conversion.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;section id=&quot;_going_further&quot;&gt;
+&lt;h2&gt;Going further&lt;/h2&gt;
+&lt;p&gt;
+The documentation at docs.asciidoctor.org covers the full syntax, processor extensions, and the converter API used to build custom output formats.
+&lt;/p&gt;
+&lt;/section&gt;
+&lt;/main&gt;
+&lt;/body&gt;
+&lt;/html&gt;" loading="lazy"></iframe>
+</div>
+<details>
+<summary>The variant's entire CSS</summary>
+<pre><code>body:has(#toc) { padding-left: 16rem; }
+#toc {
+  position: fixed; inset: 0 auto 0 0;
+  width: 15rem;
+  padding: 1.5rem 1.25rem;
+  overflow-y: auto;
+  background: var(--toc-bg);
+  border-right: 1px solid var(--line);
+}</code></pre>
+</details>
+</section>
+<footer class="colophon">
+<p>Each frame is an <code>&lt;iframe srcdoc&gt;</code> holding the converter output with one injected <code>&lt;style&gt;</code> (shared typography + the variant rules shown under the frame). Companion proof for admonitions: <code>devdocs/semantic-html5-admonitions.html</code>. Rationale: “Deliberate omissions” in <code>devdocs/semantic-html5-converter.adoc</code>.</p>
+</footer>
+</main>
+</body>
+</html>
