@@ -1,0 +1,5 @@
+[qanda]
+What is Asciidoctor?::
+An implementation of the AsciiDoc processor.
+What is the answer to the Ultimate Question?::
+42

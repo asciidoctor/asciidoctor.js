@@ -1,0 +1,14 @@
+= Document Title
+:toc:
+
+== First Section
+
+Content.
+
+=== Nested Section
+
+More content.
+
+== Second Section
+
+Content.

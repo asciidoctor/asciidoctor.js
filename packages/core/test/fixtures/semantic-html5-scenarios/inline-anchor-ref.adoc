@@ -1,0 +1,1 @@
+[[bookmark-a]]inline anchor at the start of a paragraph.

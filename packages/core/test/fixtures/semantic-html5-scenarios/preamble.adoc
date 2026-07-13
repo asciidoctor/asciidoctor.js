@@ -1,0 +1,7 @@
+= Document Title
+
+This is the preamble.
+
+== First Section
+
+Content.

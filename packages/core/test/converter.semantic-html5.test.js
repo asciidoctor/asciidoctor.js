@@ -10,7 +10,7 @@ import { readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
-import { convertStringToEmbedded } from './harness.js'
+import { convertString, convertStringToEmbedded } from './harness.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const scenariosDir = join(__dirname, 'fixtures', 'semantic-html5-scenarios')
@@ -34,4 +34,114 @@ describe('Semantic HTML 5 converter', () => {
       assert.equal(result.replace(/\n$/, ''), expected)
     })
   }
+})
+
+describe('Semantic HTML 5 converter — standalone document', () => {
+  test('generates a semantic standalone document (header/main/footer)', async () => {
+    const input = `= Document Title
+Doc Writer <doc@example.org>
+v1.0, 2026-07-13
+:reproducible:
+
+Some content.footnote:[A footnote.]
+
+== Section
+
+More content.
+`
+    const result = await convertString(input, {
+      backend: 'semantic-html5',
+      attributes: { 'stylesheet!': '' },
+    })
+    assert.equal(
+      result,
+      `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Doc Writer">
+<title>Document Title</title>
+</head>
+<body class="article">
+<header>
+<h1>Document Title</h1>
+<p class="byline">
+<span class="author">Doc Writer <a href="mailto:doc@example.org" rel="author">doc@example.org</a></span>
+</p>
+<table class="revision">
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Remark</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-title="Version">1.0</td>
+<td data-title="Date"><time datetime="2026-07-13">2026-07-13</time></td>
+<td data-title="Remark"></td>
+</tr>
+</tbody>
+</table>
+</header>
+<main>
+<p>
+Some content.<sup class="footnote-ref"><a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote." role="doc-noteref">1</a></sup>
+</p>
+<section id="_section">
+<h2>Section</h2>
+<p>
+More content.
+</p>
+</section>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol class="footnotes">
+<li id="_footnotedef_1" role="doc-endnote">A footnote. <a class="footnote-backref" href="#_footnoteref_1" role="doc-backlink">&#8617;</a></li>
+</ol>
+</section>
+</main>
+<footer>
+<span class="revnumber">Version 1.0</span>
+</footer>
+</body>
+</html>`
+    )
+  })
+
+  test('places the auto TOC inside main', async () => {
+    const input = `= Document Title
+:toc:
+:reproducible:
+:nofooter:
+
+== First Section
+
+Content.
+`
+    const result = await convertString(input, {
+      backend: 'semantic-html5',
+      attributes: { 'stylesheet!': '' },
+    })
+    assert.ok(
+      result.includes(`<main>
+<nav id="toc" class="toc">
+<strong class="title" id="toctitle">Table of Contents</strong>
+<ol class="sectlevel1">
+<li><a href="#_first_section">First Section</a></li>
+</ol>
+</nav>`)
+    )
+    assert.ok(!result.includes('<footer>'))
+  })
+
+  test('embeds the default stylesheet in the head', async () => {
+    const result = await convertString('content', {
+      backend: 'semantic-html5',
+    })
+    assert.ok(result.includes('<style>'))
+    assert.ok(result.includes('</style>'))
+  })
 })
