@@ -1,0 +1,7 @@
+[%header%footer,cols=2]
+|===
+|Name |Points
+|Alice |10
+|Bob |5
+|Total |15
+|===

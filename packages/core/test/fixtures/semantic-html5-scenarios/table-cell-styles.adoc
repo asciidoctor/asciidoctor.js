@@ -1,0 +1,8 @@
+[cols="h,l,a"]
+|===
+|Header cell
+|literal cell
+|AsciiDoc cell
+
+* with a list
+|===

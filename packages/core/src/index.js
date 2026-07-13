@@ -65,6 +65,7 @@ import { List, ListItem } from './list.js'
 import { Section } from './section.js'
 import { Cursor, PreprocessorReader, Reader } from './reader.js'
 import Html5Converter from './converter/html5.js'
+import SemanticHtml5Converter from './converter/semantic_html5.js'
 import {
   SyntaxHighlighter,
   SyntaxHighlighterBase,
@@ -164,5 +165,6 @@ export {
   deriveBackendTraits,
   DefaultSyntaxHighlighterFactory,
   Html5Converter,
+  SemanticHtml5Converter,
   SyntaxHighlighter,
 }

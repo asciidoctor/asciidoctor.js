@@ -1,0 +1,4 @@
+[cols=">,^.^"]
+|===
+|Right |Center middle
+|===

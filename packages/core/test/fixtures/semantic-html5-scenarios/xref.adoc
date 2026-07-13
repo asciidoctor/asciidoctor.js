@@ -1,0 +1,6 @@
+See <<section-b>> and <<section-b,the second section>>.
+
+[#section-b]
+== Section B
+
+Content.

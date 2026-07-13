@@ -1,0 +1,4 @@
+.Open block title
+--
+An open block can be an anonymous container.
+--
