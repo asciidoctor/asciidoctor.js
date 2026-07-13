@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A kitchen-sink document exercising most AsciiDoc syntax, used to evaluate the semantic-html5 default stylesheet.">
+<meta name="author" content="Doc Writer, Jane Smith">
+<title>AsciiDoc Syntax Reference: Semantic Edition</title>
+<style>
 /*! Asciidoctor semantic HTML5 default stylesheet | MIT License | https://asciidoctor.org */
 
 /* ── Tokens ──────────────────────────────────────────────────────────────── */
@@ -864,3 +873,567 @@ ol.unnumbered {
     letter-spacing: 0.5em;
   }
 }
+</style>
+</head>
+<body class="article">
+<header>
+<h1>AsciiDoc Syntax Reference <small class="subtitle">Semantic Edition</small></h1>
+<ul class="byline">
+<li><span class="author">Doc Writer <a href="mailto:doc.writer@example.org" rel="author">doc.writer@example.org</a></span></li>
+<li><span class="author">Jane Smith <a href="mailto:jane.smith@example.org" rel="author">jane.smith@example.org</a></span></li>
+</ul>
+<table class="revision">
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Remark</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-title="Version">2.1</td>
+<td data-title="Date"><time datetime="2026-07-13">2026-07-13</time></td>
+<td data-title="Remark">Stylesheet evaluation build</td>
+</tr>
+</tbody>
+</table>
+</header>
+<main>
+<nav id="toc" class="toc">
+<strong class="title" id="toctitle">Table of Contents</strong>
+<ol class="sect-level-1">
+<li><a href="#_text_formatting">1. Text formatting</a>
+<ol class="sect-level-2">
+<li><a href="#_links_and_cross_references">1.1. Links and cross references</a></li>
+<li><a href="#_keyboard_buttons_and_menus">1.2. Keyboard, buttons and menus</a></li>
+</ol>
+</li>
+<li><a href="#_admonitions">2. Admonitions</a></li>
+<li><a href="#_blocks">3. Blocks</a></li>
+<li><a href="#lists">4. Lists</a>
+<ol class="sect-level-2">
+<li><a href="#_unordered">4.1. Unordered</a></li>
+<li><a href="#_checklists">4.2. Checklists</a></li>
+<li><a href="#_ordered">4.3. Ordered</a></li>
+<li><a href="#_description_lists">4.4. Description lists</a></li>
+</ol>
+</li>
+<li><a href="#tables">5. Tables</a></li>
+<li><a href="#_media">6. Media</a></li>
+<li><a href="#_stem">7. STEM</a></li>
+<li><a href="#_footnotes_and_index">8. Footnotes and index</a></li>
+<li><a href="#_bibliography_ish">Appendix A: Bibliography-ish</a></li>
+</ol>
+</nav>
+<p>
+This document exercises most of the AsciiDoc syntax so the default stylesheet of the <code>semantic-html5</code> backend can be evaluated at a glance.
+It is the preamble: it precedes the first section and contains a footnote.<sup class="footnote-ref"><a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote." role="doc-noteref">1</a></sup>
+</p>
+<section id="_text_formatting">
+<h2><a class="anchor" href="#_text_formatting"></a><a class="link" href="#_text_formatting"><span class="sect-num">1.</span> Text formatting</a></h2>
+<p>
+Regular paragraph text with <strong>bold</strong>, <em>italic</em>, <code>monospace</code>, <strong><em>bold italic</em></strong>, <code><strong>bold mono</strong></code>, <mark>highlighted</mark>, <sup>super</sup>script, <sub>sub</sub>script, "double curved quotes", 'single curved quotes', and an en&#8211;dash&#8201;&#8212;&#8201;style replacement.
+</p>
+<p>
+Styled spans: <span class="underline">underlined</span>, <span class="line-through">struck through</span>, and <span class="nowrap">a span that refuses to wrap</span>.
+</p>
+<p>
+A sentence ending with a hard line break<br>
+lands on the next line.
+</p>
+<p>
+<strong class="title">A paragraph with a block title</strong>
+The title renders above the paragraph as a strong element.
+</p>
+<section id="_links_and_cross_references">
+<h3><a class="anchor" href="#_links_and_cross_references"></a><a class="link" href="#_links_and_cross_references"><span class="sect-num">1.1.</span> Links and cross references</a></h3>
+<p>
+An automatic link: <a href="https://asciidoctor.org" class="bare">https://asciidoctor.org</a>.
+A link with text: <a href="https://docs.asciidoctor.org">the documentation</a>.
+One that opens in a new window: <a href="https://asciidoctor.org" target="_blank" rel="noopener">Asciidoctor</a>.
+An email: <a href="mailto:doc.writer@example.org">doc.writer@example.org</a>.
+A cross reference to <a href="#tables">Tables</a> and one with custom text: <a href="#lists">the lists section</a>.
+An inline anchor sits <a id="bookmark-a"></a>right here.
+</p>
+</section>
+<section id="_keyboard_buttons_and_menus">
+<h3><a class="anchor" href="#_keyboard_buttons_and_menus"></a><a class="link" href="#_keyboard_buttons_and_menus"><span class="sect-num">1.2.</span> Keyboard, buttons and menus</a></h3>
+<p>
+Press <span class="key-seq"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></span> to open the palette, or the single key <kbd>F11</kbd>.
+Click <span class="button">Save</span> and confirm with <span class="button">OK</span>.
+Select <span class="menu-seq"><b class="menu">File</b></span> then <span class="menu-seq"><b class="menu">File</b>&#160;<b class="caret">&#8250;</b> <b class="menu-item">Save</b></span>, or the deep path <span class="menu-seq"><b class="menu">View</b>&#160;<b class="caret">&#8250;</b> <b class="submenu">Zoom</b>&#160;<b class="caret">&#8250;</b> <b class="menu-item">Zoom In</b></span>.
+</p>
+</section>
+</section>
+<section id="_admonitions">
+<h2><a class="anchor" href="#_admonitions"></a><a class="link" href="#_admonitions"><span class="sect-num">2.</span> Admonitions</a></h2>
+<aside class="admonition note" role="note">
+<strong class="label">Note</strong>
+Useful information that users should know, even when skimming content.
+</aside>
+<aside class="admonition tip" role="note">
+<strong class="label">Tip</strong>
+Helpful advice for doing things better or more easily.
+</aside>
+<aside class="admonition important" role="note">
+<strong class="label">Important</strong>
+Key information users need to know to achieve their goal.
+</aside>
+<aside class="admonition warning" role="note">
+<strong class="label">Warning</strong>
+Urgent info that needs immediate user attention to avoid problems.
+</aside>
+<aside class="admonition caution" role="note">
+<strong class="label">Caution</strong>
+Advises about risks or negative outcomes of certain actions.
+</aside>
+<aside class="admonition note" role="note">
+<strong class="label">Note</strong>
+<strong class="title">An admonition with a title and block content</strong>
+<p>
+Admonitions can hold any block content:
+</p>
+<ul>
+<li>
+<p>a list item</p>
+</li>
+<li>
+<p>another item</p>
+</li>
+</ul>
+<p>
+And a closing paragraph.
+</p>
+</aside>
+</section>
+<section id="_blocks">
+<h2><a class="anchor" href="#_blocks"></a><a class="link" href="#_blocks"><span class="sect-num">3.</span> Blocks</a></h2>
+<aside class="sidebar">
+<strong class="title">Sidebar title</strong>
+<p>
+A sidebar holds auxiliary content, visually set apart from the main flow.
+It can contain any block content.
+</p>
+</aside>
+<figure class="listing">
+<figcaption>Compute the answer</figcaption>
+<pre><code data-lang="js">const answer = 6 * 7 // <b class="callout-num">(1)</b>
+if (answer !== 42) {
+  throw new Error('panic') // <b class="callout-num">(2)</b>
+}</code></pre>
+</figure>
+<ol class="callout-list">
+<li>
+<p>The multiplication is the hard part.</p>
+</li>
+<li>
+<p>This should never happen.</p>
+</li>
+</ol>
+<p>
+A plain listing without a language:
+</p>
+<figure class="listing">
+<pre>$ asciidoctor -b semantic-html5 reference.adoc</pre>
+</figure>
+<p>
+A literal block:
+</p>
+<figure class="literal">
+<pre>literal block: keep    my    spacing
+      and my indentation</pre>
+</figure>
+<figure class="example">
+<figcaption>Example 1. Example caption gets a number</figcaption>
+<p>
+An example block, captioned and numbered automatically.
+</p>
+</figure>
+<details>
+<summary>Details</summary>
+<p>
+This content is revealed on demand (a collapsed details element).
+</p>
+</details>
+<details open>
+<summary>Already expanded</summary>
+<p>
+This collapsible starts open.
+</p>
+</details>
+<figure class="quote">
+<figcaption>After landing the cloaked Klingon bird of prey in Golden Gate park</figcaption>
+<blockquote>
+Everybody remember where we parked.
+<footer>&#8212; <span class="attribution">Captain James T. Kirk</span>, <cite>Star Trek IV: The Voyage Home</cite></footer>
+</blockquote>
+</figure>
+<blockquote class="quote">
+A quote without attribution stays a bare blockquote.
+</blockquote>
+<blockquote class="verse">
+<pre>The fog comes
+on little cat feet.</pre>
+<footer>&#8212; <span class="attribution">Carl Sandburg</span>, <cite>two lines from the poem Fog</cite></footer>
+</blockquote>
+<div>
+<p>
+An open block groups content without any styling of its own.
+</p>
+</div>
+<p>
+A thematic break:
+</p>
+<hr>
+<p>
+And a page break (a dinkus on screen, a real break in print):
+</p>
+<hr class="page-break">
+</section>
+<section id="lists">
+<h2><a class="anchor" href="#lists"></a><a class="link" href="#lists"><span class="sect-num">4.</span> Lists</a></h2>
+<section id="_unordered">
+<h3><a class="anchor" href="#_unordered"></a><a class="link" href="#_unordered"><span class="sect-num">4.1.</span> Unordered</a></h3>
+<ul>
+<li>
+<p>Item one</p>
+</li>
+<li>
+<p>Item two with nested items</p>
+<ul>
+<li>
+<p>Nested item</p>
+<ul>
+<li>
+<p>Deeply nested item</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Item three with an attached paragraph</p>
+<p>
+This paragraph is attached to the list item.
+</p>
+</li>
+</ul>
+</section>
+<section id="_checklists">
+<h3><a class="anchor" href="#_checklists"></a><a class="link" href="#_checklists"><span class="sect-num">4.2.</span> Checklists</a></h3>
+<ul class="checklist">
+<li>
+<p>&#10003; Design the converter</p>
+</li>
+<li>
+<p>&#10003; Write the stylesheet</p>
+</li>
+<li>
+<p>&#10063; Ship it</p>
+</li>
+</ul>
+<ul class="checklist">
+<li>
+<p><input type="checkbox" data-item-complete="1" checked> An interactive checked task</p>
+</li>
+<li>
+<p><input type="checkbox" data-item-complete="0"> An interactive unchecked task</p>
+</li>
+</ul>
+</section>
+<section id="_ordered">
+<h3><a class="anchor" href="#_ordered"></a><a class="link" href="#_ordered"><span class="sect-num">4.3.</span> Ordered</a></h3>
+<ol class="arabic">
+<li>
+<p>Step one</p>
+</li>
+<li>
+<p>Step two with substeps</p>
+<ol class="loweralpha" type="a">
+<li>
+<p>Substep A</p>
+</li>
+<li>
+<p>Substep B</p>
+</li>
+</ol>
+</li>
+</ol>
+<ol class="arabic" start="10">
+<li>
+<p>Numbering can start at ten</p>
+</li>
+<li>
+<p>And continue from there</p>
+</li>
+</ol>
+<ol class="arabic" reversed>
+<li>
+<p>Three</p>
+</li>
+<li>
+<p>Two</p>
+</li>
+<li>
+<p>One</p>
+</li>
+</ol>
+<ol class="loweralpha" type="a">
+<li>
+<p>First</p>
+</li>
+<li>
+<p>Second</p>
+</li>
+</ol>
+</section>
+<section id="_description_lists">
+<h3><a class="anchor" href="#_description_lists"></a><a class="link" href="#_description_lists"><span class="sect-num">4.4.</span> Description lists</a></h3>
+<dl>
+<dt>CPU</dt>
+<dd>
+<p>The brain of the computer.</p>
+</dd>
+<dt>RAM</dt>
+<dd>
+<p>Temporary storage, described on the next line.</p>
+</dd>
+<dt>CPU socket</dt>
+<dt>Motherboard</dt>
+<dd>
+<p>Two terms sharing one description.</p>
+</dd>
+</dl>
+<dl class="qanda">
+<dt>What is AsciiDoc?</dt>
+<dd>
+<p>A plain-text writing format with a concise, readable syntax.</p>
+</dd>
+<dt>Why semantic HTML?</dt>
+<dd>
+<p>Easier styling, better accessibility, cleaner diffs.</p>
+</dd>
+</dl>
+<dl class="horizontal">
+<dt>input</dt>
+<dd>
+<p>What you write.</p>
+</dd>
+<dt>output</dt>
+<dd>
+<p>What readers see.</p>
+</dd>
+<dt>processor</dt>
+<dd>
+<p>What sits in between.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="tables">
+<h2><a class="anchor" href="#tables"></a><a class="link" href="#tables"><span class="sect-num">5.</span> Tables</a></h2>
+<table class="frame-all grid-all stripes-even stretch">
+<caption>Table 1. Ingredients for one loaf</caption>
+<colgroup>
+<col style="width: 60%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th>Item</th>
+<th class="halign-center">Unit</th>
+<th class="halign-right">Quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Flour</p></td>
+<td class="halign-center"><p>g</p></td>
+<td class="halign-right"><p>200</p></td>
+</tr>
+<tr>
+<td><p>Sugar</p></td>
+<td class="halign-center"><p>g</p></td>
+<td class="halign-right"><p>100</p></td>
+</tr>
+<tr>
+<td><p>Butter <em>(softened)</em></p></td>
+<td class="halign-center"><p>g</p></td>
+<td class="halign-right"><p>150</p></td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td><p>Total</p></td>
+<td class="halign-center"><p>g</p></td>
+<td class="halign-right"><p>450</p></td>
+</tr>
+</tfoot>
+</table>
+<table class="frame-all grid-all stretch">
+<caption>Table 2. Spans and alignments</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="halign-center" colspan="2"><p>Spanning two columns</p></td>
+</tr>
+<tr>
+<td class="valign-middle" rowspan="2"><p>Two rows (middle)</p></td>
+<td><p>Regular cell</p></td>
+</tr>
+<tr>
+<td><p>Regular cell</p></td>
+</tr>
+</tbody>
+</table>
+<table class="frame-all grid-all fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p>An autowidth table</p></td>
+<td><p>hugs</p></td>
+<td><p>its content</p></td>
+</tr>
+</tbody>
+</table>
+<table class="frame-all grid-all stretch">
+<caption>Table 3. Cell styles</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<th><p>Header cell</p></th>
+<td><p><code>Monospace cell</code></p></td>
+<td><pre>Literal
+  cell</pre></td>
+<td><p>
+AsciiDoc cell
+</p>
+<ul>
+<li>
+<p>with a list</p>
+</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<table class="frame-ends grid-rows stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td><p>frame=ends</p></td>
+<td><p>grid=rows</p></td>
+</tr>
+<tr>
+<td><p>Only horizontal</p></td>
+<td><p>rules here</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="_media">
+<h2><a class="anchor" href="#_media"></a><a class="link" href="#_media"><span class="sect-num">6.</span> Media</a></h2>
+<figure>
+<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgODAiPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iODAiIHJ4PSI4IiBmaWxsPSIjMDk2OWRhIiBvcGFjaXR5PSIuMTUiLz48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSIxOCIgZmlsbD0iIzA5NjlkYSIvPjxyZWN0IHg9IjcwIiB5PSIyMiIgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiByeD0iNiIgZmlsbD0iIzFhN2YzNyIvPjwvc3ZnPg==" alt="Abstract shapes" width="240" height="160">
+<figcaption>Figure 1. A sample figure, captioned and numbered</figcaption>
+</figure>
+<p>
+An inline image <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiNjZjIyMmUiLz48L3N2Zz4=" alt="red dot" width="14" height="14"> sits in the middle of this sentence.
+</p>
+<figure class="right">
+<a href="https://asciidoctor.org"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiNjZjIyMmUiLz48L3N2Zz4=" alt="A dot that links" width="48" height="48"></a>
+<figcaption>Figure 2. A block image with a link, floated right</figcaption>
+</figure>
+<p>
+The paragraph next to the floated image wraps around it. Clear the float before continuing so the layout stays tidy. This sentence pads the line a little more so the wrap is visible.
+</p>
+<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiNjZjIyMmUiLz48L3N2Zz4=" alt="Centered dot" class="text-center" width="32" height="32">
+</section>
+<section id="_stem">
+<h2><a class="anchor" href="#_stem"></a><a class="link" href="#_stem"><span class="sect-num">7.</span> STEM</a></h2>
+<p>
+The area of a circle is \(A = \pi r^2\) (inline).
+</p>
+<figure class="stem">
+\[x = {-b \pm \sqrt{b^2-4ac} \over 2a}\]
+</figure>
+</section>
+<section id="_footnotes_and_index">
+<h2><a class="anchor" href="#_footnotes_and_index"></a><a class="link" href="#_footnotes_and_index"><span class="sect-num">8.</span> Footnotes and index</a></h2>
+<p>
+The hail-and-rainbow protocol can be initiated at five levels.<sup class="footnote-ref" id="_footnote_disclaimer"><a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote." role="doc-noteref">2</a></sup>
+A reused footnote reference.<sup class="footnote-ref"><a class="footnote" href="#_footnotedef_2" title="View footnote." role="doc-noteref">2</a></sup>
+The panther is a visible index term; a hidden one follows.
+</p>
+<h2 id="_a_discrete_heading" class="discrete">A discrete heading</h2>
+<p>
+A discrete heading is not numbered, not in the TOC, and opens no section.
+</p>
+</section>
+<section id="_bibliography_ish">
+<h2><a class="anchor" href="#_bibliography_ish"></a><a class="link" href="#_bibliography_ish">Appendix A: Bibliography-ish</a></h2>
+<ul>
+<li>
+<p><a id="semantic"></a> The semantic HTML5 converter design document, 2026.</p>
+</li>
+<li>
+<p><a id="wip"></a> The upstream feature/html-converter-next branch, 2022.</p>
+</li>
+</ul>
+<p>
+See <a href="#semantic">1</a> and <a href="#wip">2</a>.
+</p>
+</section>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol class="footnotes">
+<li id="_footnotedef_1" role="doc-endnote">Footnotes collect into a semantic list at the end of the document. <a class="footnote-backref" href="#_footnoteref_1" role="doc-backlink">&#8617;</a></li>
+<li id="_footnotedef_2" role="doc-endnote">Opinions are my own; the protocol is fictional. <a class="footnote-backref" href="#_footnoteref_2" role="doc-backlink">&#8617;</a></li>
+</ol>
+</section>
+</main>
+<footer>
+<span class="rev-number">Version 2.1</span>
+</footer>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [["\\(","\\)"]],
+    displayMath: [["\\[","\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$","\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+  TeX: { equationNumbers: { autoNumber: "none" } }
+})
+MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
+  MathJax.InputJax.AsciiMath.postfilterHooks.Add(function (data, node) {
+    if ((node = data.script.parentNode) && (node = node.parentNode) && node.classList.contains("stem")) {
+      data.math.root.display = "block"
+    }
+    return data
+  })
+})
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
