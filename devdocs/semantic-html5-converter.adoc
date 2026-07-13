@@ -7,6 +7,8 @@ This document explains, for every AsciiDoc node, the HTML structure produced by 
 The converter originates from the upstream Ruby WIP branch https://github.com/asciidoctor/asciidoctor/tree/feature/html-converter-next[`feature/html-converter-next`]; the nodes that branch did not cover follow the same design language.
 Every mapping below is locked in by a scenario fixture pair (`.adoc`/`.html`) under `packages/core/test/fixtures/semantic-html5-scenarios/`.
 
+TIP: link:semantic-html5-reference.adoc[`semantic-html5-reference.adoc`] is a kitchen-sink document exercising most of the AsciiDoc syntax; its converted output with the default stylesheet is checked in as link:semantic-html5-reference.html[`semantic-html5-reference.html`], next to link:semantic-html5-reference-legacy.html[`semantic-html5-reference-legacy.html`] (the same document through the `html5` backend) for side-by-side comparison.
+
 == Design principles
 
 Unlike the default `html5` backend — whose output mirrors AsciiDoc.py for compatibility — this converter maximizes the use of semantic HTML constructs:
