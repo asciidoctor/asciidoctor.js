@@ -232,6 +232,8 @@ The three `:icons:` modes match the `html5` backend's behavior with semantic mar
 
 The text label is always preserved for assistive technologies (`alt` on the image, `title` on the font icon).
 
+TIP: link:semantic-html5-admonitions.html[`semantic-html5-admonitions.html`] (in this directory) is a live proof that this markup styles "easily": the exact same converter output rendered in five different design-system looks — GitHub alerts, Just the Docs, Bootstrap, Shoelace, WHATWG spec — with a few scoped CSS rules each, icons included (pure CSS `mask-image` on `.label::before`, no markup change).
+
 == Verbatim and figure-like blocks
 
 These blocks always render as a `<figure>` with a marker class; the title (with its caption prefix when numbered) is a leading `<figcaption>`.
