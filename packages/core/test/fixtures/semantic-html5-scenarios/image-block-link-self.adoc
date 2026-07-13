@@ -1,0 +1,2 @@
+[link=self,window=_blank]
+image::../dot.gif[A dot image]

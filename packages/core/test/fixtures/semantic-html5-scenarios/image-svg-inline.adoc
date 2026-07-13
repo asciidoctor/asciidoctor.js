@@ -1,0 +1,1 @@
+image::data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0IDQiPjxjaXJjbGUgY3g9IjIiIGN5PSIyIiByPSIxIi8+PC9zdmc+[Circle,opts=inline]
