@@ -103,7 +103,7 @@ More content.
 </section>
 </main>
 <footer>
-<span class="revnumber">Version 1.0</span>
+<span class="rev-number">Version 1.0</span>
 </footer>
 </body>
 </html>`
@@ -127,7 +127,7 @@ Content.
       result.includes(`<main>
 <nav id="toc" class="toc">
 <strong class="title" id="toctitle">Table of Contents</strong>
-<ol class="sectlevel1">
+<ol class="sect-level-1">
 <li><a href="#_first_section">First Section</a></li>
 </ol>
 </nav>`)

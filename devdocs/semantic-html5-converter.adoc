@@ -29,6 +29,10 @@ Blocks that are inherently figure-like (`listing`, `literal`, `example`, `stem`)
 Titles inside flow containers::
 Blocks that cannot be a `<figure>` but can contain phrasing content (paragraph, admonition, sidebar, open block) render their title as a leading `<strong class="title">`.
 
+Kebab-case class names::
+Multi-word class names invented by the converter are kebab-case: `sect-num`, `sect-level-1`, `no-wrap`, `single-quote`, `menu-seq`, `menu-item`, `key-seq`, `callout-num`, `callout-list`, `page-break`, `footnote-ref`, `rev-number`, … (the legacy condensed spellings `sectnum`, `nowrap`, `singlequote`, `menuseq`, `conum` of the `html5` backend and the upstream WIP are not used).
+Single real words stay plain (`byline`, `subtitle`, `sidebar`, `submenu`, `checklist`), and AsciiDoc vocabulary passed through from the document (style and attribute values such as `arabic`, `loweralpha`, `qanda`, `horizontal`, `discrete`, `abstract`) keeps its original spelling.
+
 Accessibility::
 Footnote machinery uses the DPUB-ARIA roles `doc-noteref`, `doc-endnotes`, `doc-endnote` and `doc-backlink`; author email links carry `rel="author"`; the revision date uses `<time datetime>`.
 
@@ -58,7 +62,7 @@ Only a user-provided `:stylesheet:` is linked (`:linkcss:`) or embedded.
 [footnotes]
 </main>
 <footer>                                             <!--6-->
-<span class="revnumber">Version 1.0</span>
+<span class="rev-number">Version 1.0</span>
 <span class="last-updated">Last updated …</span>
 </footer>
 </body>
@@ -112,7 +116,7 @@ a|
 …
 </section>
 ----
-|`<section>` with the heading at `h(level+1)`; `id` on the `<section>` (not the heading), roles as classes. Numbered sections prefix the heading text with `<span class="sectnum">1.1.</span>` (plus the part/chapter signifier in book doctype). `:sectlinks:` wraps the title in `<a class="link">`; `:sectanchors:` adds `<a class="anchor">` before (or after with `sectanchors=after`).
+|`<section>` with the heading at `h(level+1)`; `id` on the `<section>` (not the heading), roles as classes. Numbered sections prefix the heading text with `<span class="sect-num">1.1.</span>` (plus the part/chapter signifier in book doctype). `:sectlinks:` wraps the title in `<a class="link">`; `:sectanchors:` adds `<a class="anchor">` before (or after with `sectanchors=after`).
 
 |floating title (`[discrete]`)
 a|
@@ -203,7 +207,7 @@ a|
 <pre><code data-lang="ruby">…</code></pre>
 </figure>
 ----
-|Source blocks put the language in `data-lang` (no `language-*` class; a highlighter attaches its own classes). When a syntax highlighter is active its output replaces the `<pre>` line. `%nowrap` (or `:prewrap!:`) adds `class="nowrap"` to the `<pre>`.
+|Source blocks put the language in `data-lang` (no `language-*` class; a highlighter attaches its own classes). When a syntax highlighter is active its output replaces the `<pre>` line. `%nowrap` (or `:prewrap!:`) adds `class="no-wrap"` to the `<pre>`.
 
 |literal
 a|
@@ -330,13 +334,13 @@ a|
 a|
 [source,html]
 ----
-<ol class="colist">
+<ol class="callout-list">
 <li>
 <p>First callout</p>
 </li>
 </ol>
 ----
-|An `<ol>` — callouts are inherently numbered. The `colist` class ties it visually to the callout numbers in the preceding listing.
+|An `<ol>` — callouts are inherently numbered. The `callout-list` class ties it visually to the callout numbers in the preceding listing.
 |===
 
 == Tables
@@ -419,9 +423,9 @@ a|
 ----
 <nav id="toc" class="toc">
 <strong class="title" id="toctitle">Table of Contents</strong>
-<ol class="sectlevel1">
+<ol class="sect-level-1">
 <li><a href="#_first_section">First Section</a>
-<ol class="sectlevel2">
+<ol class="sect-level-2">
 <li><a href="#_nested_section">Nested Section</a></li>
 </ol>
 </li>
@@ -429,7 +433,7 @@ a|
 </nav>
 ----
 
-* `<nav>` is the landmark element for a table of contents; the outline is a nested `<ol>` (a TOC is ordered), one `<ol class="sectlevel{n}">` per depth.
+* `<nav>` is the landmark element for a table of contents; the outline is a nested `<ol>` (a TOC is ordered), one `<ol class="sect-level-{n}">` per depth.
 * The same markup serves the three placements: auto (before the content), `:toc-placement: preamble` (after the preamble) and the `toc::[]` macro (which honors its own `id`, title, role and `levels` attributes).
 
 == Footnotes
@@ -468,7 +472,7 @@ a|
 |`<sup>` / `<sub>`
 
 |curved quotes (`+"`…`"+`, `+'`…`'+`)
-|`<span class="doublequote">&#8220;…&#8221;</span>` / `<span class="singlequote">&#8216;…&#8217;</span>` — the class lets a stylesheet swap locale-specific quotation marks
+|`<span class="double-quote">&#8220;…&#8221;</span>` / `<span class="single-quote">&#8216;…&#8217;</span>` — the class lets a stylesheet swap locale-specific quotation marks
 
 |inline stem
 |`\$…\$` (asciimath) or `\(…\)` (latexmath) — MathJax delimiters, no element
@@ -492,16 +496,16 @@ a|
 |see <<Media>>
 
 |kbd (`kbd:[Ctrl+T]`)
-|`<kbd>Ctrl</kbd>` — multiple keys: `<span class="keyseq"><kbd>Ctrl</kbd>+<kbd>T</kbd></span>`
+|`<kbd>Ctrl</kbd>` — multiple keys: `<span class="key-seq"><kbd>Ctrl</kbd>+<kbd>T</kbd></span>`
 
 |btn (`btn:[Save]`)
 |`<span class="button">Save</span>`
 
 |menu (`menu:File[Save]`)
-|`<span class="menuseq"><b class="menu">File</b>&#160;<b class="caret">&#8250;</b> <b class="menuitem">Save</b></span>` (intermediate levels: `<b class="submenu">`)
+|`<span class="menu-seq"><b class="menu">File</b>&#160;<b class="caret">&#8250;</b> <b class="menu-item">Save</b></span>` (intermediate levels: `<b class="submenu">`)
 
 |callout number in a listing
-|`<b class="conum">(1)</b>`
+|`<b class="callout-num">(1)</b>`
 
 |hard line break (`+` at end of line)
 |`text<br>`
@@ -522,8 +526,8 @@ Classes the converter emits, for the future dedicated stylesheet:
 |byline |Author paragraph/list in the document header
 |author |One author (`<span>` inside the byline)
 |revision |Revision table in the document header
-|revnumber, last-updated |Footer spans (standalone)
-|sectnum |Section number prefix in headings
+|rev-number, last-updated |Footer spans (standalone)
+|sect-num |Section number prefix in headings
 |link, anchor |`:sectlinks:` / `:sectanchors:` heading links
 |title |Block title rendered inside a flow container (`<strong class="title">`), TOC title
 |label |Admonition text label; listing caption prefix (`Listing 1.`)
@@ -533,16 +537,16 @@ Classes the converter emits, for the future dedicated stylesheet:
 |quote, verse |Blockquote (or wrapping figure) marker classes
 |attribution |Quote/verse attribution name (inside the `<footer>`)
 |abstract |Abstract open block
-|checklist, colist + list styles (arabic, loweralpha, square, …) |List style classes
+|checklist, callout-list + list styles (arabic, loweralpha, square, …) |List style classes
 |frame-*, grid-*, stripes-*, stretch, fit-content |Table layout classes
 |halign-center/right, valign-middle/bottom |Non-default cell alignment
-|toc, sectlevel\{n} |TOC `<nav>` and outline levels
+|toc, sect-level-\{n} |TOC `<nav>` and outline levels
 |footnote-ref, footnote, footnotes, footnote-backref |Footnote machinery
-|conum |Callout number
+|callout-num |Callout number
 |page-break |Page-break `<hr>`
 |discrete |Floating title
-|nowrap |`<pre>` when wrapping is disabled
-|singlequote, doublequote |Curved-quote spans
-|menuseq, menu, submenu, menuitem, caret, button, keyseq |UI macros (`menu:`, `btn:`, `kbd:`)
+|no-wrap |`<pre>` when wrapping is disabled
+|single-quote, double-quote |Curved-quote spans
+|menu-seq, menu, submenu, menu-item, caret, button, key-seq |UI macros (`menu:`, `btn:`, `kbd:`)
 |text-left/center/right + float values |Image/video alignment roles (from `align`/`float` attributes)
 |===
