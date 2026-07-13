@@ -1,0 +1,854 @@
+/*! Asciidoctor semantic HTML5 default stylesheet | MIT License | https://asciidoctor.org */
+
+/* ── Tokens ──────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: light dark;
+  --asciidoctor-bg: #fdfdfc;
+  --asciidoctor-surface: #f6f5f3;
+  --asciidoctor-fg: #23282e;
+  --asciidoctor-muted: #5c646e;
+  --asciidoctor-line: #e5e3df;
+  --asciidoctor-link: #0958b0;
+  --asciidoctor-mark: #fff2ae;
+  --asciidoctor-note: #0969da;
+  --asciidoctor-tip: #1a7f37;
+  --asciidoctor-important: #8250df;
+  --asciidoctor-warning: #9a6700;
+  --asciidoctor-caution: #cf222e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --asciidoctor-bg: #16181c;
+    --asciidoctor-surface: #1e2126;
+    --asciidoctor-fg: #e6e7e9;
+    --asciidoctor-muted: #9aa2ac;
+    --asciidoctor-line: #2c313a;
+    --asciidoctor-link: #6cb0f5;
+    --asciidoctor-mark: #6b5d1a;
+    --asciidoctor-note: #4493f8;
+    --asciidoctor-tip: #3fb950;
+    --asciidoctor-important: #ab7df8;
+    --asciidoctor-warning: #d29922;
+    --asciidoctor-caution: #f85149;
+  }
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 47rem;
+  padding: 1.5rem 1.25rem 3rem;
+  background: var(--asciidoctor-bg);
+  color: var(--asciidoctor-fg);
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Noto Sans",
+    sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  -webkit-text-size-adjust: 100%;
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  margin: 2em 0 0.6em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.25rem;
+}
+h4 {
+  font-size: 1.0625rem;
+}
+h5,
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+a {
+  color: var(--asciidoctor-link);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a:focus-visible {
+  outline: 2px solid var(--asciidoctor-link);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family:
+    ui-monospace,
+    "SF Mono",
+    "Cascadia Code",
+    Menlo,
+    Consolas,
+    monospace;
+}
+
+code {
+  font-size: 0.875em;
+  background: var(--asciidoctor-surface);
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+}
+
+pre {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: var(--asciidoctor-surface);
+  border-radius: 8px;
+}
+pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  border-radius: 0;
+}
+pre.no-wrap {
+  white-space: pre;
+}
+
+mark {
+  background: var(--asciidoctor-mark);
+  color: inherit;
+  padding: 0 0.15em;
+  border-radius: 2px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--asciidoctor-line);
+  margin: 2.5rem 0;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+sub,
+sup {
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+/* ── Document header ─────────────────────────────────────────────────────── */
+
+body > header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--asciidoctor-line);
+}
+
+body > header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 2.25rem;
+}
+
+body > header h1 .subtitle {
+  display: block;
+  font-size: 0.55em;
+  font-weight: 400;
+  color: var(--asciidoctor-muted);
+  letter-spacing: 0;
+}
+
+.byline {
+  margin: 0.5rem 0 0;
+  color: var(--asciidoctor-muted);
+  font-size: 0.9375rem;
+}
+ul.byline {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+}
+ul.byline li {
+  margin: 0;
+}
+
+table.revision {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--asciidoctor-muted);
+  border-collapse: collapse;
+}
+table.revision thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+table.revision td {
+  padding: 0 1.25rem 0 0;
+}
+table.revision td:empty {
+  display: none;
+}
+table.revision td::before {
+  content: attr(data-title) " ";
+}
+table.revision td[data-title=""]::before,
+table.revision td[data-title="Date"]::before,
+table.revision td[data-title="Remark"]::before {
+  content: none;
+}
+
+/* ── Page footer ─────────────────────────────────────────────────────────── */
+
+body > footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--asciidoctor-line);
+  font-size: 0.8125rem;
+  color: var(--asciidoctor-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+}
+
+/* ── Sections ────────────────────────────────────────────────────────────── */
+
+.sect-num {
+  color: var(--asciidoctor-muted);
+  font-weight: 500;
+  margin-right: 0.25em;
+}
+
+/* :sectanchors: — reveal the anchor on heading hover */
+a.anchor {
+  float: left;
+  margin-left: -1.1em;
+  width: 1.1em;
+  visibility: hidden;
+  font-weight: 400;
+}
+a.anchor::before {
+  content: "§";
+}
+h1:hover a.anchor,
+h2:hover a.anchor,
+h3:hover a.anchor,
+h4:hover a.anchor,
+h5:hover a.anchor,
+h6:hover a.anchor {
+  visibility: visible;
+}
+
+/* :sectlinks: — self-links keep the heading color */
+h1 > a.link,
+h2 > a.link,
+h3 > a.link,
+h4 > a.link,
+h5 > a.link,
+h6 > a.link {
+  color: inherit;
+}
+
+/* ── Block titles ────────────────────────────────────────────────────────── */
+
+strong.title {
+  display: block;
+  margin-bottom: 0.25em;
+}
+
+/* ── Table of contents ───────────────────────────────────────────────────── */
+
+nav.toc {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--asciidoctor-surface);
+  border: 1px solid var(--asciidoctor-line);
+  border-radius: 8px;
+}
+nav.toc > .title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--asciidoctor-muted);
+  margin-bottom: 0.5rem;
+}
+nav.toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+nav.toc ol ol {
+  padding-left: 1rem;
+}
+nav.toc li {
+  margin: 0.2em 0;
+}
+nav.toc a {
+  color: var(--asciidoctor-fg);
+  font-size: 0.9375rem;
+}
+nav.toc a:hover {
+  color: var(--asciidoctor-link);
+}
+
+/* ── Admonitions ─────────────────────────────────────────────────────────── */
+
+aside.admonition {
+  --asciidoctor-admonition: var(--asciidoctor-muted);
+  margin: 1.5rem 0;
+  padding: 0.5rem 1.25rem;
+  border-left: 0.25rem solid var(--asciidoctor-admonition);
+}
+aside.admonition.note {
+  --asciidoctor-admonition: var(--asciidoctor-note);
+}
+aside.admonition.tip {
+  --asciidoctor-admonition: var(--asciidoctor-tip);
+}
+aside.admonition.important {
+  --asciidoctor-admonition: var(--asciidoctor-important);
+}
+aside.admonition.warning {
+  --asciidoctor-admonition: var(--asciidoctor-warning);
+}
+aside.admonition.caution {
+  --asciidoctor-admonition: var(--asciidoctor-caution);
+}
+aside.admonition > .label,
+aside.admonition > .icon,
+aside.admonition > i.fa {
+  display: block;
+  color: var(--asciidoctor-admonition);
+  font-weight: 600;
+  margin-bottom: 0.25em;
+}
+aside.admonition > p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+
+aside.sidebar {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--asciidoctor-surface);
+  border-radius: 8px;
+}
+aside.sidebar > :last-child {
+  margin-bottom: 0;
+}
+
+/* ── Figures ─────────────────────────────────────────────────────────────── */
+
+figure {
+  margin: 1.5rem 0;
+}
+figcaption {
+  font-size: 0.875rem;
+  color: var(--asciidoctor-muted);
+  margin: 0.4rem 0;
+}
+figcaption .label {
+  font-weight: 600;
+}
+
+figure.listing figcaption,
+figure.literal figcaption,
+figure.example figcaption,
+figure.stem figcaption {
+  margin-top: 0;
+}
+
+figure.example {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--asciidoctor-line);
+  border-radius: 8px;
+}
+figure.example > :last-child {
+  margin-bottom: 0;
+}
+figure.example > figcaption {
+  margin: -0.25rem 0 0.75rem;
+}
+
+figure.stem {
+  text-align: center;
+}
+
+/* collapsible example */
+details {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--asciidoctor-line);
+  border-radius: 8px;
+}
+details > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+details[open] > summary {
+  margin-bottom: 0.5rem;
+}
+
+/* ── Quote and verse ─────────────────────────────────────────────────────── */
+
+blockquote {
+  margin: 1.5rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 0.25rem solid var(--asciidoctor-line);
+}
+blockquote.quote {
+  font-style: italic;
+}
+blockquote footer {
+  margin-top: 0.5rem;
+  font-style: normal;
+  font-size: 0.875rem;
+  color: var(--asciidoctor-muted);
+}
+blockquote pre {
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  white-space: pre-wrap;
+}
+figure.quote > blockquote,
+figure.verse > blockquote {
+  margin: 0.5rem 0 0;
+}
+
+/* ── Lists ───────────────────────────────────────────────────────────────── */
+
+ul,
+ol,
+dl {
+  margin: 0 0 1em;
+}
+li > p,
+dd > p {
+  margin-bottom: 0.25em;
+}
+dt {
+  font-weight: 600;
+}
+dd {
+  margin: 0 0 0.5em 1.25rem;
+}
+
+ul.checklist {
+  list-style: none;
+  padding-left: 1.5rem;
+}
+
+/* qanda — number the questions with a counter */
+dl.qanda {
+  counter-reset: question;
+}
+dl.qanda dt::before {
+  counter-increment: question;
+  content: counter(question) ". ";
+}
+
+/* horizontal dlist — two-column grid */
+dl.horizontal {
+  display: grid;
+  grid-template-columns: minmax(6rem, max-content) 1fr;
+  gap: 0.25em 1.5rem;
+}
+dl.horizontal dt {
+  grid-column: 1;
+}
+dl.horizontal dd {
+  grid-column: 2;
+  margin: 0;
+}
+
+/* ── Callouts ────────────────────────────────────────────────────────────── */
+
+b.callout-num {
+  color: var(--asciidoctor-muted);
+  font-weight: 600;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  font-size: 0.8125em;
+}
+i.conum[data-value] {
+  display: inline-block;
+  min-width: 1.3em;
+  height: 1.3em;
+  border-radius: 50%;
+  background: var(--asciidoctor-muted);
+  color: var(--asciidoctor-bg);
+  font-size: 0.75em;
+  font-weight: 600;
+  font-style: normal;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.3em;
+  text-align: center;
+}
+i.conum[data-value]::after {
+  content: attr(data-value);
+}
+i.conum[data-value] + b {
+  display: none;
+}
+
+ol.callout-list {
+  list-style: none;
+  counter-reset: callout;
+  padding-left: 0;
+  font-size: 0.9375rem;
+}
+ol.callout-list > li {
+  counter-increment: callout;
+  margin: 0.25em 0;
+}
+ol.callout-list > li > p::before {
+  content: counter(callout);
+  display: inline-block;
+  min-width: 1.3em;
+  height: 1.3em;
+  margin-right: 0.5em;
+  border-radius: 50%;
+  background: var(--asciidoctor-muted);
+  color: var(--asciidoctor-bg);
+  font-size: 0.75em;
+  font-weight: 600;
+  line-height: 1.3em;
+  text-align: center;
+}
+/* in icons mode the marker is already in the content — drop the counter */
+ol.callout-list > li > p:has(> i.conum:first-child)::before,
+ol.callout-list > li > p:has(> img:first-child)::before {
+  content: none;
+}
+
+/* ── Tables ──────────────────────────────────────────────────────────────── */
+
+table {
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9375rem;
+}
+table caption {
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--asciidoctor-muted);
+  margin-bottom: 0.4rem;
+}
+th,
+td {
+  padding: 0.4rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+thead th {
+  font-weight: 600;
+}
+td > p:last-child {
+  margin-bottom: 0;
+}
+
+table.stretch {
+  width: 100%;
+}
+table.fit-content {
+  width: fit-content;
+}
+
+/* frame */
+table.frame-all {
+  border: 1px solid var(--asciidoctor-line);
+}
+table.frame-ends {
+  border-top: 1px solid var(--asciidoctor-line);
+  border-bottom: 1px solid var(--asciidoctor-line);
+}
+table.frame-sides {
+  border-left: 1px solid var(--asciidoctor-line);
+  border-right: 1px solid var(--asciidoctor-line);
+}
+
+/* grid */
+table[class*="grid-"] > * > tr > th,
+table[class*="grid-"] > * > tr > td {
+  border: 0 solid var(--asciidoctor-line);
+}
+table.grid-all > * > tr > th,
+table.grid-all > * > tr > td {
+  border-width: 1px;
+}
+table.grid-rows > * > tr > th,
+table.grid-rows > * > tr > td {
+  border-width: 1px 0;
+}
+table.grid-cols > * > tr > th,
+table.grid-cols > * > tr > td {
+  border-width: 0 1px;
+}
+
+/* stripes */
+table.stripes-all > tbody > tr,
+table.stripes-even > tbody > tr:nth-of-type(even),
+table.stripes-odd > tbody > tr:nth-of-type(odd) {
+  background: var(--asciidoctor-surface);
+}
+table.stripes-hover > tbody > tr:hover {
+  background: var(--asciidoctor-surface);
+}
+
+/* cell alignment */
+th.halign-center,
+td.halign-center {
+  text-align: center;
+}
+th.halign-right,
+td.halign-right {
+  text-align: right;
+}
+th.valign-middle,
+td.valign-middle {
+  vertical-align: middle;
+}
+th.valign-bottom,
+td.valign-bottom {
+  vertical-align: bottom;
+}
+
+/* ── Footnotes ───────────────────────────────────────────────────────────── */
+
+sup.footnote-ref {
+  font-size: 0.75em;
+}
+section.footnotes {
+  margin-top: 3rem;
+  font-size: 0.875rem;
+  color: var(--asciidoctor-muted);
+}
+section.footnotes > hr {
+  width: 8rem;
+  margin: 0 0 1rem;
+}
+ol.footnotes {
+  padding-left: 1.5rem;
+}
+a.footnote-backref {
+  text-decoration: none;
+}
+
+/* ── Inline UI macros ────────────────────────────────────────────────────── */
+
+kbd {
+  display: inline-block;
+  font-size: 0.75em;
+  line-height: 1.4;
+  padding: 0.1em 0.45em;
+  border: 1px solid var(--asciidoctor-line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--asciidoctor-surface);
+}
+.key-seq kbd {
+  margin: 0 0.1em;
+}
+
+.button {
+  font-weight: 600;
+  font-size: 0.875em;
+  padding: 0.05em 0.5em;
+  border: 1px solid var(--asciidoctor-line);
+  border-radius: 6px;
+  background: var(--asciidoctor-surface);
+  white-space: nowrap;
+}
+
+.menu-seq b {
+  font-weight: 600;
+}
+.menu-seq b.caret {
+  color: var(--asciidoctor-muted);
+  font-weight: 400;
+}
+
+/* ── Media ───────────────────────────────────────────────────────────────── */
+
+audio {
+  width: 100%;
+  max-width: 30rem;
+}
+iframe {
+  border: 0;
+  max-width: 100%;
+}
+
+/* ── Alignment and float roles ───────────────────────────────────────────── */
+
+.text-left {
+  text-align: left;
+}
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+img.left,
+figure.left {
+  float: left;
+  margin: 0.25rem 1.25rem 0.75rem 0;
+}
+img.right,
+figure.right {
+  float: right;
+  margin: 0.25rem 0 0.75rem 1.25rem;
+}
+
+/* ── General-purpose roles ───────────────────────────────────────────────── */
+
+.underline {
+  text-decoration: underline;
+}
+.overline {
+  text-decoration: overline;
+}
+.line-through {
+  text-decoration: line-through;
+}
+.nobreak {
+  hyphens: none;
+  word-wrap: normal;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.pre-wrap {
+  white-space: pre-wrap;
+}
+
+.unstyled {
+  list-style: none;
+  padding-left: 0;
+}
+ul.no-bullet,
+ol.unnumbered {
+  list-style: none;
+  padding-left: 1.25rem;
+}
+
+/* ── Print ───────────────────────────────────────────────────────────────── */
+
+@media print {
+  :root {
+    --asciidoctor-bg: #fff;
+    --asciidoctor-surface: #f4f4f4;
+    --asciidoctor-fg: #000;
+    --asciidoctor-muted: #444;
+    --asciidoctor-line: #bbb;
+    --asciidoctor-link: #000;
+  }
+  body {
+    max-width: none;
+    font-size: 10.5pt;
+  }
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: var(--asciidoctor-muted);
+  }
+  nav.toc a::after,
+  a.footnote-backref::after,
+  sup.footnote-ref a::after,
+  a.anchor::after,
+  h1 > a.link::after,
+  h2 > a.link::after,
+  h3 > a.link::after,
+  h4 > a.link::after,
+  h5 > a.link::after,
+  h6 > a.link::after {
+    content: none;
+  }
+  hr.page-break {
+    border: 0;
+    margin: 0;
+    break-after: page;
+  }
+  figure,
+  blockquote,
+  aside.admonition,
+  aside.sidebar,
+  table,
+  pre {
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    break-after: avoid;
+  }
+}
+
+@media not print {
+  hr.page-break {
+    border: 0;
+    margin: 2.5rem auto;
+    text-align: center;
+  }
+  hr.page-break::after {
+    content: "· · ·";
+    color: var(--asciidoctor-muted);
+    letter-spacing: 0.5em;
+  }
+}
