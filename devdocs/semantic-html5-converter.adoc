@@ -4,6 +4,14 @@
 
 This document explains, for every AsciiDoc node, the HTML structure produced by the built-in *semantic HTML5* converter (backend `semantic-html5`, `packages/core/src/converter/semantic_html5.js`) and the reasoning behind each choice.
 
+[IMPORTANT]
+====
+*This backend is experimental.* Asciidoctor.js serves as the fast-iteration testbed for the modern HTML output effort started upstream in the https://github.com/asciidoctor/asciidoctor/tree/feature/html-converter-next[`feature/html-converter-next`] branch (https://github.com/asciidoctor/asciidoctor/issues/242[asciidoctor#242]): shipping a working implementation lets the semantic markup decisions be evaluated against real projects instead of being debated in the abstract, and the decisions that prove solid are meant to be ported back to the Ruby implementation.
+
+Consequently, the emitted markup, the class names and the default stylesheet may change in *any* release without being treated as breaking changes, and this backend is *not* a candidate to replace the default `html5` backend.
+====
+
+
 The converter originates from the upstream Ruby WIP branch https://github.com/asciidoctor/asciidoctor/tree/feature/html-converter-next[`feature/html-converter-next`]; the nodes that branch did not cover follow the same design language.
 Every mapping below is locked in by a scenario fixture pair (`.adoc`/`.html`) under `packages/core/test/fixtures/semantic-html5-scenarios/`.
 
