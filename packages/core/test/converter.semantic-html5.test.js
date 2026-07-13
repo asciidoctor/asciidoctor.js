@@ -51,7 +51,6 @@ More content.
 `
     const result = await convertString(input, {
       backend: 'semantic-html5',
-      attributes: { 'stylesheet!': '' },
     })
     assert.equal(
       result,
@@ -123,7 +122,6 @@ Content.
 `
     const result = await convertString(input, {
       backend: 'semantic-html5',
-      attributes: { 'stylesheet!': '' },
     })
     assert.ok(
       result.includes(`<main>
@@ -137,11 +135,23 @@ Content.
     assert.ok(!result.includes('<footer>'))
   })
 
-  test('embeds the default stylesheet in the head', async () => {
+  test('does not include the default stylesheet (not compatible with the semantic output)', async () => {
     const result = await convertString('content', {
       backend: 'semantic-html5',
     })
+    assert.ok(!result.includes('<style>'))
+    assert.ok(!result.includes('<link rel="stylesheet"'))
+  })
+
+  test('embeds a user-provided stylesheet in the head', async () => {
+    const result = await convertString('content', {
+      backend: 'semantic-html5',
+      safe: 'server',
+      attributes: {
+        stylesheet: 'custom.css',
+        stylesdir: 'test/fixtures',
+      },
+    })
     assert.ok(result.includes('<style>'))
-    assert.ok(result.includes('</style>'))
   })
 })

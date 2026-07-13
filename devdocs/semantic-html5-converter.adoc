@@ -1,0 +1,548 @@
+= Semantic HTML5 converter — element mapping and design choices
+:toc:
+:toc-title: Contents
+
+This document explains, for every AsciiDoc node, the HTML structure produced by the built-in *semantic HTML5* converter (backend `semantic-html5`, `packages/core/src/converter/semantic_html5.js`) and the reasoning behind each choice.
+
+The converter originates from the upstream Ruby WIP branch https://github.com/asciidoctor/asciidoctor/tree/feature/html-converter-next[`feature/html-converter-next`]; the nodes that branch did not cover follow the same design language.
+Every mapping below is locked in by a scenario fixture pair (`.adoc`/`.html`) under `packages/core/test/fixtures/semantic-html5-scenarios/`.
+
+== Design principles
+
+Unlike the default `html5` backend — whose output mirrors AsciiDoc.py for compatibility — this converter maximizes the use of semantic HTML constructs:
+
+Semantic element first::
+Each node maps to the HTML element that carries its meaning: `<section>`, `<aside>`, `<figure>`, `<blockquote>`, `<nav>`, `<time>`, `<kbd>`, `<mark>`, … A `<div>` or `<span>` is used only when HTML has no dedicated element (open blocks, quotation-mark spans, menu sequences).
+
+No wrapper noise::
+No wrapper `<div>`s around blocks and no redundant context classes (`class="paragraph"`, `class="ulist"`, `class="tableblock"`, …).
+The element itself identifies the node; a `class` appears only when it adds information the tag cannot express (a style such as `loweralpha`, an admonition name, user roles).
+
+`id` and roles on the outermost element::
+`id` renders as the `id` attribute and roles as the `class` attribute of the node's outermost element.
+When a block is wrapped in a `<figure>` (see next point), the `id` and roles move to the `<figure>`.
+
+Captioned blocks become figures::
+When a block that has no intrinsic place for a caption carries a title (lists, quotes, media, …), it is wrapped in a `<figure>` and the title becomes the leading `<figcaption>` (including the caption prefix — `Example 1.`, `Figure 1.`, `Table 1.` — when the node is numbered).
+Blocks that are inherently figure-like (`listing`, `literal`, `example`, `stem`) always render as a `<figure>` with a marker class.
+
+Titles inside flow containers::
+Blocks that cannot be a `<figure>` but can contain phrasing content (paragraph, admonition, sidebar, open block) render their title as a leading `<strong class="title">`.
+
+Accessibility::
+Footnote machinery uses the DPUB-ARIA roles `doc-noteref`, `doc-endnotes`, `doc-endnote` and `doc-backlink`; author email links carry `rel="author"`; the revision date uses `<time datetime>`.
+
+No default stylesheet::
+`data/asciidoctor-default.css` targets the `html5` backend's structure and is *not compatible* with this output, so standalone documents never include it (a dedicated default stylesheet may be introduced later).
+Only a user-provided `:stylesheet:` is linked (`:linkcss:`) or embedded.
+
+== Document structure
+
+=== Standalone document (`convert_document`)
+
+[source,html]
+----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor.js …">   <!--1-->
+<title>Document Title</title>                        <!--2-->
+</head>
+<body class="article">                               <!--3-->
+<header>…</header>                                   <!--4-->
+<main>                                               <!--5-->
+[TOC]
+[content]
+[footnotes]
+</main>
+<footer>                                             <!--6-->
+<span class="revnumber">Version 1.0</span>
+<span class="last-updated">Last updated …</span>
+</footer>
+</body>
+</html>
+----
+<1> Plus the optional `application-name`, `description`, `keywords`, `author`, `copyright` metas and favicon link, mirroring the `html5` backend. `X-UA-Compatible` is dropped (obsolete).
+<2> A user `:stylesheet:` (embedded or linked), the syntax-highlighter head docinfo and the user head docinfo follow the title.
+<3> The `<body>` class is the doctype plus the document roles; the document `id` is preserved.
+<4> Same `<header>` as the embedded output (see below).
+<5> All content lives in `<main>`: the auto-placed TOC first, then the converted blocks, then the footnotes section. Replaces `html5`'s `<div id="content">`.
+<6> Omitted with `:nofooter:`; the last-updated line is omitted with `:reproducible:`.
+
+=== Embedded document (`convert_embedded`)
+
+`<header>` (when the document has a header and `:noheader:` is not set), then the auto-placed TOC, the content, and the footnotes section.
+
+=== Document header
+
+[source,html]
+----
+<header>
+<h1>Main Title <small class="subtitle">Subtitle</small></h1>  <!--1-->
+<p class="byline">                                            <!--2-->
+<span class="author">Doc Writer <a href="mailto:doc@example.org" rel="author">doc@example.org</a></span>
+</p>
+<table class="revision">                                      <!--3-->
+…
+<td data-title="Version">1.0</td>
+<td data-title="Date"><time datetime="2022-04-04">April 4, 2022</time></td>
+<td data-title="Remark">…</td>
+…
+</table>
+</header>
+----
+<1> The partitioned doctitle; the subtitle renders as `<small class="subtitle">`. Suppressed by `:notitle:` (the `<header>` element itself remains, matching the upstream fixtures).
+<2> A single author renders as `<p class="byline">`; multiple authors as `<ul class="byline">` with one `<li>` per author. Author emails become `mailto:` links with `rel="author"`.
+<3> Rendered when any of `revnumber`/`revdate`/`revremark` is set. The `data-title` attributes let a stylesheet render the table as a definition-style block on small screens. The date is wrapped in `<time datetime="…">` when year/month/day parts can be extracted from `revdate` (partial dates supported, e.g. `January, 4th` → `datetime="01-04"`); otherwise the raw text is output.
+
+== Sections and headings
+
+[cols="1,2,3",opts=header]
+|===
+|Node |HTML |Notes
+
+|section
+a|
+[source,html]
+----
+<section id="_first_section">
+<h2>First Section</h2>
+…
+</section>
+----
+|`<section>` with the heading at `h(level+1)`; `id` on the `<section>` (not the heading), roles as classes. Numbered sections prefix the heading text with `<span class="sectnum">1.1.</span>` (plus the part/chapter signifier in book doctype). `:sectlinks:` wraps the title in `<a class="link">`; `:sectanchors:` adds `<a class="anchor">` before (or after with `sectanchors=after`).
+
+|floating title (`[discrete]`)
+a|
+[source,html]
+----
+<h2 id="free" class="discrete jumbo">…</h2>
+----
+|A bare heading; the style (`discrete`) and roles become classes.
+
+|preamble
+|content only
+|No `<div id="preamble">` wrapper. When `:toc-placement: preamble` is set, the TOC `<nav>` follows the preamble content.
+
+|thematic break (`'''`)
+|`<hr>`
+|Roles as classes.
+
+|page break (`<<<`)
+|`<hr class="page-break">`
+|A separation in the content flow, distinguished by class for print stylesheets.
+|===
+
+== Paragraphs and simple blocks
+
+[cols="1,2,3",opts=header]
+|===
+|Node |HTML |Notes
+
+|paragraph
+a|
+[source,html]
+----
+<p id="…" class="roles">
+text
+</p>
+----
+|A bare `<p>`. A titled paragraph gets a leading `<strong class="title">` inside the `<p>`.
+
+|open block
+a|
+[source,html]
+----
+<div>
+<strong class="title">…</strong>
+…
+</div>
+----
+|HTML has no anonymous container element, so `<div>` is the honest choice. A named style other than `open` (e.g. `abstract`) becomes a class: `<div class="abstract">`.
+
+|admonition
+a|
+[source,html]
+----
+<aside class="admonition note">
+<strong class="label">Note</strong>
+<strong class="title">…</strong>
+…
+</aside>
+----
+|`<aside>` (tangential content) with the `admonition` marker class plus the admonition name (`note`, `tip`, `warning`, `caution`, `important`). The localized text label (`:note-caption:` etc.) always renders as `<strong class="label">` — styling/replacing it with an icon is the stylesheet's job (no font-icon markup in the document). The block title, when present, follows as `<strong class="title">`.
+
+|sidebar
+a|
+[source,html]
+----
+<aside class="sidebar">
+<strong class="title">…</strong>
+…
+</aside>
+----
+|`<aside>` with the `sidebar` marker class to distinguish it from admonitions.
+|===
+
+== Verbatim and figure-like blocks
+
+These blocks always render as a `<figure>` with a marker class; the title (with its caption prefix when numbered) is a leading `<figcaption>`.
+
+[cols="1,2,3",opts=header]
+|===
+|Node |HTML |Notes
+
+|listing / source
+a|
+[source,html]
+----
+<figure class="listing">
+<figcaption><span class="label">Listing 1.</span> Title</figcaption>
+<pre><code data-lang="ruby">…</code></pre>
+</figure>
+----
+|Source blocks put the language in `data-lang` (no `language-*` class; a highlighter attaches its own classes). When a syntax highlighter is active its output replaces the `<pre>` line. `%nowrap` (or `:prewrap!:`) adds `class="nowrap"` to the `<pre>`.
+
+|literal
+a|
+[source,html]
+----
+<figure class="literal">
+<pre>…</pre>
+</figure>
+----
+|Same shape as listing, `literal` marker class.
+
+|example
+a|
+[source,html]
+----
+<figure class="example">
+<figcaption>Example 1. Title</figcaption>
+…
+</figure>
+----
+|`<figure>` — an example is self-contained content referenced from the main flow, the exact semantic of `<figure>`.
+
+|example with `%collapsible`
+a|
+[source,html]
+----
+<details open>
+<summary>Title</summary>
+…
+</details>
+----
+|Native disclosure widget; `%open` adds the `open` attribute; the summary falls back to `Details` when the block has no title.
+
+|stem
+a|
+[source,html]
+----
+<figure class="stem">
+\$sqrt(4) = 2\$
+</figure>
+----
+|The equation is fenced with the MathJax delimiters for its notation (`\$…\$` asciimath, `\[…\]` latexmath). The standalone document loads MathJax when `:stem:` is set.
+
+|quote
+a|
+[source,html]
+----
+<blockquote class="quote">
+…
+<footer>&#8212; <span class="attribution">Albert Einstein</span>, <cite>Work Title</cite></footer>
+</blockquote>
+----
+|A bare `<blockquote>` (with a `quote` marker class so verse and quote can be styled apart). The attribution renders as a trailing `<footer>` inside the blockquote — `<cite>` is reserved for the work title (`citetitle`), per the HTML spec. A titled quote is wrapped in `<figure class="quote">` with the title as `<figcaption>` (id/roles move to the figure).
+
+|verse
+a|
+[source,html]
+----
+<blockquote class="verse">
+<pre>…</pre>
+<footer>…</footer>
+</blockquote>
+----
+|Same shape as quote with the content in a `<pre>` to preserve line breaks and indentation.
+|===
+
+== Lists
+
+Lists render as bare `<ul>`/`<ol>`/`<dl>` elements — no wrapper `<div>`, no `ulist`/`olist`/`dlist` classes.
+Item text is wrapped in `<p>` (items can hold multiple blocks); nested blocks follow the `<p>` inside the `<li>`/`<dd>`.
+A titled list is wrapped in `<figure>` with the title as `<figcaption>`; the list's `id`/roles move to the `<figure>` while the style class stays on the list element.
+
+[cols="1,2,3",opts=header]
+|===
+|Node |HTML |Notes
+
+|ulist
+a|
+[source,html]
+----
+<ul>
+<li>
+<p>Item</p>
+</li>
+</ul>
+----
+|The style (`square`, `circle`, …) becomes the class. Item `id`/roles land on the `<li>`.
+
+|ulist with `[%interactive]` checklist
+a|
+[source,html]
+----
+<ul class="checklist">
+<li>
+<p><input type="checkbox" data-item-complete="1" checked> Done</p>
+…
+----
+|Real checkboxes for interactive checklists; non-interactive checklists use the `&#10003;`/`&#10063;` glyph markers (no disabled form controls in static content).
+
+|olist
+a|
+[source,html]
+----
+<ol class="loweralpha" type="a" start="4" reversed>
+…
+</ol>
+----
+|Numbering is expressed with the native `type`, `start` and `reversed` attributes; the AsciiDoc numbering style is kept as a class for styling.
+
+|dlist
+a|
+[source,html]
+----
+<dl>
+<dt>CPU</dt>
+<dd>
+<p>The brain of the computer.</p>
+</dd>
+</dl>
+----
+|Multiple terms produce consecutive `<dt>`s. `qanda` and `horizontal` styles keep the same `<dl>` structure with the style as class (`<dl class="qanda">`, `<dl class="horizontal">`) — presentation (numbering questions, two-column layout) is the stylesheet's job, not extra markup (`html5` renders qanda as `<ol>` and horizontal as a layout `<table>`).
+
+|colist (callout list)
+a|
+[source,html]
+----
+<ol class="colist">
+<li>
+<p>First callout</p>
+</li>
+</ol>
+----
+|An `<ol>` — callouts are inherently numbered. The `colist` class ties it visually to the callout numbers in the preceding listing.
+|===
+
+== Tables
+
+[source,html]
+----
+<table class="frame-all grid-all stretch">
+<caption>Table 1. Ingredients</caption>
+<colgroup>
+<col style="width: 50%;">
+…
+</colgroup>
+<thead>
+<tr>
+<th>Name</th>
+…
+</thead>
+<tbody>
+<tr>
+<td class="halign-right valign-middle" colspan="2"><p>…</p></td>
+…
+</tbody>
+<tfoot>…</tfoot>
+</table>
+----
+
+* The title renders as a native `<caption>` (numbered: `Table 1.`), not a `class="title"` div.
+* Frame/grid/stripes render as `frame-*`, `grid-*` and `stripes-*` classes; the width as the `stretch` or `fit-content` class (or an inline `style="width: N%"` for explicit percentages). Column widths use `<col style="width: N%">`.
+* *No `tableblock` classes anywhere.* Cell alignment classes (`halign-*`, `valign-*`) are emitted **only when they differ from the defaults** (`left`, `top`).
+* Head-row cells and `h`-style cells are `<th>`; cell content is wrapped in `<p>` (one per cell paragraph); `l` (literal) cells contain a `<pre>`; `a` (AsciiDoc) cells embed their converted content directly.
+
+== Media
+
+Media nodes render as the bare semantic element; `id` and roles (plus `float`/`align` converted to role-like classes) sit on the element itself.
+When titled, the element is wrapped in `<figure>` (id/roles move to the figure) with a *trailing* `<figcaption>` carrying the captioned title (`Figure 1. …`).
+
+[cols="1,2,3",opts=header]
+|===
+|Node |HTML |Notes
+
+|block image
+a|
+[source,html]
+----
+<figure id="the_image" class="role_1">
+<a href="…"><img src="dot.gif" alt="A dot" width="100" height="100" /></a>
+<figcaption>Figure 1. …</figcaption>
+</figure>
+----
+|Untitled: a bare `<img>` (wrapped in `<a>` when `link=` is set). The `alt` text always renders; `width`/`height` as native attributes.
+
+|inline image
+|`<img src="…" alt="…" title="…" />`
+|Same attribute handling, `title` supported.
+
+|video
+a|
+[source,html]
+----
+<video src="intro.mp4" width="640" autoplay controls loop>
+Your browser does not support the video tag.
+</video>
+----
+|Native `<video>` with boolean `autoplay`/`muted`/`controls`/`loop` attributes and `#t=start,end` media fragments. `youtube`/`vimeo`/`wistia` targets render the provider `<iframe>` directly (no wrapper `<div class="content">`).
+
+|audio
+a|
+[source,html]
+----
+<audio src="ocean-waves.wav" controls loop>
+…
+</audio>
+----
+|Native `<audio>`, same option handling.
+|===
+
+== Table of contents
+
+[source,html]
+----
+<nav id="toc" class="toc">
+<strong class="title" id="toctitle">Table of Contents</strong>
+<ol class="sectlevel1">
+<li><a href="#_first_section">First Section</a>
+<ol class="sectlevel2">
+<li><a href="#_nested_section">Nested Section</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+----
+
+* `<nav>` is the landmark element for a table of contents; the outline is a nested `<ol>` (a TOC is ordered), one `<ol class="sectlevel{n}">` per depth.
+* The same markup serves the three placements: auto (before the content), `:toc-placement: preamble` (after the preamble) and the `toc::[]` macro (which honors its own `id`, title, role and `levels` attributes).
+
+== Footnotes
+
+[source,html]
+----
+…tingle.<sup class="footnote-ref"><a id="_footnoteref_1" class="footnote"
+  href="#_footnotedef_1" title="View footnote." role="doc-noteref">1</a></sup>
+…
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol class="footnotes">
+<li id="_footnotedef_1" role="doc-endnote">The double hail-and-rainbow level makes my toes tingle.
+  <a class="footnote-backref" href="#_footnoteref_1" role="doc-backlink">&#8617;</a></li>
+</ol>
+</section>
+----
+
+* The reference is a `<sup>` link with `role="doc-noteref"` (no square brackets — the superscript number is the convention).
+* Definitions collect into an `<ol>` (numbering comes from the list, not from literal text) inside a `<section role="doc-endnotes">` appended after the content; each entry ends with a `&#8617;` backlink (`role="doc-backlink"`).
+* Reused footnotes (`\footnote:id[]`) link to the same definition.
+
+== Inline nodes
+
+[cols="1,2",opts=header]
+|===
+|Node |HTML
+
+|strong / emphasis / monospaced
+|`<strong>`, `<em>`, `<code>` (id/roles as attributes)
+
+|mark (`+#…#+`)
+|`<mark>`
+
+|superscript / subscript
+|`<sup>` / `<sub>`
+
+|curved quotes (`+"`…`"+`, `+'`…`'+`)
+|`<span class="doublequote">&#8220;…&#8221;</span>` / `<span class="singlequote">&#8216;…&#8217;</span>` — the class lets a stylesheet swap locale-specific quotation marks
+
+|inline stem
+|`\$…\$` (asciimath) or `\(…\)` (latexmath) — MathJax delimiters, no element
+
+|link / URL / mailto
+|`<a href="…">` with `title`, `target` (adds `rel="noopener"` for `_blank`), `rel="nofollow"` via `%nofollow`; `rel="author"` inside the byline
+
+|xref
+|`<a href="#id">resolved text</a>` — resolves the target's reftext/title like the `html5` backend
+
+|inline anchor (`+[[id]]+`)
+|`<a id="id"></a>`
+
+|bibliography anchor
+|`<a id="id"></a>[ref]`
+
+|footnote
+|see <<Footnotes>>
+
+|inline image
+|see <<Media>>
+
+|kbd (`kbd:[Ctrl+T]`)
+|`<kbd>Ctrl</kbd>` — multiple keys: `<span class="keyseq"><kbd>Ctrl</kbd>+<kbd>T</kbd></span>`
+
+|btn (`btn:[Save]`)
+|`<span class="button">Save</span>`
+
+|menu (`menu:File[Save]`)
+|`<span class="menuseq"><b class="menu">File</b>&#160;<b class="caret">&#8250;</b> <b class="menuitem">Save</b></span>` (intermediate levels: `<b class="submenu">`)
+
+|callout number in a listing
+|`<b class="conum">(1)</b>`
+
+|hard line break (`+` at end of line)
+|`text<br>`
+
+|index term
+|`indexterm2:[term]` renders the visible term; `indexterm:[…]` renders nothing (catalog only)
+|===
+
+== Built-in classes reference
+
+Classes the converter emits, for the future dedicated stylesheet:
+
+[cols="1m,2",opts=header]
+|===
+|Class |Context
+
+|subtitle |Document subtitle (`<small>` in the `<h1>`)
+|byline |Author paragraph/list in the document header
+|author |One author (`<span>` inside the byline)
+|revision |Revision table in the document header
+|revnumber, last-updated |Footer spans (standalone)
+|sectnum |Section number prefix in headings
+|link, anchor |`:sectlinks:` / `:sectanchors:` heading links
+|title |Block title rendered inside a flow container (`<strong class="title">`), TOC title
+|label |Admonition text label; listing caption prefix (`Listing 1.`)
+|admonition + note/tip/warning/caution/important |Admonition `<aside>`
+|sidebar |Sidebar `<aside>`
+|listing, literal, example, stem |Figure marker classes
+|quote, verse |Blockquote (or wrapping figure) marker classes
+|attribution |Quote/verse attribution name (inside the `<footer>`)
+|abstract |Abstract open block
+|checklist, colist + list styles (arabic, loweralpha, square, …) |List style classes
+|frame-*, grid-*, stripes-*, stretch, fit-content |Table layout classes
+|halign-center/right, valign-middle/bottom |Non-default cell alignment
+|toc, sectlevel\{n} |TOC `<nav>` and outline levels
+|footnote-ref, footnote, footnotes, footnote-backref |Footnote machinery
+|conum |Callout number
+|page-break |Page-break `<hr>`
+|discrete |Floating title
+|nowrap |`<pre>` when wrapping is disabled
+|singlequote, doublequote |Curved-quote spans
+|menuseq, menu, submenu, menuitem, caret, button, keyseq |UI macros (`menu:`, `btn:`, `kbd:`)
+|text-left/center/right + float values |Image/video alignment roles (from `align`/`float` attributes)
+|===
