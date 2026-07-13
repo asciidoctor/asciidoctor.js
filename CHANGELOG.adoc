@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* Add a built-in *semantic HTML5* converter registered for the `semantic-html5` backend (`Asciidoctor.convert(input, { backend: 'semantic-html5' })`). Unlike the default `html5` backend — whose output mirrors AsciiDoc.py for compatibility (wrapper `<div>`s, `class="paragraph"`, table-based admonitions, …) — this converter maximizes the use of semantic HTML constructs: `<section>` for sections, bare `<p>` for paragraphs, `<figure>`/`<figcaption>` for captioned listings and images, `<header>` with a `byline` and a revision `<table>` for the document header, `<time datetime>` for the revision date, and `rel="author"` on author email links. It ports and continues the work started in the upstream Ruby `feature/html-converter-next` branch, along with its scenario-based test suite (`.adoc`/`.html` fixture pairs in `test/fixtures/semantic-html5-scenarios/`)
+
 Bug Fixes::
 
 * Fix concurrent `load()`/`convert()` calls occasionally reporting `include file not found` (rendering `Unresolved directive`) -- or `image to embed not found or not readable` for a `data-uri` image -- for a file that does exist on disk. The lazy `node:fs` initializer, duplicated in `reader.js` and `abstract_node.js`, published its `fs/promises` handle one microtask ahead of the `fs.constants` it needs, so a call entering that window read `F_OK`/`R_OK` off `undefined`; the resulting `TypeError` was swallowed by the caller's `catch` and turned into "the file does not exist". Both values are now published together, once both imports have resolved, and concurrent callers share a single initialization -- factored out into `src/node_fs.js`, so there is one such initializer for the whole package (https://github.com/asciidoctor/asciidoctor.js/issues/1882[#1882])
