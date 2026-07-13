@@ -17,9 +17,12 @@
 
 import { ConverterBase } from '../converter.js'
 import { AbstractNode } from '../abstract_node.js'
+import Html5Converter from './html5.js'
 import {
   LF,
+  SafeMode,
   DEFAULT_STYLESHEET_KEYS,
+  FONT_AWESOME_VERSION,
   MATHJAX_VERSION,
   BLOCK_MATH_DELIMITERS,
   INLINE_MATH_DELIMITERS,
@@ -30,6 +33,7 @@ import { extname } from '../helpers.js'
 // ── Local regex constants ─────────────────────────────────────────────────────
 
 const DropAnchorRx = /<(?:a\b[^>]*|\/a)>/g
+const LeadingAnchorsRx = /^(?:<a id="[^"]+"><\/a>)+/
 const StemBreakRx = / *\\\n(?:\\?\n)*|\n\n+/g
 
 const MONTH_NAMES = [
@@ -62,7 +66,16 @@ export default class SemanticHtml5Converter extends ConverterBase {
 
   constructor(backend, opts = {}) {
     super(backend, opts)
-    const syntax = opts.htmlsyntax === 'xml' ? 'xml' : 'html'
+    let syntax
+    if (opts.htmlsyntax === 'xml') {
+      syntax = 'xml'
+      this._xmlMode = true
+      this._voidSlash = '/'
+    } else {
+      syntax = 'html'
+      this._xmlMode = false
+      this._voidSlash = ''
+    }
     this.initBackendTraits({
       basebackend: 'html',
       filetype: 'html',
@@ -73,6 +86,7 @@ export default class SemanticHtml5Converter extends ConverterBase {
   }
 
   async convert_document(node) {
+    const slash = this._voidSlash
     let assetUriScheme = node.getAttribute('asset-uri-scheme', 'https')
     if (assetUriScheme) assetUriScheme = `${assetUriScheme}:`
     const cdnBaseUrl = `${assetUriScheme}//cdnjs.cloudflare.com/ajax/libs`
@@ -81,39 +95,41 @@ export default class SemanticHtml5Converter extends ConverterBase {
     const langAttribute = node.hasAttribute('nolang')
       ? ''
       : ` lang="${node.getAttribute('lang', 'en')}"`
-    result.push(`<html${langAttribute}>`)
+    result.push(
+      `<html${this._xmlMode ? ' xmlns="http://www.w3.org/1999/xhtml"' : ''}${langAttribute}>`
+    )
     result.push(`<head>
-<meta charset="${node.getAttribute('encoding', 'UTF-8')}">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">`)
+<meta charset="${node.getAttribute('encoding', 'UTF-8')}"${slash}>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"${slash}>`)
     let reproducible
     if (!(reproducible = node.hasAttribute('reproducible'))) {
       result.push(
-        `<meta name="generator" content="Asciidoctor.js ${node.getAttribute('asciidoctor-version')}">`
+        `<meta name="generator" content="Asciidoctor.js ${node.getAttribute('asciidoctor-version')}"${slash}>`
       )
     }
     if (node.hasAttribute('app-name')) {
       result.push(
-        `<meta name="application-name" content="${node.getAttribute('app-name')}">`
+        `<meta name="application-name" content="${node.getAttribute('app-name')}"${slash}>`
       )
     }
     if (node.hasAttribute('description')) {
       result.push(
-        `<meta name="description" content="${node.getAttribute('description')}">`
+        `<meta name="description" content="${node.getAttribute('description')}"${slash}>`
       )
     }
     if (node.hasAttribute('keywords')) {
       result.push(
-        `<meta name="keywords" content="${node.getAttribute('keywords')}">`
+        `<meta name="keywords" content="${node.getAttribute('keywords')}"${slash}>`
       )
     }
     if (node.hasAttribute('authors')) {
       let authors = node.subReplacements(node.getAttribute('authors'))
       if (authors.includes('<')) authors = authors.replace(XmlSanitizeRx, '')
-      result.push(`<meta name="author" content="${authors}">`)
+      result.push(`<meta name="author" content="${authors}"${slash}>`)
     }
     if (node.hasAttribute('copyright')) {
       result.push(
-        `<meta name="copyright" content="${node.getAttribute('copyright')}">`
+        `<meta name="copyright" content="${node.getAttribute('copyright')}"${slash}>`
       )
     }
     if (node.hasAttribute('favicon')) {
@@ -130,7 +146,9 @@ export default class SemanticHtml5Converter extends ConverterBase {
             ? `image/${iconExt.slice(1)}`
             : 'image/x-icon'
       }
-      result.push(`<link rel="icon" type="${iconType}" href="${iconHref}">`)
+      result.push(
+        `<link rel="icon" type="${iconType}" href="${iconHref}"${slash}>`
+      )
     }
     result.push(
       `<title>${node.doctitle({ sanitize: true, use_fallback: true })}</title>`
@@ -148,7 +166,7 @@ export default class SemanticHtml5Converter extends ConverterBase {
     ) {
       if (linkcss) {
         result.push(
-          `<link rel="stylesheet" href="${node.normalizeWebPath(node.getAttribute('stylesheet'), node.getAttribute('stylesdir'))}">`
+          `<link rel="stylesheet" href="${node.normalizeWebPath(node.getAttribute('stylesheet'), node.getAttribute('stylesdir'))}"${slash}>`
         )
       } else {
         const cssPath = node.normalizeSystemPath(
@@ -161,6 +179,20 @@ export default class SemanticHtml5Converter extends ConverterBase {
             label: 'stylesheet',
           })) ?? ''
         result.push(`<style>\n${cssData}\n</style>`)
+      }
+    }
+
+    if (node.hasAttribute('icons', 'font')) {
+      if (node.hasAttribute('iconfont-remote')) {
+        const cdnUrl =
+          node.getAttribute('iconfont-cdn') ??
+          `${cdnBaseUrl}/font-awesome/${FONT_AWESOME_VERSION}/css/font-awesome.min.css`
+        result.push(`<link rel="stylesheet" href="${cdnUrl}"${slash}>`)
+      } else {
+        const iconfontStylesheet = `${node.getAttribute('iconfont-name', 'font-awesome')}.css`
+        result.push(
+          `<link rel="stylesheet" href="${node.normalizeWebPath(iconfontStylesheet, node.getAttribute('stylesdir'), false)}"${slash}>`
+        )
       }
     }
 
@@ -216,7 +248,7 @@ export default class SemanticHtml5Converter extends ConverterBase {
         result[syntaxHlDocinfoHeadIdx] = syntaxHl.docinfo('head', node, {
           cdn_base_url: cdnBaseUrl,
           linkcss,
-          self_closing_tag_slash: '',
+          self_closing_tag_slash: slash,
         })
       } else {
         result.splice(syntaxHlDocinfoHeadIdx, 1)
@@ -226,7 +258,7 @@ export default class SemanticHtml5Converter extends ConverterBase {
           syntaxHl.docinfo('footer', node, {
             cdn_base_url: cdnBaseUrl,
             linkcss,
-            self_closing_tag_slash: '',
+            self_closing_tag_slash: slash,
           })
         )
       }
@@ -297,7 +329,13 @@ MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
     }
     const id = node.id
     if (docAttrs.sectlinks != null) {
-      title = `<a class="link" href="#${id}">${title}</a>`
+      // avoid nesting the section link inside a leading inline anchor
+      let m
+      if (title.startsWith('<a ') && (m = title.match(LeadingAnchorsRx))) {
+        title = `${m[0]}<a class="link" href="#${id}">${title.slice(m[0].length)}</a>`
+      } else {
+        title = `<a class="link" href="#${id}">${title}</a>`
+      }
     }
     if (docAttrs.sectanchors != null) {
       if (docAttrs.sectanchors === 'after') {
@@ -369,11 +407,11 @@ ${title}<pre${nowrap ? ' class="no-wrap"' : ''}>${content}</pre>
   }
 
   async convert_thematic_break(node) {
-    return `<hr${node.role ? ` class="${node.role}"` : ''}>`
+    return `<hr${node.role ? ` class="${node.role}"` : ''}${this._voidSlash}>`
   }
 
   async convert_page_break(_node) {
-    return '<hr class="page-break">'
+    return `<hr class="page-break"${this._voidSlash}>`
   }
 
   async convert_admonition(node) {
@@ -413,7 +451,7 @@ ${titleElement}${await node.content()}
     if (node.hasOption('collapsible')) {
       const attributes = this._commonHtmlAttributes(node.id, node.role)
       const summary = node.hasTitle() ? node.title : 'Details'
-      return `<details${attributes}${node.hasOption('open') ? ' open' : ''}>
+      return `<details${attributes}${node.hasOption('open') ? this._boolAttr('open') : ''}>
 <summary>${summary}</summary>
 ${await node.content()}
 </details>`
@@ -523,7 +561,7 @@ ${title}<pre${nowrap ? ' class="no-wrap"' : ''}>${await node.content()}</pre>
     let equation = (await node.content()) ?? ''
     if (equation) {
       if (style === 'asciimath' && equation.includes(LF)) {
-        const br = `${LF}<br>`
+        const br = `${LF}<br${this._voidSlash}>`
         equation = equation.replace(StemBreakRx, (match) => {
           const newlineCount = (match.match(/\n/g) || []).length
           // Blank lines (\n\n+) produce newlineCount <br>; escaped newlines produce newlineCount - 1.
@@ -578,9 +616,18 @@ ${title}${equation}
     let markerUnchecked = ''
     if (checklist) {
       if (node.hasOption('interactive')) {
-        markerChecked =
-          '<input type="checkbox" data-item-complete="1" checked> '
-        markerUnchecked = '<input type="checkbox" data-item-complete="0"> '
+        if (this._xmlMode) {
+          markerChecked =
+            '<input type="checkbox" data-item-complete="1" checked="checked"/> '
+          markerUnchecked = '<input type="checkbox" data-item-complete="0"/> '
+        } else {
+          markerChecked =
+            '<input type="checkbox" data-item-complete="1" checked> '
+          markerUnchecked = '<input type="checkbox" data-item-complete="0"> '
+        }
+      } else if (node.document.hasAttribute('icons', 'font')) {
+        markerChecked = '<i class="fa fa-check-square-o"></i> '
+        markerUnchecked = '<i class="fa fa-square-o"></i> '
       } else {
         markerChecked = '&#10003; '
         markerUnchecked = '&#10063; '
@@ -613,7 +660,9 @@ ${title}${equation}
     const startAttribute = node.hasAttribute('start')
       ? ` start="${node.getAttribute('start')}"`
       : ''
-    const reversedAttribute = node.hasOption('reversed') ? ' reversed' : ''
+    const reversedAttribute = node.hasOption('reversed')
+      ? this._boolAttr('reversed')
+      : ''
     result.push(
       `<ol${attributes}${typeAttribute}${startAttribute}${reversedAttribute}>`
     )
@@ -654,9 +703,19 @@ ${title}${equation}
       ? this._commonHtmlAttributes(null, null, 'callout-list')
       : this._commonHtmlAttributes(node.id, node.role, 'callout-list')
     result.push(`<ol${attributes}>`)
+    const fontIcons = node.document.hasAttribute('icons', 'font')
+    const imageIcons = !fontIcons && node.document.hasAttribute('icons')
+    let num = 0
     for (const item of node.getItems()) {
+      num++
+      let marker = ''
+      if (fontIcons) {
+        marker = `<i class="conum" data-value="${num}"></i> `
+      } else if (imageIcons) {
+        marker = `<img src="${await node.iconUri(`callouts/${num}`)}" alt="${num}"${this._voidSlash}> `
+      }
       result.push(`<li>
-<p>${item.getText()}</p>${item.hasBlocks() ? LF + (await item.content()) : ''}
+<p>${marker}${item.getText()}</p>${item.hasBlocks() ? LF + (await item.content()) : ''}
 </li>`)
     }
     result.push('</ol>')
@@ -697,13 +756,14 @@ ${title}${equation}
     if (node.getAttribute('rowcount') > 0) {
       result.push('<colgroup>')
       if (autowidth) {
-        for (let i = 0; i < node.columns.length; i++) result.push('<col>')
+        for (let i = 0; i < node.columns.length; i++)
+          result.push(`<col${this._voidSlash}>`)
       } else {
         for (const col of node.columns) {
           result.push(
             col.hasOption('autowidth')
-              ? '<col>'
-              : `<col style="width: ${col.getAttribute('colpcwidth')}%;">`
+              ? `<col${this._voidSlash}>`
+              : `<col style="width: ${col.getAttribute('colpcwidth')}%;"${this._voidSlash}>`
           )
         }
       }
@@ -751,8 +811,17 @@ ${title}${equation}
             const cellRowspanAttr = cell.rowspan
               ? ` rowspan="${cell.rowspan}"`
               : ''
+            // Use the per-cell captured cellbgcolor (set by {set:cellbgcolor:...}
+            // in cell text). Fall back to the current document attribute.
+            const cellbgcolor =
+              '_cellbgcolor' in cell
+                ? cell._cellbgcolor
+                : node.document.attributes.cellbgcolor
+            const cellStyleAttr = cellbgcolor
+              ? ` style="background-color: ${cellbgcolor};"`
+              : ''
             result.push(
-              `<${cellTagName}${cellClassAttr}${cellColspanAttr}${cellRowspanAttr}>${cellContent}</${cellTagName}>`
+              `<${cellTagName}${cellClassAttr}${cellColspanAttr}${cellRowspanAttr}${cellStyleAttr}>${cellContent}</${cellTagName}>`
             )
           }
           result.push('</tr>')
@@ -895,7 +964,7 @@ ${title}${equation}
         const mutedParam = node.hasOption('muted')
           ? `${delimiter.pop() || '&amp;'}muted=1`
           : ''
-        element = `<iframe${attributes}${widthAttribute}${heightAttribute} src="${assetUriScheme}//player.vimeo.com/video/${target}${hashParam}${autoplayParam}${loopParam}${mutedParam}${startAnchor}" frameborder="0"${node.hasOption('nofullscreen') ? '' : ' allowfullscreen'}></iframe>`
+        element = `<iframe${attributes}${widthAttribute}${heightAttribute} src="${assetUriScheme}//player.vimeo.com/video/${target}${hashParam}${autoplayParam}${loopParam}${mutedParam}${startAnchor}" frameborder="0"${node.hasOption('nofullscreen') ? '' : this._boolAttr('allowfullscreen')}></iframe>`
         break
       }
       case 'youtube': {
@@ -926,7 +995,7 @@ ${title}${equation}
           fsAttribute = ''
         } else {
           fsParam = ''
-          fsAttribute = ' allowfullscreen'
+          fsAttribute = this._boolAttr('allowfullscreen')
         }
         const modestParam = node.hasOption('modest')
           ? '&amp;modestbranding=1'
@@ -968,7 +1037,7 @@ ${title}${equation}
         const endT = node.getAttribute('end')
         const timeAnchor =
           startT || endT ? `#t=${startT || ''}${endT ? `,${endT}` : ''}` : ''
-        element = `<video${attributes} src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${widthAttribute}${heightAttribute}${posterAttribute}${node.hasOption('autoplay') ? ' autoplay' : ''}${node.hasOption('muted') ? ' muted' : ''}${node.hasOption('nocontrols') ? '' : ' controls'}${node.hasOption('loop') ? ' loop' : ''}${preloadAttribute}>
+        element = `<video${attributes} src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${widthAttribute}${heightAttribute}${posterAttribute}${node.hasOption('autoplay') ? this._boolAttr('autoplay') : ''}${node.hasOption('muted') ? this._boolAttr('muted') : ''}${node.hasOption('nocontrols') ? '' : this._boolAttr('controls')}${node.hasOption('loop') ? this._boolAttr('loop') : ''}${preloadAttribute}>
 Your browser does not support the video tag.
 </video>`
       }
@@ -990,7 +1059,7 @@ ${element}
     const endT = node.getAttribute('end')
     const timeAnchor =
       startT || endT ? `#t=${startT || ''}${endT ? `,${endT}` : ''}` : ''
-    const element = `<audio${attributes} src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${node.hasOption('autoplay') ? ' autoplay' : ''}${node.hasOption('nocontrols') ? '' : ' controls'}${node.hasOption('loop') ? ' loop' : ''}>
+    const element = `<audio${attributes} src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${node.hasOption('autoplay') ? this._boolAttr('autoplay') : ''}${node.hasOption('nocontrols') ? '' : this._boolAttr('controls')}${node.hasOption('loop') ? this._boolAttr('loop') : ''}>
 Your browser does not support the audio tag.
 </audio>`
     if (node.hasTitle()) {
@@ -1010,23 +1079,54 @@ ${element}
     if (node.hasAttribute('float')) roles.push(node.getAttribute('float'))
     const role = roles.join(' ')
     const attributes = this._commonHtmlAttributes(node.id, role || null)
+    const slash = this._voidSlash
     const size = `${
       node.hasAttribute('width') ? ` width="${node.getAttribute('width')}"` : ''
     }${node.hasAttribute('height') ? ` height="${node.getAttribute('height')}"` : ''}`
     const target = node.getAttribute('target')
-    const src = await node.imageUri(target)
-    const linkStart = node.hasAttribute('link')
-      ? `<a href="${node.getAttribute('link')}">`
-      : ''
-    const linkEnd = node.hasAttribute('link') ? '</a>' : ''
+    // when the image is wrapped in a <figure>, the id/roles go on the figure
+    const imgAttrs = node.hasTitle() ? size : `${attributes}${size}`
+    let img, src
+    if (
+      (node.hasAttribute('format', 'svg') ||
+        target.includes('.svg') ||
+        target.startsWith('data:image/svg+xml')) &&
+      node.document.safe < SafeMode.SECURE
+    ) {
+      if (node.hasOption('inline')) {
+        img =
+          (await this.readSvgContents(node, target)) ||
+          `<span class="alt">${node.alt()}</span>`
+      } else if (node.hasOption('interactive')) {
+        const fallback = node.hasAttribute('fallback')
+          ? `<img src="${await node.imageUri(node.getAttribute('fallback'))}" alt="${this._encodeAttributeValue(node.alt())}"${size}${slash}>`
+          : `<span class="alt">${node.alt()}</span>`
+        src = await node.imageUri(target)
+        img = `<object type="image/svg+xml" data="${src}"${imgAttrs}>${fallback}</object>`
+      } else {
+        src = await node.imageUri(target)
+        img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${imgAttrs}${slash}>`
+      }
+    } else {
+      src = await node.imageUri(target)
+      img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${imgAttrs}${slash}>`
+    }
+
+    if (node.hasAttribute('link')) {
+      let hrefAttrVal = node.getAttribute('link')
+      if (hrefAttrVal === 'self') hrefAttrVal = src
+      if (hrefAttrVal) {
+        img = `<a href="${hrefAttrVal}"${this._appendLinkConstraintAttrs(node).join('')}>${img}</a>`
+      }
+    }
 
     if (node.hasTitle()) {
       return `<figure${attributes}>
-${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${size} />${linkEnd}
+${img}
 <figcaption>${node.captionedTitle()}</figcaption>
 </figure>`
     }
-    return `${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${attributes}${size} />${linkEnd}`
+    return img
   }
 
   async convert_inline_image(node) {
@@ -1037,14 +1137,67 @@ ${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${s
     if (node.hasAttribute('float')) roles.push(node.getAttribute('float'))
     const role = roles.join(' ')
     const attributes = this._commonHtmlAttributes(node.id, role || null)
+    const slash = this._voidSlash
     const size = `${
       node.hasAttribute('width') ? ` width="${node.getAttribute('width')}"` : ''
     }${node.hasAttribute('height') ? ` height="${node.getAttribute('height')}"` : ''}`
-    const src = await node.imageUri(node.target)
-    const title = node.hasAttribute('title')
+    const titleAttr = node.hasAttribute('title')
       ? ` title="${node.getAttribute('title')}"`
       : ''
-    return `<img src="${src}" alt="${this._encodeAttributeValue(node.alt)}"${title}${attributes}${size} />`
+    const target = node.target
+    let img, src
+    if ((node.type || 'image') === 'icon') {
+      const icons = node.document.getAttribute('icons')
+      if (icons === 'font') {
+        let iClassAttrVal = `fa fa-${target}`
+        if (node.hasAttribute('size'))
+          iClassAttrVal += ` fa-${node.getAttribute('size')}`
+        if (node.hasAttribute('flip')) {
+          iClassAttrVal += ` fa-flip-${node.getAttribute('flip')}`
+        } else if (node.hasAttribute('rotate')) {
+          iClassAttrVal += ` fa-rotate-${node.getAttribute('rotate')}`
+        }
+        if (role) iClassAttrVal += ` ${role}`
+        img = `<i${node.id ? ` id="${node.id}"` : ''} class="${iClassAttrVal}"${titleAttr}></i>`
+      } else if (icons != null) {
+        src = await node.iconUri(target)
+        img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt)}"${titleAttr}${attributes}${size}${slash}>`
+      } else {
+        img = `[${node.alt}&#93;`
+      }
+    } else if (
+      (node.hasAttribute('format', 'svg') ||
+        target.includes('.svg') ||
+        target.startsWith('data:image/svg+xml')) &&
+      node.document.safe < SafeMode.SECURE
+    ) {
+      if (node.hasOption('inline')) {
+        img =
+          (await this.readSvgContents(node, target)) ||
+          `<span class="alt">${node.alt}</span>`
+      } else if (node.hasOption('interactive')) {
+        const fallback = node.hasAttribute('fallback')
+          ? `<img src="${await node.imageUri(node.getAttribute('fallback'))}" alt="${this._encodeAttributeValue(node.alt)}"${size}${slash}>`
+          : `<span class="alt">${node.alt}</span>`
+        src = await node.imageUri(target)
+        img = `<object type="image/svg+xml" data="${src}"${titleAttr}${attributes}${size}>${fallback}</object>`
+      } else {
+        src = await node.imageUri(target)
+        img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt)}"${titleAttr}${attributes}${size}${slash}>`
+      }
+    } else {
+      src = await node.imageUri(target)
+      img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt)}"${titleAttr}${attributes}${size}${slash}>`
+    }
+
+    if (node.hasAttribute('link')) {
+      let hrefAttrVal = node.getAttribute('link')
+      if (hrefAttrVal === 'self') hrefAttrVal = src
+      if (hrefAttrVal) {
+        img = `<a href="${hrefAttrVal}"${this._appendLinkConstraintAttrs(node).join('')}>${img}</a>`
+      }
+    }
+    return img
   }
 
   async convert_inline_anchor(node) {
@@ -1054,7 +1207,7 @@ ${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${s
         if (node.role) attrs.push(` class="${node.role}"`)
         if (node.hasAttribute('title'))
           attrs.push(` title="${node.getAttribute('title')}"`)
-        return `<a href="${node.target}"${this._appendLinkConstraintAttrs(node, attrs).join('')}>${node.text}</a>`
+        return `<a href="${node.target}"${this._appendLinkConstraintAttrs(node, attrs).join('')}>${node.text ?? ''}</a>`
       }
       case 'xref': {
         const attrs = node.role ? ` class="${node.role}"` : ''
@@ -1105,6 +1258,13 @@ ${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${s
   }
 
   async convert_inline_callout(node) {
+    if (node.document.hasAttribute('icons', 'font')) {
+      return `<i class="conum" data-value="${node.text}"></i><b>(${node.text})</b>`
+    }
+    if (node.document.hasAttribute('icons')) {
+      const src = await node.iconUri(`callouts/${node.text}`)
+      return `<img src="${src}" alt="${node.text}"${this._voidSlash}>`
+    }
     const guard = node.attributes.guard
     if (Array.isArray(guard)) {
       return `&lt;!--<b class="callout-num">(${node.text})</b>--&gt;`
@@ -1179,7 +1339,7 @@ ${linkStart}<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${s
   }
 
   async convert_inline_break(node) {
-    return `${node.text}<br>`
+    return `${node.text}<br${this._voidSlash}>`
   }
 
   async convert_inline_button(node) {
@@ -1393,7 +1553,10 @@ ${outline}
    */
   _generateFootnotes(node) {
     if (!(node.hasFootnotes() && !node.hasAttribute('nofootnotes'))) return null
-    const result = ['<section class="footnotes" role="doc-endnotes">', '<hr>']
+    const result = [
+      '<section class="footnotes" role="doc-endnotes">',
+      `<hr${this._voidSlash}>`,
+    ]
     result.push('<ol class="footnotes">')
     for (const footnote of node.footnotes) {
       result.push(
@@ -1481,6 +1644,16 @@ ${outline}
   }
 
   /**
+   * Render a boolean attribute: bare in HTML syntax, name="name" in XML syntax.
+   *
+   * @internal
+   * @private
+   */
+  _boolAttr(name) {
+    return this._xmlMode ? ` ${name}="${name}"` : ` ${name}`
+  }
+
+  /**
    * @internal
    * @private
    */
@@ -1488,5 +1661,11 @@ ${outline}
     return val.includes('"') ? val.replace(/"/g, '&quot;') : val
   }
 }
+
+// Reuse the SVG-embedding machinery from the html5 converter (identical behavior)
+SemanticHtml5Converter.prototype.readSvgContents =
+  Html5Converter.prototype.readSvgContents
+SemanticHtml5Converter.prototype._decodeDataUri =
+  Html5Converter.prototype._decodeDataUri
 
 SemanticHtml5Converter.registerFor('semantic-html5')
