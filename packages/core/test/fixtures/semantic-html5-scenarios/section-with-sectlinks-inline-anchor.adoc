@@ -1,0 +1,5 @@
+:sectlinks:
+
+== [[legacy-id]]Section Title
+
+Content.
