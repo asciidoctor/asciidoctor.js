@@ -1,0 +1,5 @@
+|===
+2+|Span two columns
+.2+|Span two rows |Regular
+|Regular
+|===

@@ -1,0 +1,4 @@
+[%autowidth]
+|===
+|Cell |Cell
+|===

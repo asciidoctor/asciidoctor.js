@@ -1,0 +1,5 @@
+[verse,Carl Sandburg,two lines from the poem Fog]
+____
+The fog comes
+on little cat feet.
+____

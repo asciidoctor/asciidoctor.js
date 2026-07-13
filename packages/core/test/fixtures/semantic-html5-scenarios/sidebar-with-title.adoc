@@ -1,0 +1,4 @@
+.Sidebar title
+****
+Sidebars are used to visually separate auxiliary bits of content.
+****

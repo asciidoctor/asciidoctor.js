@@ -1,0 +1,10 @@
+= Document Title
+:toc: macro
+
+Preamble.
+
+toc::[]
+
+== First Section
+
+Content.

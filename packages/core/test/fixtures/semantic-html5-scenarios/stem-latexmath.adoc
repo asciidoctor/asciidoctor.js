@@ -1,0 +1,6 @@
+:stem: latexmath
+
+[stem]
+++++
+sqrt(4) = 2
+++++
