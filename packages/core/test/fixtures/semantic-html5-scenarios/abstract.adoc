@@ -1,0 +1,8 @@
+= Article Title
+
+[abstract]
+This is the abstract of the article.
+
+== First Section
+
+Content.

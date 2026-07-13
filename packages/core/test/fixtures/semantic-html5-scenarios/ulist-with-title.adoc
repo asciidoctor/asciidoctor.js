@@ -1,0 +1,4 @@
+.Grocery list
+[#groceries.shopping]
+* Apples
+* Oranges

@@ -1,0 +1,2 @@
+[#tip_1.performance]
+TIP: Use a cache.
