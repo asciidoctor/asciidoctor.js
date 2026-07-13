@@ -1,3 +1,37 @@
+/**
+ * A built-in converter that generates HTML 5 output maximizing the use of
+ * semantic constructs — `<section>`, `<aside>`, `<figure>`, `<nav>`,
+ * `<blockquote>`, DPUB-ARIA roles — instead of the AsciiDoc.py-compatible
+ * markup produced by the default `html5` backend.
+ *
+ * Registered for the `semantic-html5` backend:
+ *
+ * ```js
+ * const html = await Asciidoctor.convert(input, { backend: 'semantic-html5' })
+ * ```
+ *
+ * **This converter is experimental.** It is the fast-iteration testbed for the
+ * modern HTML output effort started upstream in Asciidoctor's
+ * `feature/html-converter-next` branch (see
+ * {@link https://github.com/asciidoctor/asciidoctor/issues/242 asciidoctor#242}):
+ * shipping it here lets the semantic markup decisions be evaluated against
+ * real projects and real stylesheets, and the decisions that prove solid are
+ * meant to be ported back to the Ruby implementation. Consequences:
+ *
+ * - the emitted markup (elements, class names, structure) and the default
+ *   stylesheet may change in **any** release, without being treated as
+ *   breaking changes — pin an exact version if you depend on the output shape;
+ * - it is **not** a candidate to replace the default `html5` backend, and the
+ *   `html5` backend's output is not affected in any way;
+ * - feedback on the element mapping is welcome on the upstream issue.
+ *
+ * The scenario fixtures under `test/fixtures/semantic-html5-scenarios/`
+ * (shared with the upstream branch) are the source of truth for the emitted
+ * markup, and the per-node element mapping and design rationale are documented
+ * in `devdocs/semantic-html5-converter.adoc`.
+ *
+ * @experimental
+ */
 export default class SemanticHtml5Converter extends ConverterBase {
     /**
      * Create a new SemanticHtml5Converter instance.
