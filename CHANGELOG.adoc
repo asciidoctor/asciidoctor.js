@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* Add a built-in *semantic HTML5* converter registered for the `semantic-html5` backend (`Asciidoctor.convert(input, { backend: 'semantic-html5' })`). Unlike the default `html5` backend — whose output mirrors AsciiDoc.py for compatibility (wrapper `<div>`s, `class="paragraph"`, table-based admonitions, …) — this converter maximizes the use of semantic HTML constructs: `<section>` for sections, bare `<p>` for paragraphs, `<figure>`/`<figcaption>` for captioned listings and images, `<header>` with a `byline` and a revision `<table>` for the document header, `<time datetime>` for the revision date, and `rel="author"` on author email links. It ports and continues the work started in the upstream Ruby `feature/html-converter-next` branch, along with its scenario-based test suite (`.adoc`/`.html` fixture pairs in `test/fixtures/semantic-html5-scenarios/`)
+
 Bug Fixes::
 
 * Fix AsciiDoc table cells (`a`) losing their content when they belong to a table that is itself nested inside another AsciiDoc cell — the deeper cells rendered as an empty `<div class="content"></div>` (text became invisible). `Document#convert` computes each AsciiDoc cell's inner content in `_convertAsciiDocCells`, but that pass only ran on the root document (guarded by `!parentDocument`) and, when it converted an AsciiDoc cell's inner document, never recursed into the tables *inside* that inner document. So a nested table's own AsciiDoc cells were rendered before their `_innerContent` was ever set. The pass now recurses into a cell's inner document before rendering it, so AsciiDoc cells at any nesting depth have their content computed first
