@@ -34,7 +34,7 @@ Multi-word class names invented by the converter are kebab-case: `sect-num`, `se
 Single real words stay plain (`byline`, `subtitle`, `sidebar`, `submenu`, `checklist`), and AsciiDoc vocabulary passed through from the document (style and attribute values such as `arabic`, `loweralpha`, `qanda`, `horizontal`, `discrete`, `abstract`) keeps its original spelling.
 
 Accessibility::
-Footnote machinery uses the DPUB-ARIA roles `doc-noteref`, `doc-endnotes`, `doc-endnote` and `doc-backlink`; author email links carry `rel="author"`; the revision date uses `<time datetime>`.
+Admonitions carry the non-landmark `role="note"` (see <<why-aside-with-role-note>>); footnote machinery uses the DPUB-ARIA roles `doc-noteref`, `doc-endnotes`, `doc-endnote` and `doc-backlink`; author email links carry `rel="author"`; the revision date uses `<time datetime>`.
 
 No default stylesheet::
 `data/asciidoctor-default.css` targets the `html5` backend's structure and is *not compatible* with this output, so standalone documents never include it (a dedicated default stylesheet may be introduced later).
@@ -170,13 +170,13 @@ a|
 a|
 [source,html]
 ----
-<aside class="admonition note">
+<aside class="admonition note" role="note">
 <strong class="label">Note</strong>
 <strong class="title">…</strong>
 …
 </aside>
 ----
-|`<aside>` (tangential content) with the `admonition` marker class plus the admonition name (`note`, `tip`, `warning`, `caution`, `important`). The localized text label (`:note-caption:` etc.) always renders as `<strong class="label">` — styling/replacing it with an icon is the stylesheet's job (no font-icon markup in the document). The block title, when present, follows as `<strong class="title">`.
+|`<aside role="note">` with the `admonition` marker class plus the admonition name (`note`, `tip`, `warning`, `caution`, `important`). See <<why-aside-with-role-note>> for the full rationale. The label renders as `<strong class="label">` (text mode), an `<img class="icon">` (`:icons:` image mode, honoring a per-block `icon` attribute) or an `<i class="fa icon-{name}">` (`:icons: font` mode) — see <<admonition-icons>>. The block title, when present, follows as `<strong class="title">`.
 
 |sidebar
 a|
@@ -187,8 +187,50 @@ a|
 …
 </aside>
 ----
-|`<aside>` with the `sidebar` marker class to distinguish it from admonitions.
+|`<aside>` with the `sidebar` marker class to distinguish it from admonitions. A sidebar *is* the canonical `<aside>` use case (tangential content set aside from the flow), so no ARIA role override is needed: the implicit mapping (`complementary` when top-level, `generic` when nested) is appropriate.
 |===
+
+[#why-aside-with-role-note]
+=== Why aside with role note
+
+HTML has no dedicated element for admonitions; a https://github.com/whatwg/html/issues/10100[`<callout>` element proposal] is under discussion at the WHATWG but far from settled. Every option in use today has known problems, debated at length in that thread:
+
+* `<div class="…">` (GitHub alerts, Notion, MDN, most design systems) carries no semantics at all — assistive technologies cannot tell where the admonition starts and ends.
+* `<blockquote>` (Just the Docs, Obsidian-style callouts) is flat-out wrong: an admonition is not a quotation.
+* `<section>` maps to the `region` landmark role when named, and admonitions should *not* be landmarks (see below).
+* `<table>` (the classic `html5` backend output) is layout abuse.
+
+The two load-bearing conclusions from the accessibility experts in that discussion (matatk, scottaohara):
+
+1. What matters for assistive technology is that the admonition's *bounds are demarcated* by a role, so users know where it starts and ends and can skip over it;
+2. that role must be a *document-structuring role, not a landmark* — an admonition is an integral part of the text it interrupts, and a document with many admonitions exposing landmarks (`complementary`, `region`) would drown the landmark navigation in noise.
+
+ARIA's `note` role is exactly that: “a section whose content is parenthetic or ancillary to the main content” — a structuring role, not a landmark, announced as “note” with its boundaries by screen readers. Tips, notes, examples and even static warnings all fit (`alert`/`status` would be wrong: those are live-region roles for dynamic content, not for prose present at page load).
+
+Given the role carries the machine-readable semantics, the element is chosen for the *human* reader of the markup and for non-AT consumers (reader modes, converters, scrapers): `<aside>` — “content tangentially related to the content around it, which could be considered separate” — is the closest existing element to an admonition typeset apart from the flow, and is what the explicit `role="note"` refines. A bare `<div role="note">` would expose identical ARIA semantics but says nothing to everyone else; `<aside>` costs nothing extra since the explicit role overrides its implicit mapping (which is inconsistent anyway: `complementary` when scoped to `body`/`main`, `generic` when nested in a `<section>` — admonitions appear in both positions).
+
+If the `<callout>` element lands in HTML, this converter should migrate to it.
+
+[#admonition-icons]
+=== Admonition icons
+
+The three `:icons:` modes match the `html5` backend's behavior with semantic markup:
+
+[cols="1,2",opts=header]
+|===
+|Mode |Label markup
+
+|no `:icons:` (default)
+|`<strong class="label">Note</strong>` — the localized text label (`:note-caption:` etc.); a stylesheet can restyle or replace it
+
+|`:icons:` (image mode)
+|`<img class="icon" src="./images/icons/note.png" alt="Note">` — path built from `iconsdir`/`icontype`; a per-block `[icon=…]` attribute overrides the image
+
+|`:icons: font` (font mode)
+|`<i class="fa icon-note" title="Note"></i>` — Font Awesome markup, compatible with the `html5` backend's classes so existing icon fonts/CSS keep working; a per-block `[icon=…]` attribute falls back to image mode for that block
+|===
+
+The text label is always preserved for assistive technologies (`alt` on the image, `title` on the font icon).
 
 == Verbatim and figure-like blocks
 
@@ -531,7 +573,8 @@ Classes the converter emits, for the future dedicated stylesheet:
 |link, anchor |`:sectlinks:` / `:sectanchors:` heading links
 |title |Block title rendered inside a flow container (`<strong class="title">`), TOC title
 |label |Admonition text label; listing caption prefix (`Listing 1.`)
-|admonition + note/tip/warning/caution/important |Admonition `<aside>`
+|admonition + note/tip/warning/caution/important |Admonition `<aside role="note">`
+|icon, fa icon-\{name} |Admonition icon (`:icons:` image / font modes)
 |sidebar |Sidebar `<aside>`
 |listing, literal, example, stem |Figure marker classes
 |quote, verse |Blockquote (or wrapping figure) marker classes
