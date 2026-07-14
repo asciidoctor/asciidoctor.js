@@ -11,6 +11,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 Infrastructure::
 
 * Display the package version number in the generated TypeDoc API documentation (`includeVersion` option), so both the `@asciidoctor/core` API docs and the `asciidoctor` CLI docs show which release they document (e.g. `@asciidoctor/core - v4.0.3`)
+* Publish a `major.minor` alias of the TypeDoc API documentation on each stable release — e.g. releasing v4.0.4 (re)deploys the docs to both `4.0.4/` and `4.0/` on GitHub Pages, so the `4.0` URL always points to the documentation of the latest 4.0.x release
 
 == v4.0.3 (2026-07-13)
 
