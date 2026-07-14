@@ -9,6 +9,7 @@
   "typedocOptions": {
     "entryPoints": ["types/index.d.ts"],
     "out": "build/docs",
+    "includeVersion": true,
     "navigationLinks": {
       "CLI": "./cli/"
     }
