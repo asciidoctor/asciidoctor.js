@@ -1,11 +1,5 @@
 = Asciidoctor.js Documentation
 
-[IMPORTANT]
-====
-This documentation covers an *alpha* version currently under active development.
-Some features may be missing or behave differently from the final release.
-====
-
 Asciidoctor.js brings AsciiDoc to the JavaScript world!
 
 This project is a *native JavaScript implementation* of https://asciidoctor.org[Asciidoctor], the modern AsciiDoc processor.
