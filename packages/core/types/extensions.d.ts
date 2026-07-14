@@ -244,10 +244,10 @@ export class Processor {
 export class Preprocessor extends Processor {
     /**
      * @param {Document} document - The document being parsed.
-     * @param {Reader} reader - The reader positioned at the beginning of the source.
+     * @param {PreprocessorReader} reader - The reader positioned at the beginning of the source.
      * @returns {Reader|undefined} The same or a substitute Reader, or undefined to use the original.
      */
-    process(document: Document, reader: Reader): Reader | undefined;
+    process(document: Document, reader: PreprocessorReader): Reader | undefined;
 }
 export namespace Preprocessor {
     export { DocumentProcessorDsl as DSL };
@@ -316,12 +316,12 @@ export namespace Postprocessor {
 export class IncludeProcessor extends Processor {
     /**
      * @param {Document} document - The document being parsed.
-     * @param {Reader} reader - The reader for the including document.
+     * @param {PreprocessorReader} reader - The reader for the including document.
      * @param {string} target - The target of the include directive.
      * @param {Record<string, string>} attributes - The parsed include attributes.
      * @returns {void}
      */
-    process(document: Document, reader: Reader, target: string, attributes: Record<string, string>): void;
+    process(document: Document, reader: PreprocessorReader, target: string, attributes: Record<string, string>): void;
     /**
      * Decide whether this include processor handles the given target.
      *
@@ -594,7 +594,11 @@ export class Registry {
      * })
      *
      * @overload
-     * @param {typeof Preprocessor} processor - A Preprocessor subclass or instance.
+     * @param {typeof Preprocessor} processor - A Preprocessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {Preprocessor} processor - An already-constructed Preprocessor instance.
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -624,7 +628,45 @@ export class Registry {
      * })
      *
      * @overload
-     * @param {typeof Preprocessor} processor - A Preprocessor subclass or instance.
+     * @param {typeof Preprocessor} processor - A Preprocessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {Preprocessor} processor - An already-constructed Preprocessor instance.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {(this: PreprocessorDslInterface) => void} fn - Registration function bound to the preprocessor DSL.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @param {...*} args - Class constructor, instance, or block function.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     */
+    preprocessor(processor: Preprocessor): ProcessorExtension;
+    /**
+     * Register a Preprocessor with the extension registry.
+     *
+     * The processor may be:
+     *   - A Preprocessor subclass (constructor function)
+     *   - An instance of a Preprocessor subclass
+     *   - A Function that configures the processor via the DSL (block style)
+     *
+     * @example
+     * // class style
+     * preprocessor(FrontMatterPreprocessor)
+     * // instance style
+     * preprocessor(new FrontMatterPreprocessor())
+     * // block style
+     * preprocessor(function () {
+     *   this.process(function (doc, reader) { ... })
+     * })
+     *
+     * @overload
+     * @param {typeof Preprocessor} processor - A Preprocessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {Preprocessor} processor - An already-constructed Preprocessor instance.
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -651,7 +693,11 @@ export class Registry {
      * Register a TreeProcessor with the extension registry.
      *
      * @overload
-     * @param {typeof TreeProcessor} processor - A TreeProcessor subclass or instance.
+     * @param {typeof TreeProcessor} processor - A TreeProcessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {TreeProcessor} processor - An already-constructed TreeProcessor instance.
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -666,7 +712,30 @@ export class Registry {
      * Register a TreeProcessor with the extension registry.
      *
      * @overload
-     * @param {typeof TreeProcessor} processor - A TreeProcessor subclass or instance.
+     * @param {typeof TreeProcessor} processor - A TreeProcessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {TreeProcessor} processor - An already-constructed TreeProcessor instance.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {(this: TreeProcessorDslInterface) => void} fn - Registration function bound to the tree processor DSL.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @param {...*} args - Class constructor, instance, or block function.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     */
+    treeProcessor(processor: TreeProcessor): ProcessorExtension;
+    /**
+     * Register a TreeProcessor with the extension registry.
+     *
+     * @overload
+     * @param {typeof TreeProcessor} processor - A TreeProcessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {TreeProcessor} processor - An already-constructed TreeProcessor instance.
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -701,7 +770,11 @@ export class Registry {
      * Register a Postprocessor with the extension registry.
      *
      * @overload
-     * @param {typeof Postprocessor} processor - A Postprocessor subclass or instance.
+     * @param {typeof Postprocessor} processor - A Postprocessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {Postprocessor} processor - An already-constructed Postprocessor instance.
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -716,7 +789,30 @@ export class Registry {
      * Register a Postprocessor with the extension registry.
      *
      * @overload
-     * @param {typeof Postprocessor} processor - A Postprocessor subclass or instance.
+     * @param {typeof Postprocessor} processor - A Postprocessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {Postprocessor} processor - An already-constructed Postprocessor instance.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {(this: PostprocessorDslInterface) => void} fn - Registration function bound to the postprocessor DSL.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @param {...*} args - Class constructor, instance, or block function.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     */
+    postprocessor(processor: Postprocessor): ProcessorExtension;
+    /**
+     * Register a Postprocessor with the extension registry.
+     *
+     * @overload
+     * @param {typeof Postprocessor} processor - A Postprocessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {Postprocessor} processor - An already-constructed Postprocessor instance.
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -743,7 +839,11 @@ export class Registry {
      * Register an IncludeProcessor with the extension registry.
      *
      * @overload
-     * @param {typeof IncludeProcessor} processor - An IncludeProcessor subclass or instance.
+     * @param {typeof IncludeProcessor} processor - An IncludeProcessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {IncludeProcessor} processor - An already-constructed IncludeProcessor instance.
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -758,7 +858,30 @@ export class Registry {
      * Register an IncludeProcessor with the extension registry.
      *
      * @overload
-     * @param {typeof IncludeProcessor} processor - An IncludeProcessor subclass or instance.
+     * @param {typeof IncludeProcessor} processor - An IncludeProcessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {IncludeProcessor} processor - An already-constructed IncludeProcessor instance.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {(this: IncludeProcessorDslInterface) => void} fn - Registration function bound to the include processor DSL.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @param {...*} args - Class constructor, instance, or block function.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     */
+    includeProcessor(processor: IncludeProcessor): ProcessorExtension;
+    /**
+     * Register an IncludeProcessor with the extension registry.
+     *
+     * @overload
+     * @param {typeof IncludeProcessor} processor - An IncludeProcessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {IncludeProcessor} processor - An already-constructed IncludeProcessor instance.
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -787,7 +910,11 @@ export class Registry {
      * Register a DocinfoProcessor with the extension registry.
      *
      * @overload
-     * @param {typeof DocinfoProcessor} processor - A DocinfoProcessor subclass or instance.
+     * @param {typeof DocinfoProcessor} processor - A DocinfoProcessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {DocinfoProcessor} processor - An already-constructed DocinfoProcessor instance.
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -802,7 +929,30 @@ export class Registry {
      * Register a DocinfoProcessor with the extension registry.
      *
      * @overload
-     * @param {typeof DocinfoProcessor} processor - A DocinfoProcessor subclass or instance.
+     * @param {typeof DocinfoProcessor} processor - A DocinfoProcessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {DocinfoProcessor} processor - An already-constructed DocinfoProcessor instance.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {(this: DocinfoProcessorDslInterface) => void} fn - Registration function bound to the docinfo processor DSL.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @param {...*} args - Class constructor, instance, or block function.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     */
+    docinfoProcessor(processor: DocinfoProcessor): ProcessorExtension;
+    /**
+     * Register a DocinfoProcessor with the extension registry.
+     *
+     * @overload
+     * @param {typeof DocinfoProcessor} processor - A DocinfoProcessor subclass.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {DocinfoProcessor} processor - An already-constructed DocinfoProcessor instance.
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -853,6 +1003,11 @@ export class Registry {
      * @returns {ProcessorExtension} an Extension proxy object.
      *
      * @overload
+     * @param {BlockProcessor} processor - An already-constructed BlockProcessor instance.
+     * @param {string} [name] - Optional explicit block name (overrides the instance's name).
+     * @returns {ProcessorExtension} an Extension proxy object.
+     *
+     * @overload
      * @param {string} name - The block name.
      * @param {(this: BlockProcessorDslInterface) => void} fn - Registration function bound to the block DSL.
      * @returns {ProcessorExtension} an Extension proxy object.
@@ -889,6 +1044,52 @@ export class Registry {
      * @returns {ProcessorExtension} an Extension proxy object.
      *
      * @overload
+     * @param {BlockProcessor} processor - An already-constructed BlockProcessor instance.
+     * @param {string} [name] - Optional explicit block name (overrides the instance's name).
+     * @returns {ProcessorExtension} an Extension proxy object.
+     *
+     * @overload
+     * @param {string} name - The block name.
+     * @param {(this: BlockProcessorDslInterface) => void} fn - Registration function bound to the block DSL.
+     * @returns {ProcessorExtension} an Extension proxy object.
+     *
+     * @overload
+     * @param {(this: BlockProcessorDslInterface) => void} fn - Registration function bound to the block DSL.
+     * @returns {ProcessorExtension} an Extension proxy object.
+     *
+     * @param {...*} args - Class constructor, instance, block function, or name + one of those.
+     * @returns {ProcessorExtension} an Extension proxy object.
+     */
+    block(processor: BlockProcessor, name?: string): ProcessorExtension;
+    /**
+     * Register a BlockProcessor with the extension registry.
+     *
+     * @example
+     * // class style
+     * block(ShoutBlock)
+     * // class style with explicit name
+     * block(ShoutBlock, 'shout')
+     * // block style
+     * block(function () {
+     *   this.named('shout')
+     *   this.process(function (parent, reader, attrs) { ... })
+     * })
+     * // block style with explicit name
+     * block('shout', function () {
+     *   this.process(function (parent, reader, attrs) { ... })
+     * })
+     *
+     * @overload
+     * @param {typeof BlockProcessor} processor - A BlockProcessor subclass.
+     * @param {string} [name] - Optional explicit block name.
+     * @returns {ProcessorExtension} an Extension proxy object.
+     *
+     * @overload
+     * @param {BlockProcessor} processor - An already-constructed BlockProcessor instance.
+     * @param {string} [name] - Optional explicit block name (overrides the instance's name).
+     * @returns {ProcessorExtension} an Extension proxy object.
+     *
+     * @overload
      * @param {string} name - The block name.
      * @param {(this: BlockProcessorDslInterface) => void} fn - Registration function bound to the block DSL.
      * @returns {ProcessorExtension} an Extension proxy object.
@@ -922,6 +1123,11 @@ export class Registry {
      * @overload
      * @param {typeof BlockProcessor} processor - A BlockProcessor subclass.
      * @param {string} [name] - Optional explicit block name.
+     * @returns {ProcessorExtension} an Extension proxy object.
+     *
+     * @overload
+     * @param {BlockProcessor} processor - An already-constructed BlockProcessor instance.
+     * @param {string} [name] - Optional explicit block name (overrides the instance's name).
      * @returns {ProcessorExtension} an Extension proxy object.
      *
      * @overload
@@ -973,6 +1179,11 @@ export class Registry {
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
+     * @param {BlockMacroProcessor} processor - An already-constructed BlockMacroProcessor instance.
+     * @param {string} [name] - Optional explicit macro name (overrides the instance's name).
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
      * @param {string} name - The macro name.
      * @param {(this: BlockMacroProcessorDslInterface) => void} fn - Registration function bound to the block macro DSL.
      * @returns {ProcessorExtension} the Extension stored in the registry.
@@ -994,6 +1205,37 @@ export class Registry {
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
+     * @param {BlockMacroProcessor} processor - An already-constructed BlockMacroProcessor instance.
+     * @param {string} [name] - Optional explicit macro name (overrides the instance's name).
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {string} name - The macro name.
+     * @param {(this: BlockMacroProcessorDslInterface) => void} fn - Registration function bound to the block macro DSL.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {(this: BlockMacroProcessorDslInterface) => void} fn - Registration function bound to the block macro DSL.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @param {...*} args - Class constructor, instance, or block function.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     */
+    blockMacro(processor: BlockMacroProcessor, name?: string): ProcessorExtension;
+    /**
+     * Register a BlockMacroProcessor with the extension registry.
+     *
+     * @overload
+     * @param {typeof BlockMacroProcessor} processor - A BlockMacroProcessor subclass.
+     * @param {string} [name] - Optional explicit macro name.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {BlockMacroProcessor} processor - An already-constructed BlockMacroProcessor instance.
+     * @param {string} [name] - Optional explicit macro name (overrides the instance's name).
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
      * @param {string} name - The macro name.
      * @param {(this: BlockMacroProcessorDslInterface) => void} fn - Registration function bound to the block macro DSL.
      * @returns {ProcessorExtension} the Extension stored in the registry.
@@ -1012,6 +1254,11 @@ export class Registry {
      * @overload
      * @param {typeof BlockMacroProcessor} processor - A BlockMacroProcessor subclass.
      * @param {string} [name] - Optional explicit macro name.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {BlockMacroProcessor} processor - An already-constructed BlockMacroProcessor instance.
+     * @param {string} [name] - Optional explicit macro name (overrides the instance's name).
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -1064,6 +1311,11 @@ export class Registry {
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
+     * @param {InlineMacroProcessor} processor - An already-constructed InlineMacroProcessor instance.
+     * @param {string} [name] - Optional explicit macro name (overrides the instance's name).
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
      * @param {string} name - The macro name.
      * @param {(this: InlineMacroProcessorDslInterface) => void} fn - Registration function bound to the inline macro DSL.
      * @returns {ProcessorExtension} the Extension stored in the registry.
@@ -1085,6 +1337,37 @@ export class Registry {
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
+     * @param {InlineMacroProcessor} processor - An already-constructed InlineMacroProcessor instance.
+     * @param {string} [name] - Optional explicit macro name (overrides the instance's name).
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {string} name - The macro name.
+     * @param {(this: InlineMacroProcessorDslInterface) => void} fn - Registration function bound to the inline macro DSL.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {(this: InlineMacroProcessorDslInterface) => void} fn - Registration function bound to the inline macro DSL.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @param {...*} args - Class constructor, instance, or block function.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     */
+    inlineMacro(processor: InlineMacroProcessor, name?: string): ProcessorExtension;
+    /**
+     * Register an InlineMacroProcessor with the extension registry.
+     *
+     * @overload
+     * @param {typeof InlineMacroProcessor} processor - An InlineMacroProcessor subclass.
+     * @param {string} [name] - Optional explicit macro name.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {InlineMacroProcessor} processor - An already-constructed InlineMacroProcessor instance.
+     * @param {string} [name] - Optional explicit macro name (overrides the instance's name).
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
      * @param {string} name - The macro name.
      * @param {(this: InlineMacroProcessorDslInterface) => void} fn - Registration function bound to the inline macro DSL.
      * @returns {ProcessorExtension} the Extension stored in the registry.
@@ -1103,6 +1386,11 @@ export class Registry {
      * @overload
      * @param {typeof InlineMacroProcessor} processor - An InlineMacroProcessor subclass.
      * @param {string} [name] - Optional explicit macro name.
+     * @returns {ProcessorExtension} the Extension stored in the registry.
+     *
+     * @overload
+     * @param {InlineMacroProcessor} processor - An already-constructed InlineMacroProcessor instance.
+     * @param {string} [name] - Optional explicit macro name (overrides the instance's name).
      * @returns {ProcessorExtension} the Extension stored in the registry.
      *
      * @overload
@@ -1382,6 +1670,7 @@ export namespace Extensions {
 }
 export type Document = import("./document.js").Document;
 export type AbstractBlock = import("./abstract_block.js").AbstractBlock;
+export type PreprocessorReader = import("./reader.js").PreprocessorReader;
 /**
  * DSL interface for configuring a {@link Processor} instance.
  * Applied to a processor instance via `Object.assign(instance, DslMixin)`.
@@ -1414,7 +1703,7 @@ export type DocumentProcessorDslInterface = ProcessorDslInterface & {
  * DSL interface for preprocessors.
  */
 export type PreprocessorDslInterface = Omit<DocumentProcessorDslInterface, "process"> & {
-    process(fn: (this: PreprocessorDslInterface, document: Document, reader: Reader) => Reader | void): void;
+    process(fn: (this: PreprocessorDslInterface, document: Document, reader: PreprocessorReader) => Reader | void): void;
 };
 /**
  * DSL interface for tree processors.
@@ -1449,7 +1738,7 @@ export type SyntaxProcessorDslInterface = ProcessorDslInterface & {
 export type IncludeProcessorDslInterface = Omit<DocumentProcessorDslInterface, "process"> & {
     handles(fn: (target: string) => boolean): void;
     handles(fn: (doc: Document, target: string) => boolean): void;
-    process(fn: (this: IncludeProcessorDslInterface, document: Document, reader: Reader, target: string, attributes: Record<string, string>) => void): void;
+    process(fn: (this: IncludeProcessorDslInterface, document: Document, reader: PreprocessorReader, target: string, attributes: Record<string, string>) => void): void;
 };
 /**
  * DSL interface for docinfo processors.

@@ -62,7 +62,7 @@ import { Inline } from './inline.js'
 import { Block } from './block.js'
 import { List, ListItem } from './list.js'
 import { Section } from './section.js'
-import { Cursor, Reader } from './reader.js'
+import { Cursor, PreprocessorReader, Reader } from './reader.js'
 import Html5Converter from './converter/html5.js'
 import {
   SyntaxHighlighter,
@@ -130,6 +130,7 @@ export {
   ListItem,
   Section,
   Reader,
+  PreprocessorReader,
   SyntaxHighlighterBase,
   LoggerManager,
   LogMessage,
