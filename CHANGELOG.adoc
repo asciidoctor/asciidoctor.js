@@ -8,6 +8,11 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* Declare the instance form ("style 3") of the `Registry` extension registration methods in the TypeScript typings. The runtime has always accepted an already-constructed processor (`registry.includeProcessor(new MyIncludeProcessor())`) in addition to the class and registration-function forms, but the 4.0 typings only declared the latter two, forcing consumers such as the VS Code AsciiDoc extension to augment the module by hand. `preprocessor`, `treeProcessor`, `postprocessor`, `includeProcessor`, `docinfoProcessor`, `block`, `blockMacro` and `inlineMacro` now expose an overload accepting a processor instance (the syntax processor methods also accept the optional explicit name), and the compile-only type tests cover the instance form
+* Type the reader received by preprocessor and include processor callbacks as `PreprocessorReader` instead of `Reader`, and export `PreprocessorReader` from the package root. `Preprocessor#process`, `IncludeProcessor#process` and the matching DSL `process(fn)` callbacks actually receive a `PreprocessorReader` at runtime, so its members (`pushInclude`, `getIncludeDepth`, …) now resolve without casts or manual module augmentation
+
 Infrastructure::
 
 * Display the package version number in the generated TypeDoc API documentation (`includeVersion` option), so both the `@asciidoctor/core` API docs and the `asciidoctor` CLI docs show which release they document (e.g. `@asciidoctor/core - v4.0.3`)

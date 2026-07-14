@@ -9,6 +9,7 @@ import {
   BlockProcessor,
   type Document,
   IncludeProcessor,
+  Preprocessor,
   Registry,
 } from '../../types/index.js'
 
@@ -68,6 +69,8 @@ registry.inlineMacro('kbd', function () {
 registry.preprocessor(function () {
   this.process((document, reader) => {
     void document.getAttributes()
+    // `reader` is a PreprocessorReader, not just a Reader
+    void reader.getIncludeDepth()
     return reader
   })
 })
@@ -88,14 +91,17 @@ registry.postprocessor(function () {
 })
 
 // ── includeProcessor(fn): (document, reader, target, attributes) → void ───────
+// The reader handed to preprocessor/include processor callbacks is a
+// PreprocessorReader, so its members (pushInclude, getIncludeDepth, …) resolve
+// without casts.
 registry.includeProcessor(function () {
   this.handles((target) => target.startsWith('http'))
   this.process((document, reader, target, attributes) => {
     void document
     void attributes
-    void target
-    // `reader` is a Reader — getLines() resolves to string[]
-    void reader.getLines()
+    const depth: number = reader.getIncludeDepth()
+    void depth
+    reader.pushInclude(['included content'], target, target, 1, attributes)
   })
 })
 
@@ -114,6 +120,16 @@ class ScopedInclude extends IncludeProcessor {
 }
 registry.includeProcessor(HttpInclude)
 registry.includeProcessor(ScopedInclude)
+
+// ── instance form ("style 3"): an already-constructed processor is accepted ───
+// This is what lets callers keep per-render state reachable on the instance
+// (e.g. the VS Code extension collects include items on its IncludeProcessor).
+registry.includeProcessor(new HttpInclude())
+registry.block(new ShoutBlock())
+registry.block(new ShoutBlock(), 'shout')
+
+class FrontMatterPreprocessor extends Preprocessor {}
+registry.preprocessor(new FrontMatterPreprocessor())
 
 // ── docinfoProcessor(fn): (document) → string ─────────────────────────────────
 registry.docinfoProcessor(function () {
