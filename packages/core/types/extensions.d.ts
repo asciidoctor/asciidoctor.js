@@ -1200,6 +1200,11 @@ export class Registry {
      */
     getBlockMacroFor(name: string): false | ProcessorExtension;
 }
+/**
+ * The primary entry point for registering extensions globally.
+ *
+ * Mirrors the class-level methods on the Ruby Asciidoctor::Extensions module.
+ */
 export namespace Extensions {
     /**
      * Return the plain Object that maps names to registered groups.
