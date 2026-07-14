@@ -5,6 +5,30 @@ import { execFileSync } from 'node:child_process'
 import semver from 'semver'
 import downdoc from 'downdoc'
 
+// Returns the npm dist-tag to publish under, or undefined for the default (latest).
+// Prereleases are published under "testing"; a version older than the currently
+// published latest (i.e. a release from a maintenance branch) must not steal the
+// "latest" tag, so it is published under e.g. "latest-4.0" instead (following the
+// "latest-2" convention already used on the registry for the 2.x line).
+const resolveDistTag = (pkg) => {
+  if (semver.prerelease(pkg.version)) {
+    return 'testing'
+  }
+  try {
+    const latest = execFileSync(
+      'npm',
+      ['view', `${pkg.name}@latest`, 'version'],
+      { encoding: 'utf8' }
+    ).trim()
+    if (latest && semver.gt(latest, pkg.version)) {
+      return `latest-${semver.major(pkg.version)}.${semver.minor(pkg.version)}`
+    }
+  } catch {
+    // package not published yet (or npm view failed) — default to latest
+  }
+  return undefined
+}
+
 const publish = async (directory) => {
   const pkg = JSON.parse(readFileSync(join(directory, 'package.json'), 'utf8'))
   if (process.env.DRY_RUN) {
@@ -24,8 +48,9 @@ const publish = async (directory) => {
     )
     const tgzPath = join(directory, filename)
     const args = ['publish', '--provenance', '--access', 'public', tgzPath]
-    if (semver.prerelease(pkg.version)) {
-      args.push('--tag', 'testing')
+    const distTag = resolveDistTag(pkg)
+    if (distTag) {
+      args.push('--tag', distTag)
     }
     execFileSync('npm', args, { stdio: 'inherit' })
     await fsp.rename(hiddenReadme, inputReadme)

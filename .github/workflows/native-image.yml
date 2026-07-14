@@ -2,6 +2,11 @@ name: Native Image
 
 on:
   workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref to check out and build (defaults to the ref that triggered the workflow)'
+        required: false
+        type: string
 
 jobs:
   build_images:
@@ -22,6 +27,8 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Set up Node
         uses: actions/setup-node@v6
