@@ -1,7 +1,7 @@
 = Custom Converter
-:url-abstractnode-jsdoc: {url-jsdoc-latest}/#abstractnode
-:url-document-jsdoc: {url-jsdoc-latest}/#document
-:url-section-jsdoc: {url-jsdoc-latest}/#section
+:url-abstractnode-jsdoc: {url-jsdoc}/#abstractnode
+:url-document-jsdoc: {url-jsdoc}/#document
+:url-section-jsdoc: {url-jsdoc}/#section
 :url-class-mdn: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 
 On this page, you'll learn how to create and register a custom converter.

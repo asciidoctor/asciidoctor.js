@@ -48,7 +48,7 @@ const html = await convertFile('/path/to/file.adoc', { to_file: false, standalon
 
 == Load and convert
 
-Use `loadFile` to parse an AsciiDoc file into a {url-jsdoc-latest}/#document[Document] object:
+Use `loadFile` to parse an AsciiDoc file into a {url-jsdoc}/#document[Document] object:
 
 [source,js]
 ----

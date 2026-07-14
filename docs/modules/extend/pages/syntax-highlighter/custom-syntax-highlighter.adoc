@@ -1,6 +1,6 @@
 = Custom Syntax Highlighter
-:url-syntaxhighlighterbase-jsdoc: {url-jsdoc-latest}/#syntaxhighlighterbase
-:url-block-jsdoc: {url-jsdoc-latest}/#block
+:url-syntaxhighlighterbase-jsdoc: {url-jsdoc}/#syntaxhighlighterbase
+:url-block-jsdoc: {url-jsdoc}/#block
 
 On this page, you'll learn how to create and register a custom syntax highlighter.
 

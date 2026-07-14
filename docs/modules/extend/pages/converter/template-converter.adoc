@@ -1,8 +1,8 @@
 = Template Converter
-:url-abstractnode-jsdoc: {url-jsdoc-latest}/#abstractnode
-:url-section-jsdoc: {url-jsdoc-latest}/#section
-:url-document-jsdoc: {url-jsdoc-latest}/#document
-:url-block-jsdoc: {url-jsdoc-latest}/#block
+:url-abstractnode-jsdoc: {url-jsdoc}/#abstractnode
+:url-section-jsdoc: {url-jsdoc}/#section
+:url-document-jsdoc: {url-jsdoc}/#document
+:url-block-jsdoc: {url-jsdoc}/#block
 :url-handlebars-register-helpers: https://handlebarsjs.com/api-reference/runtime.html#handlebars-registerhelper-name-helper
 :url-handlebars-register-partials: https://handlebarsjs.com/api-reference/runtime.html#handlebars-registerpartial-name-partial
 :url-nunjucks-add-filter: https://mozilla.github.io/nunjucks/api.html#addfilter
@@ -275,7 +275,7 @@ Asciidoctor.js will pass the following context to the template:
 `node`::
 An {url-abstractnode-jsdoc}[AbstractNode] from the Asciidoctor.js AST.
 Depending on the context, it can be a {url-section-jsdoc}[Section], a {url-document-jsdoc}[Document], a {url-block-jsdoc}[Block]... +
-We recommend reading the {url-jsdoc-latest}[JS API documentation] to find out what it's available on each Node.
+We recommend reading the {url-jsdoc}[JS API documentation] to find out what it's available on each Node.
 
 `opts`::
 An optional JSON of options.
