@@ -65,6 +65,16 @@ export namespace SafeMode {
      */
     function getNames(): string[];
 }
+/**
+ * Named constants for the `contentModel` property on {@link AbstractBlock}.
+ *
+ * The content model controls what kind of content a block accepts and how it
+ * is converted.
+ *
+ * @example
+ * import { ContentModel } from '@asciidoctor/core'
+ * const verbatimBlocks = doc.findBy({}, (b) => b.contentModel === ContentModel.VERBATIM || 'reject')
+ */
 export namespace ContentModel {
     /** The block contains other blocks (sections, sidebars, admonitions, …). */
     let COMPOUND: string;

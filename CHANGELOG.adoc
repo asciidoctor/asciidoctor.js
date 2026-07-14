@@ -8,6 +8,15 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* Add an experimental build-time mode to the built-in `highlightjs` source highlighter, based on https://highlightjs.org[highlight.js]. Setting `:highlightjs-mode: build` colourises source blocks at conversion time in Node instead of shipping the hljs runtime for the browser to colourise; without the attribute the behaviour is unchanged (client-side), so no registration or extra setup is required. `highlight.js` is declared as an *optional* `peerDependency` and is loaded lazily via a runtime require on first use, so importing the core never pulls it in and it is never bundled (including in the browser build); a clear error is thrown if build mode is requested on a server runtime while the package is missing. The Node-only build code lives in a separate module (`highlightjs-build.js`) that the browser build replaces with a stub, so build mode is reported as unsupported in the browser: the adapter then logs a warning and falls back to client-side highlighting rather than failing. Callouts are preserved: the core strips the conums before highlighting and re-appends them afterwards, and the adapter closes/reopens hljs spans at each line boundary so a conum is never swallowed by a multiline comment or string span. Line numbering (`linenums`) is supported in both `table` mode (returning a `[html, offset]` tuple so the core realigns the conums) and `inline` mode, along with `highlight=` line emphasis and `start=`. In build mode the theme stylesheet is read from the installed highlight.js package and embedded in a `<style>` tag by default (self-contained output); set `:highlightjs-stylesheet: link` to link the CDN instead, and `:highlightjs-theme:` to pick a theme (default `github`). A small helper stylesheet is also injected to style the build-mode markup that highlight.js themes do not cover — the inline and table line-number gutters and the emphasised-line highlight (full-width, with any callouts kept on the line)
+* The syntax highlighter `highlight()` and `docinfo()` methods are now awaited by the core, so adapter implementations may be asynchronous (e.g. to load a highlighting library such as Shiki, or to read a stylesheet from disk, on demand). Existing synchronous adapters are unaffected since the returned value is awaited either way
+
+Infrastructure::
+
+* Fix the type-generation post-processing (`scripts/patch-jsdoc.js`) losing the JSDoc of exported object literals that TypeScript synthesizes as namespaces: the comment on the declaration itself was never restored (only the per-property ones), and files in `types/` subdirectories were never matched back to their `src/` source. The published declarations now carry the previously dropped documentation for `ContentModel`, `Extensions`, `HttpCacheManager`, `Logging`, several `rx` namespaces and the experimental `buildEngine`
+
 == v4.0.3 (2026-07-13)
 
 Bug Fixes::

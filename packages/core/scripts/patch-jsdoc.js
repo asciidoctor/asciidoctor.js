@@ -15,19 +15,26 @@ import { fileURLToPath } from 'node:url'
 const srcDir = fileURLToPath(new URL('../src', import.meta.url))
 const typesDir = fileURLToPath(new URL('../types', import.meta.url))
 
-/** Returns the raw text of the last leading JSDoc comment for a node, or null. */
+/**
+ * Returns the raw text of the last leading JSDoc comment for a node, or null.
+ * JSDoc tagged @internal is skipped: strip-internal.js runs before this script,
+ * so restoring such a comment would reintroduce an @internal tag it can no
+ * longer act on.
+ */
 function leadingJSDoc(node, src) {
   const ranges = ts.getLeadingCommentRanges(src, node.getFullStart()) ?? []
   const jsdocs = ranges.filter((r) => src.startsWith('/**', r.pos))
   if (!jsdocs.length) return null
   const { pos, end } = jsdocs[jsdocs.length - 1]
-  return src.slice(pos, end)
+  const doc = src.slice(pos, end)
+  return doc.includes('@internal') ? null : doc
 }
 
 /**
- * Parses a JS source file and returns a Map from export name to a Map of
- * property name → raw JSDoc text, for every exported object literal whose
- * properties carry JSDoc comments.
+ * Parses a JS source file and returns a Map from export name to
+ * `{ selfDoc, byProp }` for every exported object literal, where `selfDoc` is
+ * the raw JSDoc on the variable declaration itself (dropped by TypeScript when
+ * it synthesizes the namespace) and `byProp` maps property name → raw JSDoc.
  */
 function collectPropertyJSDoc(jsPath) {
   const src = readFileSync(jsPath, 'utf-8')
@@ -43,13 +50,14 @@ function collectPropertyJSDoc(jsPath) {
       if (!ts.isIdentifier(decl.name) || !decl.initializer) continue
       if (!ts.isObjectLiteralExpression(decl.initializer)) continue
 
+      const selfDoc = leadingJSDoc(stmt, src)
       const byProp = new Map()
       for (const prop of decl.initializer.properties) {
         if (!ts.isPropertyAssignment(prop) || !ts.isIdentifier(prop.name)) continue
         const doc = leadingJSDoc(prop, src)
         if (doc) byProp.set(prop.name.text, doc)
       }
-      if (byProp.size) byExport.set(decl.name.text, byProp)
+      if (selfDoc || byProp.size) byExport.set(decl.name.text, { selfDoc, byProp })
     }
   }
 
@@ -122,8 +130,20 @@ function patchFile(dtsPath, jsdocByExport) {
 
   for (const stmt of sf.statements) {
     if (!ts.isModuleDeclaration(stmt) || !ts.isIdentifier(stmt.name)) continue
-    const byProp = jsdocByExport.get(stmt.name.text)
-    if (!byProp || !stmt.body || !ts.isModuleBlock(stmt.body)) continue
+    const docs = jsdocByExport.get(stmt.name.text)
+    if (!docs || !stmt.body || !ts.isModuleBlock(stmt.body)) continue
+    const { selfDoc, byProp } = docs
+
+    // Restore the JSDoc on the namespace declaration itself
+    if (selfDoc) {
+      const existing = ts.getLeadingCommentRanges(src, stmt.getFullStart()) ?? []
+      if (!existing.some((r) => src.startsWith('/**', r.pos))) {
+        const stmtStart = stmt.getStart(sf)
+        const lineStart = src.lastIndexOf('\n', stmtStart) + 1
+        const indent = src.slice(lineStart, stmtStart)
+        insertions.push({ pos: lineStart, text: reindent(selfDoc, indent) + '\n' })
+      }
+    }
 
     for (const member of stmt.body.statements) {
       if (!ts.isVariableStatement(member)) continue
@@ -163,7 +183,9 @@ function walk(dir) {
     if (statSync(full).isDirectory()) { walk(full); continue }
     if (!entry.endsWith('.d.ts')) continue
 
-    const jsPath = join(srcDir, entry.replace(/\.d\.ts$/, '.js'))
+    // Map types/<subdir>/X.d.ts back to src/<subdir>/X.js
+    const rel = full.slice(typesDir.length + 1)
+    const jsPath = join(srcDir, rel.replace(/\.d\.ts$/, '.js'))
     if (!existsSync(jsPath)) continue
 
     const abstractClasses = collectAbstractClasses(jsPath)

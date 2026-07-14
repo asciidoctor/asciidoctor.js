@@ -33,13 +33,14 @@ export class SyntaxHighlighterBase {
      * @param {boolean} [opts.linkcss] - link stylesheet instead of embedding
      * @param {string} [opts.cdn_base_url] - base URL for CDN assets
      * @param {string} [opts.self_closing_tag_slash] - '/' for self-closing tags
-     * @returns {string} the markup to insert
+     * @returns {string|Promise<string>} the markup to insert. The caller always `await`s the
+     *   result, so implementations may be async (e.g. to read a stylesheet from disk).
      */
     docinfo(location: string, doc: Document, opts: {
         linkcss?: boolean;
         cdn_base_url?: string;
         self_closing_tag_slash?: string;
-    }): string;
+    }): string | Promise<string>;
     /**
      * Indicates whether highlighting is handled server-side by this highlighter.
      *
@@ -63,7 +64,9 @@ export class SyntaxHighlighterBase {
      * @param {string} [opts.number_lines] - 'table' or 'inline' if lines should be numbered
      * @param {number} [opts.start_line_number] - starting line number (default: 1)
      * @param {string} [opts.style] - theme name
-     * @returns {string|[string, number]} the highlighted source, or a tuple with a line offset
+     * @returns {string|[string, number]|Promise<string|[string, number]>} the highlighted
+     *   source, or a tuple with a line offset. The caller always `await`s the result, so
+     *   implementations may be async (e.g. to load a highlighting library on demand).
      */
     highlight(node: Block, source: string, lang: string, opts: {
         callouts?: any;
@@ -72,7 +75,7 @@ export class SyntaxHighlighterBase {
         number_lines?: string;
         start_line_number?: number;
         style?: string;
-    }): string | [string, number];
+    }): string | [string, number] | Promise<string | [string, number]>;
     /**
      * Formats the highlighted source for inclusion in an HTML document.
      *
@@ -81,12 +84,15 @@ export class SyntaxHighlighterBase {
      * @param {Object} opts - options
      * @param {boolean} [opts.nowrap] - disable line wrapping
      * @param {Function} [opts.transform] - called with (pre, code) attribute objects before building tags
+     * @param {Function} [opts.transformContent] - called with the highlighted content string,
+     *   returning the (possibly rewritten) content, before it is wrapped in the tags
      * @returns {Promise<string>|string} the highlighted source wrapped in &lt;pre&gt;&lt;code&gt; tags.
      *   Subclasses may return a plain `string` — the caller always `await`s the result.
      */
     format(node: Block, lang: string, opts: {
         nowrap?: boolean;
         transform?: Function;
+        transformContent?: Function;
     }): Promise<string> | string;
     /**
      * Indicates whether this highlighter wants to write a stylesheet to disk.

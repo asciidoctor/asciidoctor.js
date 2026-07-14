@@ -1468,7 +1468,7 @@ export const Substitutors = {
       )
     }
 
-    const hlResult = syntaxHl.highlight(
+    const hlResult = await syntaxHl.highlight(
       this,
       source,
       this.getAttribute('language'),

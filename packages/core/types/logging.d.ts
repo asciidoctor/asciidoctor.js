@@ -219,6 +219,10 @@ export namespace LoggerManager {
         postConstruct?: (this: Logger) => void;
     }): Logger;
 }
+/**
+ * Plain object implementing the Logging mixin interface, for use in non-class contexts
+ * (e.g. top-level module functions).
+ */
 export namespace Logging {
     const logger_1: any;
     export { logger_1 as logger };

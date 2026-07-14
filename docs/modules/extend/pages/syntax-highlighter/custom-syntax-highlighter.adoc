@@ -7,7 +7,8 @@ On this page, you'll learn how to create and register a custom syntax highlighte
 == Overview
 
 A syntax highlighter controls how source blocks are rendered.
-Asciidoctor.js ships with a https://highlightjs.org[highlight.js] adapter, but you can provide your own implementation by extending {url-syntaxhighlighterbase-jsdoc}[`SyntaxHighlighterBase`].
+Asciidoctor.js ships with a https://highlightjs.org[highlight.js] adapter that runs client-side by default and at conversion time when `:highlightjs-mode: build` is set (see xref:syntax-highlighter/syntax-highlighting.adoc[Syntax Highlighting]).
+You can provide your own implementation by extending {url-syntaxhighlighterbase-jsdoc}[`SyntaxHighlighterBase`].
 
 There are two usage patterns:
 
@@ -35,15 +36,26 @@ class UpperCaseHighlighter extends SyntaxHighlighterBase { // <1>
     return true // <2>
   }
 
-  highlight(node, source, lang, opts) {
+  async highlight(node, source, lang, opts) {
     return source.toUpperCase() // <3>
   }
 }
 ----
 <1> Extend `SyntaxHighlighterBase` to inherit the default `format()` implementation.
 <2> Return `true` to tell Asciidoctor.js that this highlighter processes source at conversion time.
-<3> `source` is the raw source text; return the highlighted markup as a plain `string`.
-    Return a `[string, number]` tuple if the source shifts by one or more lines (e.g. line numbers are prepended).
+<3> `source` is the raw source text; return the highlighted markup as a `string`.
+    Return a `[string, number]` tuple if the source shifts by one or more lines (e.g. a line-numbers table is prepended); the number is the character offset at which the code lines begin, used to re-align callouts.
+
+`highlight()` may be `async` — the core `await`s its result — so you can load a highlighting library on demand (e.g. an async engine such as https://shiki.style[Shiki] or https://github.com/wooorm/starry-night[starry-night]).
+
+The `opts` argument carries the block's highlighting options, including `callouts` (callout marks, already stripped from `source`), `highlightLines` (1-based line numbers to emphasize), `numberLines` (`'table'` or `'inline'`) and `startLineNumber`.
+Callouts are handled by the core: they are removed before `highlight()` runs and re-inserted line by line afterwards, so your highlighter should preserve line boundaries (do not add or remove lines unless you report the offset via the tuple).
+
+[TIP]
+====
+Before writing your own, consider the built-in build mode: `:highlightjs-mode: build` gives you conversion-time highlight.js with callouts, line numbers, emphasized lines and theme embedding out of the box.
+See xref:syntax-highlighter/syntax-highlighting.adoc#build-time-highlighting[Build-time highlighting].
+====
 
 == Client-side highlighting
 
@@ -65,6 +77,8 @@ class PrismHighlighter extends SyntaxHighlighterBase {
 ----
 <1> Return `true` for the location slots where this highlighter needs to inject markup (`'head'` or `'footer'`).
 <2> Return the HTML markup to inject at the given location.
+
+Like `highlight()`, `docinfo()` may be `async` — the core `await`s its result — so it can, for example, read a stylesheet from disk and inline it.
 
 == Customising the `<pre><code>` wrapper
 
