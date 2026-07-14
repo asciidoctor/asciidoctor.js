@@ -13,8 +13,7 @@
     "test": "npm run test:root && npm run test --workspaces",
     "test:root": "node --test test/**.test.js",
     "lint": "biome check test tasks && npm run lint --workspaces",
-    "format": "biome format --write test tasks && npm run format --workspaces",
-    "release": "node tasks/release.js"
+    "format": "biome format --write test tasks && npm run format --workspaces"
   },
   "devDependencies": {
     "downdoc": "1.0.2-stable",

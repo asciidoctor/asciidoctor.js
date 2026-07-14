@@ -2,10 +2,11 @@ import { describe, test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
   convertAsciidocToMarkdown,
+  extractReleaseNotes,
   formatReleaseNotes,
-  prepareChangelog,
+  rollUnreleased,
   splitChangelog,
-} from '../tasks/release.js'
+} from '../tasks/changelog.js'
 
 const CHANGELOG_FIXTURE = `= Asciidoctor.js Changelog
 
@@ -193,78 +194,40 @@ describe('formatReleaseNotes', () => {
   })
 })
 
-describe('prepareChangelog', () => {
-  const AUTHOR = 'Jane Doe'
-  const PREVIOUS_TAG = 'v3.0.4'
+describe('rollUnreleased', () => {
+  const rolled = rollUnreleased(CHANGELOG_FIXTURE, '4.0.0', '2026-04-27')
 
   test('renames == Unreleased to the versioned header', () => {
-    const { updatedChangelog } = prepareChangelog(
-      CHANGELOG_FIXTURE,
-      '4.0.0',
-      '2026-04-27',
-      AUTHOR,
-      PREVIOUS_TAG
-    )
-    assert.ok(updatedChangelog.includes('== v4.0.0 (2026-04-27)'))
-    assert.ok(!updatedChangelog.match(/^== Unreleased\n\n[^=]/m))
+    assert.ok(rolled.includes('== v4.0.0 (2026-04-27)'))
+    assert.ok(!rolled.match(/^== Unreleased\n\n[^=]/m))
   })
 
   test('adds a new empty == Unreleased section above the versioned header', () => {
-    const { updatedChangelog } = prepareChangelog(
-      CHANGELOG_FIXTURE,
-      '4.0.0',
-      '2026-04-27',
-      AUTHOR,
-      PREVIOUS_TAG
-    )
-    assert.ok(updatedChangelog.match(/^== Unreleased\n\n== v4\.0\.0/m))
+    assert.ok(rolled.match(/^== Unreleased\n\n== v4\.0\.0/m))
   })
 
   test('preserves the existing unreleased content under the versioned header', () => {
-    const { updatedChangelog } = prepareChangelog(
-      CHANGELOG_FIXTURE,
-      '4.0.0',
-      '2026-04-27',
-      AUTHOR,
-      PREVIOUS_TAG
-    )
-    assert.ok(
-      updatedChangelog.includes('== v4.0.0 (2026-04-27)\n\nBreaking Changes::')
-    )
+    assert.ok(rolled.includes('== v4.0.0 (2026-04-27)\n\nBreaking Changes::'))
   })
 
   test('preserves previous version sections unchanged', () => {
-    const { updatedChangelog } = prepareChangelog(
-      CHANGELOG_FIXTURE,
-      '4.0.0',
-      '2026-04-27',
-      AUTHOR,
-      PREVIOUS_TAG
-    )
-    assert.ok(updatedChangelog.includes('== v3.0.4 (2024-02-12)'))
+    assert.ok(rolled.includes('== v3.0.4 (2024-02-12)'))
   })
+})
+
+describe('extractReleaseNotes', () => {
+  const rolled = rollUnreleased(CHANGELOG_FIXTURE, '4.0.0', '2026-04-27')
+  const meta = { author: 'Jane Doe', previousTag: 'v3.0.4' }
 
   test('release notes contain the full template sections', () => {
-    const { releaseNotes } = prepareChangelog(
-      CHANGELOG_FIXTURE,
-      '4.0.0',
-      '2026-04-27',
-      AUTHOR,
-      PREVIOUS_TAG
-    )
+    const releaseNotes = extractReleaseNotes(rolled, '4.0.0', meta)
     assert.ok(releaseNotes.includes('## Summary'))
     assert.ok(releaseNotes.includes('## Release meta'))
     assert.ok(releaseNotes.includes('## Changelog'))
   })
 
   test('release notes include release meta with author, date, and diff link', () => {
-    const { releaseNotes } = prepareChangelog(
-      CHANGELOG_FIXTURE,
-      '4.0.0',
-      '2026-04-27',
-      AUTHOR,
-      PREVIOUS_TAG
-    )
+    const releaseNotes = extractReleaseNotes(rolled, '4.0.0', meta)
     assert.ok(releaseNotes.includes('Released on: 2026-04-27'))
     assert.ok(releaseNotes.includes('Released by: Jane Doe'))
     assert.ok(
@@ -275,18 +238,25 @@ describe('prepareChangelog', () => {
   })
 
   test('release notes changelog contains converted AsciiDoc sections', () => {
-    const { releaseNotes } = prepareChangelog(
-      CHANGELOG_FIXTURE,
-      '4.0.0',
-      '2026-04-27',
-      AUTHOR,
-      PREVIOUS_TAG
-    )
+    const releaseNotes = extractReleaseNotes(rolled, '4.0.0', meta)
     assert.ok(releaseNotes.includes('### Breaking Changes'))
     assert.ok(releaseNotes.includes('### Improvements'))
     assert.ok(
       releaseNotes.includes('[Fetch API](https://fetch.spec.whatwg.org)')
     )
     assert.ok(releaseNotes.includes('  ```js\n  import { convert }'))
+  })
+
+  test('extracts the release date from the section header', () => {
+    const releaseNotes = extractReleaseNotes(CHANGELOG_FIXTURE, '3.0.4', meta)
+    assert.ok(releaseNotes.includes('Released on: 2024-02-12'))
+    assert.ok(releaseNotes.includes('### Bug Fixes'))
+  })
+
+  test('throws when the version section is missing', () => {
+    assert.throws(
+      () => extractReleaseNotes(CHANGELOG_FIXTURE, '9.9.9', meta),
+      /Section "== v9\.9\.9" not found/
+    )
   })
 })

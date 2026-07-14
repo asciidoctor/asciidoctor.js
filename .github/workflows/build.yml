@@ -2,6 +2,11 @@ name: Build core
 
 on:
   workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref to check out and build (defaults to the ref that triggered the workflow)'
+        required: false
+        type: string
   workflow_dispatch:
   push:
     branches:
@@ -29,6 +34,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
@@ -60,6 +67,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
@@ -79,6 +88,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
@@ -98,6 +109,8 @@ jobs:
   native_images:
     needs: [test, test-deno]
     uses: ./.github/workflows/native-image.yml
+    with:
+      ref: ${{ inputs.ref }}
 
   docs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository_owner == 'asciidoctor'

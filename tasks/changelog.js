@@ -1,66 +1,140 @@
+#!/usr/bin/env node
+// Changelog automation for the release workflow.
+//
+// Usage:
+//   node tasks/changelog.js release <version>   Roll the "== Unreleased" section into a dated
+//                                               "== v<version> (YYYY-MM-DD)" section and start a
+//                                               fresh, empty "== Unreleased" section.
+//   node tasks/changelog.js notes <version>     Print the "== v<version>" section to stdout as
+//                                               Markdown (used as the GitHub release notes).
+//
+// The changelog is CHANGELOG.adoc (AsciiDoc): each release is a "== v<version> (date)" section
+// holding an optional intro paragraph followed by labeled sections ("Bug Fixes::", ...).
+
 import childProcess from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import {
-  convertAsciidocToMarkdown,
-  formatReleaseNotes,
-  splitChangelog,
-} from './release.js'
+import downdoc from 'downdoc'
 
 const projectRootDirectory = join(import.meta.dirname, '..')
+const changelogPath = join(projectRootDirectory, 'CHANGELOG.adoc')
 
-export function extractReleaseNotes(versionTag) {
-  const changelogPath = join(projectRootDirectory, 'CHANGELOG.adoc')
-  const content = readFileSync(changelogPath, 'utf8')
+// Converts description list terms (e.g. "Breaking Changes::") to AsciiDoc
+// section titles ("=== Breaking Changes") so that downdoc renders them as
+// Markdown h3 headers ("### Breaking Changes").
+export function convertAsciidocToMarkdown(content) {
+  const preprocessed = content.replace(/^([A-Z][^\n]+)::\s*$/gm, '=== $1')
+  return downdoc(preprocessed)
+}
 
-  // versionTag is like "v4.0.0" — match "== v4.0.0 (YYYY-MM-DD)"
-  const version = versionTag
-    .replace(/^v/, '')
-    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+// Splits a release section into a summary (intro paragraph before the first
+// labeled section) and the structured changelog (the labeled sections themselves).
+export function splitChangelog(sectionContent) {
+  const firstSectionIdx = sectionContent.search(/^[A-Z][^\n]+::\s*$/m)
+  if (firstSectionIdx === -1) {
+    return { summary: sectionContent, changelog: '' }
+  }
+  return {
+    summary: sectionContent.slice(0, firstSectionIdx).trim(),
+    changelog: sectionContent.slice(firstSectionIdx).trim(),
+  }
+}
+
+export function formatReleaseNotes({
+  summary,
+  date,
+  author,
+  previousTag,
+  currentTag,
+  changelog,
+  footer = '',
+}) {
+  const lines = [
+    '## Summary',
+    '',
+    summary,
+    '',
+    '## Release meta',
+    '',
+    `Released on: ${date}`,
+    `Released by: ${author}`,
+    'Published by: GitHub',
+    '',
+    `Logs: [full diff](https://github.com/asciidoctor/asciidoctor.js/compare/${previousTag}...${currentTag})`,
+    '',
+    '## Changelog',
+    '',
+    changelog,
+  ]
+  if (footer) {
+    lines.push('', footer)
+  }
+  return lines.join('\n').trimEnd()
+}
+
+// Rolls the "== Unreleased" section into "== v<version> (<releaseDate>)" and
+// starts a fresh, empty "== Unreleased" section above it.
+export function rollUnreleased(content, version, releaseDate) {
+  return content.replace(
+    /^== Unreleased$/m,
+    `== Unreleased\n\n== v${version} (${releaseDate})`
+  )
+}
+
+// Extracts the "== v<version> (date)" section and formats it as Markdown release notes.
+export function extractReleaseNotes(content, version, { author, previousTag }) {
+  const escapedVersion = version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const headerRegex = new RegExp(
-    `== v${version} \\(([^)]+)\\)\\n([\\s\\S]*?)(?=\\n== )`
+    `== v${escapedVersion} \\(([^)]+)\\)\\n([\\s\\S]*?)(?=\\n== |$)`
   )
   const match = content.match(headerRegex)
-  const sectionContent = match ? match[2].trim() : ''
-  const releaseDate = match ? match[1] : new Date().toISOString().slice(0, 10)
-
-  const author = childProcess
-    .execSync(`git log ${versionTag} -1 --format=%an`, {
-      cwd: projectRootDirectory,
-    })
-    .toString()
-    .trim()
-
-  let previousTag = ''
-  try {
-    previousTag = childProcess
-      .execSync(`git describe --abbrev=0 --tags "${versionTag}^"`, {
-        cwd: projectRootDirectory,
-      })
-      .toString()
-      .trim()
-  } catch {
-    // No previous tags exist
+  if (!match) {
+    throw new Error(`Section "== v${version}" not found in CHANGELOG.adoc`)
   }
-
-  const { summary, changelog } = splitChangelog(sectionContent)
+  const [, releaseDate, sectionContent] = match
+  const { summary, changelog } = splitChangelog(sectionContent.trim())
   return formatReleaseNotes({
     summary: convertAsciidocToMarkdown(summary),
     date: releaseDate,
     author,
     previousTag,
-    currentTag: versionTag,
+    currentTag: `v${version}`,
     changelog: convertAsciidocToMarkdown(changelog),
   })
 }
 
+// Entry point — only runs when executed directly, not when imported by tests
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const [versionTag] = process.argv.slice(2)
-  if (!versionTag) {
-    process.stderr.write('Version tag is required (e.g. v4.0.0)\n')
-    process.exit(1)
+  const git = (args) =>
+    childProcess
+      .execFileSync('git', args, {
+        cwd: projectRootDirectory,
+        encoding: 'utf8',
+      })
+      .trim()
+
+  const [command, version] = process.argv.slice(2)
+  if (!version || !['release', 'notes'].includes(command)) {
+    console.error('Usage: node tasks/changelog.js <release|notes> <version>')
+    process.exit(9)
   }
-  const notes = extractReleaseNotes(versionTag)
-  writeFileSync(join(projectRootDirectory, 'RELEASE_NOTES.md'), notes)
+  const content = readFileSync(changelogPath, 'utf8')
+  if (command === 'release') {
+    const releaseDate = new Date().toISOString().slice(0, 10)
+    writeFileSync(changelogPath, rollUnreleased(content, version, releaseDate))
+  } else {
+    const author =
+      process.env.GITHUB_ACTOR ||
+      git(['log', `v${version}`, '-1', '--format=%an'])
+    let previousTag = ''
+    try {
+      previousTag = git(['describe', '--abbrev=0', '--tags', `v${version}^`])
+    } catch {
+      // no previous tag exists
+    }
+    process.stdout.write(
+      `${extractReleaseNotes(content, version, { author, previousTag })}\n`
+    )
+  }
 }
