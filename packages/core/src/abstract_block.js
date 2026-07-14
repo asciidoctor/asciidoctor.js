@@ -486,6 +486,23 @@ export class AbstractBlock extends AbstractNode {
   }
 
   /**
+   * Selector criteria accepted by {@link AbstractBlock#findBy}.
+   * @typedef {Object} FindBySelector
+   * @property {string} [context] - node context (e.g. `'section'`, `'listing'`, `'paragraph'`, `'image'`)
+   * @property {string} [style] - block style (e.g. `'source'`, `'NOTE'`)
+   * @property {string} [role] - a CSS role that must appear in the node's role list
+   * @property {string} [id] - exact node id; stops traversal after the first match
+   * @property {boolean} [traverseDocuments] - when `true`, recurse into AsciiDoc table cells
+   */
+
+  /**
+   * Filter callback passed to {@link AbstractBlock#findBy}.
+   * @callback FindByFilter
+   * @param {AbstractBlock} node - the candidate block-level node being visited
+   * @returns {boolean|string} a truthy value to include the node; `'prune'`, `'reject'` or `'stop'` to control traversal
+   */
+
+  /**
    * Walk the document tree and find all block-level nodes that match
    * the selector and optional filter function.
    *
@@ -502,8 +519,8 @@ export class AbstractBlock extends AbstractNode {
    * - `'reject'` → skip the node and its children
    * - `'stop'` → include the node (if it matched) and stop the entire traversal
    *
-   * @param {Object|Function} [selector={}] - Selector criteria object, or a filter callback when called as `findBy(callback)`.
-   * @param {Function|null} [filter=null] - Per-node filter callback.
+   * @param {FindBySelector|FindByFilter} [selector={}] - Selector criteria object, or a filter callback when called as `findBy(callback)`.
+   * @param {FindByFilter|null} [filter=null] - Per-node filter callback; receives each candidate {@link AbstractBlock}.
    * @returns {AbstractBlock[]} array of matching block-level nodes.
    *
    * @example <caption>All source listing blocks</caption>
@@ -543,7 +560,12 @@ export class AbstractBlock extends AbstractNode {
     return result
   }
 
-  /** Alias for {@link findBy}. */
+  /**
+   * Alias for {@link findBy}.
+   * @param {FindBySelector|FindByFilter} [selector={}] - Selector criteria object, or a filter callback when called as `query(callback)`.
+   * @param {FindByFilter|null} [filter=null] - Per-node filter callback; receives each candidate {@link AbstractBlock}.
+   * @returns {AbstractBlock[]} array of matching block-level nodes.
+   */
   query(selector = {}, filter = null) {
     return this.findBy(selector, filter)
   }
