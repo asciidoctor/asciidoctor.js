@@ -1,3 +1,11 @@
+/**
+ * Node-only engine backing the highlightjs adapter's build mode
+ * (`:highlightjs-mode: build`).
+ *
+ * The build mode is **experimental** for now: this engine's API and the
+ * markup/CSS it generates may change in a future release without a major
+ * version bump.
+ */
 export namespace buildEngine {
     let supported: boolean;
     /**

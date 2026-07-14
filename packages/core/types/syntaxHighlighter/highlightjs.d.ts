@@ -1,7 +1,22 @@
+/**
+ * Built-in adapter for the https://highlightjs.org[highlight.js] syntax highlighter.
+ *
+ * By default, source blocks are colourised client-side: the generated HTML loads
+ * the hljs runtime and theme from a CDN and the browser does the highlighting.
+ *
+ * Setting `:highlightjs-mode: build` switches to build-time highlighting: source
+ * blocks are colourised at conversion time in Node and the theme stylesheet is
+ * embedded, so the output is self-contained and no JavaScript runs in the browser.
+ *
+ * The build mode is **experimental** for now: the attributes it introduces
+ * (`highlightjs-mode`, `highlightjs-stylesheet`) and the markup/CSS it generates
+ * may change in a future release without a major version bump.
+ */
 export class HighlightJsAdapter extends SyntaxHighlighterBase {
     constructor(...args: any[]);
     /**
-     * Colourise the (already callout-free) source with highlight.js (build mode).
+     * Colourise the (already callout-free) source with highlight.js (build mode
+     * only — an experimental feature, see the class-level note).
      *
      * @param {Object} node - the source Block being highlighted
      * @param {string} source - source WITHOUT callout marks (the core strips them first)

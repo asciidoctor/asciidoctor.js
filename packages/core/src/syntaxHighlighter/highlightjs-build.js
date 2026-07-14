@@ -136,6 +136,14 @@ function wrapNumberedRows(html) {
   return numbered + (trailingNewline ? '\n' : '')
 }
 
+/**
+ * Node-only engine backing the highlightjs adapter's build mode
+ * (`:highlightjs-mode: build`).
+ *
+ * The build mode is **experimental** for now: this engine's API and the
+ * markup/CSS it generates may change in a future release without a major
+ * version bump.
+ */
 export const buildEngine = {
   // Whether build mode can run. True in this server implementation; the browser
   // build swaps in a stub with `supported: false` (see rollup.config.js).
