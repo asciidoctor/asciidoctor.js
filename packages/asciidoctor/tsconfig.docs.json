@@ -9,6 +9,7 @@
   "typedocOptions": {
     "entryPoints": ["types/cli.d.ts"],
     "out": "build/docs",
+    "includeVersion": true,
     "navigationLinks": {
       "API": "../"
     }

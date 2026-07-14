@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Infrastructure::
+
+* Display the package version number in the generated TypeDoc API documentation (`includeVersion` option), so both the `@asciidoctor/core` API docs and the `asciidoctor` CLI docs show which release they document (e.g. `@asciidoctor/core - v4.0.3`)
+
 == v4.0.3 (2026-07-13)
 
 Bug Fixes::
