@@ -113,6 +113,9 @@ jobs:
           TAG="${GITHUB_REF#refs/tags/v}"
           if [[ "$TAG" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-(alpha|beta|rc)\. ]]; then
             echo "folder=${BASH_REMATCH[1]}-dev" >> "$GITHUB_OUTPUT"
+          elif [[ "$TAG" =~ ^([0-9]+\.[0-9]+)\.[0-9]+$ ]]; then
+            echo "folder=$TAG" >> "$GITHUB_OUTPUT"
+            echo "alias=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
           else
             echo "folder=$TAG" >> "$GITHUB_OUTPUT"
           fi
@@ -121,3 +124,10 @@ jobs:
         with:
           folder: packages/core/build/docs
           target-folder: ${{ steps.dest.outputs.folder }}
+      # e.g. 4.0 always points to the docs of the latest 4.0.x release
+      - name: Publish version alias to gh-pages
+        if: steps.dest.outputs.alias
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: packages/core/build/docs
+          target-folder: ${{ steps.dest.outputs.alias }}
