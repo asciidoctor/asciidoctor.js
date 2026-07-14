@@ -232,6 +232,28 @@ The syntax highlighter API distinguishes between two methods with different asyn
 * `highlight(node, source, lang, opts)` — must remain *synchronous*, returns a `string` or `[string, number]`
 * `format(node, lang, opts)` — can be synchronous or asynchronous; returning a `Promise<string>` is recommended for I/O-bound operations, but a plain `string` works too
 
+=== CLI: `--require` no longer registers extensions
+
+This change applies to the `asciidoctor` CLI package.
+
+In v3, `--require` (`-r`) loaded the given module and automatically called its exported `register` function, so it was the way to load extensions from the command line.
+In v4, these two concerns are separate options:
+
+* `--require <library>` (`-r`) — loads the module for its side effects only, without calling any exported function.
+Use it for libraries that configure themselves on load (syntax highlighters, polyfills, etc.) or for extensions that self-register at the top level via `Extensions.register()`.
+* `--extension <extension>` — loads the module and calls its `register(registry)` named export with a shared registry.
+Repeat the option to load multiple extensions.
+
+For example, to load the https://github.com/asciidoctor/asciidoctor-kroki[asciidoctor-kroki] extension:
+
+[source,console]
+----
+$ asciidoctor -r asciidoctor-kroki doc.adoc <1>
+$ asciidoctor --extension asciidoctor-kroki doc.adoc <2>
+----
+<1> v3
+<2> v4
+
 === Not implemented in v4
 
 [cols="1,2"]
