@@ -98,6 +98,12 @@ export async function withLogger(logger, fn) {
   }
 }
 
+/**
+ * A logger-compatible object: any of the built-in Logger implementations, or the
+ * global `console` (used as a fallback when no document/logger is available).
+ * @typedef {Logger|MemoryLogger|NullLogger|Console} LoggerLike
+ */
+
 // ── Logger ────────────────────────────────────────────────────────────────────
 
 /** Standard logger that writes formatted messages to stderr or a custom pipe. */
@@ -589,7 +595,9 @@ export function applyLogging(proto) {
     configurable: true,
   })
 
-  proto.getLogger = () => _loggerStore?.getStore() ?? LoggerManager.logger
+  proto.getLogger = function () {
+    return this.logger
+  }
 
   proto.messageWithContext = (text, context = {}) =>
     Logger.AutoFormattingMessage.attach({ text, ...context })
