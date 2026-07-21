@@ -10,7 +10,11 @@
 //   - Ruby class << self → static methods.
 //   - Ruby Helpers.resolve_class → typeof fn === 'function' check.
 //   - Ruby @@class_var (InlineMacroProcessor.rx_cache) → static property.
-//   - Config option keys keep snake_case to match the Ruby/parser convention.
+//   - Config option keys (contentModel, positionalAttrs, defaultAttrs) use
+//     camelCase, matching normal JS style. The legacy snake_case Ruby-style
+//     keys (content_model, positional_attrs, pos_attrs, default_attrs) are
+//     still accepted when a user declares a static config object directly,
+//     for backward compatibility — see normalizeLegacyConfigAliases().
 //   - String class-name resolution (e.g. preprocessor 'MyClass') is not supported;
 //     pass the class constructor or an instance directly.
 //   - Parser.parseBlocks / block.subAttributes / block.assignCaption are forward
@@ -227,41 +231,41 @@ export const SyntaxProcessorDsl = {
   },
 
   contentModel(value) {
-    this.option('content_model', value)
+    this.option('contentModel', value)
   },
 
   /** Alias for {@link contentModel}. */
   parseContentAs(value) {
-    this.option('content_model', value)
+    this.option('contentModel', value)
   },
 
   positionalAttributes(...value) {
-    this.option('positional_attrs', value.flat().map(String))
+    this.option('positionalAttrs', value.flat().map(String))
   },
 
   /** Alias for {@link positionalAttributes}. */
   namePositionalAttributes(...value) {
-    this.option('positional_attrs', value.flat().map(String))
+    this.option('positionalAttrs', value.flat().map(String))
   },
 
   positionalAttrs(...value) {
-    this.option('positional_attrs', value.flat().map(String))
+    this.option('positionalAttrs', value.flat().map(String))
   },
 
   defaultAttributes(value) {
-    this.option('default_attrs', value)
+    this.option('defaultAttrs', value)
   },
 
   /** @deprecated Alias for {@link defaultAttributes}. */
   defaultAttrs(value) {
-    this.option('default_attrs', value)
+    this.option('defaultAttrs', value)
   },
 
   /**
    * Resolve and register positional attribute names and default values.
    *
    * Accepts any of:
-   *   resolveAttributes()             → positional_attrs: [], default_attrs: {}
+   *   resolveAttributes()             → positionalAttrs: [], defaultAttrs: {}
    *   resolveAttributes('foo', 'bar') → positional maps (Array-style)
    *   resolveAttributes({...})        → positional maps (Object-style)
    *
@@ -282,8 +286,8 @@ export const SyntaxProcessorDsl = {
     }
 
     if (args === true) {
-      this.option('positional_attrs', [])
-      this.option('default_attrs', {})
+      this.option('positionalAttrs', [])
+      this.option('defaultAttrs', {})
     } else if (Array.isArray(args)) {
       const names = []
       const defaults = {}
@@ -312,10 +316,10 @@ export const SyntaxProcessorDsl = {
         }
       }
       this.option(
-        'positional_attrs',
+        'positionalAttrs',
         names.filter((n) => n != null)
       )
-      this.option('default_attrs', defaults)
+      this.option('defaultAttrs', defaults)
     } else if (typeof args === 'object' && args !== null) {
       const names = []
       const defaults = {}
@@ -331,10 +335,10 @@ export const SyntaxProcessorDsl = {
         if (val) defaults[name] = val
       }
       this.option(
-        'positional_attrs',
+        'positionalAttrs',
         names.filter((n) => n != null)
       )
-      this.option('default_attrs', defaults)
+      this.option('defaultAttrs', defaults)
     } else {
       throw new Error(`unsupported attributes specification for macro: ${args}`)
     }
@@ -423,17 +427,17 @@ export const MacroProcessorDsl = {
   ...SyntaxProcessorDsl,
 
   /**
-   * Override: passing a falsy value sets content_model to :text instead of
+   * Override: passing a falsy value sets contentModel to 'text' instead of
    * configuring positional attributes.
    *
    * @param {...*} args - Positional attribute specifications.
    */
   resolveAttributes(...args) {
     if (args.length === 1 && !args[0]) {
-      this.option('content_model', 'text')
+      this.option('contentModel', 'text')
     } else {
       SyntaxProcessorDsl.resolveAttributes.call(this, ...args)
-      this.option('content_model', 'attributes')
+      this.option('contentModel', 'attributes')
     }
   },
 
@@ -467,6 +471,30 @@ export const InlineMacroProcessorDsl = {
 // ── Processor ────────────────────────────────────────────────────────────────
 
 /**
+ * Legacy Ruby-style snake_case config keys, mapped to the camelCase keys
+ * actually read by the parser/substitutor. Only consulted when a processor
+ * is declared with a raw static config object (e.g. `static config = {
+ * content_model: 'attributes' }`) that bypasses the DSL setters, which
+ * already write camelCase directly.
+ */
+const LEGACY_CONFIG_ALIASES = {
+  content_model: 'contentModel',
+  positional_attrs: 'positionalAttrs',
+  pos_attrs: 'positionalAttrs',
+  default_attrs: 'defaultAttrs',
+}
+
+/** @internal Fill in camelCase config keys from their legacy snake_case alias. */
+function normalizeLegacyConfigAliases(config) {
+  for (const [legacyKey, key] of Object.entries(LEGACY_CONFIG_ALIASES)) {
+    if (config[key] === undefined && config[legacyKey] !== undefined) {
+      config[key] = config[legacyKey]
+    }
+  }
+  return config
+}
+
+/**
  * Abstract base class for document and syntax processors.
  *
  * Provides a class-level config map (via static config / static option) and a
@@ -483,6 +511,16 @@ export class Processor {
   static get config() {
     if (!Object.hasOwn(this, '_config')) this._config = {}
     return this._config
+  }
+
+  /**
+   * Replace the static configuration map for this processor class, e.g.
+   * `ShoutBlock.config = { name: 'shout', contentModel: 'simple' }`.
+   *
+   * @param {object} value
+   */
+  static set config(value) {
+    this._config = value
   }
 
   /**
@@ -508,11 +546,15 @@ export class Processor {
   }
 
   constructor(config = {}) {
-    this.config = { ...this.constructor.config, ...config }
+    this.config = normalizeLegacyConfigAliases({
+      ...this.constructor.config,
+      ...config,
+    })
   }
 
   updateConfig(config) {
     Object.assign(this.config, config)
+    normalizeLegacyConfigAliases(this.config)
   }
 
   process(..._args) {
@@ -951,12 +993,12 @@ DocinfoProcessor.DSL = DocinfoProcessorDsl
  *
  * @example <caption>Custom delimited block that wraps content in a div</caption>
  * class ShoutBlock extends BlockProcessor {
+ *   static config = { name: 'shout', contexts: ['paragraph'], contentModel: 'simple' }
  *   process(parent, reader, attrs) {
  *     const block = this.createBlock(parent, 'paragraph', reader.readLines().join('\n').toUpperCase(), attrs)
  *     return block
  *   }
  * }
- * ShoutBlock.config = { name: 'shout', contexts: ['paragraph'], content_model: 'simple' }
  * Extensions.register(function () { this.block(ShoutBlock) })
  * // AsciiDoc usage: [shout]\nHello world
  */
@@ -975,7 +1017,7 @@ export class BlockProcessor extends Processor {
       this.config.contexts = new Set(ctx)
     }
 
-    this.config.content_model ??= 'compound'
+    this.config.contentModel ??= 'compound'
   }
 
   /**
@@ -999,7 +1041,7 @@ export class MacroProcessor extends Processor {
   constructor(name = null, config = {}) {
     super(config)
     this.name = name || this.config.name || null
-    this.config.content_model ??= 'attributes'
+    this.config.contentModel ??= 'attributes'
   }
 
   /**

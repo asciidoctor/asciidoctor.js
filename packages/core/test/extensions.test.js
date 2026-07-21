@@ -525,27 +525,27 @@ describe('Extensions.DSL', () => {
       assert.equal(proc.name, 'myblock')
     })
 
-    test('contentModel() / parseContentAs() set content_model option', () => {
+    test('contentModel() / parseContentAs() set contentModel option', () => {
       const proc = new BlockProcessor()
       Object.assign(proc, SyntaxProcessorDsl)
       proc.contentModel('simple')
-      assert.equal(proc.config.content_model, 'simple')
+      assert.equal(proc.config.contentModel, 'simple')
       proc.parseContentAs('compound')
-      assert.equal(proc.config.content_model, 'compound')
+      assert.equal(proc.config.contentModel, 'compound')
     })
 
-    test('positionalAttributes() sets positional_attrs option', () => {
+    test('positionalAttributes() sets positionalAttrs option', () => {
       const proc = new BlockProcessor()
       Object.assign(proc, SyntaxProcessorDsl)
       proc.positionalAttributes('name', 'value')
-      assert.deepEqual(proc.config.positional_attrs, ['name', 'value'])
+      assert.deepEqual(proc.config.positionalAttrs, ['name', 'value'])
     })
 
-    test('defaultAttributes() sets default_attrs option', () => {
+    test('defaultAttributes() sets defaultAttrs option', () => {
       const proc = new BlockProcessor()
       Object.assign(proc, SyntaxProcessorDsl)
       proc.defaultAttributes({ format: 'html' })
-      assert.deepEqual(proc.config.default_attrs, { format: 'html' })
+      assert.deepEqual(proc.config.defaultAttrs, { format: 'html' })
     })
 
     describe('resolveAttributes()', () => {
@@ -555,60 +555,60 @@ describe('Extensions.DSL', () => {
         return p
       }
 
-      test('with no args sets empty positional_attrs and default_attrs', () => {
+      test('with no args sets empty positionalAttrs and defaultAttrs', () => {
         const p = makeProc()
         p.resolveAttributes()
-        assert.deepEqual(p.config.positional_attrs, [])
-        assert.deepEqual(p.config.default_attrs, {})
+        assert.deepEqual(p.config.positionalAttrs, [])
+        assert.deepEqual(p.config.defaultAttrs, {})
       })
 
-      test('with true sets empty positional_attrs and default_attrs', () => {
+      test('with true sets empty positionalAttrs and defaultAttrs', () => {
         const p = makeProc()
         p.resolveAttributes(true)
-        assert.deepEqual(p.config.positional_attrs, [])
-        assert.deepEqual(p.config.default_attrs, {})
+        assert.deepEqual(p.config.positionalAttrs, [])
+        assert.deepEqual(p.config.defaultAttrs, {})
       })
 
       test('parses simple positional attribute names from array', () => {
         const p = makeProc()
         p.resolveAttributes('units', 'precision')
-        assert.deepEqual(p.config.positional_attrs, ['units', 'precision'])
-        assert.deepEqual(p.config.default_attrs, {})
+        assert.deepEqual(p.config.positionalAttrs, ['units', 'precision'])
+        assert.deepEqual(p.config.defaultAttrs, {})
       })
 
       test('parses indexed positional names (e.g. "1:units")', () => {
         const p = makeProc()
         p.resolveAttributes('1:units', 'precision=1')
-        assert.deepEqual(p.config.positional_attrs, ['units'])
-        assert.deepEqual(p.config.default_attrs, { precision: '1' })
+        assert.deepEqual(p.config.positionalAttrs, ['units'])
+        assert.deepEqual(p.config.defaultAttrs, { precision: '1' })
       })
 
       test('parses @-indexed names (append to current length)', () => {
         const p = makeProc()
         p.resolveAttributes('@:first', '@:second')
-        assert.deepEqual(p.config.positional_attrs, ['first', 'second'])
+        assert.deepEqual(p.config.positionalAttrs, ['first', 'second'])
       })
 
       test('parses indexed name with default value', () => {
         const p = makeProc()
         p.resolveAttributes('1:name=default')
-        assert.deepEqual(p.config.positional_attrs, ['name'])
-        assert.deepEqual(p.config.default_attrs, { name: 'default' })
+        assert.deepEqual(p.config.positionalAttrs, ['name'])
+        assert.deepEqual(p.config.defaultAttrs, { name: 'default' })
       })
 
       test('parses Object-style { "1:name": null } specs', () => {
         const p = makeProc()
         p.resolveAttributes({ '1:name': null })
-        assert.deepEqual(p.config.positional_attrs, ['name'])
-        assert.deepEqual(p.config.default_attrs, {})
+        assert.deepEqual(p.config.positionalAttrs, ['name'])
+        assert.deepEqual(p.config.defaultAttrs, {})
       })
 
       test('parses Object-style with default values', () => {
         const p = makeProc()
         p.resolveAttributes({ format: 'html', '1:target': null })
         // Object key order may vary; check both outcomes
-        assert.ok(p.config.positional_attrs.includes('target'))
-        assert.equal(p.config.default_attrs.format, 'html')
+        assert.ok(p.config.positionalAttrs.includes('target'))
+        assert.equal(p.config.defaultAttrs.format, 'html')
       })
     })
   })
@@ -636,19 +636,19 @@ describe('Extensions.DSL', () => {
   // ── MacroProcessorDsl ───────────────────────────────────────────────────────
 
   describe('MacroProcessorDsl', () => {
-    test('resolveAttributes(false) sets content_model to text', () => {
+    test('resolveAttributes(false) sets contentModel to text', () => {
       const proc = new BlockMacroProcessor()
       Object.assign(proc, MacroProcessorDsl)
       proc.resolveAttributes(false)
-      assert.equal(proc.config.content_model, 'text')
+      assert.equal(proc.config.contentModel, 'text')
     })
 
-    test('resolveAttributes() with args sets positional_attrs and content_model to attributes', () => {
+    test('resolveAttributes() with args sets positionalAttrs and contentModel to attributes', () => {
       const proc = new BlockMacroProcessor()
       Object.assign(proc, MacroProcessorDsl)
       proc.resolveAttributes('1:target')
-      assert.deepEqual(proc.config.positional_attrs, ['target'])
-      assert.equal(proc.config.content_model, 'attributes')
+      assert.deepEqual(proc.config.positionalAttrs, ['target'])
+      assert.equal(proc.config.contentModel, 'attributes')
     })
   })
 
@@ -677,9 +677,9 @@ describe('Extensions.DSL', () => {
 // ── BlockProcessor defaults ───────────────────────────────────────────────────
 
 describe('BlockProcessor', () => {
-  test('default content_model is compound', () => {
+  test('default contentModel is compound', () => {
     const bp = new BlockProcessor('myblock')
-    assert.equal(bp.config.content_model, 'compound')
+    assert.equal(bp.config.contentModel, 'compound')
   })
 
   test('default contexts is Set containing open and paragraph', () => {

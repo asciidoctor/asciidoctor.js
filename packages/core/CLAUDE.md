@@ -47,7 +47,7 @@ When converting or extending code, follow the conventions established in the exi
 - **Ruby module methods → named exports** (e.g. `Asciidoctor.load` → `export function load`).
 - **Ruby mixins / `include`** → plain objects applied with `Object.assign(instance, mixin)` or helper functions like `applyLogging()`.
 - **Ruby class methods (`def self.foo`)** → `static foo()` on the JS class.
-- **Ruby symbols (`:key`)** → plain strings (`'key'`), including config option keys which keep `snake_case`.
+- **Ruby symbols (`:key`)** → plain strings (`'key'`), and internal AST-node constructor options (e.g. `new Block(parent, ctx, { content_model: 'empty' })`) keep `snake_case` to mirror the Ruby kwargs. **Exception:** `Extensions.Processor` config keys (`contentModel`, `positionalAttrs`, `defaultAttrs`) use `camelCase` — the legacy `snake_case` Ruby-style keys are still accepted when a user declares a static `config` object directly, normalized by `normalizeLegacyConfigAliases()` in `src/extensions.js`.
 - **Ruby predicates (`attr?`, `title?`)** → `hasAttr()`, `hasTitle()`, etc.
 - **Ruby `nil` / `.nil_or_empty?`** → `null` / `!val` or explicit `== null || === ''` checks.
 - **Ruby `.to_i`** → `parseInt(val, 10)` (returns `0` for `null`/non-numeric).

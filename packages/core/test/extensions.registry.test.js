@@ -123,7 +123,7 @@ describe('DSL aliases', () => {
     assert.ok(html.includes('bnd-ok'))
   })
 
-  test('MacroProcessorDsl.resolveAttributes with falsy arg sets content_model to text', async () => {
+  test('MacroProcessorDsl.resolveAttributes with falsy arg sets contentModel to text', async () => {
     const registry = Extensions.create()
     registry.inlineMacro(function () {
       this.named('noattr')

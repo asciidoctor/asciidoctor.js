@@ -883,20 +883,26 @@ export class Parser {
                     target = expanded
                   }
                   const extConfig = extension.config
-                  if (extConfig.content_model === 'attributes') {
+                  const contentModel =
+                    extConfig.contentModel ?? extConfig.content_model
+                  if (contentModel === 'attributes') {
                     if (content)
                       await document.parseAttributes(
                         content,
-                        extConfig.positional_attrs ?? extConfig.pos_attrs ?? [],
+                        extConfig.positionalAttrs ??
+                          extConfig.positional_attrs ??
+                          extConfig.posAttrs ??
+                          extConfig.pos_attrs ??
+                          [],
                         { sub_input: true, into: attributes }
                       )
                   } else {
                     attributes.text = content ?? ''
                   }
-                  if (extConfig.default_attrs) {
-                    for (const [k, v] of Object.entries(
-                      extConfig.default_attrs
-                    )) {
+                  const defaultAttrs =
+                    extConfig.defaultAttrs ?? extConfig.default_attrs
+                  if (defaultAttrs) {
+                    for (const [k, v] of Object.entries(defaultAttrs)) {
                       attributes[k] ??= v
                     }
                   }
@@ -1396,14 +1402,20 @@ export class Parser {
             cloakedContext
           )
           const extConfig = extension.config
-          const contentModel = extConfig.content_model
+          const contentModel = extConfig.contentModel ?? extConfig.content_model
           if (contentModel !== 'skip') {
-            const posAttrs = extConfig.positional_attrs ?? extConfig.pos_attrs
+            const posAttrs =
+              extConfig.positionalAttrs ??
+              extConfig.positional_attrs ??
+              extConfig.posAttrs ??
+              extConfig.pos_attrs
             if (posAttrs && posAttrs.length > 0) {
               AttributeList.rekey(attributes, [null, ...posAttrs])
             }
-            if (extConfig.default_attrs) {
-              for (const [k, v] of Object.entries(extConfig.default_attrs)) {
+            const defaultAttrs =
+              extConfig.defaultAttrs ?? extConfig.default_attrs
+            if (defaultAttrs) {
+              for (const [k, v] of Object.entries(defaultAttrs)) {
                 attributes[k] ??= v
               }
             }

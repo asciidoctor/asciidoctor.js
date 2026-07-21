@@ -8,7 +8,12 @@
 import { describe, test, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { Extensions, load, convert } from '../src/index.js'
+import {
+  Extensions,
+  load,
+  convert,
+  InlineMacroProcessor,
+} from '../src/index.js'
 
 describe('Extensions (API)', () => {
   afterEach(() => {
@@ -165,6 +170,42 @@ describe('Extensions (API)', () => {
     })
     const html = await convert('label:[Checkbox]', { doctype: 'inline' })
     assert.equal(html, '<label>Checkbox</label>')
+  })
+
+  test('should parse inline macro content into positional/named attributes (DSL closure style)', async () => {
+    let capturedAttrs
+    Extensions.register(function () {
+      this.inlineMacro('emoji', function () {
+        this.positionalAttributes('size')
+        this.process((parent, target, attrs) => {
+          capturedAttrs = attrs
+          return this.createInline(parent, 'quoted', target, {})
+        })
+      })
+    })
+    await convert('emoji:smile[2x]', { doctype: 'inline' })
+    assert.deepEqual(capturedAttrs, { 1: '2x', size: '2x' })
+  })
+
+  test('should parse inline macro content into positional/named attributes (class-based style)', async () => {
+    let capturedAttrs
+    class EmojiInlineMacro extends InlineMacroProcessor {
+      static config = {
+        name: 'emoji',
+        content_model: 'attributes',
+        positional_attrs: ['size'],
+      }
+
+      process(parent, target, attrs) {
+        capturedAttrs = attrs
+        return this.createInline(parent, 'quoted', target, {})
+      }
+    }
+    Extensions.register(function () {
+      this.inlineMacro(EmojiInlineMacro)
+    })
+    await convert('emoji:smile[2x]', { doctype: 'inline' })
+    assert.deepEqual(capturedAttrs, { 1: '2x', size: '2x' })
   })
 
   test('should register a block macro that creates a link', async () => {

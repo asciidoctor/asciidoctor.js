@@ -498,19 +498,25 @@ export const Substitutors = {
             }
 
             const extConfig = extension.config
-            const defaultAttrs = extConfig.defaultAttrs
+            const defaultAttrs =
+              extConfig.defaultAttrs || extConfig.default_attrs
             const attributes = defaultAttrs ? { ...defaultAttrs } : {}
+            const contentModel =
+              extConfig.contentModel || extConfig.content_model
 
             if (content !== null && content !== undefined) {
               if (!content) {
-                if (extConfig.contentModel !== 'attributes')
-                  attributes.text = content
+                if (contentModel !== 'attributes') attributes.text = content
               } else {
                 content = this.normalizeText(content, true, true)
-                if (extConfig.contentModel === 'attributes') {
+                if (contentModel === 'attributes') {
                   await this.parseAttributes(
                     content,
-                    extConfig.positionalAttrs || extConfig.posAttrs || [],
+                    extConfig.positionalAttrs ||
+                      extConfig.positional_attrs ||
+                      extConfig.posAttrs ||
+                      extConfig.pos_attrs ||
+                      [],
                     { into: attributes }
                   )
                 } else {
