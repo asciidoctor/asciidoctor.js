@@ -13,6 +13,8 @@ import {
   load,
   convert,
   InlineMacroProcessor,
+  BlockMacroProcessor,
+  BlockProcessor,
 } from '../src/index.js'
 
 describe('Extensions (API)', () => {
@@ -206,6 +208,126 @@ describe('Extensions (API)', () => {
     })
     await convert('emoji:smile[2x]', { doctype: 'inline' })
     assert.deepEqual(capturedAttrs, { 1: '2x', size: '2x' })
+  })
+
+  test('should parse inline macro content into positional/named attributes (legacy pos_attrs alias)', async () => {
+    let capturedAttrs
+    class EmojiInlineMacro extends InlineMacroProcessor {
+      static config = {
+        name: 'emoji',
+        content_model: 'attributes',
+        pos_attrs: ['size'],
+      }
+
+      process(parent, target, attrs) {
+        capturedAttrs = attrs
+        return this.createInline(parent, 'quoted', target, {})
+      }
+    }
+    Extensions.register(function () {
+      this.inlineMacro(EmojiInlineMacro)
+    })
+    await convert('emoji:smile[2x]', { doctype: 'inline' })
+    assert.deepEqual(capturedAttrs, { 1: '2x', size: '2x' })
+  })
+
+  test('should merge inline macro defaultAttrs with parsed attributes, content taking precedence', async () => {
+    let capturedAttrs
+    Extensions.register(function () {
+      this.inlineMacro('emoji', function () {
+        this.positionalAttributes('size')
+        this.defaultAttributes({ size: '1x', color: 'blue' })
+        this.process((parent, target, attrs) => {
+          capturedAttrs = attrs
+          return this.createInline(parent, 'quoted', target, {})
+        })
+      })
+    })
+    await convert('emoji:smile[2x]', { doctype: 'inline' })
+    assert.deepEqual(capturedAttrs, { size: '2x', color: 'blue', 1: '2x' })
+  })
+
+  test('should parse block macro content into positional/named attributes, merging in defaultAttrs', async () => {
+    let capturedAttrs
+    const registry = Extensions.create()
+    registry.blockMacro(function () {
+      this.named('badge')
+      this.positionalAttributes('size')
+      this.defaultAttributes({ color: 'blue' })
+      this.process(function (parent, target, attrs) {
+        capturedAttrs = { ...attrs }
+        return this.createBlock(parent, 'paragraph', target, {})
+      })
+    })
+    await convert('badge::icon[2x]', { extension_registry: registry })
+    assert.deepEqual(capturedAttrs, { 1: '2x', size: '2x', color: 'blue' })
+  })
+
+  test('should parse block macro content into positional/named attributes (class-based legacy snake_case config)', async () => {
+    let capturedAttrs
+    class BadgeBlockMacro extends BlockMacroProcessor {
+      static config = {
+        name: 'badge',
+        content_model: 'attributes',
+        positional_attrs: ['size'],
+        default_attrs: { color: 'blue' },
+      }
+
+      process(parent, target, attrs) {
+        capturedAttrs = { ...attrs }
+        return this.createBlock(parent, 'paragraph', target, {})
+      }
+    }
+    const registry = Extensions.create()
+    registry.blockMacro(BadgeBlockMacro)
+    await convert('badge::icon[2x]', { extension_registry: registry })
+    assert.deepEqual(capturedAttrs, { 1: '2x', size: '2x', color: 'blue' })
+  })
+
+  test('should rekey a block extension positional attribute per positionalAttributes()', async () => {
+    let capturedAttrs
+    const registry = Extensions.create()
+    registry.block(function () {
+      this.named('badge')
+      this.onContext('paragraph')
+      this.positionalAttributes('size')
+      this.process(function (parent, reader, attrs) {
+        capturedAttrs = { ...attrs }
+        return this.createBlock(
+          parent,
+          'paragraph',
+          reader.getLines().join('\n'),
+          attrs
+        )
+      })
+    })
+    await convert('[badge,2x]\nHello', { extension_registry: registry })
+    assert.equal(capturedAttrs.size, '2x')
+  })
+
+  test('should rekey a block extension positional attribute (class-based legacy snake_case config)', async () => {
+    let capturedAttrs
+    class BadgeBlock extends BlockProcessor {
+      static config = {
+        name: 'badge',
+        contexts: ['paragraph'],
+        positional_attrs: ['size'],
+      }
+
+      process(parent, reader, attrs) {
+        capturedAttrs = { ...attrs }
+        return this.createBlock(
+          parent,
+          'paragraph',
+          reader.getLines().join('\n'),
+          attrs
+        )
+      }
+    }
+    const registry = Extensions.create()
+    registry.block(BadgeBlock)
+    await convert('[badge,2x]\nHello', { extension_registry: registry })
+    assert.equal(capturedAttrs.size, '2x')
   })
 
   test('should register a block macro that creates a link', async () => {

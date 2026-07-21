@@ -546,15 +546,14 @@ export class Processor {
   }
 
   constructor(config = {}) {
-    this.config = normalizeLegacyConfigAliases({
-      ...this.constructor.config,
-      ...config,
-    })
+    this.config = {
+      ...normalizeLegacyConfigAliases({ ...this.constructor.config }),
+      ...normalizeLegacyConfigAliases({ ...config }),
+    }
   }
 
   updateConfig(config) {
-    Object.assign(this.config, config)
-    normalizeLegacyConfigAliases(this.config)
+    Object.assign(this.config, normalizeLegacyConfigAliases({ ...config }))
   }
 
   process(..._args) {

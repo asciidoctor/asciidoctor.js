@@ -24,7 +24,7 @@ export namespace SyntaxProcessorDsl {
      * Resolve and register positional attribute names and default values.
      *
      * Accepts any of:
-     *   resolveAttributes()             → positional_attrs: [], default_attrs: {}
+     *   resolveAttributes()             → positionalAttrs: [], defaultAttrs: {}
      *   resolveAttributes('foo', 'bar') → positional maps (Array-style)
      *   resolveAttributes({...})        → positional maps (Object-style)
      *
@@ -69,7 +69,7 @@ export namespace BlockProcessorDsl {
 }
 export namespace MacroProcessorDsl {
     /**
-     * Override: passing a falsy value sets content_model to :text instead of
+     * Override: passing a falsy value sets contentModel to 'text' instead of
      * configuring positional attributes.
      *
      * @param {...*} args - Positional attribute specifications.
@@ -93,6 +93,13 @@ export namespace InlineMacroProcessorDsl {
  * set of convenience factory methods for creating AST nodes.
  */
 export class Processor {
+    /**
+     * Replace the static configuration map for this processor class, e.g.
+     * `ShoutBlock.config = { name: 'shout', contentModel: 'simple' }`.
+     *
+     * @param {object} value
+     */
+    static set config(value: object);
     /**
      * Get the static configuration map for this processor class.
      * Uses hasOwnProperty to avoid inheriting a parent class's config object
@@ -375,12 +382,12 @@ export namespace DocinfoProcessor {
  *
  * @example <caption>Custom delimited block that wraps content in a div</caption>
  * class ShoutBlock extends BlockProcessor {
+ *   static config = { name: 'shout', contexts: ['paragraph'], contentModel: 'simple' }
  *   process(parent, reader, attrs) {
  *     const block = this.createBlock(parent, 'paragraph', reader.readLines().join('\n').toUpperCase(), attrs)
  *     return block
  *   }
  * }
- * ShoutBlock.config = { name: 'shout', contexts: ['paragraph'], content_model: 'simple' }
  * Extensions.register(function () { this.block(ShoutBlock) })
  * // AsciiDoc usage: [shout]\nHello world
  */

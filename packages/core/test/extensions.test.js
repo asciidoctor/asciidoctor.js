@@ -8,6 +8,7 @@ import { describe, test, beforeEach } from 'node:test'
 import assert from 'node:assert/strict'
 
 import {
+  Processor,
   Preprocessor,
   TreeProcessor,
   Postprocessor,
@@ -693,6 +694,100 @@ describe('BlockProcessor', () => {
     const bp = new BlockProcessor('myblock', { contexts: ['sidebar'] })
     assert.ok(bp.config.contexts.has('sidebar'))
     assert.ok(!bp.config.contexts.has('open'))
+  })
+})
+
+// ── MacroProcessor defaults ─────────────────────────────────────────────────
+
+describe('MacroProcessor', () => {
+  test('default contentModel is attributes', () => {
+    const mp = new BlockMacroProcessor('mymacro')
+    assert.equal(mp.config.contentModel, 'attributes')
+  })
+
+  test('default contentModel is attributes (InlineMacroProcessor)', () => {
+    const mp = new InlineMacroProcessor('mymacro')
+    assert.equal(mp.config.contentModel, 'attributes')
+  })
+})
+
+// ── Legacy snake_case config alias normalization ────────────────────────────
+//
+// Extension config keys (contentModel, positionalAttrs, defaultAttrs) are
+// camelCase. The legacy Ruby-style snake_case keys are still accepted when a
+// processor declares its config directly (static config field, post-
+// declaration `X.config = {...}` assignment, or a plain object passed to the
+// constructor / updateConfig()) so pre-4.0.5 extensions keep working.
+// See https://github.com/asciidoctor/asciidoctor.js/issues/1857
+
+describe('Processor config normalization', () => {
+  test('static config setter allows post-declaration assignment', () => {
+    class Foo extends Processor {}
+    Foo.config = { name: 'foo', contentModel: 'simple' }
+    assert.deepEqual(Foo.config, { name: 'foo', contentModel: 'simple' })
+    const foo = new Foo()
+    assert.equal(foo.config.contentModel, 'simple')
+  })
+
+  test('constructor normalizes legacy content_model into contentModel', () => {
+    const bp = new BlockProcessor('x', { content_model: 'simple' })
+    assert.equal(bp.config.contentModel, 'simple')
+  })
+
+  test('constructor normalizes legacy positional_attrs into positionalAttrs', () => {
+    const bmp = new BlockMacroProcessor('x', {
+      positional_attrs: ['a', 'b'],
+    })
+    assert.deepEqual(bmp.config.positionalAttrs, ['a', 'b'])
+  })
+
+  test('constructor normalizes legacy pos_attrs into positionalAttrs', () => {
+    const bmp = new BlockMacroProcessor('x', { pos_attrs: ['a', 'b'] })
+    assert.deepEqual(bmp.config.positionalAttrs, ['a', 'b'])
+  })
+
+  test('positional_attrs takes precedence over pos_attrs when both are set', () => {
+    const bmp = new BlockMacroProcessor('x', {
+      positional_attrs: ['a'],
+      pos_attrs: ['b'],
+    })
+    assert.deepEqual(bmp.config.positionalAttrs, ['a'])
+  })
+
+  test('constructor normalizes legacy default_attrs into defaultAttrs', () => {
+    const bmp = new BlockMacroProcessor('x', {
+      default_attrs: { color: 'red' },
+    })
+    assert.deepEqual(bmp.config.defaultAttrs, { color: 'red' })
+  })
+
+  test('an explicit camelCase key is not overwritten by a legacy alias', () => {
+    const bp = new BlockProcessor('x', {
+      contentModel: 'simple',
+      content_model: 'compound',
+    })
+    assert.equal(bp.config.contentModel, 'simple')
+  })
+
+  test('static config declared with legacy keys is normalized on construction', () => {
+    class LegacyBlock extends BlockProcessor {}
+    LegacyBlock.config = {
+      name: 'legacy',
+      content_model: 'simple',
+      positional_attrs: ['size'],
+      default_attrs: { size: '1x' },
+    }
+    const instance = new LegacyBlock()
+    assert.equal(instance.config.contentModel, 'simple')
+    assert.deepEqual(instance.config.positionalAttrs, ['size'])
+    assert.deepEqual(instance.config.defaultAttrs, { size: '1x' })
+  })
+
+  test('updateConfig() normalizes legacy aliases', () => {
+    const bp = new BlockProcessor('x')
+    bp.updateConfig({ content_model: 'simple', positional_attrs: ['a'] })
+    assert.equal(bp.config.contentModel, 'simple')
+    assert.deepEqual(bp.config.positionalAttrs, ['a'])
   })
 })
 
