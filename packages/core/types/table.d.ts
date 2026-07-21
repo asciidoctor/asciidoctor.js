@@ -120,8 +120,8 @@ declare class Cell extends AbstractBlock<string | string[]> {
         readAsset(path: string, opts?: any): Promise<string | null>;
         readContents(target: string, opts?: any): Promise<string | null>;
         isUri(str: string): boolean;
-        readonly logger: any;
-        getLogger(): object;
+        readonly logger: import("./logging.js").LoggerLike;
+        getLogger(): import("./logging.js").LoggerLike;
         getRole(): string | undefined;
         setRole(...names: (string | string[])[]): string;
         getRoles(): string[];
