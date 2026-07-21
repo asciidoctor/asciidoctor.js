@@ -28,10 +28,11 @@ export function convertAsciidocToMarkdown(content) {
   return downdoc(preprocessed)
 }
 
-// Splits a release section into a summary (intro paragraph before the first
-// labeled section) and the structured changelog (the labeled sections themselves).
+// Splits a release section (already converted to Markdown) into a summary
+// (intro paragraph before the first labeled section) and the structured
+// changelog (the labeled sections themselves, now Markdown h3 headers).
 export function splitChangelog(sectionContent) {
-  const firstSectionIdx = sectionContent.search(/^[A-Z][^\n]+::\s*$/m)
+  const firstSectionIdx = sectionContent.search(/^### /m)
   if (firstSectionIdx === -1) {
     return { summary: sectionContent, changelog: '' }
   }
@@ -83,24 +84,30 @@ export function rollUnreleased(content, version, releaseDate) {
 }
 
 // Extracts the "== v<version> (date)" section and formats it as Markdown release notes.
+//
+// The whole changelog is converted to Markdown up front (rather than
+// extracting the AsciiDoc section first and converting it in isolation) so
+// that document-level context — attribute references such as
+// "{uri-repo}/issues/1857[#1857]" in particular — resolves correctly.
 export function extractReleaseNotes(content, version, { author, previousTag }) {
   const escapedVersion = version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const markdown = convertAsciidocToMarkdown(content)
   const headerRegex = new RegExp(
-    `== v${escapedVersion} \\(([^)]+)\\)\\n([\\s\\S]*?)(?=\\n== |$)`
+    `## v${escapedVersion} \\(([^)]+)\\)\\n([\\s\\S]*?)(?=\\n## |$)`
   )
-  const match = content.match(headerRegex)
+  const match = markdown.match(headerRegex)
   if (!match) {
     throw new Error(`Section "== v${version}" not found in CHANGELOG.adoc`)
   }
   const [, releaseDate, sectionContent] = match
   const { summary, changelog } = splitChangelog(sectionContent.trim())
   return formatReleaseNotes({
-    summary: convertAsciidocToMarkdown(summary),
+    summary,
     date: releaseDate,
     author,
     previousTag,
     currentTag: `v${version}`,
-    changelog: convertAsciidocToMarkdown(changelog),
+    changelog,
   })
 }
 
