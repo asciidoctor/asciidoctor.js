@@ -242,6 +242,32 @@ describe('Logger', () => {
     assert.equal(fatalMessage.getText(), 'game over')
   })
 
+  test('should route Document#getLogger() through the per-call logger option during convert', async () => {
+    // Regression test: getLogger() must behave as a true alias for the
+    // `logger` getter (per its own JSDoc), including the per-instance
+    // override that load.js installs on the Document so that logging still
+    // reaches the caller-supplied logger once the load()-scoped
+    // AsyncLocalStorage context has ended (i.e. during doc.convert(), which
+    // is when inline macros/converters run).
+    const registry = Extensions.create()
+    registry.inlineMacro(function () {
+      this.named('probe')
+      this.process((parent) => {
+        const doc = parent.getDocument()
+        doc.getLogger().warn('via getLogger()')
+        doc.logger.warn('via logger property')
+        return this.createInline(parent, 'quoted', 'ok', {})
+      })
+    })
+    const memoryLogger = MemoryLogger.create()
+    await convert('probe:x[]', {
+      extension_registry: registry,
+      logger: memoryLogger,
+    })
+    const texts = memoryLogger.getMessages().map((m) => m.getText())
+    assert.deepEqual(texts, ['via getLogger()', 'via logger property'])
+  })
+
   test('should return true if the logger instance is enabled for the specified level', () => {
     const logger = new Logger()
     assert.equal(logger.isDebugEnabled(), false)

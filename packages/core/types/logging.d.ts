@@ -31,6 +31,11 @@ export namespace Severity {
     let FATAL: number;
     let UNKNOWN: number;
 }
+/**
+ * A logger-compatible object: any of the built-in Logger implementations, or the
+ * global `console` (used as a fallback when no document/logger is available).
+ * @typedef {Logger|MemoryLogger|NullLogger|Console} LoggerLike
+ */
 /** Standard logger that writes formatted messages to stderr or a custom pipe. */
 export class Logger {
     constructor(opts?: {});
@@ -226,6 +231,11 @@ export namespace Logging {
     export function messageWithContext(text: any, context?: {}): any;
     export function createLogMessage(text: any, context?: {}): any;
 }
+/**
+ * A logger-compatible object: any of the built-in Logger implementations, or the
+ * global `console` (used as a fallback when no document/logger is available).
+ */
+export type LoggerLike = Logger | MemoryLogger | NullLogger | Console;
 declare class BasicFormatter {
     /**
      * Format a log entry as "progname: SEVERITY: message\n".
