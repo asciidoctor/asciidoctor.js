@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.5 (2026-07-21)
+
 Bug Fixes::
 
 * Fix `Document#getLogger()` (and `getLogger()` on any prototype augmented by `applyLogging()`: `Converter`, `Parser`, `PathResolver`, `Table.ParserContext`) silently ignoring a per-instance override of the `logger` getter, even though its own JSDoc describes it as "a method alias for the `logger` getter". `applyLogging()` (`logging.js`) installed `getLogger` as a fixed arrow function with no `this` binding, so it always fell back to the global `LoggerManager.logger` instead of resolving through `this.logger` — breaking the `logger` option to `convert()`/`load()` once the async-local-storage scope from `load()` had closed (i.e. during `doc.convert()`, when most block/inline converters and extensions run). Extensions/converters that follow the documented `doc.getLogger()` pattern (e.g. to log a warning with `messageWithContext()`) would have those messages silently escape a caller-supplied logger such as a `MemoryLogger`
