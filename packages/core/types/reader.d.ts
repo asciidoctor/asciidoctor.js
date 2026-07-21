@@ -1,3 +1,38 @@
+/**
+ * Snapshot captured by {@link Reader#save}/{@link PreprocessorReader#save} and
+ * consumed by the matching restoreSave().
+ * @typedef {Object} ReaderSaveState
+ * @property {string|null} file
+ * @property {string} dir
+ * @property {string} path
+ * @property {number} lineno
+ * @property {string[]} lines
+ * @property {[string|null, string, string, number]|null} mark
+ * @property {number} lookAhead
+ * @property {boolean} processLines
+ * @property {boolean} unescapeNextLine
+ * @property {boolean|null} unterminated
+ * @property {MaxDepth|null} [maxdepth]
+ * @property {boolean} [skipping]
+ * @property {ConditionalStackEntry[]} [conditionalStack]
+ * @property {Array} [includeStack]
+ */
+/**
+ * @typedef {Object} MaxDepth
+ * @property {number} abs
+ * @property {number} curr
+ * @property {number} rel
+ */
+/**
+ * An entry on the preprocessor conditional directive stack (ifdef/ifndef/ifeval).
+ * @typedef {Object} ConditionalStackEntry
+ * @property {string} name
+ * @property {string} [target]
+ * @property {string} [expr]
+ * @property {boolean} [skip]
+ * @property {boolean} skipping
+ * @property {Cursor|null} sourceLocation
+ */
 export class Cursor {
     constructor(file: any, dir?: any, path?: any, lineno?: number);
     file: any;
@@ -20,18 +55,11 @@ export class Cursor {
 export class Reader {
     constructor(data?: any, cursor?: any, opts?: {});
     file: any;
-    _dir: any;
     path: any;
     lineno: any;
-    _document: any;
     sourceLines: string[];
-    _lines: string[];
-    _mark: any;
-    _lookAhead: number;
     processLines: boolean;
-    _unescapeNextLine: boolean;
-    unterminated: any;
-    _saved: any;
+    unterminated: boolean;
     /** @returns {boolean | Promise<boolean>} */
     hasMoreLines(): boolean | Promise<boolean>;
     /** @returns {boolean | Promise<boolean>} */
@@ -112,16 +140,34 @@ export class Reader {
     get lines(): string[];
     string(): string;
     source(): string;
+    /** @returns {void} */
     save(): void;
+    /** @returns {void} */
     restoreSave(): void;
     discardSave(): void;
     toString(): string;
     getCursor(): Cursor;
     getLines(): string[];
     getString(): string;
-    getLogger(): any;
-    createLogMessage(text: any, context?: {}): any;
-    get logger(): any;
+    /** @returns {import('./logging.js').LoggerLike} */
+    getLogger(): import("./logging.js").LoggerLike;
+    /**
+     * @param {string} text
+     * @param {{sourceLocation?: Cursor, includeLocation?: Cursor}} [context={}]
+     * @returns {{text: string, source_location?: Cursor, include_location?: Cursor, inspect(): string, toString(): string}}
+     */
+    createLogMessage(text: string, context?: {
+        sourceLocation?: Cursor;
+        includeLocation?: Cursor;
+    }): {
+        text: string;
+        source_location?: Cursor;
+        include_location?: Cursor;
+        inspect(): string;
+        toString(): string;
+    };
+    /** @returns {import('./logging.js').LoggerLike} */
+    get logger(): import("./logging.js").LoggerLike;
     /** @param {string} msg @param {{ sourceLocation?: any, includeLocation?: any }} [opts] */
     _logWarn(msg: string, opts?: {
         sourceLocation?: any;
@@ -132,20 +178,12 @@ export class Reader {
     _logInfo(msg: string, opts?: {
         sourceLocation?: any;
     }): void;
+    #private;
 }
 export class PreprocessorReader extends Reader {
     constructor(document: any, data?: any, cursor?: any, opts?: {});
-    _sourcemap: any;
-    _maxdepth: {
-        abs: number;
-        curr: number;
-        rel: number;
-    };
+    _document: any;
     includeStack: any[];
-    _includes: any;
-    _skipping: boolean;
-    _conditionalStack: any[];
-    _includeProcessorExtensions: any;
     /**
      * Drain conditional stack at EOS; treat blank lines as lines (not as EOF).
      * `peekLine()` returns undefined only at true EOF; '' for blank lines.
@@ -181,4 +219,41 @@ export class PreprocessorReader extends Reader {
      * @returns {number}
      */
     getIncludeDepth(): number;
+    #private;
 }
+/**
+ * Snapshot captured by {@link Reader#save}/{@link PreprocessorReader#save} and
+ * consumed by the matching restoreSave().
+ */
+export type ReaderSaveState = {
+    file: string | null;
+    dir: string;
+    path: string;
+    lineno: number;
+    lines: string[];
+    mark: [string | null, string, string, number] | null;
+    lookAhead: number;
+    processLines: boolean;
+    unescapeNextLine: boolean;
+    unterminated: boolean | null;
+    maxdepth?: MaxDepth | null;
+    skipping?: boolean;
+    conditionalStack?: ConditionalStackEntry[];
+    includeStack?: any[];
+};
+export type MaxDepth = {
+    abs: number;
+    curr: number;
+    rel: number;
+};
+/**
+ * An entry on the preprocessor conditional directive stack (ifdef/ifndef/ifeval).
+ */
+export type ConditionalStackEntry = {
+    name: string;
+    target?: string;
+    expr?: string;
+    skip?: boolean;
+    skipping: boolean;
+    sourceLocation: Cursor | null;
+};

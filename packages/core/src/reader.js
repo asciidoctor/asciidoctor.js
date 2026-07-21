@@ -4,10 +4,17 @@
 //   - @lines is an Array used as a reversed stack: @lines[-1] is the next line.
 //     In JS: this._lines[this._lines.length - 1] / this._lines.pop() / push().
 //   - Ruby private methods called by subclasses (shift, unshift, unshift_all,
-//     process_line, prepare_lines) use the _ prefix convention rather than JS
-//     # private, because PreprocessorReader must be able to override/call them.
-//   - JS # private fields are used only for data that is truly inaccessible to
-//     subclasses and external callers (none here, to keep inheritance clean).
+//     process_line, prepare_lines, skip_front_matter) use the _ prefix convention
+//     rather than JS # private, because PreprocessorReader must be able to
+//     override/call them — including prepare_lines' call into skip_front_matter,
+//     which runs via super() before PreprocessorReader's own # fields exist.
+//   - JS # private fields/methods are used for state that is only ever touched
+//     within the declaring class itself (never overridden, never read by the
+//     other class or by external modules): Reader's cursor mark, and
+//     PreprocessorReader's include/conditional-directive bookkeeping.
+//   - Fields shared with the subclass (or read by browser/reader.js for include
+//     resolution) keep the _ prefix and are typed via @internal JSDoc so they are
+//     stripped from the generated public .d.ts without changing runtime access.
 //   - PreprocessorReader overrides _shift() to strip the backslash from escaped
 //     directives, mirroring the Ruby `def shift` override.
 //   - PreprocessorReader overrides _prepareLines() to add front-matter handling
@@ -117,6 +124,44 @@ function _adjustIndentation(lines, indentSize, tabSize = 0) {
   }
 }
 
+/**
+ * Snapshot captured by {@link Reader#save}/{@link PreprocessorReader#save} and
+ * consumed by the matching restoreSave().
+ * @typedef {Object} ReaderSaveState
+ * @property {string|null} file
+ * @property {string} dir
+ * @property {string} path
+ * @property {number} lineno
+ * @property {string[]} lines
+ * @property {[string|null, string, string, number]|null} mark
+ * @property {number} lookAhead
+ * @property {boolean} processLines
+ * @property {boolean} unescapeNextLine
+ * @property {boolean|null} unterminated
+ * @property {MaxDepth|null} [maxdepth]
+ * @property {boolean} [skipping]
+ * @property {ConditionalStackEntry[]} [conditionalStack]
+ * @property {Array} [includeStack]
+ */
+
+/**
+ * @typedef {Object} MaxDepth
+ * @property {number} abs
+ * @property {number} curr
+ * @property {number} rel
+ */
+
+/**
+ * An entry on the preprocessor conditional directive stack (ifdef/ifndef/ifeval).
+ * @typedef {Object} ConditionalStackEntry
+ * @property {string} name
+ * @property {string} [target]
+ * @property {string} [expr]
+ * @property {boolean} [skip]
+ * @property {boolean} skipping
+ * @property {Cursor|null} sourceLocation
+ */
+
 // ── Cursor ────────────────────────────────────────────────────────────────────
 
 export class Cursor {
@@ -163,6 +208,56 @@ export class Cursor {
 // ── Reader ────────────────────────────────────────────────────────────────────
 
 export class Reader {
+  /**
+   * Directory containing the current source. Read and reassigned by
+   * {@link PreprocessorReader} when pushing/popping include contexts.
+   * @internal
+   * @type {string}
+   */
+  _dir
+
+  /**
+   * The document this reader belongs to, when created for one (e.g. via
+   * {@link PreprocessorReader}). Also read by browser/reader.js include resolution.
+   * @internal
+   * @type {import('./document.js').Document|undefined}
+   */
+  _document
+
+  /**
+   * Remaining lines, stored as a reversed stack (last element is the next line).
+   * @internal
+   * @type {string[]}
+   */
+  _lines
+
+  /**
+   * Number of already-visited lines (via {@link processLine}) not yet consumed.
+   * @internal
+   * @type {number}
+   */
+  _lookAhead
+
+  /**
+   * When true, the next line shifted off the stack has its leading backslash stripped.
+   * @internal
+   * @type {boolean}
+   */
+  _unescapeNextLine
+
+  /**
+   * Snapshot captured by {@link save}, consumed by {@link restoreSave}.
+   * @internal
+   * @type {ReaderSaveState|null}
+   */
+  _saved
+
+  /**
+   * Cursor mark captured by {@link mark}, as [file, dir, path, lineno].
+   * @type {[string|null, string, string, number]|null}
+   */
+  #mark = null
+
   constructor(data = null, cursor = null, opts = {}) {
     if (!cursor) {
       this.file = null
@@ -187,7 +282,6 @@ export class Reader {
     if (opts.document) this._document = opts.document
     this.sourceLines = this._prepareLines(data, opts)
     this._lines = this.sourceLines.slice().reverse()
-    this._mark = null
     this._lookAhead = 0
     this.processLines = true
     this._unescapeNextLine = false
@@ -487,11 +581,11 @@ export class Reader {
     return new Cursor(this.file, this._dir, this.path, lineno)
   }
   cursorAtMark() {
-    return this._mark ? new Cursor(...this._mark) : this.cursor
+    return this.#mark ? new Cursor(...this.#mark) : this.cursor
   }
   cursorBeforeMark() {
-    if (this._mark) {
-      const [mFile, mDir, mPath, mLineno] = this._mark
+    if (this.#mark) {
+      const [mFile, mDir, mPath, mLineno] = this.#mark
       return new Cursor(mFile, mDir, mPath, mLineno - 1)
     }
     return new Cursor(this.file, this._dir, this.path, this.lineno - 1)
@@ -501,7 +595,7 @@ export class Reader {
   }
 
   mark() {
-    this._mark = [this.file, this._dir, this.path, this.lineno]
+    this.#mark = [this.file, this._dir, this.path, this.lineno]
   }
 
   lineInfo() {
@@ -538,6 +632,7 @@ export class Reader {
 
   // ── Save / restore ──────────────────────────────────────────────────────────
 
+  /** @returns {void} */
   save() {
     this._saved = {
       file: this.file,
@@ -545,7 +640,7 @@ export class Reader {
       path: this.path,
       lineno: this.lineno,
       lines: [...this._lines],
-      mark: this._mark,
+      mark: this.#mark,
       lookAhead: this._lookAhead,
       processLines: this.processLines,
       unescapeNextLine: this._unescapeNextLine,
@@ -553,6 +648,7 @@ export class Reader {
     }
   }
 
+  /** @returns {void} */
   restoreSave() {
     if (!this._saved) return
     const s = this._saved
@@ -561,7 +657,7 @@ export class Reader {
     this.path = s.path
     this.lineno = s.lineno
     this._lines = s.lines
-    this._mark = s.mark
+    this.#mark = s.mark
     this._lookAhead = s.lookAhead
     this.processLines = s.processLines
     this._unescapeNextLine = s.unescapeNextLine
@@ -661,15 +757,22 @@ export class Reader {
   getString() {
     return this.source()
   }
+  /** @returns {import('./logging.js').LoggerLike} */
   getLogger() {
     return this._document?.logger ?? LoggerManager.logger
   }
+  /**
+   * @param {string} text
+   * @param {{sourceLocation?: Cursor, includeLocation?: Cursor}} [context={}]
+   * @returns {{text: string, source_location?: Cursor, include_location?: Cursor, inspect(): string, toString(): string}}
+   */
   createLogMessage(text, context = {}) {
     return Logger.AutoFormattingMessage.attach({ text, ...context })
   }
 
   // ── Logging helpers ─────────────────────────────────────────────────────────
 
+  /** @returns {import('./logging.js').LoggerLike} */
   get logger() {
     return this._document?.logger ?? console
   }
@@ -709,6 +812,24 @@ export class Reader {
 // ── PreprocessorReader ────────────────────────────────────────────────────────
 
 export class PreprocessorReader extends Reader {
+  /** @type {boolean} */
+  #sourcemap
+
+  /** @type {MaxDepth|null} */
+  #maxdepth
+
+  /** Maps an include's rootname to whether it was fully (true) or partially (null) included. @type {Object<string, boolean|null>} */
+  #includes
+
+  /** @type {boolean} */
+  #skipping
+
+  /** @type {ConditionalStackEntry[]} */
+  #conditionalStack
+
+  /** Cached result of `document.extensions.includeProcessors()`; `false` once resolved as absent. @type {Array|false|null} */
+  #includeProcessorExtensions
+
   constructor(document, data = null, cursor = null, opts = {}) {
     if (
       'skip-front-matter' in document.attributes &&
@@ -720,22 +841,23 @@ export class PreprocessorReader extends Reader {
     if (!opts.document) opts = { ...opts, document }
     super(data, cursor, opts)
     this._document = document
-    this._sourcemap = document.sourcemap
+    this.#sourcemap = document.sourcemap
     const defaultDepth = parseInt(
       document.attributes['max-include-depth'] ?? 64,
       10
     )
-    this._maxdepth =
+    this.#maxdepth =
       defaultDepth > 0
         ? { abs: defaultDepth, curr: defaultDepth, rel: defaultDepth }
         : null
     this.includeStack = []
-    this._includes = document.catalog.includes
-    this._skipping = false
-    this._conditionalStack = []
-    this._includeProcessorExtensions = null
+    this.#includes = document.catalog.includes
+    this.#skipping = false
+    this.#conditionalStack = []
+    this.#includeProcessorExtensions = null
   }
 
+  /** @returns {import('./logging.js').LoggerLike} */
   get logger() {
     return this._document?.logger ?? console
   }
@@ -760,7 +882,7 @@ export class PreprocessorReader extends Reader {
     if (line !== undefined) return line
     if (this.includeStack.length === 0) {
       let endCursor = null
-      this._conditionalStack = this._conditionalStack.filter((cond) => {
+      this.#conditionalStack = this.#conditionalStack.filter((cond) => {
         const loc =
           cond.sourceLocation || (endCursor ??= this.cursorAtPrevLine())
         this._logError(
@@ -771,7 +893,7 @@ export class PreprocessorReader extends Reader {
       })
       return undefined
     }
-    this._popInclude()
+    this.#popInclude()
     return await this.peekLine(direct)
   }
 
@@ -804,7 +926,7 @@ export class PreprocessorReader extends Reader {
       this._dir,
       this.path,
       this.lineno,
-      this._maxdepth,
+      this.#maxdepth,
       this.processLines,
     ])
 
@@ -818,13 +940,13 @@ export class PreprocessorReader extends Reader {
         ))
       ) {
         const key = this.path.slice(0, this.path.lastIndexOf('.'))
-        this._includes[key] ??= 'partial-option' in attributes ? null : true
+        this.#includes[key] ??= 'partial-option' in attributes ? null : true
       }
     } else {
       this._dir = '.'
       this.processLines = true
       if ((this.path = path)) {
-        this._includes[rootname(this.path)] ??=
+        this.#includes[rootname(this.path)] ??=
           'partial-option' in attributes ? null : true
       } else {
         this.path = '<stdin>'
@@ -833,17 +955,17 @@ export class PreprocessorReader extends Reader {
 
     this.lineno = lineno
 
-    if (this._maxdepth && 'depth' in attributes) {
+    if (this.#maxdepth && 'depth' in attributes) {
       const relMaxdepth = parseInt(attributes.depth, 10)
       if (relMaxdepth > 0) {
-        const absMaxdepth = this._maxdepth.abs
+        const absMaxdepth = this.#maxdepth.abs
         let currMaxdepth = this.includeStack.length + relMaxdepth
         let effRel = relMaxdepth
         if (currMaxdepth > absMaxdepth) currMaxdepth = effRel = absMaxdepth
-        this._maxdepth = { abs: absMaxdepth, curr: currMaxdepth, rel: effRel }
+        this.#maxdepth = { abs: absMaxdepth, curr: currMaxdepth, rel: effRel }
       } else {
-        this._maxdepth = {
-          abs: this._maxdepth.abs,
+        this.#maxdepth = {
+          abs: this.#maxdepth.abs,
           curr: this.includeStack.length,
           rel: 0,
         }
@@ -858,7 +980,7 @@ export class PreprocessorReader extends Reader {
     })
 
     if (this._lines.length === 0) {
-      this._popInclude()
+      this.#popInclude()
     } else if ('leveloffset' in attributes) {
       const leveloffset = this._document.getAttribute('leveloffset')
       const resetLine = leveloffset
@@ -887,9 +1009,9 @@ export class PreprocessorReader extends Reader {
 
   exceedsMaxDepth() {
     return (
-      this._maxdepth &&
-      this.includeStack.length >= this._maxdepth.curr &&
-      this._maxdepth.rel
+      this.#maxdepth &&
+      this.includeStack.length >= this.#maxdepth.curr &&
+      this.#maxdepth.rel
     )
   }
   exceededMaxDepth() {
@@ -897,16 +1019,16 @@ export class PreprocessorReader extends Reader {
   }
 
   hasIncludeProcessors() {
-    if (this._includeProcessorExtensions === null) {
+    if (this.#includeProcessorExtensions === null) {
       const exts = this._document.extensions
       if (
         exts &&
-        (this._includeProcessorExtensions = exts.includeProcessors?.())
+        (this.#includeProcessorExtensions = exts.includeProcessors?.())
       )
         return true
-      this._includeProcessorExtensions = false
+      this.#includeProcessorExtensions = false
     }
-    return this._includeProcessorExtensions !== false
+    return this.#includeProcessorExtensions !== false
   }
 
   createIncludeCursor(file, path, lineno) {
@@ -921,9 +1043,9 @@ export class PreprocessorReader extends Reader {
   save() {
     super.save()
     Object.assign(this._saved, {
-      maxdepth: this._maxdepth,
-      skipping: this._skipping,
-      conditionalStack: this._conditionalStack.map((e) => ({ ...e })),
+      maxdepth: this.#maxdepth,
+      skipping: this.#skipping,
+      conditionalStack: this.#conditionalStack.map((e) => ({ ...e })),
       includeStack: [...this.includeStack],
     })
   }
@@ -931,9 +1053,9 @@ export class PreprocessorReader extends Reader {
   /** Also restore PreprocessorReader-specific fields. */
   restoreSave() {
     if (!this._saved) return
-    this._maxdepth = this._saved.maxdepth
-    this._skipping = this._saved.skipping
-    this._conditionalStack = this._saved.conditionalStack
+    this.#maxdepth = this._saved.maxdepth
+    this.#skipping = this._saved.skipping
+    this.#conditionalStack = this._saved.conditionalStack
     this.includeStack = this._saved.includeStack
     super.restoreSave()
   }
@@ -979,7 +1101,7 @@ export class PreprocessorReader extends Reader {
     if (!this.processLines) return line
 
     if (line === '') {
-      if (this._skipping) {
+      if (this.#skipping) {
         super._shift()
         return undefined
       }
@@ -998,7 +1120,7 @@ export class PreprocessorReader extends Reader {
             return line.slice(1)
           }
           if (
-            this._preprocessConditionalDirective(
+            this.#preprocessConditionalDirective(
               name,
               target || '',
               delimiter || null,
@@ -1012,7 +1134,7 @@ export class PreprocessorReader extends Reader {
           return line
         }
       }
-      if (this._skipping) {
+      if (this.#skipping) {
         super._shift()
         return undefined
       }
@@ -1025,7 +1147,7 @@ export class PreprocessorReader extends Reader {
             this._lookAhead++
             return line.slice(1)
           }
-          if (await this._preprocessIncludeDirective(target, attrlist ?? null))
+          if (await this.#preprocessIncludeDirective(target, attrlist ?? null))
             return undefined
           this._lookAhead++
           return line
@@ -1035,7 +1157,7 @@ export class PreprocessorReader extends Reader {
       return line
     }
 
-    if (this._skipping) {
+    if (this.#skipping) {
       super._shift()
       return undefined
     }
@@ -1054,7 +1176,7 @@ export class PreprocessorReader extends Reader {
    * @returns {boolean} True if the cursor should advance past this line.
    * @internal
    */
-  _preprocessConditionalDirective(name, target, delimiter, text) {
+  #preprocessConditionalDirective(name, target, delimiter, text) {
     const noTarget = target === ''
     if (!noTarget) target = target.toLowerCase()
 
@@ -1064,18 +1186,18 @@ export class PreprocessorReader extends Reader {
           `malformed preprocessor directive - text not permitted: endif::${target}[${text}]`,
           { sourceLocation: this.cursor }
         )
-      } else if (this._conditionalStack.length === 0) {
+      } else if (this.#conditionalStack.length === 0) {
         this._logError(`unmatched preprocessor directive: endif::${target}[]`, {
           sourceLocation: this.cursor,
         })
       } else {
-        const top = this._conditionalStack[this._conditionalStack.length - 1]
+        const top = this.#conditionalStack[this.#conditionalStack.length - 1]
         if (noTarget || target === top.target) {
-          this._conditionalStack.pop()
-          this._skipping =
-            this._conditionalStack.length === 0
+          this.#conditionalStack.pop()
+          this.#skipping =
+            this.#conditionalStack.length === 0
               ? false
-              : this._conditionalStack[this._conditionalStack.length - 1]
+              : this.#conditionalStack[this.#conditionalStack.length - 1]
                   .skipping
         } else {
           this._logError(
@@ -1088,7 +1210,7 @@ export class PreprocessorReader extends Reader {
     }
 
     let skip
-    if (this._skipping) {
+    if (this.#skipping) {
       if (name === 'ifeval') {
         if (!(noTarget && text && EvalExpressionRx.test(text.trim())))
           return true
@@ -1137,10 +1259,10 @@ export class PreprocessorReader extends Reader {
         const m = text && EvalExpressionRx.exec(text.trim())
         if (m) {
           try {
-            skip = !this._evalOp(
-              this._resolveExprVal(m[1]),
+            skip = !this.#evalOp(
+              this.#resolveExprVal(m[1]),
               m[2],
-              this._resolveExprVal(m[3])
+              this.#resolveExprVal(m[3])
             )
           } catch {
             skip = true
@@ -1156,29 +1278,29 @@ export class PreprocessorReader extends Reader {
     }
 
     if (name === 'ifeval') {
-      if (skip) this._skipping = true
-      this._conditionalStack.push({
+      if (skip) this.#skipping = true
+      this.#conditionalStack.push({
         name,
         expr: text,
         skip,
-        skipping: this._skipping,
-        sourceLocation: this._sourcemap ? this.cursor : null,
+        skipping: this.#skipping,
+        sourceLocation: this.#sourcemap ? this.cursor : null,
       })
     } else if (text) {
-      if (!this._skipping && !skip) {
+      if (!this.#skipping && !skip) {
         this.replaceNextLine(text.trimEnd())
         // Push a dummy line to stand in for the opening conditional directive
         this._lines.push('')
         if (text.startsWith('include::')) this._lookAhead--
       }
     } else {
-      if (skip) this._skipping = true
-      this._conditionalStack.push({
+      if (skip) this.#skipping = true
+      this.#conditionalStack.push({
         name,
         target,
         skip,
-        skipping: this._skipping,
-        sourceLocation: this._sourcemap ? this.cursor : null,
+        skipping: this.#skipping,
+        sourceLocation: this.#sourcemap ? this.cursor : null,
       })
     }
 
@@ -1192,7 +1314,7 @@ export class PreprocessorReader extends Reader {
    * @returns {Promise<boolean|undefined>} True if the line under the cursor was consumed or changed.
    * @internal
    */
-  async _preprocessIncludeDirective(target, attrlist) {
+  async #preprocessIncludeDirective(target, attrlist) {
     await _requireFsp()
     const doc = this._document
     let expandedTarget = target
@@ -1234,7 +1356,7 @@ export class PreprocessorReader extends Reader {
     }
 
     if (this.hasIncludeProcessors()) {
-      const ext = this._includeProcessorExtensions.find((c) =>
+      const ext = this.#includeProcessorExtensions.find((c) =>
         c.instance.handles(doc, expandedTarget)
       )
       if (ext) {
@@ -1257,11 +1379,11 @@ export class PreprocessorReader extends Reader {
       return this.replaceNextLine(`link:${lt}[${la}]`)
     }
 
-    if (!this._maxdepth) return undefined
+    if (!this.#maxdepth) return undefined
 
-    if (this.includeStack.length >= this._maxdepth.curr) {
+    if (this.includeStack.length >= this.#maxdepth.curr) {
       this._logError(
-        `maximum include depth of ${this._maxdepth.rel} exceeded`,
+        `maximum include depth of ${this.#maxdepth.rel} exceeded`,
         { sourceLocation: this.cursor }
       )
       return undefined
@@ -1270,7 +1392,7 @@ export class PreprocessorReader extends Reader {
     const parsedAttrs = attrlist
       ? await doc.parseAttributes(attrlist, [], { subInput: true })
       : {}
-    const resolution = await this._resolveIncludePath(
+    const resolution = await this.#resolveIncludePath(
       expandedTarget,
       attrlist,
       parsedAttrs
@@ -1283,7 +1405,7 @@ export class PreprocessorReader extends Reader {
     if (attrlist) {
       if ('lines' in parsedAttrs && parsedAttrs.lines !== '') {
         incLinenos = []
-        for (const ld of this._splitDelimitedValue(parsedAttrs.lines)) {
+        for (const ld of this.#splitDelimitedValue(parsedAttrs.lines)) {
           if (ld.includes('..')) {
             const sep = ld.indexOf('..')
             const from = parseInt(ld.slice(0, sep), 10)
@@ -1310,7 +1432,7 @@ export class PreprocessorReader extends Reader {
             : { [tag]: true }
       } else if ('tags' in parsedAttrs) {
         incTags = {}
-        for (const td of this._splitDelimitedValue(parsedAttrs.tags)) {
+        for (const td of this.#splitDelimitedValue(parsedAttrs.tags)) {
           if (td && td !== '!') {
             incTags[td.startsWith('!') ? td.slice(1) : td] = !td.startsWith('!')
           }
@@ -1345,7 +1467,7 @@ export class PreprocessorReader extends Reader {
         )
       }
       if (incLinenos) {
-        const { incLines, incOffset } = this._filterLinesByLinenos(
+        const { incLines, incOffset } = this.#filterLinesByLinenos(
           uriContent.split('\n'),
           incLinenos
         )
@@ -1354,7 +1476,7 @@ export class PreprocessorReader extends Reader {
           this.pushInclude(incLines, incPath, relpath, incOffset, parsedAttrs)
         }
       } else if (incTags) {
-        const { incLines, incOffset } = this._filterLinesByTags(
+        const { incLines, incOffset } = this.#filterLinesByTags(
           uriContent.split('\n'),
           incPath,
           expandedTarget,
@@ -1374,7 +1496,7 @@ export class PreprocessorReader extends Reader {
       if (incLinenos) {
         const fileLines = (await _fsp.readFile(incPath, 'utf8')).split('\n')
         super._shift()
-        const { incLines, incOffset } = this._filterLinesByLinenos(
+        const { incLines, incOffset } = this.#filterLinesByLinenos(
           fileLines,
           incLinenos
         )
@@ -1385,7 +1507,7 @@ export class PreprocessorReader extends Reader {
       } else if (incTags) {
         const fileLines = (await _fsp.readFile(incPath, 'utf8')).split('\n')
         super._shift()
-        const { incLines, incOffset } = this._filterLinesByTags(
+        const { incLines, incOffset } = this.#filterLinesByTags(
           fileLines,
           incPath,
           expandedTarget,
@@ -1428,7 +1550,7 @@ export class PreprocessorReader extends Reader {
    * @returns {boolean}
    * @internal
    */
-  _isBrowserMode() {
+  #isBrowserMode() {
     if (!_fsp) return true
     const baseDir = this._document.baseDir
     return (
@@ -1446,13 +1568,13 @@ export class PreprocessorReader extends Reader {
    * @returns {Promise<[string, string, string]|boolean|undefined>}
    * @internal
    */
-  async _resolveIncludePath(target, attrlist, attributes) {
+  async #resolveIncludePath(target, attrlist, attributes) {
     const doc = this._document
 
     // Delegate to browser-specific resolution when in a URI-based or browserless environment.
     // This handles file://, http(s)://, and relative targets resolved against a URI base_dir.
     // See src/browser/reader.js for the full specification.
-    if (this._isBrowserMode()) {
+    if (this.#isBrowserMode()) {
       const resolution = resolveBrowserIncludePath(this, target, attrlist)
       if (!Array.isArray(resolution)) return resolution
       const [incPath, relpath] = resolution
@@ -1501,7 +1623,7 @@ export class PreprocessorReader extends Reader {
    * Pop the top include context and restore state.
    * @internal
    */
-  _popInclude() {
+  #popInclude() {
     if (this.includeStack.length === 0) return
     ;[
       this._lines,
@@ -1509,7 +1631,7 @@ export class PreprocessorReader extends Reader {
       this._dir,
       this.path,
       this.lineno,
-      this._maxdepth,
+      this.#maxdepth,
       this.processLines,
     ] = this.includeStack.pop()
     this._lookAhead = 0
@@ -1522,7 +1644,7 @@ export class PreprocessorReader extends Reader {
    * @returns {{incLines: string[], incOffset: number|null}}
    * @internal
    */
-  _filterLinesByLinenos(fileLines, incLinenos) {
+  #filterLinesByLinenos(fileLines, incLinenos) {
     const remaining = [...incLinenos]
     const incLines = []
     let incOffset = null
@@ -1557,7 +1679,7 @@ export class PreprocessorReader extends Reader {
    * @returns {{incLines: string[], incOffset: number|null}}
    * @internal
    */
-  _filterLinesByTags(
+  #filterLinesByTags(
     fileLines,
     incPath,
     expandedTarget,
@@ -1704,7 +1826,7 @@ export class PreprocessorReader extends Reader {
    * @returns {string|number|boolean|null}
    * @internal
    */
-  _resolveExprVal(val) {
+  #resolveExprVal(val) {
     let quoted = false
     if (
       (val.startsWith('"') && val.endsWith('"')) ||
@@ -1733,7 +1855,7 @@ export class PreprocessorReader extends Reader {
    * @returns {boolean}
    * @internal
    */
-  _evalOp(lhs, op, rhs) {
+  #evalOp(lhs, op, rhs) {
     // Reject comparisons that mix boolean with non-boolean (invalid in Ruby — throws TypeError).
     if ((typeof lhs === 'boolean') !== (typeof rhs === 'boolean'))
       throw new TypeError('incompatible operand types')
@@ -1752,7 +1874,7 @@ export class PreprocessorReader extends Reader {
    * @returns {string[]}
    * @internal
    */
-  _splitDelimitedValue(val) {
+  #splitDelimitedValue(val) {
     return val.includes(',') ? val.split(',') : val.split(';')
   }
 

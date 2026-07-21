@@ -781,6 +781,7 @@ export class AbstractNode {
   /**
    * Provide a default logger.
    * The Logging mixin (logging.js) overrides this getter on the prototype.
+   * @returns {import('./logging.js').LoggerLike}
    */
   get logger() {
     return this.document?.logger ?? console
@@ -790,7 +791,7 @@ export class AbstractNode {
 
   /**
    * Get the logger for this node.
-   * @returns {object} the logger instance.
+   * @returns {import('./logging.js').LoggerLike} the logger instance.
    */
   getLogger() {
     return this.logger

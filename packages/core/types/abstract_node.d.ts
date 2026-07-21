@@ -357,13 +357,14 @@ export abstract class AbstractNode {
     /**
      * Provide a default logger.
      * The Logging mixin (logging.js) overrides this getter on the prototype.
+     * @returns {import('./logging.js').LoggerLike}
      */
-    get logger(): any;
+    get logger(): import("./logging.js").LoggerLike;
     /**
      * Get the logger for this node.
-     * @returns {object} the logger instance.
+     * @returns {import('./logging.js').LoggerLike} the logger instance.
      */
-    getLogger(): object;
+    getLogger(): import("./logging.js").LoggerLike;
     /**
      * Retrieve the space-separated String role for this node.
      *
