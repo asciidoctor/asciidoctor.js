@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Bug Fixes::
+
+* Fix `tasks/changelog.js notes` (used to generate GitHub release notes) leaving AsciiDoc attribute references such as `{uri-repo}/issues/1857[#1857]` unresolved in the generated Markdown. `extractReleaseNotes` used to extract the raw AsciiDoc section for a release and convert only that fragment to Markdown, losing the `:uri-repo:` attribute definition from the changelog header in the process. The whole changelog is now converted to Markdown once, and the release section is extracted from the resulting Markdown instead, so attribute references resolve correctly
+
 == v4.0.5 (2026-07-21)
 
 Bug Fixes::

@@ -9,6 +9,7 @@ import {
 } from '../tasks/changelog.js'
 
 const CHANGELOG_FIXTURE = `= Asciidoctor.js Changelog
+:uri-repo: https://github.com/asciidoctor/asciidoctor.js
 
 This document provides a high-level view of the changes introduced in Asciidoctor.js by release.
 
@@ -35,7 +36,7 @@ await convert('Hello _world_')
 
 Bug Fixes::
 
-* Fix conditional exports (#1722)
+* Fix conditional exports ({uri-repo}/issues/1722[#1722])
 `
 
 const RELEASE_NOTES_OPTS = {
@@ -119,20 +120,29 @@ describe('convertAsciidocToMarkdown', () => {
     const input = '* Use `npm ci` to install'
     assert.equal(convertAsciidocToMarkdown(input), input)
   })
+
+  test('resolves a document attribute reference defined earlier in the same content', () => {
+    assert.equal(
+      convertAsciidocToMarkdown(
+        ':uri-repo: https://github.com/asciidoctor/asciidoctor.js\n\nSee {uri-repo}/issues/1857[#1857]'
+      ),
+      'See [#1857](https://github.com/asciidoctor/asciidoctor.js/issues/1857)'
+    )
+  })
 })
 
 describe('splitChangelog', () => {
   test('returns the intro paragraph as summary and the sections as changelog', () => {
     const input =
-      'A great release.\n\nBreaking Changes::\n\n* Item A\n\nImprovements::\n\n* Item B'
+      'A great release.\n\n### Breaking Changes\n\n* Item A\n\n### Improvements\n\n* Item B'
     const { summary, changelog } = splitChangelog(input)
     assert.equal(summary, 'A great release.')
-    assert.ok(changelog.startsWith('Breaking Changes::'))
+    assert.ok(changelog.startsWith('### Breaking Changes'))
     assert.ok(!changelog.includes('A great release.'))
   })
 
   test('returns empty summary when content starts with a labeled section', () => {
-    const input = 'Breaking Changes::\n\n* Item A'
+    const input = '### Breaking Changes\n\n* Item A'
     const { summary, changelog } = splitChangelog(input)
     assert.equal(summary, '')
     assert.equal(changelog, input)
@@ -251,6 +261,16 @@ describe('extractReleaseNotes', () => {
     const releaseNotes = extractReleaseNotes(CHANGELOG_FIXTURE, '3.0.4', meta)
     assert.ok(releaseNotes.includes('Released on: 2024-02-12'))
     assert.ok(releaseNotes.includes('### Bug Fixes'))
+  })
+
+  test('resolves a document attribute reference from the changelog header', () => {
+    const releaseNotes = extractReleaseNotes(CHANGELOG_FIXTURE, '3.0.4', meta)
+    assert.ok(
+      releaseNotes.includes(
+        '[#1722](https://github.com/asciidoctor/asciidoctor.js/issues/1722)'
+      )
+    )
+    assert.ok(!releaseNotes.includes('{uri-repo}'))
   })
 
   test('throws when the version section is missing', () => {
