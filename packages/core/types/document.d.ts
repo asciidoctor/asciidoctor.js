@@ -498,6 +498,32 @@ export class Document extends AbstractBlock<string> {
      * @param {string} [delegateBackend] - An optional delegate backend to use when resolving the converter.
      */
     private _createConverter;
+    /**
+     * Build an auto-formatting log message that carries structured source_location
+     * (rather than baking it into the text), for use with `this.logger.warn(...)`.
+     * The Logging mixin (logging.js) overrides this method on the prototype.
+     * @param {string} text
+     * @param {{source_location?: any, include_location?: any}} [context={}]
+     * @returns {{text: string, source_location?: any, include_location?: any, inspect(): string, toString(): string}}
+     */
+    messageWithContext(text: string, context?: {
+        source_location?: any;
+        include_location?: any;
+    }): {
+        text: string;
+        source_location?: any;
+        include_location?: any;
+        inspect(): string;
+        toString(): string;
+    };
+    /** Alias for {@link messageWithContext} (used in extensions). */
+    createLogMessage(text: any, context?: {}): {
+        text: string;
+        source_location?: any;
+        include_location?: any;
+        inspect(): string;
+        toString(): string;
+    };
 }
 export namespace Document {
     export { Footnote };

@@ -221,26 +221,62 @@ export class Logger {
     return true
   }
 
-  /** Alias for {@link add} (Ruby Logger API). */
+  /**
+   * Alias for {@link add} (Ruby Logger API).
+   * @param {number|string} severity
+   * @param {string|{inspect?(): string}|null} [message=null]
+   * @param {string|Function|null} [progname=null]
+   * @returns {boolean}
+   */
   log(severity, message, progname) {
     return this.add(severity, message, progname)
   }
 
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [progname=null]
+   * @returns {boolean}
+   */
   debug(msg, progname) {
     return this.add(Severity.DEBUG, msg, progname)
   }
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [progname=null]
+   * @returns {boolean}
+   */
   info(msg, progname) {
     return this.add(Severity.INFO, msg, progname)
   }
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [progname=null]
+   * @returns {boolean}
+   */
   warn(msg, progname) {
     return this.add(Severity.WARN, msg, progname)
   }
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [progname=null]
+   * @returns {boolean}
+   */
   error(msg, progname) {
     return this.add(Severity.ERROR, msg, progname)
   }
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [progname=null]
+   * @returns {boolean}
+   */
   fatal(msg, progname) {
     return this.add(Severity.FATAL, msg, progname)
   }
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [progname=null]
+   * @returns {boolean}
+   */
   unknown(msg, progname) {
     return this.add(Severity.UNKNOWN, msg, progname)
   }
@@ -392,25 +428,61 @@ export class MemoryLogger {
     return true
   }
 
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [pn=null]
+   * @returns {boolean}
+   */
   debug(msg, pn) {
     return this.add(Severity.DEBUG, msg, pn)
   }
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [pn=null]
+   * @returns {boolean}
+   */
   info(msg, pn) {
     return this.add(Severity.INFO, msg, pn)
   }
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [pn=null]
+   * @returns {boolean}
+   */
   warn(msg, pn) {
     return this.add(Severity.WARN, msg, pn)
   }
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [pn=null]
+   * @returns {boolean}
+   */
   error(msg, pn) {
     return this.add(Severity.ERROR, msg, pn)
   }
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [pn=null]
+   * @returns {boolean}
+   */
   fatal(msg, pn) {
     return this.add(Severity.FATAL, msg, pn)
   }
+  /**
+   * @param {string|{inspect?(): string}|null} [msg=null]
+   * @param {string|Function|null} [pn=null]
+   * @returns {boolean}
+   */
   unknown(msg, pn) {
     return this.add(Severity.UNKNOWN, msg, pn)
   }
 
+  /**
+   * @param {number|string} severity
+   * @param {string|{inspect?(): string}|null} [message=null]
+   * @param {string|Function|null} [progname=null]
+   * @returns {boolean}
+   */
   log(severity, message, progname) {
     return this.add(severity, message, progname)
   }

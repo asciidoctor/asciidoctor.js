@@ -122,6 +122,39 @@ export class ConverterBase {
     constructor(backend: any, opts?: {});
     backend: any;
     /**
+     * The logger for this converter.
+     * The Logging mixin (logging.js) overrides this getter on the instance.
+     * @returns {import('./logging.js').LoggerLike}
+     */
+    get logger(): import("./logging.js").LoggerLike;
+    /** @returns {import('./logging.js').LoggerLike} */
+    getLogger(): import("./logging.js").LoggerLike;
+    /**
+     * Build an auto-formatting log message that carries structured source_location
+     * (rather than baking it into the text), for use with `this.logger.warn(...)`.
+     * @param {string} text
+     * @param {{source_location?: any, include_location?: any}} [context={}]
+     * @returns {{text: string, source_location?: any, include_location?: any, inspect(): string, toString(): string}}
+     */
+    messageWithContext(text: string, context?: {
+        source_location?: any;
+        include_location?: any;
+    }): {
+        text: string;
+        source_location?: any;
+        include_location?: any;
+        inspect(): string;
+        toString(): string;
+    };
+    /** Alias for {@link messageWithContext} (used in extensions). */
+    createLogMessage(text: any, context?: {}): {
+        text: string;
+        source_location?: any;
+        include_location?: any;
+        inspect(): string;
+        toString(): string;
+    };
+    /**
      * Convert a node by dispatching to a `convert_<transform>` method.
      *
      * @param {AbstractNode} node - the AbstractNode to convert

@@ -105,6 +105,39 @@ export class Parser {
      */
     static parseStyleAttribute(attributes: any, reader?: Reader | null): string | null;
     static _yieldBufferedAttribute(attrs: any, name: any, value: any, reader: any): void;
+    /**
+     * The logger used by the static Parser methods.
+     * The Logging mixin (logging.js) overrides this getter on the class.
+     * @returns {import('./logging.js').LoggerLike}
+     */
+    static get logger(): import("./logging.js").LoggerLike;
+    /** @returns {import('./logging.js').LoggerLike} */
+    static getLogger(): import("./logging.js").LoggerLike;
+    /**
+     * Build an auto-formatting log message that carries structured source_location
+     * (rather than baking it into the text), for use with `Parser.logger.warn(...)`.
+     * @param {string} text
+     * @param {{source_location?: any, include_location?: any}} [context={}]
+     * @returns {{text: string, source_location?: any, include_location?: any, inspect(): string, toString(): string}}
+     */
+    static messageWithContext(text: string, context?: {
+        source_location?: any;
+        include_location?: any;
+    }): {
+        text: string;
+        source_location?: any;
+        include_location?: any;
+        inspect(): string;
+        toString(): string;
+    };
+    /** Alias for {@link messageWithContext} (used in extensions). */
+    static createLogMessage(text: any, context?: {}): {
+        text: string;
+        source_location?: any;
+        include_location?: any;
+        inspect(): string;
+        toString(): string;
+    };
 }
 import { Reader } from './reader.js';
 import { Section } from './section.js';
