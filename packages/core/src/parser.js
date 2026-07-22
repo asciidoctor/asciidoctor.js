@@ -9,7 +9,7 @@
 //   - ListContinuationMarker module → Symbol used for identity checks.
 //   - Logging mixin applied via applyLogging().
 
-import { applyLogging } from './logging.js'
+import { applyLogging, Logger, LoggerManager } from './logging.js'
 import { Block } from './block.js'
 import { Section } from './section.js'
 import { List, ListItem } from './list.js'
@@ -3671,6 +3671,42 @@ export class Parser {
     return name
       .replace(new RegExp(InvalidAttributeNameCharsRx.source, 'gu'), '')
       .toLowerCase()
+  }
+
+  // ── Logging mixin (static) ──────────────────────────────────────────────────
+  // Declared here (in addition to being installed by applyLogging(Parser) below)
+  // so that generated .d.ts declarations expose them — applyLogging() assigns
+  // static properties after the class body closes, which tsc's declaration
+  // emit can't see.
+
+  /**
+   * The logger used by the static Parser methods.
+   * The Logging mixin (logging.js) overrides this getter on the class.
+   * @returns {import('./logging.js').LoggerLike}
+   */
+  static get logger() {
+    return LoggerManager.logger
+  }
+
+  /** @returns {import('./logging.js').LoggerLike} */
+  static getLogger() {
+    return this.logger
+  }
+
+  /**
+   * Build an auto-formatting log message that carries structured source_location
+   * (rather than baking it into the text), for use with `Parser.logger.warn(...)`.
+   * @param {string} text
+   * @param {{source_location?: any, include_location?: any}} [context={}]
+   * @returns {{text: string, source_location?: any, include_location?: any, inspect(): string, toString(): string}}
+   */
+  static messageWithContext(text, context = {}) {
+    return Logger.AutoFormattingMessage.attach({ text, ...context })
+  }
+
+  /** Alias for {@link messageWithContext} (used in extensions). */
+  static createLogMessage(text, context = {}) {
+    return this.messageWithContext(text, context)
   }
 }
 

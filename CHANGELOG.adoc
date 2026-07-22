@@ -11,6 +11,12 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 Bug Fixes::
 
 * Fix `tasks/changelog.js notes` (used to generate GitHub release notes) leaving AsciiDoc attribute references such as `{uri-repo}/issues/1857[#1857]` unresolved in the generated Markdown. `extractReleaseNotes` used to extract the raw AsciiDoc section for a release and convert only that fragment to Markdown, losing the `:uri-repo:` attribute definition from the changelog header in the process. The whole changelog is now converted to Markdown once, and the release section is extracted from the resulting Markdown instead, so attribute references resolve correctly
+* Type `Logger#warn()`/`#debug()`/`#info()`/`#error()`/`#fatal()`/`#unknown()`/`#log()` (and the matching `MemoryLogger` methods) with an optional `progname`/`pn` parameter instead of a required one. The generated `.d.ts` previously declared both arguments as mandatory, so calling `doc.getLogger().warn(doc.messageWithContext(...))` with a single argument — the documented pattern for logging from an extension — was flagged by editors as "expected 2 arguments" even though it is valid at runtime; the error surfaced because `getLogger()` resolves to the `LoggerLike` union (`Logger | MemoryLogger | NullLogger | Console`) and TypeScript requires a call to satisfy every member's signature
+* Type `messageWithContext()`/`createLogMessage()` on `Document`, `ConverterBase`, `PathResolver`, and `Table.ParserContext` (and the static equivalents on `Parser`). These are installed at runtime by the `applyLogging()` mixin (`logging.js`) *after* the class body closes, so `tsc`'s JSDoc-based declaration emit never picked them up — `doc.messageWithContext(...)`, the pattern shown in the extensions guide, previously had no type at all on the public API surface
+
+Infrastructure::
+
+* Add compile-only type tests for the Logger/MemoryLogger/NullLogger API and the `LoggerLike` union (`test/types/logging.test-d.ts`, run by `npm run test:types`), covering every shorthand log method across single- and two-argument call forms, the `applyLogging()` consumers listed above, and negative `@ts-expect-error` checks (e.g. `fatal()`/`unknown()` are intentionally unavailable on the raw `LoggerLike` union because `Console` has neither, but resolve once narrowed away from `Console`)
 
 == v4.0.5 (2026-07-21)
 

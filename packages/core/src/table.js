@@ -11,7 +11,7 @@
 import { AbstractBlock } from './abstract_block.js'
 import { AbstractNode } from './abstract_node.js'
 import { Inline } from './inline.js'
-import { applyLogging } from './logging.js'
+import { applyLogging, Logger, LoggerManager } from './logging.js'
 import { LF, ATTR_REF_HEAD, BASIC_SUBS, NORMAL_SUBS } from './constants.js'
 import { BlankLineRx, LeadingInlineAnchorRx } from './rx.js'
 import { PreprocessorReader } from './reader.js'
@@ -966,6 +966,41 @@ Table.ParserContext = class ParserContext {
 
   _advance() {
     this._linenum++
+  }
+
+  // ── Logging mixin ───────────────────────────────────────────────────────────
+  // Declared here (in addition to being installed by applyLogging() below) so
+  // that generated .d.ts declarations expose them — applyLogging() mutates the
+  // prototype after the class body closes, which tsc's declaration emit can't see.
+
+  /**
+   * The logger for this parser context.
+   * The Logging mixin (logging.js) overrides this getter on the prototype.
+   * @returns {import('./logging.js').LoggerLike}
+   */
+  get logger() {
+    return this.table?.document?.logger ?? LoggerManager.logger
+  }
+
+  /** @returns {import('./logging.js').LoggerLike} */
+  getLogger() {
+    return this.logger
+  }
+
+  /**
+   * Build an auto-formatting log message that carries structured source_location
+   * (rather than baking it into the text), for use with `this.logger.warn(...)`.
+   * @param {string} text
+   * @param {{source_location?: any, include_location?: any}} [context={}]
+   * @returns {{text: string, source_location?: any, include_location?: any, inspect(): string, toString(): string}}
+   */
+  messageWithContext(text, context = {}) {
+    return Logger.AutoFormattingMessage.attach({ text, ...context })
+  }
+
+  /** Alias for {@link messageWithContext} (used in extensions). */
+  createLogMessage(text, context = {}) {
+    return this.messageWithContext(text, context)
   }
 }
 

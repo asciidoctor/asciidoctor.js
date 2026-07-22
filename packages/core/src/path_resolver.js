@@ -7,7 +7,7 @@
 //   - The Opal / JRuby conditional root? overloads are omitted (Node.js only).
 //   - Logging mixin is applied via applyLogging() after class definition.
 
-import { applyLogging } from './logging.js'
+import { applyLogging, Logger, LoggerManager } from './logging.js'
 import { UriSniffRx } from './rx.js'
 
 const DOT = '.'
@@ -400,6 +400,41 @@ export class PathResolver {
       if (m) return [str.slice(m[0].length), m[0]]
     }
     return str
+  }
+
+  // ── Logging mixin ───────────────────────────────────────────────────────────
+  // Declared here (in addition to being installed by applyLogging() below) so
+  // that generated .d.ts declarations expose them — applyLogging() mutates the
+  // prototype after the class body closes, which tsc's declaration emit can't see.
+
+  /**
+   * The logger for this path resolver.
+   * The Logging mixin (logging.js) overrides this getter on the prototype.
+   * @returns {import('./logging.js').LoggerLike}
+   */
+  get logger() {
+    return LoggerManager.logger
+  }
+
+  /** @returns {import('./logging.js').LoggerLike} */
+  getLogger() {
+    return this.logger
+  }
+
+  /**
+   * Build an auto-formatting log message that carries structured source_location
+   * (rather than baking it into the text), for use with `this.logger.warn(...)`.
+   * @param {string} text
+   * @param {{source_location?: any, include_location?: any}} [context={}]
+   * @returns {{text: string, source_location?: any, include_location?: any, inspect(): string, toString(): string}}
+   */
+  messageWithContext(text, context = {}) {
+    return Logger.AutoFormattingMessage.attach({ text, ...context })
+  }
+
+  /** Alias for {@link messageWithContext} (used in extensions). */
+  createLogMessage(text, context = {}) {
+    return this.messageWithContext(text, context)
   }
 }
 

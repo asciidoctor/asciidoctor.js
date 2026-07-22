@@ -87,14 +87,64 @@ export class Logger {
     add(severity: number | string, message?: string | {
         inspect?(): string;
     } | null, progname?: string | Function | null): boolean;
-    /** Alias for {@link add} (Ruby Logger API). */
-    log(severity: any, message: any, progname: any): boolean;
-    debug(msg: any, progname: any): boolean;
-    info(msg: any, progname: any): boolean;
-    warn(msg: any, progname: any): boolean;
-    error(msg: any, progname: any): boolean;
-    fatal(msg: any, progname: any): boolean;
-    unknown(msg: any, progname: any): boolean;
+    /**
+     * Alias for {@link add} (Ruby Logger API).
+     * @param {number|string} severity
+     * @param {string|{inspect?(): string}|null} [message=null]
+     * @param {string|Function|null} [progname=null]
+     * @returns {boolean}
+     */
+    log(severity: number | string, message?: string | {
+        inspect?(): string;
+    } | null, progname?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [progname=null]
+     * @returns {boolean}
+     */
+    debug(msg?: string | {
+        inspect?(): string;
+    } | null, progname?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [progname=null]
+     * @returns {boolean}
+     */
+    info(msg?: string | {
+        inspect?(): string;
+    } | null, progname?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [progname=null]
+     * @returns {boolean}
+     */
+    warn(msg?: string | {
+        inspect?(): string;
+    } | null, progname?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [progname=null]
+     * @returns {boolean}
+     */
+    error(msg?: string | {
+        inspect?(): string;
+    } | null, progname?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [progname=null]
+     * @returns {boolean}
+     */
+    fatal(msg?: string | {
+        inspect?(): string;
+    } | null, progname?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [progname=null]
+     * @returns {boolean}
+     */
+    unknown(msg?: string | {
+        inspect?(): string;
+    } | null, progname?: string | Function | null): boolean;
 }
 export namespace Logger {
     export { BasicFormatter };
@@ -162,13 +212,63 @@ export class MemoryLogger {
     getMessages(): LogMessage[];
     getMaxSeverity(): number;
     add(severity: any, message?: any, progname?: any): boolean;
-    debug(msg: any, pn: any): boolean;
-    info(msg: any, pn: any): boolean;
-    warn(msg: any, pn: any): boolean;
-    error(msg: any, pn: any): boolean;
-    fatal(msg: any, pn: any): boolean;
-    unknown(msg: any, pn: any): boolean;
-    log(severity: any, message: any, progname: any): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [pn=null]
+     * @returns {boolean}
+     */
+    debug(msg?: string | {
+        inspect?(): string;
+    } | null, pn?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [pn=null]
+     * @returns {boolean}
+     */
+    info(msg?: string | {
+        inspect?(): string;
+    } | null, pn?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [pn=null]
+     * @returns {boolean}
+     */
+    warn(msg?: string | {
+        inspect?(): string;
+    } | null, pn?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [pn=null]
+     * @returns {boolean}
+     */
+    error(msg?: string | {
+        inspect?(): string;
+    } | null, pn?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [pn=null]
+     * @returns {boolean}
+     */
+    fatal(msg?: string | {
+        inspect?(): string;
+    } | null, pn?: string | Function | null): boolean;
+    /**
+     * @param {string|{inspect?(): string}|null} [msg=null]
+     * @param {string|Function|null} [pn=null]
+     * @returns {boolean}
+     */
+    unknown(msg?: string | {
+        inspect?(): string;
+    } | null, pn?: string | Function | null): boolean;
+    /**
+     * @param {number|string} severity
+     * @param {string|{inspect?(): string}|null} [message=null]
+     * @param {string|Function|null} [progname=null]
+     * @returns {boolean}
+     */
+    log(severity: number | string, message?: string | {
+        inspect?(): string;
+    } | null, progname?: string | Function | null): boolean;
     isDebug(): boolean;
     isInfo(): boolean;
     /**

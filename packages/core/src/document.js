@@ -33,7 +33,7 @@ import {
 import { Converter, CustomFactory, deriveBackendTraits } from './converter.js'
 import { XmlSanitizeRx, AttributeEntryPassMacroRx } from './rx.js'
 import { LF } from './constants.js'
-import { applyLogging } from './logging.js'
+import { applyLogging, Logger } from './logging.js'
 import { SyntaxHighlighter, DefaultFactoryProxy } from './syntax_highlighter.js'
 import { Reader, PreprocessorReader, Cursor } from './reader.js'
 import { Parser } from './parser.js'
@@ -2139,6 +2139,28 @@ export class Document extends AbstractBlock {
     attrs[`doctype-${newDoctype}`] = ''
     this.doctype = attrs.doctype = newDoctype
     return newDoctype
+  }
+
+  // ── Logging mixin ───────────────────────────────────────────────────────────
+  // Declared here (in addition to being installed by applyLogging() below) so
+  // that generated .d.ts declarations expose them — applyLogging() mutates the
+  // prototype after the class body closes, which tsc's declaration emit can't see.
+
+  /**
+   * Build an auto-formatting log message that carries structured source_location
+   * (rather than baking it into the text), for use with `this.logger.warn(...)`.
+   * The Logging mixin (logging.js) overrides this method on the prototype.
+   * @param {string} text
+   * @param {{source_location?: any, include_location?: any}} [context={}]
+   * @returns {{text: string, source_location?: any, include_location?: any, inspect(): string, toString(): string}}
+   */
+  messageWithContext(text, context = {}) {
+    return Logger.AutoFormattingMessage.attach({ text, ...context })
+  }
+
+  /** Alias for {@link messageWithContext} (used in extensions). */
+  createLogMessage(text, context = {}) {
+    return this.messageWithContext(text, context)
   }
 }
 
