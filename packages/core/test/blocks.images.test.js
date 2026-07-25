@@ -793,6 +793,17 @@ image::data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=[Do
       )
     })
 
+    test('encodes spaces in an embedded data uri image target', async () => {
+      const input =
+        "image::data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text>a b</text></svg>[Dot]"
+      const output = await convertStringToEmbedded(input)
+      assert.ok(
+        output.includes(
+          "data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'><text>a%20b</text></svg>"
+        )
+      )
+    })
+
     test('cleans reference to ancestor directories in imagesdir before reading image if safe mode level is at least SAFE', async () => {
       await usingMemoryLogger(async (logger) => {
         const input = `\
