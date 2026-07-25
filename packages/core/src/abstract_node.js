@@ -475,8 +475,10 @@ export class AbstractNode {
    * @returns {Promise<string>} a Promise resolving to a String reference or data URI.
    */
   async imageUri(targetImage, assetDirKey = 'imagesdir') {
-    // A data URI is already an embedded image, so use it as-is rather than reading or re-encoding it.
-    if (targetImage.startsWith('data:')) return targetImage
+    // A data URI is already an embedded image, so use it as-is (aside from space
+    // encoding, which normalizeWebPath would otherwise apply) rather than reading
+    // or re-encoding it.
+    if (targetImage.startsWith('data:')) return encodeSpacesInUri(targetImage)
     const doc = this.document
     if (doc.safe < SafeMode.SECURE && doc.hasAttribute('data-uri')) {
       let imagesBase
