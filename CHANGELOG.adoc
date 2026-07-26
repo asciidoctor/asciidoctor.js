@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.6 (2026-07-26)
+
 Bug Fixes::
 
 * Fix `AbstractNode#imageUri()` no longer percent-encoding spaces in a `data:` URI image target (e.g. `image::data:image/svg+xml,<svg ...><text>a b</text></svg>[]`), a regression from the data URI image target support added for inline SVG embedding. That change short-circuited `imageUri()` for any `data:` target by returning it unchanged, bypassing the space-encoding that `normalizeWebPath()` still applies for every other URI-ish target — and that upstream Asciidoctor (Ruby) also applies, since `image_uri` has no `data:`-specific early return at all. `imageUri()` now runs `data:` targets through `encodeSpacesInUri()` before returning them, matching Ruby's output byte-for-byte, while still avoiding the spurious `could not retrieve image data from URI` warning the earlier fix was meant to prevent
