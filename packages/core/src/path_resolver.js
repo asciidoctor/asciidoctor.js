@@ -177,11 +177,16 @@ export class PathResolver {
     }
 
     const relative = root ? posixPath.slice(root.length) : posixPath
-    let segments = relative.split(SLASH).filter((s) => s !== DOT && s !== '')
-    // Re-add non-empty-string DOT segments removal is as above; preserve empty for UNC
-    segments = relative.split(SLASH).filter((s) => s !== DOT)
-    // Remove any empty segments (trailing slash artifacts) except retain intent
-    segments = segments.filter((s) => s !== '')
+    // Mirror Ruby's String#split('/'), which drops only *trailing* empty
+    // strings. A leading empty segment must be kept: it's what reconstructs
+    // the missing slash for URI roots that under-consume it, e.g. root
+    // "file://" + relative "/Users/foo" (from "file:///Users/foo") needs
+    // that leading '' so joinPath() rebuilds "file:///Users/foo" and not
+    // "file://Users/foo".
+    const segments = relative.split(SLASH).filter((s) => s !== DOT)
+    while (segments.length && segments[segments.length - 1] === '') {
+      segments.pop()
+    }
 
     const result = [segments, root]
     cache[path] = result

@@ -148,6 +148,22 @@ describe('PathResolver#partitionPath()', () => {
     assert.equal(root, '//')
     assert.deepEqual(segments, ['server', 'share', 'docs'])
   })
+
+  test('file:// URI with triple slash: root keeps only 2 slashes, segments keep the leading "" placeholder', () => {
+    const [segments, root] = posix().partitionPath(
+      'file:///Users/guillaume/foo.png'
+    )
+    assert.equal(root, 'file://')
+    assert.deepEqual(segments, ['', 'Users', 'guillaume', 'foo.png'])
+  })
+
+  test('http:// URI (authority present) has no leading empty segment', () => {
+    const [segments, root] = posix().partitionPath(
+      'http://example.org/path/to/file.png'
+    )
+    assert.equal(root, 'http://')
+    assert.deepEqual(segments, ['example.org', 'path', 'to', 'file.png'])
+  })
 })
 
 // ── joinPath() ────────────────────────────────────────────────────────────────
@@ -202,6 +218,20 @@ describe('PathResolver#expandPath()', () => {
     assert.equal(
       posix().expandPath('//server/share/docs'),
       '//server/share/docs'
+    )
+  })
+
+  test('roundtrips a file:// URI with triple slash without dropping a slash', () => {
+    assert.equal(
+      posix().expandPath('file:///Users/guillaume/foo.png'),
+      'file:///Users/guillaume/foo.png'
+    )
+  })
+
+  test('resolves ".." in a file:// URI with triple slash', () => {
+    assert.equal(
+      posix().expandPath('file:///Users/guillaume/../foo.png'),
+      'file:///Users/foo.png'
     )
   })
 })
