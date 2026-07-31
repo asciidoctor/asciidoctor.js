@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.7 (2026-07-31)
+
 Bug Fixes::
 
 * Fix `PathResolver#partitionPath()`/`#expandPath()` dropping a slash from `file:///` (and other triple-slash) URIs, turning `file:///Users/guillaume/foo.png` into `file://Users/guillaume/foo.png` — a malformed URL whose "host" (`Users`) browsers reject as `Not allowed to load local resource`. `UriSniffRx` only ever matches up to 2 slashes after the scheme, so for a triple-slash URI the 3rd slash is left in the remainder to partition into segments; `partitionPath()` unconditionally filtered out *all* empty segments (including that leading one), silently discarding the information needed to reconstruct the slash on `joinPath()`. It now mirrors Ruby's `String#split('/')` semantics and drops only trailing empty segments, keeping leading ones intact
