@@ -38,21 +38,46 @@ export namespace Severity {
  */
 /** Standard logger that writes formatted messages to stderr or a custom pipe. */
 export class Logger {
-    constructor(opts?: {});
-    progname: any;
-    level: any;
-    set formatter(f: any);
+    /**
+     * @param {Object} [opts]
+     * @param {string} [opts.progname]
+     * @param {number} [opts.level]
+     * @param {{call: Function}} [opts.formatter]
+     * @param {{write: (line: string) => void}|((line: string) => void)|null} [opts.pipe] -
+     *   Destination for formatted output lines, mirroring Ruby's `Logger.new(logdev)`.
+     *   Accepts anything with a `write(line)` method (e.g. a Node stream) or a plain
+     *   function; defaults to `process.stderr`/`console.error` when omitted.
+     */
+    constructor(opts?: {
+        progname?: string;
+        level?: number;
+        formatter?: {
+            call: Function;
+        };
+        pipe?: {
+            write: (line: string) => void;
+        } | ((line: string) => void) | null;
+    });
+    progname: string;
+    level: number;
+    set formatter(f: {
+        call: Function;
+    });
     /** getter/setter so custom logger impls can access this.formatter */
-    get formatter(): any;
+    get formatter(): {
+        call: Function;
+    };
     /**
      * @returns {number|null} The highest severity level logged so far.
      */
     get maxSeverity(): number | null;
-    getLevel(): any;
+    getLevel(): number;
     setLevel(n: any): void;
-    getFormatter(): any;
+    getFormatter(): {
+        call: Function;
+    };
     setFormatter(f: any): void;
-    getProgramName(): any;
+    getProgramName(): string;
     setProgramName(n: any): void;
     getMaxSeverity(): number;
     /**
@@ -285,7 +310,6 @@ export class MemoryLogger {
 export class NullLogger extends Logger {
     static create(): NullLogger;
     constructor();
-    level: number;
     add(severity: any): boolean;
     log(severity: any): boolean;
     debug(): boolean;

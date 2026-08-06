@@ -15,6 +15,7 @@ import {
   LogMessage,
   MemoryLogger,
   NullLogger,
+  Severity,
 } from './logging.js'
 import { HttpCache, MemoryHttpCache, HttpCacheManager } from './http_cache.js'
 import { SafeMode, ContentModel } from './constants.js'
@@ -119,6 +120,7 @@ export {
   LogMessage,
   MemoryLogger,
   NullLogger,
+  Severity,
   HttpCache,
   MemoryHttpCache,
   HttpCacheManager,

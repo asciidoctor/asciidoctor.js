@@ -108,6 +108,16 @@ export async function withLogger(logger, fn) {
 
 /** Standard logger that writes formatted messages to stderr or a custom pipe. */
 export class Logger {
+  /**
+   * @param {Object} [opts]
+   * @param {string} [opts.progname]
+   * @param {number} [opts.level]
+   * @param {{call: Function}} [opts.formatter]
+   * @param {{write: (line: string) => void}|((line: string) => void)|null} [opts.pipe] -
+   *   Destination for formatted output lines, mirroring Ruby's `Logger.new(logdev)`.
+   *   Accepts anything with a `write(line)` method (e.g. a Node stream) or a plain
+   *   function; defaults to `process.stderr`/`console.error` when omitted.
+   */
   constructor(opts = {}) {
     this.progname = opts.progname ?? 'asciidoctor'
     this.level = opts.level ?? Severity.WARN
@@ -116,7 +126,7 @@ export class Logger {
     /** @internal */
     this._formatter = opts.formatter ?? new Logger.BasicFormatter()
     /** @internal */
-    this._pipe = opts.pipe ?? null // null → write via _writeln
+    this._pipe = opts.pipe ?? null // null → write via default _writeln destination
   }
 
   /** getter/setter so custom logger impls can access this.formatter */
@@ -282,12 +292,16 @@ export class Logger {
   }
 
   /**
-   * Write a formatted line to stderr or console.error.
+   * Write a formatted line to the configured pipe, or fall back to stderr/console.error.
    * @param {string} line
    * @internal
    */
   _writeln(line) {
-    if (typeof process !== 'undefined' && process.stderr?.write) {
+    if (this._pipe) {
+      typeof this._pipe.write === 'function'
+        ? this._pipe.write(line)
+        : this._pipe(line)
+    } else if (typeof process !== 'undefined' && process.stderr?.write) {
       process.stderr.write(line)
     } else {
       console.error(line.replace(/\n$/, ''))
