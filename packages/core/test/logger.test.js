@@ -9,6 +9,7 @@ import {
   LoggerManager,
   MemoryLogger,
   NullLogger,
+  Severity,
   Timings,
   Extensions,
   convert,
@@ -329,5 +330,32 @@ describe('Logger', () => {
       )
     )
     assert.ok(messages.includes('after'))
+  })
+
+  test('should expose the Severity constants', () => {
+    assert.deepEqual(Severity, {
+      DEBUG: 0,
+      INFO: 1,
+      WARN: 2,
+      ERROR: 3,
+      FATAL: 4,
+      UNKNOWN: 5,
+    })
+  })
+
+  test('should write formatted lines to a custom pipe object', async () => {
+    const lines = []
+    const logger = new Logger({ pipe: { write: (line) => lines.push(line) } })
+    await convert(PART_WITH_NO_SECTION, { logger })
+    assert.equal(lines.length, 1)
+    assert.match(lines[0], /^asciidoctor: ERROR: /)
+  })
+
+  test('should write formatted lines to a custom pipe function', async () => {
+    const lines = []
+    const logger = new Logger({ pipe: (line) => lines.push(line) })
+    await convert(PART_WITH_NO_SECTION, { logger })
+    assert.equal(lines.length, 1)
+    assert.match(lines[0], /^asciidoctor: ERROR: /)
   })
 })
