@@ -351,11 +351,35 @@ describe('Logger', () => {
     assert.match(lines[0], /^asciidoctor: ERROR: /)
   })
 
-  test('should write formatted lines to a custom pipe function', async () => {
-    const lines = []
-    const logger = new Logger({ pipe: (line) => lines.push(line) })
+  test('should pass the numeric severity to a function-style pipe', async () => {
+    const entries = []
+    const logger = new Logger({
+      pipe: (line, severity) => entries.push({ line, severity }),
+    })
     await convert(PART_WITH_NO_SECTION, { logger })
-    assert.equal(lines.length, 1)
-    assert.match(lines[0], /^asciidoctor: ERROR: /)
+    assert.equal(entries.length, 1)
+    assert.match(entries[0].line, /^asciidoctor: ERROR: /)
+    assert.equal(entries[0].severity, Severity.ERROR)
+  })
+
+  test('should route by severity through a function-style pipe without overriding add()', () => {
+    const routed = { error: [], warn: [], info: [] }
+    const logger = new Logger({
+      level: Severity.INFO,
+      pipe: (line, severity) => {
+        const text = line.replace(/\n$/, '')
+        if (severity >= Severity.ERROR) routed.error.push(text)
+        else if (severity === Severity.WARN) routed.warn.push(text)
+        else routed.info.push(text)
+      },
+    })
+    logger.info('info message')
+    logger.warn('warn message')
+    logger.error('error message')
+    assert.deepEqual(routed, {
+      error: ['asciidoctor: ERROR: error message'],
+      warn: ['asciidoctor: WARNING: warn message'],
+      info: ['asciidoctor: INFO: info message'],
+    })
   })
 })
