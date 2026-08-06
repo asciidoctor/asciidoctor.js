@@ -13,6 +13,10 @@ Improvements::
 * Export `Severity` (`{ DEBUG, INFO, WARN, ERROR, FATAL, UNKNOWN }`) from `@asciidoctor/core`'s public API (`index.js` and `browser.js`). Previously the constant existed only inside `logging.js` and was not re-exported, so a custom logger built with `LoggerManager.newLogger(name, { add })` had no way to compare the (already-numeric) `severity` argument against named levels without redeclaring the map by hand
 * Wire up the `pipe` constructor option on `Logger` (`new Logger({ pipe })`), mirroring Ruby's `Logger.new(logdev)`. It previously had no effect — `_writeln()` always wrote to `process.stderr`/`console.error` regardless of the option. `pipe` now accepts anything with a `write(line)` method, or a function called as `(line, severity)` — the numeric severity lets a function-style pipe route by level (e.g. `console.error` for `ERROR`+, `console.warn` for `WARN`) without subclassing `Logger`, overriding `add()`, or touching the internal `_writeln()` method
 
+Infrastructure::
+
+* Add compile-only type tests (`test/types/logging.test-d.ts`) covering the `Logger` constructor's `pipe` option (both the object `{write}` form and the severity-aware `(line, severity)` function form, plus a negative `@ts-expect-error` case for an invalid `pipe` value) and `LoggerManager.newLogger()`'s `add`/`postConstruct` override shape
+
 == v4.0.7 (2026-07-31)
 
 Bug Fixes::

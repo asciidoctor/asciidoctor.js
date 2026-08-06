@@ -310,6 +310,8 @@ export class Logger {
     } else if (typeof process !== 'undefined' && process.stderr?.write) {
       process.stderr.write(line)
     } else {
+      // Unlike stream.write(), console.error() appends its own line terminator,
+      // so the formatter's trailing \n must be stripped to avoid a blank line.
       console.error(line.replace(/\n$/, ''))
     }
   }
