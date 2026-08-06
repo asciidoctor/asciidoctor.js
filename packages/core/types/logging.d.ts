@@ -43,10 +43,12 @@ export class Logger {
      * @param {string} [opts.progname]
      * @param {number} [opts.level]
      * @param {{call: Function}} [opts.formatter]
-     * @param {{write: (line: string) => void}|((line: string) => void)|null} [opts.pipe] -
+     * @param {{write: (line: string) => void}|((line: string, severity: number) => void)|null} [opts.pipe] -
      *   Destination for formatted output lines, mirroring Ruby's `Logger.new(logdev)`.
-     *   Accepts anything with a `write(line)` method (e.g. a Node stream) or a plain
-     *   function; defaults to `process.stderr`/`console.error` when omitted.
+     *   Accepts anything with a `write(line)` method (e.g. a Node stream), or a plain
+     *   function called as `(line, severity)` — the numeric severity lets a function-style
+     *   pipe route by level (e.g. console.error for ERROR+, console.warn for WARN) without
+     *   overriding add(). Defaults to `process.stderr`/`console.error` when omitted.
      */
     constructor(opts?: {
         progname?: string;
@@ -56,7 +58,7 @@ export class Logger {
         };
         pipe?: {
             write: (line: string) => void;
-        } | ((line: string) => void) | null;
+        } | ((line: string, severity: number) => void) | null;
     });
     progname: string;
     level: number;

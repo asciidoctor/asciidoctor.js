@@ -113,10 +113,12 @@ export class Logger {
    * @param {string} [opts.progname]
    * @param {number} [opts.level]
    * @param {{call: Function}} [opts.formatter]
-   * @param {{write: (line: string) => void}|((line: string) => void)|null} [opts.pipe] -
+   * @param {{write: (line: string) => void}|((line: string, severity: number) => void)|null} [opts.pipe] -
    *   Destination for formatted output lines, mirroring Ruby's `Logger.new(logdev)`.
-   *   Accepts anything with a `write(line)` method (e.g. a Node stream) or a plain
-   *   function; defaults to `process.stderr`/`console.error` when omitted.
+   *   Accepts anything with a `write(line)` method (e.g. a Node stream), or a plain
+   *   function called as `(line, severity)` — the numeric severity lets a function-style
+   *   pipe route by level (e.g. console.error for ERROR+, console.warn for WARN) without
+   *   overriding add(). Defaults to `process.stderr`/`console.error` when omitted.
    */
   constructor(opts = {}) {
     this.progname = opts.progname ?? 'asciidoctor'
@@ -227,7 +229,7 @@ export class Logger {
       message ?? (typeof progname === 'function' ? progname() : progname)
     const label = SEVERITY_LABEL[severity] ?? 'ANY'
     const line = this._formatter.call(label, null, this.progname, text)
-    this._writeln(line)
+    this._writeln(line, severity)
     return true
   }
 
@@ -294,13 +296,17 @@ export class Logger {
   /**
    * Write a formatted line to the configured pipe, or fall back to stderr/console.error.
    * @param {string} line
+   * @param {number} severity - Numeric severity, forwarded to a function-style pipe so
+   *   it can route by level (e.g. console.error vs console.warn) without overriding add().
+   *   Not passed to an object-style pipe's write(), to stay compatible with Node's
+   *   Writable#write(chunk, encoding) signature.
    * @internal
    */
-  _writeln(line) {
+  _writeln(line, severity) {
     if (this._pipe) {
       typeof this._pipe.write === 'function'
         ? this._pipe.write(line)
-        : this._pipe(line)
+        : this._pipe(line, severity)
     } else if (typeof process !== 'undefined' && process.stderr?.write) {
       process.stderr.write(line)
     } else {
