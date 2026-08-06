@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.8 (2026-08-06)
+
 Improvements::
 
 * Export `Severity` (`{ DEBUG, INFO, WARN, ERROR, FATAL, UNKNOWN }`) from `@asciidoctor/core`'s public API (`index.js` and `browser.js`). Previously the constant existed only inside `logging.js` and was not re-exported, so a custom logger built with `LoggerManager.newLogger(name, { add })` had no way to compare the (already-numeric) `severity` argument against named levels without redeclaring the map by hand
