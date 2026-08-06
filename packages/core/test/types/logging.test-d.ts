@@ -162,3 +162,50 @@ logger.add()
 
 // @ts-expect-error NullLogger's shorthand methods take no arguments
 nullLogger.warn('message')
+
+// ── Logger constructor `pipe` option: object-style (Writable-compatible) ──────
+const capturedLines: string[] = []
+const objectPipeLogger = new Logger({
+  pipe: { write: (line: string) => capturedLines.push(line) },
+})
+objectPipeLogger.warn('routed through an object pipe')
+
+// ── Logger constructor `pipe` option: function-style, severity-aware ──────────
+const routed = {
+  error: [] as string[],
+  warn: [] as string[],
+  info: [] as string[],
+}
+const severityRoutingLogger = new Logger({
+  level: Severity.INFO,
+  pipe: (line: string, severity: number) => {
+    const text = line.replace(/\n$/, '')
+    if (severity >= Severity.ERROR) routed.error.push(text)
+    else if (severity === Severity.WARN) routed.warn.push(text)
+    else routed.info.push(text)
+  },
+})
+severityRoutingLogger.info('info message')
+severityRoutingLogger.warn('warn message')
+severityRoutingLogger.error('error message')
+
+// @ts-expect-error pipe must be an object with write() or a (line, severity) function
+new Logger({ pipe: 'not-a-valid-pipe' })
+
+// ── LoggerManager.newLogger(): custom `add()` override, severity is numeric ───
+const customLogs: { severity: number; message: unknown }[] = []
+const customLogger = LoggerManager.newLogger('BrowserConsoleLogger', {
+  add: (severity, message, progname) => {
+    // severity is always numeric here, comparable against Severity constants
+    const isError: boolean = severity >= Severity.ERROR
+    void isError
+    customLogs.push({ severity, message: message ?? progname })
+    return true
+  },
+  postConstruct() {
+    this.setProgramName('asciidoctor.js')
+  },
+})
+customLogger.warn('via a custom newLogger() override')
+const customLoggerLevel: number = customLogger.getLevel()
+void customLoggerLevel
