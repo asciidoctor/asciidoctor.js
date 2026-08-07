@@ -56,13 +56,22 @@ let _loggerStorePromise = null
  */
 async function _ensureLoggerStore() {
   if (_loggerStorePromise === null) {
-    _loggerStorePromise = import('node:async_hooks')
-      .then(({ AsyncLocalStorage }) => {
-        const store = new AsyncLocalStorage()
-        _loggerStore = store
-        return store
-      })
-      .catch(() => null)
+    // Only attempt the import in Node.js. Browsers have no `node:` module
+    // scheme, so a dynamic import of one is treated as a cross-origin fetch
+    // and rejected -- the .catch(() => null) below makes that safe, but some
+    // browsers (e.g. Firefox) additionally log the rejected request to the
+    // console as a CORS error, regardless of it being caught. Skipping the
+    // import entirely in non-Node environments avoids that console noise.
+    _loggerStorePromise =
+      typeof process !== 'undefined'
+        ? import('node:async_hooks')
+            .then(({ AsyncLocalStorage }) => {
+              const store = new AsyncLocalStorage()
+              _loggerStore = store
+              return store
+            })
+            .catch(() => null)
+        : Promise.resolve(null)
   }
   return _loggerStorePromise
 }

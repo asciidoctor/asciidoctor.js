@@ -9,6 +9,9 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 == Unreleased
 
 == v4.0.8 (2026-08-06)
+Bug Fixes::
+
+* Fix `logging.js` logging a spurious CORS error to the console in some browsers (e.g. Firefox) on first use. The per-execution logger context lazily probes for `node:async_hooks` and falls back to `null` when unavailable, but the dynamic `import('node:async_hooks')` itself was still attempted in the browser, where it is treated as a cross-origin fetch and rejected -- caught safely, but still logged by the browser regardless. The import is now skipped entirely when `process` is undefined (i.e. outside Node.js)
 
 Improvements::
 
