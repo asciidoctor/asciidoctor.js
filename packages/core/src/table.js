@@ -641,7 +641,7 @@ class Cell extends AbstractBlock {
 
   /**
    * Get the inner document for AsciiDoc-style cells.
-   * @returns {Document|null}
+   * @returns {import('./document.js').Document|null}
    */
   getInnerDocument() {
     return this.innerDocument

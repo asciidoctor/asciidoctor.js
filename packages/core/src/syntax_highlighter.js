@@ -50,7 +50,7 @@ export class SyntaxHighlighterBase {
    * Generates docinfo markup to insert at the specified location in the output document.
    *
    * @param {string} location - the location slot ('head' or 'footer')
-   * @param {Document} doc - the Document in which this highlighter is used
+   * @param {import('./document.js').Document} doc - the Document in which this highlighter is used
    * @param {Object} opts - options
    * @param {boolean} [opts.linkcss] - link stylesheet instead of embedding
    * @param {string} [opts.cdn_base_url] - base URL for CDN assets
@@ -137,7 +137,7 @@ export class SyntaxHighlighterBase {
   /**
    * Indicates whether this highlighter wants to write a stylesheet to disk.
    *
-   * @param {Document} doc - the Document in which this highlighter is being used
+   * @param {import('./document.js').Document} doc - the Document in which this highlighter is being used
    * @returns {boolean} false by default; subclasses return true to enable {@link writeStylesheetToDisk}
    */
   writeStylesheet(doc) {
@@ -147,7 +147,7 @@ export class SyntaxHighlighterBase {
   /**
    * Writes the stylesheet to disk.
    *
-   * @param {Document} doc - the Document in which this highlighter is used
+   * @param {import('./document.js').Document} doc - the Document in which this highlighter is used
    * @param {string} toDir - the absolute path of the output directory
    */
   writeStylesheetToDisk(doc, toDir) {

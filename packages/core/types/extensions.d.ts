@@ -46,17 +46,17 @@ export namespace IncludeProcessorDsl {
     function handles(fn: (target: string) => boolean): void;
     /**
      * @overload
-     * @param {(doc: Document, target: string) => boolean} fn - Predicate that receives the document and the include target.
+     * @param {(doc: import('./document.js').Document, target: string) => boolean} fn - Predicate that receives the document and the include target.
      * @returns {void}
      */
-    function handles(fn: (doc: Document, target: string) => boolean): void;
+    function handles(fn: (doc: import("./document.js").Document, target: string) => boolean): void;
     /**
      * @overload
-     * @param {Document} doc - The document being parsed.
+     * @param {import('./document.js').Document} doc - The document being parsed.
      * @param {string} target - The include target.
      * @returns {boolean}
      */
-    function handles(doc: Document, target: string): boolean;
+    function handles(doc: import("./document.js").Document, target: string): boolean;
 }
 export namespace DocinfoProcessorDsl {
     function atLocation(value: any): void;
@@ -128,7 +128,7 @@ export class Processor {
     /**
      * Create a Section node in the same manner as the parser.
      *
-     * @param {Section|Document} parent - The parent Section or Document of this new Section.
+     * @param {Section|import('./document.js').Document} parent - The parent Section or Document of this new Section.
      * @param {string} title - The String title of the new Section.
      * @param {object} attrs - A plain object of attributes to control how the section is built.
      *   Use the style attribute to set the name of a special section (e.g. appendix).
@@ -139,7 +139,7 @@ export class Processor {
      *   - numbered {boolean} - Flag to force numbering.
      * @returns {Section} a Section node with all properties properly initialized.
      */
-    createSection(parent: Section | Document, title: string, attrs: object, opts?: object): Section;
+    createSection(parent: Section | import("./document.js").Document, title: string, attrs: object, opts?: object): Section;
     /**
      * Create a generic block node and link it to the specified parent.
      *
@@ -154,12 +154,12 @@ export class Processor {
     /**
      * Create a list node and link it to the specified parent.
      *
-     * @param {Block|Section|Document} parent - The parent of this new list.
+     * @param {Block|Section|import('./document.js').Document} parent - The parent of this new list.
      * @param {string} context - The list context ('ulist', 'olist', 'colist', 'dlist').
      * @param {object|null} [attrs=null] - A plain object of attributes to set on this list block.
      * @returns {List} a List node with all properties properly initialized.
      */
-    createList(parent: Block | Section | Document, context: string, attrs?: object | null): List;
+    createList(parent: Block | Section | import("./document.js").Document, context: string, attrs?: object | null): List;
     /**
      * Create a list item node and link it to the specified parent.
      *
@@ -171,13 +171,13 @@ export class Processor {
     /**
      * Create an image block node and link it to the specified parent.
      *
-     * @param {Block|Section|Document} parent - The parent of this new image block.
+     * @param {Block|Section|import('./document.js').Document} parent - The parent of this new image block.
      * @param {object} attrs - A plain object of attributes to control how the image block is built.
      *   The target attribute sets the image source; alt sets the alt text.
      * @param {object} [opts={}] - An optional plain object of options.
      * @returns {Block} a Block node with all properties properly initialized.
      */
-    createImageBlock(parent: Block | Section | Document, attrs: object, opts?: object): Block;
+    createImageBlock(parent: Block | Section | import("./document.js").Document, attrs: object, opts?: object): Block;
     /**
      * Create an inline node and bind it to the specified parent.
      *
@@ -250,11 +250,11 @@ export class Processor {
  */
 export class Preprocessor extends Processor {
     /**
-     * @param {Document} document - The document being parsed.
+     * @param {import('./document.js').Document} document - The document being parsed.
      * @param {PreprocessorReader} reader - The reader positioned at the beginning of the source.
      * @returns {Reader|undefined} The same or a substitute Reader, or undefined to use the original.
      */
-    process(document: Document, reader: PreprocessorReader): Reader | undefined;
+    process(document: import("./document.js").Document, reader: PreprocessorReader): Reader | undefined;
 }
 export namespace Preprocessor {
     export { DocumentProcessorDsl as DSL };
@@ -277,10 +277,10 @@ export namespace Preprocessor {
  */
 export class TreeProcessor extends Processor {
     /**
-     * @param {Document} document - The parsed document.
+     * @param {import('./document.js').Document} document - The parsed document.
      * @returns {void}
      */
-    process(document: Document): void;
+    process(document: import("./document.js").Document): void;
 }
 export namespace TreeProcessor {
     export { DocumentProcessorDsl as DSL };
@@ -306,11 +306,11 @@ export const Treeprocessor: typeof TreeProcessor;
  */
 export class Postprocessor extends Processor {
     /**
-     * @param {Document} document - The converted document.
+     * @param {import('./document.js').Document} document - The converted document.
      * @param {string} output - The converted output string.
      * @returns {string} The (possibly modified) output string.
      */
-    process(document: Document, output: string): string;
+    process(document: import("./document.js").Document, output: string): string;
 }
 export namespace Postprocessor {
     export { DocumentProcessorDsl as DSL };
@@ -322,13 +322,13 @@ export namespace Postprocessor {
  */
 export class IncludeProcessor extends Processor {
     /**
-     * @param {Document} document - The document being parsed.
+     * @param {import('./document.js').Document} document - The document being parsed.
      * @param {PreprocessorReader} reader - The reader for the including document.
      * @param {string} target - The target of the include directive.
      * @param {Record<string, string>} attributes - The parsed include attributes.
      * @returns {void}
      */
-    process(document: Document, reader: PreprocessorReader, target: string, attributes: Record<string, string>): void;
+    process(document: import("./document.js").Document, reader: PreprocessorReader, target: string, attributes: Record<string, string>): void;
     /**
      * Decide whether this include processor handles the given target.
      *
@@ -338,11 +338,11 @@ export class IncludeProcessor extends Processor {
      * parser can always invoke it as `handles(doc, target)`. The first parameter
      * is therefore typed `Document | string` so both override shapes type-check.
      *
-     * @param {Document|string} doc - The document being parsed, or (for a Ruby-style arity-1 override) the include target.
+     * @param {import('./document.js').Document|string} doc - The document being parsed, or (for a Ruby-style arity-1 override) the include target.
      * @param {string} target - The target of the include directive.
      * @returns {boolean} true if this processor handles the given target.
      */
-    handles(doc: Document | string, target: string): boolean;
+    handles(doc: import("./document.js").Document | string, target: string): boolean;
 }
 export namespace IncludeProcessor {
     export { IncludeProcessorDsl as DSL };
@@ -355,10 +355,10 @@ export namespace IncludeProcessor {
  */
 export class DocinfoProcessor extends Processor {
     /**
-     * @param {Document} document - The document being converted.
+     * @param {import('./document.js').Document} document - The document being converted.
      * @returns {string} The docinfo content to inject into the document.
      */
-    process(document: Document): string;
+    process(document: import("./document.js").Document): string;
 }
 export namespace DocinfoProcessor {
     export { DocinfoProcessorDsl as DSL };
@@ -577,10 +577,10 @@ export class Registry {
     /**
      * Activate all global extension Groups and the Groups associated with this registry.
      *
-     * @param {Document} document - The Document on which the extensions are to be used.
+     * @param {import('./document.js').Document} document - The Document on which the extensions are to be used.
      * @returns {Registry} this Registry.
      */
-    activate(document: Document): Registry;
+    activate(document: import("./document.js").Document): Registry;
     document: import("./document.js").Document;
     /**
      * Register a Preprocessor with the extension registry.

@@ -129,9 +129,9 @@ export class Parser {
   /**
    * Parse AsciiDoc source from reader into document.
    * @param {Reader} reader
-   * @param {Document} document
+   * @param {import('./document.js').Document} document
    * @param {{header_only?: boolean}} [options={}]
-   * @returns {Promise<Document>}
+   * @returns {Promise<import('./document.js').Document>}
    */
   static async parse(reader, document, options = {}) {
     const headerOnly = options.header_only ?? false
@@ -161,7 +161,7 @@ export class Parser {
   /**
    * Parse the document header.
    * @param {Reader} reader
-   * @param {Document} document
+   * @param {import('./document.js').Document} document
    * @param {boolean} [headerOnly=false]
    * @returns {Promise<Object>} Block attributes after the header.
    */
@@ -267,7 +267,7 @@ export class Parser {
   /**
    * Parse manpage header.
    * @param {Reader} reader
-   * @param {Document} document
+   * @param {import('./document.js').Document} document
    * @param {Object} blockAttributes
    * @param {boolean} [headerOnly=false]
    * @returns {Promise<void>}
@@ -405,7 +405,7 @@ export class Parser {
   /**
    * Return the next section from the reader.
    * @param {Reader} reader
-   * @param {Document|Section} parent
+   * @param {import('./document.js').Document|Section} parent
    * @param {Object} [attributes={}]
    * @returns {Promise<[Section|null, Object]>} Tuple of the new section (or null) and orphaned attributes.
    */
@@ -1656,7 +1656,7 @@ export class Parser {
   /**
    * Catalog callouts in text.
    * @param {string} text
-   * @param {Document} document
+   * @param {import('./document.js').Document} document
    * @returns {boolean} Whether any callouts were found.
    * @internal
    */
@@ -2449,7 +2449,7 @@ export class Parser {
   /**
    * Parse section title from reader.
    * @param {Reader} reader
-   * @param {Document} document
+   * @param {import('./document.js').Document} document
    * @param {string|null} [sectId=null]
    * @returns {Promise<[string|null, string|null, string, number, boolean]>} Tuple of [id, reftext, title, level, atx].
    */
@@ -2527,7 +2527,7 @@ export class Parser {
   /**
    * Parse header metadata (author line and revision line).
    * @param {Reader} reader
-   * @param {Document|null} [document=null]
+   * @param {import('./document.js').Document|null} [document=null]
    * @param {boolean} [retrieve=true]
    * @returns {Promise<Object|null>}
    */
@@ -2956,7 +2956,7 @@ export class Parser {
    * Store the attribute in the document.
    * @param {string} name
    * @param {string} value
-   * @param {Document|null} [doc=null]
+   * @param {import('./document.js').Document|null} [doc=null]
    * @param {Object|null} [attrs=null]
    * @param {Object} [opts={}]
    * @returns {[string, string|null]} Tuple of the resolved name and value.
