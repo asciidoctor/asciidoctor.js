@@ -360,12 +360,12 @@ export const IncludeProcessorDsl = {
    */
   /**
    * @overload
-   * @param {(doc: Document, target: string) => boolean} fn - Predicate that receives the document and the include target.
+   * @param {(doc: import('./document.js').Document, target: string) => boolean} fn - Predicate that receives the document and the include target.
    * @returns {void}
    */
   /**
    * @overload
-   * @param {Document} doc - The document being parsed.
+   * @param {import('./document.js').Document} doc - The document being parsed.
    * @param {string} target - The include target.
    * @returns {boolean}
    */
@@ -565,7 +565,7 @@ export class Processor {
   /**
    * Create a Section node in the same manner as the parser.
    *
-   * @param {Section|Document} parent - The parent Section or Document of this new Section.
+   * @param {Section|import('./document.js').Document} parent - The parent Section or Document of this new Section.
    * @param {string} title - The String title of the new Section.
    * @param {object} attrs - A plain object of attributes to control how the section is built.
    *   Use the style attribute to set the name of a special section (e.g. appendix).
@@ -666,7 +666,7 @@ export class Processor {
   /**
    * Create a list node and link it to the specified parent.
    *
-   * @param {Block|Section|Document} parent - The parent of this new list.
+   * @param {Block|Section|import('./document.js').Document} parent - The parent of this new list.
    * @param {string} context - The list context ('ulist', 'olist', 'colist', 'dlist').
    * @param {object|null} [attrs=null] - A plain object of attributes to set on this list block.
    * @returns {List} a List node with all properties properly initialized.
@@ -691,7 +691,7 @@ export class Processor {
   /**
    * Create an image block node and link it to the specified parent.
    *
-   * @param {Block|Section|Document} parent - The parent of this new image block.
+   * @param {Block|Section|import('./document.js').Document} parent - The parent of this new image block.
    * @param {object} attrs - A plain object of attributes to control how the image block is built.
    *   The target attribute sets the image source; alt sets the alt text.
    * @param {object} [opts={}] - An optional plain object of options.
@@ -834,7 +834,7 @@ export class Processor {
  */
 export class Preprocessor extends Processor {
   /**
-   * @param {Document} document - The document being parsed.
+   * @param {import('./document.js').Document} document - The document being parsed.
    * @param {PreprocessorReader} reader - The reader positioned at the beginning of the source.
    * @returns {Reader|undefined} The same or a substitute Reader, or undefined to use the original.
    */
@@ -864,7 +864,7 @@ Preprocessor.DSL = DocumentProcessorDsl
  */
 export class TreeProcessor extends Processor {
   /**
-   * @param {Document} document - The parsed document.
+   * @param {import('./document.js').Document} document - The parsed document.
    * @returns {void}
    */
   process(document) {
@@ -897,7 +897,7 @@ export const Treeprocessor = TreeProcessor
  */
 export class Postprocessor extends Processor {
   /**
-   * @param {Document} document - The converted document.
+   * @param {import('./document.js').Document} document - The converted document.
    * @param {string} output - The converted output string.
    * @returns {string} The (possibly modified) output string.
    */
@@ -916,7 +916,7 @@ Postprocessor.DSL = DocumentProcessorDsl
  */
 export class IncludeProcessor extends Processor {
   /**
-   * @param {Document} document - The document being parsed.
+   * @param {import('./document.js').Document} document - The document being parsed.
    * @param {PreprocessorReader} reader - The reader for the including document.
    * @param {string} target - The target of the include directive.
    * @param {Record<string, string>} attributes - The parsed include attributes.
@@ -937,7 +937,7 @@ export class IncludeProcessor extends Processor {
    * parser can always invoke it as `handles(doc, target)`. The first parameter
    * is therefore typed `Document | string` so both override shapes type-check.
    *
-   * @param {Document|string} doc - The document being parsed, or (for a Ruby-style arity-1 override) the include target.
+   * @param {import('./document.js').Document|string} doc - The document being parsed, or (for a Ruby-style arity-1 override) the include target.
    * @param {string} target - The target of the include directive.
    * @returns {boolean} true if this processor handles the given target.
    */
@@ -960,7 +960,7 @@ export class DocinfoProcessor extends Processor {
   }
 
   /**
-   * @param {Document} document - The document being converted.
+   * @param {import('./document.js').Document} document - The document being converted.
    * @returns {string} The docinfo content to inject into the document.
    */
   process(document) {
@@ -1297,7 +1297,7 @@ export class Registry {
   /**
    * Activate all global extension Groups and the Groups associated with this registry.
    *
-   * @param {Document} document - The Document on which the extensions are to be used.
+   * @param {import('./document.js').Document} document - The Document on which the extensions are to be used.
    * @returns {Registry} this Registry.
    */
   activate(document) {

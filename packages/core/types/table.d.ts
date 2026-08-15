@@ -181,9 +181,9 @@ declare class Cell extends AbstractBlock<string | string[]> {
     setText(val: string | null): void;
     /**
      * Get the inner document for AsciiDoc-style cells.
-     * @returns {Document|null}
+     * @returns {import('./document.js').Document|null}
      */
-    getInnerDocument(): Document | null;
+    getInnerDocument(): import("./document.js").Document | null;
 }
 declare class ParserContext {
     static get FORMATS(): Set<string>;
