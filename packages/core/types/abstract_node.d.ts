@@ -10,8 +10,8 @@ export abstract class AbstractNode {
      * @param {object} [opts={}]
      */
     constructor(parent: AbstractNode, context: string, opts?: object);
-    /** @type {Document} */
-    document: Document;
+    /** @type {import('./document.js').Document} */
+    document: import("./document.js").Document;
     context: string;
     nodeName: string;
     id: string;
@@ -396,9 +396,9 @@ export abstract class AbstractNode {
     /**
      * Get the document to which this node belongs.
      *
-     * @returns {Document} the Document.
+     * @returns {import('./document.js').Document} the Document.
      */
-    getDocument(): Document;
+    getDocument(): import("./document.js").Document;
     /**
      * Get the parent node of this node.
      *
@@ -435,7 +435,7 @@ export abstract class AbstractNode {
      */
     getContext(): string;
     /**
-     * Get the {Converter} instance being used to convert the current {Document}.
+     * Get the {@link import('./converter.js').Converter} instance being used to convert the current {@link import('./document.js').Document}.
      *
      * @returns {object} the converter instance.
      */

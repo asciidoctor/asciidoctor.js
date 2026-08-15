@@ -79,12 +79,12 @@ export class AbstractNode {
   constructor(parent, context, opts = {}) {
     // document is a special case – should refer to itself
     if (context === 'document') {
-      /** @type {Document} */
-      this.document = /** @type {Document} */ this
+      /** @type {import('./document.js').Document} */
+      this.document = /** @type {import('./document.js').Document} */ this
     } else if (parent) {
       /** @internal */
       this._parent = parent
-      /** @type {Document} */
+      /** @type {import('./document.js').Document} */
       this.document = parent.document
     }
     this.context = context
@@ -843,7 +843,7 @@ export class AbstractNode {
   /**
    * Get the document to which this node belongs.
    *
-   * @returns {Document} the Document.
+   * @returns {import('./document.js').Document} the Document.
    */
   getDocument() {
     return this.document
@@ -904,7 +904,7 @@ export class AbstractNode {
   }
 
   /**
-   * Get the {Converter} instance being used to convert the current {Document}.
+   * Get the {@link import('./converter.js').Converter} instance being used to convert the current {@link import('./document.js').Document}.
    *
    * @returns {object} the converter instance.
    */

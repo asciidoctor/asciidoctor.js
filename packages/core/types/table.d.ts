@@ -80,7 +80,7 @@ declare class Cell extends AbstractBlock<string | string[]> {
          * @returns {Table}
          */
         getTable(): Table;
-        document: Document;
+        document: import("./document.js").Document;
         context: string;
         nodeName: string;
         id: string;
@@ -126,7 +126,7 @@ declare class Cell extends AbstractBlock<string | string[]> {
         setRole(...names: (string | string[])[]): string;
         getRoles(): string[];
         getAttributes(): any;
-        getDocument(): Document;
+        getDocument(): import("./document.js").Document;
         getParent(): AbstractNode | undefined;
         setParent(parent: any): void;
         getNodeName(): string;
