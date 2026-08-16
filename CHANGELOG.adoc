@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.9 (2026-08-16)
+
 Bug Fixes::
 
 * Fix the extension DSL `this` types (`BlockProcessorDslInterface`, `BlockMacroProcessorDslInterface`, `InlineMacroProcessorDslInterface`, and the document-processor DSLs for preprocessors, tree processors, postprocessors, include processors, and docinfo processors) missing the node-builder helpers -- `createSection`, `createBlock`, `createList`, `createListItem`, `createImageBlock`, `createInline`, `parseContent`, `parseAttributes`, and the `createBlock`/`createInline` shorthands (`createParagraph`, `createOpenBlock`, `createExampleBlock`, `createPassBlock`, `createListingBlock`, `createLiteralBlock`, `createAnchor`, `createInlinePass`) -- even though all of them are available at runtime on the bound processor instance, since every processor type shares the same `Processor` base class (matching Ruby's `Asciidoctor::Extensions::Processor`)
