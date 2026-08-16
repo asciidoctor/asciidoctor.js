@@ -8,13 +8,19 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
-== v4.0.8 (2026-08-06)
-Bug Fixes::
-
-* Fix `logging.js` logging a spurious CORS error to the console in some browsers (e.g. Firefox) on first use. The per-execution logger context lazily probes for `node:async_hooks` and falls back to `null` when unavailable, but the dynamic `import('node:async_hooks')` itself was still attempted in the browser, where it is treated as a cross-origin fetch and rejected -- caught safely, but still logged by the browser regardless. The import is now skipped entirely when `process` is undefined (i.e. outside Node.js)
 Bug Fixes::
 
 * Fix JSDoc `Document` type references across `abstract_node.js`, `extensions.js`, `parser.js`, `syntax_highlighter.js`, and `table.js` (and the corresponding generated `.d.ts` files) resolving to the ambient DOM `Document` type instead of Asciidoctor's own `Document` class from `document.js`. None of those source files imported `Document`, so TypeScript resolved the unqualified name to `lib.dom.d.ts` — `getDocument()`, extension processor callbacks (`Preprocessor#process()`, `TreeProcessor#process()`, etc.), `Parser` methods, `SyntaxHighlighterBase` methods, and `Table.Cell#getInnerDocument()` were all typed against the browser DOM document rather than the Asciidoctor document, silently defeating type checking on any code calling Asciidoctor `Document` methods on the result
+
+Infrastructure::
+
+* Add compile-only type tests (`test/types/document_type.test-d.ts`) guarding against the `Document` DOM-leak regression above, covering `AbstractNode#getDocument()`, `Preprocessor`/`TreeProcessor`/`Postprocessor`/`IncludeProcessor`/`DocinfoProcessor`'s `process()`/`handles()`, `Registry#activate()`, and `SyntaxHighlighterBase`'s `docinfo()`/`writeStylesheet()`/`writeStylesheetToDisk()`
+
+== v4.0.8 (2026-08-06)
+
+Bug Fixes::
+
+* Fix `logging.js` logging a spurious CORS error to the console in some browsers (e.g. Firefox) on first use. The per-execution logger context lazily probes for `node:async_hooks` and falls back to `null` when unavailable, but the dynamic `import('node:async_hooks')` itself was still attempted in the browser, where it is treated as a cross-origin fetch and rejected -- caught safely, but still logged by the browser regardless. The import is now skipped entirely when `process` is undefined (i.e. outside Node.js)
 
 Improvements::
 
