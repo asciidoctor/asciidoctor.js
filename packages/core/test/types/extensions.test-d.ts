@@ -76,9 +76,14 @@ registry.preprocessor(function () {
 })
 
 // ── treeProcessor(fn): (document) → Document | void ───────────────────────────
+// The node-builder helpers (createBlock, createSection, createParagraph, …) live
+// on the shared Processor base class in Ruby, so every processor DSL exposes them
+// on `this` -- not just BlockProcessor. Confirm a tree processor can build nodes too.
 registry.treeProcessor(function () {
   this.process((document) => {
     void document.getBlocks()
+    this.createParagraph(document, 'injected by tree processor')
+    this.createSection(document, 'Appendix', {})
   })
 })
 

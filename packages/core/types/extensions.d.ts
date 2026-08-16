@@ -1684,6 +1684,13 @@ export type PreprocessorReader = import("./reader.js").PreprocessorReader;
  *
  * The `process` property behaves as a setter when called with a single Function
  * argument (stores the process block), or as a passthrough caller otherwise.
+ *
+ * Every processor type (Preprocessor, TreeProcessor, Postprocessor, IncludeProcessor,
+ * DocinfoProcessor, BlockProcessor, BlockMacroProcessor, InlineMacroProcessor) extends
+ * the {@link Processor} base class, so the node-builder helpers below (and their
+ * `createBlock`/`createInline` shorthands) are available on `this` inside the
+ * registration function and the bound `process` callback for all of them, not just
+ * block processors.
  */
 export type ProcessorDslInterface = {
     /**
@@ -1698,6 +1705,22 @@ export type ProcessorDslInterface = {
      * - Returns true if a process function has been registered.
      */
     processBlockGiven: () => boolean;
+    createSection: (parent: AbstractBlock, title: string, attrs: object, opts?: object) => Section;
+    createBlock: (parent: AbstractBlock, context: string, source?: string | string[] | null, attrs?: object, opts?: object) => Block;
+    createList: (parent: AbstractBlock, context: string, attrs?: object | null) => List;
+    createListItem: (parent: List, text?: string | null) => ListItem;
+    createImageBlock: (parent: AbstractBlock, attrs: object, opts?: object) => Block;
+    createInline: (parent: AbstractBlock, context: string, text: string, opts?: object) => Inline;
+    parseContent: (parent: AbstractBlock, content: string[] | Reader, attributes?: object | null) => Promise<AbstractBlock>;
+    parseAttributes: (block: AbstractBlock, attrlist: string, opts?: object) => Promise<Record<string, unknown>>;
+    createParagraph: (parent: AbstractBlock, source?: string | string[] | null, attrs?: object, opts?: object) => Block;
+    createOpenBlock: (parent: AbstractBlock, source?: string | string[] | null, attrs?: object, opts?: object) => Block;
+    createExampleBlock: (parent: AbstractBlock, source?: string | string[] | null, attrs?: object, opts?: object) => Block;
+    createPassBlock: (parent: AbstractBlock, source?: string | string[] | null, attrs?: object, opts?: object) => Block;
+    createListingBlock: (parent: AbstractBlock, source?: string | string[] | null, attrs?: object, opts?: object) => Block;
+    createLiteralBlock: (parent: AbstractBlock, source?: string | string[] | null, attrs?: object, opts?: object) => Block;
+    createAnchor: (parent: AbstractBlock, text: string, opts?: object) => Inline;
+    createInlinePass: (parent: AbstractBlock, text: string, opts?: object) => Inline;
 };
 /**
  * DSL interface for document processors (Preprocessor, TreeProcessor, Postprocessor, DocinfoProcessor).
@@ -1758,14 +1781,14 @@ export type DocinfoProcessorDslInterface = Omit<DocumentProcessorDslInterface, "
  * DSL interface for block processors.
  *
  * The `process` callback is bound to the processor instance, so `this` inside it
- * (and inside the registration function) exposes the `createBlock` helpers.
+ * (and inside the registration function) exposes the `createBlock` helpers
+ * inherited from {@link ProcessorDslInterface}.
  */
 export type BlockProcessorDslInterface = Omit<SyntaxProcessorDslInterface, "process"> & {
     contexts(...value: (string | string[])[]): void;
     onContexts(...value: (string | string[])[]): void;
     onContext(...value: (string | string[])[]): void;
     bindTo(...value: (string | string[])[]): void;
-    createBlock(parent: AbstractBlock, context: string, source?: string | string[] | null, attrs?: object, opts?: object): Block;
     process(fn: (this: BlockProcessorDslInterface, parent: AbstractBlock, reader: Reader, attributes: Record<string, unknown>) => AbstractBlock | void): void;
 };
 /**
@@ -1776,24 +1799,24 @@ export type MacroProcessorDslInterface = SyntaxProcessorDslInterface;
  * DSL interface for block macro processors.
  *
  * The `process` callback is bound to the processor instance, so `this` inside it
- * (and inside the registration function) exposes the `createBlock` helpers.
+ * (and inside the registration function) exposes the `createBlock` helpers
+ * inherited from {@link ProcessorDslInterface}.
  */
 export type BlockMacroProcessorDslInterface = Omit<MacroProcessorDslInterface, "process"> & {
-    createBlock(parent: AbstractBlock, context: string, source?: string | string[] | null, attrs?: object, opts?: object): Block;
     process(fn: (this: BlockMacroProcessorDslInterface, parent: AbstractBlock, target: string, attributes: Record<string, unknown>) => AbstractBlock | void): void;
 };
 /**
  * DSL interface for inline macro processors.
  *
  * The `process` callback is bound to the processor instance, so `this` inside it
- * (and inside the registration function) exposes the `createInline` helper.
+ * (and inside the registration function) exposes the `createInline` helper
+ * inherited from {@link ProcessorDslInterface}.
  */
 export type InlineMacroProcessorDslInterface = Omit<MacroProcessorDslInterface, "process"> & {
     format(value: string): void;
     matchFormat(value: string): void;
     usingFormat(value: string): void;
     match(value: RegExp): void;
-    createInline(parent: AbstractBlock, context: string, text: string, opts?: object): Inline;
     process(fn: (this: InlineMacroProcessorDslInterface, parent: AbstractBlock, target: string, attributes: Record<string, unknown>) => Inline | void): void;
 };
 import { Section } from './section.js';
