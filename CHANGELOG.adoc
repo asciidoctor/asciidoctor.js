@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Bug Fixes::
+
+* Fix the inline `pass:[...]` macro escaping its content instead of passing it through unmodified when no explicit substitution list is given, e.g. `pass:[<u>underlined</u>]` rendered as `&lt;u&gt;underlined&lt;/u&gt;` instead of `<u>underlined</u>`. The passthrough's `subs` was left `undefined`, which fell through to `applySubs()`'s `NORMAL_SUBS` default parameter instead of the intended "no substitutions" behavior (https://github.com/asciidoctor/asciidoctor.js/issues/1870[#1870])
+
 == v4.0.9 (2026-08-16)
 
 Bug Fixes::

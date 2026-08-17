@@ -194,6 +194,33 @@ describe('Substitutions', () => {
       assert.equal(await para.restorePassthroughs(result), '')
     })
 
+    // https://github.com/asciidoctor/asciidoctor.js/issues/1870
+    test('should not apply any subs to content of inline pass macro without explicit subs', async () => {
+      const para = await blockFromString('pass:[<u>underlined</u>]')
+      const result = para.extractPassthroughs(para.source)
+      const passthroughs = para.passthroughs
+      assert.equal(passthroughs.length, 1)
+      assert.deepEqual(passthroughs[0].subs, [])
+      assert.equal(await para.restorePassthroughs(result), '<u>underlined</u>')
+    })
+
+    test('should not escape content of inline pass macro without explicit subs when converting to HTML', async () => {
+      const result = await convertInlineString('pass:[<u>underlined</u>]')
+      assert.equal(result, '<u>underlined</u>')
+    })
+
+    test('should apply specialcharacters subs to content of inline pass macro using c shorthand', async () => {
+      const para = await blockFromString('pass:c[<u>underlined</u>]')
+      const result = para.extractPassthroughs(para.source)
+      const passthroughs = para.passthroughs
+      assert.equal(passthroughs.length, 1)
+      assert.deepEqual(passthroughs[0].subs, ['specialcharacters'])
+      assert.equal(
+        await para.restorePassthroughs(result),
+        '&lt;u&gt;underlined&lt;/u&gt;'
+      )
+    })
+
     // NOTE placeholder is surrounded by text to prevent reader from stripping trailing boundary char (unique to test scenario)
     test('restore inline passthroughs without subs', async () => {
       const para = await blockFromString(

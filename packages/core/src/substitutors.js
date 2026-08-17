@@ -1645,6 +1645,7 @@ export const Substitutors = {
             } else {
               passthrus[(passthruKey = passthrus.length)] = {
                 text: this.normalizeText(p8, null, true),
+                subs: [],
               }
             }
             return `${PASS_START}${passthruKey}${PASS_END}`
