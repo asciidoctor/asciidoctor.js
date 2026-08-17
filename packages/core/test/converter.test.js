@@ -193,6 +193,38 @@ getAttribute('fragment'): ${node.getAttribute('fragment') === null}`
   }
 }
 
+// A minimal third-party converter that renders list item text via the public getText()
+// accessor -- exactly as any real converter naturally would, with no special knowledge of
+// how footnote index placeholders are resolved. Used to verify that document-order footnote
+// numbering doesn't depend on the built-in converters specifically (see
+// Document#_converting).
+class FootnoteOrderConverter {
+  convert(node, transform) {
+    switch (transform || node.nodeName) {
+      case 'embedded':
+        return this.convertEmbedded(node)
+      case 'paragraph':
+        return node.content()
+      case 'ulist':
+        return this.convertUlist(node)
+      case 'inline_footnote':
+        return `[${node.getAttribute('index')}]`
+      default:
+        return ''
+    }
+  }
+
+  async convertEmbedded(node) {
+    const parts = []
+    for (const b of node.blocks) parts.push(await b.convert())
+    return parts.join('\n')
+  }
+
+  convertUlist(node) {
+    return node.items.map((item) => item.getText()).join('\n')
+  }
+}
+
 // ── Tests ─────────────────────────────────────────────────────────────────────
 // Clean up global converter registry after every test.
 // afterEach inside a describe is not supported in Deno's node:test compat layer.
@@ -243,6 +275,23 @@ getAttribute('fragment'): true`
       backend: 'delegate',
     })
     assert.ok(result.includes('<delegate>content</delegate>'))
+  })
+
+  // https://github.com/asciidoctor/asciidoctor.js/issues/1871
+  test('a custom converter using only the public getText() should number footnotes in document order', async () => {
+    ConverterFactory.register(new FootnoteOrderConverter(), ['footnoteorder'])
+    const input = [
+      'paragraph footnote:[first]',
+      '',
+      '* item footnote:[second]',
+    ].join('\n')
+    const result = await convert(input, {
+      safe: 'safe',
+      backend: 'footnoteorder',
+      standalone: false,
+    })
+    assert.ok(result.includes('paragraph [1]'))
+    assert.ok(result.includes('item [2]'))
   })
 
   test('should retrieve backend traits from a converter class using backendTraits', async () => {
