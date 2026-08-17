@@ -187,7 +187,7 @@ export class DocBook5Converter extends ConverterBase {
     if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
     for (const item of node.getItems()) {
       result.push(`<callout arearefs="${item.getAttribute('coids')}">`)
-      result.push(`<para>${item.getText()}</para>`)
+      result.push(`<para>${item._resolvedText()}</para>`)
       if (item.hasBlocks()) result.push(await item.content())
       result.push('</callout>')
     }
@@ -213,10 +213,11 @@ export class DocBook5Converter extends ConverterBase {
       for (const [terms, dd] of node.getItems()) {
         result.push('<row>\n<entry>')
         for (const dt of terms)
-          result.push(`<simpara>${dt.getText()}</simpara>`)
+          result.push(`<simpara>${dt._resolvedText()}</simpara>`)
         result.push('</entry>\n<entry>')
         if (dd) {
-          if (dd.hasText()) result.push(`<simpara>${dd.getText()}</simpara>`)
+          if (dd.hasText())
+            result.push(`<simpara>${dd._resolvedText()}</simpara>`)
           if (dd.hasBlocks()) result.push(await dd.content())
         }
         result.push('</entry>\n</row>')
@@ -241,11 +242,12 @@ export class DocBook5Converter extends ConverterBase {
         result.push(`<${entryTag}>`)
         if (labelTag) result.push(`<${labelTag}>`)
         for (const dt of terms)
-          result.push(`<${termTag}>${dt.getText()}</${termTag}>`)
+          result.push(`<${termTag}>${dt._resolvedText()}</${termTag}>`)
         if (labelTag) result.push(`</${labelTag}>`)
         result.push(`<${itemTag}>`)
         if (dd) {
-          if (dd.hasText()) result.push(`<simpara>${dd.getText()}</simpara>`)
+          if (dd.hasText())
+            result.push(`<simpara>${dd._resolvedText()}</simpara>`)
           if (dd.hasBlocks()) result.push(await dd.content())
         }
         result.push(`</${itemTag}>`)
@@ -356,7 +358,7 @@ export class DocBook5Converter extends ConverterBase {
     if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
     for (const item of node.getItems()) {
       result.push(`<listitem${this._commonAttributes(item.id, item.role)}>`)
-      result.push(`<simpara>${item.getText()}</simpara>`)
+      result.push(`<simpara>${item._resolvedText()}</simpara>`)
       if (item.hasBlocks()) result.push(await item.content())
       result.push('</listitem>')
     }
@@ -512,14 +514,14 @@ export class DocBook5Converter extends ConverterBase {
           const entryStart = `<entry align="${cell.getAttribute('halign')}" valign="${cell.getAttribute('valign')}"${colspanAttribute}${rowspanAttribute}>`
           let cellContent
           if (tsec === 'head') {
-            cellContent = cell.text
+            cellContent = cell._resolvedText()
           } else {
             switch (cell.style) {
               case 'asciidoc':
                 cellContent = await cell.content()
                 break
               case 'literal':
-                cellContent = `<literallayout class="monospaced">${cell.text}</literallayout>`
+                cellContent = `<literallayout class="monospaced">${cell._resolvedText()}</literallayout>`
                 break
               case 'header': {
                 const parts = await cell.content()
@@ -566,7 +568,7 @@ export class DocBook5Converter extends ConverterBase {
       if (node.hasTitle()) result.push(`<title>${node.title}</title>`)
       for (const item of node.getItems()) {
         result.push('<bibliomixed>')
-        result.push(`<bibliomisc>${item.getText()}</bibliomisc>`)
+        result.push(`<bibliomisc>${item._resolvedText()}</bibliomisc>`)
         if (item.hasBlocks()) result.push(await item.content())
         result.push('</bibliomixed>')
       }
@@ -587,7 +589,7 @@ export class DocBook5Converter extends ConverterBase {
               : '&#10063; '
             : ''
         result.push(`<listitem${this._commonAttributes(item.id, item.role)}>`)
-        result.push(`<simpara>${textMarker}${item.getText()}</simpara>`)
+        result.push(`<simpara>${textMarker}${item._resolvedText()}</simpara>`)
         if (item.hasBlocks()) result.push(await item.content())
         result.push('</listitem>')
       }

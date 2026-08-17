@@ -10,7 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Bug Fixes::
 
-* Fix a footnote inside a list item or table cell being numbered (and listed in the footnotes block) ahead of an earlier footnote in a preceding paragraph, instead of in document order. List item and table cell text is substituted eagerly, ahead of normal body conversion, so any footnote there previously consumed the next footnote number immediately regardless of its actual position in the document; it's now assigned a placeholder that resolves to the real, document-order number once real conversion reaches that block (https://github.com/asciidoctor/asciidoctor.js/issues/1871[#1871])
+* Fix a footnote inside a list item or table cell being numbered (and listed in the footnotes block) ahead of an earlier footnote in a preceding paragraph, instead of in document order. List item and table cell text is substituted eagerly, ahead of normal body conversion, so any footnote there previously consumed the next footnote number immediately regardless of its actual position in the document; it's now assigned a placeholder that resolves to the real, document-order number once real conversion reaches that block. Reading a list item's or table cell's `text`/`getText()` before conversion (e.g. from an extension) no longer fixes the wrong number either -- an unresolved footnote there now previews as `1` rather than consuming the real counter (https://github.com/asciidoctor/asciidoctor.js/issues/1871[#1871])
 
 == v4.0.10 (2026-08-17)
 

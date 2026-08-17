@@ -535,12 +535,31 @@ class Cell extends AbstractBlock {
    * Get the text with substitutions applied.
    * The result is pre-computed during Document.parse() via precomputeText().
    * Falls back to the raw text if precomputeText() has not been called yet.
+   *
+   * If this cell's text contains a footnote and is read before real conversion (e.g. from
+   * an extension, or application code inspecting the parsed tree), the footnote is shown
+   * numbered `1` regardless of how many footnotes precede it or its eventual real,
+   * document-order number: assigning the real number here would fix it based on read order
+   * rather than document order, which may not match (see {@link _resolvedText}, used
+   * internally by the converters once real conversion actually reaches this cell).
    * @returns {string|null}
    */
   get text() {
+    return this.document._previewFootnotePlaceholdersIn(
+      this._convertedText ?? this._text ?? null
+    )
+  }
+
+  /**
+   * @internal
+   * Real, document-order text used by the converters: unlike the public {@link text}
+   * getter's non-mutating preview, this resolves (and caches) any pending footnote index
+   * placeholders via Document#_resolveFootnotePlaceholdersIn, which is only correct when
+   * called during real, document-order conversion.
+   * @returns {string|null}
+   */
+  _resolvedText() {
     if (this._convertedText != null) {
-      // Patch any footnote index placeholders now that real, document-order conversion
-      // has reached this cell (see Document#_resolveFootnotePlaceholdersIn).
       this._convertedText = this.document._resolveFootnotePlaceholdersIn(
         this._convertedText
       )
@@ -579,7 +598,7 @@ class Cell extends AbstractBlock {
     }
     if (this._text.includes(Table.Cell.DOUBLE_LF)) {
       const parts = []
-      for (const rawPara of this.text.split(BlankLineRx)) {
+      for (const rawPara of this._resolvedText().split(BlankLineRx)) {
         const para = rawPara.trim()
         if (!para) continue
         const cs = this.style
@@ -593,7 +612,7 @@ class Cell extends AbstractBlock {
       }
       return parts
     }
-    const subbedText = this.text
+    const subbedText = this._resolvedText()
     if (!subbedText) return []
     const cs = this.style
     if (cs && cs !== 'header') {

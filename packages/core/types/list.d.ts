@@ -53,12 +53,19 @@ export class ListItem extends AbstractBlock<string> {
      * Alias for {@link setText}.
      * @see {setText}
      */
-    set text(val: any);
+    set text(val: string);
     /**
      * Alias for {@link getText}.
+     *
+     * If this item's text contains a footnote and is read before real conversion (e.g. from
+     * an extension, or application code inspecting the parsed tree), the footnote is shown
+     * numbered `1` regardless of how many footnotes precede it or its eventual real,
+     * document-order number: assigning the real number here would fix it based on read
+     * order rather than document order, which may not match (see {@link _resolvedText}, used
+     * internally by the converters once real conversion actually reaches this item).
      * @see {getText}
      */
-    get text(): any;
+    get text(): string;
     /**
      * Check whether the text of this list item is non-blank.
      * @returns {boolean}
@@ -102,6 +109,9 @@ export class ListItem extends AbstractBlock<string> {
      * was computed: returning raw text mirrors what Ruby would produce when subs are
      * cleared or reduced to a no-op set (since `applySubs` is async and cannot be
      * re-run synchronously).
+     *
+     * A footnote in the text is shown numbered `1` if this is read before real conversion —
+     * see the note on {@link text}.
      * @returns {string|null}
      */
     getText(): string | null;

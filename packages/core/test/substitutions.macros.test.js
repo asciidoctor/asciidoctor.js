@@ -1326,6 +1326,28 @@ describe('Substitutions', () => {
       )
     })
 
+    test('reading a list item text before conversion should not fix a wrong footnote number', async () => {
+      const input = [
+        'paragraph footnote:[first]',
+        '',
+        '* item footnote:[second]',
+      ].join('\n')
+      const doc = await load(input, { standalone: false })
+      const list = doc.blocks.find((b) => b.context === 'ulist')
+      const item = list.items[0]
+      // Reading .text before conversion must not consume the real footnote counter or
+      // assign a document-order index based on this (out-of-order) read: it shows the
+      // footnote numbered 1 as a non-authoritative preview.
+      assert.match(item.text, /_footnoteref_1"[^>]*>1</)
+      const { parse } = await import('node-html-parser')
+      const result = await convertStringToEmbedded(input)
+      const root = parse(`<body>${result}</body>`)
+      assert.deepEqual(
+        root.querySelectorAll('a.footnote').map((el) => el.text),
+        ['1', '2']
+      )
+    })
+
     test('a single-line index term macro with a primary term should be registered as an index reference', async () => {
       const sentence =
         'The tiger (Panthera tigris) is the largest cat species.\n'
