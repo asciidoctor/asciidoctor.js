@@ -159,9 +159,9 @@ declare class Cell extends AbstractBlock<string | string[]> {
      * If this cell's text contains a footnote and is read before real conversion (e.g. from
      * an extension, or application code inspecting the parsed tree), the footnote is shown
      * numbered `1` regardless of how many footnotes precede it or its eventual real,
-     * document-order number: assigning the real number here would fix it based on read order
-     * rather than document order, which may not match (see {@link _resolvedText}, used
-     * internally by the converters once real conversion actually reaches this cell).
+     * document-order number, rather than fixing it based on read order rather than document
+     * order (which may not match): the real number is only ever assigned once
+     * `Document#convert` is actually running (see {@link Document#_converting}).
      * @returns {string|null}
      */
     get text(): string | null;

@@ -207,6 +207,13 @@ export class Document extends AbstractBlock {
   /** @internal Monotonic id source for footnote index placeholders; see
    * {@link _deferFootnoteIndex}. */
   _footnotePlaceholderSeq = 0
+  /** @internal Set for the duration of {@link convert}, so that ListItem#text and
+   * Table.Cell#text know whether they're being read during real, document-order
+   * conversion (safe to resolve a pending footnote index placeholder) or from elsewhere --
+   * an extension, application code inspecting the parsed tree, multiple reads of the same
+   * node, etc. -- where resolving could fix the wrong number (see
+   * {@link _resolveFootnotePlaceholdersIn} and {@link _previewFootnotePlaceholdersIn}). */
+  _converting = false
   /** @internal */
   _headerAttributes
   /** @internal */
@@ -739,13 +746,13 @@ export class Document extends AbstractBlock {
    * Patch every footnote index placeholder found in `text` — inserted while
    * {@link _footnotesDeferred} was set — with the corresponding footnote's real index,
    * resolving it via {@link _resolveFootnoteIndex} the first time this is called for that
-   * footnote. This mutates shared footnote state (it consumes the real counter), so it must
-   * only be called from real, document-order conversion (see ListItem#_resolvedText and
-   * Table.Cell#_resolvedText, used internally by the converters) — never from the public
-   * `text` / `getText()` accessors, which use the non-mutating
-   * {@link _previewFootnotePlaceholdersIn} instead, since arbitrary code (e.g. an extension,
-   * or just application code inspecting the parsed tree) may read a list item's or table
-   * cell's text before real conversion, and in any order.
+   * footnote. This mutates shared footnote state (it consumes the real counter), so ListItem
+   * and Table.Cell's `text` / `getText()` accessors only call it while {@link _converting}
+   * is set — i.e. while real, document-order conversion (`Document#convert`) is actually
+   * running — falling back to the non-mutating {@link _previewFootnotePlaceholdersIn}
+   * otherwise, since arbitrary code (e.g. an extension, or just application code inspecting
+   * the parsed tree) may read a list item's or table cell's text before real conversion, and
+   * in any order.
    * @param {string} text
    * @returns {string}
    */
@@ -1155,51 +1162,59 @@ export class Document extends AbstractBlock {
   async convert(opts = {}) {
     if (this._timings) this._timings.start('convert')
     await this.parse()
-    // Pre-compute AsciiDoc table cell content now that parse is done:
-    // callouts are rewound and all refs are registered.
-    if (!this.parentDocument) await this._convertAsciiDocCells()
-    if (this.safe < SafeMode.SERVER && Object.keys(opts).length > 0) {
-      if (!opts.outfile) delete this.attributes.outfile
-      else this.attributes.outfile = opts.outfile
-      if (!opts.outdir) delete this.attributes.outdir
-      else this.attributes.outdir = opts.outdir
-    }
+    // From here on, ListItem#text / Table.Cell#text may safely resolve a pending footnote
+    // index placeholder to its real, document-order number (see the field comment on
+    // _converting) since we're now walking the tree in real document order.
+    this._converting = true
+    try {
+      // Pre-compute AsciiDoc table cell content now that parse is done:
+      // callouts are rewound and all refs are registered.
+      if (!this.parentDocument) await this._convertAsciiDocCells()
+      if (this.safe < SafeMode.SERVER && Object.keys(opts).length > 0) {
+        if (!opts.outfile) delete this.attributes.outfile
+        else this.attributes.outfile = opts.outfile
+        if (!opts.outdir) delete this.attributes.outdir
+        else this.attributes.outdir = opts.outdir
+      }
 
-    let output
-    if (this.doctype === 'inline') {
-      const block = this.blocks[0] ?? this.header
-      if (block) {
-        if (
-          block.contentModel === 'compound' ||
-          block.contentModel === 'empty'
-        ) {
-          this.logger.warn(
-            'no inline candidate; use the inline doctype to convert a single paragraph, verbatim, or raw block'
-          )
+      let output
+      if (this.doctype === 'inline') {
+        const block = this.blocks[0] ?? this.header
+        if (block) {
+          if (
+            block.contentModel === 'compound' ||
+            block.contentModel === 'empty'
+          ) {
+            this.logger.warn(
+              'no inline candidate; use the inline doctype to convert a single paragraph, verbatim, or raw block'
+            )
+          } else {
+            output = await block.content()
+          }
+        }
+      } else {
+        let transform
+        if ('standalone' in opts) {
+          transform = opts.standalone ? 'document' : 'embedded'
+        } else if ('header_footer' in opts) {
+          transform = opts.header_footer ? 'document' : 'embedded'
         } else {
-          output = await block.content()
+          transform = this.options.standalone ? 'document' : 'embedded'
+        }
+        output = await this.converter.convert(this, transform)
+      }
+
+      if (!this.parentDocument && this.extensions?.hasPostprocessors?.()) {
+        for (const ext of this.extensions.postprocessors()) {
+          output = ext.processMethod(this, output)
         }
       }
-    } else {
-      let transform
-      if ('standalone' in opts) {
-        transform = opts.standalone ? 'document' : 'embedded'
-      } else if ('header_footer' in opts) {
-        transform = opts.header_footer ? 'document' : 'embedded'
-      } else {
-        transform = this.options.standalone ? 'document' : 'embedded'
-      }
-      output = await this.converter.convert(this, transform)
-    }
 
-    if (!this.parentDocument && this.extensions?.hasPostprocessors?.()) {
-      for (const ext of this.extensions.postprocessors()) {
-        output = ext.processMethod(this, output)
-      }
+      return output
+    } finally {
+      this._converting = false
+      if (this._timings) this._timings.record('convert')
     }
-
-    if (this._timings) this._timings.record('convert')
-    return output
   }
 
   /** @deprecated Use convert instead. */

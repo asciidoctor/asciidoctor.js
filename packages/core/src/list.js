@@ -121,49 +121,30 @@ export class ListItem extends AbstractBlock {
    * If this item's text contains a footnote and is read before real conversion (e.g. from
    * an extension, or application code inspecting the parsed tree), the footnote is shown
    * numbered `1` regardless of how many footnotes precede it or its eventual real,
-   * document-order number: assigning the real number here would fix it based on read
-   * order rather than document order, which may not match (see {@link _resolvedText}, used
-   * internally by the converters once real conversion actually reaches this item).
+   * document-order number, rather than fixing it based on read order rather than document
+   * order (which may not match): the real number is only ever assigned once
+   * `Document#convert` is actually running (see {@link Document#_converting}).
    * @see {getText}
-   */
-  get text() {
-    const converted = this._liveConvertedText()
-    if (converted == null) return this._text ?? null
-    return this.document._previewFootnotePlaceholdersIn(converted)
-  }
-
-  /**
-   * @internal
-   * `_convertedText`, or `null` if it's stale because `subs` changed since it was computed.
    * @returns {string|null}
    */
-  _liveConvertedText() {
+  get text() {
     if (this._convertedText != null && this._subsSnapshot != null) {
       const cur = this.subs
       if (
         cur.length !== this._subsSnapshot.length ||
         cur.some((s, i) => s !== this._subsSnapshot[i])
       ) {
-        return null
+        return this._text ?? null
       }
     }
-    return this._convertedText
-  }
-
-  /**
-   * @internal
-   * Real, document-order text used by the converters: unlike the public {@link text}
-   * getter's non-mutating preview, this resolves (and caches) any pending footnote index
-   * placeholders via Document#_resolveFootnotePlaceholdersIn, which is only correct when
-   * called during real, document-order conversion.
-   * @returns {string|null}
-   */
-  _resolvedText() {
-    const converted = this._liveConvertedText()
-    if (converted == null) return this._text ?? null
-    this._convertedText =
-      this.document._resolveFootnotePlaceholdersIn(converted)
-    return this._convertedText
+    if (this._convertedText == null) return this._text ?? null
+    if (this.document._converting) {
+      this._convertedText = this.document._resolveFootnotePlaceholdersIn(
+        this._convertedText
+      )
+      return this._convertedText
+    }
+    return this.document._previewFootnotePlaceholdersIn(this._convertedText)
   }
 
   /**

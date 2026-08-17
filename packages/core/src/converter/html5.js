@@ -678,7 +678,7 @@ Your browser does not support the audio tag.
         }
         result.push(`<tr>
 <td>${numLabel}</td>
-<td>${item._resolvedText()}${item.hasBlocks() ? LF + (await item.content()) : ''}</td>
+<td>${item.getText()}${item.hasBlocks() ? LF + (await item.content()) : ''}</td>
 </tr>`)
       }
       result.push('</table>')
@@ -686,7 +686,7 @@ Your browser does not support the audio tag.
       result.push('<ol>')
       for (const item of node.getItems()) {
         result.push(`<li>
-<p>${item._resolvedText()}</p>${item.hasBlocks() ? LF + (await item.content()) : ''}
+<p>${item.getText()}</p>${item.hasBlocks() ? LF + (await item.content()) : ''}
 </li>`)
       }
       result.push('</ol>')
@@ -721,10 +721,10 @@ Your browser does not support the audio tag.
         for (const [terms, dd] of node.getItems()) {
           result.push('<li>')
           for (const dt of terms) {
-            result.push(`<p><em>${dt._resolvedText()}</em></p>`)
+            result.push(`<p><em>${dt.getText()}</em></p>`)
           }
           if (dd) {
-            if (dd.hasText()) result.push(`<p>${dd._resolvedText()}</p>`)
+            if (dd.hasText()) result.push(`<p>${dd.getText()}</p>`)
             if (dd.hasBlocks()) result.push(await dd.content())
           }
           result.push('</li>')
@@ -754,13 +754,13 @@ Your browser does not support the audio tag.
           let firstTerm = true
           for (const dt of terms) {
             if (!firstTerm) result.push(`<br${slash}>`)
-            result.push(dt._resolvedText())
+            result.push(dt.getText())
             firstTerm = false
           }
           result.push('</td>')
           result.push('<td class="hdlist2">')
           if (dd) {
-            if (dd.hasText()) result.push(`<p>${dd._resolvedText()}</p>`)
+            if (dd.hasText()) result.push(`<p>${dd.getText()}</p>`)
             if (dd.hasBlocks()) result.push(await dd.content())
           }
           result.push('</td>')
@@ -774,11 +774,11 @@ Your browser does not support the audio tag.
         const dtStyleAttribute = node.style ? '' : ' class="hdlist1"'
         for (const [terms, dd] of node.getItems()) {
           for (const dt of terms) {
-            result.push(`<dt${dtStyleAttribute}>${dt._resolvedText()}</dt>`)
+            result.push(`<dt${dtStyleAttribute}>${dt.getText()}</dt>`)
           }
           if (!dd) continue
           result.push('<dd>')
-          if (dd.hasText()) result.push(`<p>${dd._resolvedText()}</p>`)
+          if (dd.hasText()) result.push(`<p>${dd.getText()}</p>`)
           if (dd.hasBlocks()) result.push(await dd.content())
           result.push('</dd>')
         }
@@ -1001,7 +1001,7 @@ ${equation}
       } else {
         result.push('<li>')
       }
-      result.push(`<p>${item._resolvedText()}</p>`)
+      result.push(`<p>${item.getText()}</p>`)
       if (item.hasBlocks()) result.push(await item.content())
       result.push('</li>')
     }
@@ -1210,14 +1210,14 @@ ${titleElement}${await node.content()}
           for (const cell of row) {
             let cellContent
             if (tsec === 'head') {
-              cellContent = cell._resolvedText()
+              cellContent = cell.text
             } else {
               switch (cell.style) {
                 case 'asciidoc':
                   cellContent = `<div class="content">${await cell.content()}</div>`
                   break
                 case 'literal':
-                  cellContent = `<div class="literal"><pre>${cell._resolvedText()}</pre></div>`
+                  cellContent = `<div class="literal"><pre>${cell.text}</pre></div>`
                   break
                 default: {
                   const parts = await cell.content()
@@ -1336,10 +1336,10 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
       }
       if (checklist && item.hasAttribute('checkbox')) {
         result.push(
-          `<p>${item.hasAttribute('checked') ? markerChecked : markerUnchecked}${item._resolvedText()}</p>`
+          `<p>${item.hasAttribute('checked') ? markerChecked : markerUnchecked}${item.getText()}</p>`
         )
       } else {
-        result.push(`<p>${item._resolvedText()}</p>`)
+        result.push(`<p>${item.getText()}</p>`)
       }
       if (item.hasBlocks()) result.push(await item.content())
       result.push('</li>')
