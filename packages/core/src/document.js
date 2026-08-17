@@ -69,6 +69,17 @@ export class ImageReference {
 import { Footnote } from './footnote.js'
 export { Footnote }
 
+// List item / table cell / dlist text is substituted eagerly, ahead of normal body
+// conversion (see the Pass 2 comment in Document#parse), so a footnote macro found there
+// cannot yet know its real, document-order index -- an ordinary block elsewhere might
+// precede it but is only substituted later, during real conversion. Such a footnote is
+// given this placeholder as its index instead; the placeholder is baked into the
+// pre-computed HTML exactly where a real number would go, and is patched to the real
+// number (see Document#_resolveFootnotePlaceholdersIn) the first time real, document-order
+// conversion reaches that block.
+const FOOTNOTE_PLACEHOLDER_MARK = '\x01\x01'
+const FOOTNOTE_PLACEHOLDER_RX = /\x01\x01fn:\d+\x01\x01/g
+
 import {
   AttributeEntry,
   getAttributeEntries,
@@ -189,6 +200,13 @@ export class Document extends AbstractBlock {
   _attributesModified
   /** @internal */
   _counters
+  /** @internal Set while eagerly pre-computing list item / table cell / dlist text during
+   * parse() (see the Pass 2 comment in {@link parse}), so footnotes registered there defer
+   * real index assignment. */
+  _footnotesDeferred = false
+  /** @internal Monotonic id source for footnote index placeholders; see
+   * {@link _deferFootnoteIndex}. */
+  _footnotePlaceholderSeq = 0
   /** @internal */
   _headerAttributes
   /** @internal */
@@ -612,27 +630,23 @@ export class Document extends AbstractBlock {
     // Build the reftext→id lookup map so that resolveId() is synchronous.
     await this._buildReftextsMap()
     // Pass 2: list item / table cell / dlist text, now that natural cross-references
-    // can be resolved against the reftext→id map.
+    // can be resolved against the reftext→id map. Footnotes found during this pass cannot
+    // yet know their real, document-order index -- an ordinary block elsewhere may precede
+    // them but is only substituted later, during real conversion -- so _footnotesDeferred
+    // makes them register with a placeholder (resolved once real, document-order
+    // conversion reaches the block; see _resolveFootnotePlaceholdersIn) instead of
+    // consuming the real counter.
+    this._footnotesDeferred = true
     await this._resolveAllTexts(this, true)
-    // List item / table cell / dlist footnotes registered just now are rendered inline
-    // during real body conversion (via their cached precomputed text), so — unlike title
-    // footnotes, which render out-of-band before conversion and are reset below to
-    // reproduce Ruby's "out of sequence" quirk — their counter progress must carry over
-    // into conversion so a footnote later in the body doesn't reuse an index already
-    // assigned to one of them.
-    const footnoteNumberAfterPass2 = this.attributes['footnote-number']
+    this._footnotesDeferred = false
     this._restoreAttributeSnapshot(attributesSnapshot)
-    if (footnoteNumberAfterPass2 != null) {
-      this.attributes['footnote-number'] = footnoteNumberAfterPass2
-      this._counters['footnote-number'] = footnoteNumberAfterPass2
-    } else {
-      // Reset the footnote counter so that body-content footnotes (processed during
-      // conversion) start numbering from 1, reproducing Ruby's "out of sequence" quirk:
-      // title footnotes are numbered during parsing via apply_title_subs, then the
-      // counter restarts for body content.
-      delete this.attributes['footnote-number']
-      delete this._counters['footnote-number']
-    }
+    // Reset the footnote counter so that body-content footnotes (processed during
+    // conversion) start numbering from 1, reproducing Ruby's "out of sequence" quirk:
+    // title footnotes are numbered during parsing via apply_title_subs, then the
+    // counter restarts for body content. Pass 2 no longer advances this counter itself
+    // (see above), so nothing needs to be carried forward.
+    delete this.attributes['footnote-number']
+    delete this._counters['footnote-number']
 
     this._parsed = true
     return this
@@ -693,6 +707,65 @@ export class Document extends AbstractBlock {
     }
     if (!isLocked) this.attributes[name] = nextVal
     return nextVal
+  }
+
+  /**
+   * @internal
+   * Reserve a footnote index placeholder while {@link _footnotesDeferred} is set. See the
+   * comment above {@link FOOTNOTE_PLACEHOLDER_MARK} for why this is needed.
+   * @returns {string}
+   */
+  _deferFootnoteIndex() {
+    return `${FOOTNOTE_PLACEHOLDER_MARK}fn:${this._footnotePlaceholderSeq++}${FOOTNOTE_PLACEHOLDER_MARK}`
+  }
+
+  /**
+   * @internal
+   * Resolve a footnote's real, document-order index the first time it's reached during
+   * real conversion, consuming the next 'footnote-number' counter value. A no-op (returns
+   * the existing value) if already resolved.
+   * @param {Footnote} footnote
+   * @returns {number}
+   */
+  _resolveFootnoteIndex(footnote) {
+    if (typeof footnote.index !== 'number') {
+      footnote.index = this.counter('footnote-number')
+    }
+    return footnote.index
+  }
+
+  /**
+   * @internal
+   * Patch every footnote index placeholder found in `text` — inserted while
+   * {@link _footnotesDeferred} was set — with the corresponding footnote's real index,
+   * resolving it via {@link _resolveFootnoteIndex} the first time this is called for that
+   * footnote. Called when list item / table cell / dlist pre-computed text is first read
+   * during real conversion, which — since conversion walks the document in order — is
+   * exactly when the footnote's true position relative to footnotes in ordinary blocks
+   * (substituted lazily, at real conversion time) becomes known.
+   * @param {string} text
+   * @returns {string}
+   */
+  _resolveFootnotePlaceholdersIn(text) {
+    if (typeof text !== 'string' || !text.includes(FOOTNOTE_PLACEHOLDER_MARK)) {
+      return text
+    }
+    // Cache resolutions within this call: the same placeholder can appear more than once
+    // in `text` (e.g. a footnote definition followed by an xref to it in the same item),
+    // and resolving mutates footnote.index to a real number -- so a lookup by placeholder
+    // would no longer find it on the second occurrence.
+    const resolved = new Map()
+    return text.replace(FOOTNOTE_PLACEHOLDER_RX, (placeholder) => {
+      if (resolved.has(placeholder)) return resolved.get(placeholder)
+      const footnote = this.catalog.footnotes.find(
+        (f) => f.index === placeholder
+      )
+      const value = footnote
+        ? String(this._resolveFootnoteIndex(footnote))
+        : placeholder
+      resolved.set(placeholder, value)
+      return value
+    })
   }
 
   /**
@@ -794,8 +867,17 @@ export class Document extends AbstractBlock {
   hasFootnotes() {
     return this.catalog.footnotes.length > 0
   }
+  /**
+   * @returns {Footnote[]} The registered footnotes, in document order.
+   *
+   * Registration order (the order {@link catalog}.footnotes was populated in) does not
+   * always match document order: list item / table cell / dlist footnotes are registered
+   * eagerly during parse(), ahead of footnotes in ordinary blocks that are only registered
+   * later, during real conversion (see {@link _footnotesDeferred}). Sorting by index — which
+   * is only ever assigned in true document order — recovers the right order.
+   */
   get footnotes() {
-    return this.catalog.footnotes
+    return [...this.catalog.footnotes].sort((a, b) => a.index - b.index)
   }
   get callouts() {
     return this.catalog.callouts

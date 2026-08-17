@@ -172,7 +172,16 @@ export class Document extends AbstractBlock<string> {
     resolveId(text: string): string | null;
     isMultipart(): boolean;
     hasFootnotes(): boolean;
-    get footnotes(): any;
+    /**
+     * @returns {Footnote[]} The registered footnotes, in document order.
+     *
+     * Registration order (the order {@link catalog}.footnotes was populated in) does not
+     * always match document order: list item / table cell / dlist footnotes are registered
+     * eagerly during parse(), ahead of footnotes in ordinary blocks that are only registered
+     * later, during real conversion (see {@link _footnotesDeferred}). Sorting by index — which
+     * is only ever assigned in true document order — recovers the right order.
+     */
+    get footnotes(): Footnote[];
     get callouts(): any;
     isNested(): boolean;
     isEmbedded(): boolean;
