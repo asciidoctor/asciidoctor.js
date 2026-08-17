@@ -239,7 +239,9 @@ ${await this._encloseContent(node)}
     let num = 0
     for (const item of node.getItems()) {
       result.push(`\\fB(${++num})\\fP\\h'-2n':T{`)
-      result.push(this.manify(item.getText(), { whitespace: 'normalize' }))
+      result.push(
+        this.manify(item._resolvedText(), { whitespace: 'normalize' })
+      )
       if (item.hasBlocks()) result.push(await item.content())
       result.push('T}')
     }
@@ -258,17 +260,19 @@ ${await this._encloseContent(node)}
       counter++
       if (node.style === 'qanda') {
         result.push(
-          `.sp\n${counter}. ${this.manify(terms.map((dt) => dt.getText()).join(' '))}\n.RS 4`
+          `.sp\n${counter}. ${this.manify(terms.map((dt) => dt._resolvedText()).join(' '))}\n.RS 4`
         )
       } else {
         result.push(
-          `.sp\n${this.manify(terms.map((dt) => dt.getText()).join(', '), { whitespace: 'normalize' })}\n.RS 4`
+          `.sp\n${this.manify(terms.map((dt) => dt._resolvedText()).join(', '), { whitespace: 'normalize' })}\n.RS 4`
         )
       }
       if (dd) {
         let hasText = false
         if (dd.hasText()) {
-          result.push(this.manify(dd.getText(), { whitespace: 'normalize' }))
+          result.push(
+            this.manify(dd._resolvedText(), { whitespace: 'normalize' })
+          )
           hasText = true
         }
         if (dd.hasBlocks()) {
@@ -351,7 +355,9 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
     let idx = 0
     for (const item of node.getItems()) {
       const numeral = idx + start
-      const listText = this.manify(item.getText(), { whitespace: 'normalize' })
+      const listText = this.manify(item._resolvedText(), {
+        whitespace: 'normalize',
+      })
       result.push(`.sp
 .RS 4
 .ie n \\{\\
@@ -494,7 +500,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
             if (cell.style === 'asciidoc') {
               cellContent = await cell.content()
             } else if (cell.style === 'literal') {
-              cellContent = `.nf${LF}${this.manify(cell.text, { whitespace: 'preserve' })}${LF}.fi`
+              cellContent = `.nf${LF}${this.manify(cell._resolvedText(), { whitespace: 'preserve' })}${LF}.fi`
             } else {
               cellContent = (await cell.content())
                 .map((p) => this.manify(p, { whitespace: 'normalize' }))
@@ -514,7 +520,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
               rowHeader[rowIndex][cellIndex + 1].push(`${cellHalign}tB`)
             }
             rowText[rowIndex].push(
-              `${this.manify(cell.text, { whitespace: 'normalize' })}${LF}`
+              `${this.manify(cell._resolvedText(), { whitespace: 'normalize' })}${LF}`
             )
           }
           if (cell.colspan && cell.colspan > 1) {
@@ -588,7 +594,9 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
     }
     for (const item of node.getItems()) {
-      const listText = this.manify(item.getText(), { whitespace: 'normalize' })
+      const listText = this.manify(item._resolvedText(), {
+        whitespace: 'normalize',
+      })
       result.push(`.sp
 .RS 4
 .ie n \\{\\

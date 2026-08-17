@@ -155,6 +155,13 @@ declare class Cell extends AbstractBlock<string | string[]> {
      * Get the text with substitutions applied.
      * The result is pre-computed during Document.parse() via precomputeText().
      * Falls back to the raw text if precomputeText() has not been called yet.
+     *
+     * If this cell's text contains a footnote and is read before real conversion (e.g. from
+     * an extension, or application code inspecting the parsed tree), the footnote is shown
+     * numbered `1` regardless of how many footnotes precede it or its eventual real,
+     * document-order number: assigning the real number here would fix it based on read order
+     * rather than document order, which may not match (see {@link _resolvedText}, used
+     * internally by the converters once real conversion actually reaches this cell).
      * @returns {string|null}
      */
     get text(): string | null;

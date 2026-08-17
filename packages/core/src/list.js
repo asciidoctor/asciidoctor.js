@@ -117,26 +117,53 @@ export class ListItem extends AbstractBlock {
 
   /**
    * Alias for {@link getText}.
+   *
+   * If this item's text contains a footnote and is read before real conversion (e.g. from
+   * an extension, or application code inspecting the parsed tree), the footnote is shown
+   * numbered `1` regardless of how many footnotes precede it or its eventual real,
+   * document-order number: assigning the real number here would fix it based on read
+   * order rather than document order, which may not match (see {@link _resolvedText}, used
+   * internally by the converters once real conversion actually reaches this item).
    * @see {getText}
    */
   get text() {
+    const converted = this._liveConvertedText()
+    if (converted == null) return this._text ?? null
+    return this.document._previewFootnotePlaceholdersIn(converted)
+  }
+
+  /**
+   * @internal
+   * `_convertedText`, or `null` if it's stale because `subs` changed since it was computed.
+   * @returns {string|null}
+   */
+  _liveConvertedText() {
     if (this._convertedText != null && this._subsSnapshot != null) {
       const cur = this.subs
       if (
         cur.length !== this._subsSnapshot.length ||
         cur.some((s, i) => s !== this._subsSnapshot[i])
       ) {
-        return this._text ?? null
+        return null
       }
     }
-    if (this._convertedText != null) {
-      // Patch any footnote index placeholders now that real, document-order conversion
-      // has reached this item (see Document#_resolveFootnotePlaceholdersIn).
-      this._convertedText = this.document._resolveFootnotePlaceholdersIn(
-        this._convertedText
-      )
-    }
-    return this._convertedText ?? this._text ?? null
+    return this._convertedText
+  }
+
+  /**
+   * @internal
+   * Real, document-order text used by the converters: unlike the public {@link text}
+   * getter's non-mutating preview, this resolves (and caches) any pending footnote index
+   * placeholders via Document#_resolveFootnotePlaceholdersIn, which is only correct when
+   * called during real, document-order conversion.
+   * @returns {string|null}
+   */
+  _resolvedText() {
+    const converted = this._liveConvertedText()
+    if (converted == null) return this._text ?? null
+    this._convertedText =
+      this.document._resolveFootnotePlaceholdersIn(converted)
+    return this._convertedText
   }
 
   /**
@@ -227,6 +254,9 @@ export class ListItem extends AbstractBlock {
    * was computed: returning raw text mirrors what Ruby would produce when subs are
    * cleared or reduced to a no-op set (since `applySubs` is async and cannot be
    * re-run synchronously).
+   *
+   * A footnote in the text is shown numbered `1` if this is read before real conversion —
+   * see the note on {@link text}.
    * @returns {string|null}
    */
   getText() {

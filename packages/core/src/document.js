@@ -739,10 +739,13 @@ export class Document extends AbstractBlock {
    * Patch every footnote index placeholder found in `text` — inserted while
    * {@link _footnotesDeferred} was set — with the corresponding footnote's real index,
    * resolving it via {@link _resolveFootnoteIndex} the first time this is called for that
-   * footnote. Called when list item / table cell / dlist pre-computed text is first read
-   * during real conversion, which — since conversion walks the document in order — is
-   * exactly when the footnote's true position relative to footnotes in ordinary blocks
-   * (substituted lazily, at real conversion time) becomes known.
+   * footnote. This mutates shared footnote state (it consumes the real counter), so it must
+   * only be called from real, document-order conversion (see ListItem#_resolvedText and
+   * Table.Cell#_resolvedText, used internally by the converters) — never from the public
+   * `text` / `getText()` accessors, which use the non-mutating
+   * {@link _previewFootnotePlaceholdersIn} instead, since arbitrary code (e.g. an extension,
+   * or just application code inspecting the parsed tree) may read a list item's or table
+   * cell's text before real conversion, and in any order.
    * @param {string} text
    * @returns {string}
    */
@@ -766,6 +769,26 @@ export class Document extends AbstractBlock {
       resolved.set(placeholder, value)
       return value
     })
+  }
+
+  /**
+   * @internal
+   * Non-mutating preview of `text` with any pending footnote index placeholders replaced by
+   * a fixed `1`, instead of the real, document-order number. Used by the public
+   * `text` / `getText()` accessors on ListItem and Table.Cell so that reading them before
+   * real conversion never consumes the real footnote counter or fixes a document-order
+   * index prematurely — doing so from an arbitrary (and possibly out-of-order) read would
+   * reproduce the numbering bug this placeholder scheme exists to avoid. The real index is
+   * only ever assigned via {@link _resolveFootnotePlaceholdersIn}, called internally by the
+   * converters at actual, document-order conversion time.
+   * @param {string} text
+   * @returns {string}
+   */
+  _previewFootnotePlaceholdersIn(text) {
+    if (typeof text !== 'string' || !text.includes(FOOTNOTE_PLACEHOLDER_MARK)) {
+      return text
+    }
+    return text.replace(FOOTNOTE_PLACEHOLDER_RX, '1')
   }
 
   /**
