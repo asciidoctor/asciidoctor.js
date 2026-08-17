@@ -614,12 +614,25 @@ export class Document extends AbstractBlock {
     // Pass 2: list item / table cell / dlist text, now that natural cross-references
     // can be resolved against the reftext→id map.
     await this._resolveAllTexts(this, true)
+    // List item / table cell / dlist footnotes registered just now are rendered inline
+    // during real body conversion (via their cached precomputed text), so — unlike title
+    // footnotes, which render out-of-band before conversion and are reset below to
+    // reproduce Ruby's "out of sequence" quirk — their counter progress must carry over
+    // into conversion so a footnote later in the body doesn't reuse an index already
+    // assigned to one of them.
+    const footnoteNumberAfterPass2 = this.attributes['footnote-number']
     this._restoreAttributeSnapshot(attributesSnapshot)
-    // Reset the footnote counter so that body-content footnotes (processed during conversion)
-    // start numbering from 1, reproducing Ruby's "out of sequence" quirk: title footnotes are
-    // numbered during parsing via apply_title_subs, then the counter restarts for body content.
-    delete this.attributes['footnote-number']
-    delete this._counters['footnote-number']
+    if (footnoteNumberAfterPass2 != null) {
+      this.attributes['footnote-number'] = footnoteNumberAfterPass2
+      this._counters['footnote-number'] = footnoteNumberAfterPass2
+    } else {
+      // Reset the footnote counter so that body-content footnotes (processed during
+      // conversion) start numbering from 1, reproducing Ruby's "out of sequence" quirk:
+      // title footnotes are numbered during parsing via apply_title_subs, then the
+      // counter restarts for body content.
+      delete this.attributes['footnote-number']
+      delete this._counters['footnote-number']
+    }
 
     this._parsed = true
     return this

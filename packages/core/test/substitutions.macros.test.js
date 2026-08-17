@@ -1205,6 +1205,52 @@ describe('Substitutions', () => {
       )
     })
 
+    // https://github.com/asciidoctor/asciidoctor.js/issues/1871
+    test('should not reuse a footnote index or id for a footnote following one inside a list item', async () => {
+      const input = [
+        '* item.footnote:[note text]',
+        '',
+        'paragraph.footnote:[second note]',
+      ].join('\n')
+      const { parse } = await import('node-html-parser')
+      const result = await convertStringToEmbedded(input)
+      const root = parse(`<body>${result}</body>`)
+      const footnoteRefs = root.querySelectorAll('a.footnote')
+      const footnoteDefs = root.querySelectorAll('div.footnote')
+      assert.deepEqual(
+        footnoteRefs.map((el) => el.text),
+        ['1', '2']
+      )
+      assert.deepEqual(
+        footnoteDefs.map((el) => el.id),
+        ['_footnotedef_1', '_footnotedef_2']
+      )
+    })
+
+    // https://github.com/asciidoctor/asciidoctor.js/issues/1871
+    test('should not reuse a footnote index or id for a footnote following one inside a table cell', async () => {
+      const input = [
+        '|===',
+        '|cell.footnote:[table note]',
+        '|===',
+        '',
+        'paragraph.footnote:[second note]',
+      ].join('\n')
+      const { parse } = await import('node-html-parser')
+      const result = await convertStringToEmbedded(input)
+      const root = parse(`<body>${result}</body>`)
+      const footnoteRefs = root.querySelectorAll('a.footnote')
+      const footnoteDefs = root.querySelectorAll('div.footnote')
+      assert.deepEqual(
+        footnoteRefs.map((el) => el.text),
+        ['1', '2']
+      )
+      assert.deepEqual(
+        footnoteDefs.map((el) => el.id),
+        ['_footnotedef_1', '_footnotedef_2']
+      )
+    })
+
     test('a single-line index term macro with a primary term should be registered as an index reference', async () => {
       const sentence =
         'The tiger (Panthera tigris) is the largest cat species.\n'
