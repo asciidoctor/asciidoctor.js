@@ -1251,6 +1251,81 @@ describe('Substitutions', () => {
       )
     })
 
+    // https://github.com/asciidoctor/asciidoctor.js/issues/1871#issuecomment (footnote inside
+    // list item or table cell numbered before an earlier footnote in document order)
+    test('should number a footnote inside a list item after an earlier footnote in a preceding paragraph', async () => {
+      const input = [
+        'paragraph footnote:[first]',
+        '',
+        '* item footnote:[second]',
+      ].join('\n')
+      const { parse } = await import('node-html-parser')
+      const result = await convertStringToEmbedded(input)
+      const root = parse(`<body>${result}</body>`)
+      const footnoteRefs = root.querySelectorAll('a.footnote')
+      const footnoteDefs = root.querySelectorAll('div.footnote')
+      assert.deepEqual(
+        footnoteRefs.map((el) => el.text),
+        ['1', '2']
+      )
+      assert.deepEqual(
+        footnoteDefs.map((el) => el.text.trim()),
+        ['1. first', '2. second']
+      )
+    })
+
+    test('should number a footnote inside a table cell after an earlier footnote in a preceding paragraph', async () => {
+      const input = [
+        'paragraph footnote:[first]',
+        '',
+        '|===',
+        '|cell footnote:[second]',
+        '|===',
+      ].join('\n')
+      const { parse } = await import('node-html-parser')
+      const result = await convertStringToEmbedded(input)
+      const root = parse(`<body>${result}</body>`)
+      const footnoteRefs = root.querySelectorAll('a.footnote')
+      const footnoteDefs = root.querySelectorAll('div.footnote')
+      assert.deepEqual(
+        footnoteRefs.map((el) => el.text),
+        ['1', '2']
+      )
+      assert.deepEqual(
+        footnoteDefs.map((el) => el.text.trim()),
+        ['1. first', '2. second']
+      )
+    })
+
+    test('should number footnotes across paragraphs, a list item, and a table cell in document order', async () => {
+      const input = [
+        'p1 footnote:[note1]',
+        '',
+        'p2 footnote:[note2]',
+        '',
+        '* item footnote:[note3]',
+        '',
+        '|===',
+        '|cell footnote:[note4]',
+        '|===',
+        '',
+        'p3 footnote:[note5]',
+      ].join('\n')
+      const { parse } = await import('node-html-parser')
+      const result = await convertStringToEmbedded(input)
+      const root = parse(`<body>${result}</body>`)
+      const footnoteRefs = root.querySelectorAll('a.footnote')
+      const footnoteDefs = root.querySelectorAll('div.footnote')
+      assert.deepEqual(
+        footnoteRefs.map((el) => el.text),
+        ['1', '2', '3', '4', '5']
+      )
+      assert.deepEqual(
+        footnoteDefs.map((el) => el.text.trim()),
+        ['1. note1', '2. note2', '3. note3', '4. note4', '5. note5']
+      )
+    })
+
     test('a single-line index term macro with a primary term should be registered as an index reference', async () => {
       const sentence =
         'The tiger (Panthera tigris) is the largest cat species.\n'

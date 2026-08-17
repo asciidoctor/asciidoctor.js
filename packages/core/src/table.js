@@ -538,6 +538,13 @@ class Cell extends AbstractBlock {
    * @returns {string|null}
    */
   get text() {
+    if (this._convertedText != null) {
+      // Patch any footnote index placeholders now that real, document-order conversion
+      // has reached this cell (see Document#_resolveFootnotePlaceholdersIn).
+      this._convertedText = this.document._resolveFootnotePlaceholdersIn(
+        this._convertedText
+      )
+    }
     return this._convertedText ?? this._text ?? null
   }
 

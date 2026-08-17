@@ -129,6 +129,13 @@ export class ListItem extends AbstractBlock {
         return this._text ?? null
       }
     }
+    if (this._convertedText != null) {
+      // Patch any footnote index placeholders now that real, document-order conversion
+      // has reached this item (see Document#_resolveFootnotePlaceholdersIn).
+      this._convertedText = this.document._resolveFootnotePlaceholdersIn(
+        this._convertedText
+      )
+    }
     return this._convertedText ?? this._text ?? null
   }
 

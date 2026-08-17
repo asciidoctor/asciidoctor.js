@@ -1312,9 +1312,15 @@ export const Substitutors = {
 
           let index
           if (id) {
-            const footnote = doc.footnotes.find((f) => f.id === id)
+            const footnote = doc.catalog.footnotes.find((f) => f.id === id)
             if (footnote) {
-              index = footnote.index
+              // Reuse the footnote's index as-is while deferred (it may itself still be a
+              // placeholder registered by a preceding list item / table cell / dlist term);
+              // otherwise resolve it now, in case this is a forward reference to a footnote
+              // that was registered eagerly but not yet reached in real document order.
+              index = doc._footnotesDeferred
+                ? footnote.index
+                : doc._resolveFootnoteIndex(footnote)
               content = footnote.text
               type = 'xref'
               target = id
@@ -1323,7 +1329,9 @@ export const Substitutors = {
               content = await this.restorePassthroughs(
                 this.normalizeText(content, true, true)
               )
-              index = doc.counter('footnote-number')
+              index = doc._footnotesDeferred
+                ? doc._deferFootnoteIndex()
+                : doc.counter('footnote-number')
               doc.register('footnotes', new Footnote(index, id, content))
               type = 'ref'
               target = null
@@ -1338,7 +1346,9 @@ export const Substitutors = {
             content = await this.restorePassthroughs(
               this.normalizeText(content, true, true)
             )
-            index = doc.counter('footnote-number')
+            index = doc._footnotesDeferred
+              ? doc._deferFootnoteIndex()
+              : doc.counter('footnote-number')
             doc.register('footnotes', new Footnote(index, id, content))
             type = null
             target = null
