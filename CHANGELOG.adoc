@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.0.11 (2026-08-18)
+
 Improvements::
 
 * Add `Options#getProgramName()`, `#getUsageLine()`, and `#getHelpDescription()` to the extensible CLI (`@asciidoctor/core`'s `cli.js`), letting an extended CLI override just the program name shown by `--help` -- or the usage line/description individually -- the same way `Invoker#version()` can already be overridden; `#getHelpPreamble()` remains available to override the whole preamble as a last resort
