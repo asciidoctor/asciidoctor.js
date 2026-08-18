@@ -7,6 +7,10 @@ class ExtendedOptions extends Options {
     this.addOption('custom-flag', { type: 'boolean', short: 'F', describe: 'a custom flag' })
     this.addOption('theme', { type: 'string', describe: 'PDF theme name', metavar: '<theme>' })
   }
+
+  getProgramName() {
+    return 'extended-cli'
+  }
 }
 
 class ExtendedInvoker extends Invoker {
