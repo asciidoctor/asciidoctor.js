@@ -25,11 +25,10 @@ const FAILURE_LEVELS = {
 
 const DOT_RELATIVE_RX = new RegExp(`^\\.{1,2}[/${sep.replace('\\', '\\\\')}]`)
 
-const HELP_PREAMBLE = `asciidoctor [options...] files...
-Translate the AsciiDoc source file or file(s) into the backend output format (e.g., HTML 5, DocBook 5, etc.)
-By default, the output is written to a file with the basename of the source file and the appropriate extension
+const DEFAULT_PROGRAM_NAME = 'asciidoctor'
 
-Options:`
+const HELP_DESCRIPTION = `Translate the AsciiDoc source file or file(s) into the backend output format (e.g., HTML 5, DocBook 5, etc.)
+By default, the output is written to a file with the basename of the source file and the appropriate extension`
 
 const HELP_COLUMN = 36
 
@@ -318,11 +317,52 @@ export class Options {
    * @returns {string}
    */
   buildHelpText() {
-    const lines = [HELP_PREAMBLE]
+    const lines = [this.getHelpPreamble()]
     for (const [key, def] of Object.entries(this._definitions)) {
       lines.push(buildHelpLine(key, def))
     }
     return lines.join('\n')
+  }
+
+  /**
+   * Return the program name shown in the `--help` usage line.
+   * Override this for the common case of wrapping this CLI under a different command name.
+   *
+   * @returns {string}
+   */
+  getProgramName() {
+    return DEFAULT_PROGRAM_NAME
+  }
+
+  /**
+   * Return the usage line printed at the top of `--help` (e.g., `asciidoctor [options...] files...`).
+   * Override to change the argument summary; override {@link Options#getProgramName} to only change the name.
+   *
+   * @returns {string}
+   */
+  getUsageLine() {
+    return `${this.getProgramName()} [options...] files...`
+  }
+
+  /**
+   * Return the description printed below the usage line in `--help`.
+   *
+   * @returns {string}
+   */
+  getHelpDescription() {
+    return HELP_DESCRIPTION
+  }
+
+  /**
+   * Return the usage line, description, and "Options:" header printed above the options list in `--help`.
+   * Assembled from {@link Options#getUsageLine} and {@link Options#getHelpDescription}; override those
+   * instead where possible. Override this method directly only as a last resort, e.g. to drop the
+   * "Options:" header or restructure the preamble entirely.
+   *
+   * @returns {string}
+   */
+  getHelpPreamble() {
+    return `${this.getUsageLine()}\n${this.getHelpDescription()}\n\nOptions:`
   }
 }
 

@@ -126,6 +126,12 @@ export class Options {
             describe: string;
             metavar: string;
         };
+        extension: {
+            type: string;
+            multiple: boolean;
+            describe: string;
+            metavar: string;
+        };
         version: {
             type: string;
             short: string;
@@ -186,6 +192,35 @@ export class Options {
      * @returns {string}
      */
     buildHelpText(): string;
+    /**
+     * Return the program name shown in the `--help` usage line.
+     * Override this for the common case of wrapping this CLI under a different command name.
+     *
+     * @returns {string}
+     */
+    getProgramName(): string;
+    /**
+     * Return the usage line printed at the top of `--help` (e.g., `asciidoctor [options...] files...`).
+     * Override to change the argument summary; override {@link Options#getProgramName} to only change the name.
+     *
+     * @returns {string}
+     */
+    getUsageLine(): string;
+    /**
+     * Return the description printed below the usage line in `--help`.
+     *
+     * @returns {string}
+     */
+    getHelpDescription(): string;
+    /**
+     * Return the usage line, description, and "Options:" header printed above the options list in `--help`.
+     * Assembled from {@link Options#getUsageLine} and {@link Options#getHelpDescription}; override those
+     * instead where possible. Override this method directly only as a last resort, e.g. to drop the
+     * "Options:" header or restructure the preamble entirely.
+     *
+     * @returns {string}
+     */
+    getHelpPreamble(): string;
 }
 /**
  * Executes the CLI after options have been parsed.
@@ -232,6 +267,8 @@ export class Invoker {
     convertFiles(files: string[], options: any, values: Record<string, unknown>): Promise<void>;
     /** @internal */
     _prepareProcessor(values: any): void;
+    /** @internal */
+    _prepareExtensions(values: any): void;
     /** @internal */
     _convertFromStdin(options: any): Promise<void>;
     /** @internal */

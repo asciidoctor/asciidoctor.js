@@ -202,6 +202,46 @@ describe('CLI extensibility', () => {
       assert.match(help, /-w, --watch/)
       assert.match(help, /watch for changes/)
     })
+
+    test('getProgramName() can be overridden to change the usage line', () => {
+      class MyOptions extends Options {
+        getProgramName() {
+          return 'my-tool'
+        }
+      }
+      const help = new MyOptions().buildHelpText()
+      assert.match(help, /^my-tool \[options\.\.\.\] files\.\.\./)
+    })
+
+    test('getUsageLine() can be overridden to change the argument summary', () => {
+      class MyOptions extends Options {
+        getUsageLine() {
+          return `${this.getProgramName()} [options...] <input>`
+        }
+      }
+      const help = new MyOptions().buildHelpText()
+      assert.match(help, /^asciidoctor \[options\.\.\.\] <input>/)
+    })
+
+    test('getHelpDescription() can be overridden', () => {
+      class MyOptions extends Options {
+        getHelpDescription() {
+          return 'Convert AsciiDoc to my format.'
+        }
+      }
+      const help = new MyOptions().buildHelpText()
+      assert.match(help, /Convert AsciiDoc to my format\./)
+    })
+
+    test('getHelpPreamble() can be overridden as a last resort', () => {
+      class MyOptions extends Options {
+        getHelpPreamble() {
+          return 'Usage: my-tool <args>'
+        }
+      }
+      const help = new MyOptions().buildHelpText()
+      assert.match(help, /^Usage: my-tool <args>/)
+    })
   })
 
   describe('Invoker', () => {
@@ -228,6 +268,12 @@ describe('CLI extensibility', () => {
       assert.match(result.stderr, /a custom flag/)
       assert.match(result.stderr, /--theme/)
       assert.match(result.stderr, /PDF theme name/)
+    })
+
+    test('subclass --help uses overridden getProgramName()', () => {
+      const result = extendedCli(['--help'])
+      assert.equal(result.status, 0)
+      assert.match(result.stderr, /^extended-cli \[options\.\.\.\] files\.\.\./)
     })
 
     test('subclass convertFiles() receives custom option values', () => {
