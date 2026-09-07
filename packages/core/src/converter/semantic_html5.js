@@ -668,8 +668,12 @@ ${title}${equation}
           markerUnchecked = '<input type="checkbox" data-item-complete="0"> '
         }
       } else if (node.document.hasAttribute('icons', 'font')) {
-        markerChecked = '<i class="fa fa-check-square-o"></i> '
-        markerUnchecked = '<i class="fa fa-square-o"></i> '
+        // the glyph is picked by the stylesheet from the `checked`/`unchecked`
+        // slot, not by an icon font's own class names, so another icon set can
+        // remap it without a markup change (same contract as `icon-<name>` on
+        // admonitions)
+        markerChecked = '<i class="fa checked"></i> '
+        markerUnchecked = '<i class="fa unchecked"></i> '
       } else {
         markerChecked = '&#10003; '
         markerUnchecked = '&#10063; '
