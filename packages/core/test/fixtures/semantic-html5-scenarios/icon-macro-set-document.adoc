@@ -1,0 +1,4 @@
+:icons: font
+:icon-set: fas
+
+Document default: icon:heart[]. Overridden per icon: icon:github[set=fab].

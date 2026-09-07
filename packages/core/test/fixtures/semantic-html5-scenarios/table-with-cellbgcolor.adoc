@@ -1,0 +1,3 @@
+|===
+|{set:cellbgcolor:#f0f0f0}shaded |inherited
+|===

@@ -28,6 +28,7 @@ Each source file corresponds to a Ruby file in the upstream Asciidoctor reposito
 | `src/attribute_list.js` | `attribute_list.rb` | Block attribute list parser |
 | `src/converter.js` | `converter.rb` | Converter registry and base class |
 | `src/converter/html5.js` | `converter/html5.rb` | Built-in HTML5 converter |
+| `src/converter/semantic_html5.js` | `converter/semantic_html5.rb` (WIP branch) | Built-in semantic HTML5 converter (`semantic-html5` backend) |
 | `src/extensions.js` | `extensions.rb` | Extension API (preprocessors, block/inline macros, …) |
 | `src/syntax_highlighter.js` | `syntax_highlighter.rb` | Syntax highlighter base/registry |
 | `src/syntaxHighlighter/highlightjs.js` | — | Highlight.js adapter |

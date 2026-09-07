@@ -1,0 +1,4 @@
+[%collapsible]
+====
+This content is revealed on demand.
+====

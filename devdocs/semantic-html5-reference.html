@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A kitchen-sink document exercising most AsciiDoc syntax, used to evaluate the semantic-html5 default stylesheet.">
+<meta name="author" content="Doc Writer, Jane Smith">
+<title>AsciiDoc Syntax Reference: Semantic Edition</title>
+<style>
+/*! Asciidoctor semantic HTML5 default stylesheet | MIT License | https://asciidoctor.org */
+
+/* ── Tokens ──────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: light dark;
+  --asciidoctor-bg: #fdfdfc;
+  --asciidoctor-surface: #f6f5f3;
+  --asciidoctor-fg: #23282e;
+  --asciidoctor-muted: #5c646e;
+  --asciidoctor-line: #e5e3df;
+  --asciidoctor-link: #0958b0;
+  --asciidoctor-mark: #fff2ae;
+  --asciidoctor-note: #0969da;
+  --asciidoctor-tip: #1a7f37;
+  --asciidoctor-important: #8250df;
+  --asciidoctor-warning: #9a6700;
+  --asciidoctor-caution: #cf222e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --asciidoctor-bg: #16181c;
+    --asciidoctor-surface: #1e2126;
+    --asciidoctor-fg: #e6e7e9;
+    --asciidoctor-muted: #9aa2ac;
+    --asciidoctor-line: #2c313a;
+    --asciidoctor-link: #6cb0f5;
+    --asciidoctor-mark: #6b5d1a;
+    --asciidoctor-note: #4493f8;
+    --asciidoctor-tip: #3fb950;
+    --asciidoctor-important: #ab7df8;
+    --asciidoctor-warning: #d29922;
+    --asciidoctor-caution: #f85149;
+  }
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 47rem;
+  padding: 1.5rem 1.25rem 3rem;
+  background: var(--asciidoctor-bg);
+  color: var(--asciidoctor-fg);
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Noto Sans",
+    sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  -webkit-text-size-adjust: 100%;
+  overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  margin: 2em 0 0.6em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.25rem;
+}
+h4 {
+  font-size: 1.0625rem;
+}
+h5,
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+a {
+  color: var(--asciidoctor-link);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a:focus-visible {
+  outline: 2px solid var(--asciidoctor-link);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family:
+    ui-monospace,
+    "SF Mono",
+    "Cascadia Code",
+    Menlo,
+    Consolas,
+    monospace;
+}
+
+code {
+  font-size: 0.875em;
+  background: var(--asciidoctor-surface);
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+}
+
+pre {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: var(--asciidoctor-surface);
+  border-radius: 8px;
+}
+pre code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  border-radius: 0;
+}
+pre.no-wrap {
+  white-space: pre;
+}
+
+mark {
+  background: var(--asciidoctor-mark);
+  color: inherit;
+  padding: 0 0.15em;
+  border-radius: 2px;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--asciidoctor-line);
+  margin: 2.5rem 0;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+sub,
+sup {
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+/* ── Document header ─────────────────────────────────────────────────────── */
+
+body > header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--asciidoctor-line);
+}
+
+body > header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 2.25rem;
+}
+
+body > header h1 .subtitle {
+  display: block;
+  font-size: 0.55em;
+  font-weight: 400;
+  color: var(--asciidoctor-muted);
+  letter-spacing: 0;
+}
+
+.byline {
+  margin: 0.5rem 0 0;
+  color: var(--asciidoctor-muted);
+  font-size: 0.9375rem;
+}
+ul.byline {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+}
+ul.byline li {
+  margin: 0;
+}
+
+table.revision {
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--asciidoctor-muted);
+  border-collapse: collapse;
+}
+table.revision thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+table.revision td {
+  padding: 0 1.25rem 0 0;
+}
+table.revision td:empty {
+  display: none;
+}
+table.revision td::before {
+  content: attr(data-title) " ";
+}
+table.revision td[data-title=""]::before,
+table.revision td[data-title="Date"]::before,
+table.revision td[data-title="Remark"]::before {
+  content: none;
+}
+
+/* ── Page footer ─────────────────────────────────────────────────────────── */
+
+body > footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--asciidoctor-line);
+  font-size: 0.8125rem;
+  color: var(--asciidoctor-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+}
+
+/* ── Sections ────────────────────────────────────────────────────────────── */
+
+.sect-num {
+  color: var(--asciidoctor-muted);
+  font-weight: 500;
+  margin-right: 0.25em;
+}
+
+/* :sectanchors: — reveal the anchor on heading hover */
+a.anchor {
+  float: left;
+  margin-left: -1.1em;
+  width: 1.1em;
+  visibility: hidden;
+  font-weight: 400;
+}
+a.anchor::before {
+  content: "§";
+}
+h1:hover a.anchor,
+h2:hover a.anchor,
+h3:hover a.anchor,
+h4:hover a.anchor,
+h5:hover a.anchor,
+h6:hover a.anchor {
+  visibility: visible;
+}
+
+/* :sectlinks: — self-links keep the heading color */
+h1 > a.link,
+h2 > a.link,
+h3 > a.link,
+h4 > a.link,
+h5 > a.link,
+h6 > a.link {
+  color: inherit;
+}
+
+/* ── Block titles ────────────────────────────────────────────────────────── */
+
+strong.title {
+  display: block;
+  margin-bottom: 0.25em;
+}
+
+/* ── Table of contents ───────────────────────────────────────────────────── */
+
+nav.toc {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--asciidoctor-surface);
+  border: 1px solid var(--asciidoctor-line);
+  border-radius: 8px;
+}
+nav.toc > .title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--asciidoctor-muted);
+  margin-bottom: 0.5rem;
+}
+nav.toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+nav.toc ol ol {
+  padding-left: 1rem;
+}
+nav.toc li {
+  margin: 0.2em 0;
+}
+nav.toc a {
+  color: var(--asciidoctor-fg);
+  font-size: 0.9375rem;
+}
+nav.toc a:hover {
+  color: var(--asciidoctor-link);
+}
+
+/* ── Admonitions ─────────────────────────────────────────────────────────── */
+
+aside.admonition {
+  --asciidoctor-admonition: var(--asciidoctor-muted);
+  margin: 1.5rem 0;
+  padding: 0.5rem 1.25rem;
+  border-left: 0.25rem solid var(--asciidoctor-admonition);
+}
+aside.admonition.note {
+  --asciidoctor-admonition: var(--asciidoctor-note);
+}
+aside.admonition.tip {
+  --asciidoctor-admonition: var(--asciidoctor-tip);
+}
+aside.admonition.important {
+  --asciidoctor-admonition: var(--asciidoctor-important);
+}
+aside.admonition.warning {
+  --asciidoctor-admonition: var(--asciidoctor-warning);
+}
+aside.admonition.caution {
+  --asciidoctor-admonition: var(--asciidoctor-caution);
+}
+/* Admonition glyphs for :icons: font. The converter emits a neutral slot
+   (`icon-<name>`); the code points below are Font Awesome 7 Free, set through
+   its `--fa` custom property. Another provider remaps these five rules. */
+aside.admonition > .icon-note {
+  --fa: "\f05a"; /* circle-info */
+}
+aside.admonition > .icon-tip {
+  --fa: "\f0eb"; /* lightbulb */
+}
+aside.admonition > .icon-important {
+  --fa: "\f06a"; /* circle-exclamation */
+}
+aside.admonition > .icon-caution {
+  --fa: "\f06d"; /* fire */
+}
+aside.admonition > .icon-warning {
+  --fa: "\f071"; /* triangle-exclamation */
+}
+aside.admonition > .label,
+aside.admonition > .icon,
+aside.admonition > i {
+  display: block;
+  color: var(--asciidoctor-admonition);
+  font-weight: 600;
+  margin-bottom: 0.25em;
+}
+aside.admonition > p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+
+aside.sidebar {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--asciidoctor-surface);
+  border-radius: 8px;
+}
+aside.sidebar > :last-child {
+  margin-bottom: 0;
+}
+
+/* ── Figures ─────────────────────────────────────────────────────────────── */
+
+figure {
+  margin: 1.5rem 0;
+}
+figcaption {
+  font-size: 0.875rem;
+  color: var(--asciidoctor-muted);
+  margin: 0.4rem 0;
+}
+figcaption .label {
+  font-weight: 600;
+}
+
+figure.listing figcaption,
+figure.literal figcaption,
+figure.example figcaption,
+figure.stem figcaption {
+  margin-top: 0;
+}
+
+figure.example {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--asciidoctor-line);
+  border-radius: 8px;
+}
+figure.example > :last-child {
+  margin-bottom: 0;
+}
+figure.example > figcaption {
+  margin: -0.25rem 0 0.75rem;
+}
+
+figure.stem {
+  text-align: center;
+}
+
+/* collapsible example */
+details {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--asciidoctor-line);
+  border-radius: 8px;
+}
+details > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+details[open] > summary {
+  margin-bottom: 0.5rem;
+}
+
+/* ── Quote and verse ─────────────────────────────────────────────────────── */
+
+blockquote {
+  margin: 1.5rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 0.25rem solid var(--asciidoctor-line);
+}
+blockquote.quote {
+  font-style: italic;
+}
+blockquote footer {
+  margin-top: 0.5rem;
+  font-style: normal;
+  font-size: 0.875rem;
+  color: var(--asciidoctor-muted);
+}
+blockquote pre {
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  white-space: pre-wrap;
+}
+figure.quote > blockquote,
+figure.verse > blockquote {
+  margin: 0.5rem 0 0;
+}
+
+/* ── Lists ───────────────────────────────────────────────────────────────── */
+
+ul,
+ol,
+dl {
+  margin: 0 0 1em;
+}
+li > p,
+dd > p {
+  margin-bottom: 0.25em;
+}
+dt {
+  font-weight: 600;
+}
+dd {
+  margin: 0 0 0.5em 1.25rem;
+}
+
+ul.checklist {
+  list-style: none;
+  padding-left: 1.5rem;
+}
+/* :icons: font markers — the glyph is mapped here (Font Awesome 7 Free code
+   points, via its `--fa` custom property) rather than taken from the icon
+   font's own class names, so swapping in another icon set is a stylesheet
+   change, not a markup change. --fa-style: 400 selects the regular (outline)
+   face, matching the unfilled checkbox the text mode draws with &#10063;. */
+ul.checklist .checked {
+  --fa: "\f14a"; /* square-check */
+  --fa-style: 400;
+}
+ul.checklist .unchecked {
+  --fa: "\f0c8"; /* square */
+  --fa-style: 400;
+}
+
+/* qanda — number the questions with a counter */
+dl.qanda {
+  counter-reset: question;
+}
+dl.qanda dt::before {
+  counter-increment: question;
+  content: counter(question) ". ";
+}
+
+/* horizontal dlist — two-column grid */
+dl.horizontal {
+  display: grid;
+  grid-template-columns: minmax(6rem, max-content) 1fr;
+  gap: 0.25em 1.5rem;
+}
+dl.horizontal dt {
+  grid-column: 1;
+}
+dl.horizontal dd {
+  grid-column: 2;
+  margin: 0;
+}
+
+/* ── Callouts ────────────────────────────────────────────────────────────── */
+
+b.callout-num {
+  color: var(--asciidoctor-muted);
+  font-weight: 600;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  font-size: 0.8125em;
+}
+i.conum[data-value] {
+  display: inline-block;
+  min-width: 1.3em;
+  height: 1.3em;
+  border-radius: 50%;
+  background: var(--asciidoctor-muted);
+  color: var(--asciidoctor-bg);
+  font-size: 0.75em;
+  font-weight: 600;
+  font-style: normal;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.3em;
+  text-align: center;
+}
+i.conum[data-value]::after {
+  content: attr(data-value);
+}
+i.conum[data-value] + b {
+  display: none;
+}
+
+ol.callout-list {
+  list-style: none;
+  counter-reset: callout;
+  padding-left: 0;
+  font-size: 0.9375rem;
+}
+ol.callout-list > li {
+  counter-increment: callout;
+  margin: 0.25em 0;
+}
+ol.callout-list > li > p::before {
+  content: counter(callout);
+  display: inline-block;
+  min-width: 1.3em;
+  height: 1.3em;
+  margin-right: 0.5em;
+  border-radius: 50%;
+  background: var(--asciidoctor-muted);
+  color: var(--asciidoctor-bg);
+  font-size: 0.75em;
+  font-weight: 600;
+  line-height: 1.3em;
+  text-align: center;
+}
+/* in icons mode the marker is already in the content — drop the counter */
+ol.callout-list > li > p:has(> i.conum:first-child)::before,
+ol.callout-list > li > p:has(> img:first-child)::before {
+  content: none;
+}
+
+/* ── Tables ──────────────────────────────────────────────────────────────── */
+
+table {
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9375rem;
+}
+table caption {
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--asciidoctor-muted);
+  margin-bottom: 0.4rem;
+}
+th,
+td {
+  padding: 0.4rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+thead th {
+  font-weight: 600;
+}
+td > p:last-child {
+  margin-bottom: 0;
+}
+
+table.stretch {
+  width: 100%;
+}
+table.fit-content {
+  width: fit-content;
+}
+
+/* frame */
+table.frame-all {
+  border: 1px solid var(--asciidoctor-line);
+}
+table.frame-ends {
+  border-top: 1px solid var(--asciidoctor-line);
+  border-bottom: 1px solid var(--asciidoctor-line);
+}
+table.frame-sides {
+  border-left: 1px solid var(--asciidoctor-line);
+  border-right: 1px solid var(--asciidoctor-line);
+}
+
+/* grid */
+table[class*="grid-"] > * > tr > th,
+table[class*="grid-"] > * > tr > td {
+  border: 0 solid var(--asciidoctor-line);
+}
+table.grid-all > * > tr > th,
+table.grid-all > * > tr > td {
+  border-width: 1px;
+}
+table.grid-rows > * > tr > th,
+table.grid-rows > * > tr > td {
+  border-width: 1px 0;
+}
+table.grid-cols > * > tr > th,
+table.grid-cols > * > tr > td {
+  border-width: 0 1px;
+}
+
+/* stripes */
+table.stripes-all > tbody > tr,
+table.stripes-even > tbody > tr:nth-of-type(even),
+table.stripes-odd > tbody > tr:nth-of-type(odd) {
+  background: var(--asciidoctor-surface);
+}
+table.stripes-hover > tbody > tr:hover {
+  background: var(--asciidoctor-surface);
+}
+
+/* cell alignment */
+th.halign-center,
+td.halign-center {
+  text-align: center;
+}
+th.halign-right,
+td.halign-right {
+  text-align: right;
+}
+th.valign-middle,
+td.valign-middle {
+  vertical-align: middle;
+}
+th.valign-bottom,
+td.valign-bottom {
+  vertical-align: bottom;
+}
+
+/* ── Footnotes ───────────────────────────────────────────────────────────── */
+
+sup.footnote-ref {
+  font-size: 0.75em;
+}
+section.footnotes {
+  margin-top: 3rem;
+  font-size: 0.875rem;
+  color: var(--asciidoctor-muted);
+}
+section.footnotes > hr {
+  width: 8rem;
+  margin: 0 0 1rem;
+}
+ol.footnotes {
+  padding-left: 1.5rem;
+}
+a.footnote-backref {
+  text-decoration: none;
+}
+
+/* ── Inline UI macros ────────────────────────────────────────────────────── */
+
+kbd {
+  display: inline-block;
+  font-size: 0.75em;
+  line-height: 1.4;
+  padding: 0.1em 0.45em;
+  border: 1px solid var(--asciidoctor-line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--asciidoctor-surface);
+}
+.key-seq kbd {
+  margin: 0 0.1em;
+}
+
+.button {
+  font-weight: 600;
+  font-size: 0.875em;
+  padding: 0.05em 0.5em;
+  border: 1px solid var(--asciidoctor-line);
+  border-radius: 6px;
+  background: var(--asciidoctor-surface);
+  white-space: nowrap;
+}
+
+.menu-seq b {
+  font-weight: 600;
+}
+.menu-seq b.caret {
+  color: var(--asciidoctor-muted);
+  font-weight: 400;
+}
+
+/* ── Media ───────────────────────────────────────────────────────────────── */
+
+audio {
+  width: 100%;
+  max-width: 30rem;
+}
+iframe {
+  border: 0;
+  max-width: 100%;
+}
+
+/* ── Alignment and float roles ───────────────────────────────────────────── */
+
+.text-left {
+  text-align: left;
+}
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+/* a bare <img> carries the alignment role itself — align via auto margins */
+img.text-left,
+img.text-center,
+img.text-right {
+  display: block;
+}
+img.text-center {
+  margin-inline: auto;
+}
+img.text-right {
+  margin-left: auto;
+}
+img.left,
+figure.left {
+  float: left;
+  margin: 0.25rem 1.25rem 0.75rem 0;
+}
+img.right,
+figure.right {
+  float: right;
+  margin: 0.25rem 0 0.75rem 1.25rem;
+}
+
+/* ── General-purpose roles ───────────────────────────────────────────────── */
+
+.underline {
+  text-decoration: underline;
+}
+.overline {
+  text-decoration: overline;
+}
+.line-through {
+  text-decoration: line-through;
+}
+.nobreak {
+  hyphens: none;
+  word-wrap: normal;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.pre-wrap {
+  white-space: pre-wrap;
+}
+
+.unstyled {
+  list-style: none;
+  padding-left: 0;
+}
+ul.no-bullet,
+ol.unnumbered {
+  list-style: none;
+  padding-left: 1.25rem;
+}
+
+/* ── Print ───────────────────────────────────────────────────────────────── */
+
+@media print {
+  :root {
+    --asciidoctor-bg: #fff;
+    --asciidoctor-surface: #f4f4f4;
+    --asciidoctor-fg: #000;
+    --asciidoctor-muted: #444;
+    --asciidoctor-line: #bbb;
+    --asciidoctor-link: #000;
+  }
+  body {
+    max-width: none;
+    font-size: 10.5pt;
+  }
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: var(--asciidoctor-muted);
+  }
+  nav.toc a::after,
+  a.footnote-backref::after,
+  sup.footnote-ref a::after,
+  a.anchor::after,
+  h1 > a.link::after,
+  h2 > a.link::after,
+  h3 > a.link::after,
+  h4 > a.link::after,
+  h5 > a.link::after,
+  h6 > a.link::after {
+    content: none;
+  }
+  hr.page-break {
+    border: 0;
+    margin: 0;
+    break-after: page;
+  }
+  figure,
+  blockquote,
+  aside.admonition,
+  aside.sidebar,
+  table,
+  pre {
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    break-after: avoid;
+  }
+}
+
+@media not print {
+  hr.page-break {
+    border: 0;
+    margin: 2.5rem auto;
+    text-align: center;
+  }
+  hr.page-break::after {
+    content: "· · ·";
+    color: var(--asciidoctor-muted);
+    letter-spacing: 0.5em;
+  }
+}
+</style>
+</head>
+<body class="article">
+<header>
+<h1>AsciiDoc Syntax Reference <small class="subtitle">Semantic Edition</small></h1>
+<ul class="byline">
+<li><span class="author">Doc Writer <a href="mailto:doc.writer@example.org" rel="author">doc.writer@example.org</a></span></li>
+<li><span class="author">Jane Smith <a href="mailto:jane.smith@example.org" rel="author">jane.smith@example.org</a></span></li>
+</ul>
+<table class="revision">
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Remark</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-title="Version">2.1</td>
+<td data-title="Date"><time datetime="2026-07-13">2026-07-13</time></td>
+<td data-title="Remark">Stylesheet evaluation build</td>
+</tr>
+</tbody>
+</table>
+</header>
+<main>
+<nav id="toc" class="toc">
+<strong class="title" id="toctitle">Table of Contents</strong>
+<ol class="sect-level-1">
+<li><a href="#_text_formatting">1. Text formatting</a>
+<ol class="sect-level-2">
+<li><a href="#_links_and_cross_references">1.1. Links and cross references</a></li>
+<li><a href="#_keyboard_buttons_and_menus">1.2. Keyboard, buttons and menus</a></li>
+</ol>
+</li>
+<li><a href="#_admonitions">2. Admonitions</a></li>
+<li><a href="#_blocks">3. Blocks</a></li>
+<li><a href="#lists">4. Lists</a>
+<ol class="sect-level-2">
+<li><a href="#_unordered">4.1. Unordered</a></li>
+<li><a href="#_checklists">4.2. Checklists</a></li>
+<li><a href="#_ordered">4.3. Ordered</a></li>
+<li><a href="#_description_lists">4.4. Description lists</a></li>
+</ol>
+</li>
+<li><a href="#tables">5. Tables</a></li>
+<li><a href="#_media">6. Media</a></li>
+<li><a href="#_stem">7. STEM</a></li>
+<li><a href="#_footnotes_and_index">8. Footnotes and index</a></li>
+<li><a href="#_bibliography_ish">Appendix A: Bibliography-ish</a></li>
+</ol>
+</nav>
+<p>
+This document exercises most of the AsciiDoc syntax so the default stylesheet of the <code>semantic-html5</code> backend can be evaluated at a glance.
+It is the preamble: it precedes the first section and contains a footnote.<sup class="footnote-ref"><a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote." role="doc-noteref">1</a></sup>
+</p>
+<section id="_text_formatting">
+<h2><a class="anchor" href="#_text_formatting"></a><a class="link" href="#_text_formatting"><span class="sect-num">1.</span> Text formatting</a></h2>
+<p>
+Regular paragraph text with <strong>bold</strong>, <em>italic</em>, <code>monospace</code>, <strong><em>bold italic</em></strong>, <code><strong>bold mono</strong></code>, <mark>highlighted</mark>, <sup>super</sup>script, <sub>sub</sub>script, "double curved quotes", 'single curved quotes', and an en&#8211;dash&#8201;&#8212;&#8201;style replacement.
+</p>
+<p>
+Styled spans: <span class="underline">underlined</span>, <span class="line-through">struck through</span>, and <span class="nowrap">a span that refuses to wrap</span>.
+</p>
+<p>
+A sentence ending with a hard line break<br>
+lands on the next line.
+</p>
+<p>
+<strong class="title">A paragraph with a block title</strong>
+The title renders above the paragraph as a strong element.
+</p>
+<section id="_links_and_cross_references">
+<h3><a class="anchor" href="#_links_and_cross_references"></a><a class="link" href="#_links_and_cross_references"><span class="sect-num">1.1.</span> Links and cross references</a></h3>
+<p>
+An automatic link: <a href="https://asciidoctor.org" class="bare">https://asciidoctor.org</a>.
+A link with text: <a href="https://docs.asciidoctor.org">the documentation</a>.
+One that opens in a new window: <a href="https://asciidoctor.org" target="_blank" rel="noopener">Asciidoctor</a>.
+An email: <a href="mailto:doc.writer@example.org">doc.writer@example.org</a>.
+A cross reference to <a href="#tables">Tables</a> and one with custom text: <a href="#lists">the lists section</a>.
+An inline anchor sits <a id="bookmark-a"></a>right here.
+</p>
+</section>
+<section id="_keyboard_buttons_and_menus">
+<h3><a class="anchor" href="#_keyboard_buttons_and_menus"></a><a class="link" href="#_keyboard_buttons_and_menus"><span class="sect-num">1.2.</span> Keyboard, buttons and menus</a></h3>
+<p>
+Press <span class="key-seq"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></span> to open the palette, or the single key <kbd>F11</kbd>.
+Click <span class="button">Save</span> and confirm with <span class="button">OK</span>.
+Select <span class="menu-seq"><b class="menu">File</b></span> then <span class="menu-seq"><b class="menu">File</b>&#160;<b class="caret">&#8250;</b> <b class="menu-item">Save</b></span>, or the deep path <span class="menu-seq"><b class="menu">View</b>&#160;<b class="caret">&#8250;</b> <b class="submenu">Zoom</b>&#160;<b class="caret">&#8250;</b> <b class="menu-item">Zoom In</b></span>.
+</p>
+</section>
+</section>
+<section id="_admonitions">
+<h2><a class="anchor" href="#_admonitions"></a><a class="link" href="#_admonitions"><span class="sect-num">2.</span> Admonitions</a></h2>
+<aside class="admonition note" role="note">
+<strong class="label">Note</strong>
+Useful information that users should know, even when skimming content.
+</aside>
+<aside class="admonition tip" role="note">
+<strong class="label">Tip</strong>
+Helpful advice for doing things better or more easily.
+</aside>
+<aside class="admonition important" role="note">
+<strong class="label">Important</strong>
+Key information users need to know to achieve their goal.
+</aside>
+<aside class="admonition warning" role="note">
+<strong class="label">Warning</strong>
+Urgent info that needs immediate user attention to avoid problems.
+</aside>
+<aside class="admonition caution" role="note">
+<strong class="label">Caution</strong>
+Advises about risks or negative outcomes of certain actions.
+</aside>
+<aside class="admonition note" role="note">
+<strong class="label">Note</strong>
+<strong class="title">An admonition with a title and block content</strong>
+<p>
+Admonitions can hold any block content:
+</p>
+<ul>
+<li>
+<p>a list item</p>
+</li>
+<li>
+<p>another item</p>
+</li>
+</ul>
+<p>
+And a closing paragraph.
+</p>
+</aside>
+</section>
+<section id="_blocks">
+<h2><a class="anchor" href="#_blocks"></a><a class="link" href="#_blocks"><span class="sect-num">3.</span> Blocks</a></h2>
+<aside class="sidebar">
+<strong class="title">Sidebar title</strong>
+<p>
+A sidebar holds auxiliary content, visually set apart from the main flow.
+It can contain any block content.
+</p>
+</aside>
+<figure class="listing">
+<figcaption>Compute the answer</figcaption>
+<pre><code data-lang="js">const answer = 6 * 7 // <b class="callout-num">(1)</b>
+if (answer !== 42) {
+  throw new Error('panic') // <b class="callout-num">(2)</b>
+}</code></pre>
+</figure>
+<ol class="callout-list">
+<li>
+<p>The multiplication is the hard part.</p>
+</li>
+<li>
+<p>This should never happen.</p>
+</li>
+</ol>
+<p>
+A plain listing without a language:
+</p>
+<figure class="listing">
+<pre>$ asciidoctor -b semantic-html5 reference.adoc</pre>
+</figure>
+<p>
+A literal block:
+</p>
+<figure class="literal">
+<pre>literal block: keep    my    spacing
+      and my indentation</pre>
+</figure>
+<figure class="example">
+<figcaption>Example 1. Example caption gets a number</figcaption>
+<p>
+An example block, captioned and numbered automatically.
+</p>
+</figure>
+<details>
+<summary>Details</summary>
+<p>
+This content is revealed on demand (a collapsed details element).
+</p>
+</details>
+<details open>
+<summary>Already expanded</summary>
+<p>
+This collapsible starts open.
+</p>
+</details>
+<figure class="quote">
+<figcaption>After landing the cloaked Klingon bird of prey in Golden Gate park</figcaption>
+<blockquote>
+Everybody remember where we parked.
+<footer>&#8212; <span class="attribution">Captain James T. Kirk</span>, <cite>Star Trek IV: The Voyage Home</cite></footer>
+</blockquote>
+</figure>
+<blockquote class="quote">
+A quote without attribution stays a bare blockquote.
+</blockquote>
+<blockquote class="verse">
+<pre>The fog comes
+on little cat feet.</pre>
+<footer>&#8212; <span class="attribution">Carl Sandburg</span>, <cite>two lines from the poem Fog</cite></footer>
+</blockquote>
+<div>
+<p>
+An open block groups content without any styling of its own.
+</p>
+</div>
+<p>
+A thematic break:
+</p>
+<hr>
+<p>
+And a page break (a dinkus on screen, a real break in print):
+</p>
+<hr class="page-break">
+</section>
+<section id="lists">
+<h2><a class="anchor" href="#lists"></a><a class="link" href="#lists"><span class="sect-num">4.</span> Lists</a></h2>
+<section id="_unordered">
+<h3><a class="anchor" href="#_unordered"></a><a class="link" href="#_unordered"><span class="sect-num">4.1.</span> Unordered</a></h3>
+<ul>
+<li>
+<p>Item one</p>
+</li>
+<li>
+<p>Item two with nested items</p>
+<ul>
+<li>
+<p>Nested item</p>
+<ul>
+<li>
+<p>Deeply nested item</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Item three with an attached paragraph</p>
+<p>
+This paragraph is attached to the list item.
+</p>
+</li>
+</ul>
+</section>
+<section id="_checklists">
+<h3><a class="anchor" href="#_checklists"></a><a class="link" href="#_checklists"><span class="sect-num">4.2.</span> Checklists</a></h3>
+<ul class="checklist">
+<li>
+<p>&#10003; Design the converter</p>
+</li>
+<li>
+<p>&#10003; Write the stylesheet</p>
+</li>
+<li>
+<p>&#10063; Ship it</p>
+</li>
+</ul>
+<ul class="checklist">
+<li>
+<p><input type="checkbox" data-item-complete="1" checked> An interactive checked task</p>
+</li>
+<li>
+<p><input type="checkbox" data-item-complete="0"> An interactive unchecked task</p>
+</li>
+</ul>
+</section>
+<section id="_ordered">
+<h3><a class="anchor" href="#_ordered"></a><a class="link" href="#_ordered"><span class="sect-num">4.3.</span> Ordered</a></h3>
+<ol class="arabic">
+<li>
+<p>Step one</p>
+</li>
+<li>
+<p>Step two with substeps</p>
+<ol class="loweralpha" type="a">
+<li>
+<p>Substep A</p>
+</li>
+<li>
+<p>Substep B</p>
+</li>
+</ol>
+</li>
+</ol>
+<ol class="arabic" start="10">
+<li>
+<p>Numbering can start at ten</p>
+</li>
+<li>
+<p>And continue from there</p>
+</li>
+</ol>
+<ol class="arabic" reversed>
+<li>
+<p>Three</p>
+</li>
+<li>
+<p>Two</p>
+</li>
+<li>
+<p>One</p>
+</li>
+</ol>
+<ol class="loweralpha" type="a">
+<li>
+<p>First</p>
+</li>
+<li>
+<p>Second</p>
+</li>
+</ol>
+</section>
+<section id="_description_lists">
+<h3><a class="anchor" href="#_description_lists"></a><a class="link" href="#_description_lists"><span class="sect-num">4.4.</span> Description lists</a></h3>
+<dl>
+<dt>CPU</dt>
+<dd>
+<p>The brain of the computer.</p>
+</dd>
+<dt>RAM</dt>
+<dd>
+<p>Temporary storage, described on the next line.</p>
+</dd>
+<dt>CPU socket</dt>
+<dt>Motherboard</dt>
+<dd>
+<p>Two terms sharing one description.</p>
+</dd>
+</dl>
+<dl class="qanda">
+<dt>What is AsciiDoc?</dt>
+<dd>
+<p>A plain-text writing format with a concise, readable syntax.</p>
+</dd>
+<dt>Why semantic HTML?</dt>
+<dd>
+<p>Easier styling, better accessibility, cleaner diffs.</p>
+</dd>
+</dl>
+<dl class="horizontal">
+<dt>input</dt>
+<dd>
+<p>What you write.</p>
+</dd>
+<dt>output</dt>
+<dd>
+<p>What readers see.</p>
+</dd>
+<dt>processor</dt>
+<dd>
+<p>What sits in between.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="tables">
+<h2><a class="anchor" href="#tables"></a><a class="link" href="#tables"><span class="sect-num">5.</span> Tables</a></h2>
+<table class="frame-all grid-all stripes-even stretch">
+<caption>Table 1. Ingredients for one loaf</caption>
+<colgroup>
+<col style="width: 60%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th>Item</th>
+<th class="halign-center">Unit</th>
+<th class="halign-right">Quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><p>Flour</p></td>
+<td class="halign-center"><p>g</p></td>
+<td class="halign-right"><p>200</p></td>
+</tr>
+<tr>
+<td><p>Sugar</p></td>
+<td class="halign-center"><p>g</p></td>
+<td class="halign-right"><p>100</p></td>
+</tr>
+<tr>
+<td><p>Butter <em>(softened)</em></p></td>
+<td class="halign-center"><p>g</p></td>
+<td class="halign-right"><p>150</p></td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td><p>Total</p></td>
+<td class="halign-center"><p>g</p></td>
+<td class="halign-right"><p>450</p></td>
+</tr>
+</tfoot>
+</table>
+<table class="frame-all grid-all stretch">
+<caption>Table 2. Spans and alignments</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="halign-center" colspan="2"><p>Spanning two columns</p></td>
+</tr>
+<tr>
+<td class="valign-middle" rowspan="2"><p>Two rows (middle)</p></td>
+<td><p>Regular cell</p></td>
+</tr>
+<tr>
+<td><p>Regular cell</p></td>
+</tr>
+</tbody>
+</table>
+<table class="frame-all grid-all fit-content">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<tbody>
+<tr>
+<td><p>An autowidth table</p></td>
+<td><p>hugs</p></td>
+<td><p>its content</p></td>
+</tr>
+</tbody>
+</table>
+<table class="frame-all grid-all stretch">
+<caption>Table 3. Cell styles</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<tbody>
+<tr>
+<th><p>Header cell</p></th>
+<td><p><code>Monospace cell</code></p></td>
+<td><pre>Literal
+  cell</pre></td>
+<td><p>
+AsciiDoc cell
+</p>
+<ul>
+<li>
+<p>with a list</p>
+</li>
+</ul></td>
+</tr>
+</tbody>
+</table>
+<table class="frame-ends grid-rows stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td><p>frame=ends</p></td>
+<td><p>grid=rows</p></td>
+</tr>
+<tr>
+<td><p>Only horizontal</p></td>
+<td><p>rules here</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="_media">
+<h2><a class="anchor" href="#_media"></a><a class="link" href="#_media"><span class="sect-num">6.</span> Media</a></h2>
+<figure>
+<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgODAiPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iODAiIHJ4PSI4IiBmaWxsPSIjMDk2OWRhIiBvcGFjaXR5PSIuMTUiLz48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSIxOCIgZmlsbD0iIzA5NjlkYSIvPjxyZWN0IHg9IjcwIiB5PSIyMiIgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiByeD0iNiIgZmlsbD0iIzFhN2YzNyIvPjwvc3ZnPg==" alt="Abstract shapes" width="240" height="160">
+<figcaption>Figure 1. A sample figure, captioned and numbered</figcaption>
+</figure>
+<p>
+An inline image <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiNjZjIyMmUiLz48L3N2Zz4=" alt="red dot" width="14" height="14"> sits in the middle of this sentence.
+</p>
+<figure class="right">
+<a href="https://asciidoctor.org"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiNjZjIyMmUiLz48L3N2Zz4=" alt="A dot that links" width="48" height="48"></a>
+<figcaption>Figure 2. A block image with a link, floated right</figcaption>
+</figure>
+<p>
+The paragraph next to the floated image wraps around it. Clear the float before continuing so the layout stays tidy. This sentence pads the line a little more so the wrap is visible.
+</p>
+<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiNjZjIyMmUiLz48L3N2Zz4=" alt="Centered dot" class="text-center" width="32" height="32">
+</section>
+<section id="_stem">
+<h2><a class="anchor" href="#_stem"></a><a class="link" href="#_stem"><span class="sect-num">7.</span> STEM</a></h2>
+<p>
+The area of a circle is \(A = \pi r^2\) (inline).
+</p>
+<figure class="stem">
+\[x = {-b \pm \sqrt{b^2-4ac} \over 2a}\]
+</figure>
+</section>
+<section id="_footnotes_and_index">
+<h2><a class="anchor" href="#_footnotes_and_index"></a><a class="link" href="#_footnotes_and_index"><span class="sect-num">8.</span> Footnotes and index</a></h2>
+<p>
+The hail-and-rainbow protocol can be initiated at five levels.<sup class="footnote-ref" id="_footnote_disclaimer"><a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote." role="doc-noteref">2</a></sup>
+A reused footnote reference.<sup class="footnote-ref"><a class="footnote" href="#_footnotedef_2" title="View footnote." role="doc-noteref">2</a></sup>
+The panther is a visible index term; a hidden one follows.
+</p>
+<h2 id="_a_discrete_heading" class="discrete">A discrete heading</h2>
+<p>
+A discrete heading is not numbered, not in the TOC, and opens no section.
+</p>
+</section>
+<section id="_bibliography_ish">
+<h2><a class="anchor" href="#_bibliography_ish"></a><a class="link" href="#_bibliography_ish">Appendix A: Bibliography-ish</a></h2>
+<ul>
+<li>
+<p><a id="semantic"></a> The semantic HTML5 converter design document, 2026.</p>
+</li>
+<li>
+<p><a id="wip"></a> The upstream feature/html-converter-next branch, 2022.</p>
+</li>
+</ul>
+<p>
+See <a href="#semantic">1</a> and <a href="#wip">2</a>.
+</p>
+</section>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol class="footnotes">
+<li id="_footnotedef_1" role="doc-endnote">Footnotes collect into a semantic list at the end of the document. <a class="footnote-backref" href="#_footnoteref_1" role="doc-backlink">&#8617;</a></li>
+<li id="_footnotedef_2" role="doc-endnote">Opinions are my own; the protocol is fictional. <a class="footnote-backref" href="#_footnoteref_2" role="doc-backlink">&#8617;</a></li>
+</ol>
+</section>
+</main>
+<footer>
+<span class="rev-number">Version 2.1</span>
+</footer>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [["\\(","\\)"]],
+    displayMath: [["\\[","\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$","\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+  TeX: { equationNumbers: { autoNumber: "none" } }
+})
+MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
+  MathJax.InputJax.AsciiMath.postfilterHooks.Add(function (data, node) {
+    if ((node = data.script.parentNode) && (node = node.parentNode) && node.classList.contains("stem")) {
+      data.math.root.display = "block"
+    }
+    return data
+  })
+})
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

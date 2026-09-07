@@ -1,0 +1,3 @@
+====
+Content of the example.
+====

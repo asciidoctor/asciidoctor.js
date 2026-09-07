@@ -1,0 +1,5 @@
+.Toggle me
+[%collapsible%open]
+====
+This content is visible by default.
+====

@@ -1,0 +1,1 @@
+The indexterm2:[panther] is a visible index term, while this one is hidden.indexterm:[big cat]

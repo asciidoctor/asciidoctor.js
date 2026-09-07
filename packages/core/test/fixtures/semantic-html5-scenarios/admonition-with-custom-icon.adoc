@@ -1,0 +1,4 @@
+:icons: font
+
+[icon=hot-surface.svg]
+CAUTION: Hot surface!

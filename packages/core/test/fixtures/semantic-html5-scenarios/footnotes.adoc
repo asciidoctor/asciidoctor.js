@@ -1,0 +1,5 @@
+The hail-and-rainbow protocol can be initiated at five levels.footnote:[The double hail-and-rainbow level makes my toes tingle.]
+
+A bold statement.footnote:disclaimer[Opinions are my own.]
+
+Another bold statement.footnote:disclaimer[]
