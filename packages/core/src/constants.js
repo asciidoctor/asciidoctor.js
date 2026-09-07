@@ -388,7 +388,14 @@ export const STEM_TYPE_ALIASES = new Proxy(
 )
 
 // ── Third-party library versions ──────────────────────────────────────────────
+// The html5 backend stays on Font Awesome 4 so its output keeps matching the
+// Ruby implementation (and AsciiDoc.py before it); do not bump this one.
 export const FONT_AWESOME_VERSION = '4.7.0'
+// The semantic-html5 backend has no such compatibility constraint and tracks
+// the current Font Awesome Free release. Free remains open source:
+// CC-BY-4.0 (icons) AND OFL-1.1 (fonts) AND MIT (code). Note the v5+ bundle is
+// served as css/all.min.css — css/font-awesome.min.css is a v4-only filename.
+export const FONT_AWESOME_FREE_VERSION = '7.3.1'
 export const HIGHLIGHT_JS_VERSION = '9.18.3'
 export const MATHJAX_VERSION = '2.7.9'
 

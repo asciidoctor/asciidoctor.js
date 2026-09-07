@@ -256,11 +256,13 @@ The three `:icons:` modes match the `html5` backend's behavior with semantic mar
 |`<img class="icon" src="./images/icons/note.png" alt="Note">` — path built from `iconsdir`/`icontype`; a per-block `[icon=…]` attribute overrides the image
 
 |`:icons: font` (font mode)
-|`<i class="fa icon-note" title="Note"></i>` — the base class comes from `iconfont-prefix` (default `fa`, so the markup stays compatible with the `html5` backend and existing Font Awesome CSS); the glyph comes from the `icon-{name}` slot in the stylesheet. A per-block `[icon=…]` attribute falls back to image mode for that block
+|`<i class="fa icon-note" title="Note"></i>` — the base class comes from `iconfont-prefix` (default `fa`, so the markup stays compatible with the `html5` backend and existing Font Awesome CSS); the glyph comes from the `icon-{name}` slot, mapped in the stylesheet through Font Awesome 7's `--fa` custom property (`\f05a` circle-info, `\f0eb` lightbulb, `\f06a` circle-exclamation, `\f06d` fire, `\f071` triangle-exclamation). A per-block `[icon=…]` attribute falls back to image mode for that block
 |===
 
 The text label is always preserved for assistive technologies (`alt` on the image, `title` on the font icon).
 In standalone documents, `:icons: font` also links the icon font stylesheet in the `<head>` (honoring `iconfont-remote`, `iconfont-cdn` and `iconfont-name`), like the `html5` backend.
+The remote default is Font Awesome 7 Free — still open source (CC-BY-4.0 for the icons, OFL-1.1 for the fonts, MIT for the code) — served as `css/all.min.css`, which is the v5+ bundle filename; `css/font-awesome.min.css` exists only in v4.
+The `html5` backend deliberately stays on Font Awesome 4.7.0 so its output keeps matching the Ruby implementation, so the two backends pin different versions.
 Pair `iconfont-name` with `iconfont-prefix` to serve another provider: `:iconfont-name: bootstrap-icons` picks the stylesheet, `:iconfont-prefix: bi` picks the class names.
 Callout numbers follow the same pattern: font mode emits the `html5`-compatible `<i class="conum" data-value="N">` (in listings and as the callout-list item marker), image mode emits the `callouts/N` icon image, and the default stays the textual `<b class="callout-num">(N)</b>`.
 
@@ -381,7 +383,7 @@ a|
 <p><input type="checkbox" data-item-complete="1" checked> Done</p>
 …
 ----
-|Real checkboxes for interactive checklists; non-interactive checklists use the `&#10003;`/`&#10063;` glyph markers (no disabled form controls in static content), or `<i class="{iconfont-prefix} checked">`/`<i class="{iconfont-prefix} unchecked">` under `:icons: font` — the glyph comes from the stylesheet, not from the icon font's own class names.
+|Real checkboxes for interactive checklists; non-interactive checklists use the `&#10003;`/`&#10063;` glyph markers (no disabled form controls in static content), or `<i class="{iconfont-prefix} checked">`/`<i class="{iconfont-prefix} unchecked">` under `:icons: font` — the glyph comes from the stylesheet (`\f14a` square-check and `\f0c8` square, in the regular face), not from the icon font's own class names.
 
 |olist
 a|

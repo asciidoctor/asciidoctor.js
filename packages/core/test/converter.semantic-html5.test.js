@@ -174,10 +174,20 @@ Content.
       backend: 'semantic-html5',
       attributes: { icons: 'font', 'iconfont-remote': '' },
     })
+    // Font Awesome 5+ ships the bundle as css/all.min.css; css/font-awesome.min.css
+    // is a v4-only filename and 404s on the CDN. The html5 backend stays on v4.
     assert.match(
       result,
-      /<link rel="stylesheet" href="https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/[^"]+\/css\/font-awesome\.min\.css">/
+      /<link rel="stylesheet" href="https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/7\.[^"]+\/css\/all\.min\.css">/
     )
+  })
+
+  test('keeps the html5 backend on Font Awesome 4', async () => {
+    const result = await convertString('NOTE: Remember the milk.', {
+      backend: 'html5',
+      attributes: { icons: 'font', 'iconfont-remote': '' },
+    })
+    assert.match(result, /font-awesome\/4\.7\.0\/css\/font-awesome\.min\.css/)
   })
 
   test('embeds a user-provided stylesheet in the head', async () => {
