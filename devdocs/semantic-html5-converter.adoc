@@ -574,7 +574,7 @@ a|
 |see <<Media>> — same SVG and `link` handling as the block form
 
 |icon (`icon:heart[]`)
-|`:icons: font` → `<i class="fa fa-heart">`, the prefix from `iconfont-prefix` (with `size`/`rotate`/`flip` modifiers, which follow the same prefix); `:icons:` → `<img src=".../icons/heart.png">`; no icons → the `[alt]` text
+|`:icons: font` → `<i class="fa fa-heart">` — the set class from `set=`/`icon-set` and the name prefix from `iconfont-prefix` (with `size`/`rotate`/`flip` modifiers, which follow the name prefix); see <<icon-sets>>. `:icons:` → `<img src=".../icons/heart.png">`; no icons → the `[alt]` text
 
 |kbd (`kbd:[Ctrl+T]`)
 |`<kbd>Ctrl</kbd>` — multiple keys: `<span class="key-seq"><kbd>Ctrl</kbd>+<kbd>T</kbd></span>`
@@ -643,6 +643,37 @@ Set `iconfont-name` to the stylesheet served from `stylesdir`, or `iconfont-cdn`
 |===
 
 Line Awesome is the least intrusive swap of the set: it reuses Font Awesome's icon names in a line style, so `:iconfont-prefix: la` changes the whole look without touching anything else.
+
+[#icon-sets]
+=== Selecting an icon set
+
+Font Awesome 4 kept every icon in one font face, so a single `fa` class bound the font and `fa-github` selected the glyph.
+Since v5 the faces are split — brands ship as a separate font file — and the two jobs need two class names: `fab` binds the Brands face, `fa-github` picks the glyph.
+A bare `fa fa-github` therefore asks the Solid face for a code point it does not contain, and renders nothing.
+
+The `icon:[]` macro takes the set the way Asciidoctor PDF does, in decreasing precedence:
+
+`icon:github@fab[]`:: the shorthand, set appended to the icon name.
+`icon:github[set=fab]`:: a `set` attribute on the macro.
+`:icon-set: fas`:: a document attribute, the default for every `icon:[]` in the document.
+(nothing):: falls back to `iconfont-prefix`, so the default output stays `fa fa-heart`.
+
+[source,asciidoc]
+----
+:icons: font
+:icon-set: fas
+
+icon:heart[]            <i class="fas fa-heart">
+icon:github[set=fab]    <i class="fab fa-github">
+icon:twitter@fab[]      <i class="fab fa-twitter">
+icon:heart[2x,set=far]  <i class="far fa-heart fa-2x">
+----
+
+The set names the font face; the modifiers keep using the name prefix, since `fa-2x` is a sizing class rather than a glyph.
+Note that a named attribute occupies a positional slot, so `icon:heart[2x,set=far]` sets the size but `icon:heart[set=far,2x]` does not — ordinary AsciiDoc attribute-list behavior, not specific to `set`.
+
+The set is deliberately *not* applied to admonition and checklist icons.
+Those pick both the glyph and the weight from the stylesheet (`--fa` and `--fa-style`), which a style class such as `fas` — it hardcodes `--fa-style: 900` — would fight.
 
 Two popular providers do *not* fit the prefix model, and no value of `iconfont-prefix` makes them work:
 
