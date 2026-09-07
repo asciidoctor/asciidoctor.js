@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Bug Fixes::
+
+* Fix the warning issued when an asset cannot be found or read (e.g. `image::does-not-exist.svg[opts=inline]`) always reporting the document as `<stdin>`. The `docfile` attribute was looked up on the node instead of on the document, and since `docfile` is only ever set as a document attribute the lookup never resolved (https://github.com/asciidoctor/asciidoctor/issues/4873[asciidoctor#4873])
+
 == v4.0.11 (2026-08-18)
 
 Improvements::

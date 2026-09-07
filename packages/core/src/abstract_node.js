@@ -684,7 +684,7 @@ export class AbstractNode {
       if (text != null)
         return opts.normalize ? prepareSourceString(text).join(LF) : text
       if (opts.warnOnFailure) {
-        const docfile = this.getAttribute('docfile') || '<stdin>'
+        const docfile = this.document.getAttribute('docfile') || '<stdin>'
         const label = opts.label || 'file'
         this.logger.warn(
           `${docfile}: ${label} does not exist or cannot be read: ${path}`
@@ -699,7 +699,7 @@ export class AbstractNode {
       return _fsp.readFile(path, 'utf8')
     }
     if (opts.warnOnFailure) {
-      const docfile = this.getAttribute('docfile') || '<stdin>'
+      const docfile = this.document.getAttribute('docfile') || '<stdin>'
       const label = opts.label || 'file'
       this.logger.warn(
         `${docfile}: ${label} does not exist or cannot be read: ${path}`
