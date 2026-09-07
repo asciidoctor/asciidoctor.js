@@ -43,6 +43,12 @@ Kebab-case class names::
 Multi-word class names invented by the converter are kebab-case: `sect-num`, `sect-level-1`, `no-wrap`, `single-quote`, `menu-seq`, `menu-item`, `key-seq`, `callout-num`, `callout-list`, `page-break`, `footnote-ref`, `rev-number`, … (the legacy condensed spellings `sectnum`, `nowrap`, `singlequote`, `menuseq`, `conum` of the `html5` backend and the upstream WIP are not used).
 Single real words stay plain (`byline`, `subtitle`, `sidebar`, `submenu`, `checklist`), and AsciiDoc vocabulary passed through from the document (style and attribute values such as `arabic`, `loweralpha`, `qanda`, `horizontal`, `discrete`, `abstract`) keeps its original spelling.
 
+Icons: content vs. decoration::
+An icon that carries information is content: it honors the `:icons:` modes and always keeps a text equivalent (`alt` on an image, `title` on a font icon) — admonition icons, callout numbers, checklist markers, the `icon:[]` macro.
+An icon that only separates or ornaments is presentation: it stays a plain character styled by CSS and never depends on an icon font, so the markup keeps its meaning with no stylesheet loaded.
+The menu caret is the reference case — `<b class="caret">&#8250;</b>` in every mode, where the `html5` backend switches to `<i class="fa fa-angle-right">` under `:icons: font`.
+The test is whether removing the icon loses information: without the caret, `File Save` still reads as a menu path; without its icon, an admonition no longer says which admonition it is.
+
 Accessibility::
 Admonitions carry the non-landmark `role="note"` (see <<why-aside-with-role-note>>); footnote machinery uses the DPUB-ARIA roles `doc-noteref`, `doc-endnotes`, `doc-endnote` and `doc-backlink`; author email links carry `rel="author"`; the revision date uses `<time datetime>`.
 
