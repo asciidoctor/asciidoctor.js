@@ -358,7 +358,7 @@ aside.admonition.caution {
 }
 aside.admonition > .label,
 aside.admonition > .icon,
-aside.admonition > i.fa {
+aside.admonition > i {
   display: block;
   color: var(--asciidoctor-admonition);
   font-weight: 600;
