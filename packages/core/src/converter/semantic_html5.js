@@ -476,7 +476,7 @@ ${title}<pre${nowrap ? ' class="no-wrap"' : ''}>${content}</pre>
         node.document.hasAttribute('icons', 'font') &&
         !node.hasAttribute('icon')
       ) {
-        label = `<i class="fa icon-${name}" title="${node.getAttribute('textlabel')}"></i>`
+        label = `<i class="${this._iconPrefix(node.document)} icon-${name}" title="${node.getAttribute('textlabel')}"></i>`
       } else {
         label = `<img class="icon" src="${await node.iconUri(name)}" alt="${node.getAttribute('textlabel')}"${this._voidSlash}>`
       }
@@ -672,8 +672,9 @@ ${title}${equation}
         // slot, not by an icon font's own class names, so another icon set can
         // remap it without a markup change (same contract as `icon-<name>` on
         // admonitions)
-        markerChecked = '<i class="fa checked"></i> '
-        markerUnchecked = '<i class="fa unchecked"></i> '
+        const px = this._iconPrefix(node.document)
+        markerChecked = `<i class="${px} checked"></i> `
+        markerUnchecked = `<i class="${px} unchecked"></i> `
       } else {
         markerChecked = '&#10003; '
         markerUnchecked = '&#10063; '
@@ -1196,13 +1197,14 @@ ${img}
     if ((node.type || 'image') === 'icon') {
       const icons = node.document.getAttribute('icons')
       if (icons === 'font') {
-        let iClassAttrVal = `fa fa-${target}`
+        const px = this._iconPrefix(node.document)
+        let iClassAttrVal = `${px} ${px}-${target}`
         if (node.hasAttribute('size'))
-          iClassAttrVal += ` fa-${node.getAttribute('size')}`
+          iClassAttrVal += ` ${px}-${node.getAttribute('size')}`
         if (node.hasAttribute('flip')) {
-          iClassAttrVal += ` fa-flip-${node.getAttribute('flip')}`
+          iClassAttrVal += ` ${px}-flip-${node.getAttribute('flip')}`
         } else if (node.hasAttribute('rotate')) {
-          iClassAttrVal += ` fa-rotate-${node.getAttribute('rotate')}`
+          iClassAttrVal += ` ${px}-rotate-${node.getAttribute('rotate')}`
         }
         if (role) iClassAttrVal += ` ${role}`
         img = `<i${node.id ? ` id="${node.id}"` : ''} class="${iClassAttrVal}"${titleAttr}></i>`
@@ -1693,6 +1695,22 @@ ${outline}
     }
     if (linkTypes.length) attrs.push(` rel="${linkTypes.join(' ')}"`)
     return attrs
+  }
+
+  /**
+   * Base class name of the active icon font provider, from `iconfont-prefix`
+   * (default `fa`, i.e. Font Awesome). The provider's base class is what binds
+   * the icon font (`font-family`, inline-block, …), so it is emitted for every
+   * font-mode icon; the glyph itself comes from the provider's own name space
+   * for the `icon:[]` macro, and from this converter's slots (`icon-<name>`,
+   * `checked`/`unchecked`) everywhere else. Set `:iconfont-prefix: bi` to
+   * render with Bootstrap Icons instead, alongside `:iconfont-name:`.
+   *
+   * @internal
+   * @private
+   */
+  _iconPrefix(doc) {
+    return doc.getAttribute('iconfont-prefix', 'fa')
   }
 
   /**

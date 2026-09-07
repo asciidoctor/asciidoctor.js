@@ -1,0 +1,9 @@
+:icons: font
+:iconfont-prefix: bi
+
+NOTE: The provider base class comes from iconfont-prefix.
+
+* [x] Done
+* [ ] Todo
+
+Inline: icon:heart[2x] and icon:star[rotate=90].
