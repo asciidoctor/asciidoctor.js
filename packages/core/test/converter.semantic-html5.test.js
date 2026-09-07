@@ -238,9 +238,39 @@ image::dot.gif[A dot]
     assert.ok(result.includes('<meta charset="UTF-8"/>'))
   })
 
+  test('self-closes the admonition image icon', async () => {
+    // the image-icon branch of convert_admonition (:icons: without a value)
+    const result = await convertStringToEmbedded('NOTE: An admonition.', {
+      ...opts,
+      attributes: { ...opts.attributes, icons: '' },
+    })
+    assert.ok(
+      result.includes(
+        '<img class="icon" src="./images/icons/note.png" alt="Note"/>'
+      )
+    )
+  })
+
+  test('self-closes the callout list image icon', async () => {
+    const input = `----
+puts 'hi' <1>
+----
+<1> prints
+
+`
+    const result = await convertStringToEmbedded(input, {
+      ...opts,
+      attributes: { ...opts.attributes, icons: '' },
+    })
+    assert.ok(
+      result.includes('<img src="./images/icons/callouts/1.png" alt="1"/>')
+    )
+  })
+
   test('produces well-formed markup an XML parser accepts (embedded)', async () => {
     const input = `= Title
 :sectanchors:
+:icons:
 
 first +
 second
