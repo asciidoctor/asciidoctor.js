@@ -356,6 +356,24 @@ aside.admonition.warning {
 aside.admonition.caution {
   --asciidoctor-admonition: var(--asciidoctor-caution);
 }
+/* Admonition glyphs for :icons: font. The converter emits a neutral slot
+   (`icon-<name>`); the code points below are Font Awesome 7 Free, set through
+   its `--fa` custom property. Another provider remaps these five rules. */
+aside.admonition > .icon-note {
+  --fa: "\f05a"; /* circle-info */
+}
+aside.admonition > .icon-tip {
+  --fa: "\f0eb"; /* lightbulb */
+}
+aside.admonition > .icon-important {
+  --fa: "\f06a"; /* circle-exclamation */
+}
+aside.admonition > .icon-caution {
+  --fa: "\f06d"; /* fire */
+}
+aside.admonition > .icon-warning {
+  --fa: "\f071"; /* triangle-exclamation */
+}
 aside.admonition > .label,
 aside.admonition > .icon,
 aside.admonition > i {
@@ -482,14 +500,18 @@ ul.checklist {
   list-style: none;
   padding-left: 1.5rem;
 }
-/* :icons: font markers — the glyph is mapped here (Font Awesome 4 code points)
-   rather than taken from the icon font's own class names, so swapping in
-   another icon set is a stylesheet change, not a markup change */
-ul.checklist .checked::before {
-  content: "\f046";
+/* :icons: font markers — the glyph is mapped here (Font Awesome 7 Free code
+   points, via its `--fa` custom property) rather than taken from the icon
+   font's own class names, so swapping in another icon set is a stylesheet
+   change, not a markup change. --fa-style: 400 selects the regular (outline)
+   face, matching the unfilled checkbox the text mode draws with &#10063;. */
+ul.checklist .checked {
+  --fa: "\f14a"; /* square-check */
+  --fa-style: 400;
 }
-ul.checklist .unchecked::before {
-  content: "\f096";
+ul.checklist .unchecked {
+  --fa: "\f0c8"; /* square */
+  --fa-style: 400;
 }
 
 /* qanda — number the questions with a counter */
