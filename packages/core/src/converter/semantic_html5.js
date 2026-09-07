@@ -478,7 +478,7 @@ ${title}<pre${nowrap ? ' class="no-wrap"' : ''}>${content}</pre>
       ) {
         label = `<i class="fa icon-${name}" title="${node.getAttribute('textlabel')}"></i>`
       } else {
-        label = `<img class="icon" src="${await node.iconUri(name)}" alt="${node.getAttribute('textlabel')}">`
+        label = `<img class="icon" src="${await node.iconUri(name)}" alt="${node.getAttribute('textlabel')}"${this._voidSlash}>`
       }
     } else {
       label = `<strong class="label">${node.getAttribute('textlabel')}</strong>`
@@ -720,7 +720,8 @@ ${title}${equation}
 
   async convert_dlist(node) {
     const result = []
-    const style = node.style === 'horizontal' ? 'horizontal' : node.style
+    // every style (horizontal, qanda, …) passes through as a class name; CSS handles the layout
+    const style = node.style
     const attributes = node.hasTitle()
       ? this._commonHtmlAttributes(null, null, style)
       : this._commonHtmlAttributes(node.id, node.role, style)
@@ -1252,12 +1253,17 @@ ${img}
         return `<a href="${node.target}"${this._appendLinkConstraintAttrs(node, attrs).join('')}>${node.text ?? ''}</a>`
       }
       case 'xref': {
-        const attrs = node.role ? ` class="${node.role}"` : ''
-        let text = node.text
-        if (!text) {
-          if (node.attributes.path) {
-            text = node.attributes.path
-          } else {
+        let attrs, text
+        if (node.attributes.path) {
+          // inter-document xref: honor the window/nofollow/noopener constraints
+          attrs = this._appendLinkConstraintAttrs(
+            node,
+            node.role ? [` class="${node.role}"`] : []
+          ).join('')
+          text = node.text || node.attributes.path
+        } else {
+          attrs = node.role ? ` class="${node.role}"` : ''
+          if (!(text = node.text)) {
             const refs = (this._refs ??= node.document.catalog.refs)
             const refid = node.attributes.refid
             let top

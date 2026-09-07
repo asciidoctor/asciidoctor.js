@@ -1,0 +1,9 @@
+See xref:other.adoc#frag[the other document].
+
+Opened in a new window: xref:other.adoc#frag[Other,window=_blank].
+
+Marked nofollow: xref:other.adoc#frag[Other,opts=nofollow].
+
+With a role: xref:other.adoc#frag[Other,role=ext].
+
+Without link text: xref:other.adoc#frag[].
