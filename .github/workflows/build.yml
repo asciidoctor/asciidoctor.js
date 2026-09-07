@@ -51,7 +51,11 @@ jobs:
       - name: Validate documentation
         run: npm run docs -w @asciidoctor/core
       - name: Check no uncommitted changes after build
-        run: git diff --exit-code
+        run: |
+          git diff --exit-code --stat || {
+            echo "::error::Generated files are out of date. Run 'npm run build -w @asciidoctor/core' and commit the result."
+            exit 1
+          }
 
   test:
     needs: build
