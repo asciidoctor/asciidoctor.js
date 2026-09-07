@@ -233,9 +233,32 @@ image::circle.svg[Tiger,100]
 [%inline]
 image::no-such-image.svg[Alt Text]
 `
+        const output = await convertStringToEmbedded(input, {
+          safe: 'safe',
+          attributes: { docfile: 'document.adoc' },
+        })
+        assertXpath(output, '//span[@class="alt"][text()="Alt Text"]', 1)
+        assertMessage(
+          logger,
+          'warn',
+          'document.adoc: SVG does not exist or cannot be read'
+        )
+      })
+    })
+
+    test('uses <stdin> in warning if SVG cannot be read and document has no docfile', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const input = `\
+[%inline]
+image::no-such-image.svg[Alt Text]
+`
         const output = await convertStringToEmbedded(input, { safe: 'server' })
         assertXpath(output, '//span[@class="alt"][text()="Alt Text"]', 1)
-        assertMessage(logger, 'warn', 'SVG does not exist or cannot be read')
+        assertMessage(
+          logger,
+          'warn',
+          '<stdin>: SVG does not exist or cannot be read'
+        )
       })
     })
 
