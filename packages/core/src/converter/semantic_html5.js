@@ -1196,9 +1196,24 @@ ${img}
     let img, src
     if ((node.type || 'image') === 'icon') {
       const icons = node.document.getAttribute('icons')
+      // `icon:<name>@<set>[]` shorthand, mirroring Asciidoctor PDF
+      let iconName = target
+      let shorthandSet = null
+      const atIdx = iconName.lastIndexOf('@')
+      if (atIdx > 0) {
+        shorthandSet = iconName.slice(atIdx + 1)
+        iconName = iconName.slice(0, atIdx)
+      }
+      // alt defaults to the raw target, so the shorthand has to come off it too
+      let iconAlt = node.alt
+      if (shorthandSet && iconAlt === target) iconAlt = iconName
       if (icons === 'font') {
         const px = this._iconPrefix(node.document)
-        let iClassAttrVal = `${px} ${px}-${target}`
+        const iconSet = this._iconSet(node, shorthandSet, px)
+        // the set names the font face, the prefix names the glyph; Font Awesome
+        // 4 used one token for both, v5+ split them (fab fa-github)
+        let iClassAttrVal = `${iconSet} ${px}-${iconName}`
+        // sizing/transform modifiers stay on the name prefix (fa-2x, not fab-2x)
         if (node.hasAttribute('size'))
           iClassAttrVal += ` ${px}-${node.getAttribute('size')}`
         if (node.hasAttribute('flip')) {
@@ -1209,10 +1224,10 @@ ${img}
         if (role) iClassAttrVal += ` ${role}`
         img = `<i${node.id ? ` id="${node.id}"` : ''} class="${iClassAttrVal}"${titleAttr}></i>`
       } else if (icons != null) {
-        src = await node.iconUri(target)
-        img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt)}"${titleAttr}${attributes}${size}${slash}>`
+        src = await node.iconUri(iconName)
+        img = `<img src="${src}" alt="${this._encodeAttributeValue(iconAlt)}"${titleAttr}${attributes}${size}${slash}>`
       } else {
-        img = `[${node.alt}&#93;`
+        img = `[${iconAlt}&#93;`
       }
     } else if (
       (node.hasAttribute('format', 'svg') ||
@@ -1711,6 +1726,28 @@ ${outline}
    */
   _iconPrefix(doc) {
     return doc.getAttribute('iconfont-prefix', 'fa')
+  }
+
+  /**
+   * Class name of the icon set to draw an `icon:[]` glyph from, resolved the
+   * way Asciidoctor PDF resolves its own `icon-set`: the `icon:<name>@<set>[]`
+   * shorthand first, then a `set=` attribute on the macro, then the `icon-set`
+   * document attribute, and finally the name prefix itself so the default
+   * output stays `fa fa-heart`.
+   *
+   * The set is what binds the font face — `fab` maps to the Brands face, which
+   * is a separate font file, so `icon:github[set=fab]` renders where a bare
+   * `fa fa-github` cannot. It is deliberately not applied to admonition and
+   * checklist icons: those pick both glyph and weight from the stylesheet
+   * (`--fa`/`--fa-style`), which a style class such as `fas` would fight.
+   *
+   * @internal
+   * @private
+   */
+  _iconSet(node, shorthandSet, prefix) {
+    if (shorthandSet) return shorthandSet
+    if (node.hasAttribute('set')) return node.getAttribute('set')
+    return node.document.getAttribute('icon-set') ?? prefix
   }
 
   /**

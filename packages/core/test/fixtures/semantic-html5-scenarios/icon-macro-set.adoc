@@ -1,0 +1,8 @@
+:icons: font
+
+Brand icons live in a separate font face, so they need their own set:
+icon:github[set=fab] and the shorthand icon:twitter@fab[].
+
+Regular face: icon:heart[set=far]. Default (solid): icon:heart[].
+
+Modifiers stay on the name prefix: icon:star[2x,set=fab].
