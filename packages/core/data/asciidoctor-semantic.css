@@ -482,6 +482,15 @@ ul.checklist {
   list-style: none;
   padding-left: 1.5rem;
 }
+/* :icons: font markers — the glyph is mapped here (Font Awesome 4 code points)
+   rather than taken from the icon font's own class names, so swapping in
+   another icon set is a stylesheet change, not a markup change */
+ul.checklist .checked::before {
+  content: "\f046";
+}
+ul.checklist .unchecked::before {
+  content: "\f096";
+}
 
 /* qanda — number the questions with a counter */
 dl.qanda {
