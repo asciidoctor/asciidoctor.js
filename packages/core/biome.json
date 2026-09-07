@@ -50,7 +50,7 @@
 	},
 	"overrides": [
 		{
-			"includes": ["src/data/stylesheet-data.js"],
+			"includes": ["src/data/**"],
 			"formatter": {
 				"enabled": false
 			},
