@@ -49,6 +49,12 @@ An icon that only separates or ornaments is presentation: it stays a plain chara
 The menu caret is the reference case — `<b class="caret">&#8250;</b>` in every mode, where the `html5` backend switches to `<i class="fa fa-angle-right">` under `:icons: font`.
 The test is whether removing the icon loses information: without the caret, `File Save` still reads as a menu path; without its icon, an admonition no longer says which admonition it is.
 
+Icons: closed vocabulary resolves in CSS::
+Where the set of possible icons is fixed by AsciiDoc itself — the five admonition names, callout numbers, the two checklist states — the converter emits a stable slot class and the stylesheet maps it to a glyph: `icon-note`, `conum`, `checked`/`unchecked`.
+Nothing resolves an icon name in JavaScript, so swapping Font Awesome for another icon set (or for SVG via `mask-image`, as link:semantic-html5-admonitions.html[the admonitions proof] does) is a stylesheet change, never a markup change.
+The `icon:[]` macro is the one open vocabulary — the author names an arbitrary icon from the set's own namespace, which cannot be pre-declared in CSS — and is therefore the only place a future icon-resolver abstraction would apply.
+A per-block `[icon=…]` attribute is not such a case: it resolves to an image path under `iconsdir`, so there is nothing to look up.
+
 Accessibility::
 Admonitions carry the non-landmark `role="note"` (see <<why-aside-with-role-note>>); footnote machinery uses the DPUB-ARIA roles `doc-noteref`, `doc-endnotes`, `doc-endnote` and `doc-backlink`; author email links carry `rel="author"`; the revision date uses `<time datetime>`.
 
@@ -373,7 +379,7 @@ a|
 <p><input type="checkbox" data-item-complete="1" checked> Done</p>
 …
 ----
-|Real checkboxes for interactive checklists; non-interactive checklists use the `&#10003;`/`&#10063;` glyph markers (no disabled form controls in static content).
+|Real checkboxes for interactive checklists; non-interactive checklists use the `&#10003;`/`&#10063;` glyph markers (no disabled form controls in static content), or `<i class="fa checked">`/`<i class="fa unchecked">` under `:icons: font` — the glyph comes from the stylesheet, not from the icon font's own class names.
 
 |olist
 a|
@@ -623,6 +629,8 @@ Classes the converter emits — the contract implemented by the default styleshe
 |attribution |Quote/verse attribution name (inside the `<footer>`)
 |abstract |Abstract open block
 |checklist, callout-list + list styles (arabic, loweralpha, square, …) |List style classes
+
+|checked, unchecked |Checklist marker slots (`:icons: font`), mapped to a glyph by the stylesheet
 |frame-*, grid-*, stripes-*, stretch, fit-content |Table layout classes
 |halign-center/right, valign-middle/bottom |Non-default cell alignment
 |toc, sect-level-\{n} |TOC `<nav>` and outline levels
