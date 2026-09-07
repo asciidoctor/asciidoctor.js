@@ -20,7 +20,11 @@ for (const [cssFile, outFile] of stylesheets) {
   const outPath = join(outDir, outFile)
   writeFileSync(
     outPath,
-    `// Auto-generated from data/${cssFile} — run 'npm run build:data' to update\nexport default ${JSON.stringify(css)}\n`
+    // NOTE the @type annotation widens the declaration from the 16-30 KB string
+    // literal TypeScript would otherwise infer down to `string`; the exact
+    // contents carry no type information a consumer can use, and the literal
+    // was republished in types/ on every stylesheet edit.
+    `// Auto-generated from data/${cssFile} — run 'npm run build:data' to update\n/** @type {string} */\nconst stylesheet = ${JSON.stringify(css)}\nexport default stylesheet\n`
   )
   console.log(`generated ${outPath} (${css.length} chars)`)
 }
