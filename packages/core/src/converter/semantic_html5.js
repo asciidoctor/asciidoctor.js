@@ -22,7 +22,7 @@ import {
   LF,
   SafeMode,
   DEFAULT_STYLESHEET_KEYS,
-  FONT_AWESOME_VERSION,
+  FONT_AWESOME_FREE_VERSION,
   MATHJAX_VERSION,
   BLOCK_MATH_DELIMITERS,
   INLINE_MATH_DELIMITERS,
@@ -228,7 +228,7 @@ export default class SemanticHtml5Converter extends ConverterBase {
       if (node.hasAttribute('iconfont-remote')) {
         const cdnUrl =
           node.getAttribute('iconfont-cdn') ??
-          `${cdnBaseUrl}/font-awesome/${FONT_AWESOME_VERSION}/css/font-awesome.min.css`
+          `${cdnBaseUrl}/font-awesome/${FONT_AWESOME_FREE_VERSION}/css/all.min.css`
         result.push(`<link rel="stylesheet" href="${cdnUrl}"${slash}>`)
       } else {
         const iconfontStylesheet = `${node.getAttribute('iconfont-name', 'font-awesome')}.css`

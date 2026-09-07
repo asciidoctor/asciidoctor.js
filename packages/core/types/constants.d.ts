@@ -205,6 +205,7 @@ export namespace STEM_TYPE_ALIASES {
     export let tex: string;
 }
 export const FONT_AWESOME_VERSION: "4.7.0";
+export const FONT_AWESOME_FREE_VERSION: "7.3.1";
 export const HIGHLIGHT_JS_VERSION: "9.18.3";
 export const MATHJAX_VERSION: "2.7.9";
 export const DEFAULT_ATTRIBUTES: {
