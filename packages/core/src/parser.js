@@ -2702,7 +2702,7 @@ export class Parser {
         let cleanEntry = entry
         if (entry.includes('<')) {
           authorMetadata[keyMap.author] = entry.replace(/_/g, ' ')
-          cleanEntry = entry.replace(new RegExp(XmlSanitizeRx.source, 'g'), '')
+          cleanEntry = entry.replace(XmlSanitizeRx, '')
         }
         // Ruby: split(nil, 3) — splits on whitespace, keeps remainder in 3rd element.
         // JS split with limit drops the remainder, so we split fully then cap at 3.

@@ -542,5 +542,9 @@ export const TrailingDigitsRx: RegExp;
  * http://domain    https://domain    file:///path    data:info
  */
 export const UriSniffRx: RegExp;
-/** Detects XML tags. */
+/**
+ * Detects XML tags. Global: every call site sanitizes with `gsub` in Ruby, and
+ * they all pass this to `String#replace`, which strips a single match without
+ * the flag (and never leaks `lastIndex`, since `replace` resets it).
+ */
 export const XmlSanitizeRx: RegExp;

@@ -275,6 +275,20 @@ describe('Parser', () => {
     assert.equal(metadata.authorinitials, 'DHH')
   })
 
+  test('parse author names strips every tag when splitting the segments', () => {
+    // the name keeps its markup (the converter renders it), but the segments it
+    // is split into must not: every tag is stripped, not only the first one
+    const metadata = Parser.processAuthors(
+      'Jane <b>the</b> <i>Great</i> Doe',
+      true
+    )
+    assert.equal(metadata.author, 'Jane <b>the</b> <i>Great</i> Doe')
+    assert.equal(metadata.firstname, 'Jane')
+    assert.equal(metadata.middlename, 'the')
+    assert.equal(metadata.lastname, 'Great Doe')
+    assert.equal(metadata.authorinitials, 'JtG')
+  })
+
   test('parse author first middle last email', async () => {
     const metadata = await parseHeaderMetadata(
       'David Heinemeier Hansson <rails@ruby-lang.org>'
