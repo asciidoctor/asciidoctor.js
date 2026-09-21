@@ -20,6 +20,7 @@ Improvements::
 
 Infrastructure::
 
+* `scripts/strip-internal.js` now deletes a generated declaration file that is left with no content -- because every declaration it held was `@internal`, or because TypeScript emitted nothing for it -- instead of publishing an empty `.d.ts` (first hit by the new `src/node_fs.js`, whose exports are all internal)
 * Fix the type-generation post-processing (`scripts/patch-jsdoc.js`) losing the JSDoc of exported object literals that TypeScript synthesizes as namespaces: the comment on the declaration itself was never restored (only the per-property ones), and files in `types/` subdirectories were never matched back to their `src/` source. The published declarations now carry the previously dropped documentation for `ContentModel`, `Extensions`, `HttpCacheManager`, `Logging`, several `rx` namespaces and the experimental `buildEngine`
 
 == v4.0.11 (2026-08-18)
