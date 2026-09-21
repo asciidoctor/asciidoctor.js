@@ -1,0 +1,11 @@
+----
+line one <1>
+line two <2>
+----
+<1> First callout
+<2> Second callout
+
+----
+line three <1>
+----
+<1> Callout numbering restarts in the second block
