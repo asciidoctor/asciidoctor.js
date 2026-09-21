@@ -759,15 +759,17 @@ ${title}${equation}
       ? this._commonHtmlAttributes(null, null, 'callout-list')
       : this._commonHtmlAttributes(node.id, node.role, 'callout-list')
     result.push(`<ol${attributes}>`)
-    const fontIcons = node.document.hasAttribute('icons', 'font')
-    const imageIcons = !fontIcons && node.document.hasAttribute('icons')
+    // the number is drawn by the stylesheet from the list counter, in text as
+    // in `:icons: font` mode — only image icons put a marker in the content,
+    // since there the glyph is a file the author supplied
+    const imageIcons =
+      node.document.hasAttribute('icons') &&
+      !node.document.hasAttribute('icons', 'font')
     let num = 0
     for (const item of node.getItems()) {
       num++
       let marker = ''
-      if (fontIcons) {
-        marker = `<i class="conum" data-value="${num}"></i> `
-      } else if (imageIcons) {
+      if (imageIcons) {
         marker = `<img src="${await node.iconUri(`callouts/${num}`)}" alt="${num}"${this._voidSlash}> `
       }
       result.push(`<li>
@@ -1337,18 +1339,20 @@ ${img}
   }
 
   async convert_inline_callout(node) {
-    if (node.document.hasAttribute('icons', 'font')) {
-      return `<i class="conum" data-value="${node.text}"></i><b>(${node.text})</b>`
-    }
-    if (node.document.hasAttribute('icons')) {
+    if (
+      node.document.hasAttribute('icons') &&
+      !node.document.hasAttribute('icons', 'font')
+    ) {
       const src = await node.iconUri(`callouts/${node.text}`)
       return `<img src="${src}" alt="${node.text}"${this._voidSlash}>`
     }
-    const guard = node.attributes.guard
-    if (Array.isArray(guard)) {
-      return `&lt;!--<b class="callout-num">(${node.text})</b>--&gt;`
-    }
-    return `${guard ?? ''}<b class="callout-num">(${node.text})</b>`
+    // A callout number is a closed vocabulary: the markup carries the number as
+    // data and the stylesheet draws the badge, so the marker looks the same in
+    // the listing and in the callout list, in text as in `:icons: font` mode.
+    // `<b>(N)</b>` is the fallback rendering when the stylesheet is missing.
+    // The comment guard is dropped for the same reason `:icons: font` drops it:
+    // the badge is not code, so it needs no comment to sit in.
+    return `<i class="callout-num" data-value="${node.text}"></i><b>(${node.text})</b>`
   }
 
   async convert_inline_footnote(node) {

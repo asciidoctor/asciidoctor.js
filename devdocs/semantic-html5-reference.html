@@ -59,12 +59,7 @@ body {
   background: var(--asciidoctor-bg);
   color: var(--asciidoctor-fg);
   font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    "Noto Sans",
-    sans-serif;
+    system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
   font-size: 1.0625rem;
   line-height: 1.7;
   -webkit-text-size-adjust: 100%;
@@ -123,12 +118,7 @@ kbd,
 pre,
 samp {
   font-family:
-    ui-monospace,
-    "SF Mono",
-    "Cascadia Code",
-    Menlo,
-    Consolas,
-    monospace;
+    ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
 }
 
 code {
@@ -551,41 +541,39 @@ dl.horizontal dd {
 
 /* ── Callouts ────────────────────────────────────────────────────────────── */
 
-b.callout-num {
-  color: var(--asciidoctor-muted);
-  font-weight: 600;
-  font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
-  font-size: 0.8125em;
-}
-i.conum[data-value] {
+/* One badge, drawn in two places: the marker inside a verbatim block carries
+   its number in `data-value`, the callout list numbers itself with a CSS
+   counter. Declared together so the two renderings cannot drift apart. */
+i.callout-num[data-value],
+ol.callout-list > li::before {
   display: inline-block;
-  min-width: 1.3em;
-  height: 1.3em;
+  min-width: 1.4em;
+  height: 1.4em;
   border-radius: 50%;
   background: var(--asciidoctor-muted);
   color: var(--asciidoctor-bg);
-  font-size: 0.75em;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 0.75rem;
   font-weight: 600;
   font-style: normal;
-  font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
-  line-height: 1.3em;
+  line-height: 1.4em;
   text-align: center;
 }
-i.conum[data-value]::after {
+i.callout-num[data-value] {
+  /* center the badge on the code line rather than sit it on the baseline */
+  vertical-align: middle;
+}
+i.callout-num[data-value]::after {
   content: attr(data-value);
 }
-i.conum[data-value] + b {
+/* the parenthesized number is the fallback when this stylesheet is not loaded */
+i.callout-num[data-value] + b {
   display: none;
 }
 
+/* two columns, so the badge hangs beside the text and wrapped lines stay
+   aligned with the first one; baseline alignment puts the number on the
+   baseline of the text it labels */
 ol.callout-list {
   list-style: none;
   counter-reset: callout;
@@ -594,25 +582,21 @@ ol.callout-list {
 }
 ol.callout-list > li {
   counter-increment: callout;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 0 0.5rem;
   margin: 0.25em 0;
 }
-ol.callout-list > li > p::before {
+ol.callout-list > li::before {
   content: counter(callout);
-  display: inline-block;
-  min-width: 1.3em;
-  height: 1.3em;
-  margin-right: 0.5em;
-  border-radius: 50%;
-  background: var(--asciidoctor-muted);
-  color: var(--asciidoctor-bg);
-  font-size: 0.75em;
-  font-weight: 600;
-  line-height: 1.3em;
-  text-align: center;
+  grid-column: 1;
 }
-/* in icons mode the marker is already in the content — drop the counter */
-ol.callout-list > li > p:has(> i.conum:first-child)::before,
-ol.callout-list > li > p:has(> img:first-child)::before {
+ol.callout-list > li > * {
+  grid-column: 2;
+}
+/* image icons: the marker the author supplied is already in the content */
+ol.callout-list > li:has(> p > img:first-child)::before {
   content: none;
 }
 
@@ -1052,9 +1036,9 @@ It can contain any block content.
 </aside>
 <figure class="listing">
 <figcaption>Compute the answer</figcaption>
-<pre><code data-lang="js">const answer = 6 * 7 // <b class="callout-num">(1)</b>
+<pre><code data-lang="js">const answer = 6 * 7 <i class="callout-num" data-value="1"></i><b>(1)</b>
 if (answer !== 42) {
-  throw new Error('panic') // <b class="callout-num">(2)</b>
+  throw new Error('panic') <i class="callout-num" data-value="2"></i><b>(2)</b>
 }</code></pre>
 </figure>
 <ol class="callout-list">
@@ -1067,9 +1051,9 @@ if (answer !== 42) {
 </ol>
 <figure class="listing">
 <figcaption>A second annotated block, to check the numbering restarts</figcaption>
-<pre><code data-lang="ruby">require 'asciidoctor' # <b class="callout-num">(1)</b>
+<pre><code data-lang="ruby">require 'asciidoctor' <i class="callout-num" data-value="1"></i><b>(1)</b>
 
-Asciidoctor.convert_file 'reference.adoc', backend: 'semantic-html5' # <b class="callout-num">(2)</b></code></pre>
+Asciidoctor.convert_file 'reference.adoc', backend: 'semantic-html5' <i class="callout-num" data-value="2"></i><b>(2)</b></code></pre>
 </figure>
 <ol class="callout-list">
 <li>
