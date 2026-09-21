@@ -9,9 +9,13 @@
  *      statements to collect nodes whose JSDoc contains @internal.
  *   3. Sort the collected ranges descending by position and splice them out of
  *      the original source string, preserving all other formatting exactly.
+ *
+ * A declaration file left with no content — either because every declaration it
+ * held was @internal (e.g. `src/node_fs.js`) or because TypeScript emitted
+ * nothing for it — is deleted rather than published as an empty file.
  */
 import ts from 'typescript'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync, rmSync } from 'node:fs'
 import { readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -75,7 +79,6 @@ function stripInternalFromFile(filePath) {
   const sourceFile = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, /* setParentNodes */ true)
 
   const internals = collectInternalNodes(sourceFile)
-  if (internals.length === 0) return
 
   // Remove from end to start so earlier offsets stay valid
   internals.sort((a, b) => b.getFullStart() - a.getFullStart())
@@ -84,6 +87,14 @@ function stripInternalFromFile(filePath) {
   for (const node of internals) {
     result = result.slice(0, node.getFullStart()) + result.slice(node.getEnd())
   }
+
+  if (result.trim() === '') {
+    rmSync(filePath)
+    console.log(`removed ${filePath} (no declaration left)`)
+    return
+  }
+
+  if (internals.length === 0) return
 
   writeFileSync(filePath, result, 'utf-8')
   console.log(`stripped ${internals.length} @internal declaration(s) from ${filePath}`)
