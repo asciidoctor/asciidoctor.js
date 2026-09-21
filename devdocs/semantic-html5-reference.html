@@ -269,12 +269,14 @@ body > footer {
   margin-right: 0.25em;
 }
 
-/* :sectanchors: — reveal the anchor on heading hover */
+/* :sectanchors: — reveal the anchor on heading hover, and on keyboard focus.
+   Hidden with opacity rather than visibility: the anchor is a real permalink
+   named by its aria-label, so it must stay focusable and reachable. */
 a.anchor {
   float: left;
   margin-left: -1.1em;
   width: 1.1em;
-  visibility: hidden;
+  opacity: 0;
   font-weight: 400;
 }
 a.anchor::before {
@@ -285,8 +287,9 @@ h2:hover a.anchor,
 h3:hover a.anchor,
 h4:hover a.anchor,
 h5:hover a.anchor,
-h6:hover a.anchor {
-  visibility: visible;
+h6:hover a.anchor,
+a.anchor:focus-visible {
+  opacity: 1;
 }
 
 /* :sectlinks: — self-links keep the heading color */
@@ -962,7 +965,7 @@ This document exercises most of the AsciiDoc syntax so the default stylesheet of
 It is the preamble: it precedes the first section and contains a footnote.<sup class="footnote-ref"><a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote." role="doc-noteref">1</a></sup>
 </p>
 <section id="_text_formatting">
-<h2><a class="anchor" href="#_text_formatting"></a><a class="link" href="#_text_formatting"><span class="sect-num">1.</span> Text formatting</a></h2>
+<h2><a class="anchor" rel="bookmark" href="#_text_formatting" aria-label="1. Text formatting"></a><a class="link" href="#_text_formatting"><span class="sect-num">1.</span> Text formatting</a></h2>
 <p>
 Regular paragraph text with <strong>bold</strong>, <em>italic</em>, <code>monospace</code>, <strong><em>bold italic</em></strong>, <code><strong>bold mono</strong></code>, <mark>highlighted</mark>, <sup>super</sup>script, <sub>sub</sub>script, "double curved quotes", 'single curved quotes', and an en&#8211;dash&#8201;&#8212;&#8201;style replacement.
 </p>
@@ -978,18 +981,18 @@ lands on the next line.
 The title renders above the paragraph as a strong element.
 </p>
 <section id="_links_and_cross_references">
-<h3><a class="anchor" href="#_links_and_cross_references"></a><a class="link" href="#_links_and_cross_references"><span class="sect-num">1.1.</span> Links and cross references</a></h3>
+<h3><a class="anchor" rel="bookmark" href="#_links_and_cross_references" aria-label="1.1. Links and cross references"></a><a class="link" href="#_links_and_cross_references"><span class="sect-num">1.1.</span> Links and cross references</a></h3>
 <p>
 An automatic link: <a href="https://asciidoctor.org" class="bare">https://asciidoctor.org</a>.
 A link with text: <a href="https://docs.asciidoctor.org">the documentation</a>.
 One that opens in a new window: <a href="https://asciidoctor.org" target="_blank" rel="noopener">Asciidoctor</a>.
 An email: <a href="mailto:doc.writer@example.org">doc.writer@example.org</a>.
 A cross reference to <a href="#tables">Tables</a> and one with custom text: <a href="#lists">the lists section</a>.
-An inline anchor sits <a id="bookmark-a"></a>right here.
+An inline anchor sits <span id="bookmark-a"></span>right here.
 </p>
 </section>
 <section id="_keyboard_buttons_and_menus">
-<h3><a class="anchor" href="#_keyboard_buttons_and_menus"></a><a class="link" href="#_keyboard_buttons_and_menus"><span class="sect-num">1.2.</span> Keyboard, buttons and menus</a></h3>
+<h3><a class="anchor" rel="bookmark" href="#_keyboard_buttons_and_menus" aria-label="1.2. Keyboard, buttons and menus"></a><a class="link" href="#_keyboard_buttons_and_menus"><span class="sect-num">1.2.</span> Keyboard, buttons and menus</a></h3>
 <p>
 Press <span class="key-seq"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></span> to open the palette, or the single key <kbd>F11</kbd>.
 Click <span class="button">Save</span> and confirm with <span class="button">OK</span>.
@@ -998,7 +1001,7 @@ Select <span class="menu-seq"><b class="menu">File</b></span> then <span class="
 </section>
 </section>
 <section id="_admonitions">
-<h2><a class="anchor" href="#_admonitions"></a><a class="link" href="#_admonitions"><span class="sect-num">2.</span> Admonitions</a></h2>
+<h2><a class="anchor" rel="bookmark" href="#_admonitions" aria-label="2. Admonitions"></a><a class="link" href="#_admonitions"><span class="sect-num">2.</span> Admonitions</a></h2>
 <aside class="admonition note" role="note">
 <strong class="label">Note</strong>
 Useful information that users should know, even when skimming content.
@@ -1039,7 +1042,7 @@ And a closing paragraph.
 </aside>
 </section>
 <section id="_blocks">
-<h2><a class="anchor" href="#_blocks"></a><a class="link" href="#_blocks"><span class="sect-num">3.</span> Blocks</a></h2>
+<h2><a class="anchor" rel="bookmark" href="#_blocks" aria-label="3. Blocks"></a><a class="link" href="#_blocks"><span class="sect-num">3.</span> Blocks</a></h2>
 <aside class="sidebar">
 <strong class="title">Sidebar title</strong>
 <p>
@@ -1060,6 +1063,20 @@ if (answer !== 42) {
 </li>
 <li>
 <p>This should never happen.</p>
+</li>
+</ol>
+<figure class="listing">
+<figcaption>A second annotated block, to check the numbering restarts</figcaption>
+<pre><code data-lang="ruby">require 'asciidoctor' # <b class="callout-num">(1)</b>
+
+Asciidoctor.convert_file 'reference.adoc', backend: 'semantic-html5' # <b class="callout-num">(2)</b></code></pre>
+</figure>
+<ol class="callout-list">
+<li>
+<p>Callout numbers are scoped to their block: this one is 1 again, not 3.</p>
+</li>
+<li>
+<p>The list that follows restarts its own counter too.</p>
 </li>
 </ol>
 <p>
@@ -1123,9 +1140,9 @@ And a page break (a dinkus on screen, a real break in print):
 <hr class="page-break">
 </section>
 <section id="lists">
-<h2><a class="anchor" href="#lists"></a><a class="link" href="#lists"><span class="sect-num">4.</span> Lists</a></h2>
+<h2><a class="anchor" rel="bookmark" href="#lists" aria-label="4. Lists"></a><a class="link" href="#lists"><span class="sect-num">4.</span> Lists</a></h2>
 <section id="_unordered">
-<h3><a class="anchor" href="#_unordered"></a><a class="link" href="#_unordered"><span class="sect-num">4.1.</span> Unordered</a></h3>
+<h3><a class="anchor" rel="bookmark" href="#_unordered" aria-label="4.1. Unordered"></a><a class="link" href="#_unordered"><span class="sect-num">4.1.</span> Unordered</a></h3>
 <ul>
 <li>
 <p>Item one</p>
@@ -1152,7 +1169,7 @@ This paragraph is attached to the list item.
 </ul>
 </section>
 <section id="_checklists">
-<h3><a class="anchor" href="#_checklists"></a><a class="link" href="#_checklists"><span class="sect-num">4.2.</span> Checklists</a></h3>
+<h3><a class="anchor" rel="bookmark" href="#_checklists" aria-label="4.2. Checklists"></a><a class="link" href="#_checklists"><span class="sect-num">4.2.</span> Checklists</a></h3>
 <ul class="checklist">
 <li>
 <p>&#10003; Design the converter</p>
@@ -1174,7 +1191,7 @@ This paragraph is attached to the list item.
 </ul>
 </section>
 <section id="_ordered">
-<h3><a class="anchor" href="#_ordered"></a><a class="link" href="#_ordered"><span class="sect-num">4.3.</span> Ordered</a></h3>
+<h3><a class="anchor" rel="bookmark" href="#_ordered" aria-label="4.3. Ordered"></a><a class="link" href="#_ordered"><span class="sect-num">4.3.</span> Ordered</a></h3>
 <ol class="arabic">
 <li>
 <p>Step one</p>
@@ -1220,7 +1237,7 @@ This paragraph is attached to the list item.
 </ol>
 </section>
 <section id="_description_lists">
-<h3><a class="anchor" href="#_description_lists"></a><a class="link" href="#_description_lists"><span class="sect-num">4.4.</span> Description lists</a></h3>
+<h3><a class="anchor" rel="bookmark" href="#_description_lists" aria-label="4.4. Description lists"></a><a class="link" href="#_description_lists"><span class="sect-num">4.4.</span> Description lists</a></h3>
 <dl>
 <dt>CPU</dt>
 <dd>
@@ -1263,7 +1280,7 @@ This paragraph is attached to the list item.
 </section>
 </section>
 <section id="tables">
-<h2><a class="anchor" href="#tables"></a><a class="link" href="#tables"><span class="sect-num">5.</span> Tables</a></h2>
+<h2><a class="anchor" rel="bookmark" href="#tables" aria-label="5. Tables"></a><a class="link" href="#tables"><span class="sect-num">5.</span> Tables</a></h2>
 <table class="frame-all grid-all stripes-even stretch">
 <caption>Table 1. Ingredients for one loaf</caption>
 <colgroup>
@@ -1379,7 +1396,7 @@ AsciiDoc cell
 </table>
 </section>
 <section id="_media">
-<h2><a class="anchor" href="#_media"></a><a class="link" href="#_media"><span class="sect-num">6.</span> Media</a></h2>
+<h2><a class="anchor" rel="bookmark" href="#_media" aria-label="6. Media"></a><a class="link" href="#_media"><span class="sect-num">6.</span> Media</a></h2>
 <figure>
 <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjAgODAiPjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iODAiIHJ4PSI4IiBmaWxsPSIjMDk2OWRhIiBvcGFjaXR5PSIuMTUiLz48Y2lyY2xlIGN4PSI0MCIgY3k9IjQwIiByPSIxOCIgZmlsbD0iIzA5NjlkYSIvPjxyZWN0IHg9IjcwIiB5PSIyMiIgd2lkdGg9IjM2IiBoZWlnaHQ9IjM2IiByeD0iNiIgZmlsbD0iIzFhN2YzNyIvPjwvc3ZnPg==" alt="Abstract shapes" width="240" height="160">
 <figcaption>Figure 1. A sample figure, captioned and numbered</figcaption>
@@ -1397,7 +1414,7 @@ The paragraph next to the floated image wraps around it. Clear the float before 
 <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiNjZjIyMmUiLz48L3N2Zz4=" alt="Centered dot" class="text-center" width="32" height="32">
 </section>
 <section id="_stem">
-<h2><a class="anchor" href="#_stem"></a><a class="link" href="#_stem"><span class="sect-num">7.</span> STEM</a></h2>
+<h2><a class="anchor" rel="bookmark" href="#_stem" aria-label="7. STEM"></a><a class="link" href="#_stem"><span class="sect-num">7.</span> STEM</a></h2>
 <p>
 The area of a circle is \(A = \pi r^2\) (inline).
 </p>
@@ -1406,7 +1423,7 @@ The area of a circle is \(A = \pi r^2\) (inline).
 </figure>
 </section>
 <section id="_footnotes_and_index">
-<h2><a class="anchor" href="#_footnotes_and_index"></a><a class="link" href="#_footnotes_and_index"><span class="sect-num">8.</span> Footnotes and index</a></h2>
+<h2><a class="anchor" rel="bookmark" href="#_footnotes_and_index" aria-label="8. Footnotes and index"></a><a class="link" href="#_footnotes_and_index"><span class="sect-num">8.</span> Footnotes and index</a></h2>
 <p>
 The hail-and-rainbow protocol can be initiated at five levels.<sup class="footnote-ref" id="_footnote_disclaimer"><a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote." role="doc-noteref">2</a></sup>
 A reused footnote reference.<sup class="footnote-ref"><a class="footnote" href="#_footnotedef_2" title="View footnote." role="doc-noteref">2</a></sup>
@@ -1418,13 +1435,13 @@ A discrete heading is not numbered, not in the TOC, and opens no section.
 </p>
 </section>
 <section id="_bibliography_ish">
-<h2><a class="anchor" href="#_bibliography_ish"></a><a class="link" href="#_bibliography_ish">Appendix A: Bibliography-ish</a></h2>
+<h2><a class="anchor" rel="bookmark" href="#_bibliography_ish" aria-label="Appendix A: Bibliography-ish"></a><a class="link" href="#_bibliography_ish">Appendix A: Bibliography-ish</a></h2>
 <ul>
 <li>
-<p><a id="semantic"></a> The semantic HTML5 converter design document, 2026.</p>
+<p><span id="semantic"></span> The semantic HTML5 converter design document, 2026.</p>
 </li>
 <li>
-<p><a id="wip"></a> The upstream feature/html-converter-next branch, 2022.</p>
+<p><span id="wip"></span> The upstream feature/html-converter-next branch, 2022.</p>
 </li>
 </ul>
 <p>

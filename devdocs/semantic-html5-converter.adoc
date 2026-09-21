@@ -145,7 +145,7 @@ a|
 …
 </section>
 ----
-|`<section>` with the heading at `h(level+1)`; `id` on the `<section>` (not the heading), roles as classes. Numbered sections prefix the heading text with `<span class="sect-num">1.1.</span>` (plus the part/chapter signifier in book doctype). `:sectlinks:` wraps the title in `<a class="link">`; `:sectanchors:` adds `<a class="anchor">` before (or after with `sectanchors=after`).
+|`<section>` with the heading at `h(level+1)`; `id` on the `<section>` (not the heading), roles as classes. Numbered sections prefix the heading text with `<span class="sect-num">1.1.</span>` (plus the part/chapter signifier in book doctype). `:sectlinks:` wraps the title in `<a class="link">`; `:sectanchors:` adds `<a class="anchor" rel="bookmark" aria-label="…">` before (or after with `sectanchors=after`) — see <<section-anchors>>.
 
 |floating title (`[discrete]`)
 a|
@@ -167,6 +167,26 @@ a|
 |`<hr class="page-break">`
 |A separation in the content flow, distinguished by class for print stylesheets.
 |===
+
+[#section-anchors]
+=== Section anchors
+
+`:sectanchors:` emits a permalink whose glyph comes from the stylesheet (`a.anchor::before { content: "§" }`), so the element itself is empty:
+
+[source,html]
+----
+<h2><a class="anchor" rel="bookmark" href="#_blocks" aria-label="3. Blocks"></a><a class="link" href="#_blocks"><span class="sect-num">3.</span> Blocks</a></h2>
+----
+
+`rel="bookmark"` is the link type HTML defines for a permalink to the nearest ancestor section — there is no dedicated element for this, so it is the only semantic marker available.
+
+`aria-label` gives the link the accessible name an empty `<a>` otherwise lacks (a link with no name fails WCAG 2.4.4 and 4.1.2, and Biome's `a11y/useAnchorContent` flags it). Its value is the *section title*, sanitized: the link points at that section, so the title describes the destination, and it is the author's own text — already written in the language of the document, so the converter carries no string to translate.
+
+The glyph deliberately stays in the stylesheet rather than moving into the DOM: as visible text it would become a visible label (`§`) absent from the accessible name, which is what WCAG 2.5.3 (*Label in Name*) forbids. An icon-only link named by `aria-label` is outside the scope of that criterion.
+
+The default stylesheet hides the anchor with `opacity: 0` rather than `visibility: hidden`, and reveals it on `:focus-visible` as well as on heading hover: the anchor is a real permalink, so it must stay focusable — `visibility: hidden` removes an element from both the accessibility tree and the tab order.
+
+NOTE: with `:sectanchors:` *and* `:sectlinks:`, the heading carries two links to the same target, now with the same accessible name. That is the pattern WCAG technique H2 suggests combining — a redundancy, not a conformance failure (each link's purpose is unambiguous). Combining them is a markup decision left open: it only applies when both attributes are set, it turns the `sectanchors=after` position into a stylesheet concern, and it moves the glyph inside the named link, where generated content participates in the accessible name computation.
 
 == Paragraphs and simple blocks
 
@@ -562,10 +582,10 @@ a|
 |`<a href="#id">resolved text</a>` — resolves the target's reftext/title like the `html5` backend
 
 |inline anchor (`+[[id]]+`)
-|`<a id="id"></a>`
+|`<span id="id"></span>` — see <<anchor-targets>>
 
 |bibliography anchor
-|`<a id="id"></a>[ref]`
+|`<span id="id"></span>[ref]`
 
 |footnote
 |see <<Footnotes>>
@@ -594,6 +614,17 @@ a|
 |index term
 |`indexterm2:[term]` renders the visible term; `indexterm:[…]` renders nothing (catalog only)
 |===
+
+[#anchor-targets]
+=== Anchor targets
+
+An inline anchor (`+[[id]]+`, `+anchor:name[]+`) and a bibliography anchor mark a position; they are never followed.
+The `html5` backend renders them as `<a id="id"></a>`, which AsciiDoc.py needed because HTML 4 resolved a fragment through `<a name>`.
+HTML5 resolves a fragment against any element carrying the `id`, and an `<a>` without `href` is no longer a link — only a target with the default `generic` ARIA role.
+This converter therefore emits an empty `<span id>`: the same target, without an element that assistive technology and linters read as a link with no accessible name (Biome's `a11y/useAnchorContent` flags every empty `<a>`).
+
+The tradeoff is that an anchor placed in a section title is now a `<span>` inside the heading, so it must be stripped wherever that title is reused outside the heading — the TOC entry and the resolved text of an xref — or the `id` would appear twice in the document.
+`_dropAnchors` does that, alongside the `<a>` stripping already required there (a link cannot nest inside the enclosing `<a>`).
 
 [#icon-providers]
 == Icon providers

@@ -1,0 +1,6 @@
+= Document Title
+:toc:
+
+== [[first-anchor]]First Section
+
+See <<first-anchor>> and <<_first_section>>.

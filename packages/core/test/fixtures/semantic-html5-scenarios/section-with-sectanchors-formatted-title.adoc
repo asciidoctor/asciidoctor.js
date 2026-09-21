@@ -1,0 +1,8 @@
+:sectnums:
+:sectanchors:
+:sectlinks:
+
+[[blocks]]
+== A *formatted* "`title`" with a footnote:[note]
+
+A normal paragraph.
