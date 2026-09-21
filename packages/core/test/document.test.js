@@ -90,6 +90,14 @@ describe('DocumentTitle', () => {
     assert.ok(!title.combined.includes('<b>'))
   })
 
+  test('sanitizes every tag, not only the first one', () => {
+    const title = new DocumentTitle('<b>Bold</b> and <i>italic</i> Title', {
+      sanitize: true,
+    })
+    assert.ok(title.isSanitized())
+    assert.equal(title.combined, 'Bold and italic Title')
+  })
+
   test('does not sanitize when no HTML present', () => {
     const title = new DocumentTitle('Plain Title', { sanitize: true })
     assert.ok(!title.isSanitized())
@@ -189,6 +197,15 @@ describe('Structure', () => {
     const input = "= Let's Go!\n\npreamble"
     const doc = await parse(input)
     assert.equal(doc.doctitle(), 'Let&#8217;s Go!')
+  })
+
+  test('doctitle(sanitize) strips every tag of a formatted title', async () => {
+    const doc = await parse('= *Bold* and _italic_ title\n\npreamble')
+    assert.equal(
+      doc.doctitle(),
+      '<strong>Bold</strong> and <em>italic</em> title'
+    )
+    assert.equal(doc.doctitle({ sanitize: true }), 'Bold and italic title')
   })
 
   test('xreftext with reftext applies quotes and replacements substitutions', async () => {
@@ -568,6 +585,15 @@ describe('HTML output', () => {
     assert.ok(result.includes('id="footer-text"'))
     // footer-text should be empty (no "Last updated" text)
     assert.match(result, /id="footer-text"[^>]*>\s*<\/div>/)
+  })
+
+  test('author meta tag strips every tag of the authors attribute', async () => {
+    const result = await convert('= Title\n\nparagraph', {
+      attributes: { authors: 'Jane <b>Doe</b> and <i>John</i>' },
+    })
+    assert.ok(
+      result.includes('<meta name="author" content="Jane Doe and John">')
+    )
   })
 
   test('embedded document has no html wrapper or header/footer divs', async () => {

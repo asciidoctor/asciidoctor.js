@@ -825,5 +825,9 @@ export const TrailingDigitsRx = /\d+$/
  */
 export const UriSniffRx = ru(String.raw`^${CG_ALPHA}[${CC_ALNUM}.+\-]+:\/{0,2}`)
 
-/** Detects XML tags. */
-export const XmlSanitizeRx = /<[^>]+>/
+/**
+ * Detects XML tags. Global: every call site sanitizes with `gsub` in Ruby, and
+ * they all pass this to `String#replace`, which strips a single match without
+ * the flag (and never leaks `lastIndex`, since `replace` resets it).
+ */
+export const XmlSanitizeRx = /<[^>]+>/g

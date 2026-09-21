@@ -963,6 +963,12 @@ describe('Links', () => {
     )
   })
 
+  test('should strip every tag of a formatted reftext in DocBook output', async () => {
+    const input = '[[ref,*a* _b_ label]]Para.'
+    const result = await convertStringToEmbedded(input, { backend: 'docbook' })
+    assert.ok(result.includes('<anchor xml:id="ref" xreflabel="a b label"/>'))
+  })
+
   test('should substitute attribute references in reftext when registering inline ref', async () => {
     const anchors = [
       '[[tigers,{label-tigers}]]',
