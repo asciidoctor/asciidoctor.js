@@ -83,6 +83,16 @@ if (answer !== 42) {
 <1> The multiplication is the hard part.
 <2> This should never happen.
 
+.A second annotated block, to check the numbering restarts
+[source,ruby]
+----
+require 'asciidoctor' # <1>
+
+Asciidoctor.convert_file 'reference.adoc', backend: 'semantic-html5' # <2>
+----
+<1> Callout numbers are scoped to their block: this one is 1 again, not 3.
+<2> The list that follows restarts its own counter too.
+
 A plain listing without a language:
 
 ----

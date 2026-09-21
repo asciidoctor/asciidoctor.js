@@ -260,12 +260,14 @@ body > footer {
   margin-right: 0.25em;
 }
 
-/* :sectanchors: — reveal the anchor on heading hover */
+/* :sectanchors: — reveal the anchor on heading hover, and on keyboard focus.
+   Hidden with opacity rather than visibility: the anchor is a real permalink
+   named by its aria-label, so it must stay focusable and reachable. */
 a.anchor {
   float: left;
   margin-left: -1.1em;
   width: 1.1em;
-  visibility: hidden;
+  opacity: 0;
   font-weight: 400;
 }
 a.anchor::before {
@@ -276,8 +278,9 @@ h2:hover a.anchor,
 h3:hover a.anchor,
 h4:hover a.anchor,
 h5:hover a.anchor,
-h6:hover a.anchor {
-  visibility: visible;
+h6:hover a.anchor,
+a.anchor:focus-visible {
+  opacity: 1;
 }
 
 /* :sectlinks: — self-links keep the heading color */

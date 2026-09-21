@@ -1,0 +1,7 @@
+[bibliography]
+== References
+
+* [[[taoup,1]]] Eric Steven Raymond. _The Art of Unix Programming_. 2003.
+* [[[walsh-muellner]]] Norman Walsh and Leonard Muellner. _DocBook_. 1999.
+
+See <<taoup>> and <<walsh-muellner>>.

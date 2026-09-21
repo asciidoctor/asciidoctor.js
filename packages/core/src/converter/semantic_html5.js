@@ -34,7 +34,11 @@ import { Stylesheets } from '../stylesheets.js'
 // ── Local regex constants ─────────────────────────────────────────────────────
 
 const DropAnchorRx = /<(?:a\b[^>]*|\/a)>/g
-const LeadingAnchorsRx = /^(?:<a id="[^"]+"><\/a>)+/
+// an inline (`[[id]]`) or bibliography anchor is an empty <span id>: it has to
+// be dropped wherever a title is reused outside its heading (TOC entry, xref
+// text), or its id would appear twice in the document
+const DropAnchorSpanRx = /<span id="[^"]*"><\/span>/g
+const LeadingAnchorsRx = /^(?:<span id="[^"]+"><\/span>)+/
 const StemBreakRx = / *\\\n(?:\\?\n)*|\n\n+/g
 
 const MONTH_NAMES = [
@@ -373,18 +377,22 @@ MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
     if (docAttrs.sectlinks != null) {
       // avoid nesting the section link inside a leading inline anchor
       let m
-      if (title.startsWith('<a ') && (m = title.match(LeadingAnchorsRx))) {
+      if (title.startsWith('<span ') && (m = title.match(LeadingAnchorsRx))) {
         title = `${m[0]}<a class="link" href="#${id}">${title.slice(m[0].length)}</a>`
       } else {
         title = `<a class="link" href="#${id}">${title}</a>`
       }
     }
     if (docAttrs.sectanchors != null) {
-      if (docAttrs.sectanchors === 'after') {
-        title = `${title}<a class="anchor" href="#${id}"></a>`
-      } else {
-        title = `<a class="anchor" href="#${id}"></a>${title}`
-      }
+      // rel=bookmark is the spec-defined marker for a permalink to the section;
+      // the anchor renders as a glyph from the stylesheet, so aria-label carries
+      // its accessible name — the section title itself, hence already written in
+      // the language of the document (no string to translate in the converter).
+      const anchor = `<a class="anchor" rel="bookmark" href="#${id}" aria-label="${this._sanitizeTitle(title)}"></a>`
+      title =
+        docAttrs.sectanchors === 'after'
+          ? `${title}${anchor}`
+          : `${anchor}${title}`
     }
     const attributes = this._commonHtmlAttributes(id, node.role)
     const level = node.level
@@ -951,8 +959,8 @@ ${title}${equation}
         stitle = section.title
       }
 
-      if (stitle?.includes('<a')) {
-        stitle = stitle.replace(new RegExp(DropAnchorRx.source, 'g'), '')
+      if (stitle?.includes('<')) {
+        stitle = this._dropAnchors(stitle)
       }
 
       if (slevel < stoclevels) {
@@ -1300,8 +1308,8 @@ ${img}
                 )
                 resolvingSet.delete(refid)
                 if (resolved) {
-                  text = resolved.includes('<a')
-                    ? resolved.replace(new RegExp(DropAnchorRx.source, 'g'), '')
+                  text = resolved.includes('<')
+                    ? this._dropAnchors(resolved)
                     : resolved
                 } else {
                   text = top ? '[^top]' : `[${refid}]`
@@ -1317,9 +1325,11 @@ ${img}
         return `<a href="${node.target}"${attrs}>${text}</a>`
       }
       case 'ref':
-        return `<a id="${node.id}"></a>`
+        // not <a id>: an anchor without href is no longer a link, only a target,
+        // and an empty <a> has no accessible name (Biome a11y/useAnchorContent)
+        return `<span id="${node.id}"></span>`
       case 'bibref':
-        return `<a id="${node.id}"></a>[${node.reftext || node.id}]`
+        return `<span id="${node.id}"></span>[${node.reftext || node.id}]`
       default:
         this.logger.warn(`unknown anchor type: ${node.type}`)
         return null
@@ -1748,6 +1758,35 @@ ${outline}
     if (shorthandSet) return shorthandSet
     if (node.hasAttribute('set')) return node.getAttribute('set')
     return node.document.getAttribute('icon-set') ?? prefix
+  }
+
+  /**
+   * Strip from a title the markup that must not be repeated when it is reused
+   * outside its heading: links, which cannot nest inside the enclosing `<a>`,
+   * and the empty `<span id>` of an inline anchor, whose id is already carried
+   * by the heading.
+   *
+   * @internal
+   * @private
+   */
+  _dropAnchors(text) {
+    return text.replace(DropAnchorRx, '').replace(DropAnchorSpanRx, '')
+  }
+
+  /**
+   * Plain-text form of a converted title, for use inside an attribute value:
+   * tags stripped and the whitespace they leave behind collapsed, the way the
+   * `sanitize` option of Asciidoctor's own doctitle does it, then quotes
+   * encoded.
+   *
+   * @internal
+   * @private
+   */
+  _sanitizeTitle(title) {
+    const text = title.includes('<')
+      ? title.replace(XmlSanitizeRx, '').replace(/ {2,}/g, ' ').trim()
+      : title
+    return this._encodeAttributeValue(text)
   }
 
   /**
