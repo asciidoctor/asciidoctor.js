@@ -10,6 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Bug Fixes::
 
+* Fix concurrent `load()`/`convert()` calls occasionally reporting `include file not found` (rendering `Unresolved directive`) -- or `image to embed not found or not readable` for a `data-uri` image -- for a file that does exist on disk. The lazy `node:fs` initializer, duplicated in `reader.js` and `abstract_node.js`, published its `fs/promises` handle one microtask ahead of the `fs.constants` it needs, so a call entering that window read `F_OK`/`R_OK` off `undefined`; the resulting `TypeError` was swallowed by the caller's `catch` and turned into "the file does not exist". Both values are now published together, once both imports have resolved, and concurrent callers share a single initialization -- factored out into `src/node_fs.js`, so there is one such initializer for the whole package (https://github.com/asciidoctor/asciidoctor.js/issues/1882[#1882])
 * Fix the warning issued when an asset cannot be found or read (e.g. `image::does-not-exist.svg[opts=inline]`) always reporting the document as `<stdin>`. The `docfile` attribute was looked up on the node instead of on the document, and since `docfile` is only ever set as a document attribute the lookup never resolved (https://github.com/asciidoctor/asciidoctor/issues/4873[asciidoctor#4873])
 
 Improvements::

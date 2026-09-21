@@ -35,6 +35,7 @@ Each source file corresponds to a Ruby file in the upstream Asciidoctor reposito
 | `src/logging.js` | `logging.rb` | Logger / LoggerManager |
 | `src/compliance.js` | `compliance.rb` | Compliance flags |
 | `src/helpers.js` | `helpers.rb` | Shared utility functions |
+| `src/node_fs.js` | — | Lazy, optional `node:fs` access (shared by `reader.js` and `abstract_node.js`) |
 | `src/constants.js` | `constants.rb` | Shared constants (SafeMode, DEFAULT_ATTRIBUTES, …) |
 | `src/rx.js` | — | Centralised regular expressions |
 | `src/timings.js` | `timings.rb` | Performance timings |
@@ -54,7 +55,7 @@ When converting or extending code, follow the conventions established in the exi
 - **Ruby `$1`, `$2` captures** → JS match array `m[1]`, `m[2]`.
 - **Thread safety / Mutex** → not needed (single-threaded JS).
 - **Circular dependencies** → resolved via lazy `import()` inside functions; pre-warmed in `load.js` using `Promise.all`.
-- **`node:path`, `node:fs`** → imported lazily (`_requirePath()`) to avoid issues in non-Node environments.
+- **`node:path`, `node:fs`** → imported lazily (`_requirePath()`, `src/node_fs.js`) to avoid issues in non-Node environments. A lazy initializer that publishes more than one module-level value must publish them together, once every import has resolved, and let concurrent callers await a single shared promise — otherwise a caller can observe a half-initialized state (see https://github.com/asciidoctor/asciidoctor.js/issues/1882).
 
 ## Generated type declarations
 

@@ -32,32 +32,7 @@ import {
   prepareSourceString,
 } from './helpers.js'
 import { fetchUri } from './http_cache.js'
-
-// ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
-// Loaded on first use in Node.js; silently absent in browser/WebWorker environments.
-let _fsp // undefined = not tried, null = unavailable, object = available
-let _fsConstants // node:fs constants (R_OK etc.) — not on node:fs/promises
-
-async function _requireFsp() {
-  if (_fsp !== undefined) return
-  try {
-    _fsp = await import('node:fs/promises')
-    _fsConstants = (await import('node:fs')).constants
-  } catch {
-    _fsp = null
-  }
-}
-
-async function isReadable(path) {
-  await _requireFsp()
-  if (!_fsp) return false
-  try {
-    await _fsp.access(path, _fsConstants.R_OK)
-    return true
-  } catch {
-    return false
-  }
-}
+import { isReadable, requireFs } from './node_fs.js'
 
 /**
  * An abstract base class that provides state and methods for managing a node of AsciiDoc content.
@@ -547,7 +522,8 @@ export class AbstractNode {
       return await this.generateDataUriFromUri(imagePath)
     }
     if (await isReadable(imagePath)) {
-      const data = await _fsp.readFile(imagePath)
+      const fsp = await requireFs()
+      const data = await fsp.readFile(imagePath)
       return `data:${mimetype};base64,${data.toString('base64')}`
     }
     this.logger.warn(`image to embed not found or not readable: ${imagePath}`)
@@ -693,10 +669,11 @@ export class AbstractNode {
       return null
     }
     if (await isReadable(path)) {
+      const fsp = await requireFs()
       if (opts.normalize) {
-        return prepareSourceString(await _fsp.readFile(path, 'utf8')).join(LF)
+        return prepareSourceString(await fsp.readFile(path, 'utf8')).join(LF)
       }
-      return _fsp.readFile(path, 'utf8')
+      return fsp.readFile(path, 'utf8')
     }
     if (opts.warnOnFailure) {
       const docfile = this.document.getAttribute('docfile') || '<stdin>'
