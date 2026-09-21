@@ -15,19 +15,45 @@ import { convertString, convertStringToEmbedded } from './harness.js'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const scenariosDir = join(__dirname, 'fixtures', 'semantic-html5-scenarios')
 
-describe('Semantic HTML 5 converter', () => {
-  const scenarios = readdirSync(scenariosDir)
+// node:fs is unavailable in the browser, where the fixtures are instead inlined
+// at build time by Vite (`import.meta.glob`, which only the browser build
+// evaluates — Deno 1.x also defines `window`, hence the second check).
+const isBrowser =
+  typeof window !== 'undefined' && typeof globalThis.Deno === 'undefined'
+const inlinedFixtures = !isBrowser
+  ? null
+  : import.meta.glob('./fixtures/semantic-html5-scenarios/*.{adoc,html}', {
+      query: '?raw',
+      import: 'default',
+      eager: true,
+    })
+
+function listScenarios() {
+  const names = inlinedFixtures
+    ? Object.keys(inlinedFixtures).map((path) =>
+        path.slice(path.lastIndexOf('/') + 1)
+      )
+    : readdirSync(scenariosDir)
+  return names
     .filter((name) => name.endsWith('.adoc'))
     .map((name) => name.slice(0, -5))
     .sort()
+}
+
+function readFixture(name) {
+  if (inlinedFixtures) {
+    return inlinedFixtures[`./fixtures/semantic-html5-scenarios/${name}`]
+  }
+  return readFileSync(join(scenariosDir, name), 'utf8')
+}
+
+describe('Semantic HTML 5 converter', () => {
+  const scenarios = listScenarios()
 
   for (const scenario of scenarios) {
     test(scenario, async () => {
-      const input = readFileSync(join(scenariosDir, `${scenario}.adoc`), 'utf8')
-      const expected = readFileSync(
-        join(scenariosDir, `${scenario}.html`),
-        'utf8'
-      ).replace(/\n$/, '')
+      const input = readFixture(`${scenario}.adoc`)
+      const expected = readFixture(`${scenario}.html`).replace(/\n$/, '')
       const result = await convertStringToEmbedded(input, {
         backend: 'semantic-html5',
       })
