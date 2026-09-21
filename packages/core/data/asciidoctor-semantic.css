@@ -534,10 +534,18 @@ dl.horizontal dd {
 
 /* One badge, drawn in two places: the marker inside a verbatim block carries
    its number in `data-value`, the callout list numbers itself with a CSS
-   counter. Declared together so the two renderings cannot drift apart. */
+   counter. Declared together so the two renderings cannot drift apart.
+
+   Both align on the baseline of the text they annotate: the flex box takes its
+   baseline from the digit, so the disc lands on the lowercase band whatever the
+   surrounding font size. Inline layout offers no steadier anchor — `middle`
+   keys off the parent's x-height, which varies far more than the baseline, and
+   grid or flex cannot reach inside a line of preformatted text. */
 i.callout-num[data-value],
 ol.callout-list > li::before {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 1.4em;
   height: 1.4em;
   border-radius: 50%;
@@ -547,12 +555,13 @@ ol.callout-list > li::before {
   font-size: 0.75rem;
   font-weight: 600;
   font-style: normal;
-  line-height: 1.4em;
-  text-align: center;
+  /* the flex box centers the digit; a line-height of its own would fight it */
+  line-height: normal;
 }
-i.callout-num[data-value] {
-  /* center the badge on the code line rather than sit it on the baseline */
-  vertical-align: middle;
+ol.callout-list > li::before {
+  /* a digit has no descender, so the box it is centered in has slack at the
+   bottom it never uses: take that slack back */
+  padding-bottom: 0.075em;
 }
 i.callout-num[data-value]::after {
   content: attr(data-value);
