@@ -52,21 +52,7 @@ import { LoggerManager, Logger } from './logging.js'
 import { fetchUri } from './http_cache.js'
 import { Compliance } from './compliance.js'
 import { resolveBrowserIncludePath } from './browser/reader.js'
-
-// ── Node.js fs (lazy, optional) ───────────────────────────────────────────────
-// Loaded on first use in Node.js; silently absent in browser/WebWorker environments.
-let _fsp // undefined = not tried, null = unavailable, object = available
-let _fsConstants // node:fs constants (F_OK etc.) — not on node:fs/promises
-
-async function _requireFsp() {
-  if (_fsp !== undefined) return
-  try {
-    _fsp = await import('node:fs/promises')
-    _fsConstants = (await import('node:fs')).constants
-  } catch {
-    _fsp = null
-  }
-}
+import { fileExists, hasFs, requireFs } from './node_fs.js'
 
 // ── path helpers (no node:path dependency) ───────────────────────────────────
 function fsdirname(p) {
@@ -77,16 +63,6 @@ function fsdirname(p) {
 function fsbasename(p) {
   const idx = Math.max(p.lastIndexOf('/'), p.lastIndexOf('\\'))
   return p ? p.slice(idx + 1) : ''
-}
-async function fileExists(path) {
-  await _requireFsp()
-  if (!_fsp) return false
-  try {
-    await _fsp.access(path, _fsConstants.F_OK)
-    return true
-  } catch {
-    return false
-  }
 }
 
 // ── adjustIndentation ─────────────────────────────────────────────────────────
@@ -1315,7 +1291,7 @@ export class PreprocessorReader extends Reader {
    * @internal
    */
   async #preprocessIncludeDirective(target, attrlist) {
-    await _requireFsp()
+    const fsp = await requireFs()
     const doc = this._document
     let expandedTarget = target
 
@@ -1494,7 +1470,7 @@ export class PreprocessorReader extends Reader {
 
     try {
       if (incLinenos) {
-        const fileLines = (await _fsp.readFile(incPath, 'utf8')).split('\n')
+        const fileLines = (await fsp.readFile(incPath, 'utf8')).split('\n')
         super._shift()
         const { incLines, incOffset } = this.#filterLinesByLinenos(
           fileLines,
@@ -1505,7 +1481,7 @@ export class PreprocessorReader extends Reader {
           this.pushInclude(incLines, incPath, relpath, incOffset, parsedAttrs)
         }
       } else if (incTags) {
-        const fileLines = (await _fsp.readFile(incPath, 'utf8')).split('\n')
+        const fileLines = (await fsp.readFile(incPath, 'utf8')).split('\n')
         super._shift()
         const { incLines, incOffset } = this.#filterLinesByTags(
           fileLines,
@@ -1520,7 +1496,7 @@ export class PreprocessorReader extends Reader {
       } else {
         let incContent
         try {
-          incContent = await _fsp.readFile(incPath, 'utf8')
+          incContent = await fsp.readFile(incPath, 'utf8')
           super._shift()
         } catch {
           this._logError(`include ${targetType} not readable: ${incPath}`, {
@@ -1551,7 +1527,7 @@ export class PreprocessorReader extends Reader {
    * @internal
    */
   #isBrowserMode() {
-    if (!_fsp) return true
+    if (!hasFs()) return true
     const baseDir = this._document.baseDir
     return (
       !!baseDir &&
