@@ -1472,15 +1472,14 @@ ${img}
   async _generateHeader(node) {
     if (!(node.hasHeader() && !node.isNoheader())) return null
 
-    const result = ['<header>']
-    const doctitle = this._generateDocumentTitle(node)
-    if (doctitle) result.push(doctitle)
-    const authors = await this._generateAuthors(node)
-    if (authors) result.push(authors)
-    const revision = this._generateRevision(node)
-    if (revision) result.push(revision)
-    result.push('</header>')
-    return result.join(LF)
+    const parts = [
+      this._generateDocumentTitle(node),
+      await this._generateAuthors(node),
+      this._generateRevision(node),
+    ].filter(Boolean)
+    // a header holding nothing (e.g. a title hidden by :notitle:) is omitted
+    if (parts.length === 0) return null
+    return ['<header>', ...parts, '</header>'].join(LF)
   }
 
   _generateDocumentTitle(node) {
