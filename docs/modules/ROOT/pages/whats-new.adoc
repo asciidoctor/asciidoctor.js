@@ -1,0 +1,325 @@
+= What's New
+:description: The new features of the upcoming Asciidoctor.js release: a semantic HTML5 backend and asynchronous, build-time syntax highlighting.
+:url-repo: https://github.com/asciidoctor/asciidoctor.js
+:url-devdocs: {url-repo}/blob/main/devdocs
+:url-changelog: {url-repo}/blob/main/CHANGELOG.adoc
+
+This page introduces the highlights of the upcoming Asciidoctor.js release.
+For the complete list of changes, including bug fixes, see the {url-changelog}[changelog].
+
+[#semantic-html5]
+== A semantic HTML5 backend
+
+The default `html5` backend reproduces the markup of AsciiDoc.py, byte for byte where possible, for compatibility.
+The output works, but it is a pile of wrapper ``<div>``s: `div.sect1 > div.sectionbody > div.paragraph > p`, admonitions laid out with a `<table>`, captions in a `div.title`...
+
+The new `semantic-html5` backend produces the markup you would write by hand: every AsciiDoc node maps to the HTML element that carries its meaning.
+The output is lighter, more accessible and much easier to style.
+
+Try it by selecting the backend:
+
+[source,js]
+----
+import { convert } from '@asciidoctor/core'
+
+const html = await convert(input, { backend: 'semantic-html5' })
+----
+
+Or, from the command line:
+
+[source,console]
+----
+$ asciidoctor -b semantic-html5 document.adoc
+----
+
+[IMPORTANT]
+.Experimental
+====
+This backend is the testbed for the modern HTML output that Asciidoctor has been working toward for years (https://github.com/asciidoctor/asciidoctor/issues/242[asciidoctor#242]).
+Its markup, class names and stylesheet may change in any release, and it does not replace the default `html5` backend.
+Try it out and {url-repo}/issues[tell us what you think]: the decisions that work in real projects will be ported back to Asciidoctor (Ruby).
+====
+
+=== Before and after
+
+The following examples compare the output of the built-in `html5` backend with the output of the `semantic-html5` backend.
+
+==== Sections and paragraphs
+
+[source,asciidoc]
+----
+== Getting started
+
+Install the package.
+----
+
+.html5
+[source,html]
+----
+<div class="sect1">
+<h2 id="_getting_started">Getting started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Install the package.</p>
+</div>
+</div>
+</div>
+----
+
+.semantic-html5
+[source,html]
+----
+<section id="_getting_started">
+<h2>Getting started</h2>
+<p>
+Install the package.
+</p>
+</section>
+----
+
+==== Admonitions
+
+[source,asciidoc]
+----
+NOTE: Asciidoctor.js runs in the browser too.
+----
+
+.html5
+[source,html]
+----
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Asciidoctor.js runs in the browser too.
+</td>
+</tr>
+</table>
+</div>
+----
+
+.semantic-html5
+[source,html]
+----
+<aside class="admonition note" role="note">
+<strong class="label">Note</strong>
+Asciidoctor.js runs in the browser too.
+</aside>
+----
+
+==== Images and code listings
+
+A captioned block becomes a `<figure>` with a `<figcaption>`, and a callout list is a plain ordered list.
+
+[source,asciidoc]
+------
+.The Asciidoctor logo
+image::logo.svg[Logo]
+
+.app.js
+[source,js]
+----
+const html = await convert(input) // <1>
+----
+<1> Returns a Promise
+------
+
+.html5
+[source,html]
+----
+<div class="imageblock">
+<div class="content">
+<img src="logo.svg" alt="Logo">
+</div>
+<div class="title">Figure 1. The Asciidoctor logo</div>
+</div>
+<div class="listingblock">
+<div class="title">app.js</div>
+<div class="content">
+<pre class="highlight"><code class="language-js" data-lang="js">const html = await convert(input) // <b class="conum">(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Returns a Promise</p>
+</li>
+</ol>
+</div>
+----
+
+.semantic-html5
+[source,html]
+----
+<figure>
+<img src="logo.svg" alt="Logo">
+<figcaption>Figure 1. The Asciidoctor logo</figcaption>
+</figure>
+<figure class="listing">
+<figcaption>app.js</figcaption>
+<pre><code data-lang="js">const html = await convert(input) <i class="callout-num" data-value="1"></i><b>(1)</b></code></pre>
+</figure>
+<ol class="callout-list">
+<li>
+<p>Returns a Promise</p>
+</li>
+</ol>
+----
+
+==== Quotes and collapsible blocks
+
+[source,asciidoc]
+----
+[quote,Albert Einstein]
+Imagination is more important than knowledge.
+
+.Show the answer
+[%collapsible]
+====
+42
+====
+----
+
+.html5
+[source,html]
+----
+<div class="quoteblock">
+<blockquote>
+Imagination is more important than knowledge.
+</blockquote>
+<div class="attribution">
+&#8212; Albert Einstein
+</div>
+</div>
+<details>
+<summary class="title">Show the answer</summary>
+<div class="content">
+<div class="paragraph">
+<p>42</p>
+</div>
+</div>
+</details>
+----
+
+.semantic-html5
+[source,html]
+----
+<blockquote class="quote">
+Imagination is more important than knowledge.
+<footer>&#8212; <span class="attribution">Albert Einstein</span></footer>
+</blockquote>
+<details>
+<summary>Show the answer</summary>
+<p>
+42
+</p>
+</details>
+----
+
+=== More than markup
+
+A standalone page::
+A standalone document is laid out as `<header>`, `<main>` and `<footer>`.
+The table of contents is a `<nav>` with nested ``<ol>``s, and the revision date is a `<time datetime>`.
+
+Accessibility built in::
+Footnotes carry the `doc-noteref`, `doc-endnote` and `doc-backlink` ARIA roles, admonitions have `role="note"`, and section permalinks (`:sectanchors:`) are real bookmarks with an accessible name that stay reachable with the keyboard.
+
+A modern default stylesheet::
+The backend ships with its own stylesheet, `asciidoctor-semantic.css`: system fonts, no external dependency, automatic light and dark themes, and print rules (real page breaks, links printed with their URL).
+Like the `html5` stylesheet, it is embedded by default, linked with `:linkcss:`, and replaced with `:stylesheet:`.
+
+XML output on demand::
+Set `htmlsyntax=xml` to get well-formed XHTML that you can process with an XML parser, XPath or XSLT.
+
+=== Details
+
+* Class names are consistently kebab-case: `sect-num`, `no-wrap`, `menu-seq`, `callout-num`... instead of the condensed `sectnum`, `nowrap`, `menuseq` and `conum` spellings of the `html5` backend.
+* Tables drop the `tableblock` classes; alignment classes (`halign-*`, `valign-*`) are only added when they are not the default.
+* An inline anchor (`+[[id]]+`) or a bibliography anchor renders as an empty `<span id>` rather than an `<a>` without `href`.
+* A callout number renders as the same badge in the listing and in the callout list, with or without `:icons: font`.
+  The `<b>(1)</b>` fallback remains readable on a page without the stylesheet; only `:icons: image` still uses the image files you provide.
+* With `:icons: font`, the backend uses Font Awesome 7 Free (the `html5` backend stays on 4.7.0 to match Asciidoctor).
+  Brand icons need an icon set, which you specify the same way as with Asciidoctor PDF: `icon:github@fab[]`, `icon:github[set=fab]`, or the `:icon-set:` document attribute.
+  To use another icon provider, set `iconfont-name` (the stylesheet) and `iconfont-prefix` (the base class).
+
+The element produced for every AsciiDoc node, and the reasoning behind each choice, is documented in {url-devdocs}/semantic-html5-converter.adoc[Semantic HTML5 converter -- element mapping and design choices].
+To compare both backends on a larger document, open {url-devdocs}/semantic-html5-reference.adoc[the reference document] and its output with {url-devdocs}/semantic-html5-reference.html[`semantic-html5`] and {url-devdocs}/semantic-html5-reference-legacy.html[`html5`].
+
+[#build-time-highlighting]
+== Syntax highlighting at build time
+
+Until now, the built-in highlight.js adapter shipped the highlight.js runtime with the page, and the browser colorized source blocks when the page loaded.
+Syntax highlighters can now run at conversion time, *asynchronously*: the colors are baked into the HTML, and your page needs no JavaScript at all.
+
+=== With highlight.js
+
+Install highlight.js, then add one attribute:
+
+[source,console]
+----
+$ npm install highlight.js
+----
+
+[source,js]
+----
+const html = await convert(input, {
+  standalone: true,
+  attributes: {
+    'source-highlighter': 'highlightjs',
+    'highlightjs-mode': 'build', // <1>
+  },
+})
+----
+<1> Colorize source blocks at conversion time instead of in the browser.
+
+The source block is now delivered already colorized:
+
+[source,html]
+----
+<pre class="highlightjs highlight"><code class="language-js hljs" data-lang="js"><span class="hljs-keyword">const</span> html = <span class="hljs-keyword">await</span> <span class="hljs-title function_">convert</span>(input)</code></pre>
+----
+
+Callouts, line numbers (`linenums`), line emphasis (`highlight=`) and `start=` all work, and the theme stylesheet is embedded in the page.
+See xref:extend:syntax-highlighter/syntax-highlighting.adoc#build-time-highlighting[Build-time highlighting] for all the options.
+
+=== With the highlighter of your choice
+
+The `highlight()` method of a syntax highlighter may now return a Promise.
+That opens the door to asynchronous highlighting engines, such as https://shiki.style[Shiki], which uses the same TextMate grammars and themes as VS Code:
+
+[source,js]
+----
+import { convert, SyntaxHighlighterBase } from '@asciidoctor/core'
+import { codeToTokens } from 'shiki' // npm install shiki
+
+const escape = (text) => text.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c])
+
+class ShikiHighlighter extends SyntaxHighlighterBase {
+  handlesHighlighting() {
+    return true // <1>
+  }
+
+  async highlight(node, source, lang) { // <2>
+    const { tokens } = await codeToTokens(source, { lang, theme: 'github-light' })
+    return tokens
+      .map((line) => line.map(({ content, color }) => `<span style="color:${color}">${escape(content)}</span>`).join(''))
+      .join('\n') // <3>
+  }
+}
+
+const html = await convert(input, {
+  syntax_highlighters: { shiki: ShikiHighlighter }, // <4>
+  attributes: { 'source-highlighter': 'shiki' },
+})
+----
+<1> This highlighter colorizes the source at conversion time.
+<2> `highlight()` is `async`: Asciidoctor.js awaits its result.
+<3> Keep one line of output per line of source: Asciidoctor.js removes the callouts before calling `highlight()` and puts them back afterwards, line by line.
+<4> Register the highlighter under the name used by the `source-highlighter` attribute.
+
+This example is kept short on purpose: it does not handle languages that Shiki doesn't know, nor line numbers.
+See xref:extend:syntax-highlighter/custom-syntax-highlighter.adoc[Custom Syntax Highlighter] to learn about the full API.
