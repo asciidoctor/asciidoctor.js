@@ -1,5 +1,5 @@
-= What's New
-:description: The new features of the upcoming Asciidoctor.js release: a semantic HTML5 backend and asynchronous, build-time syntax highlighting.
+= What's New in Asciidoctor.js {page-component-version}
+:description: The new features included in Asciidoctor.js {page-component-version}: a semantic HTML5 backend and asynchronous, build-time syntax highlighting.
 :url-repo: https://github.com/asciidoctor/asciidoctor.js
 :url-devdocs: {url-repo}/blob/main/devdocs
 :url-changelog: {url-repo}/blob/main/CHANGELOG.adoc
