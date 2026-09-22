@@ -107,6 +107,7 @@ With `:linkcss:` it is linked as `asciidoctor-semantic.css` instead of embedded;
 === Embedded document (`convert_embedded`)
 
 `<header>` (when the document has a header and `:noheader:` is not set), then the auto-placed TOC, the content, and the footnotes section.
+As in the `html5` backend, the doctitle `<h1>` only renders in embedded output when `:showtitle:` is set, so a document whose header holds nothing but a title produces no `<header>` there.
 
 === Document header
 
@@ -126,7 +127,7 @@ With `:linkcss:` it is linked as `asciidoctor-semantic.css` instead of embedded;
 </table>
 </header>
 ----
-<1> The partitioned doctitle; the subtitle renders as `<small class="subtitle">`. Suppressed by `:notitle:` (the `<header>` element itself remains, matching the upstream fixtures).
+<1> The partitioned doctitle; the subtitle renders as `<small class="subtitle">`. Suppressed by `:notitle:`; the `<header>` element is omitted altogether when it would be left empty (no title, author or revision to show).
 <2> A single author renders as `<p class="byline">`; multiple authors as `<ul class="byline">` with one `<li>` per author. Author emails become `mailto:` links with `rel="author"`.
 <3> Rendered when any of `revnumber`/`revdate`/`revremark` is set. The `data-title` attributes let a stylesheet render the table as a definition-style block on small screens. The date is wrapped in `<time datetime="…">` when year/month/day parts can be extracted from `revdate` (partial dates supported, e.g. `January, 4th` → `datetime="01-04"`); otherwise the raw text is output.
 
@@ -486,14 +487,14 @@ a|
 [source,html]
 ----
 <figure id="the_image" class="role_1">
-<a href="…"><img src="dot.gif" alt="A dot" width="100" height="100" /></a>
+<a href="…"><img src="dot.gif" alt="A dot" width="100" height="100"></a>
 <figcaption>Figure 1. …</figcaption>
 </figure>
 ----
 |Untitled: a bare `<img>` (wrapped in `<a>` when `link=` is set — `link=self` links to the image itself, and the `window`/`nofollow`/`noopener` link constraints are honored). The `alt` text always renders; `width`/`height` as native attributes. SVG targets support the same modes as the `html5` backend: `opts=inline` embeds the `<svg>` contents (file, remote or `data:` URI), `opts=interactive` renders an `<object>` with the `fallback` image.
 
 |inline image
-|`<img src="…" alt="…" title="…" />`
+|`<img src="…" alt="…" title="…">`
 |Same attribute handling, `title` supported.
 
 |video
@@ -534,6 +535,7 @@ a|
 ----
 
 * `<nav>` is the landmark element for a table of contents; the outline is a nested `<ol>` (a TOC is ordered), one `<ol class="sect-level-{n}">` per depth.
+* The `<nav>` class comes from `toc-class`: `toc` by default, `toc2` when `:toc:` is `left` or `right` (the core sets it, as for the `html5` backend). Unlike `html5`, nothing is added to the `<body>` (see <<Deliberate omissions>>).
 * The same markup serves the three placements: auto (before the content), `:toc-placement: preamble` (after the preamble) and the `toc::[]` macro (which honors its own `id`, title, role and `levels` attributes).
 
 == Footnotes
@@ -581,7 +583,7 @@ a|
 |`<a href="…">` with `title`, `target` (adds `rel="noopener"` for `_blank`), `rel="nofollow"` via `%nofollow`; `rel="author"` inside the byline
 
 |xref
-|`<a href="#id">resolved text</a>` — resolves the target's reftext/title like the `html5` backend
+|`<a href="#id">resolved text</a>` — resolves the target's reftext/title like the `html5` backend. An inter-document xref (`xref:other.adoc#frag[]`) links to `other.html#frag` and honors the `window`/`nofollow`/`noopener` link constraints
 
 |inline anchor (`+[[id]]+`)
 |`<span id="id"></span>` — see <<anchor-targets>>
@@ -735,7 +737,7 @@ Features of the `html5` backend intentionally *not* carried over (everything els
 
 Classes the converter emits — the contract implemented by the default stylesheet (`data/asciidoctor-semantic.css`):
 
-[cols="1m,2",opts=header]
+[cols="1l,2",opts=header]
 |===
 |Class |Context
 
@@ -749,18 +751,17 @@ Classes the converter emits — the contract implemented by the default styleshe
 |title |Block title rendered inside a flow container (`<strong class="title">`), TOC title
 |label |Admonition text label; listing caption prefix (`Listing 1.`)
 |admonition + note/tip/warning/caution/important |Admonition `<aside role="note">`
-|icon, \{iconfont-prefix} icon-\{name} |Admonition icon (`:icons:` image / font modes)
+|icon, {iconfont-prefix} icon-{name} |Admonition icon (`:icons:` image / font modes)
 |sidebar |Sidebar `<aside>`
 |listing, literal, example, stem |Figure marker classes
 |quote, verse |Blockquote (or wrapping figure) marker classes
 |attribution |Quote/verse attribution name (inside the `<footer>`)
 |abstract |Abstract open block
-|checklist, callout-list + list styles (arabic, loweralpha, square, …) |List style classes
-
+|checklist, callout-list + list styles (arabic, loweralpha, square, ...) |List style classes
 |checked, unchecked |Checklist marker slots (`:icons: font`), mapped to a glyph by the stylesheet
 |frame-*, grid-*, stripes-*, stretch, fit-content |Table layout classes
 |halign-center/right, valign-middle/bottom |Non-default cell alignment
-|toc, sect-level-\{n} |TOC `<nav>` and outline levels
+|toc, toc2, sect-level-{n} |TOC `<nav>` (`toc2` for `:toc: left`/`right`) and outline levels
 |footnote-ref, footnote, footnotes, footnote-backref |Footnote machinery
 |callout-num |Callout number in a verbatim block (empty `<i>` carrying `data-value`)
 |page-break |Page-break `<hr>`
