@@ -61,8 +61,10 @@ jobs:
         run: npm run build --prefix packages/core
       - name: Publish
         run: node tasks/publish.js
-      - name: Make sure that @asciidoctor/core has been published on npmjs
-        run: timeout 60s ./scripts/wait-asciidoctor-core-published.sh
+      # the registry can take several minutes to expose a freshly published version
+      - name: Make sure that the packages have been published on npmjs
+        timeout-minutes: 15
+        run: ./scripts/wait-packages-published.sh
 
   release:
     name: Publish GitHub release

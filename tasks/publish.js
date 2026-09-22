@@ -29,9 +29,25 @@ const resolveDistTag = (pkg) => {
   return undefined
 }
 
+// Returns true if this exact version is already on the registry, so that
+// re-running a release whose publish step partially succeeded does not fail.
+const isPublished = (pkg) => {
+  try {
+    return (
+      execFileSync('npm', ['view', `${pkg.name}@${pkg.version}`, 'version'], {
+        encoding: 'utf8',
+      }).trim() === pkg.version
+    )
+  } catch {
+    return false
+  }
+}
+
 const publish = async (directory) => {
   const pkg = JSON.parse(readFileSync(join(directory, 'package.json'), 'utf8'))
-  if (process.env.DRY_RUN) {
+  if (isPublished(pkg)) {
+    console.log(`${pkg.name}@${pkg.version} is already published, skipping`)
+  } else if (process.env.DRY_RUN) {
     console.log(`${pkg.name}@${pkg.version}`)
   } else {
     const inputReadme = join(directory, 'README.adoc')
