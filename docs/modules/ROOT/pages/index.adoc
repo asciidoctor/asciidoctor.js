@@ -17,3 +17,5 @@ Key highlights:
 * *Node.js >= 22* — requires Node.js 22 (LTS) or later
 
 Head to the xref:setup:install.adoc[Install guide] to get started.
+
+TIP: Curious about the upcoming release? Discover the new semantic HTML5 backend and build-time syntax highlighting on the xref:whats-new.adoc[What's New] page.
