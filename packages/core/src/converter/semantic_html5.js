@@ -419,7 +419,7 @@ ${await node.content()}
 
   async convert_listing(node) {
     const caption = node.caption
-      ? `<span class="label">${node.caption}</span> `
+      ? `<span class="label">${node.caption.trimEnd()}</span> `
       : ''
     const title = node.hasTitle()
       ? `<figcaption>${caption}${node.title}</figcaption>\n`
