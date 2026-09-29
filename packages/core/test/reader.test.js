@@ -1119,6 +1119,49 @@ describe('PreprocessorReader', () => {
       assert.ok(!output.match(/included content/))
     })
 
+    for (const [selection, expected] of [
+      ['tag=template', 'TEMPLATE_ONLY'],
+      ['tags=template', 'TEMPLATE_ONLY'],
+      ['tag=constructor', 'CONSTRUCTOR_CONTENT\nNESTED_CONTENT'],
+      ['tags=constructor', 'CONSTRUCTOR_CONTENT\nNESTED_CONTENT'],
+      ['tag=toString', 'TOSTRING_CONTENT'],
+      ['tags=toString', 'TOSTRING_CONTENT'],
+      ['tag=valueOf', 'VALUEOF_CONTENT'],
+      ['tags=valueOf', 'VALUEOF_CONTENT'],
+      ['tag=__proto__', 'PROTO_CONTENT'],
+      ['tags=__proto__', 'PROTO_CONTENT'],
+      ['tags=template;__proto__', 'TEMPLATE_ONLY\nPROTO_CONTENT'],
+      [
+        'tag=!__proto__',
+        'OUTSIDE\nTEMPLATE_ONLY\nCONSTRUCTOR_CONTENT\nNESTED_CONTENT\nTOSTRING_CONTENT\nVALUEOF_CONTENT\n',
+      ],
+      [
+        'tags=!__proto__',
+        'OUTSIDE\nTEMPLATE_ONLY\nCONSTRUCTOR_CONTENT\nNESTED_CONTENT\nTOSTRING_CONTENT\nVALUEOF_CONTENT\n',
+      ],
+      [
+        'tags=*;!__proto__',
+        'TEMPLATE_ONLY\nCONSTRUCTOR_CONTENT\nNESTED_CONTENT\nTOSTRING_CONTENT\nVALUEOF_CONTENT',
+      ],
+      [
+        'tags=**;!constructor;!__proto__',
+        'OUTSIDE\nTEMPLATE_ONLY\nTOSTRING_CONTENT\nVALUEOF_CONTENT\n',
+      ],
+      ['tags=constructor;!nested', 'CONSTRUCTOR_CONTENT'],
+    ]) {
+      test(`include directive handles prototype-named tags with ${selection}`, async () => {
+        await usingMemoryLogger(async (logger) => {
+          const input = `[source,text]\n----\ninclude::fixtures/tagged-prototype-properties.txt[${selection}]\n----`
+          const doc = await documentFromString(input, {
+            safe: 'safe',
+            base_dir: BASE_DIR,
+          })
+          assert.equal(logger.messages.length, 0)
+          assert.equal(doc.blocks[0].source, expected)
+        })
+      })
+    }
+
     test('include directive supports selecting lines by tag in language that uses circumfix comments (XML)', async () => {
       const input =
         '[source,xml]\n----\ninclude::fixtures/include-file.xml[tag=snippet,indent=0]\n----'
