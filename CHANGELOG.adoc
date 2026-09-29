@@ -12,6 +12,7 @@ Bug Fixes::
 
 * Fix tagged includes selecting unrequested regions whose names match inherited `Object.prototype` properties, such as `constructor`, `toString`, and `valueOf`, and issuing spurious closing-tag warnings. Treat `__proto__` as an ordinary tag name in `tags=` selections, including negated selections
 * Fix explicit page breaks (`<<<`) in the default HTML5 stylesheet: hide the page-break element on screen and force a page break when printing.
+* Use Noto Sans Mono in the default stylesheet for code and keyboard shortcuts, matching the downloaded webfont instead of falling back because the stylesheet requested Droid Sans Mono.
 
 == v4.1.0 (2026-09-22)
 

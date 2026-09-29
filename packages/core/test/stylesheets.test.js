@@ -68,6 +68,47 @@ describe('Stylesheets', () => {
   // ── Stylesheet embedding in HTML output ──────────────────────────────────────
 
   describe('HTML output', () => {
+    test('default monospace declarations and optional import agree with downloaded webfonts', async () => {
+      const output = await convertString(INPUT, { safe: SafeMode.SERVER })
+      const fontUrl = output.match(
+        /<link rel="stylesheet" href="(https:\/\/fonts.googleapis.com[^"]+)"/
+      )?.[1]
+      assert.ok(fontUrl)
+      assert.ok(fontUrl.includes('%7CNoto+Sans+Mono:400,700'))
+      const css = await Stylesheets.instance.primaryStylesheetData()
+      assert.ok(css.includes(`/* @import "${fontUrl}"; */`))
+      for (const selector of ['code', 'pre', 'kbd']) {
+        assert.match(
+          css,
+          new RegExp(
+            `(?:^|\\n)${selector}\\{[^}]*font-family:"Noto Sans Mono","Droid Sans Mono","DejaVu Sans Mono",monospace;`
+          )
+        )
+      }
+    })
+
+    test('should allow overriding or disabling webfonts without replacing the default stylesheet', async () => {
+      for (const webfonts of ['Roboto+Mono:400,700', null]) {
+        const output = await convertString(INPUT, {
+          safe: SafeMode.SERVER,
+          attributes: { webfonts },
+        })
+        assertCss(output, 'html:root > head > style', 1)
+        assertCss(
+          output,
+          'html:root > head > link[href^="https://fonts.googleapis.com"]',
+          webfonts ? 1 : 0
+        )
+        if (webfonts) {
+          assertCss(
+            output,
+            `html:root > head > link[href="https://fonts.googleapis.com/css?family=${webfonts}"]`,
+            1
+          )
+        }
+      }
+    })
+
     test('should link to default stylesheet by default when safe mode is SECURE or greater', async () => {
       const output = await convertString(INPUT, { safe: 'secure' })
       assertCss(
