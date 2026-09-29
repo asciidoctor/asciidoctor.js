@@ -1407,7 +1407,7 @@ export class PreprocessorReader extends Reader {
             ? { [tag.slice(1)]: false }
             : { [tag]: true }
       } else if ('tags' in parsedAttrs) {
-        incTags = {}
+        incTags = Object.create(null)
         for (const td of this.#splitDelimitedValue(parsedAttrs.tags)) {
           if (td && td !== '!') {
             incTags[td.startsWith('!') ? td.slice(1) : td] = !td.startsWith('!')
@@ -1704,7 +1704,7 @@ export class PreprocessorReader extends Reader {
                 tagStack.length === 0
                   ? [null, baseSelect]
                   : tagStack[tagStack.length - 1]
-            } else if (thisTag in tags) {
+            } else if (Object.hasOwn(tags, thisTag)) {
               const ic = this.createIncludeCursor(
                 incPath,
                 expandedTarget,
@@ -1724,7 +1724,7 @@ export class PreprocessorReader extends Reader {
                 )
               }
             }
-          } else if (thisTag in tags) {
+          } else if (Object.hasOwn(tags, thisTag)) {
             if ((select = tags[thisTag])) tagsSelected.add(thisTag)
             tagStack.push([(activeTag = thisTag), select, incLineno])
           } else if (wildcard !== undefined) {

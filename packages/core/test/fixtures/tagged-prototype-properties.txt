@@ -1,0 +1,19 @@
+OUTSIDE
+// tag::template[]
+TEMPLATE_ONLY
+// end::template[]
+// tag::constructor[]
+CONSTRUCTOR_CONTENT
+// tag::nested[]
+NESTED_CONTENT
+// end::nested[]
+// end::constructor[]
+// tag::toString[]
+TOSTRING_CONTENT
+// end::toString[]
+// tag::valueOf[]
+VALUEOF_CONTENT
+// end::valueOf[]
+// tag::__proto__[]
+PROTO_CONTENT
+// end::__proto__[]
