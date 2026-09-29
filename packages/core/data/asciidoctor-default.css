@@ -325,6 +325,7 @@ sup.footnote a:active,sup.footnoteref a:active,#footnotes .footnote a:first-of-t
 #footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
 #footnotes .footnote:last-of-type{margin-bottom:0}
 #content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+div.page-break{display:none}
 div.unbreakable{page-break-inside:avoid}
 .big{font-size:larger}
 .small{font-size:smaller}
@@ -395,6 +396,7 @@ p{margin-bottom:1.25rem}
   abbr[title]{border-bottom:1px dotted}
   abbr[title]::after{content:" (" attr(title) ")"}
   pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+  div.page-break{display:block;page-break-after:always}
   thead{display:table-header-group}
   svg{max-width:100%}
   p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}

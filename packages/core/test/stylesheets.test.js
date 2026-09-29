@@ -47,6 +47,15 @@ describe('Stylesheets', () => {
       assert.strictEqual(first, second)
     })
 
+    test('page breaks are hidden on screen and force a break in print', async () => {
+      const css = await Stylesheets.instance.primaryStylesheetData()
+      const [screen, print] = css.split('@media print{')
+      assert.ok(screen.includes('div.page-break{display:none}'))
+      assert.ok(
+        print.includes('div.page-break{display:block;page-break-after:always}')
+      )
+    })
+
     test('embedPrimaryStylesheet wraps CSS in a <style> tag', async () => {
       const embedded = await Stylesheets.instance.embedPrimaryStylesheet()
       assert.ok(embedded.startsWith('<style>\n'), 'should start with <style>')

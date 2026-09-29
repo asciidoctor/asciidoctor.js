@@ -77,6 +77,7 @@ describe('Blocks', () => {
     test('page break', async () => {
       const output = await convertStringToEmbedded(`page 1\n\n<<<\n\npage 2`)
       assertXpath(output, '/*[@class="page-break"]', 1)
+      assertXpath(output, '/div[@class="page-break"][not(@style)]', 1)
       assertXpath(
         output,
         '/*[@class="page-break"]/preceding-sibling::div/p[text()="page 1"]',
@@ -87,6 +88,20 @@ describe('Blocks', () => {
         '/*[@class="page-break"]/following-sibling::div/p[text()="page 2"]',
         1
       )
+    })
+
+    test('page break styling is left to the document stylesheet', async () => {
+      for (const attributes of [
+        {},
+        { stylesheet: 'custom.css', linkcss: '' },
+        { 'stylesheet!': '' },
+      ]) {
+        const output = await convertString(
+          'Before the break.\n\n<<<\n\nAfter the break.',
+          { attributes }
+        )
+        assertXpath(output, '//div[@class="page-break"][not(@style)]', 1)
+      }
     })
   })
 
