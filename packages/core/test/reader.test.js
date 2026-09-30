@@ -1772,6 +1772,23 @@ describe('PreprocessorReader', () => {
       assert.match(output, /included content/)
     })
 
+    test('document-defined constructor is substituted in target of include directive', async () => {
+      const input =
+        '= Test\n\n:constructor: fixtures/tagged-prototype-properties.txt\n\n----\ninclude::{constructor}[tags=constructor]\n----'
+      await usingMemoryLogger(async (logger) => {
+        const doc = await documentFromString(input, { base_dir: BASE_DIR })
+        assert.equal(
+          doc.blocks[0].source,
+          'CONSTRUCTOR_CONTENT\nNESTED_CONTENT'
+        )
+        assert.match(
+          await doc.convert(),
+          /<pre>CONSTRUCTOR_CONTENT\nNESTED_CONTENT<\/pre>/
+        )
+        assert.equal(logger.messages.length, 0)
+      })
+    })
+
     test('line is skipped by default if target of include directive resolves to empty', async () => {
       const input = 'include::{blank}[]'
       await usingMemoryLogger(async (logger) => {

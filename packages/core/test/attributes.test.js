@@ -51,6 +51,30 @@ describe('Attributes', () => {
       assert.equal(doc.attributes.frog, 'Tanglefoot')
     })
 
+    test('assigns and substitutes constructor unless overridden via options', async () => {
+      const input =
+        '= Test\n\n:constructor: expected-value\n\nValue: {constructor}'
+      for (const [attributes, expected] of [
+        [{}, 'expected-value'],
+        [{ constructor: 'option-value' }, 'option-value'],
+      ]) {
+        const doc = await documentFromString(input, { attributes })
+        assert.equal(doc.attributes.constructor, expected)
+        assert.equal(
+          await doc.convert(),
+          `<div class="paragraph">\n<p>Value: ${expected}</p>\n</div>`
+        )
+      }
+    })
+
+    test('does not substitute an inherited intrinsic attribute', async () => {
+      const output = await convertStringToEmbedded('Value: {constructor}')
+      assert.equal(
+        output,
+        '<div class="paragraph">\n<p>Value: {constructor}</p>\n</div>'
+      )
+    })
+
     test('resolves a reassigned body attribute to its value at each reference', async () => {
       // A custom attribute redefined in the document body must resolve to the value
       // in scope at the point of each reference (playback), not the final value.

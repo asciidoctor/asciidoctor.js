@@ -1115,7 +1115,7 @@ export class Document extends AbstractBlock {
    * @returns {boolean}
    */
   isAttributeLocked(name) {
-    return name in this._attributeOverrides
+    return Object.hasOwn(this._attributeOverrides, name)
   }
 
   /** @deprecated Use isAttributeLocked instead. */

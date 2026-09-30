@@ -367,8 +367,9 @@ export const Substitutors = {
           return docAttrs[key]
         }
 
-        const intrinsicValue = INTRINSIC_ATTRIBUTES[key]
-        if (intrinsicValue !== undefined) return intrinsicValue
+        if (Object.hasOwn(INTRINSIC_ATTRIBUTES, key)) {
+          return INTRINSIC_ATTRIBUTES[key]
+        }
 
         switch (
           (attributeMissing ||=
