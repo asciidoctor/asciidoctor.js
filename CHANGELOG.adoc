@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.1.1 (2026-10-05)
+
 Bug Fixes::
 
 * Fix tagged includes selecting unrequested regions whose names match inherited `Object.prototype` properties, such as `constructor`, `toString`, and `valueOf`, and issuing spurious closing-tag warnings. Treat `__proto__` as an ordinary tag name in `tags=` selections, including negated selections
