@@ -12,6 +12,10 @@ Bug Fixes::
 
 * Add `referrerpolicy="strict-origin-when-cross-origin"` to the YouTube `<iframe>` of the video macro, in the `html5` and `semantic-html5` backends, so YouTube receives the referrer it now requires to play embedded videos (https://github.com/asciidoctor/asciidoctor/issues/4711[asciidoctor#4711])
 
+Improvements::
+
+* Propagate the role on the document to the `<h1>` tag of the embedded (non-standalone) HTML output of the `html5` backend, for regular documents and manual pages (https://github.com/asciidoctor/asciidoctor/issues/4837[asciidoctor#4837])
+
 == v4.1.1 (2026-10-05)
 
 Bug Fixes::
