@@ -10,9 +10,14 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 Improvements::
 
+* Add `MatchData#names` (not provided by the version of Opal in use) so it can be removed from Asciidoctor core
+
+== 2.2.9 (2026-04-30)
+
+Improvements::
+
 * Replace `glob` by `fast-glob`
 * Bump `unxhr` to 1.2
-* Add `MatchData#names` (not provided by the version of Opal in use) so it can be removed from Asciidoctor core
 
 == 2.2.8 (2024-06-02)
 

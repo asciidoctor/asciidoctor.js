@@ -1,133 +1,141 @@
 name: Release
+run-name: Release ${{ inputs.version }} from ${{ github.ref_name }}
 
 on:
-  push:
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v2.1.3
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (must be 2.2.x, e.g. 2.2.10)'
+        required: true
+        type: string
+
+permissions:
+  contents: write  # push the release commit and tag, create the release
+  id-token: write  # npm provenance (OIDC)
+
+env:
+  ASCIIDOCTOR_CORE_VERSION: v2.0.23
+  VERSION: ${{ inputs.version }}
 
 jobs:
-  build:
+  tag:
+    name: Bump version and tag
+    if: github.ref_name == 'v2.2.x' && github.repository_owner == 'asciidoctor'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
-      # libgbm-dev is required by Puppeteer 3+
-      - name: Install system dependencies
-        run: |
-          sudo apt-get install -y libgbm-dev
+          node-version: 24
       - name: Install dependencies
+        run: npm ci
+      # tasks/version.js rejects any version outside of the 2.2.x line
+      - name: Bump version and update changelog
         run: |
-          npm ci
-          npm ci --prefix packages/core
-      - name: Lint, build and test
-        env:
-          ASCIIDOCTOR_CORE_VERSION: v2.0.23
+          node tasks/version.js "$VERSION"
+          node tasks/changelog.js release "$VERSION"
+      - name: Commit, tag and push
         run: |
-          npm run lint
-          npm run test
-          npm run travis --prefix packages/core
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -a -m "$VERSION"
+          git tag "v$VERSION" -m "$VERSION"
+          git push origin "${{ github.ref_name }}" "v$VERSION"
+
+  build:
+    needs: tag
+    uses: ./.github/workflows/build.yml
+    with:
+      ref: v${{ inputs.version }}
+
   publish:
+    name: Publish to npmjs
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
         with:
-          node-version: 20
+          ref: v${{ inputs.version }}
+      # npm >= 11.5.1 (bundled with Node 24) is required to publish using trusted publishing (OIDC)
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
           registry-url: https://registry.npmjs.org/
-      # libgbm-dev is required by Puppeteer 3+
+      # libgbm-dev is required by Puppeteer 3+ (the dist task runs the browser tests)
       - name: Install system dependencies
-        run: |
-          sudo apt-get install -y libgbm-dev
-      # install dependencies
+        run: sudo apt-get install -y libgbm-dev
       - name: Install dependencies
         run: |
           npm ci
           npm ci --prefix packages/core
-      - name: Patch libnpmpublish
-        run: node ./tasks/patch-libnpmpublish.js
-      # package and publish
       - name: Package
-        env:
-          ASCIIDOCTOR_CORE_VERSION: v2.0.23
         run: ./scripts/package.sh
       - name: Publish
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: ./scripts/publish.sh
+        run: node tasks/publish.js
+      # the registry can take several minutes to expose a freshly published version
+      - name: Make sure that the packages have been published on npmjs
+        timeout-minutes: 15
+        run: ./scripts/wait-packages-published.sh
+      - name: Upload distribution archives
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: |
+            packages/core/bin/asciidoctor.js.dist.zip
+            packages/core/bin/asciidoctor.js.dist.tar.gz
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub release
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: v${{ inputs.version }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate release notes
+        run: node tasks/changelog.js notes "$VERSION" > RELEASE_NOTES.md
+      # @asciidoctor/core must be published to npmjs before we can produce the binaries
       - name: Produce binaries
         run: ./scripts/binaries.sh
-      # create the GitHub release
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1.0.0
+      - name: Download distribution archives
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: packages/core/bin
+      # A release from a maintenance branch must not steal the "Latest" badge
+      # from the release of the current line (gh marks the newest release as
+      # latest by default).
+      - name: Create release and upload assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          draft: false
-          prerelease: false
-      # upload assets
-      - name: Upload source code as a zip file
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/core/bin/asciidoctor.js.dist.zip
-          asset_name: asciidoctor.js.dist.zip
-          asset_content_type: application/zip
-      - name: Upload source code as a tar.gz file
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/core/bin/asciidoctor.js.dist.tar.gz
-          asset_name: asciidoctor.js.dist.tar.gz
-          asset_content_type: application/tar+gzip
-      - name: Upload Linux binary
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/asciidoctor/dist/asciidoctor-linux
-          asset_name: asciidoctor-linux
-          asset_content_type: application/octet-stream
-      - name: Upload macOS binary
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/asciidoctor/dist/asciidoctor-macos
-          asset_name: asciidoctor-macos
-          asset_content_type: application/octet-stream
-      - name: Upload Windows binary
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: packages/asciidoctor/dist/asciidoctor-win.exe
-          asset_name: asciidoctor-win.exe
-          asset_content_type: application/octet-stream
-      - name: Set release version
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        run: |
+          gh release create "v$VERSION" \
+            --verify-tag \
+            --title "v$VERSION" \
+            --notes-file RELEASE_NOTES.md \
+            --latest=false \
+            packages/core/bin/asciidoctor.js.dist.zip \
+            packages/core/bin/asciidoctor.js.dist.tar.gz \
+            packages/asciidoctor/dist/asciidoctor-linux \
+            packages/asciidoctor/dist/asciidoctor-macos \
+            packages/asciidoctor/dist/asciidoctor-win.exe
       - name: Announcement
-        uses: yuzutech/zulip-send-message-action@v0.1.0
+        uses: zulip/github-actions-zulip/send-message@v2
         with:
-          username: ${{ secrets.ZULIP_USERNAME }}
+          email: ${{ secrets.ZULIP_USERNAME }}
           api-key: ${{ secrets.ZULIP_API_KEY }}
           organization-url: 'https://asciidoctor.zulipchat.com'
           to: '279652'
           type: 'stream'
           topic: 'releases'
           content: |
-            Asciidoctor.js ${{ env.RELEASE_VERSION }} is out!
+            Asciidoctor.js v${{ inputs.version }} is out!
 
-            https://github.com/asciidoctor/asciidoctor.js/releases/tag/${{ env.RELEASE_VERSION }}
+            https://github.com/asciidoctor/asciidoctor.js/releases/tag/v${{ inputs.version }}

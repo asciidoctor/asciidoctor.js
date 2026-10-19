@@ -1,6 +1,14 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref to build (defaults to the ref that triggered the workflow)'
+        required: false
+        type: string
 
 jobs:
   build:
@@ -11,9 +19,11 @@ jobs:
         asciidoctor-core-version: [v2.0.23]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
+      with:
+        ref: ${{ inputs.ref }}
     - name: Set up Node ${{ matrix.node-version }}
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version: ${{ matrix.node-version }}
     # libgbm-dev is required by Puppeteer 3+
@@ -39,9 +49,11 @@ jobs:
         node-version: [20]
         asciidoctor-core-version: [v2.0.23]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
       - name: Set up Node ${{ matrix.node-version }}
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies

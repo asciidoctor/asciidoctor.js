@@ -231,3 +231,20 @@ Here's a list of some of the changes that are currently needed:
 * Assignments without a matching value are set to empty string instead of nil (in the following example, `b` is set to empty string)
 
   a, b = "value".split ',', 2
+
+== Releasing
+
+Releases are performed from GitHub using the https://github.com/asciidoctor/asciidoctor.js/actions/workflows/release.yml[Release workflow].
+Run the workflow on the `v2.2.x` branch and enter the version to release.
+This is a maintenance branch, so the version must be a 2.2.x version (e.g. `2.2.10`).
+
+Before running the workflow, make sure that the changes are listed in the `== Unreleased` section of [.path]_CHANGELOG.adoc_.
+
+The workflow will:
+
+. update the version of the packages and roll the `== Unreleased` section of the changelog into a dated version section
+. commit, tag and push the release
+. build and test the tagged version
+. publish the packages to npmjs under the `latest-2` dist-tag
+. create the GitHub release with the release notes (from the changelog), the distribution archives and the binaries
+. announce the release on Zulip
