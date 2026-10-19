@@ -272,7 +272,12 @@ export class DocBook5Converter extends ConverterBase {
     const alignAttribute = node.hasAttribute('align')
       ? ` align="${node.getAttribute('align')}"`
       : ''
-    const mediaobject = `<mediaobject>\n<imageobject>\n<imagedata fileref="${await node.imageUri(node.getAttribute('target'))}"${this._imageSizeAttributes(node.attributes)}${alignAttribute}/>\n</imageobject>\n<textobject><phrase>${node.getAlt()}</phrase></textobject>\n</mediaobject>`
+    const fileref = await node.imageUri(node.getAttribute('target'))
+    let mediaobject = `<mediaobject>\n<imageobject>\n<imagedata fileref="${fileref}"${this._imageSizeAttributes(node.attributes)}${alignAttribute}/>\n</imageobject>\n<textobject><phrase>${node.getAlt()}</phrase></textobject>\n</mediaobject>`
+    if (node.hasAttribute('link')) {
+      const linkHref = node.getAttribute('link')
+      mediaobject = `<link xl:href="${linkHref === 'self' ? fileref : linkHref}">${mediaobject}</link>`
+    }
     const commonAttrs = this._commonAttributes(node.id, node.role, node.reftext)
     if (node.hasTitle()) {
       return `<figure${commonAttrs}>\n<title>${node.title}</title>\n${mediaobject}\n</figure>`
