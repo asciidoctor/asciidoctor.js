@@ -84,7 +84,7 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
           if (defaultFunctions && Object.prototype.hasOwnProperty.call(defaultFunctions, functionName)) {
             defaultFunctionsOverridden[functionName] = true
           }
-          Opal.def(scope, '$' + functionName, function () {
+          var method = function () {
             var args
             if (argProxyFunctions && Object.prototype.hasOwnProperty.call(argProxyFunctions, functionName)) {
               args = argProxyFunctions[functionName](arguments)
@@ -92,7 +92,10 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
               args = arguments
             }
             return userFunction.apply(this, args)
-          })
+          }
+          // expose the arity of the user function (used by Method#arity)
+          method.$$arity = userFunction.length
+          Opal.def(scope, '$' + functionName, method)
         }
       }(functionName))
     }
@@ -157,9 +160,12 @@ function initializeClass (superClass, className, functions, defaultFunctions, ar
       if (Object.prototype.hasOwnProperty.call(defaultFunctions, defaultFunctionName) && !Object.prototype.hasOwnProperty.call(defaultFunctionsOverridden, defaultFunctionName)) {
         (function (defaultFunctionName) {
           var defaultFunction = defaultFunctions[defaultFunctionName]
-          Opal.def(scope, '$' + defaultFunctionName, function () {
+          var method = function () {
             return defaultFunction.apply(this, arguments)
-          })
+          }
+          // expose the arity of the default function (used by Method#arity)
+          method.$$arity = defaultFunction.length
+          Opal.def(scope, '$' + defaultFunctionName, method)
         }(defaultFunctionName))
       }
     }
@@ -2679,8 +2685,11 @@ Cursor.prototype.getLineNumber = function () {
 
 // Logger API (available in Asciidoctor 1.5.7+)
 
+// Asciidoctor >= 2.1 no longer requires the logger library on Opal, it uses Asciidoctor::BasicLogger instead
+var BaseLogger = Opal.const_get_qualified(Opal.Object, 'Logger', true) || Opal.const_get_qualified(Opal.Asciidoctor, 'BasicLogger', true)
+
 function initializeLoggerFormatterClass (className, functions) {
-  var superclass = Opal.const_get_qualified(Opal.Logger, 'Formatter')
+  var superclass = Opal.const_get_qualified(BaseLogger, 'Formatter')
   return initializeClass(superclass, className, functions, {}, {
     call: function (args) {
       for (var i = 0; i < args.length; i++) {
@@ -2764,7 +2773,7 @@ LoggerManager.newFormatter = function (name, functions) {
 /**
  * @namespace
  */
-var LoggerSeverity = Opal.const_get_qualified(Opal.Logger, 'Severity', true)
+var LoggerSeverity = Opal.const_get_qualified(BaseLogger, 'Severity', true)
 
 // Alias
 Opal.Asciidoctor.LoggerSeverity = LoggerSeverity
@@ -2779,7 +2788,7 @@ LoggerSeverity.get = function (severity) {
 /**
  * @namespace
  */
-var LoggerFormatter = Opal.const_get_qualified(Opal.Logger, 'Formatter', true)
+var LoggerFormatter = Opal.const_get_qualified(BaseLogger, 'Formatter', true)
 
 // Alias
 Opal.Asciidoctor.LoggerFormatter = LoggerFormatter
@@ -2931,7 +2940,7 @@ Logger.prototype.setProgramName = function (programName) {
   this.progname = programName
 }
 
-var RubyLogger = Opal.const_get_qualified('::', 'Logger')
+var RubyLogger = BaseLogger
 
 var log = function (logger, level, message) {
   logger['$' + level](message)

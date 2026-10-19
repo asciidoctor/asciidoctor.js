@@ -76,7 +76,7 @@ describe('Node.js', () => {
     describe('Logger', () => {
       it('should use the built-in Logger', () => {
         const pipe = Opal.StringIO.$new()
-        const logger = Opal.Logger.$new(pipe)
+        const logger = (Opal.const_get_qualified(Opal.Object, 'Logger', true) || Opal.Asciidoctor.BasicLogger).$new(pipe)
         const now = new Date()
         logger.$add(2, 'hello', 'asciidoctor')
         const message = pipe.$string()

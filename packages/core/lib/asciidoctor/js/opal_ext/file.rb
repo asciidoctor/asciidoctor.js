@@ -1,4 +1,5 @@
 class File
+  NULL = '/dev/null' unless const_defined? :NULL
 
   attr_reader :eof
   attr_reader :lineno
