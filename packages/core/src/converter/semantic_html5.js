@@ -1081,7 +1081,7 @@ ${title}${equation}
             listParam = hasLoopParam ? `&amp;playlist=${target}` : ''
           }
         }
-        element = `<iframe${attributes}${widthAttribute}${heightAttribute} src="${assetUriScheme}//www.youtube.com/embed/${target}?rel=${relParamVal}${startParam}${endParam}${autoplayParam}${loopParam}${muteParam}${controlsParam}${listParam}${fsParam}${modestParam}${themeParam}${hlParam}" frameborder="0"${fsAttribute}></iframe>`
+        element = `<iframe${attributes}${widthAttribute}${heightAttribute} src="${assetUriScheme}//www.youtube.com/embed/${target}?rel=${relParamVal}${startParam}${endParam}${autoplayParam}${loopParam}${muteParam}${controlsParam}${listParam}${fsParam}${modestParam}${themeParam}${hlParam}" referrerpolicy="strict-origin-when-cross-origin" frameborder="0"${fsAttribute}></iframe>`
         break
       }
       default: {
