@@ -12,6 +12,7 @@ Improvements::
 
 * Replace `glob` by `fast-glob`
 * Bump `unxhr` to 1.2
+* Add `MatchData#names` (not provided by the version of Opal in use) so it can be removed from Asciidoctor core
 
 == 2.2.8 (2024-06-02)
 

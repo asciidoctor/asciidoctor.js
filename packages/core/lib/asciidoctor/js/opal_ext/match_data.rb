@@ -4,4 +4,9 @@ class MatchData
   def []= idx, val
     @matches[idx] = val
   end
+
+  # NOTE remove once implemented in Opal; see https://github.com/opal/opal/issues/1964
+  def names
+    []
+  end unless method_defined? :names
 end
