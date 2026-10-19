@@ -525,6 +525,27 @@ image::images/tiger.png[Tiger]
       assertXpath(output, '//imagedata[@align="right"]', 1)
     })
 
+    test('can convert block image with link in DocBook backend', async () => {
+      const input =
+        'image::images/tiger.png[Tiger, link="http://en.wikipedia.org/wiki/Tiger"]'
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
+      assert.ok(
+        output.includes(
+          '<link xl:href="http://en.wikipedia.org/wiki/Tiger"><mediaobject>'
+        )
+      )
+    })
+
+    test('can convert block image with link to self in DocBook backend', async () => {
+      const input = ':imagesdir: img\n\nimage::tiger.png[Tiger, link=self]'
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
+      assert.ok(output.includes('<link xl:href="img/tiger.png"><mediaobject>'))
+    })
+
     test('set content width and depth in DocBook backend if no scaling', async () => {
       const input = 'image::images/sunset.jpg[Sunset,500,332]'
       const output = await convertStringToEmbedded(input, {
