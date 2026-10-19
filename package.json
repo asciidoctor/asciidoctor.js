@@ -7,16 +7,12 @@
   "scripts": {
     "test": "mocha spec/*/*.spec.js",
     "lint": "npm run code:lint",
-    "code:lint": "standard spec/**/*.js tasks/**/*.js",
-    "release": "node tasks/release.js"
+    "code:lint": "standard spec/**/*.js tasks/**/*.js"
   },
   "devDependencies": {
-    "bestikk-log": "0.1.0",
     "chai": "4.3.4",
-    "dirty-chai": "2.0.1",
-    "libnpmpublish": "3.0.1",
+    "downdoc": "1.0.2-stable",
     "mocha": "9.1.4",
-    "sinon": "12.0.1",
     "standard": "16.0.4"
   }
 }
