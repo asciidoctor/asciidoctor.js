@@ -317,6 +317,19 @@ describe('Structure', () => {
     assert.ok(inAttr(doc, 'embedded'))
   })
 
+  test('should add role on document to heading tag of embedded document', async () => {
+    const input = '[.rolename]\n= Document Title\n:showtitle:\n\ncontent'
+    const result = await convert(input, { standalone: false })
+    assert.ok(result.includes('<h1 class="rolename">Document Title</h1>'))
+  })
+
+  test('should add role on document to heading tag of embedded manpage', async () => {
+    const input =
+      '[.rolename]\n= cmd(1)\n:doctype: manpage\n:showtitle:\n\n== NAME\n\ncmd - does stuff\n\n== SYNOPSIS\n\ncmd'
+    const result = await convert(input, { standalone: false })
+    assert.ok(result.includes('<h1 class="rolename">cmd(1) Manual Page</h1>'))
+  })
+
   test('standalone document includes html and header/footer', async () => {
     const doc = await parse('= Title\n\nparagraph', {
       safe: 'unsafe',

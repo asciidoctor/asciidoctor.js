@@ -426,13 +426,17 @@ MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
     if (node.doctype === 'manpage') {
       if (!node.isNotitle()) {
         const idAttr = node.id ? ` id="${node.id}"` : ''
-        result.push(`<h1${idAttr}>${node.doctitle()} Manual Page</h1>`)
+        const classAttr = node.role ? ` class="${node.role}"` : ''
+        result.push(
+          `<h1${idAttr}${classAttr}>${node.doctitle()} Manual Page</h1>`
+        )
       }
       if (node.hasAttribute('manpurpose'))
         result.push(this._generateMannameSection(node))
     } else if (node.hasHeader() && !node.isNotitle()) {
       const idAttr = node.id ? ` id="${node.id}"` : ''
-      result.push(`<h1${idAttr}>${node.header.title}</h1>`)
+      const classAttr = node.role ? ` class="${node.role}"` : ''
+      result.push(`<h1${idAttr}${classAttr}>${node.header.title}</h1>`)
     }
 
     if (node.hasSections() && node.hasAttribute('toc')) {
