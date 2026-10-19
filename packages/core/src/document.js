@@ -1028,6 +1028,20 @@ export class Document extends AbstractBlock {
     return list
   }
 
+  /**
+   * Retrieve the keywords of this document, parsed from the comma-separated
+   * `keywords` document attribute. Blank entries are dropped.
+   * @returns {string[]} The keywords, or an empty array if no keywords are defined.
+   */
+  keywords() {
+    const val = this.attributes.keywords
+    if (val == null) return []
+    return String(val)
+      .split(',')
+      .map((kw) => kw.trim())
+      .filter((kw) => kw !== '')
+  }
+
   isNotitle() {
     return 'notitle' in this.attributes
   }
@@ -1515,6 +1529,11 @@ export class Document extends AbstractBlock {
   /** @returns {Author[]} All document authors. */
   getAuthors() {
     return this.authors()
+  }
+
+  /** @returns {string[]} The document keywords. */
+  getKeywords() {
+    return this.keywords()
   }
 
   /** @returns {string} The base directory path. */

@@ -893,6 +893,13 @@ export class DocBook5Converter extends ConverterBase {
       }
       if (doc.hasAttribute('orgname'))
         result.push(`<orgname>${doc.getAttribute('orgname')}</orgname>`)
+      const keywords = doc.keywords()
+      if (keywords.length > 0) {
+        result.push('<keywordset>')
+        for (const keyword of keywords)
+          result.push(`<keyword>${keyword}</keyword>`)
+        result.push('</keywordset>')
+      }
       const docinfo = await doc.docinfo()
       if (docinfo) result.push(docinfo)
     }

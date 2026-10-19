@@ -657,6 +657,7 @@ describe('HTML output', () => {
       '= AsciiDoc',
       'Stuart Rackham <founder@asciidoc.org>',
       ':orgname: AsciiDoc Makers',
+      ':keywords: text, markup,,processor, asciidoc , documentation',
       '',
       '== Version 8.6.8',
       '',
@@ -670,8 +671,36 @@ describe('HTML output', () => {
       )
     )
     assert.ok(output.includes('<orgname>AsciiDoc Makers</orgname>'))
+    assert.ok(
+      output.includes(
+        '<keywordset>\n<keyword>text</keyword>\n<keyword>markup</keyword>\n<keyword>processor</keyword>\n<keyword>asciidoc</keyword>\n<keyword>documentation</keyword>\n</keywordset>'
+      )
+    )
     assert.ok(!output.includes('<article xml:id='))
     assert.ok(output.includes(' xml:lang="en"'))
+  })
+
+  test('keywords returns the trimmed, non-blank entries of the keywords attribute', async () => {
+    const doc = await parse(
+      ':keywords: text, markup,,processor, asciidoc \n\ncontent'
+    )
+    assert.deepEqual(doc.keywords(), [
+      'text',
+      'markup',
+      'processor',
+      'asciidoc',
+    ])
+    assert.deepEqual(doc.getKeywords(), doc.keywords())
+  })
+
+  test('keywords returns an empty array when the keywords attribute is not set', async () => {
+    const doc = await parse('content')
+    assert.deepEqual(doc.keywords(), [])
+  })
+
+  test('DocBook output has no keywordset when the keywords attribute is not set', async () => {
+    const output = await convert('= Title\n\ncontent', { backend: 'docbook5' })
+    assert.ok(!output.includes('<keywordset>'))
   })
 
   test('author apostrophe is substituted as right single quotation mark entity', async () => {
