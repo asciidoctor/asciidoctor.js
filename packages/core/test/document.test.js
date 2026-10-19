@@ -626,19 +626,21 @@ describe('HTML output', () => {
       ':description: AsciiDoc user guide',
       ':keywords: asciidoc,documentation',
       ':copyright: Stuart Rackham',
+      ':app-name: AsciiDoc',
       '',
       '== Version 8.6.8',
       '',
       'more info...',
     ].join('\n')
     const output = await convert(input)
-    assert.ok(output.includes('name="author" content="Stuart Rackham"'))
+    assert.ok(output.includes('name="application-name" content="AsciiDoc"'))
     assert.ok(
       output.includes('name="description" content="AsciiDoc user guide"')
     )
     assert.ok(
       output.includes('name="keywords" content="asciidoc,documentation"')
     )
+    assert.ok(output.includes('name="author" content="Stuart Rackham"'))
     assert.ok(output.includes('name="copyright" content="Stuart Rackham"'))
     assert.ok(
       output.includes('id="author"') && output.includes('Stuart Rackham')
@@ -648,6 +650,28 @@ describe('HTML output', () => {
     assert.ok(
       output.includes('id="revremark"') && output.includes('See changelog.')
     )
+  })
+
+  test('with metadata to DocBook 5', async () => {
+    const input = [
+      '= AsciiDoc',
+      'Stuart Rackham <founder@asciidoc.org>',
+      ':orgname: AsciiDoc Makers',
+      '',
+      '== Version 8.6.8',
+      '',
+      'more info...',
+    ].join('\n')
+    const output = await convert(input, { backend: 'docbook5' })
+    assert.ok(output.includes('<info>\n<title>AsciiDoc</title>'))
+    assert.ok(
+      output.includes(
+        '<author>\n<personname>\n<firstname>Stuart</firstname>\n<surname>Rackham</surname>\n</personname>\n<email>founder@asciidoc.org</email>\n</author>'
+      )
+    )
+    assert.ok(output.includes('<orgname>AsciiDoc Makers</orgname>'))
+    assert.ok(!output.includes('<article xml:id='))
+    assert.ok(output.includes(' xml:lang="en"'))
   })
 
   test('author apostrophe is substituted as right single quotation mark entity', async () => {
