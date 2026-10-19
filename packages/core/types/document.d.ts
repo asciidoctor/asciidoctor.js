@@ -206,6 +206,12 @@ export class Document extends AbstractBlock<string> {
     get author(): any;
     get revdate(): any;
     authors(): Author[];
+    /**
+     * Retrieve the keywords of this document, parsed from the comma-separated
+     * `keywords` document attribute. Blank entries are dropped.
+     * @returns {string[]} The keywords, or an empty array if no keywords are defined.
+     */
+    keywords(): string[];
     isNotitle(): boolean;
     isNoheader(): boolean;
     isNofooter(): boolean;
@@ -398,6 +404,8 @@ export class Document extends AbstractBlock<string> {
     getAuthor(): string | null;
     /** @returns {Author[]} All document authors. */
     getAuthors(): Author[];
+    /** @returns {string[]} The document keywords. */
+    getKeywords(): string[];
     /** @returns {string} The base directory path. */
     getBaseDir(): string;
     /** @returns {RevisionInfo} The revision information. */
