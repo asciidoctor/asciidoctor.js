@@ -90,7 +90,7 @@
     "handlebars": "^4.7.9",
     "highlight.js": "^11.11.1",
     "linkedom": "^0.18.12",
-    "node-html-parser": "^7.1.0",
+    "node-html-parser": "^9.0.0",
     "nunjucks": "^3.2.4",
     "playwright": "^1.60.0",
     "pug": "^3.0.4",
