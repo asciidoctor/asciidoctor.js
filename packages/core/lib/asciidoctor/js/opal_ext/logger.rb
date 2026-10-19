@@ -62,11 +62,20 @@ end unless defined? ::Logger
 
 class Asciidoctor::Logger
   # NOTE pass the arguments explicitly since an implicit super does not pass the modified arguments in Opal
+  # and Method#super_method (used by Asciidoctor >= 2.0.24) is not implemented in Opal
   def initialize *args, **opts
     opts[:progname] = 'asciidoctor'
     opts[:formatter] = BasicFormatter.new unless opts.key? :formatter
     opts[:level] = WARN unless opts.key? :level
     args = [$stderr] if args.empty?
-    super(*args, **opts)
+    if defined? ::Logger
+      # the built-in Logger only accepts a pipe
+      super(*args)
+      @progname = opts[:progname]
+      @formatter = opts[:formatter]
+      self.level = opts[:level]
+    else
+      super(*args, **opts)
+    end
   end
-end unless defined? ::Logger
+end

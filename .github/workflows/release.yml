@@ -14,7 +14,7 @@ permissions:
   id-token: write  # npm provenance (OIDC)
 
 env:
-  ASCIIDOCTOR_CORE_VERSION: v2.0.23
+  ASCIIDOCTOR_CORE_VERSION: v2.0.26
   VERSION: ${{ inputs.version }}
 
 jobs:
