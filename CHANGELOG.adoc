@@ -10,6 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/master[
 
 Improvements::
 
+* Build against the latest release of Asciidoctor 2.0.26
 * Add `MatchData#names` (not provided by the version of Opal in use) so it can be removed from Asciidoctor core
 
 == 2.2.9 (2026-04-30)
