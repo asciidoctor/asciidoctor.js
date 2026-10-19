@@ -1,0 +1,39 @@
+name: Feature request
+description: Suggest an idea for this project
+type: Feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If you've arrived here to ask a question about how to use Asciidoctor or the AsciiDoc syntax, please direct your question to the #users/asciidoctor.js stream in the [project chat](https://chat.asciidoctor.org) instead.
+        You can learn more about the project support policy on the following page: https://docs.asciidoctor.org/about/support/
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      options:
+        - label: I've verified that I'm using the latest patch release.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your feature request related to a problem? Please describe.
+      description: A clear and concise description of what the problem is.
+      placeholder: I'm always frustrated when [...]
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Describe alternatives you've considered
+      description: A clear and concise description of any alternative solutions or features you've considered.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the feature request here.
