@@ -2,6 +2,7 @@ import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { documentFromString } from './harness.js'
+import { Compliance } from '../src/compliance.js'
 
 // Tests for Block JS-style accessor API (block.js)
 
@@ -116,6 +117,71 @@ describe('Block', () => {
       assert.ok(
         str.includes('lines:'),
         'line count should appear for verbatim block'
+      )
+    })
+  })
+
+  describe('lineno', () => {
+    // FIXME see https://github.com/asciidoctor/asciidoctor/issues/3966
+    test('should assign incorrect lineno for paragraph inside a conditional preprocessor directive', async () => {
+      const input = `:conditional-attribute:
+
+before
+
+ifdef::conditional-attribute[]
+subject
+endif::[]
+
+after
+`
+      const doc = await documentFromString(input, { sourcemap: true })
+      // FIXME the second line number should be 6 instead of 7
+      assert.deepEqual(
+        doc.findBy({ context: 'paragraph' }).map((b) => b.lineno),
+        [3, 7, 9]
+      )
+    })
+
+    // related to https://github.com/asciidoctor/asciidoctor/issues/3966
+    test('should assign correct lineno for paragraph inside a conditional preprocessor directive when underline style off', async () => {
+      const input = `:conditional-attribute:
+
+before
+
+ifdef::conditional-attribute[]
+subject
+endif::[]
+
+after
+`
+      Compliance.underlineStyleSectionTitles = false
+      try {
+        const doc = await documentFromString(input, { sourcemap: true })
+        assert.deepEqual(
+          doc.findBy({ context: 'paragraph' }).map((b) => b.lineno),
+          [3, 6, 9]
+        )
+      } finally {
+        Compliance.underlineStyleSectionTitles = true
+      }
+    })
+
+    test('should assign correct lineno for multi-line paragraph inside a conditional preprocessor directive', async () => {
+      const input = `:conditional-attribute:
+
+before
+
+ifdef::conditional-attribute[]
+subject
+subject
+endif::[]
+
+after
+`
+      const doc = await documentFromString(input, { sourcemap: true })
+      assert.deepEqual(
+        doc.findBy({ context: 'paragraph' }).map((b) => b.lineno),
+        [3, 6, 10]
       )
     })
   })
