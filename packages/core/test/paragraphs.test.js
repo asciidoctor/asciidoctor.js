@@ -258,7 +258,9 @@ so
 
 :!hardbreaks:
 
-roll it back`
+roll
+it
+back`
       const output = await convertStringToEmbedded(input)
       assertXpath(output, '(//p)[1]/br', 2)
       assertXpath(output, '(//p)[2]/br', 0)
