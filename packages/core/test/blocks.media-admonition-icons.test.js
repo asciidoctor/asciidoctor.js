@@ -173,6 +173,11 @@ video::http://example.org/videos/cats-vs-dogs.avi[]
       )
       assertCss(output, 'iframe[width="640"]', 1)
       assertCss(output, 'iframe[height="360"]', 1)
+      assertCss(
+        output,
+        'iframe[referrerpolicy="strict-origin-when-cross-origin"]',
+        1
+      )
     })
 
     test('video macro should output custom HTML with iframe for youtube service with dynamic playlist', async () => {

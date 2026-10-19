@@ -1483,7 +1483,7 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
         }
         return `<div${idAttribute}${classAttribute}>${titleElement}
 <div class="content">
-<iframe${widthAttribute}${heightAttribute} src="${assetUriScheme}//www.youtube.com/embed/${target}?rel=${relParamVal}${startParam}${endParam}${autoplayParam}${loopParam}${muteParam}${controlsParam}${listParam}${fsParam}${modestParam}${themeParam}${hlParam}" frameborder="0"${fsAttribute}></iframe>
+<iframe${widthAttribute}${heightAttribute} src="${assetUriScheme}//www.youtube.com/embed/${target}?rel=${relParamVal}${startParam}${endParam}${autoplayParam}${loopParam}${muteParam}${controlsParam}${listParam}${fsParam}${modestParam}${themeParam}${hlParam}" referrerpolicy="strict-origin-when-cross-origin" frameborder="0"${fsAttribute}></iframe>
 </div>
 </div>`
       }
