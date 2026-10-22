@@ -3429,10 +3429,14 @@ export class Parser {
         const spec = {}
         if (m[2]) {
           const [colspec, rowspec] = m[2].split('.')
-          if (colspec && TableCellHorzAlignments[colspec])
+          if (colspec && TableCellHorzAlignments[colspec]) {
             spec.halign = TableCellHorzAlignments[colspec]
-          if (rowspec && TableCellVertAlignments[rowspec])
+            spec['halign-source'] = 'column'
+          }
+          if (rowspec && TableCellVertAlignments[rowspec]) {
             spec.valign = TableCellVertAlignments[rowspec]
+            spec['valign-source'] = 'column'
+          }
         }
         spec.width = m[3] ? (m[3] === '~' ? -1 : parseInt(m[3], 10)) : 1
         if (m[4] && TableCellStyles[m[4]]) spec.style = TableCellStyles[m[4]]
@@ -3485,10 +3489,14 @@ export class Parser {
     }
     if (m[3]) {
       const [colspec, rowspec] = m[3].split('.')
-      if (colspec && TableCellHorzAlignments[colspec])
+      if (colspec && TableCellHorzAlignments[colspec]) {
         spec.halign = TableCellHorzAlignments[colspec]
-      if (rowspec && TableCellVertAlignments[rowspec])
+        spec['halign-source'] = 'cell'
+      }
+      if (rowspec && TableCellVertAlignments[rowspec]) {
         spec.valign = TableCellVertAlignments[rowspec]
+        spec['valign-source'] = 'cell'
+      }
     }
     if (m[4] && TableCellStyles[m[4]]) spec.style = TableCellStyles[m[4]]
 

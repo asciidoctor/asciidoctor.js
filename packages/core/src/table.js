@@ -239,8 +239,14 @@ Table.Column = class Column extends AbstractNode {
     this.style = attributes.style ?? null
     attributes.colnumber = index + 1
     if (!('width' in attributes)) attributes.width = 1
-    if (!('halign' in attributes)) attributes.halign = 'left'
-    if (!('valign' in attributes)) attributes.valign = 'top'
+    if (!('halign' in attributes)) {
+      attributes.halign = 'left'
+      attributes['halign-source'] = 'default'
+    }
+    if (!('valign' in attributes)) {
+      attributes.valign = 'top'
+      attributes['valign-source'] = 'default'
+    }
     this.updateAttributes(attributes)
   }
 
