@@ -52,7 +52,9 @@ describe('Stylesheets', () => {
       const [screen, print] = css.split('@media print{')
       assert.ok(screen.includes('div.page-break{display:none}'))
       assert.ok(
-        print.includes('div.page-break{display:block;page-break-after:always}')
+        print.includes(
+          'div.page-break{display:block;-moz-column-break-after:page;break-after:page}'
+        )
       )
     })
 
@@ -77,14 +79,11 @@ describe('Stylesheets', () => {
       assert.ok(fontUrl.includes('%7CNoto+Sans+Mono:400,700'))
       const css = await Stylesheets.instance.primaryStylesheetData()
       assert.ok(css.includes(`/* @import "${fontUrl}"; */`))
-      for (const selector of ['code', 'pre', 'kbd']) {
-        assert.match(
-          css,
-          new RegExp(
-            `(?:^|\\n)${selector}\\{[^}]*font-family:"Noto Sans Mono","Droid Sans Mono","DejaVu Sans Mono",monospace;`
-          )
+      assert.ok(
+        css.includes(
+          '\ncode,kbd,pre{font-family:"Noto Sans Mono","Droid Sans Mono",monospace;'
         )
-      }
+      )
     })
 
     test('should allow overriding or disabling webfonts without replacing the default stylesheet', async () => {
