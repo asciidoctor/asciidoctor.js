@@ -11,6 +11,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 Bug Fixes::
 
 * Add `referrerpolicy="strict-origin-when-cross-origin"` to the YouTube `<iframe>` of the video macro, in the `html5` and `semantic-html5` backends, so YouTube receives the referrer it now requires to play embedded videos (https://github.com/asciidoctor/asciidoctor/issues/4711[asciidoctor#4711])
+* Return an image data URI as-is from `AbstractNode#generateDataUriFromUri()` instead of fetching it to build a new data URI, and add the `isDataUri()` helper (https://github.com/asciidoctor/asciidoctor/issues/4887[asciidoctor#4887])
 
 Improvements::
 
