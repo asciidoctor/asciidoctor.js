@@ -303,7 +303,7 @@ You can use icons for admonitions by setting the 'icons' attribute.
       const output = await convertString(input, { safe: 'server' })
       assertXpath(
         output,
-        '//*[@class="admonitionblock tip"]//*[@class="icon"]/img[@src="./images/icons/tip.png"][@alt="Tip"]',
+        '//*[@class="admonitionblock tip"]//*[@class="icon"]/img[@src="./images/icons/tip.png"][@title="Tip"][@alt="Tip"]',
         1
       )
     })

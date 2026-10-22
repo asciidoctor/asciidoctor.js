@@ -282,7 +282,7 @@ image::dot.gif[A dot]
     })
     assert.ok(
       result.includes(
-        '<img class="icon" src="./images/icons/note.png" alt="Note"/>'
+        '<img class="icon" src="./images/icons/note.png" title="Note" alt="Note"/>'
       )
     )
   })
