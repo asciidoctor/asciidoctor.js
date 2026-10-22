@@ -58,6 +58,14 @@ describe('Stylesheets', () => {
       )
     })
 
+    test('admonition icon images cannot be selected', async () => {
+      const css = await Stylesheets.instance.primaryStylesheetData()
+      assert.match(
+        css,
+        /\n\.admonitionblock>table td\.icon img\{[^}]*;user-select:none[;}]/
+      )
+    })
+
     test('embedPrimaryStylesheet wraps CSS in a <style> tag', async () => {
       const embedded = await Stylesheets.instance.embedPrimaryStylesheet()
       assert.ok(embedded.startsWith('<style>\n'), 'should start with <style>')
