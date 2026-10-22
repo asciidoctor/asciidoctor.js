@@ -20,6 +20,7 @@ Improvements::
 * Prevent the image-based admonition icon from being selected when selecting the surrounding text (`user-select: none`) in the default stylesheet (https://github.com/asciidoctor/asciidoctor/issues/4824[asciidoctor#4824])
 * Add a `title` attribute to the image-based admonition icon, like the font-based icon, in the `html5` and `semantic-html5` backends (https://github.com/asciidoctor/asciidoctor/issues/4820[asciidoctor#4820])
 * Add the `nopip` option to the video macro to disable the picture-in-picture functionality (`disablepictureinpicture` attribute), in the `html5` and `semantic-html5` backends (https://github.com/asciidoctor/asciidoctor/issues/3935[asciidoctor#3935])
+* Set the height of the image-based admonition icon to `2.5em` in the default stylesheet to match the height of the font-based icon (https://github.com/asciidoctor/asciidoctor/issues/4822[asciidoctor#4822])
 * Update the default stylesheet (`asciidoctor-default.css`) of the `html5` backend to the one of Asciidoctor `main`, which was still based on the 2.0.x stylesheet. Among other changes, table stripes only apply to rows in the table body (https://github.com/asciidoctor/asciidoctor/issues/3881[asciidoctor#3881]), only actual parts are italicized at the part level of the TOC (https://github.com/asciidoctor/asciidoctor/issues/2262[asciidoctor#2262]), browser prefixes are managed by autoprefixer, unused form, embed and gist styles are removed, and `break-*` properties replace the legacy `page-break-*` ones
 
 == v4.1.1 (2026-10-05)
