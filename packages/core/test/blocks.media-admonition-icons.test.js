@@ -56,13 +56,14 @@ describe('Blocks', () => {
 
     test('video macro should honor all options', async () => {
       const input =
-        'video::cats-vs-dogs.avi[options="autoplay,muted,nocontrols,loop",preload="metadata"]'
+        'video::cats-vs-dogs.avi[options="autoplay,muted,nocontrols,loop,nopip",preload="metadata"]'
       const output = await convertStringToEmbedded(input)
       assertCss(output, 'video', 1)
       assertCss(output, 'video[autoplay]', 1)
       assertCss(output, 'video[muted]', 1)
       assertCss(output, 'video:not([controls])', 1)
       assertCss(output, 'video[loop]', 1)
+      assertCss(output, 'video[disablepictureinpicture]', 1)
       assertCss(output, 'video[preload=metadata]', 1)
     })
 

@@ -1095,7 +1095,7 @@ ${title}${equation}
         const endT = node.getAttribute('end')
         const timeAnchor =
           startT || endT ? `#t=${startT || ''}${endT ? `,${endT}` : ''}` : ''
-        element = `<video${attributes} src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${widthAttribute}${heightAttribute}${posterAttribute}${node.hasOption('autoplay') ? this._boolAttr('autoplay') : ''}${node.hasOption('muted') ? this._boolAttr('muted') : ''}${node.hasOption('nocontrols') ? '' : this._boolAttr('controls')}${node.hasOption('loop') ? this._boolAttr('loop') : ''}${preloadAttribute}>
+        element = `<video${attributes} src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${widthAttribute}${heightAttribute}${posterAttribute}${node.hasOption('autoplay') ? this._boolAttr('autoplay') : ''}${node.hasOption('muted') ? this._boolAttr('muted') : ''}${node.hasOption('nocontrols') ? '' : this._boolAttr('controls')}${node.hasOption('loop') ? this._boolAttr('loop') : ''}${node.hasOption('nopip') ? this._boolAttr('disablepictureinpicture') : ''}${preloadAttribute}>
 Your browser does not support the video tag.
 </video>`
       }
