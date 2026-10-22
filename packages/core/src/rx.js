@@ -788,6 +788,14 @@ export const ExtLayoutBreakRx = /^(?:'{3,}|<{3,}|([-*_])( *)\1\2\1)$/
 export const BlankLineRx = /\n{2,}/
 
 /**
+ * Matches a Base64-encoded image data URI.
+ * @example
+ * data:image/png;base64,iVBORw0KGgo=
+ */
+export const DataUriRx =
+  /^data:image\/(?:png|jpe?g|gif|bmp|tiff|svg\+xml|webp);base64,/
+
+/**
  * Matches whitespace escaped by a backslash.
  * @example
  * three\ blind\ mice

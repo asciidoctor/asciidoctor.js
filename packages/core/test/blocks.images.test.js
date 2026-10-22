@@ -815,26 +815,68 @@ image::dot[Dot]
     test('can handle embedded data uri images', async () => {
       const input =
         'image::data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=[Dot]'
-      const output = await convertStringToEmbedded(input)
-      assertXpath(
-        output,
-        '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]',
-        1
-      )
+      await usingMemoryLogger(async (logger) => {
+        const output = await convertStringToEmbedded(input)
+        assert.equal(logger.messages.length, 0)
+        assertXpath(
+          output,
+          '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]',
+          1
+        )
+      })
     })
 
-    test('can handle embedded data uri images when data-uri attribute is set', async () => {
-      const input = `\
+    for (const [description, opts] of [
+      ['data-uri attribute is set in secure mode', {}],
+      ['data-uri attribute is set in safe mode', { safe: 'safe' }],
+      [
+        'data-uri and allow-uri-read attributes are set in safe mode',
+        { safe: 'safe', attributes: { 'allow-uri-read': '' } },
+      ],
+    ]) {
+      test(`can handle embedded data uri images when ${description}`, async () => {
+        const input = `\
 :data-uri:
 
 image::data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=[Dot]
 `
-      const output = await convertStringToEmbedded(input)
-      assertXpath(
-        output,
-        '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]',
-        1
-      )
+        await usingMemoryLogger(async (logger) => {
+          const output = await convertStringToEmbedded(input, opts)
+          assert.equal(logger.messages.length, 0)
+          assertXpath(
+            output,
+            '//img[@src="data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs="][@alt="Dot"]',
+            1
+          )
+        })
+      })
+    }
+
+    test('generateDataUriFromUri returns a data URI as-is', async () => {
+      const dataUri =
+        'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
+      await usingMemoryLogger(async (logger) => {
+        const doc = await documentFromString('image::dot.gif[]', {
+          safe: 'safe',
+          attributes: { 'data-uri': '', 'allow-uri-read': '' },
+        })
+        const originalFetch = globalThis.fetch
+        let fetched = false
+        globalThis.fetch = (...args) => {
+          fetched = true
+          return originalFetch(...args)
+        }
+        try {
+          assert.equal(
+            await doc.blocks[0].generateDataUriFromUri(dataUri),
+            dataUri
+          )
+        } finally {
+          globalThis.fetch = originalFetch
+        }
+        assert.ok(!fetched, 'should not fetch a data URI')
+        assert.equal(logger.messages.length, 0)
+      })
     })
 
     test('encodes spaces in an embedded data uri image target', async () => {

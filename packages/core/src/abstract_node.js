@@ -25,6 +25,7 @@
 
 import { SafeMode, LF } from './constants.js'
 import {
+  isDataUri,
   isUriish,
   encodeSpacesInUri,
   isExtname,
@@ -543,6 +544,7 @@ export class AbstractNode {
    * @returns {Promise<string>} a Promise resolving to a String data URI.
    */
   async generateDataUriFromUri(imageUri) {
+    if (isDataUri(imageUri)) return imageUri
     try {
       const doc = this.document
       const response = await fetchUri(imageUri, doc)

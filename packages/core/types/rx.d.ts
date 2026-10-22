@@ -511,6 +511,12 @@ export const ExtLayoutBreakRx: RegExp;
 /** Matches consecutive blank lines. */
 export const BlankLineRx: RegExp;
 /**
+ * Matches a Base64-encoded image data URI.
+ * @example
+ * data:image/png;base64,iVBORw0KGgo=
+ */
+export const DataUriRx: RegExp;
+/**
  * Matches whitespace escaped by a backslash.
  * @example
  * three\ blind\ mice
