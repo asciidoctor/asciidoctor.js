@@ -11,7 +11,7 @@ import {
   assertMessage,
   usingMemoryLogger,
 } from './helpers.js'
-import { convertStringToEmbedded } from './harness.js'
+import { convertStringToEmbedded, documentFromString } from './harness.js'
 
 // ── Tables › PSV › Spans & Styles ────────────────────────────────────────────
 
@@ -109,6 +109,16 @@ d|9 2+>|10
         'table > tbody > tr:nth-child(4) > td:nth-child(2).halign-right.valign-top[colspan="2"] p code',
         1
       )
+
+      const doc = await documentFromString(input)
+      const table = doc.findBy({ context: 'table' })[0]
+      const cells = table.rows.body.flat()
+      assert.equal(cells[0].getAttribute('halign-source'), 'default')
+      assert.equal(cells[1].getAttribute('halign-source'), 'cell')
+      assert.equal(cells[2].getAttribute('halign-source'), 'column')
+
+      assert.equal(cells[0].getAttribute('valign-source'), 'default')
+      assert.equal(cells[6].getAttribute('valign-source'), 'cell')
     })
 
     test('sets up columns correctly if first row has cell that spans columns', async () => {
