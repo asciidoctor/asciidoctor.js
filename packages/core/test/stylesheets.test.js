@@ -58,12 +58,15 @@ describe('Stylesheets', () => {
       )
     })
 
-    test('admonition icon images cannot be selected', async () => {
+    test('admonition icon images cannot be selected and match the height of font-based icons', async () => {
       const css = await Stylesheets.instance.primaryStylesheetData()
-      assert.match(
-        css,
-        /\n\.admonitionblock>table td\.icon img\{[^}]*;user-select:none[;}]/
-      )
+      const rule = css.match(
+        /\n\.admonitionblock>table td\.icon img\{([^}]*)\}/
+      )?.[1]
+      assert.ok(rule)
+      const declarations = rule.split(';')
+      assert.ok(declarations.includes('user-select:none'))
+      assert.ok(declarations.includes('height:2.5em'))
     })
 
     test('embedPrimaryStylesheet wraps CSS in a <style> tag', async () => {
