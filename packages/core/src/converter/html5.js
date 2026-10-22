@@ -1532,7 +1532,7 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
           startT || endT ? `#t=${startT || ''}${endT ? `,${endT}` : ''}` : ''
         return `<div${idAttribute}${classAttribute}>${titleElement}
 <div class="content">
-<video src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${widthAttribute}${heightAttribute}${posterAttribute}${node.hasOption('autoplay') ? this._appendBooleanAttr('autoplay', xml) : ''}${node.hasOption('muted') ? this._appendBooleanAttr('muted', xml) : ''}${node.hasOption('nocontrols') ? '' : this._appendBooleanAttr('controls', xml)}${node.hasOption('loop') ? this._appendBooleanAttr('loop', xml) : ''}${preloadAttribute}>
+<video src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${widthAttribute}${heightAttribute}${posterAttribute}${node.hasOption('autoplay') ? this._appendBooleanAttr('autoplay', xml) : ''}${node.hasOption('muted') ? this._appendBooleanAttr('muted', xml) : ''}${node.hasOption('nocontrols') ? '' : this._appendBooleanAttr('controls', xml)}${node.hasOption('loop') ? this._appendBooleanAttr('loop', xml) : ''}${node.hasOption('nopip') ? this._appendBooleanAttr('disablepictureinpicture', xml) : ''}${preloadAttribute}>
 Your browser does not support the video tag.
 </video>
 </div>
