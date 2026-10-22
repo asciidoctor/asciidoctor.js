@@ -486,7 +486,7 @@ ${title}<pre${nowrap ? ' class="no-wrap"' : ''}>${content}</pre>
       ) {
         label = `<i class="${this._iconPrefix(node.document)} icon-${name}" title="${node.getAttribute('textlabel')}"></i>`
       } else {
-        label = `<img class="icon" src="${await node.iconUri(name)}" alt="${node.getAttribute('textlabel')}"${this._voidSlash}>`
+        label = `<img class="icon" src="${await node.iconUri(name)}" title="${node.getAttribute('textlabel')}" alt="${node.getAttribute('textlabel')}"${this._voidSlash}>`
       }
     } else {
       label = `<strong class="label">${node.getAttribute('textlabel')}</strong>`

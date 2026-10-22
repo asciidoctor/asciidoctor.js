@@ -619,7 +619,7 @@ ${await node.content()}
       ) {
         label = `<i class="fa icon-${name}" title="${node.getAttribute('textlabel')}"></i>`
       } else {
-        label = `<img src="${await node.iconUri(name)}" alt="${node.getAttribute('textlabel')}"${this._voidSlash}>`
+        label = `<img src="${await node.iconUri(name)}" title="${node.getAttribute('textlabel')}" alt="${node.getAttribute('textlabel')}"${this._voidSlash}>`
       }
     } else {
       label = `<div class="title">${node.getAttribute('textlabel')}</div>`
