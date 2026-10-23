@@ -123,14 +123,14 @@ export class Section extends AbstractBlock {
               )
             }
             const signifier = this.document.attributes[`${type}-refsig`]
-            return signifier
+            return signifier != null
               ? `${signifier} ${this.sectnum('.', ',')} ${quotedTitle}`
               : `${this.sectnum('.', ',')} ${quotedTitle}`
           }
           case 'short': {
             const signifier =
               this.document.attributes[`${this.sectname}-refsig`]
-            return signifier
+            return signifier != null
               ? `${signifier} ${this.sectnum('.', '')}`
               : this.sectnum('.', '')
           }

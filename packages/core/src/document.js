@@ -19,7 +19,7 @@ import { Inline } from './inline.js'
 import { Callouts } from './callouts.js'
 import { PathResolver } from './path_resolver.js'
 import { Compliance } from './compliance.js'
-import { extname, nextval } from './helpers.js'
+import { extname, nextval, toInt } from './helpers.js'
 import {
   SafeMode,
   DEFAULT_ATTRIBUTES,
@@ -485,7 +485,7 @@ export class Document extends AbstractBlock {
 
     const sizeAttr = (attrOverrides['max-attribute-value-size'] ??= null)
     this._maxAttributeValueSize =
-      sizeAttr != null ? Math.abs(parseInt(sizeAttr, 10)) : null
+      sizeAttr != null ? Math.abs(toInt(sizeAttr)) : null
 
     // Apply attribute overrides — overrides that survive (non-soft) stay in attrOverrides.
     const softKeys = []
@@ -1335,7 +1335,8 @@ export class Document extends AbstractBlock {
         if (hasShared) {
           const path = this.normalizeSystemPath(docinfoFile, docinfoDir)
           const shared = await this.readAsset(path, { normalize: true })
-          if (shared) content.push(await this.applySubs(shared, docinfoSubs))
+          if (shared != null)
+            content.push(await this.applySubs(shared, docinfoSubs))
         }
 
         const docname = this.attributes.docname
@@ -1349,7 +1350,8 @@ export class Document extends AbstractBlock {
             docinfoDir
           )
           const priv = await this.readAsset(path, { normalize: true })
-          if (priv) content.push(await this.applySubs(priv, docinfoSubs))
+          if (priv != null)
+            content.push(await this.applySubs(priv, docinfoSubs))
         }
       }
     }
@@ -1357,7 +1359,7 @@ export class Document extends AbstractBlock {
     if (this.extensions && this.hasDocinfoProcessors(location)) {
       const extContent = this._docinfoProcessorExtensions[location]
         .map((ext) => ext.processMethod(this))
-        .filter(Boolean)
+        .filter((c) => c != null)
       return (content ?? []).concat(extContent).join(LF)
     }
     return content ? content.join(LF) : ''
@@ -1976,7 +1978,7 @@ export class Document extends AbstractBlock {
     const attrs = this.attributes
     if (!('doctitle' in attrs)) {
       const dt = this.doctitle()
-      if (dt) attrs.doctitle = dt
+      if (dt != null) attrs.doctitle = dt
     }
     this.id ??= attrs['css-signature'] ?? null
 
@@ -1993,9 +1995,7 @@ export class Document extends AbstractBlock {
     if (tocVal != null) {
       const tocPlacementVal = attrs['toc-placement'] ?? 'macro'
       const tocPositionVal =
-        tocPlacementVal && tocPlacementVal !== 'auto'
-          ? tocPlacementVal
-          : attrs['toc-position']
+        tocPlacementVal !== 'auto' ? tocPlacementVal : attrs['toc-position']
       if (tocVal !== '' || tocPositionVal) {
         const defaultTocPosition = 'left'
         let defaultTocClass = 'toc2'
@@ -2123,8 +2123,9 @@ export class Document extends AbstractBlock {
         : new Date()
 
     let localdate = attrs.localdate
-    if (localdate) {
-      attrs.localyear ??= localdate.length >= 4 ? localdate.slice(0, 4) : null
+    if (localdate != null) {
+      attrs.localyear ??=
+        localdate.indexOf('-') === 4 ? localdate.slice(0, 4) : null
     } else {
       localdate = attrs.localdate = _formatDate(now)
       attrs.localyear ??= String(now.getFullYear())
@@ -2140,8 +2141,8 @@ export class Document extends AbstractBlock {
           : now
 
     let docdate = attrs.docdate
-    if (docdate) {
-      attrs.docyear ??= docdate.length >= 4 ? docdate.slice(0, 4) : null
+    if (docdate != null) {
+      attrs.docyear ??= docdate.indexOf('-') === 4 ? docdate.slice(0, 4) : null
     } else {
       docdate = attrs.docdate = _formatDate(effectiveMtime)
       attrs.docyear ??= String(effectiveMtime.getFullYear())
