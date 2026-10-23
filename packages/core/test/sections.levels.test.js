@@ -180,6 +180,30 @@ content`
         assertCss(output, 'body#idname-block', 1)
       })
 
+      test('should assign id defined inline on document title to body', async () => {
+        const input = `= Document Title [[idname-inline]]
+
+content`
+        const output = await convertString(input)
+        assertCss(output, 'body#idname-inline', 1)
+      })
+
+      test('should register document in catalog if id is defined inline on document title', async () => {
+        const input = `= Reference Manual [[manual]]
+:xrefstyle: full
+
+This is the <<manual>>.`
+        const doc = await documentFromString(input)
+        assert.equal(doc.id, 'manual')
+        assert.equal(doc.catalog.refs.manual, doc)
+        const output = await doc.convert()
+        assertXpath(
+          output,
+          '//a[@href="#manual"][text()="Reference Manual"]',
+          1
+        )
+      })
+
       test('block id above document title sets id on document', async () => {
         const input = `[[reference]]
 = Reference Manual

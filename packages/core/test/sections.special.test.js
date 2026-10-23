@@ -715,6 +715,39 @@ Appendix text`
       assertXpath(output, '//h2[@id = "_appendix"]', 1)
     })
 
+    test('level 0 special section in article should be coerced to level 1', async () => {
+      const input = `= Article
+
+[appendix]
+= Appendix
+
+Appendix text`
+      const output = await convertStringToEmbedded(input)
+      assertXpath(output, '//h2[@id = "_appendix"]', 1)
+      assertXpath(output, '//h1', 0)
+    })
+
+    test('level 0 abstract section in book should be coerced to a level 1 chapter', async () => {
+      const input = `= Book
+:doctype: book
+
+[abstract]
+= Abstract
+
+Abstract text
+
+= Part
+
+== Chapter
+
+Chapter text`
+      const doc = await documentFromString(input)
+      const abstract = doc.blocks[0]
+      assert.equal(abstract.level, 1)
+      assert.equal(abstract.sectname, 'chapter')
+      assert.equal(doc.blocks[1].sectname, 'part')
+    })
+
     test('should output docbook elements that correspond to special sections in book doctype', async () => {
       const input = `= Multipart Book
 :doctype: book

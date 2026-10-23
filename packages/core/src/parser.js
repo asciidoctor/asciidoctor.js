@@ -190,10 +190,9 @@ export class Parser {
 
     if (implicitDoctitle) {
       const sourceLocation = document.sourcemap ? reader.cursor : null
-      const [_sectId, , l0SectionTitle, , atx] = await Parser.parseSectionTitle(
-        reader,
-        document
-      )
+      const [l0SectionId, , l0SectionTitle, , atx] =
+        await Parser.parseSectionTitle(reader, document)
+      document.id = l0SectionId
       let finalSectTitle = l0SectionTitle
 
       if (doctitleAttrVal) {
@@ -222,9 +221,11 @@ export class Parser {
       ) {
         docAttrs['title-separator'] = blockAttrs.separator
       }
-      const docId = blockAttrs.id
+      let docId = blockAttrs.id
       if (docId) {
         document.id = docId
+      } else {
+        docId = document.id
       }
       if (blockAttrs.role) docAttrs.role = blockAttrs.role
       if (blockAttrs.reftext) docAttrs.reftext = blockAttrs.reftext
@@ -2284,7 +2285,7 @@ export class Parser {
     if (sectStyle) {
       if (book && sectStyle === 'abstract') {
         sectName = 'chapter'
-        // sectLevel already 1 from parseSectionTitle typically
+        sectLevel = 1
       } else if (
         sectStyle.startsWith('sect') &&
         SectionLevelStyleRx.test(sectStyle)
@@ -2293,7 +2294,7 @@ export class Parser {
       } else {
         sectName = sectStyle
         sectSpecial = true
-        if (book && sectLevel === 0) sectLevel = 1
+        if (sectLevel === 0) sectLevel = 1
         sectNumbered = sectName === 'appendix'
       }
     } else if (book) {
