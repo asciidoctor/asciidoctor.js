@@ -151,6 +151,17 @@ export function romanToInt(val: string): number;
  */
 export function rubySplit(str: string, separator: string): string[];
 /**
+ * Split a string on the first occurrence of the separator, like Ruby's
+ * `str.split(separator, 2)`, which keeps the rest of the string in the second
+ * field (JavaScript's `str.split(separator, 2)` drops it).
+ *
+ * @param {string} str - the string to split
+ * @param {string} separator - the separator
+ * @returns {Array<string|undefined>} the part before the separator and the rest
+ * (undefined if the separator is not found)
+ */
+export function splitOnce(str: string, separator: string): Array<string | undefined>;
+/**
  * Convert a value to an integer like Ruby's String#to_i, which returns 0
  * (instead of NaN) when the value doesn't start with a number.
  *

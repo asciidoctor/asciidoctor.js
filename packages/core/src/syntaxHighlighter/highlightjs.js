@@ -25,6 +25,7 @@
 //   mode load the optional dependency and read the theme stylesheet on demand.
 
 import { SyntaxHighlighterBase } from '../syntax_highlighter.js'
+import { rubySplit } from '../helpers.js'
 import { HIGHLIGHT_JS_VERSION } from '../constants.js'
 import { buildEngine } from './highlightjs-build.js'
 
@@ -162,7 +163,7 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
       if (node.hasAttribute('nohighlight-option')) {
         pre.class = pre.class.replace(' highlight', '')
       }
-      code.class = `language-${lang || 'none'} hljs${numbered ? ' linenums' : ''}`
+      code.class = `language-${lang ?? 'none'} hljs${numbered ? ' linenums' : ''}`
       if (numbered) {
         // seed the CSS counter so the first `.ln` cell shows `start` (default 1)
         const start = parseInt(node.getAttribute('start', 1), 10) || 1
@@ -213,10 +214,8 @@ export class HighlightJsAdapter extends SyntaxHighlighterBase {
     }
 
     // footer
-    const langScripts = doc.getAttribute('highlightjs-languages')
-      ? doc
-          .getAttribute('highlightjs-languages')
-          .split(',')
+    const langScripts = doc.hasAttribute('highlightjs-languages')
+      ? rubySplit(doc.getAttribute('highlightjs-languages'), ',')
           .map(
             (lang) =>
               `<script src="${baseUrl}/languages/${lang.trimStart()}.min.js"></script>\n`

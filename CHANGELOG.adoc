@@ -10,6 +10,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Bug Fixes::
 
+* Output empty attribute values like Asciidoctor in the `html5` and `semantic-html5` converters, such as an empty role or id (e.g., `class="paragraph "`, `id=""`), style, `link` on images, `window` on links, `start`/`end` on audio and video, Vimeo `hash` and YouTube `list`/`playlist`, `stripes` on tables, attribution and citetitle on quotes and verses, the `language` of a source block (also with highlight.js and html-pipeline), `cellbgcolor`, and chapter and part signifiers, and render an empty stem block with its delimiters (#1903)
+* Treat an empty or non-numeric `sectnumlevels`, `toclevels` and `levels` (toc macro) as 0, like Asciidoctor, instead of falling back to the default or `NaN` (#1903)
+* Keep the rest of a Vimeo or YouTube video target after the first `/` (e.g., `video::123/abc/def[vimeo]`), like Ruby's `split('/', 2)` (#1903)
+* Link the TOC entry of a section without an id to `#` instead of `#null` (#1903)
 * Treat an empty attribute value as set, like Asciidoctor, in substitutions and in the document model, such as an empty `attribute-undefined` (only drops the reference instead of the whole line), the subject and body of a `mailto` link, the text of a `footnoteref` macro, index terms and `see-also`, the caption prefixes (e.g., `table-caption`, `appendix-caption`) and section signifiers (`<name>-refsig`) used in xreftext, `doctitle`, `toc-placement`, `docdate` and `localdate`, and the content of a docinfo file or docinfo processor (#1903)
 * Split the menu path, the `see-also` index term attribute and the lines to highlight like Asciidoctor, so that `menu:File[>]` is a plain menu reference, and an open range of lines to highlight ends at the last line (#1903)
 * Only derive `docyear` and `localyear` from a date in ISO format, and use `toInt` for the `start` attribute of a highlighted source block and `max-attribute-value-size` (#1903)

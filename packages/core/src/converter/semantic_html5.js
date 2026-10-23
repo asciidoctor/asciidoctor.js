@@ -28,7 +28,7 @@ import {
   INLINE_MATH_DELIMITERS,
 } from '../constants.js'
 import { XmlSanitizeRx } from '../rx.js'
-import { extname } from '../helpers.js'
+import { extname, splitOnce, toInt } from '../helpers.js'
 import { Stylesheets } from '../stylesheets.js'
 
 // ── Local regex constants ─────────────────────────────────────────────────────
@@ -254,9 +254,9 @@ export default class SemanticHtml5Converter extends ConverterBase {
 
     result.push('</head>')
 
-    const idAttr = node.id ? ` id="${node.id}"` : ''
+    const idAttr = node.id != null ? ` id="${node.id}"` : ''
     const classes = [node.doctype]
-    if (node.role) classes.push(node.role)
+    if (node.hasRoleAttribute()) classes.push(node.role)
     result.push(`<body${idAttr} class="${classes.join(' ')}">`)
 
     const headerDocinfo = await node.docinfo('header')
@@ -447,7 +447,7 @@ ${await node.content()}
 ${title}${await syntaxHl.format(node, lang, opts)}
 </figure>`
       }
-      content = `<code${lang ? ` data-lang="${lang}"` : ''}>${(await node.content()) || ''}</code>`
+      content = `<code${lang != null ? ` data-lang="${lang}"` : ''}>${(await node.content()) || ''}</code>`
     } else {
       content = (await node.content()) || ''
     }
@@ -457,7 +457,7 @@ ${title}<pre${nowrap ? ' class="no-wrap"' : ''}>${content}</pre>
   }
 
   async convert_thematic_break(node) {
-    return `<hr${node.role ? ` class="${node.role}"` : ''}${this._voidSlash}>`
+    return `<hr${node.role != null ? ` class="${node.role}"` : ''}${this._voidSlash}>`
   }
 
   async convert_page_break(_node) {
@@ -551,7 +551,7 @@ ${titleElement}${await node.content()}
     const attributes = this._commonHtmlAttributes(
       node.id,
       node.role,
-      style && style !== 'open' ? style : null
+      style != null && style !== 'open' ? style : null
     )
     const titleElement = node.hasTitle()
       ? `<strong class="title">${node.title}</strong>\n`
@@ -609,7 +609,7 @@ ${title}<pre${nowrap ? ' class="no-wrap"' : ''}>${await node.content()}</pre>
     const style = node.style
     const [open, close] = BLOCK_MATH_DELIMITERS[style] ?? ['', '']
     let equation = (await node.content()) ?? ''
-    if (equation) {
+    if (equation != null) {
       if (style === 'asciimath' && equation.includes(LF)) {
         const br = `${LF}<br${this._voidSlash}>`
         equation = equation.replace(StemBreakRx, (match) => {
@@ -789,7 +789,7 @@ ${title}${equation}
       `grid-${node.getAttribute('grid', 'all', 'table-grid')}`,
     ]
     const stripes = node.getAttribute('stripes', null, 'table-stripes')
-    if (stripes) classes.push(`stripes-${stripes}`)
+    if (stripes != null) classes.push(`stripes-${stripes}`)
     let widthAttribute = ''
     const autowidth = node.hasOption('autowidth')
     if (autowidth && !node.hasAttribute('width')) {
@@ -803,8 +803,8 @@ ${title}${equation}
       }
     }
     if (node.hasAttribute('float')) classes.push(node.getAttribute('float'))
-    if (node.role) classes.push(node.role)
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
+    if (node.role != null) classes.push(node.role)
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
     result.push(
       `<table${idAttribute} class="${classes.join(' ')}"${widthAttribute}>`
     )
@@ -875,9 +875,10 @@ ${title}${equation}
               '_cellbgcolor' in cell
                 ? cell._cellbgcolor
                 : node.document.attributes.cellbgcolor
-            const cellStyleAttr = cellbgcolor
-              ? ` style="background-color: ${cellbgcolor};"`
-              : ''
+            const cellStyleAttr =
+              cellbgcolor != null
+                ? ` style="background-color: ${cellbgcolor};"`
+                : ''
             result.push(
               `<${cellTagName}${cellClassAttr}${cellColspanAttr}${cellRowspanAttr}${cellStyleAttr}>${cellContent}</${cellTagName}>`
             )
@@ -901,7 +902,7 @@ ${title}${equation}
       return '<!-- toc disabled -->'
     }
     const levels = node.hasAttribute('levels')
-      ? parseInt(node.getAttribute('levels'), 10)
+      ? toInt(node.getAttribute('levels'))
       : null
     return this._generateToc(doc, {
       id: node.id,
@@ -917,14 +918,13 @@ ${title}${equation}
     const parts = node.context === 'document' && node.isMultipart()
     const sectlevel = parts ? 0 : sections[0].level
     const sectnumlevels =
-      opts.sectnumlevels ??
-      parseInt(node.document.attributes.sectnumlevels || 3, 10)
+      opts.sectnumlevels ?? toInt(node.document.attributes.sectnumlevels ?? 3)
 
     let toclevels = opts.toclevels ?? null
     if (toclevels == null) {
       const toclevelAttr = node.document.attributes.toclevels
-      if (toclevelAttr) {
-        toclevels = parseInt(toclevelAttr, 10)
+      if (toclevelAttr != null) {
+        toclevels = toInt(toclevelAttr)
         if (toclevels < 1 && !parts) toclevels = 1
       } else {
         toclevels = 2
@@ -935,7 +935,7 @@ ${title}${equation}
     for (const section of sections) {
       const slevel = section.level
       const stoclevels = section.hasAttribute('toclevels')
-        ? parseInt(section.getAttribute('toclevels'), 10)
+        ? toInt(section.getAttribute('toclevels'))
         : toclevels
       if (slevel > stoclevels) continue
 
@@ -947,10 +947,10 @@ ${title}${equation}
           const sectname = section.sectname
           if (sectname === 'chapter') {
             const signifier = node.document.attributes['chapter-signifier']
-            stitle = `${signifier ? `${signifier} ` : ''}${section.sectnum()} ${section.title}`
+            stitle = `${signifier != null ? `${signifier} ` : ''}${section.sectnum()} ${section.title}`
           } else if (sectname === 'part') {
             const signifier = node.document.attributes['part-signifier']
-            stitle = `${signifier ? `${signifier} ` : ''}${section.sectnum(null, ':')} ${section.title}`
+            stitle = `${signifier != null ? `${signifier} ` : ''}${section.sectnum(null, ':')} ${section.title}`
           } else {
             stitle = `${section.sectnum()} ${section.title}`
           }
@@ -971,13 +971,13 @@ ${title}${equation}
           sectnumlevels,
         })
         if (childTocLevel) {
-          result.push(`<li><a href="#${section.id}">${stitle}</a>`)
+          result.push(`<li><a href="#${section.id ?? ''}">${stitle}</a>`)
           result.push(childTocLevel)
           result.push('</li>')
           continue
         }
       }
-      result.push(`<li><a href="#${section.id}">${stitle}</a></li>`)
+      result.push(`<li><a href="#${section.id ?? ''}">${stitle}</a></li>`)
     }
     result.push('</ol>')
     return result.join(LF)
@@ -985,13 +985,16 @@ ${title}${equation}
 
   async convert_video(node) {
     const roles = []
-    if (node.role) roles.push(node.role)
+    if (node.role != null) roles.push(node.role)
     if (node.hasAttribute('align'))
       roles.push(`text-${node.getAttribute('align')}`)
     if (node.hasAttribute('float')) roles.push(node.getAttribute('float'))
     const attributes = node.hasTitle()
       ? ''
-      : this._commonHtmlAttributes(node.id, roles.join(' ') || null)
+      : this._commonHtmlAttributes(
+          node.id,
+          roles.length > 0 ? roles.join(' ') : null
+        )
     const widthAttribute = node.hasAttribute('width')
       ? ` width="${node.getAttribute('width')}"`
       : ''
@@ -1010,9 +1013,10 @@ ${title}${equation}
           ? `#at=${node.getAttribute('start')}`
           : ''
         const delimiter = ['?']
-        let [target, hash] = node.getAttribute('target').split('/', 2)
-        hash ||= node.getAttribute('hash')
-        const hashParam = hash ? `${delimiter.pop() || '&amp;'}h=${hash}` : ''
+        let [target, hash] = splitOnce(node.getAttribute('target'), '/')
+        hash ??= node.getAttribute('hash')
+        const hashParam =
+          hash != null ? `${delimiter.pop() || '&amp;'}h=${hash}` : ''
         const autoplayParam = node.hasOption('autoplay')
           ? `${delimiter.pop() || '&amp;'}autoplay=1`
           : ''
@@ -1064,18 +1068,16 @@ ${title}${equation}
         const hlParam = node.hasAttribute('lang')
           ? `&amp;hl=${node.getAttribute('lang')}`
           : ''
-        let [target, list] = node.getAttribute('target').split('/', 2)
-        list ||= node.getAttribute('list')
+        let [target, list] = splitOnce(node.getAttribute('target'), '/')
+        list ??= node.getAttribute('list')
         let listParam
-        if (list) {
+        if (list != null) {
           listParam = `&amp;list=${list}`
         } else {
-          const videoParts = target.split(',')
-          target = videoParts[0]
-          let playlist =
-            videoParts.length > 1 ? videoParts.slice(1).join(',') : null
-          playlist ||= node.getAttribute('playlist')
-          if (playlist) {
+          let playlist
+          ;[target, playlist] = splitOnce(target, ',')
+          playlist ??= node.getAttribute('playlist')
+          if (playlist != null) {
             listParam = `&amp;playlist=${target},${playlist}`
           } else {
             listParam = hasLoopParam ? `&amp;playlist=${target}` : ''
@@ -1094,14 +1096,19 @@ ${title}${equation}
         const startT = node.getAttribute('start')
         const endT = node.getAttribute('end')
         const timeAnchor =
-          startT || endT ? `#t=${startT || ''}${endT ? `,${endT}` : ''}` : ''
+          startT != null || endT != null
+            ? `#t=${startT ?? ''}${endT != null ? `,${endT}` : ''}`
+            : ''
         element = `<video${attributes} src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${widthAttribute}${heightAttribute}${posterAttribute}${node.hasOption('autoplay') ? this._boolAttr('autoplay') : ''}${node.hasOption('muted') ? this._boolAttr('muted') : ''}${node.hasOption('nocontrols') ? '' : this._boolAttr('controls')}${node.hasOption('loop') ? this._boolAttr('loop') : ''}${node.hasOption('nopip') ? this._boolAttr('disablepictureinpicture') : ''}${preloadAttribute}>
 Your browser does not support the video tag.
 </video>`
       }
     }
     if (node.hasTitle()) {
-      return `<figure${this._commonHtmlAttributes(node.id, roles.join(' ') || null)}>
+      return `<figure${this._commonHtmlAttributes(
+        node.id,
+        roles.length > 0 ? roles.join(' ') : null
+      )}>
 ${element}
 <figcaption>${node.captionedTitle()}</figcaption>
 </figure>`
@@ -1116,7 +1123,9 @@ ${element}
     const startT = node.getAttribute('start')
     const endT = node.getAttribute('end')
     const timeAnchor =
-      startT || endT ? `#t=${startT || ''}${endT ? `,${endT}` : ''}` : ''
+      startT != null || endT != null
+        ? `#t=${startT ?? ''}${endT != null ? `,${endT}` : ''}`
+        : ''
     const element = `<audio${attributes} src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${node.hasOption('autoplay') ? this._boolAttr('autoplay') : ''}${node.hasOption('nocontrols') ? '' : this._boolAttr('controls')}${node.hasOption('loop') ? this._boolAttr('loop') : ''}>
 Your browser does not support the audio tag.
 </audio>`
@@ -1131,12 +1140,12 @@ ${element}
 
   async convert_image(node) {
     const roles = []
-    if (node.role) roles.push(node.role)
+    if (node.role != null) roles.push(node.role)
     if (node.hasAttribute('align'))
       roles.push(`text-${node.getAttribute('align')}`)
     if (node.hasAttribute('float')) roles.push(node.getAttribute('float'))
-    const role = roles.join(' ')
-    const attributes = this._commonHtmlAttributes(node.id, role || null)
+    const role = roles.length > 0 ? roles.join(' ') : null
+    const attributes = this._commonHtmlAttributes(node.id, role)
     const slash = this._voidSlash
     const size = `${
       node.hasAttribute('width') ? ` width="${node.getAttribute('width')}"` : ''
@@ -1173,7 +1182,7 @@ ${element}
     if (node.hasAttribute('link')) {
       let hrefAttrVal = node.getAttribute('link')
       if (hrefAttrVal === 'self') hrefAttrVal = src
-      if (hrefAttrVal) {
+      if (hrefAttrVal != null) {
         img = `<a href="${hrefAttrVal}"${this._appendLinkConstraintAttrs(node).join('')}>${img}</a>`
       }
     }
@@ -1189,12 +1198,12 @@ ${img}
 
   async convert_inline_image(node) {
     const roles = []
-    if (node.role) roles.push(node.role)
+    if (node.role != null) roles.push(node.role)
     if (node.hasAttribute('align'))
       roles.push(`text-${node.getAttribute('align')}`)
     if (node.hasAttribute('float')) roles.push(node.getAttribute('float'))
-    const role = roles.join(' ')
-    const attributes = this._commonHtmlAttributes(node.id, role || null)
+    const role = roles.length > 0 ? roles.join(' ') : null
+    const attributes = this._commonHtmlAttributes(node.id, role)
     const slash = this._voidSlash
     const size = `${
       node.hasAttribute('width') ? ` width="${node.getAttribute('width')}"` : ''
@@ -1231,8 +1240,8 @@ ${img}
         } else if (node.hasAttribute('rotate')) {
           iClassAttrVal += ` ${px}-rotate-${node.getAttribute('rotate')}`
         }
-        if (role) iClassAttrVal += ` ${role}`
-        img = `<i${node.id ? ` id="${node.id}"` : ''} class="${iClassAttrVal}"${titleAttr}></i>`
+        if (role != null) iClassAttrVal += ` ${role}`
+        img = `<i${node.id != null ? ` id="${node.id}"` : ''} class="${iClassAttrVal}"${titleAttr}></i>`
       } else if (icons != null) {
         src = await node.iconUri(iconName)
         img = `<img src="${src}" alt="${this._encodeAttributeValue(iconAlt)}"${titleAttr}${attributes}${size}${slash}>`
@@ -1267,7 +1276,7 @@ ${img}
     if (node.hasAttribute('link')) {
       let hrefAttrVal = node.getAttribute('link')
       if (hrefAttrVal === 'self') hrefAttrVal = src
-      if (hrefAttrVal) {
+      if (hrefAttrVal != null) {
         img = `<a href="${hrefAttrVal}"${this._appendLinkConstraintAttrs(node).join('')}>${img}</a>`
       }
     }
@@ -1277,8 +1286,8 @@ ${img}
   async convert_inline_anchor(node) {
     switch (node.type) {
       case 'link': {
-        const attrs = node.id ? [` id="${node.id}"`] : []
-        if (node.role) attrs.push(` class="${node.role}"`)
+        const attrs = node.id != null ? [` id="${node.id}"`] : []
+        if (node.role != null) attrs.push(` class="${node.role}"`)
         if (node.hasAttribute('title'))
           attrs.push(` title="${node.getAttribute('title')}"`)
         return `<a href="${node.target}"${this._appendLinkConstraintAttrs(node, attrs).join('')}>${node.text ?? ''}</a>`
@@ -1289,11 +1298,11 @@ ${img}
           // inter-document xref: honor the window/nofollow/noopener constraints
           attrs = this._appendLinkConstraintAttrs(
             node,
-            node.role ? [` class="${node.role}"`] : []
+            node.role != null ? [` class="${node.role}"`] : []
           ).join('')
           text = node.text || node.attributes.path
         } else {
-          attrs = node.role ? ` class="${node.role}"` : ''
+          attrs = node.role != null ? ` class="${node.role}"` : ''
           if (!(text = node.text)) {
             const refs = (this._refs ??= node.document.catalog.refs)
             const refid = node.attributes.refid
@@ -1361,7 +1370,7 @@ ${img}
       if (node.type === 'xref') {
         return `<sup class="footnote-ref"><a class="footnote" href="#_footnotedef_${index}" title="View footnote." role="doc-noteref">${index}</a></sup>`
       }
-      const idAttr = node.id ? ` id="_footnote_${node.id}"` : ''
+      const idAttr = node.id != null ? ` id="_footnote_${node.id}"` : ''
       return `<sup class="footnote-ref"${idAttr}><a id="_footnoteref_${index}" class="footnote" href="#_footnotedef_${index}" title="View footnote." role="doc-noteref">${index}</a></sup>`
     }
     if (node.type === 'xref') {
@@ -1436,7 +1445,7 @@ ${img}
     const submenus = node.getAttribute('submenus')
     if (submenus.length === 0) {
       const menuitem = node.getAttribute('menuitem')
-      if (menuitem) {
+      if (menuitem != null) {
         return `<span class="menu-seq"><b class="menu">${menu}</b>${caret}<b class="menu-item">${menuitem}</b></span>`
       }
       return `<span class="menu-seq"><b class="menu">${menu}</b></span>`
@@ -1450,7 +1459,7 @@ ${img}
     const level = node.level
     const docAttrs = node.document.attributes
 
-    if (!(node.numbered && level <= parseInt(docAttrs.sectnumlevels || 3, 10)))
+    if (!(node.numbered && level <= toInt(docAttrs.sectnumlevels ?? 3)))
       return null
 
     if (level < 2 && node.document.doctype === 'book') {
@@ -1458,10 +1467,10 @@ ${img}
       switch (node.sectname) {
         case 'chapter':
           signifier = docAttrs['chapter-signifier']
-          return `${signifier ? `${signifier} ` : ''}<span class="sect-num">${node.sectnum()}</span>`
+          return `${signifier != null ? `${signifier} ` : ''}<span class="sect-num">${node.sectnum()}</span>`
         case 'part':
           signifier = docAttrs['part-signifier']
-          return `${signifier ? `${signifier} ` : ''}<span class="sect-num">${node.sectnum(null, ':')}</span>`
+          return `${signifier != null ? `${signifier} ` : ''}<span class="sect-num">${node.sectnum(null, ':')}</span>`
         default:
           return `<span class="sect-num">${node.sectnum()}</span>`
       }
@@ -1586,11 +1595,12 @@ ${markup}
     const citetitle = node.hasAttribute('citetitle')
       ? node.getAttribute('citetitle')
       : null
-    if (!attribution && !citetitle) return ''
-    const citeElement = citetitle ? `<cite>${citetitle}</cite>` : ''
-    const attributionText = attribution
-      ? `<span class="attribution">${attribution}</span>${citetitle ? ', ' : ''}`
-      : ''
+    if (attribution == null && citetitle == null) return ''
+    const citeElement = citetitle != null ? `<cite>${citetitle}</cite>` : ''
+    const attributionText =
+      attribution != null
+        ? `<span class="attribution">${attribution}</span>${citetitle != null ? ', ' : ''}`
+        : ''
     return `\n<footer>&#8212; ${attributionText}${citeElement}</footer>`
   }
 
@@ -1702,8 +1712,8 @@ ${outline}
    */
   _commonHtmlAttributes(id, role, defaultRole = null) {
     const roles = defaultRole ? [defaultRole] : []
-    if (role) roles.push(role)
-    return `${id ? ` id="${id}"` : ''}${roles.length ? ` class="${roles.join(' ')}"` : ''}`
+    if (role != null) roles.push(role)
+    return `${id != null ? ` id="${id}"` : ''}${roles.length ? ` class="${roles.join(' ')}"` : ''}`
   }
 
   /**
@@ -1716,7 +1726,7 @@ ${outline}
       linkTypes.push('author')
     if (node.hasOption('nofollow')) linkTypes.push('nofollow')
     const window = node.attributes.window
-    if (window) {
+    if (window != null) {
       attrs.push(` target="${window}"`)
       if (window === '_blank' || node.hasOption('noopener'))
         linkTypes.push('noopener')

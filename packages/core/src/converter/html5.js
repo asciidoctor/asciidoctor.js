@@ -29,7 +29,7 @@ import {
   INLINE_MATH_DELIMITERS,
 } from '../constants.js'
 import { XmlSanitizeRx } from '../rx.js'
-import { extname } from '../helpers.js'
+import { extname, splitOnce, toInt } from '../helpers.js'
 import { Stylesheets } from '../stylesheets.js'
 
 // ── Local regex constants ─────────────────────────────────────────────────────
@@ -235,7 +235,7 @@ export default class Html5Converter extends ConverterBase {
 
     result.push('</head>')
 
-    const idAttr = node.id ? ` id="${node.id}"` : ''
+    const idAttr = node.id != null ? ` id="${node.id}"` : ''
     const sectioned = node.hasSections()
     let classes
     if (
@@ -252,7 +252,7 @@ export default class Html5Converter extends ConverterBase {
     } else {
       classes = [node.doctype]
     }
-    if (node.role) classes.push(node.role)
+    if (node.hasRoleAttribute()) classes.push(node.role)
     result.push(`<body${idAttr} class="${classes.join(' ')}">`)
 
     const headerDocinfo = await node.docinfo('header')
@@ -425,8 +425,8 @@ MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
     const result = []
     if (node.doctype === 'manpage') {
       if (!node.isNotitle()) {
-        const idAttr = node.id ? ` id="${node.id}"` : ''
-        const classAttr = node.role ? ` class="${node.role}"` : ''
+        const idAttr = node.id != null ? ` id="${node.id}"` : ''
+        const classAttr = node.role != null ? ` class="${node.role}"` : ''
         result.push(
           `<h1${idAttr}${classAttr}>${node.doctitle()} Manual Page</h1>`
         )
@@ -434,8 +434,8 @@ MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
       if (node.hasAttribute('manpurpose'))
         result.push(this._generateMannameSection(node))
     } else if (node.hasHeader() && !node.isNotitle()) {
-      const idAttr = node.id ? ` id="${node.id}"` : ''
-      const classAttr = node.role ? ` class="${node.role}"` : ''
+      const idAttr = node.id != null ? ` id="${node.id}"` : ''
+      const classAttr = node.role != null ? ` class="${node.role}"` : ''
       result.push(`<h1${idAttr}${classAttr}>${node.header.title}</h1>`)
     }
 
@@ -471,14 +471,13 @@ ${await node.converter.convert(node, 'outline')}
     const parts = node.context === 'document' && node.isMultipart()
     const sectlevel = parts ? 0 : sections[0].level
     const sectnumlevels =
-      opts.sectnumlevels ??
-      parseInt(node.document.attributes.sectnumlevels || 3, 10)
+      opts.sectnumlevels ?? toInt(node.document.attributes.sectnumlevels ?? 3)
 
     let toclevels = opts.toclevels ?? null
     if (toclevels == null) {
       const toclevelAttr = node.document.attributes.toclevels
-      if (toclevelAttr) {
-        toclevels = parseInt(toclevelAttr, 10)
+      if (toclevelAttr != null) {
+        toclevels = toInt(toclevelAttr)
         if (toclevels < 1 && !parts) toclevels = 1
       } else {
         toclevels = 2
@@ -489,7 +488,7 @@ ${await node.converter.convert(node, 'outline')}
     for (const section of sections) {
       const slevel = section.level
       const stoclevels = section.hasAttribute('toclevels')
-        ? parseInt(section.getAttribute('toclevels'), 10)
+        ? toInt(section.getAttribute('toclevels'))
         : toclevels
       if (slevel > stoclevels) continue
 
@@ -501,10 +500,10 @@ ${await node.converter.convert(node, 'outline')}
           const sectname = section.sectname
           if (sectname === 'chapter') {
             const signifier = node.document.attributes['chapter-signifier']
-            stitle = `${signifier ? `${signifier} ` : ''}${section.sectnum()} ${section.title}`
+            stitle = `${signifier != null ? `${signifier} ` : ''}${section.sectnum()} ${section.title}`
           } else if (sectname === 'part') {
             const signifier = node.document.attributes['part-signifier']
-            stitle = `${signifier ? `${signifier} ` : ''}${section.sectnum(null, ':')} ${section.title}`
+            stitle = `${signifier != null ? `${signifier} ` : ''}${section.sectnum(null, ':')} ${section.title}`
           } else {
             stitle = `${section.sectnum()} ${section.title}`
           }
@@ -527,13 +526,13 @@ ${await node.converter.convert(node, 'outline')}
           sectnumlevels,
         })
         if (childTocLevel) {
-          result.push(`${otag}<a href="#${section.id}">${stitle}</a>`)
+          result.push(`${otag}<a href="#${section.id ?? ''}">${stitle}</a>`)
           result.push(childTocLevel)
           result.push('</li>')
           continue
         }
       }
-      result.push(`${otag}<a href="#${section.id}">${stitle}</a></li>`)
+      result.push(`${otag}<a href="#${section.id ?? ''}">${stitle}</a></li>`)
     }
     result.push('</ul>')
     return result.join(LF)
@@ -545,18 +544,15 @@ ${await node.converter.convert(node, 'outline')}
     let title
     if (node.caption) {
       title = node.captionedTitle()
-    } else if (
-      node.numbered &&
-      level <= parseInt(docAttrs.sectnumlevels || 3, 10)
-    ) {
+    } else if (node.numbered && level <= toInt(docAttrs.sectnumlevels ?? 3)) {
       if (level < 2 && node.document.doctype === 'book') {
         const sectname = node.sectname
         if (sectname === 'chapter') {
           const signifier = docAttrs['chapter-signifier']
-          title = `${signifier ? `${signifier} ` : ''}${node.sectnum()} ${node.title}`
+          title = `${signifier != null ? `${signifier} ` : ''}${node.sectnum()} ${node.title}`
         } else if (sectname === 'part') {
           const signifier = docAttrs['part-signifier']
-          title = `${signifier ? `${signifier} ` : ''}${node.sectnum(null, ':')} ${node.title}`
+          title = `${signifier != null ? `${signifier} ` : ''}${node.sectnum(null, ':')} ${node.title}`
         } else {
           title = `${node.sectnum()} ${node.title}`
         }
@@ -568,7 +564,7 @@ ${await node.converter.convert(node, 'outline')}
     }
 
     let idAttr = ''
-    if (node.id) {
+    if (node.id != null) {
       const id = node.id
       idAttr = ` id="${id}"`
       if ('sectlinks' in docAttrs) {
@@ -590,10 +586,10 @@ ${await node.converter.convert(node, 'outline')}
 
     const role = node.role
     if (level === 0) {
-      return `<h1${idAttr} class="sect0${role ? ` ${role}` : ''}">${title}</h1>
+      return `<h1${idAttr} class="sect0${role != null ? ` ${role}` : ''}">${title}</h1>
 ${await node.content()}`
     }
-    return `<div class="sect${level}${role ? ` ${role}` : ''}">
+    return `<div class="sect${level}${role != null ? ` ${role}` : ''}">
 <h${level + 1}${idAttr}>${title}</h${level + 1}>
 ${
   level === 1
@@ -606,7 +602,7 @@ ${await node.content()}
   }
 
   async convert_admonition(node) {
-    const idAttr = node.id ? ` id="${node.id}"` : ''
+    const idAttr = node.id != null ? ` id="${node.id}"` : ''
     const name = node.getAttribute('name')
     const titleElement = node.hasTitle()
       ? `<div class="title">${node.title}</div>\n`
@@ -624,7 +620,7 @@ ${await node.content()}
     } else {
       label = `<div class="title">${node.getAttribute('textlabel')}</div>`
     }
-    return `<div${idAttr} class="admonitionblock ${name}${node.role ? ` ${node.role}` : ''}">
+    return `<div${idAttr} class="admonitionblock ${name}${node.role != null ? ` ${node.role}` : ''}">
 <table>
 <tr>
 <td class="icon">
@@ -640,8 +636,8 @@ ${titleElement}${await node.content()}
 
   async convert_audio(node) {
     const xml = this._xmlMode
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
-    const classes = ['audioblock', node.role].filter(Boolean)
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
+    const classes = ['audioblock', node.role].filter((c) => c != null)
     const classAttribute = ` class="${classes.join(' ')}"`
     const titleElement = node.hasTitle()
       ? `<div class="title">${node.title}</div>\n`
@@ -649,7 +645,9 @@ ${titleElement}${await node.content()}
     const startT = node.getAttribute('start')
     const endT = node.getAttribute('end')
     const timeAnchor =
-      startT || endT ? `#t=${startT || ''}${endT ? `,${endT}` : ''}` : ''
+      startT != null || endT != null
+        ? `#t=${startT ?? ''}${endT != null ? `,${endT}` : ''}`
+        : ''
     return `<div${idAttribute}${classAttribute}>
 ${titleElement}<div class="content">
 <audio src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${node.hasOption('autoplay') ? this._appendBooleanAttr('autoplay', xml) : ''}${node.hasOption('nocontrols') ? '' : this._appendBooleanAttr('controls', xml)}${node.hasOption('loop') ? this._appendBooleanAttr('loop', xml) : ''}>
@@ -661,8 +659,8 @@ Your browser does not support the audio tag.
 
   async convert_colist(node) {
     const result = []
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
-    const classes = ['colist', node.style, node.role].filter(Boolean)
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
+    const classes = ['colist', node.style, node.role].filter((c) => c != null)
     const classAttribute = ` class="${classes.join(' ')}"`
 
     result.push(`<div${idAttribute}${classAttribute}>`)
@@ -702,7 +700,7 @@ Your browser does not support the audio tag.
 
   async convert_dlist(node) {
     const result = []
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
     let classes
     switch (node.style) {
       case 'qanda':
@@ -714,7 +712,7 @@ Your browser does not support the audio tag.
       default:
         classes = ['dlist', node.style, node.role]
     }
-    const classAttribute = ` class="${classes.filter(Boolean).join(' ')}"`
+    const classAttribute = ` class="${classes.filter((c) => c != null).join(' ')}"`
 
     result.push(`<div${idAttribute}${classAttribute}>`)
     if (node.hasTitle()) result.push(`<div class="title">${node.title}</div>`)
@@ -775,7 +773,7 @@ Your browser does not support the audio tag.
       }
       default: {
         result.push('<dl>')
-        const dtStyleAttribute = node.style ? '' : ' class="hdlist1"'
+        const dtStyleAttribute = node.style != null ? '' : ' class="hdlist1"'
         for (const [terms, dd] of node.getItems()) {
           for (const dt of terms) {
             result.push(`<dt${dtStyleAttribute}>${dt.getText()}</dt>`)
@@ -795,9 +793,9 @@ Your browser does not support the audio tag.
   }
 
   async convert_example(node) {
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
     if (node.hasOption('collapsible')) {
-      const classAttribute = node.role ? ` class="${node.role}"` : ''
+      const classAttribute = node.role != null ? ` class="${node.role}"` : ''
       const summaryElement = node.hasTitle()
         ? `<summary class="title">${node.title}</summary>`
         : '<summary class="title">Details</summary>'
@@ -812,7 +810,7 @@ ${await node.content()}
       ? `<div class="title">${node.captionedTitle()}</div>\n`
       : ''
     const role = node.role
-    return `<div${idAttribute} class="exampleblock${role ? ` ${role}` : ''}">
+    return `<div${idAttribute} class="exampleblock${role != null ? ` ${role}` : ''}">
 ${titleElement}<div class="content">
 ${await node.content()}
 </div>
@@ -821,8 +819,8 @@ ${await node.content()}
 
   async convert_floating_title(node) {
     const tagName = `h${node.level + 1}`
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
-    const classes = [node.style, node.role].filter(Boolean)
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
+    const classes = [node.style, node.role].filter((c) => c != null)
     return `<${tagName}${idAttribute} class="${classes.join(' ')}">${node.title}</${tagName}>`
   }
 
@@ -864,17 +862,17 @@ ${await node.content()}
     if (node.hasAttribute('link')) {
       let hrefAttrVal = node.getAttribute('link')
       if (hrefAttrVal === 'self') hrefAttrVal = src
-      if (hrefAttrVal) {
+      if (hrefAttrVal != null) {
         img = `<a class="image" href="${hrefAttrVal}"${this._appendLinkConstraintAttrs(node).join('')}>${img}</a>`
       }
     }
 
-    const idAttr = node.id ? ` id="${node.id}"` : ''
+    const idAttr = node.id != null ? ` id="${node.id}"` : ''
     const classes = ['imageblock']
     if (node.hasAttribute('float')) classes.push(node.getAttribute('float'))
     if (node.hasAttribute('align'))
       classes.push(`text-${node.getAttribute('align')}`)
-    if (node.role) classes.push(node.role)
+    if (node.role != null) classes.push(node.role)
     const classAttr = ` class="${classes.join(' ')}"`
     const titleEl = node.hasTitle()
       ? `\n<div class="title">${node.captionedTitle()}</div>`
@@ -905,14 +903,14 @@ ${img}
         }
         opts.nowrap = nowrap
       } else {
-        preOpen = `<pre class="highlight${nowrap ? ' nowrap' : ''}"><code${lang ? ` class="language-${lang}" data-lang="${lang}"` : ''}>`
+        preOpen = `<pre class="highlight${nowrap ? ' nowrap' : ''}"><code${lang != null ? ` class="language-${lang}" data-lang="${lang}"` : ''}>`
         preClose = '</code></pre>'
       }
     } else {
       preOpen = `<pre${nowrap ? ' class="nowrap"' : ''}>`
       preClose = '</pre>'
     }
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
     const titleElement = node.hasTitle()
       ? `<div class="title">${node.captionedTitle()}</div>\n`
       : ''
@@ -920,7 +918,7 @@ ${img}
     const inner = syntaxHl
       ? await syntaxHl.format(node, lang, opts)
       : `${preOpen}${await node.content()}${preClose}`
-    return `<div${idAttribute} class="listingblock${role ? ` ${role}` : ''}">
+    return `<div${idAttribute} class="listingblock${role != null ? ` ${role}` : ''}">
 ${titleElement}<div class="content">
 ${inner}
 </div>
@@ -928,14 +926,14 @@ ${inner}
   }
 
   async convert_literal(node) {
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
     const titleElement = node.hasTitle()
       ? `<div class="title">${node.title}</div>\n`
       : ''
     const nowrap =
       !node.document.hasAttribute('prewrap') || node.hasOption('nowrap')
     const role = node.role
-    return `<div${idAttribute} class="literalblock${role ? ` ${role}` : ''}">
+    return `<div${idAttribute} class="literalblock${role != null ? ` ${role}` : ''}">
 ${titleElement}<div class="content">
 <pre${nowrap ? ' class="nowrap"' : ''}>${await node.content()}</pre>
 </div>
@@ -943,14 +941,14 @@ ${titleElement}<div class="content">
   }
 
   async convert_stem(node) {
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
     const titleElement = node.hasTitle()
       ? `<div class="title">${node.title}</div>\n`
       : ''
     const style = node.style
     const [open, close] = BLOCK_MATH_DELIMITERS[style] ?? ['', '']
     let equation = await node.content()
-    if (equation) {
+    if (equation != null) {
       if (style === 'asciimath' && equation.includes(LF)) {
         const br = `${LF}<br${this._voidSlash}>`
         equation = equation.replace(StemBreakRx, (match) => {
@@ -967,7 +965,7 @@ ${titleElement}<div class="content">
       equation = ''
     }
     const role = node.role
-    return `<div${idAttribute} class="stemblock${role ? ` ${role}` : ''}">
+    return `<div${idAttribute} class="stemblock${role != null ? ` ${role}` : ''}">
 ${titleElement}<div class="content">
 ${equation}
 </div>
@@ -976,8 +974,8 @@ ${equation}
 
   async convert_olist(node) {
     const result = []
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
-    const classes = ['olist', node.style, node.role].filter(Boolean)
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
+    const classes = ['olist', node.style, node.role].filter((c) => c != null)
     const classAttribute = ` class="${classes.join(' ')}"`
 
     result.push(`<div${idAttribute}${classAttribute}>`)
@@ -996,11 +994,11 @@ ${equation}
     )
 
     for (const item of node.getItems()) {
-      if (item.id) {
+      if (item.id != null) {
         result.push(
-          `<li id="${item.id}"${item.role ? ` class="${item.role}"` : ''}>`
+          `<li id="${item.id}"${item.role != null ? ` class="${item.role}"` : ''}>`
         )
-      } else if (item.role) {
+      } else if (item.role != null) {
         result.push(`<li class="${item.role}">`)
       } else {
         result.push('<li>')
@@ -1027,12 +1025,12 @@ ${equation}
         )
         return ''
       }
-      const idAttr = node.id ? ` id="${node.id}"` : ''
+      const idAttr = node.id != null ? ` id="${node.id}"` : ''
       const titleEl = node.hasTitle()
         ? `<div class="title">${node.title}</div>\n`
         : ''
       const role = node.role
-      return `<div${idAttr} class="quoteblock abstract${role ? ` ${role}` : ''}">
+      return `<div${idAttr} class="quoteblock abstract${role != null ? ` ${role}` : ''}">
 ${titleEl}<blockquote>
 ${await node.content()}
 </blockquote>
@@ -1049,12 +1047,12 @@ ${await node.content()}
       )
       return ''
     }
-    const idAttr = node.id ? ` id="${node.id}"` : ''
+    const idAttr = node.id != null ? ` id="${node.id}"` : ''
     const titleEl = node.hasTitle()
       ? `<div class="title">${node.title}</div>\n`
       : ''
     const role = node.role
-    return `<div${idAttr} class="openblock${style && style !== 'open' ? ` ${style}` : ''}${role ? ` ${role}` : ''}">
+    return `<div${idAttr} class="openblock${style != null && style !== 'open' ? ` ${style}` : ''}${role != null ? ` ${role}` : ''}">
 ${titleEl}<div class="content">
 ${await node.content()}
 </div>
@@ -1067,9 +1065,9 @@ ${await node.content()}
 
   async convert_paragraph(node) {
     let attributes
-    if (node.role) {
-      attributes = `${node.id ? ` id="${node.id}"` : ''} class="paragraph ${node.role}"`
-    } else if (node.id) {
+    if (node.role != null) {
+      attributes = `${node.id != null ? ` id="${node.id}"` : ''} class="paragraph ${node.role}"`
+    } else if (node.id != null) {
       attributes = ` id="${node.id}" class="paragraph"`
     } else {
       attributes = ' class="paragraph"'
@@ -1112,8 +1110,8 @@ ${await node.content()}
   }
 
   async convert_quote(node) {
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
-    const classes = ['quoteblock', node.role].filter(Boolean)
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
+    const classes = ['quoteblock', node.role].filter((c) => c != null)
     const classAttribute = ` class="${classes.join(' ')}"`
     const titleElement = node.hasTitle()
       ? `\n<div class="title">${node.title}</div>`
@@ -1125,11 +1123,12 @@ ${await node.content()}
       ? node.getAttribute('citetitle')
       : null
     let attributionElement = ''
-    if (attribution || citetitle) {
-      const citeElement = citetitle ? `<cite>${citetitle}</cite>` : ''
-      const attributionText = attribution
-        ? `&#8212; ${attribution}${citetitle ? `<br${this._voidSlash}>\n` : ''}`
-        : ''
+    if (attribution != null || citetitle != null) {
+      const citeElement = citetitle != null ? `<cite>${citetitle}</cite>` : ''
+      const attributionText =
+        attribution != null
+          ? `&#8212; ${attribution}${citetitle != null ? `<br${this._voidSlash}>\n` : ''}`
+          : ''
       attributionElement = `\n<div class="attribution">\n${attributionText}${citeElement}\n</div>`
     }
     return `<div${idAttribute}${classAttribute}>${titleElement}
@@ -1140,17 +1139,17 @@ ${await node.content()}
   }
 
   async convert_thematic_break(node) {
-    const classAttribute = node.role ? ` class="${node.role}"` : ''
+    const classAttribute = node.role != null ? ` class="${node.role}"` : ''
     return `<hr${classAttribute}${this._voidSlash}>`
   }
 
   async convert_sidebar(node) {
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
     const titleElement = node.hasTitle()
       ? `<div class="title">${node.title}</div>\n`
       : ''
     const role = node.role
-    return `<div${idAttribute} class="sidebarblock${role ? ` ${role}` : ''}">
+    return `<div${idAttribute} class="sidebarblock${role != null ? ` ${role}` : ''}">
 <div class="content">
 ${titleElement}${await node.content()}
 </div>
@@ -1159,7 +1158,7 @@ ${titleElement}${await node.content()}
 
   async convert_table(node) {
     const result = []
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
     let frame = node.getAttribute('frame', 'all', 'table-frame')
     if (frame === 'topbot') frame = 'ends'
     const classes = [
@@ -1168,7 +1167,7 @@ ${titleElement}${await node.content()}
       `grid-${node.getAttribute('grid', 'all', 'table-grid')}`,
     ]
     const stripes = node.getAttribute('stripes', null, 'table-stripes')
-    if (stripes) classes.push(`stripes-${stripes}`)
+    if (stripes != null) classes.push(`stripes-${stripes}`)
     let widthAttribute = ''
     const autowidth = node.hasOption('autowidth')
     if (autowidth && !node.hasAttribute('width')) {
@@ -1182,7 +1181,7 @@ ${titleElement}${await node.content()}
       }
     }
     if (node.hasAttribute('float')) classes.push(node.getAttribute('float'))
-    if (node.role) classes.push(node.role)
+    if (node.role != null) classes.push(node.role)
     const classAttribute = ` class="${classes.join(' ')}"`
 
     result.push(`<table${idAttribute}${classAttribute}${widthAttribute}>`)
@@ -1247,9 +1246,10 @@ ${titleElement}${await node.content()}
               '_cellbgcolor' in cell
                 ? cell._cellbgcolor
                 : node.document.attributes.cellbgcolor
-            const cellStyleAttr = cellbgcolor
-              ? ` style="background-color: ${cellbgcolor};"`
-              : ''
+            const cellStyleAttr =
+              cellbgcolor != null
+                ? ` style="background-color: ${cellbgcolor};"`
+                : ''
             result.push(
               `<${cellTagName}${cellClassAttr}${cellColspanAttr}${cellRowspanAttr}${cellStyleAttr}>${cellContent}</${cellTagName}>`
             )
@@ -1273,7 +1273,7 @@ ${titleElement}${await node.content()}
       return '<!-- toc disabled -->'
     }
     let idAttr, titleIdAttr
-    if (node.id) {
+    if (node.id != null) {
       idAttr = ` id="${node.id}"`
       titleIdAttr = ` id="${node.id}title"`
     } else {
@@ -1282,7 +1282,7 @@ ${titleElement}${await node.content()}
     }
     const title = node.hasTitle() ? node.title : doc.getAttribute('toc-title')
     const levels = node.hasAttribute('levels')
-      ? parseInt(node.getAttribute('levels'), 10)
+      ? toInt(node.getAttribute('levels'))
       : null
     const role = node.hasRoleAttribute()
       ? node.role
@@ -1295,8 +1295,8 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
 
   async convert_ulist(node) {
     const result = []
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
-    const divClasses = ['ulist', node.style, node.role].filter(Boolean)
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
+    const divClasses = ['ulist', node.style, node.role].filter((c) => c != null)
     let markerChecked = ''
     let markerUnchecked = ''
     let ulClassAttribute
@@ -1322,18 +1322,18 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
         markerUnchecked = '&#10063; '
       }
     } else {
-      ulClassAttribute = node.style ? ` class="${node.style}"` : ''
+      ulClassAttribute = node.style != null ? ` class="${node.style}"` : ''
     }
     result.push(`<div${idAttribute} class="${divClasses.join(' ')}">`)
     if (node.hasTitle()) result.push(`<div class="title">${node.title}</div>`)
     result.push(`<ul${ulClassAttribute}>`)
 
     for (const item of node.getItems()) {
-      if (item.id) {
+      if (item.id != null) {
         result.push(
-          `<li id="${item.id}"${item.role ? ` class="${item.role}"` : ''}>`
+          `<li id="${item.id}"${item.role != null ? ` class="${item.role}"` : ''}>`
         )
-      } else if (item.role) {
+      } else if (item.role != null) {
         result.push(`<li class="${item.role}">`)
       } else {
         result.push('<li>')
@@ -1355,8 +1355,8 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
   }
 
   async convert_verse(node) {
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
-    const classes = ['verseblock', node.role].filter(Boolean)
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
+    const classes = ['verseblock', node.role].filter((c) => c != null)
     const classAttribute = ` class="${classes.join(' ')}"`
     const titleElement = node.hasTitle()
       ? `\n<div class="title">${node.title}</div>`
@@ -1368,11 +1368,12 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
       ? node.getAttribute('citetitle')
       : null
     let attributionElement = ''
-    if (attribution || citetitle) {
-      const citeElement = citetitle ? `<cite>${citetitle}</cite>` : ''
-      const attributionText = attribution
-        ? `&#8212; ${attribution}${citetitle ? `<br${this._voidSlash}>\n` : ''}`
-        : ''
+    if (attribution != null || citetitle != null) {
+      const citeElement = citetitle != null ? `<cite>${citetitle}</cite>` : ''
+      const attributionText =
+        attribution != null
+          ? `&#8212; ${attribution}${citetitle != null ? `<br${this._voidSlash}>\n` : ''}`
+          : ''
       attributionElement = `\n<div class="attribution">\n${attributionText}${citeElement}\n</div>`
     }
     return `<div${idAttribute}${classAttribute}>${titleElement}
@@ -1382,12 +1383,12 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
 
   async convert_video(node) {
     const xml = this._xmlMode
-    const idAttribute = node.id ? ` id="${node.id}"` : ''
+    const idAttribute = node.id != null ? ` id="${node.id}"` : ''
     const classes = ['videoblock']
     if (node.hasAttribute('float')) classes.push(node.getAttribute('float'))
     if (node.hasAttribute('align'))
       classes.push(`text-${node.getAttribute('align')}`)
-    if (node.role) classes.push(node.role)
+    if (node.role != null) classes.push(node.role)
     const classAttribute = ` class="${classes.join(' ')}"`
     const titleElement = node.hasTitle()
       ? `\n<div class="title">${node.title}</div>`
@@ -1410,9 +1411,10 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
           ? `#at=${node.getAttribute('start')}`
           : ''
         const delimiter = ['?']
-        let [target, hash] = node.getAttribute('target').split('/', 2)
-        hash ||= node.getAttribute('hash')
-        const hashParam = hash ? `${delimiter.pop() || '&amp;'}h=${hash}` : ''
+        let [target, hash] = splitOnce(node.getAttribute('target'), '/')
+        hash ??= node.getAttribute('hash')
+        const hashParam =
+          hash != null ? `${delimiter.pop() || '&amp;'}h=${hash}` : ''
         const autoplayParam = node.hasOption('autoplay')
           ? `${delimiter.pop() || '&amp;'}autoplay=1`
           : ''
@@ -1467,19 +1469,16 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
         const hlParam = node.hasAttribute('lang')
           ? `&amp;hl=${node.getAttribute('lang')}`
           : ''
-        let [target, list] = node.getAttribute('target').split('/', 2)
-        list ||= node.getAttribute('list')
+        let [target, list] = splitOnce(node.getAttribute('target'), '/')
+        list ??= node.getAttribute('list')
         let listParam
-        if (list) {
+        if (list != null) {
           listParam = `&amp;list=${list}`
         } else {
           let playlist
-          const videoParts = target.split(',')
-          target = videoParts[0]
-          playlist =
-            videoParts.length > 1 ? videoParts.slice(1).join(',') : null
-          playlist ||= node.getAttribute('playlist')
-          if (playlist) {
+          ;[target, playlist] = splitOnce(target, ',')
+          playlist ??= node.getAttribute('playlist')
+          if (playlist != null) {
             listParam = `&amp;playlist=${target},${playlist}`
           } else {
             listParam = hasLoopParam ? `&amp;playlist=${target}` : ''
@@ -1529,7 +1528,9 @@ ${await doc.converter.convert(doc, 'outline', levels != null ? { toclevels: leve
         const startT = node.getAttribute('start')
         const endT = node.getAttribute('end')
         const timeAnchor =
-          startT || endT ? `#t=${startT || ''}${endT ? `,${endT}` : ''}` : ''
+          startT != null || endT != null
+            ? `#t=${startT ?? ''}${endT != null ? `,${endT}` : ''}`
+            : ''
         return `<div${idAttribute}${classAttribute}>${titleElement}
 <div class="content">
 <video src="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${widthAttribute}${heightAttribute}${posterAttribute}${node.hasOption('autoplay') ? this._appendBooleanAttr('autoplay', xml) : ''}${node.hasOption('muted') ? this._appendBooleanAttr('muted', xml) : ''}${node.hasOption('nocontrols') ? '' : this._appendBooleanAttr('controls', xml)}${node.hasOption('loop') ? this._appendBooleanAttr('loop', xml) : ''}${node.hasOption('nopip') ? this._appendBooleanAttr('disablepictureinpicture', xml) : ''}${preloadAttribute}>
@@ -1548,11 +1549,11 @@ Your browser does not support the video tag.
         if (node.attributes.path) {
           attrs = this._appendLinkConstraintAttrs(
             node,
-            node.role ? [` class="${node.role}"`] : []
+            node.role != null ? [` class="${node.role}"`] : []
           ).join('')
           text = node.text || node.attributes.path
         } else {
-          attrs = node.role ? ` class="${node.role}"` : ''
+          attrs = node.role != null ? ` class="${node.role}"` : ''
           if (!(text = node.text)) {
             const refs = (this._refs ??= node.document.catalog.refs)
             const refid = node.attributes.refid
@@ -1588,8 +1589,8 @@ Your browser does not support the video tag.
       case 'ref':
         return `<a id="${node.id}"></a>`
       case 'link': {
-        const attrs = node.id ? [` id="${node.id}"`] : []
-        if (node.role) attrs.push(` class="${node.role}"`)
+        const attrs = node.id != null ? [` id="${node.id}"`] : []
+        if (node.role != null) attrs.push(` class="${node.role}"`)
         if (node.hasAttribute('title'))
           attrs.push(` title="${node.getAttribute('title')}"`)
         return `<a href="${node.target}"${this._appendLinkConstraintAttrs(node, attrs).join('')}>${node.text ?? ''}</a>`
@@ -1631,7 +1632,7 @@ Your browser does not support the video tag.
       if (node.type === 'xref') {
         return `<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_${index}" title="View footnote.">${index}</a>]</sup>`
       }
-      const idAttr = node.id ? ` id="_footnote_${node.id}"` : ''
+      const idAttr = node.id != null ? ` id="_footnote_${node.id}"` : ''
       return `<sup class="footnote"${idAttr}>[<a id="_footnoteref_${index}" class="footnote" href="#_footnotedef_${index}" title="View footnote.">${index}</a>]</sup>`
     }
     if (node.type === 'xref') {
@@ -1708,15 +1709,15 @@ Your browser does not support the video tag.
     if (node.hasAttribute('link')) {
       let hrefAttrVal = node.getAttribute('link')
       if (hrefAttrVal === 'self') hrefAttrVal = src
-      if (hrefAttrVal) {
+      if (hrefAttrVal != null) {
         img = `<a class="image" href="${hrefAttrVal}"${this._appendLinkConstraintAttrs(node).join('')}>${img}</a>`
       }
     }
 
-    const idAttr = node.id ? ` id="${node.id}"` : ''
+    const idAttr = node.id != null ? ` id="${node.id}"` : ''
     let classAttrVal = type
     const role = node.role
-    if (role) {
+    if (role != null) {
       classAttrVal = node.hasAttribute('float')
         ? `${classAttrVal} ${node.getAttribute('float')} ${role}`
         : `${classAttrVal} ${role}`
@@ -1747,7 +1748,7 @@ Your browser does not support the video tag.
     const submenus = node.getAttribute('submenus')
     if (!submenus || submenus.length === 0) {
       const menuitem = node.getAttribute('menuitem')
-      if (menuitem) {
+      if (menuitem != null) {
         return `<span class="menuseq"><b class="menu">${menu}</b>${caret}<b class="menuitem">${menuitem}</b></span>`
       }
       return `<b class="menuref">${menu}</b>`
@@ -1757,14 +1758,14 @@ Your browser does not support the video tag.
 
   async convert_inline_quoted(node) {
     const [open, close, tag] = QUOTE_TAGS[node.type] ?? DEFAULT_QUOTE_TAG
-    if (node.id) {
-      const classAttr = node.role ? ` class="${node.role}"` : ''
+    if (node.id != null) {
+      const classAttr = node.role != null ? ` class="${node.role}"` : ''
       if (tag) {
         return `${open.slice(0, -1)} id="${node.id}"${classAttr}>${node.text}${close}`
       }
       return `<span id="${node.id}"${classAttr}>${open}${node.text}${close}</span>`
     }
-    if (node.role) {
+    if (node.role != null) {
       if (tag) {
         return `${open.slice(0, -1)} class="${node.role}">${node.text}${close}`
       }
@@ -1853,7 +1854,7 @@ Your browser does not support the video tag.
   _appendLinkConstraintAttrs(node, attrs = []) {
     const rel = node.hasOption('nofollow') ? 'nofollow' : null
     const window = node.attributes.window
-    if (window) {
+    if (window != null) {
       attrs.push(` target="${window}"`)
       if (window === '_blank' || node.hasOption('noopener')) {
         attrs.push(rel ? ` rel="${rel} noopener"` : ' rel="noopener"')

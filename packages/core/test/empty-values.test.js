@@ -14,6 +14,7 @@ import { Extensions } from '../src/index.js'
 import { assertMessage, usingMemoryLogger } from './helpers.js'
 import {
   documentFromString,
+  convertString,
   convertStringToEmbedded,
   blockFromString,
 } from './harness.js'
@@ -388,6 +389,154 @@ describe('Empty attribute values', () => {
       assert.equal(block.hasAttribute('foo', ''), true)
       block = await blockFromString('[foo=x]\npara')
       assert.equal(block.hasAttribute('foo', ''), false)
+    })
+  })
+
+  describe('HTML converter', () => {
+    const convert = (input, opts = {}) => convertStringToEmbedded(input, opts)
+
+    test('should output empty role and id', async () => {
+      let output = await convert('[role=]\npara')
+      assert.ok(output.includes('<div class="paragraph ">'))
+      output = await convert('[role=]\n--\nopen\n--')
+      assert.ok(output.includes('<div class="openblock ">'))
+      output = await convert("[role=]\n'''")
+      assert.ok(output.includes('<hr class="">'))
+      output = await convert('[role=]\n* item')
+      assert.ok(output.includes('<div class="ulist ">'))
+      output = await convert('image:b.png[role=]')
+      assert.ok(output.includes('<span class="image ">'))
+      output = await convert('[id=]\npara')
+      assert.ok(output.includes('<div id="" class="paragraph">'))
+      output = await convert('[discrete,id=]\n== Float')
+      assert.ok(output.includes('<h2 id="" class="discrete">Float</h2>'))
+    })
+
+    test('should output empty role on body', async () => {
+      const output = await convertString('= Doc\n:role:\n\nx')
+      assert.ok(output.includes('<body class="article ">'))
+    })
+
+    test('should output empty style', async () => {
+      let output = await convert('[""]\n--\nopen\n--')
+      assert.ok(output.includes('<div class="openblock ">'))
+      output = await convert('[bibliography]\n== Refs\n\n[""]\n* [[[a]]] A')
+      assert.ok(output.includes('<ul class="">'))
+    })
+
+    test('should output empty start and end on audio and video', async () => {
+      let output = await convert('audio::a.mp3[start=]')
+      assert.ok(output.includes('<audio src="a.mp3#t="'))
+      output = await convert('video::a.mp4[end=]')
+      assert.ok(output.includes('<video src="a.mp4#t=,"'))
+    })
+
+    test('should output empty Vimeo hash and YouTube list and playlist', async () => {
+      let output = await convert('video::123[vimeo,hash=]')
+      assert.ok(output.includes('player.vimeo.com/video/123?h="'))
+      output = await convert('video::abc[youtube,list=]')
+      assert.ok(output.includes('?rel=0&amp;list="'))
+      output = await convert('video::abc[youtube,playlist=]')
+      assert.ok(output.includes('?rel=0&amp;playlist=abc,"'))
+    })
+
+    test('should keep rest of video target after first slash', async () => {
+      let output = await convert('video::123/abc/def[vimeo]')
+      assert.ok(output.includes('player.vimeo.com/video/123?h=abc/def"'))
+      output = await convert('video::abc/def/ghi[youtube]')
+      assert.ok(output.includes('embed/abc?rel=0&amp;list=def/ghi"'))
+    })
+
+    test('should link image to empty link', async () => {
+      let output = await convert('image::a.png[link=]')
+      assert.ok(output.includes('<a class="image" href=""><img'))
+      output = await convert('image:b.png[link=]')
+      assert.ok(output.includes('<a class="image" href=""><img'))
+    })
+
+    test('should output empty window target on link', async () => {
+      const output = await convert('link:http://x.org[x,window=]')
+      assert.ok(output.includes('<a href="http://x.org" target="">x</a>'))
+    })
+
+    test('should output empty stripes, stem, attribution, language and cell background color', async () => {
+      let output = await convert('[stripes=]\n|===\n|a\n|===')
+      assert.ok(output.includes('grid-all stripes- stretch'))
+      output = await convert('[stem]\n++++\n++++')
+      assert.ok(output.includes('\\$\\$'))
+      output = await convert('[quote,attribution=]\n____\nq\n____')
+      assert.ok(output.includes('<div class="attribution">\n&#8212; \n</div>'))
+      output = await convert('[quote,,citetitle=]\n____\nq\n____')
+      assert.ok(
+        output.includes('<div class="attribution">\n<cite></cite>\n</div>')
+      )
+      output = await convert('[source,language=]\n----\nx\n----')
+      assert.ok(
+        output.includes('<code class="language-" data-lang="">x</code>')
+      )
+      output = await convert(':cellbgcolor:\n\n|===\n|a\n|===')
+      assert.ok(output.includes('style="background-color: ;"'))
+    })
+
+    test('should output empty language with syntax highlighter', async () => {
+      let output = await convert('[source,language=]\n----\nx\n----', {
+        attributes: { 'source-highlighter': 'highlight.js' },
+      })
+      assert.ok(output.includes('<code class="language- hljs" data-lang="">'))
+      output = await convert('[source,language=]\n----\nx\n----', {
+        attributes: { 'source-highlighter': 'html-pipeline' },
+      })
+      assert.ok(output.includes('<pre lang=""><code>'))
+    })
+
+    test('should treat empty or non-numeric levels as 0', async () => {
+      let output = await convert('= Doc\n:sectnums:\n:sectnumlevels:\n\n== A')
+      assert.ok(output.includes('<h2 id="_a">A</h2>'))
+      output = await convertString('= Doc\n:toc:\n:toclevels:\n\n== A\n\n=== B')
+      assert.ok(!output.includes('href="#_b"'))
+      output = await convert('= Doc\n:toc: macro\n\n== A\n\ntoc::[levels=]')
+      assert.ok(!output.includes('href="#_a"'))
+      output = await convertString(
+        '= Doc\n:toc:\n\n[toclevels=]\n== A\n\n=== B'
+      )
+      assert.ok(!output.includes('href="#_a"'))
+    })
+
+    test('should output empty chapter and part signifiers', async () => {
+      const output = await convert(
+        '= Book\n:doctype: book\n:sectnums:\n:partnums:\n:chapter-signifier:\n:part-signifier:\n\n= P\n\n== A\n\nx'
+      )
+      assert.ok(output.includes('<h1 id="_p" class="sect0"> I: P</h1>'))
+      assert.ok(output.includes('<h2 id="_a"> 1. A</h2>'))
+    })
+
+    test('should link toc entry of section without id to empty fragment', async () => {
+      const output = await convertString('= Doc\n:toc:\n\n[id=]\n== Foo\n\nx')
+      assert.ok(output.includes('<li><a href="#">Foo</a></li>'))
+    })
+  })
+
+  describe('Semantic HTML converter', () => {
+    const convert = (input) =>
+      convertStringToEmbedded(input, { backend: 'semantic-html5' })
+
+    test('should output empty role and id', async () => {
+      let output = await convert('[role=]\npara')
+      assert.ok(output.includes('<p class="">'), output)
+      output = await convert('[id=]\npara')
+      assert.ok(output.includes('<p id="">'), output)
+    })
+
+    test('should not output class attribute on image without role', async () => {
+      const output = await convert('image:b.png[]')
+      assert.ok(!output.includes('class='), output)
+    })
+
+    test('should link toc entry of section without id to empty fragment', async () => {
+      const output = await convertString('= Doc\n:toc:\n\n[id=]\n== Foo\n\nx', {
+        backend: 'semantic-html5',
+      })
+      assert.ok(output.includes('<a href="#">Foo</a>'), output)
     })
   })
 })
