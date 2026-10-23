@@ -140,8 +140,6 @@ declare class Cell extends AbstractBlock<string | string[]> {
         getReftext(): string | undefined;
     }, cellText: string, attributes?: any, opts?: any): Promise<typeof Cell>;
     constructor(column: any, cellText: any, attributes?: {}, opts?: {});
-    _cursor: any;
-    sourceLocation: any;
     colspan: number;
     rowspan: number;
     style: any;
@@ -175,7 +173,6 @@ declare class Cell extends AbstractBlock<string | string[]> {
     source(): any;
     get innerDocument(): any;
     get file(): any;
-    get lineno(): any;
     /**
      * Get the text with substitutions applied.
      * @returns {string|null}

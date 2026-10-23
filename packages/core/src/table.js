@@ -14,7 +14,7 @@ import { Inline } from './inline.js'
 import { applyLogging, Logger, LoggerManager } from './logging.js'
 import { LF, ATTR_REF_HEAD, BASIC_SUBS, NORMAL_SUBS } from './constants.js'
 import { BlankLineRx, LeadingInlineAnchorRx } from './rx.js'
-import { PreprocessorReader } from './reader.js'
+import { Cursor, PreprocessorReader } from './reader.js'
 
 /**
  * Truncate a float to `precision` decimal places (like Ruby's Float#truncate).
@@ -314,6 +314,9 @@ class Cell extends AbstractBlock {
   }
 
   /** @internal */
+  _cursor
+
+  /** @internal */
   _reinitializeArgs
 
   /** @internal */
@@ -336,7 +339,8 @@ class Cell extends AbstractBlock {
     this._cursor = null
     this._reinitializeArgs = null
     if (this.document.sourcemap && opts.cursor) {
-      this.sourceLocation = Object.assign({}, opts.cursor)
+      const { file, dir, path, lineno } = opts.cursor
+      this.sourceLocation = new Cursor(file, dir, path, lineno)
     }
 
     let cellStyle = null
