@@ -28,6 +28,7 @@
 //     → use ($1 !== undefined) instead of ($1) in preserve-whitespace handler
 
 import { ConverterBase } from '../converter.js'
+import { toInt } from '../helpers.js'
 import { AbstractNode } from '../abstract_node.js'
 import { LF, TAB, BLOCK_MATH_DELIMITERS } from '../constants.js'
 import { InvalidSectionIdCharsRx } from '../rx.js'
@@ -111,16 +112,16 @@ export default class ManPageConverter extends ConverterBase {
 .\\" Generator: Asciidoctor.js ${node.getAttribute('asciidoctor-version')}`,
     ]
 
-    if (docdate) result.push(`.\\"      Date: ${docdate}`)
+    if (docdate != null) result.push(`.\\"      Date: ${docdate}`)
 
-    result.push(`.\\"    Manual: ${manmanual ? manmanual.replace(/[\n\t ]+/g, ' ') : '\\ \\&'}
-.\\"    Source: ${mansource ? mansource.replace(/[\n\t ]+/g, ' ') : '\\ \\&'}
+    result.push(`.\\"    Manual: ${manmanual != null ? manmanual.replace(/[\n\t ]+/g, ' ') : '\\ \\&'}
+.\\"    Source: ${mansource != null ? mansource.replace(/[\n\t ]+/g, ' ') : '\\ \\&'}
 .\\"  Language: English
 .\\"`)
 
     // TODO add document-level setting to disable capitalization of manname
     result.push(
-      `.TH "${this.manify(manname.toUpperCase())}" "${manvolnum}" "${docdate ?? ''}" "${mansource ? this.manify(mansource) : '\\ \\&'}" "${manmanual ? this.manify(manmanual) : '\\ \\&'}"`
+      `.TH "${this.manify(manname.toUpperCase())}" "${manvolnum}" "${docdate ?? ''}" "${mansource != null ? this.manify(mansource) : '\\ \\&'}" "${manmanual != null ? this.manify(manmanual) : '\\ \\&'}"`
     )
 
     // define portability settings
@@ -347,7 +348,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
       result.push(`.sp\n.B ${this.manify(node.title)}\n.br`)
     }
 
-    const start = parseInt(node.getAttribute('start', 1), 10)
+    const start = toInt(node.getAttribute('start', 1))
     let idx = 0
     for (const item of node.getItems()) {
       const numeral = idx + start
@@ -418,7 +419,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
     result.push(
       `.RS 3\n.ll -.6i\n${await this._encloseContent(node)}\n.br\n.RE\n.ll`
     )
-    if (attributionLine) {
+    if (attributionLine != null) {
       result.push(`.RS 5\n.ll -.10i\n${attributionLine}\n.RE\n.ll`)
     }
     return result.join(LF)
@@ -630,7 +631,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
     result.push(
       `.sp\n.nf\n${this.manify(await node.content(), { whitespace: 'preserve' })}\n.fi\n.br`
     )
-    if (attributionLine) {
+    if (attributionLine != null) {
       result.push(`.in +.5i\n.ll -.5i\n${attributionLine}\n.in\n.ll`)
     }
     return result.join(LF)
@@ -674,7 +675,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
       }
       case 'xref': {
         let text = node.text
-        if (!text) {
+        if (text == null) {
           const refs = (this._refs ??= node.document.catalog.refs)
           const refid = node.attributes.refid
           let top
@@ -688,7 +689,7 @@ ${this.manify(await node.content(), { whitespace: 'preserve' })}
                 node.getAttribute('xrefstyle', null, true)
               )
               resolvingSet.delete(refid)
-              if (resolved) {
+              if (resolved != null) {
                 text = resolved
                 if (
                   ref.context === 'section' &&

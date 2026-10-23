@@ -27,7 +27,7 @@ import { Inline } from './inline.js'
 import { Reader } from './reader.js'
 import { Parser } from './parser.js'
 import { AttributeList } from './attribute_list.js'
-import { basename } from './helpers.js'
+import { basename, toInt } from './helpers.js'
 import { ATTR_REF_HEAD } from './constants.js'
 import { MacroNameRx, CC_ANY } from './rx.js'
 
@@ -352,10 +352,10 @@ export const SyntaxProcessorDsl = {
           const colonIdx = name.indexOf(':')
           const idxStr = name.slice(0, colonIdx)
           name = name.slice(colonIdx + 1)
-          const idx = idxStr === '@' ? names.length : parseInt(idxStr, 10)
+          const idx = idxStr === '@' ? names.length : toInt(idxStr)
           names[idx] = name
         }
-        if (val) defaults[name] = val
+        if (val != null && val !== false) defaults[name] = val
       }
       this.option(
         'positionalAttrs',
@@ -603,23 +603,20 @@ export class Processor {
     const doc = parent.document
     const doctype = doc.doctype
     const book = doctype === 'book'
-    const level = opts.level ?? parent.level + 1
+    let level = opts.level ?? parent.level + 1
 
     let sectname,
       special = false
     const style = attrs.style
-    if (style) {
-      delete attrs.style
+    delete attrs.style
+    if (style != null) {
       if (book && style === 'abstract') {
         sectname = 'chapter'
-        // level intentionally set to 1 (overrides local const)
-        Object.defineProperty(opts, '_level', { value: 1 })
+        level = 1
       } else {
         sectname = style
         special = true
-        if (level === 0) {
-          // promote to level 1
-        }
+        if (level === 0) level = 1
       }
     } else if (book) {
       sectname = level === 0 ? 'part' : level > 1 ? 'section' : 'chapter'
@@ -630,15 +627,7 @@ export class Processor {
       sectname = 'section'
     }
 
-    // Re-derive level if style forced it (appendix/abstract style override)
-    const effectiveLevel =
-      style && book && style === 'abstract'
-        ? 1
-        : style && special && level === 0
-          ? 1
-          : level
-
-    const sect = new Section(parent, effectiveLevel)
+    const sect = new Section(parent, level)
     sect.title = title
     sect.sectname = sectname
 
@@ -647,9 +636,9 @@ export class Processor {
       if ('numbered' in opts ? opts.numbered : style === 'appendix') {
         sect.numbered = true
       } else if (!('numbered' in opts) && doc.hasAttribute('sectnums', 'all')) {
-        sect.numbered = book && effectiveLevel === 1 ? 'chapter' : true
+        sect.numbered = book && level === 1 ? 'chapter' : true
       }
-    } else if (effectiveLevel > 0) {
+    } else if (level > 0) {
       if ('numbered' in opts ? opts.numbered : doc.hasAttribute('sectnums')) {
         sect.numbered = sect.special ? !!parent.numbered : true
       }
@@ -663,7 +652,7 @@ export class Processor {
       delete attrs.id
     } else {
       sect.id = attrs.id =
-        attrs.id ||
+        attrs.id ??
         (doc.hasAttribute('sectids')
           ? Section.generateId(sect.title, doc)
           : null)
@@ -722,11 +711,11 @@ export class Processor {
    */
   createImageBlock(parent, attrs, opts = {}) {
     const target = attrs.target
-    if (!target)
+    if (target == null)
       throw new Error(
         'Unable to create an image block, target attribute is required'
       )
-    if (!attrs.alt)
+    if (attrs.alt == null)
       attrs.alt = attrs['default-alt'] = basename(target, true).replace(
         /[_-]/g,
         ' '
@@ -734,7 +723,7 @@ export class Processor {
     const title = 'title' in attrs ? attrs.title : null
     if (title !== null) delete attrs.title
     const block = this.createBlock(parent, 'image', null, attrs, opts)
-    if (title) {
+    if (title != null) {
       block.title = title
       const caption = attrs.caption
       delete attrs.caption

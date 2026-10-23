@@ -10,7 +10,12 @@ import assert from 'node:assert/strict'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { Extensions } from '../src/index.js'
+import { Extensions, Html5Converter } from '../src/index.js'
+import {
+  Processor,
+  MacroProcessorDsl,
+  InlineMacroProcessor,
+} from '../src/extensions.js'
 import { assertMessage, usingMemoryLogger } from './helpers.js'
 import {
   documentFromString,
@@ -537,6 +542,126 @@ describe('Empty attribute values', () => {
         backend: 'semantic-html5',
       })
       assert.ok(output.includes('<a href="#">Foo</a>'), output)
+    })
+  })
+
+  describe('DocBook converter', () => {
+    const convert = (input, opts = {}) =>
+      convertStringToEmbedded(input, { backend: 'docbook5', ...opts })
+    const convertStandalone = (input) =>
+      convertString(input, {
+        backend: 'docbook5',
+        attributes: { reproducible: '' },
+      })
+
+    test('should output empty id, role and reftext', async () => {
+      let output = await convert('[id=]\nfoo')
+      assert.ok(output.includes('<simpara xml:id="">foo</simpara>'))
+      output = await convert('[reftext=]\n== Sec\n\ntext')
+      assert.ok(output.includes('xreflabel=""'))
+      output = await convert('[role=]\n--\nopen\n--')
+      assert.ok(output.includes('<para role="">'))
+    })
+
+    test('should not output xreflabel on open block without id', async () => {
+      const output = await convert('[role=r,reftext=x]\n--\nopen\n--')
+      assert.ok(output.includes('<para role="r">\n<simpara>open</simpara>'))
+    })
+
+    test('should output empty table width, list mark and index see', async () => {
+      let output = await convert('[width=]\n|===\n|a\n|===')
+      assert.ok(output.includes('<?dbhtml table-width=""?>'))
+      assert.ok(output.includes('colwidth="425*"'))
+      output = await convert('[""]\n* a')
+      assert.ok(output.includes('<itemizedlist mark="">'))
+      output = await convert('x indexterm:[a,see=]')
+      assert.ok(output.includes('<see></see>'))
+      output = await convert('x indexterm:[b,see-also=]')
+      assert.ok(output.includes('<seealso></seealso>'))
+    })
+
+    test('should output empty date, copyright, email and authorinitials', async () => {
+      let output = await convertStandalone('= T\n:revdate:\n\nx')
+      assert.ok(output.includes('<date></date>'))
+      output = await convertStandalone('= T\n:copyright:\n\nx')
+      assert.ok(output.includes('<copyright>\n<holder></holder>\n</copyright>'))
+      output = await convertStandalone('= T\nA B <x>\n:email:\n\nx')
+      assert.ok(output.includes('<email></email>'))
+      output = await convertStandalone('= T\nA B\n:authorinitials:\n\nx')
+      assert.ok(output.includes('<authorinitials></authorinitials>'))
+    })
+
+    test('should output cover image with empty target and size attributes', async () => {
+      let output = await convertStandalone(
+        '= T\n:doctype: book\n:front-cover-image:\n\nx'
+      )
+      assert.ok(output.includes('<imagedata fileref=""/>'))
+      output = await convertStandalone(
+        '= T\n:doctype: book\n:front-cover-image: image:cover.png[Cover,200,300]\n\nx'
+      )
+      assert.ok(
+        output.includes(
+          '<imagedata fileref="cover.png" contentwidth="200" contentdepth="300"/>'
+        )
+      )
+    })
+  })
+
+  describe('Manpage converter', () => {
+    test('should output empty manmanual, mansource and docdate', async () => {
+      const output = await convertString(
+        '= foo(1)\n:manmanual:\n:mansource:\n:docdate:\n\n== NAME\n\nfoo - bar',
+        { backend: 'manpage', doctype: 'manpage' }
+      )
+      assert.ok(output.includes('.\\"      Date: \n'))
+      assert.ok(output.includes('.\\"    Manual: \n.\\"    Source: \n'))
+      assert.ok(output.includes('.TH "FOO" "1" "" "" ""'))
+    })
+  })
+
+  describe('Extension API', () => {
+    test('should keep empty id and style when creating a section', async () => {
+      const doc = await documentFromString('x')
+      const processor = new Processor()
+      let section = processor.createSection(doc, 'Sec', { id: '' })
+      assert.equal(section.id, '')
+      section = processor.createSection(doc, 'Sec', { style: '' })
+      assert.equal(section.sectname, '')
+      assert.equal(section.special, true)
+      assert.equal('style' in section.attributes, false)
+      section = processor.createSection(
+        doc,
+        'App',
+        { style: 'appendix' },
+        { level: 0 }
+      )
+      assert.equal(section.level, 1)
+    })
+
+    test('should keep empty target, alt and title when creating an image block', async () => {
+      const doc = await documentFromString('x')
+      const processor = new Processor()
+      let block = processor.createImageBlock(doc, { target: '' })
+      assert.equal(block.getAttribute('target'), '')
+      block = processor.createImageBlock(doc, { target: 'a_b.png', alt: '' })
+      assert.equal(block.getAttribute('alt'), '')
+      block = processor.createImageBlock(doc, { target: 'a.png', title: '' })
+      assert.equal(block.title, '')
+      assert.equal(block.caption, 'Figure 1. ')
+    })
+
+    test('should keep empty and zero default attribute values', () => {
+      const processor = new InlineMacroProcessor()
+      Object.assign(processor, MacroProcessorDsl)
+      processor.resolveAttributes({ '1:alt': '', n: 0 })
+      assert.deepEqual(processor.config.positionalAttrs, ['alt'])
+      assert.deepEqual(processor.config.defaultAttrs, { alt: '', n: 0 })
+    })
+
+    test('should set empty outfilesuffix on converter', () => {
+      const converter = new Html5Converter('html5')
+      converter.outfilesuffix('')
+      assert.equal(converter.outfilesuffix(), '')
     })
   })
 })

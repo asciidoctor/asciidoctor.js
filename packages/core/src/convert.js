@@ -274,7 +274,7 @@ export async function convert(input, options = {}) {
               warnOnFailure,
               label: 'stylesheet',
             })
-            if (stylesheetData) {
+            if (stylesheetData != null) {
               const { writeFile } = await import('node:fs/promises')
               const nodePath = await _requirePath()
               const stylesheetOutdir = nodePath.dirname(stylesheetDest)
