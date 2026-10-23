@@ -451,6 +451,23 @@ describe('stylesheet copying (linkcss + copycss)', () => {
     })
   })
 
+  test('copies an empty stylesheet', async () => {
+    await withTmpDir(async (dir) => {
+      const inputPath = join(dir, 'doc.adoc')
+      const content = '= Doc\n\nHello.'
+      await writeFile(inputPath, content, 'utf8')
+      await writeFile(join(dir, 'empty.css'), '', 'utf8')
+      const outDir = join(dir, 'out')
+      await mkdir(outDir)
+      await convert(fileInput(inputPath, content), {
+        safe: 'unsafe',
+        to_dir: outDir,
+        attributes: { linkcss: '', copycss: '', stylesheet: 'empty.css' },
+      })
+      assert.equal(await readFile(join(outDir, 'empty.css'), 'utf8'), '')
+    })
+  })
+
   test('mkdirs:true creates intermediate stylesheet subdirectory when stylesheet path has subdirs', async () => {
     await withTmpDir(async (dir) => {
       const inputPath = join(dir, 'doc.adoc')

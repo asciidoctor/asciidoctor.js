@@ -11,6 +11,8 @@
 
 import { ConverterBase } from '../converter.js'
 import { XmlSanitizeRx } from '../rx.js'
+import { AttributeList } from '../attribute_list.js'
+import { toInt } from '../helpers.js'
 
 const LF = '\n'
 
@@ -56,6 +58,7 @@ const MANPAGE_SECTION_TAGS = {
 const TABLE_PI_NAMES = ['dbhtml', 'dbfo', 'dblatex']
 
 const CopyrightRx = /^(.+?)(?: ((?:\d{4}-)?\d{4}))?$/
+const ImageMacroRx = /^image::?(\S|\S.*?\S)\[(.+)?\]$/
 
 export class DocBook5Converter extends ConverterBase {
   constructor(backend, opts = {}) {
@@ -295,7 +298,7 @@ export class DocBook5Converter extends ConverterBase {
       if (node.hasOption('linenums')) {
         numberingAttrs =
           'start' in attrs
-            ? ` linenumbering="numbered" startinglinenumber="${parseInt(attrs.start, 10)}"`
+            ? ` linenumbering="numbered" startinglinenumber="${toInt(attrs.start)}"`
             : ' linenumbering="numbered"'
       } else {
         numberingAttrs = ' linenumbering="unnumbered"'
@@ -351,7 +354,7 @@ export class DocBook5Converter extends ConverterBase {
 
   async convert_olist(node) {
     const result = []
-    const numAttribute = node.style ? ` numeration="${node.style}"` : ''
+    const numAttribute = node.style != null ? ` numeration="${node.style}"` : ''
     const startAttribute = node.hasAttribute('start')
       ? ` startingnumber="${node.getAttribute('start')}"`
       : ''
@@ -372,7 +375,7 @@ export class DocBook5Converter extends ConverterBase {
   async convert_open(node) {
     const id = node.id
     const role = node.role
-    const reftext = node.reftext
+    const reftext = id != null ? node.reftext : null
     switch (node.style) {
       case 'abstract': {
         if (
@@ -416,7 +419,7 @@ export class DocBook5Converter extends ConverterBase {
         if (node.hasTitle()) {
           const contentSpacer = node.contentModel === 'compound' ? LF : ''
           return `<formalpara${this._commonAttributes(id, role, reftext)}>\n<title>${node.title}</title>\n<para>${contentSpacer}${await node.content()}${contentSpacer}</para>\n</formalpara>`
-        } else if (id || role) {
+        } else if (id != null || role != null) {
           if (node.contentModel === 'compound') {
             return `<para${this._commonAttributes(id, role, reftext)}>\n${await node.content()}\n</para>`
           }
@@ -488,7 +491,7 @@ export class DocBook5Converter extends ConverterBase {
     if (tagName === 'table') result.push(`<title>${node.title}</title>`)
     let colWidthKey
     const width = node.hasAttribute('width') ? node.getAttribute('width') : null
-    if (width) {
+    if (width != null) {
       for (const piName of TABLE_PI_NAMES)
         result.push(`<?${piName} table-width="${width}"?>`)
       colWidthKey = 'colabswidth'
@@ -579,7 +582,7 @@ export class DocBook5Converter extends ConverterBase {
     } else {
       const checklist = node.hasOption('checklist')
       const markType = checklist ? 'none' : node.style
-      const markAttribute = markType ? ` mark="${markType}"` : ''
+      const markAttribute = markType != null ? ` mark="${markType}"` : ''
       result.push(
         `<itemizedlist${this._commonAttributes(node.id, node.role, node.reftext)}${markAttribute}>`
       )
@@ -616,11 +619,11 @@ export class DocBook5Converter extends ConverterBase {
   async convert_inline_anchor(node) {
     switch (node.type) {
       case 'ref':
-        return `<anchor${this._commonAttributes(node.id, null, node.reftext || `[${node.id}]`)}/>`
+        return `<anchor${this._commonAttributes(node.id, null, node.reftext ?? `[${node.id}]`)}/>`
       case 'xref': {
         const path = node.attributes.path
-        if (path) {
-          return `<link xl:href="${node.target}">${node.text || path}</link>`
+        if (path != null) {
+          return `<link xl:href="${node.target}">${node.text ?? path}</link>`
         }
         let linkend = node.attributes.refid
         if (!linkend) {
@@ -629,14 +632,14 @@ export class DocBook5Converter extends ConverterBase {
             rootDoc.id ??
             (this._rootDocId ??= this._generateDocumentId(rootDoc))
         }
-        return node.text
+        return node.text != null
           ? `<link linkend="${linkend}">${node.text}</link>`
           : `<xref linkend="${linkend}"/>`
       }
       case 'link':
         return `<link xl:href="${node.target}">${node.text}</link>`
       case 'bibref': {
-        const text = `[${node.reftext || node.id}]`
+        const text = `[${node.reftext ?? node.id}]`
         return `<anchor${this._commonAttributes(node.id, null, text)}/>${text}`
       }
       default:
@@ -680,11 +683,11 @@ export class DocBook5Converter extends ConverterBase {
   async convert_inline_indexterm(node) {
     let rel = ''
     const see = node.getAttribute('see')
-    if (see) {
+    if (see != null) {
       rel = `\n<see>${see}</see>`
     } else {
       const seeAlsoList = node.getAttribute('see-also')
-      if (seeAlsoList) {
+      if (seeAlsoList != null) {
         rel = seeAlsoList.map((s) => `\n<seealso>${s}</seealso>`).join('')
       }
     }
@@ -715,7 +718,7 @@ export class DocBook5Converter extends ConverterBase {
     const submenus = node.getAttribute('submenus')
     if (!submenus || submenus.length === 0) {
       const menuitem = node.getAttribute('menuitem')
-      if (menuitem) {
+      if (menuitem != null) {
         return `<menuchoice><guimenu>${menu}</guimenu> <guimenuitem>${menuitem}</guimenuitem></menuchoice>`
       }
       return `<guimenu>${menu}</guimenu>`
@@ -735,7 +738,7 @@ export class DocBook5Converter extends ConverterBase {
     const [open, close, supportsPhrase] = QUOTE_TAGS[type] ?? QUOTE_TAGS_DEFAULT
     const text = node.text
     let quotedText
-    if (node.role) {
+    if (node.role != null) {
       if (supportsPhrase) {
         quotedText = `${open}<phrase role="${node.role}">${text}</phrase>${close}`
       } else {
@@ -745,7 +748,7 @@ export class DocBook5Converter extends ConverterBase {
     } else {
       quotedText = `${open}${text}${close}`
     }
-    return node.id
+    return node.id != null
       ? `<anchor${this._commonAttributes(node.id)}/>${quotedText}`
       : quotedText
   }
@@ -758,12 +761,12 @@ export class DocBook5Converter extends ConverterBase {
    */
   _commonAttributes(id, role = null, reftext = null) {
     let attrs = ''
-    if (id) {
-      attrs = ` xml:id="${id}"${role ? ` role="${role}"` : ''}`
-    } else if (role) {
+    if (id != null) {
+      attrs = ` xml:id="${id}"${role != null ? ` role="${role}"` : ''}`
+    } else if (role != null) {
       attrs = ` role="${role}"`
     }
-    if (reftext) {
+    if (reftext != null) {
       let sanitized = reftext
       if (sanitized.includes('<')) {
         sanitized = sanitized.replace(XmlSanitizeRx, '')
@@ -799,18 +802,18 @@ export class DocBook5Converter extends ConverterBase {
    */
   _authorTag(doc, author) {
     const result = ['<author>', '<personname>']
-    if (author.firstname)
+    if (author.firstname != null)
       result.push(
         `<firstname>${doc.subReplacements(author.firstname)}</firstname>`
       )
-    if (author.middlename)
+    if (author.middlename != null)
       result.push(
         `<othername>${doc.subReplacements(author.middlename)}</othername>`
       )
-    if (author.lastname)
+    if (author.lastname != null)
       result.push(`<surname>${doc.subReplacements(author.lastname)}</surname>`)
     result.push('</personname>')
-    if (author.email) result.push(`<email>${author.email}</email>`)
+    if (author.email != null) result.push(`<email>${author.email}</email>`)
     result.push('</author>')
     return result.join(LF)
   }
@@ -836,15 +839,13 @@ export class DocBook5Converter extends ConverterBase {
       : doc.hasAttribute('reproducible')
         ? null
         : doc.getAttribute('docdate')
-    if (date) result.push(`<date>${date}</date>`)
+    if (date != null) result.push(`<date>${date}</date>`)
     if (doc.hasAttribute('copyright')) {
       const m = CopyrightRx.exec(doc.getAttribute('copyright'))
-      if (m) {
-        result.push('<copyright>')
-        result.push(`<holder>${m[1]}</holder>`)
-        if (m[2]) result.push(`<year>${m[2]}</year>`)
-        result.push('</copyright>')
-      }
+      result.push('<copyright>')
+      result.push(`<holder>${m?.[1] ?? ''}</holder>`)
+      if (m?.[2] != null) result.push(`<year>${m[2]}</year>`)
+      result.push('</copyright>')
     }
     if (doc.hasHeader()) {
       const authors = doc.authors()
@@ -857,7 +858,7 @@ export class DocBook5Converter extends ConverterBase {
         } else {
           const author = authors[0]
           result.push(this._authorTag(doc, author))
-          if (author.initials)
+          if (author.initials != null)
             result.push(`<authorinitials>${author.initials}</authorinitials>`)
         }
       }
@@ -999,15 +1000,17 @@ export class DocBook5Converter extends ConverterBase {
    */
   async _coverTag(doc, face, usePlaceholder = false) {
     const coverImage = doc.getAttribute(`${face}-cover-image`)
-    if (coverImage) {
+    if (coverImage != null) {
       let fileref = coverImage
-      const sizeAttrs = ''
-      // Check if it's an image macro (contains ':')
-      if (coverImage.includes(':')) {
-        const m = /^image::?(\S|\S.*?\S)\[(.*?)?\]$/.exec(coverImage)
-        if (m) {
-          fileref = await doc.imageUri(m[1])
-          // size attrs parsing omitted for simplicity
+      let sizeAttrs = ''
+      const m = coverImage.includes(':') ? ImageMacroRx.exec(coverImage) : null
+      if (m) {
+        fileref = await doc.imageUri(m[1])
+        // NOTE scalefit="1" is the default for a cover image
+        if (m[2] != null) {
+          sizeAttrs = this._imageSizeAttributes(
+            await new AttributeList(m[2]).parse(['alt', 'width', 'height'])
+          )
         }
       }
       return `<cover role="${face}">\n<mediaobject>\n<imageobject>\n<imagedata fileref="${fileref}"${sizeAttrs}/>\n</imageobject>\n</mediaobject>\n</cover>`

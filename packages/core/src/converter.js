@@ -38,7 +38,7 @@ export function applyBackendTraits(instance) {
   }
 
   defineTraitAccessor('basebackend', function (value = null) {
-    if (value) {
+    if (value != null) {
       const traits = (this._backendTraits ??= {})
       traits.basebackend = value
       // Derive filetype/outfilesuffix/htmlsyntax from the new basebackend when not already set
@@ -53,15 +53,15 @@ export function applyBackendTraits(instance) {
     return this._getBackendTraits().basebackend
   })
   defineTraitAccessor('filetype', function (value = null) {
-    if (value) return (this._getBackendTraits().filetype = value)
+    if (value != null) return (this._getBackendTraits().filetype = value)
     return this._getBackendTraits().filetype
   })
   defineTraitAccessor('htmlsyntax', function (value = null) {
-    if (value) return (this._getBackendTraits().htmlsyntax = value)
+    if (value != null) return (this._getBackendTraits().htmlsyntax = value)
     return this._getBackendTraits().htmlsyntax
   })
   defineTraitAccessor('outfilesuffix', function (value = null) {
-    if (value) return (this._getBackendTraits().outfilesuffix = value)
+    if (value != null) return (this._getBackendTraits().outfilesuffix = value)
     return this._getBackendTraits().outfilesuffix
   })
   instance.supportsTemplates = function (value = true) {
