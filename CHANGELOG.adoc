@@ -13,6 +13,7 @@ Bug Fixes::
 * Add `referrerpolicy="strict-origin-when-cross-origin"` to the YouTube `<iframe>` of the video macro, in the `html5` and `semantic-html5` backends, so YouTube receives the referrer it now requires to play embedded videos (https://github.com/asciidoctor/asciidoctor/issues/4711[asciidoctor#4711])
 * Return an image data URI as-is from `AbstractNode#generateDataUriFromUri()` instead of fetching it to build a new data URI, and add the `isDataUri()` helper (https://github.com/asciidoctor/asciidoctor/issues/4887[asciidoctor#4887])
 * Don't apply any substitutions to a block when the `subs` attribute is empty (e.g., `[subs=]`) instead of applying its default substitutions, and don't warn about an invalid substitution type when the `subs` attribute only contains spaces or ends with a comma (#1899)
+* Return a `Cursor` instead of a plain object from the `getSourceLocation()` method of a table cell when the `sourcemap` option is enabled (https://github.com/asciidoctor/asciidoctor.js/issues/1900[#1900])
 
 Improvements::
 

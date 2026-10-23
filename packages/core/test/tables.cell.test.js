@@ -2,6 +2,7 @@ import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { documentFromString } from './harness.js'
+import { Cursor } from '../src/reader.js'
 
 // Tests for Table, Column and Cell JS-style accessor API (table.js)
 
@@ -83,6 +84,17 @@ describe('Table', () => {
       const doc = await documentFromString('|===\n|cell\n|===')
       const cell = doc.blocks[0].rows.body[0][0]
       assert.equal(cell.getLineNumber(), null)
+    })
+
+    test('getSourceLocation() returns a Cursor when sourcemap is enabled', async () => {
+      const doc = await documentFromString('|===\n|cell\n|===', {
+        sourcemap: true,
+      })
+      const cell = doc.blocks[0].rows.body[0][0]
+      const location = cell.getSourceLocation()
+      assert.ok(location instanceof Cursor)
+      assert.equal(location.getLineNumber(), 2)
+      assert.equal(location.getLineInfo(), '<stdin>: line 2')
     })
 
     test('lines() returns the raw source text as an array of lines', async () => {
