@@ -124,12 +124,12 @@ export class SyntaxHighlighterBase {
       const transform = opts.transform
       if (transform) {
         const pre = { class: classAttrVal }
-        const code = lang ? { 'data-lang': lang } : {}
+        const code = lang != null ? { 'data-lang': lang } : {}
         transform(pre, code)
         // NOTE keep data-lang as the last attribute on <code> to match Ruby 1.5.x behaviour
         const dataLang = code['data-lang']
         delete code['data-lang']
-        if (dataLang) code['data-lang'] = dataLang
+        if (dataLang != null) code['data-lang'] = dataLang
         const preAttrs = Object.entries(pre)
           .map(([k, v]) => ` ${k}="${v}"`)
           .join('')
@@ -138,7 +138,7 @@ export class SyntaxHighlighterBase {
           .join('')
         return `<pre${preAttrs}><code${codeAttrs}>${content}</code></pre>`
       }
-      return `<pre class="${classAttrVal}"><code${lang ? ` data-lang="${lang}"` : ''}>${content}</code></pre>`
+      return `<pre class="${classAttrVal}"><code${lang != null ? ` data-lang="${lang}"` : ''}>${content}</code></pre>`
     })
   }
 

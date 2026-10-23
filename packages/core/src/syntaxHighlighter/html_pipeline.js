@@ -26,7 +26,7 @@ export class HtmlPipelineAdapter extends SyntaxHighlighterBase {
    * @returns {Promise<string>} the wrapped source string
    */
   async format(node, lang, opts) {
-    return `<pre${lang ? ` lang="${lang}"` : ''}><code>${await node.content()}</code></pre>`
+    return `<pre${lang != null ? ` lang="${lang}"` : ''}><code>${await node.content()}</code></pre>`
   }
 }
 
