@@ -68,6 +68,14 @@ function fsbasename(p) {
   return p ? p.slice(idx + 1) : ''
 }
 
+// Split include content into lines the way Ruby's IO#each_line enumerates them:
+// a trailing newline terminates the last line rather than starting an empty one.
+function splitIncludeLines(content) {
+  const lines = content.split('\n')
+  if (lines[lines.length - 1] === '') lines.pop()
+  return lines
+}
+
 // ── adjustIndentation ─────────────────────────────────────────────────────────
 // Port of Parser.adjust_indentation! from Ruby.
 // Mutates `lines` in place to remove block indent, then optionally re-indent.
@@ -1446,7 +1454,7 @@ export class PreprocessorReader extends Reader {
       }
       if (incLinenos) {
         const { incLines, incOffset } = this.#filterLinesByLinenos(
-          uriContent.split('\n'),
+          splitIncludeLines(uriContent),
           incLinenos
         )
         if (incOffset !== null) {
@@ -1455,7 +1463,7 @@ export class PreprocessorReader extends Reader {
         }
       } else if (incTags) {
         const { incLines, incOffset } = this.#filterLinesByTags(
-          uriContent.split('\n'),
+          splitIncludeLines(uriContent),
           incPath,
           expandedTarget,
           targetType,
@@ -1472,7 +1480,7 @@ export class PreprocessorReader extends Reader {
 
     try {
       if (incLinenos) {
-        const fileLines = (await fsp.readFile(incPath, 'utf8')).split('\n')
+        const fileLines = splitIncludeLines(await fsp.readFile(incPath, 'utf8'))
         super._shift()
         const { incLines, incOffset } = this.#filterLinesByLinenos(
           fileLines,
@@ -1483,7 +1491,7 @@ export class PreprocessorReader extends Reader {
           this.pushInclude(incLines, incPath, relpath, incOffset, parsedAttrs)
         }
       } else if (incTags) {
-        const fileLines = (await fsp.readFile(incPath, 'utf8')).split('\n')
+        const fileLines = splitIncludeLines(await fsp.readFile(incPath, 'utf8'))
         super._shift()
         const { incLines, incOffset } = this.#filterLinesByTags(
           fileLines,
