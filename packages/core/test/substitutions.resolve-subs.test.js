@@ -5,6 +5,7 @@ import assert from 'node:assert/strict'
 
 import { load } from '../src/load.js'
 import { Block } from '../src/block.js'
+import { usingMemoryLogger } from './helpers.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -124,6 +125,38 @@ describe('Substitutions', () => {
         'macros',
         'post_replacements',
       ])
+    })
+    test('should not apply any subs if subs attribute is empty', async () => {
+      const doc = await load_('[subs=]\nxref:target[] *bold* &lt;')
+      const para = doc.blocks[0]
+      assert.deepEqual(para.subs, [])
+      assert.equal(await para.content(), 'xref:target[] *bold* &lt;')
+    })
+
+    test('should not apply default verbatim subs if subs attribute on listing block is empty', async () => {
+      const doc = await load_('[subs=""]\n----\n*bold* <tag>\n----')
+      const listing = doc.blocks[0]
+      assert.deepEqual(listing.subs, [])
+      assert.equal(await listing.content(), '*bold* <tag>')
+    })
+
+    test('should not warn if subs attribute only contains spaces', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const doc = await load_('[subs=" "]\n*bold*')
+        const para = doc.blocks[0]
+        assert.deepEqual(para.subs, [])
+        assert.equal(await para.content(), '*bold*')
+        assert.equal(logger.messages.length, 0)
+      })
+    })
+
+    test('should ignore trailing empty entries in subs attribute', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const doc = await load_('[subs="quotes,"]\n*bold*')
+        const para = doc.blocks[0]
+        assert.deepEqual(para.subs, ['quotes'])
+        assert.equal(logger.messages.length, 0)
+      })
     })
   })
 })

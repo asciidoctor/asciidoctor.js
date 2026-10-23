@@ -1843,8 +1843,11 @@ export const Substitutors = {
     let candidates = null
     if (subs.includes(' ')) subs = subs.split(' ').join('')
     const modifiersPresent = SubModifierSniffRx.test(subs)
+    // like Ruby's String#split, drop trailing empty fields
+    const keys = subs.split(',')
+    while (keys.length > 0 && keys[keys.length - 1] === '') keys.pop()
 
-    for (let key of subs.split(',')) {
+    for (let key of keys) {
       let modifierOperation = null
       if (modifiersPresent) {
         const first = key.charAt(0)
@@ -1967,7 +1970,7 @@ export const Substitutors = {
     }
 
     const customSubs = this.attributes.subs
-    if (customSubs) {
+    if (customSubs != null) {
       this.subs =
         this.resolveBlockSubs(customSubs, defaultSubs, this.context) || []
     } else {
