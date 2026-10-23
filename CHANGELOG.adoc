@@ -10,6 +10,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Bug Fixes::
 
+* Treat an empty attribute value as set, like Asciidoctor, in substitutions and in the document model, such as an empty `attribute-undefined` (only drops the reference instead of the whole line), the subject and body of a `mailto` link, the text of a `footnoteref` macro, index terms and `see-also`, the caption prefixes (e.g., `table-caption`, `appendix-caption`) and section signifiers (`<name>-refsig`) used in xreftext, `doctitle`, `toc-placement`, `docdate` and `localdate`, and the content of a docinfo file or docinfo processor (#1903)
+* Split the menu path, the `see-also` index term attribute and the lines to highlight like Asciidoctor, so that `menu:File[>]` is a plain menu reference, and an open range of lines to highlight ends at the last line (#1903)
+* Only derive `docyear` and `localyear` from a date in ISO format, and use `toInt` for the `start` attribute of a highlighted source block and `max-attribute-value-size` (#1903)
+* Treat an empty role and an empty expected value as set in `AbstractNode#addRole()` and `AbstractNode#hasAttribute()` (#1903)
 * Treat an empty attribute value as set, like Asciidoctor, when parsing the document, such as an empty style (`[""]`), id (`[id=]`), title (`[title=]`), language (`[,""]`), attribution, revision number or remark, `authorinitials`, `manpurpose`, and empty block attributes above the document title. Empty entries in the `lines` include attribute, and a `lines` attribute that is set but empty (which now takes precedence over `tag`), are handled like in Asciidoctor (#1903)
 * Use 0 for an empty or non-numeric value where Asciidoctor converts it to an integer, such as the `start` attribute of an ordered list (instead of `NaN`), `leveloffset` and the operands of an `ifeval` directive (#1903)
 * Parse an indented paragraph with an unknown style as a literal block, add `%` to a `scaledwidth` value that ends with digits, and skip missing attribute references in the document title regardless of the `attribute-missing` attribute (#1903)

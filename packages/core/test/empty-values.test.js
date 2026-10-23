@@ -1,8 +1,8 @@
 // Empty attribute values and non-numeric values
 //
 // In Ruby, only nil and false are falsy: an empty string (e.g., `[foo=]`) is truthy, and
-// String#to_i returns 0 for a non-numeric value. These tests make sure that the parser
-// and the reader handle these values like Asciidoctor (Ruby).
+// String#to_i returns 0 for a non-numeric value. These tests make sure that Asciidoctor.js
+// handles these values like Asciidoctor (Ruby).
 // See https://github.com/asciidoctor/asciidoctor.js/issues/1903
 
 import { test, describe } from 'node:test'
@@ -10,6 +10,7 @@ import assert from 'node:assert/strict'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { Extensions } from '../src/index.js'
 import { assertMessage, usingMemoryLogger } from './helpers.js'
 import {
   documentFromString,
@@ -234,6 +235,159 @@ describe('Empty attribute values', () => {
         )
         assert.ok(output.includes('yes'), `{x} == ${rhs}`)
       }
+    })
+  })
+
+  describe('Substitutions', () => {
+    test('should only drop attribute reference if attribute-undefined is empty', async () => {
+      const output = await convertStringToEmbedded(
+        ':attribute-undefined:\n\ntext {set:foo!} more'
+      )
+      assert.ok(output.includes('<p>text  more</p>'))
+    })
+
+    test('should add empty subject and body to mailto link', async () => {
+      let output = await convertStringToEmbedded('mailto:a@b.com[Text,""]')
+      assert.ok(output.includes('href="mailto:a@b.com?subject="'))
+      output = await convertStringToEmbedded('mailto:a@b.com[Text,Subj,""]')
+      assert.ok(output.includes('href="mailto:a@b.com?subject=Subj&amp;body="'))
+    })
+
+    test('should register footnote with empty text from footnoteref macro', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const doc = await documentFromString('A footnoteref:[x,] B')
+        await doc.convert()
+        assert.equal(doc.catalog.footnotes.length, 1)
+        assert.equal(doc.catalog.footnotes[0].id, 'x')
+        assert.equal(doc.catalog.footnotes[0].text, '')
+        assertMessage(
+          logger,
+          'WARN',
+          'found deprecated footnoteref macro: footnoteref:[x,]; use footnote macro with target instead'
+        )
+      })
+    })
+
+    test('should honor empty terms in index term macros', async () => {
+      let output = await convertStringToEmbedded('indexterm2:["",see=y]')
+      assert.ok(output.includes('<p></p>'))
+      output = await convertStringToEmbedded('x indexterm:[Tigers,"",see=x]', {
+        backend: 'docbook5',
+      })
+      assert.ok(
+        output.includes('<primary>Tigers</primary><secondary></secondary>')
+      )
+      output = await convertStringToEmbedded('x indexterm:[Tigers,see-also=]', {
+        backend: 'docbook5',
+      })
+      assert.ok(output.includes('<seealso></seealso>'))
+    })
+
+    test('should not create menu items from an empty menu path', async () => {
+      const output = await convertStringToEmbedded(
+        ':experimental:\n\nmenu:File[>]'
+      )
+      assert.ok(output.includes('<b class="menuref">File</b>'))
+    })
+
+    test('should use the number of lines as the end of an open range of lines to highlight', async () => {
+      const block = await blockFromString('----\na\nb\n----')
+      assert.deepEqual(block.resolveLinesToHighlight('a\nb', '1-'), [1, 2])
+      assert.deepEqual(block.resolveLinesToHighlight('a\nb', '1,'), [1])
+    })
+  })
+
+  describe('Captions and signifiers', () => {
+    test('should use empty caption prefix in xreftext', async () => {
+      const output = await convertStringToEmbedded(
+        ':xrefstyle: full\n\n[#t]\n.Tbl\n|===\n|a\n|===\n\n:table-caption:\n\n<<t>>'
+      )
+      assert.ok(output.includes('<a href="#t"> 1, &#8220;Tbl&#8221;</a>'))
+    })
+
+    test('should use empty appendix caption', async () => {
+      const output = await convertStringToEmbedded(
+        ':appendix-caption:\n:doctype: book\n\n[appendix]\n== App\n\ntext'
+      )
+      assert.ok(output.includes('<h2 id="_app"> A: App</h2>'))
+    })
+
+    test('should use empty section signifier in xreftext', async () => {
+      const output = await convertStringToEmbedded(
+        ':sectnums:\n:section-refsig:\n:xrefstyle: short\n\n== Sec\n\n<<_sec>>'
+      )
+      assert.ok(output.includes('<a href="#_sec"> 1</a>'))
+    })
+  })
+
+  describe('Document attributes', () => {
+    test('should set doctitle attribute to empty title', async () => {
+      const output = await convertStringToEmbedded(':title:\n\nA{doctitle}B')
+      assert.ok(output.includes('<p>AB</p>'))
+    })
+
+    test('should not position toc if toc-placement is empty', async () => {
+      const doc = await documentFromString(
+        '= Doc\n:toc:\n:toc-placement:\n:toc-position: right\n\n== S\n\nx',
+        { standalone: true }
+      )
+      assert.equal(doc.getAttribute('toc-placement'), '')
+      assert.equal(doc.getAttribute('toc-class'), null)
+    })
+
+    test('should keep empty docdate and localdate', async () => {
+      const doc = await documentFromString('x', {
+        attributes: { docdate: '', localdate: '' },
+      })
+      assert.equal(doc.getAttribute('docdate'), '')
+      assert.equal(doc.getAttribute('docyear'), null)
+      assert.equal(doc.getAttribute('localdate'), '')
+      assert.equal(doc.getAttribute('localyear'), null)
+    })
+
+    test('should only derive year from date in ISO format', async () => {
+      const doc = await documentFromString('x', {
+        attributes: { docdate: '20201231', localdate: '2020-12-31' },
+      })
+      assert.equal(doc.getAttribute('docyear'), null)
+      assert.equal(doc.getAttribute('localyear'), '2020')
+    })
+
+    test('should limit attribute values to 0 bytes if max-attribute-value-size is empty', async () => {
+      const output = await convertStringToEmbedded(':foo: bar\n\nx [{foo}]', {
+        attributes: { 'max-attribute-value-size': '' },
+      })
+      assert.ok(output.includes('<p>x []</p>'))
+    })
+
+    test('should keep empty docinfo content from docinfo processor', async () => {
+      const registry = Extensions.create()
+      registry.docinfoProcessor(function () {
+        this.process(() => '')
+      })
+      registry.docinfoProcessor(function () {
+        this.process(() => '<meta name="x">')
+      })
+      const doc = await documentFromString('x', {
+        standalone: true,
+        extension_registry: registry,
+      })
+      assert.equal(await doc.docinfo('head'), '\n<meta name="x">')
+    })
+  })
+
+  describe('Node API', () => {
+    test('should append role to empty role', async () => {
+      const block = await blockFromString('[role=]\npara')
+      block.addRole('foo')
+      assert.equal(block.role, ' foo')
+    })
+
+    test('should compare attribute value with empty expected value', async () => {
+      let block = await blockFromString('[foo=]\npara')
+      assert.equal(block.hasAttribute('foo', ''), true)
+      block = await blockFromString('[foo=x]\npara')
+      assert.equal(block.hasAttribute('foo', ''), false)
     })
   })
 })

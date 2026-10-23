@@ -44,6 +44,8 @@ import {
   basename,
   encodeUriComponent,
   isExtname,
+  rubySplit,
+  toInt,
 } from './helpers.js'
 import { Inline } from './inline.js'
 import { AttributeList } from './attribute_list.js'
@@ -339,8 +341,8 @@ export const Substitutors = {
             )
             if (
               (value !== null && value !== undefined) ||
-              (attributeUndefined ||=
-                docAttrs['attribute-undefined'] ||
+              (attributeUndefined ??=
+                docAttrs['attribute-undefined'] ??
                 Compliance.attributeUndefined) !== 'drop-line'
             ) {
               drop = true
@@ -372,9 +374,9 @@ export const Substitutors = {
         }
 
         switch (
-          (attributeMissing ||=
-            opts.attributeMissing ||
-            docAttrs['attribute-missing'] ||
+          (attributeMissing ??=
+            opts.attributeMissing ??
+            docAttrs['attribute-missing'] ??
             Compliance.attributeMissing)
         ) {
           case 'drop':
@@ -628,8 +630,8 @@ export const Substitutors = {
               if (items.includes('&gt;')) delim = '&gt;'
               else if (items.includes(',')) delim = ','
               if (delim) {
-                const parts = items.split(delim).map((item) => item.trim())
-                menuitem = parts.pop()
+                const parts = rubySplit(items, delim).map((item) => item.trim())
+                menuitem = parts.pop() ?? null
                 submenus = parts
               } else {
                 submenus = []
@@ -652,7 +654,7 @@ export const Substitutors = {
           globalRx(InlineMenuRx),
           async (match, p1) => {
             if (match.startsWith(RS)) return match.slice(1)
-            const parts = p1.split('&gt;').map((item) => item.trim())
+            const parts = rubySplit(p1, '&gt;').map((item) => item.trim())
             const menu = parts.shift()
             const menuitem = parts.pop() ?? null
             const submenus = parts
@@ -722,19 +724,19 @@ export const Substitutors = {
               if (attrlist.includes('=')) {
                 const parsed = await new AttributeList(attrlist, this).parse()
                 const primary = parsed[1]
-                if (primary) {
+                if (primary != null) {
                   const terms = [primary]
                   const secondary = parsed[2]
-                  if (secondary) {
+                  if (secondary != null) {
                     terms.push(secondary)
                     const tertiary = parsed[3]
-                    if (tertiary) terms.push(tertiary)
+                    if (tertiary != null) terms.push(tertiary)
                   }
                   attrs = { ...parsed, terms }
-                  if (attrs['see-also']) {
-                    const seeAlso = attrs['see-also']
+                  const seeAlso = attrs['see-also']
+                  if (seeAlso != null) {
                     attrs['see-also'] = seeAlso.includes(',')
-                      ? seeAlso.split(',').map((s) => s.trimStart())
+                      ? rubySplit(seeAlso, ',').map((s) => s.trimStart())
                       : [seeAlso]
                   }
                 } else {
@@ -753,16 +755,15 @@ export const Substitutors = {
               let attrs = null
               if (term.includes('=')) {
                 const parsed = await new AttributeList(term, this).parse()
-                term = parsed[1] || term
-                if (parsed[1]) {
+                if (parsed[1] != null) {
+                  term = parsed[1]
                   attrs = parsed
-                  if (attrs['see-also']) {
-                    attrs['see-also'] = attrs['see-also'].includes(',')
-                      ? attrs['see-also'].split(',').map((s) => s.trimStart())
-                      : [attrs['see-also']]
+                  const seeAlso = attrs['see-also']
+                  if (seeAlso != null) {
+                    attrs['see-also'] = seeAlso.includes(',')
+                      ? rubySplit(seeAlso, ',').map((s) => s.trimStart())
+                      : [seeAlso]
                   }
-                } else {
-                  attrs = null
                 }
               }
               return new Inline(this, 'indexterm', term, {
@@ -1006,8 +1007,10 @@ export const Substitutors = {
                 linkText = extractedText
                 attrs = extractedAttrs
                 linkOpts.id = attrs?.id
-                if (attrs?.[2]) {
-                  if (attrs[3]) {
+                // NOTE Ruby checks attrs.key? 2, but fails if the subject is
+                // skipped (e.g., [Text,,Body]), so the body is ignored in that case
+                if (attrs?.[2] != null) {
+                  if (attrs[3] != null) {
                     target = `${target}?subject=${encodeUriComponent(attrs[2])}&amp;body=${encodeUriComponent(attrs[3])}`
                   } else {
                     target = `${target}?subject=${encodeUriComponent(attrs[2])}`
@@ -1312,7 +1315,7 @@ export const Substitutors = {
           }
 
           let index
-          if (id) {
+          if (id != null) {
             const footnote = doc.catalog.footnotes.find((f) => f.id === id)
             if (footnote) {
               // Reuse the footnote's index as-is while deferred (it may itself still be a
@@ -1326,7 +1329,7 @@ export const Substitutors = {
               type = 'xref'
               target = id
               id = null
-            } else if (content) {
+            } else if (content != null) {
               content = await this.restorePassthroughs(
                 this.normalizeText(content, true, true)
               )
@@ -1343,7 +1346,7 @@ export const Substitutors = {
               content = id
               id = null
             }
-          } else if (content) {
+          } else if (content != null) {
             content = await this.restorePassthroughs(
               this.normalizeText(content, true, true)
             )
@@ -1471,8 +1474,8 @@ export const Substitutors = {
     let linenumsMode = null
     let startLineNumber = null
     if (this.hasOption('linenums')) {
-      linenumsMode = docAttrs[`${syntaxHlName}-linenums-mode`] || 'table'
-      startLineNumber = parseInt(this.getAttribute('start', 1), 10)
+      linenumsMode = docAttrs[`${syntaxHlName}-linenums-mode`] ?? 'table'
+      startLineNumber = toInt(this.getAttribute('start', 1))
       if (startLineNumber < 1) startLineNumber = 1
     }
 
@@ -1491,7 +1494,7 @@ export const Substitutors = {
       this.getAttribute('language'),
       {
         callouts: calloutMarks,
-        cssMode: docAttrs[`${syntaxHlName}-css`] || 'class',
+        cssMode: docAttrs[`${syntaxHlName}-css`] ?? 'class',
         highlightLines,
         numberLines: linenumsMode,
         startLineNumber,
@@ -1527,7 +1530,9 @@ export const Substitutors = {
   resolveLinesToHighlight(source, spec, start = null) {
     let lines = []
     if (spec.includes(' ')) spec = spec.split(' ').join('')
-    const entries = spec.includes(',') ? spec.split(',') : spec.split(';')
+    const entries = spec.includes(',')
+      ? rubySplit(spec, ',')
+      : rubySplit(spec, ';')
 
     for (let entry of entries) {
       let negate = false
@@ -1542,10 +1547,11 @@ export const Substitutors = {
           : null
       if (delim) {
         const [fromStr, , toStr] = partition(entry, delim)
-        const from = parseInt(fromStr, 10)
+        const from = toInt(fromStr)
         let to
-        if (!toStr || (to = parseInt(toStr, 10)) < 0) {
-          to = source.split(LF).length + 1
+        if (!toStr || (to = toInt(toStr)) < 0) {
+          // the number of lines, like (source.count LF) + 1 in Ruby
+          to = source.split(LF).length
         }
         const range = Array.from({ length: to - from + 1 }, (_, i) => from + i)
         if (negate) {
@@ -1554,10 +1560,10 @@ export const Substitutors = {
           lines = arrayUnion(lines, range)
         }
       } else if (negate) {
-        const val = parseInt(entry, 10)
+        const val = toInt(entry)
         lines = lines.filter((l) => l !== val)
       } else {
-        const line = parseInt(entry, 10)
+        const line = toInt(entry)
         if (!lines.includes(line)) lines.push(line)
       }
     }

@@ -381,7 +381,7 @@ export class AbstractBlock extends AbstractNode {
   async xreftext(xrefstyle = null) {
     const val = this.reftext
     if (val && val.length > 0) return val
-    if (xrefstyle && this.#title && this.#caption) {
+    if (xrefstyle && this.#title != null && this.#caption) {
       if (xrefstyle === 'full') {
         const quoteTemplate = this.document.compatMode ? "``%s''" : '"`%s`"'
         const quotedTitle = this.subPlaceholder(
@@ -392,7 +392,8 @@ export class AbstractBlock extends AbstractNode {
           const captionAttrName = CAPTION_ATTRIBUTE_NAMES[this.context]
           if (captionAttrName) {
             const prefix = this.document.attributes[captionAttrName]
-            if (prefix) return `${prefix} ${this.numeral}, ${quotedTitle}`
+            if (prefix != null)
+              return `${prefix} ${this.numeral}, ${quotedTitle}`
           }
         }
         const cap = this.#caption
@@ -402,7 +403,7 @@ export class AbstractBlock extends AbstractNode {
           const captionAttrName = CAPTION_ATTRIBUTE_NAMES[this.context]
           if (captionAttrName) {
             const prefix = this.document.attributes[captionAttrName]
-            if (prefix) return `${prefix} ${this.numeral}`
+            if (prefix != null) return `${prefix} ${this.numeral}`
           }
         }
         const cap = this.#caption
@@ -455,9 +456,10 @@ export class AbstractBlock extends AbstractNode {
       if (sectname === 'appendix') {
         section.numeral = this.document.counter('appendix-number', 'A')
         const captionAttr = this.document.attributes['appendix-caption']
-        section.caption = captionAttr
-          ? `${captionAttr} ${section.numeral}: `
-          : `${section.numeral}. `
+        section.caption =
+          captionAttr != null
+            ? `${captionAttr} ${section.numeral}: `
+            : `${section.numeral}. `
       } else if (sectname === 'chapter' || like === 'chapter') {
         section.numeral = String(this.document.counter('chapter-number', 1))
       } else {

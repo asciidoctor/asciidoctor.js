@@ -198,7 +198,7 @@ export class AbstractNode {
    */
   hasAttribute(name, expectedValue = null, fallbackName = null) {
     const key = String(name)
-    if (expectedValue) {
+    if (expectedValue != null && expectedValue !== false) {
       const val =
         this.attributes[key] ??
         (fallbackName && this._parent
@@ -337,7 +337,7 @@ export class AbstractNode {
    */
   addRole(name) {
     const val = this.attributes.role
-    if (val) {
+    if (val != null) {
       if (` ${val} `.includes(` ${name} `)) return false
       this.attributes.role = `${val} ${name}`
       return true
