@@ -141,6 +141,32 @@ export function intToRoman(val: number): string;
  */
 export function romanToInt(val: string): number;
 /**
+ * Split a string like Ruby's String#split with a String separator, which drops
+ * trailing empty fields (e.g. `''.split(',')` is `[]` and `'a,'.split(',')` is
+ * `['a']`), unlike JavaScript's String#split.
+ *
+ * @param {string} str - the string to split
+ * @param {string} separator - the separator
+ * @returns {string[]} the fields, without trailing empty fields
+ */
+export function rubySplit(str: string, separator: string): string[];
+/**
+ * Convert a value to an integer like Ruby's String#to_i, which returns 0
+ * (instead of NaN) when the value doesn't start with a number.
+ *
+ * @param {string|number} val - the value to convert
+ * @returns {number} the integer value, or 0 if the value isn't numeric
+ */
+export function toInt(val: string | number): number;
+/**
+ * Convert a value to a float like Ruby's String#to_f, which returns 0.0
+ * (instead of NaN) when the value doesn't start with a number.
+ *
+ * @param {string|number} val - the value to convert
+ * @returns {number} the float value, or 0 if the value isn't numeric
+ */
+export function toFloat(val: string | number): number;
+/**
  * Get the next value in a sequence.
  *
  * Handles integer sequences (numeric increment) and alphabetic sequences

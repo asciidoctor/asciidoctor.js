@@ -5,7 +5,7 @@
 //   - Ruby Struct BlockMatchData → plain object { context, masq, tip, terminator }.
 //   - Ruby's regex captures ($1, $2, …) → JS match array m[1], m[2], …
 //   - Ruby .nil_or_empty? → !val (or val == null || val === '')
-//   - Ruby .to_i → parseInt(val, 10) (returns 0 for nil/non-numeric)
+//   - Ruby .to_i → toInt(val) from helpers.js (returns 0 for nil/non-numeric, unlike parseInt)
 //   - ListContinuationMarker module → Symbol used for identity checks.
 //   - Logging mixin applied via applyLogging().
 
@@ -19,7 +19,7 @@ import { AttributeList } from './attribute_list.js'
 import { AttributeEntry } from './attribute_entry.js'
 import { Reader } from './reader.js'
 import { Compliance } from './compliance.js'
-import { basename, intToRoman, romanToInt } from './helpers.js'
+import { basename, intToRoman, romanToInt, toInt } from './helpers.js'
 import {
   ADMONITION_STYLES,
   ADMONITION_STYLE_HEADS,
@@ -83,6 +83,7 @@ import {
   LeadingInlineAnchorRx,
   XmlSanitizeRx,
   AttributeEntryPassMacroRx,
+  TrailingDigitsRx,
 } from './rx.js'
 
 // ── List continuation identity marker ────────────────────────────────────────
@@ -202,7 +203,7 @@ export class Parser {
         let sanitized = document.subSpecialchars(finalSectTitle)
         if (sanitized.includes(ATTR_REF_HEAD)) {
           sanitized = document.subAttributes(sanitized, {
-            attribute_missing: 'skip',
+            attributeMissing: 'skip',
           })
         }
         docAttrs.doctitle = doctitleAttrVal = sanitized
@@ -216,19 +217,19 @@ export class Parser {
         docAttrs['compat-mode'] = ''
       }
       if (
-        blockAttrs.separator &&
+        blockAttrs.separator != null &&
         !document.isAttributeLocked('title-separator')
       ) {
         docAttrs['title-separator'] = blockAttrs.separator
       }
       let docId = blockAttrs.id
-      if (docId) {
+      if (docId != null) {
         document.id = docId
       } else {
         docId = document.id
       }
-      if (blockAttrs.role) docAttrs.role = blockAttrs.role
-      if (blockAttrs.reftext) docAttrs.reftext = blockAttrs.reftext
+      if (blockAttrs.role != null) docAttrs.role = blockAttrs.role
+      if (blockAttrs.reftext != null) docAttrs.reftext = blockAttrs.reftext
       blockAttrs = {}
 
       const modifiedAttrs = document._attributesModified
@@ -246,12 +247,12 @@ export class Parser {
         modifiedAttrs.add('doctitle')
       }
 
-      if (docId) document.register('refs', [docId, document])
-    } else if (docAttrs.author) {
+      if (docId != null) document.register('refs', [docId, document])
+    } else if (docAttrs.author != null) {
       const authorMeta = Parser.processAuthors(docAttrs.author, true, false)
-      if (docAttrs.authorinitials) delete authorMeta.authorinitials
+      if (docAttrs.authorinitials != null) delete authorMeta.authorinitials
       Object.assign(docAttrs, authorMeta)
-    } else if (docAttrs.authors) {
+    } else if (docAttrs.authors != null) {
       const authorMeta = Parser.processAuthors(docAttrs.authors, true)
       Object.assign(docAttrs, authorMeta)
     } else {
@@ -295,12 +296,12 @@ export class Parser {
           source_location: reader.cursorAtLine(1),
         })
       )
-      docAttrs.mantitle = doctitle || docAttrs.docname || 'command'
+      docAttrs.mantitle = docAttrs.doctitle ?? docAttrs.docname ?? 'command'
       manvolnum = docAttrs.manvolnum = '1'
     }
 
     const manname = docAttrs.manname
-    if (manname && docAttrs.manpurpose) {
+    if (manname != null && docAttrs.manpurpose != null) {
       docAttrs['manname-title'] ??= 'Name'
       docAttrs.mannames = [manname]
       if (document.backend === 'manpage') {
@@ -367,7 +368,7 @@ export class Parser {
                 source_location: reader.cursor,
               })
             )
-            const mn = docAttrs.docname || 'command'
+            const mn = docAttrs.docname ?? 'command'
             docAttrs.manname = mn
             docAttrs.mannames = [mn]
             if (document.backend === 'manpage') {
@@ -392,7 +393,7 @@ export class Parser {
             source_location: reader.cursor,
           })
         )
-        const mn = docAttrs.docname || 'command'
+        const mn = docAttrs.docname ?? 'command'
         docAttrs.manname = mn
         docAttrs.mannames = [mn]
         if (document.backend === 'manpage') {
@@ -482,7 +483,7 @@ export class Parser {
       ) {
         const leveloffset = document.getAttribute('leveloffset')
         if (leveloffset) {
-          nextLevel += parseInt(leveloffset, 10)
+          nextLevel += toInt(leveloffset)
           if (nextLevel < 0) nextLevel = 0
         }
 
@@ -689,7 +690,7 @@ export class Parser {
     const thisLine = await reader.readLine()
     if (thisLine === undefined) return null
     const docAttrs = document.attributes
-    const style = attributes[1] ?? null
+    let style = attributes[1] ?? null
     let block = null,
       blockContext = null,
       cloakedContext = null,
@@ -699,7 +700,7 @@ export class Parser {
     if (delimitedBlock) {
       blockContext = cloakedContext = delimitedBlock.context
       terminator = delimitedBlock.terminator
-      if (style) {
+      if (style != null) {
         if (style !== blockContext) {
           if (delimitedBlock.masq.has(style)) {
             blockContext = style
@@ -834,13 +835,15 @@ export class Parser {
                       /[_-]/g,
                       ' '
                     ))
-                  let scaledwidth = attributes.scaledwidth
+                  const scaledwidth = attributes.scaledwidth
+                  delete attributes.scaledwidth
                   if (scaledwidth) {
-                    delete attributes.scaledwidth
-                    if (!scaledwidth.match(/\D/)) scaledwidth += '%'
-                    attributes.scaledwidth = scaledwidth
+                    // NOTE assume % units if not specified
+                    attributes.scaledwidth = TrailingDigitsRx.test(scaledwidth)
+                      ? `${scaledwidth}%`
+                      : scaledwidth
                   }
-                  if (attributes.title) {
+                  if (attributes.title != null) {
                     block.title = attributes.title
                     delete attributes.title
                     block.assignCaption(attributes.caption, 'figure')
@@ -943,18 +946,13 @@ export class Parser {
         if (UnorderedListRx.test(thisLine)) {
           reader.unshiftLine(thisLine)
           if (
-            !style &&
+            style == null &&
             parent instanceof Section &&
             parent.sectname === 'bibliography'
           ) {
-            attributes.style = 'bibliography'
+            attributes.style = style = 'bibliography'
           }
-          block = await Parser.parseList(
-            reader,
-            'ulist',
-            parent,
-            style ?? attributes.style ?? null
-          )
+          block = await Parser.parseList(reader, 'ulist', parent, style)
           break
         }
 
@@ -995,7 +993,7 @@ export class Parser {
           delete attributes.title
           // Force title resolution while in scope to capture current attribute values (Ruby: parser.rb ~line 939)
           if (blockTitle.includes(ATTR_REF_HEAD)) await block.precomputeTitle()
-          if (floatId) {
+          if (floatId != null) {
             block.id = floatId
           } else if ('sectids' in docAttrs) {
             await block.precomputeTitle()
@@ -1005,7 +1003,7 @@ export class Parser {
           break
         }
 
-        if (style && style !== 'normal') {
+        if (style != null && style !== 'normal') {
           if (PARAGRAPH_STYLES.has(style)) {
             blockContext = style
             cloakedContext = 'paragraph'
@@ -1027,14 +1025,15 @@ export class Parser {
             reader.unshiftLine(thisLine)
             break
           }
-          // unknown style; fall through
-          if (style && Parser.logger.isDebug())
+          // unknown style; continue to process paragraph
+          if (Parser.logger.isDebug())
             Parser.logger.debug(
               Parser.messageWithContext(
                 `unknown style for paragraph: ${style}`,
                 { source_location: reader.cursor }
               )
             )
+          style = null
         }
 
         reader.unshiftLine(thisLine)
@@ -1131,13 +1130,10 @@ export class Parser {
                 'macros',
                 'post_replacements',
               ])
-              const commaIdx = subsApplied.indexOf(', ')
-              const attribution =
-                commaIdx !== -1 ? subsApplied.slice(0, commaIdx) : subsApplied
-              const citetitle =
-                commaIdx !== -1 ? subsApplied.slice(commaIdx + 2) : null
-              if (attribution) attributes.attribution = attribution
-              if (citetitle) attributes.citetitle = citetitle
+              const [attribution, citetitle] =
+                Parser._splitCreditLine(subsApplied)
+              if (attribution != null) attributes.attribution = attribution
+              if (citetitle != null) attributes.citetitle = citetitle
             }
           } else if (
             ch0 === '"' &&
@@ -1164,13 +1160,10 @@ export class Parser {
               'macros',
               'post_replacements',
             ])
-            const commaIdx = subsApplied.indexOf(', ')
-            const attribution =
-              commaIdx !== -1 ? subsApplied.slice(0, commaIdx) : subsApplied
-            const citetitle =
-              commaIdx !== -1 ? subsApplied.slice(commaIdx + 2) : null
-            if (attribution) attributes.attribution = attribution
-            if (citetitle) attributes.citetitle = citetitle
+            const [attribution, citetitle] =
+              Parser._splitCreditLine(subsApplied)
+            if (attribution != null) attributes.attribution = attribution
+            if (citetitle != null) attributes.citetitle = citetitle
           } else {
             if (indented && style === 'normal') Parser.adjustIndentation(lines)
             block = new Block(parent, 'paragraph', {
@@ -1190,10 +1183,10 @@ export class Parser {
         case 'listing':
         case 'source': {
           const lang =
-            blockContext !== 'source' && !attributes[1]
+            blockContext !== 'source' && attributes[1] == null
               ? (attributes[2] ?? docAttrs['source-language'])
               : null
-          if (lang) {
+          if (lang != null) {
             attributes.style = 'source'
             attributes.language = lang
             AttributeList.rekey(attributes, [null, null, 'linenums'])
@@ -1442,7 +1435,7 @@ export class Parser {
     if (!block) return null
 
     if (document.sourcemap) block.sourceLocation = reader.cursorAtMark()
-    if (attributes.title) {
+    if (attributes.title != null) {
       const blockTitle = attributes.title
       block.title = blockTitle
       delete attributes.title
@@ -1456,7 +1449,7 @@ export class Parser {
     block.style = attributes.style ?? null
 
     const blockId = block.id ?? (block.id = attributes.id ?? null)
-    if (blockId) {
+    if (blockId != null) {
       if (!document.register('refs', [blockId, block])) {
         Parser.logger.warn(
           Parser.messageWithContext(
@@ -1626,7 +1619,7 @@ export class Parser {
    * @internal
    */
   static async parseList(reader, listType, parent, style = null, opts = {}) {
-    const start = opts.start != null ? parseInt(opts.start, 10) : null
+    const start = opts.start != null ? toInt(opts.start) : null
     const listAttrs = start != null && start !== 1 ? { start } : null
     const listBlock = new List(
       parent,
@@ -1952,7 +1945,7 @@ export class Parser {
           reader
         )
         listItem.marker = resolvedMarker
-        if (isFirst && !style) {
+        if (isFirst && style == null) {
           listBlock.style =
             implicitStyle ??
             ORDERED_LIST_STYLES[resolvedMarker.length - 1] ??
@@ -2282,7 +2275,7 @@ export class Parser {
     let sectName,
       sectSpecial = false,
       sectNumbered = false
-    if (sectStyle) {
+    if (sectStyle != null) {
       if (book && sectStyle === 'abstract') {
         sectName = 'chapter'
         sectLevel = 1
@@ -2392,7 +2385,7 @@ export class Parser {
     const sectLevel = await Parser.isNextLineSection(reader, attributes)
     if (sectLevel == null || sectLevel === false) return false
     if (leveloffset) {
-      return sectLevel + parseInt(leveloffset, 10) === 0
+      return sectLevel + toInt(leveloffset) === 0
     }
     return sectLevel === 0
   }
@@ -2475,7 +2468,7 @@ export class Parser {
       sectLevel = m[1].length - 1
       sectTitle = m[2]
       atx = true
-      if (!sectId && sectTitle.endsWith(']]')) {
+      if (sectId == null && sectTitle.endsWith(']]')) {
         const am = sectTitle.match(InlineSectionAnchorRx)
         if (am && !am[1]) {
           // not escaped
@@ -2499,7 +2492,7 @@ export class Parser {
           const m = line1.match(SetextSectionTitleRx)
           sectTitle = m ? m[1] : line1
           atx = false
-          if (!sectId && sectTitle.endsWith(']]')) {
+          if (sectId == null && sectTitle.endsWith(']]')) {
             const am = sectTitle.match(InlineSectionAnchorRx)
             if (am && !am[1]) {
               sectTitle = sectTitle.slice(0, sectTitle.length - am[0].length)
@@ -2518,7 +2511,7 @@ export class Parser {
 
     const leveloffset = document.getAttribute('leveloffset')
     if (leveloffset) {
-      sectLevel += parseInt(leveloffset, 10)
+      sectLevel += toInt(leveloffset)
       if (sectLevel < 0) sectLevel = 0
     }
 
@@ -2572,18 +2565,18 @@ export class Parser {
         const rm = revLine.match(RevisionInfoLineRx)
         if (rm) {
           const revMetadata = {}
-          if (rm[1]) revMetadata.revnumber = rm[1].trimEnd()
+          if (rm[1] != null) revMetadata.revnumber = rm[1].trimEnd()
           if (rm[2]) {
             const component = rm[2].trim()
             if (component !== '') {
-              if (!rm[1] && component.startsWith('v')) {
+              if (rm[1] == null && component.startsWith('v')) {
                 revMetadata.revnumber = component.slice(1)
               } else {
                 revMetadata.revdate = component
               }
             }
           }
-          if (rm[3]) revMetadata.revremark = rm[3].trimEnd()
+          if (rm[3] != null) revMetadata.revremark = rm[3].trimEnd()
           if (document && docAttrs && Object.keys(revMetadata).length > 0) {
             for (const [key, val] of Object.entries(revMetadata)) {
               if (!(key in docAttrs))
@@ -2842,7 +2835,7 @@ export class Parser {
             sub_result: true,
             into: attributes,
           })
-          if (parsed[1]) {
+          if (parsed[1] != null) {
             attributes[1] =
               Parser.parseStyleAttribute(attributes, reader) ?? currentStyle
           }
@@ -2985,12 +2978,11 @@ export class Parser {
       if (value != null) {
         if (value !== '') {
           if (name === 'leveloffset') {
-            const current =
-              parseInt(doc.getAttribute('leveloffset', 0), 10) || 0
+            const current = toInt(doc.getAttribute('leveloffset', 0))
             if (value.startsWith('+'))
-              value = String(current + parseInt(value.slice(1), 10))
+              value = String(current + toInt(value.slice(1)))
             else if (value.startsWith('-'))
-              value = String(current - parseInt(value.slice(1), 10))
+              value = String(current - toInt(value.slice(1)))
           }
         }
         // value === '' means set to empty string (Ruby: '' is truthy → setAttribute path)
@@ -3559,6 +3551,22 @@ export class Parser {
       return parsed.style ?? null
     }
     return (attributes.style = rawStyle)
+  }
+
+  /**
+   * Split a credit line into its attribution and citetitle, like Ruby's
+   * `credit_line.split ', ', 2` (an empty credit line yields no attribution).
+   *
+   * @param {string} creditLine
+   * @returns {Array<string|null>} the attribution and the citetitle
+   * @internal
+   */
+  static _splitCreditLine(creditLine) {
+    if (creditLine === '') return [null, null]
+    const commaIdx = creditLine.indexOf(', ')
+    return commaIdx === -1
+      ? [creditLine, null]
+      : [creditLine.slice(0, commaIdx), creditLine.slice(commaIdx + 2)]
   }
 
   static _yieldBufferedAttribute(attrs, name, value, reader) {

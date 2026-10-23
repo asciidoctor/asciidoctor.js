@@ -214,6 +214,9 @@ export class Document extends AbstractBlock {
    * node, etc. -- where resolving could fix the wrong number (see
    * {@link _resolveFootnotePlaceholdersIn} and {@link _previewFootnotePlaceholdersIn}). */
   _converting = false
+  /** @internal Blocks with an explicit empty id ([id=]) whose title substitution is
+   * deferred from parse to convert; see {@link _resolveAllTexts}. */
+  _deferredTitleBlocks = []
   /** @internal */
   _headerAttributes
   /** @internal */
@@ -1184,6 +1187,10 @@ export class Document extends AbstractBlock {
       // Pre-compute AsciiDoc table cell content now that parse is done:
       // callouts are rewound and all refs are registered.
       if (!this.parentDocument) await this._convertAsciiDocCells()
+      // Substitute the titles deferred during parse, as Ruby does lazily on convert.
+      for (const block of this._deferredTitleBlocks.splice(0)) {
+        await block.precomputeTitle()
+      }
       if (this.safe < SafeMode.SERVER && Object.keys(opts).length > 0) {
         if (!opts.outfile) delete this.attributes.outfile
         else this.attributes.outfile = opts.outfile
@@ -1873,8 +1880,11 @@ export class Document extends AbstractBlock {
     // In Ruby, apply_title_subs is lazy: it is never called during parsing for such
     // blocks because section.title is never accessed.  An explicit empty id is
     // distinguished by block.attributes.id === '' (the AttributeList parser preserves it).
+    // The title is substituted at convert time instead (see convert()).
     if (block.attributes?.id !== '') {
       await block.precomputeTitle?.()
+    } else if (block.precomputeTitle) {
+      this._deferredTitleBlocks.push(block)
     }
     await block.precomputeReftext?.()
     const ctx = block.context

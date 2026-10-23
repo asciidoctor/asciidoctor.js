@@ -10,6 +10,9 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Bug Fixes::
 
+* Treat an empty attribute value as set, like Asciidoctor, when parsing the document, such as an empty style (`[""]`), id (`[id=]`), title (`[title=]`), language (`[,""]`), attribution, revision number or remark, `authorinitials`, `manpurpose`, and empty block attributes above the document title. Empty entries in the `lines` include attribute, and a `lines` attribute that is set but empty (which now takes precedence over `tag`), are handled like in Asciidoctor (#1903)
+* Use 0 for an empty or non-numeric value where Asciidoctor converts it to an integer, such as the `start` attribute of an ordered list (instead of `NaN`), `leveloffset` and the operands of an `ifeval` directive (#1903)
+* Parse an indented paragraph with an unknown style as a literal block, add `%` to a `scaledwidth` value that ends with digits, and skip missing attribute references in the document title regardless of the `attribute-missing` attribute (#1903)
 * Assign the id defined inline on the document title (e.g., `= Document Title [[docid]]`) to the document and register it in the catalog, so that cross references to it resolve (#1903)
 * Coerce a level-0 special section (e.g., `[appendix]`) to level 1 in any doctype, not only in a book, and make a level-0 `[abstract]` section a level-1 chapter in a book, instead of a part (#1903)
 * Add `referrerpolicy="strict-origin-when-cross-origin"` to the YouTube `<iframe>` of the video macro, in the `html5` and `semantic-html5` backends, so YouTube receives the referrer it now requires to play embedded videos (https://github.com/asciidoctor/asciidoctor/issues/4711[asciidoctor#4711])

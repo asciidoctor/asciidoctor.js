@@ -52,7 +52,8 @@ When converting or extending code, follow the conventions established in the exi
 - **Ruby symbols (`:key`)** → plain strings (`'key'`), and internal AST-node constructor options (e.g. `new Block(parent, ctx, { content_model: 'empty' })`) keep `snake_case` to mirror the Ruby kwargs. **Exception:** `Extensions.Processor` config keys (`contentModel`, `positionalAttrs`, `defaultAttrs`) use `camelCase` — the legacy `snake_case` Ruby-style keys are still accepted when a user declares a static `config` object directly, normalized by `normalizeLegacyConfigAliases()` in `src/extensions.js`.
 - **Ruby predicates (`attr?`, `title?`)** → `hasAttr()`, `hasTitle()`, etc.
 - **Ruby `nil` / `.nil_or_empty?`** → `null` / `!val` or explicit `== null || === ''` checks.
-- **Ruby `.to_i`** → `parseInt(val, 10)` (returns `0` for `null`/non-numeric).
+- **Ruby `.to_i` / `.to_f`** → `toInt(val)` / `toFloat(val)` from `src/helpers.js` (return `0` for `null`/non-numeric, unlike `parseInt`/`parseFloat` which return `NaN`).
+- **Ruby truthiness** → only `nil` and `false` are falsy in Ruby: `''` and `0` are truthy. Port `if x` / `x || y` / `x ? a : b` on a value that can be `''` or `0` (attribute values, regex captures) as `x != null` / `x ?? y`, not as a JS truthiness check.
 - **Ruby `$1`, `$2` captures** → JS match array `m[1]`, `m[2]`.
 - **Thread safety / Mutex** → not needed (single-threaded JS).
 - **Circular dependencies** → resolved via lazy `import()` inside functions; pre-warmed in `load.js` using `Promise.all`.
