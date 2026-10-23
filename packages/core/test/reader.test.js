@@ -1073,6 +1073,42 @@ describe('PreprocessorReader', () => {
       assert.match(output, /last line of included content/)
     })
 
+    test('include directive does not select empty line after trailing newline when range runs to end of file', async () => {
+      for (const lines of ['24..', '24..-1']) {
+        const input = `[%hardbreaks]\ninclude::fixtures/include-file.adoc[lines=${lines}]\nafter`
+        const output = await convertStringToEmbedded(input, {
+          safe: 'safe',
+          base_dir: BASE_DIR,
+        })
+        assert.equal((output.match(/<div class="paragraph">/g) || []).length, 1)
+        assert.ok(output.includes('last line of included content<br>\nafter'))
+      }
+    })
+
+    test('include directive does not add empty line after trailing newline when selecting lines', async () => {
+      const input =
+        '----\ninclude::fixtures/include-file.adoc[lines=22..-1]\n----'
+      const doc = await documentFromString(input, {
+        safe: 'safe',
+        base_dir: BASE_DIR,
+      })
+      assert.equal(
+        doc.getBlocks()[0].getSource(),
+        'more non-tagged content\n\nlast line of included content'
+      )
+    })
+
+    test('include directive does not add empty line after trailing newline when selecting tags', async () => {
+      const input = '----\ninclude::fixtures/include-file.adoc[tags=**]\n----'
+      const doc = await documentFromString(input, {
+        safe: 'safe',
+        base_dir: BASE_DIR,
+      })
+      assert.ok(
+        doc.getBlocks()[0].getSource().endsWith('last line of included content')
+      )
+    })
+
     test('include directive ignores lines attribute if empty', async () => {
       const input = '++++\ninclude::fixtures/include-file.adoc[lines=]\n++++'
       const output = await convertStringToEmbedded(input, {
@@ -1133,11 +1169,11 @@ describe('PreprocessorReader', () => {
       ['tags=template;__proto__', 'TEMPLATE_ONLY\nPROTO_CONTENT'],
       [
         'tag=!__proto__',
-        'OUTSIDE\nTEMPLATE_ONLY\nCONSTRUCTOR_CONTENT\nNESTED_CONTENT\nTOSTRING_CONTENT\nVALUEOF_CONTENT\n',
+        'OUTSIDE\nTEMPLATE_ONLY\nCONSTRUCTOR_CONTENT\nNESTED_CONTENT\nTOSTRING_CONTENT\nVALUEOF_CONTENT',
       ],
       [
         'tags=!__proto__',
-        'OUTSIDE\nTEMPLATE_ONLY\nCONSTRUCTOR_CONTENT\nNESTED_CONTENT\nTOSTRING_CONTENT\nVALUEOF_CONTENT\n',
+        'OUTSIDE\nTEMPLATE_ONLY\nCONSTRUCTOR_CONTENT\nNESTED_CONTENT\nTOSTRING_CONTENT\nVALUEOF_CONTENT',
       ],
       [
         'tags=*;!__proto__',
@@ -1145,7 +1181,7 @@ describe('PreprocessorReader', () => {
       ],
       [
         'tags=**;!constructor;!__proto__',
-        'OUTSIDE\nTEMPLATE_ONLY\nTOSTRING_CONTENT\nVALUEOF_CONTENT\n',
+        'OUTSIDE\nTEMPLATE_ONLY\nTOSTRING_CONTENT\nVALUEOF_CONTENT',
       ],
       ['tags=constructor;!nested', 'CONSTRUCTOR_CONTENT'],
     ]) {
