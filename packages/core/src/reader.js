@@ -47,6 +47,9 @@ import {
   prepareSourceString,
   rootname,
   isUriish,
+  rubySplit,
+  toInt,
+  toFloat,
 } from './helpers.js'
 import { LoggerManager, Logger } from './logging.js'
 import { fetchUri } from './http_cache.js'
@@ -959,9 +962,8 @@ export class PreprocessorReader extends Reader {
       this.#popInclude()
     } else if ('leveloffset' in attributes) {
       const leveloffset = this._document.getAttribute('leveloffset')
-      const resetLine = leveloffset
-        ? `:leveloffset: ${leveloffset}`
-        : ':leveloffset!:'
+      const resetLine =
+        leveloffset != null ? `:leveloffset: ${leveloffset}` : ':leveloffset!:'
       const setLine = `:leveloffset: ${attributes.leveloffset}`
       // Build stack-order array: setLine at end (read first), resetLine at start (read last)
       this._lines = [
@@ -1379,21 +1381,21 @@ export class PreprocessorReader extends Reader {
     let incLinenos = null
     let incTags = null
     if (attrlist) {
-      if ('lines' in parsedAttrs && parsedAttrs.lines !== '') {
+      if ('lines' in parsedAttrs) {
         incLinenos = []
         for (const ld of this.#splitDelimitedValue(parsedAttrs.lines)) {
           if (ld.includes('..')) {
             const sep = ld.indexOf('..')
-            const from = parseInt(ld.slice(0, sep), 10)
+            const from = toInt(ld.slice(0, sep))
             const toStr = ld.slice(sep + 2)
-            if (toStr === '' || parseInt(toStr, 10) < 0) {
+            const to = toInt(toStr)
+            if (toStr === '' || to < 0) {
               incLinenos.push(from, Infinity)
             } else {
-              const to = parseInt(toStr, 10)
               for (let i = from; i <= to; i++) incLinenos.push(i)
             }
           } else {
-            incLinenos.push(parseInt(ld, 10))
+            incLinenos.push(toInt(ld))
           }
         }
         incLinenos =
@@ -1819,8 +1821,8 @@ export class PreprocessorReader extends Reader {
     if (val === 'true') return true
     if (val === 'false') return false
     if (val.trimEnd() === '') return ' '
-    if (val.includes('.')) return parseFloat(val)
-    return parseInt(val, 10)
+    if (val.includes('.')) return toFloat(val)
+    return toInt(val)
   }
 
   /**
@@ -1851,7 +1853,7 @@ export class PreprocessorReader extends Reader {
    * @internal
    */
   #splitDelimitedValue(val) {
-    return val.includes(',') ? val.split(',') : val.split(';')
+    return val.includes(',') ? rubySplit(val, ',') : rubySplit(val, ';')
   }
 
   // ── JavaScript-style accessors ────────────────────────────────────────────────
