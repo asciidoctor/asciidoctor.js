@@ -10,6 +10,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Bug Fixes::
 
+* Assign the id defined inline on the document title (e.g., `= Document Title [[docid]]`) to the document and register it in the catalog, so that cross references to it resolve (#1903)
+* Coerce a level-0 special section (e.g., `[appendix]`) to level 1 in any doctype, not only in a book, and make a level-0 `[abstract]` section a level-1 chapter in a book, instead of a part (#1903)
 * Add `referrerpolicy="strict-origin-when-cross-origin"` to the YouTube `<iframe>` of the video macro, in the `html5` and `semantic-html5` backends, so YouTube receives the referrer it now requires to play embedded videos (https://github.com/asciidoctor/asciidoctor/issues/4711[asciidoctor#4711])
 * Return an image data URI as-is from `AbstractNode#generateDataUriFromUri()` instead of fetching it to build a new data URI, and add the `isDataUri()` helper (https://github.com/asciidoctor/asciidoctor/issues/4887[asciidoctor#4887])
 * Don't apply any substitutions to a block when the `subs` attribute is empty (e.g., `[subs=]`) instead of applying its default substitutions, and don't warn about an invalid substitution type when the `subs` attribute only contains spaces or ends with a comma (#1899)
