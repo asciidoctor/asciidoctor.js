@@ -628,9 +628,12 @@ export class Document extends AbstractBlock {
     // reftext is known; the map is then built; pass 2 substitutes the block content
     // text, where resolveId() can now match those natural references.
     const attributesSnapshot = { ...this.attributes }
+    // Playing back a compat-mode attribute entry also toggles compatMode.
+    const compatModeSnapshot = this.compatMode
     // Pass 1: titles + reftexts (no block content text yet).
     await this._resolveAllTexts(this, false)
     this._restoreAttributeSnapshot(attributesSnapshot)
+    this.compatMode = compatModeSnapshot
     // Pre-compute reftext for all registered inline anchor nodes.
     for (const ref of Object.values(this.catalog.refs)) {
       if (ref && typeof ref.precomputeReftext === 'function') {
@@ -650,6 +653,7 @@ export class Document extends AbstractBlock {
     await this._resolveAllTexts(this, true)
     this._footnotesDeferred = false
     this._restoreAttributeSnapshot(attributesSnapshot)
+    this.compatMode = compatModeSnapshot
     // Reset the footnote counter so that body-content footnotes (processed during
     // conversion) start numbering from 1, reproducing Ruby's "out of sequence" quirk:
     // title footnotes are numbered during parsing via apply_title_subs, then the

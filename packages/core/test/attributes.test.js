@@ -951,10 +951,51 @@ describe('Attributes', () => {
         attributes: { 'compat-mode': '@' },
       })
       // paragraph-a: compat mode on → {foo} not replaced inside backtick
-      assert.ok(result.includes('id="paragraph-a"'))
+      assert.ok(
+        result.includes(
+          '<div id="paragraph-a" class="paragraph">\n<p><code>{foo}</code></p>'
+        )
+      )
       // paragraph-b: compat mode off → {foo} replaced → 'bar'
-      assert.ok(result.includes('id="paragraph-b"'))
-      assert.ok(result.includes('id="paragraph-c"'))
+      assert.ok(
+        result.includes(
+          '<div id="paragraph-b" class="paragraph">\n<p><code>bar</code></p>'
+        )
+      )
+      assert.ok(
+        result.includes(
+          '<div id="paragraph-c" class="paragraph">\n<p><code>{foo}</code></p>'
+        )
+      )
+    })
+
+    test('compat-mode set or unset in middle of document does not apply to content above it', async () => {
+      const set = await convertStringToEmbedded(
+        ':foo: bar\n\n[[paragraph-a]]\n`{foo}`\n\n:compat-mode:\n\n[[paragraph-b]]\n`{foo}`'
+      )
+      assert.ok(
+        set.includes(
+          '<div id="paragraph-a" class="paragraph">\n<p><code>bar</code></p>'
+        )
+      )
+      assert.ok(
+        set.includes(
+          '<div id="paragraph-b" class="paragraph">\n<p><code>{foo}</code></p>'
+        )
+      )
+      const unset = await convertStringToEmbedded(
+        ':foo: bar\n:compat-mode:\n\n[[paragraph-a]]\n`{foo}`\n\n:compat-mode!:\n\n[[paragraph-b]]\n`{foo}`'
+      )
+      assert.ok(
+        unset.includes(
+          '<div id="paragraph-a" class="paragraph">\n<p><code>{foo}</code></p>'
+        )
+      )
+      assert.ok(
+        unset.includes(
+          '<div id="paragraph-b" class="paragraph">\n<p><code>bar</code></p>'
+        )
+      )
     })
 
     test('does not disturb attribute-looking things escaped with backslash', async () => {
