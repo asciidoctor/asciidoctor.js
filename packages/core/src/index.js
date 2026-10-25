@@ -71,6 +71,7 @@ import {
   SyntaxHighlighterBase,
   DefaultFactory as DefaultSyntaxHighlighterFactory,
 } from './syntax_highlighter.js'
+import { TemplateEngine } from './template_engine.js'
 
 const ASCIIDOCTOR_CORE_VERSION = '2.0.26'
 
@@ -167,4 +168,5 @@ export {
   Html5Converter,
   SemanticHtml5Converter,
   SyntaxHighlighter,
+  TemplateEngine,
 }
