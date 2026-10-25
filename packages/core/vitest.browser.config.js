@@ -19,7 +19,7 @@ export default defineConfig({
     // Exclude tests that require a running Node.js HTTP server or Node.js test infrastructure
     // (highlightjs-build: build mode is Node-only — it loads highlight.js via node:module —
     // and is stubbed to `unsupported` in the browser build)
-    exclude: ['include-http.test.js', 'blocks.images-http.test.js', 'http-cache-http.test.js', 'browser.reader.test.js', 'converter.template.test.js', 'convert.test.js', 'highlightjs-build.test.js'],
+    exclude: ['template_engine.test.js', 'include-http.test.js', 'blocks.images-http.test.js', 'http-cache-http.test.js', 'browser.reader.test.js', 'converter.template.test.js', 'convert.test.js', 'highlightjs-build.test.js'],
   },
   resolve: {
     alias: [

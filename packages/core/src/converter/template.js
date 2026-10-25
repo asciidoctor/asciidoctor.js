@@ -15,6 +15,7 @@
 //   - require_library → _nodeRequire() with a user-friendly IOError on missing module.
 //   - Constructor is sync; use TemplateConverter.create() factory for async _scan().
 
+import { TemplateEngine } from '../template_engine.js'
 import { ConverterBase } from '../converter.js'
 import { PathResolver } from '../path_resolver.js'
 import { createRequire } from 'node:module'
@@ -23,28 +24,6 @@ import { promises as fsp } from 'node:fs'
 import path from 'node:path'
 
 const _require = createRequire(import.meta.url)
-
-// ── TemplateEngine registry ───────────────────────────────────────────────────
-// Allows users to plug in custom template engine adapters.
-//
-// Adapters must implement:
-//   compile(file, name) → { render(ctx) }
-//
-// Example:
-//   TemplateConverter.TemplateEngine.register('dot', {
-//     compile(file, _name) {
-//       const doT = require('dot')
-//       const fn  = doT.template(fs.readFileSync(file, 'utf8'))
-//       return { render: (ctx) => fn(ctx) }
-//     }
-//   })
-const TemplateEngine = {
-  registry: {},
-  register(names, adapter) {
-    const list = Array.isArray(names) ? names : [names]
-    for (const name of list) this.registry[name] = adapter
-  },
-}
 
 export class TemplateConverter extends ConverterBase {
   // Class-level scan + template caches (shared across instances when template_cache: true).
