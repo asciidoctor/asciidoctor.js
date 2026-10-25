@@ -2599,7 +2599,7 @@ export class Parser {
       if ('author' in docAttrs && docAttrs.author !== implicitAuthor) {
         // author attribute was set or overridden; re-parse as names only (no multiple)
         authorMetadata = Parser.processAuthors(docAttrs.author, true, false)
-        if (docAttrs.authorinitials !== implicitAuthorinitials) {
+        if ((docAttrs.authorinitials ?? null) !== implicitAuthorinitials) {
           delete authorMetadata.authorinitials
         }
       } else if (

@@ -680,6 +680,23 @@ describe('HTML output', () => {
     assert.ok(output.includes(' xml:lang="en"'))
   })
 
+  test('with author defined using attribute entry to DocBook', async () => {
+    const input = [
+      '= Document Title',
+      ':author: Doc Writer',
+      ':email: thedoctor@asciidoc.org',
+      '',
+      'content',
+    ].join('\n')
+    const output = await convert(input, { backend: 'docbook5' })
+    assert.ok(
+      output.includes(
+        '<author>\n<personname>\n<firstname>Doc</firstname>\n<surname>Writer</surname>\n</personname>\n<email>thedoctor@asciidoc.org</email>\n</author>'
+      )
+    )
+    assert.ok(output.includes('<authorinitials>DW</authorinitials>'))
+  })
+
   test('keywords returns the trimmed, non-blank entries of the keywords attribute', async () => {
     const doc = await parse(
       ':keywords: text, markup,,processor, asciidoc \n\ncontent'
