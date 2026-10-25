@@ -305,6 +305,27 @@ describe('Structure', () => {
     assert.equal(doc.getAttribute('lastname'), 'Writer')
   })
 
+  test('authorinitials derived from author attribute entry below document title', async () => {
+    const input = '= Document Title\n:author: Doc Writer\n\n{authorinitials}'
+    const doc = await parse(input)
+    assert.equal(doc.getAttribute('authorinitials'), 'DW')
+    assert.ok((await doc.convert()).includes('<p>DW</p>'))
+  })
+
+  test('explicit authorinitials kept when author attribute entry is below document title', async () => {
+    const input =
+      '= Document Title\n:author: Doc Writer\n:authorinitials: XY\n\ncontent'
+    const doc = await parse(input)
+    assert.equal(doc.getAttribute('authorinitials'), 'XY')
+  })
+
+  test('empty authorinitials kept when author attribute entry is below document title', async () => {
+    const input =
+      '= Document Title\n:author: Doc Writer\n:authorinitials:\n\ncontent'
+    const doc = await parse(input)
+    assert.equal(doc.getAttribute('authorinitials'), '')
+  })
+
   test('authorcount is 0 when document has no header', async () => {
     const doc = await parse('content')
     assert.equal(doc.attributes.authorcount, 0)
@@ -680,23 +701,6 @@ describe('HTML output', () => {
     assert.ok(output.includes(' xml:lang="en"'))
   })
 
-  test('with author defined using attribute entry to DocBook', async () => {
-    const input = [
-      '= Document Title',
-      ':author: Doc Writer',
-      ':email: thedoctor@asciidoc.org',
-      '',
-      'content',
-    ].join('\n')
-    const output = await convert(input, { backend: 'docbook5' })
-    assert.ok(
-      output.includes(
-        '<author>\n<personname>\n<firstname>Doc</firstname>\n<surname>Writer</surname>\n</personname>\n<email>thedoctor@asciidoc.org</email>\n</author>'
-      )
-    )
-    assert.ok(output.includes('<authorinitials>DW</authorinitials>'))
-  })
-
   test('keywords returns the trimmed, non-blank entries of the keywords attribute', async () => {
     const doc = await parse(
       ':keywords: text, markup,,processor, asciidoc \n\ncontent'
@@ -774,6 +778,21 @@ describe('HTML output', () => {
 // ── Backends and Doctypes (extended) ─────────────────────────────────────────
 
 describe('Backends and Doctypes (extended)', () => {
+  test('docbook5 with author defined using attribute entry', async () => {
+    const input = [
+      '= Document Title',
+      ':author: Doc Writer',
+      ':email: thedoctor@asciidoc.org',
+      '',
+      'content',
+    ].join('\n')
+    const output = await convert(input, { backend: 'docbook5' })
+    assert.ok(output.includes('<firstname>Doc</firstname>'))
+    assert.ok(output.includes('<surname>Writer</surname>'))
+    assert.ok(output.includes('<email>thedoctor@asciidoc.org</email>'))
+    assert.ok(output.includes('<authorinitials>DW</authorinitials>'))
+  })
+
   test('html5 doctype article produces article body class', async () => {
     const result = await convert('= Title\n\nparagraph', {
       attributes: { backend: 'html5' },
