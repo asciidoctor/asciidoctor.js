@@ -10,6 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Bug Fixes::
 
+* Derive the `authorinitials` attribute from an `author` attribute entry in a header that has a document title but no author line (e.g., `:author: Doc Writer` gives `DW`), like Asciidoctor, instead of leaving it unset
 * Output empty attribute values like Asciidoctor in the DocBook converter, such as an empty id, role or reftext (`xml:id=""`, `role=""`, `xreflabel=""`), table `width`, list `mark`, index term `see` and `see-also`, and an empty `revdate`, `copyright`, author email, name parts or initials, and `front-cover-image` in the document info, and only output the reftext of an open block that has an id (#1903)
 * Output the size attributes of a DocBook cover image defined using the image macro syntax (e.g., `:front-cover-image: image:cover.png[Cover,200,300]`), which were ignored (#1903)
 * Output an empty `manmanual`, `mansource` and `docdate` like Asciidoctor in the manpage converter, and use `toInt` for the `start` attribute of an ordered list (#1903)
