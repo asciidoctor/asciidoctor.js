@@ -944,17 +944,54 @@ describe('Attributes', () => {
       )
     })
 
-    test('allow compat-mode to be set and unset in middle of document', async () => {
-      const input =
-        ':foo: bar\n\n[[paragraph-a]]\n`{foo}`\n\n:compat-mode!:\n\n[[paragraph-b]]\n`{foo}`\n\n:compat-mode:\n\n[[paragraph-c]]\n`{foo}`'
-      const result = await convertStringToEmbedded(input, {
-        attributes: { 'compat-mode': '@' },
+    test('does not allow compat-mode to be set in middle of document', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const input =
+          ':foo: bar\n\nfirst\n\n:compat-mode:\n\n[#with-id]\n.T1 `{foo}`\n----\nx\n----\n\n.T2 `{foo}`\n----\nx\n----\n\n`{foo}`'
+        const doc = await documentFromString(input)
+        const result = await doc.convert()
+        assert.equal(doc.compatMode, false)
+        assert.ok(!('compat-mode' in doc.getAttributes()))
+        assert.ok(result.includes('T1 <code>bar</code>'))
+        assert.ok(result.includes('T2 <code>bar</code>'))
+        assert.ok(result.includes('<p><code>bar</code></p>'))
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 5: compat-mode attribute can only be set in the document header'
+        )
       })
-      // paragraph-a: compat mode on → {foo} not replaced inside backtick
-      assert.ok(result.includes('id="paragraph-a"'))
-      // paragraph-b: compat mode off → {foo} replaced → 'bar'
-      assert.ok(result.includes('id="paragraph-b"'))
-      assert.ok(result.includes('id="paragraph-c"'))
+    })
+
+    test('does not allow compat-mode to be unset in middle of document', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const input =
+          ':foo: bar\n:compat-mode:\n\n`{foo}`\n\n:compat-mode!:\n\n`{foo}`'
+        const doc = await documentFromString(input)
+        const result = await doc.convert()
+        assert.equal(doc.compatMode, true)
+        assert.equal(doc.getAttribute('compat-mode'), '')
+        assert.equal(result.match(/<code>\{foo\}<\/code>/g).length, 2)
+        assertMessage(
+          logger,
+          'WARN',
+          '<stdin>: line 6: compat-mode attribute can only be set in the document header'
+        )
+      })
+    })
+
+    test('does not allow compat-mode to be set using inline attribute entry', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const doc = await documentFromString('{set:compat-mode}')
+        await doc.convert()
+        assert.equal(doc.compatMode, false)
+        assert.ok(!('compat-mode' in doc.getAttributes()))
+        assertMessage(
+          logger,
+          'WARN',
+          'compat-mode attribute can only be set in the document header'
+        )
+      })
     })
 
     test('does not disturb attribute-looking things escaped with backslash', async () => {

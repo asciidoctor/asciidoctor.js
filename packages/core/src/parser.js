@@ -2937,12 +2937,15 @@ export class Parser {
         value = await document._applyAttributeEntryValueSubs(value)
         Parser.storeAttribute(match[1], value, document, attributes, {
           skipSubs: true,
+          sourceLocation: reader.cursor,
         })
         return true
       }
     }
 
-    Parser.storeAttribute(match[1], value, document, attributes)
+    Parser.storeAttribute(match[1], value, document, attributes, {
+      sourceLocation: reader.cursor,
+    })
     return true
   }
 
@@ -2975,6 +2978,16 @@ export class Parser {
     }
 
     if (doc) {
+      // compat-mode is a header-only attribute; ignore it beyond the document header
+      if (name === 'compat-mode' && doc._headerAttributes) {
+        Parser.logger.warn(
+          Parser.messageWithContext(
+            'compat-mode attribute can only be set in the document header',
+            { source_location: opts.sourceLocation }
+          )
+        )
+        return [name, value]
+      }
       if (value != null) {
         if (value !== '') {
           if (name === 'leveloffset') {
