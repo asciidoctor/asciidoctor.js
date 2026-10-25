@@ -157,7 +157,7 @@ export class TemplateConverter extends ConverterBase {
     }
 
     const proxyNode = _makeContentProxy(node, content, resolvedItems)
-    const result = template.render({ node: proxyNode, opts, helpers })
+    const result = await template.render({ node: proxyNode, opts, helpers })
     return name === 'document' ? result.trim() : result.trimEnd()
   }
 
@@ -367,7 +367,7 @@ export class TemplateConverter extends ConverterBase {
         // Fall back to custom TemplateEngine registry.
         const adapter = TemplateEngine.registry[ext]
         if (adapter && typeof adapter.compile === 'function') {
-          template = Object.assign(adapter.compile(file, name), { file })
+          template = Object.assign(await adapter.compile(file, name), { file })
         } else {
           continue
         }
