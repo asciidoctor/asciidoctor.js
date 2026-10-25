@@ -1096,10 +1096,8 @@ export class Document extends AbstractBlock {
     for (const entry of entries) {
       if (entry.negate) {
         delete this.attributes[entry.name]
-        if (entry.name === 'compat-mode') this.compatMode = false
       } else {
         this.attributes[entry.name] = entry.value
-        if (entry.name === 'compat-mode') this.compatMode = true
       }
     }
   }
