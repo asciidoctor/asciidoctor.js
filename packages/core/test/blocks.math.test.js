@@ -191,6 +191,7 @@ f: x |-> x + 1
 ++++
 f: bbb"N" -> bbb"N"
 
+
 f: x |-> x + 1
 ++++`
       const expected3d = `\\$f: bbb"N" -&gt; bbb"N"\\$
@@ -202,6 +203,22 @@ f: x |-> x + 1
       assertCss(output3d, '.stemblock', 1)
       const nodes3d = xmlnodesAtXpath('//*[@class="content"]', output3d)
       assert.equal(nodes3d[0].innerHtml.trim(), expected3d)
+    })
+
+    test('should split equation in AsciiMath block at blank line and preserve one break', async () => {
+      const input = `[asciimath]
+++++
+f: bbb"N" -> bbb"N"
+
+f: x |-> x + 1
+++++`
+      const expected = `\\$f: bbb"N" -&gt; bbb"N"\\$
+<br/>
+\\$f: x |-&gt; x + 1\\$`
+
+      const output = await convertStringToEmbedded(input)
+      const nodes = xmlnodesAtXpath('//*[@class="content"]', output)
+      assert.equal(nodes[0].innerHtml.trim(), expected)
     })
 
     test('should add AsciiMath delimiters around asciimath block content', async () => {
