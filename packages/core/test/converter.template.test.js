@@ -100,6 +100,62 @@ describe('Using a template converter', () => {
     )
   })
 
+  test('should use a JavaScript template that returns a promise', async () => {
+    const result = await convert('*bold* statement', {
+      safe: 'safe',
+      backend: 'html5',
+      template_dir: join(TEMPLATES_DIR, 'js-promises'),
+    })
+    assert.ok(
+      result.includes(
+        '<p class="paragraph-promises-js"><strong>bold</strong> statement</p>'
+      ),
+      `Unexpected output:\n${result}`
+    )
+  })
+
+  test('should use a JavaScript template that returns a promise (CJS)', async () => {
+    const result = await convert('*bold* statement', {
+      safe: 'safe',
+      backend: 'html5',
+      template_dir: join(TEMPLATES_DIR, 'js-promises-cjs'),
+    })
+    assert.ok(
+      result.includes(
+        '<p class="paragraph-promises-cjs"><strong>bold</strong> statement</p>'
+      ),
+      `Unexpected output:\n${result}`
+    )
+  })
+
+  test('should use a JavaScript template that returns a promise (ESM)', async () => {
+    const result = await convert('*bold* statement', {
+      safe: 'safe',
+      backend: 'html5',
+      template_dir: join(TEMPLATES_DIR, 'js-promises-esm'),
+    })
+    assert.ok(
+      result.includes(
+        '<p class="paragraph-promises-esm"><strong>bold</strong> statement</p>'
+      ),
+      `Unexpected output:\n${result}`
+    )
+  })
+
+  test('should use a JavaScript template that returns a promise (ESM)', async () => {
+    const result = await convert('*bold* statement', {
+      safe: 'safe',
+      backend: 'html5',
+      template_dir: join(TEMPLATES_DIR, 'js-promises-esm'),
+    })
+    assert.ok(
+      result.includes(
+        '<p class="paragraph-promises-esm"><strong>bold</strong> statement</p>'
+      ),
+      `Unexpected output:\n${result}`
+    )
+  })
+
   // https://github.com/asciidoctor/asciidoctor.js/issues/1841
   // A JavaScript template must be applied regardless of its file extension
   // (.js, .cjs, .mjs) and of the module format of the project (ESM or CJS).
