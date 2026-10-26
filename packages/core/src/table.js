@@ -644,6 +644,13 @@ class Cell extends AbstractBlock {
     return this.sourceLocation?.lineno ?? null
   }
 
+  /** @returns {string|null} */
+  get backgroundColor() {
+    return this._cellbgcolor !== undefined
+      ? this._cellbgcolor
+      : (this.document.attributes.cellbgcolor ?? null)
+  }
+
   toString() {
     return `${super.toString()} - [text: ${this._text}, colspan: ${this.colspan ?? 1}, rowspan: ${this.rowspan ?? 1}, attributes: ${JSON.stringify(this.attributes)}]`
   }
@@ -688,6 +695,19 @@ class Cell extends AbstractBlock {
    */
   getLineNumber() {
     return this.lineno
+  }
+
+  /**
+   * Get the background color of this cell, from the `cellbgcolor` document attribute.
+   *
+   * Since `{set:cellbgcolor:...}` in the text of a cell changes the attribute for this cell
+   * and the cells after it, and the text of a cell is substituted while the document is
+   * parsed, the value is captured for each cell at that time. Until then (e.g. in a tree
+   * processor), the current value of the document attribute is returned.
+   * @returns {string|null} the background color, or null if `cellbgcolor` is unset.
+   */
+  getBackgroundColor() {
+    return this.backgroundColor
   }
 }
 Table.Cell = Cell
