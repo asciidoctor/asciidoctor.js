@@ -571,13 +571,16 @@ class Cell extends AbstractBlock {
    * @returns {Promise<void>}
    */
   async precomputeText() {
-    if (this._subs && this._convertedText == null) {
+    if (this._convertedText != null) return
+    if (this._subs) {
       this._convertedText = await this.applySubs(this._text, this._subs)
-      // Capture the cellbgcolor attribute value as set by {set:cellbgcolor:...} in cell text.
-      // Since {set:...} attribute assignments happen during applySubs, and the document attribute
-      // is shared state, we must capture it per-cell immediately after text processing.
-      this._cellbgcolor = this.document.attributes.cellbgcolor
     }
+    // Capture the cellbgcolor attribute value as set by {set:cellbgcolor:...} in cell text.
+    // Since {set:...} attribute assignments happen during applySubs, and the document attribute
+    // is shared state, we must capture it per-cell immediately after text processing.
+    // AsciiDoc cells have no subs (their content is an inner document), but they still pick up
+    // the value set by the preceding cells. null means unset; undefined means not captured.
+    this._cellbgcolor = this.document.attributes.cellbgcolor ?? null
   }
 
   set text(val) {

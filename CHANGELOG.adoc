@@ -31,6 +31,7 @@ Bug Fixes::
 * Add `referrerpolicy="strict-origin-when-cross-origin"` to the YouTube `<iframe>` of the video macro, in the `html5` and `semantic-html5` backends, so YouTube receives the referrer it now requires to play embedded videos (https://github.com/asciidoctor/asciidoctor/issues/4711[asciidoctor#4711])
 * Output one line break per blank line between the equations of an AsciiMath block, like Asciidoctor, instead of one extra break, in the `html5` and `semantic-html5` converters (#1914)
 * Return an image data URI as-is from `AbstractNode#generateDataUriFromUri()` instead of fetching it to build a new data URI, and add the `isDataUri()` helper (https://github.com/asciidoctor/asciidoctor/issues/4887[asciidoctor#4887])
+* Apply the `cellbgcolor` background color to AsciiDoc table cells (`a|`), like Asciidoctor, in the `html5` and `semantic-html5` converters (#1917)
 * Don't apply any substitutions to a block when the `subs` attribute is empty (e.g., `[subs=]`) instead of applying its default substitutions, and don't warn about an invalid substitution type when the `subs` attribute only contains spaces or ends with a comma (#1899)
 * Return a `Cursor` instead of a plain object from the `getSourceLocation()` method of a table cell when the `sourcemap` option is enabled (https://github.com/asciidoctor/asciidoctor.js/issues/1900[#1900])
 * Don't select an extra empty line at the end of an included file that ends with a newline when selecting lines (e.g., `lines=2..`) or tags, which ended the enclosing paragraph (#1898)
