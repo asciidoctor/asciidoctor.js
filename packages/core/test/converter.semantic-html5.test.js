@@ -195,6 +195,21 @@ Content.
     assert.ok(!result.includes('<link rel="stylesheet"'))
   })
 
+  test('applies cellbgcolor to AsciiDoc cells', async () => {
+    const input = `:cellbgcolor: #abcdef
+
+|===
+|normal a|AsciiDoc
+|===`
+    const result = await convertStringToEmbedded(input, {
+      backend: 'semantic-html5',
+    })
+    assert.equal(
+      result.match(/<td style="background-color: #abcdef;">/g)?.length,
+      2
+    )
+  })
+
   test('links the Font Awesome stylesheet when icons=font', async () => {
     const result = await convertString('NOTE: Remember the milk.', {
       backend: 'semantic-html5',

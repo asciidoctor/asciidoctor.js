@@ -1239,9 +1239,10 @@ ${titleElement}${await node.content()}
               ? ` rowspan="${cell.rowspan}"`
               : ''
             // Use the per-cell captured cellbgcolor (set by {set:cellbgcolor:...} in cell text
-            // during precomputeText). Fall back to the current document attribute if not captured.
+            // during precomputeText). Fall back to the current document attribute if not captured
+            // (null means captured while unset).
             const cellbgcolor =
-              '_cellbgcolor' in cell
+              cell._cellbgcolor !== undefined
                 ? cell._cellbgcolor
                 : node.document.attributes.cellbgcolor
             const cellStyleAttr =

@@ -795,6 +795,34 @@ plain
       )
     })
 
+    test('should apply cellbgcolor to AsciiDoc cells', async () => {
+      const input = `:cellbgcolor: #abcdef
+
+|===
+|normal a|AsciiDoc
+|===`
+      const output = await convertStringToEmbedded(input)
+      assertXpath(
+        output,
+        '/table/tbody/tr/td[@style="background-color: #abcdef;"]',
+        2
+      )
+    })
+
+    test('should apply cellbgcolor set by a preceding cell to AsciiDoc cells', async () => {
+      const input = `|===
+|{set:cellbgcolor:red}red a|AsciiDoc
+|{set:cellbgcolor!}plain a|AsciiDoc
+|===`
+      const output = await convertStringToEmbedded(input)
+      assertXpath(
+        output,
+        '(/table/tbody/tr)[1]/td[@style="background-color: red;"]',
+        2
+      )
+      assertXpath(output, '(/table/tbody/tr)[2]/td[@style]', 0)
+    })
+
     test('should warn if table block is not terminated', async () => {
       const input = `outside
 
