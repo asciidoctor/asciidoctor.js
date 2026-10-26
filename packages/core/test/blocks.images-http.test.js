@@ -1,4 +1,5 @@
 import { test, describe, before, after } from 'node:test'
+import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
@@ -29,6 +30,13 @@ describe('Blocks', () => {
           },
         ],
         [
+          '/fixtures/square-svg',
+          {
+            contentType: 'application/octet-stream',
+            body: readFileSync(path.join(FIXTURES_DIR, 'square-svg'), 'utf8'),
+          },
+        ],
+        [
           '/fixtures/circle.svg',
           {
             contentType: 'image/svg+xml',
@@ -54,6 +62,25 @@ describe('Blocks', () => {
       assertCss(output, 'svg[width="100"]', 1)
       assertCss(output, 'svg[height="100"]', 1)
       assertCss(output, 'svg circle', 1)
+    })
+
+    test('embeds remote SVG to inline when inline option is set on block, allow-uri-read is set on document, and format attribute is svg', async () => {
+      const input = `image::${baseUri}/fixtures/square-svg[Square,opts=inline,format=svg]`
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { 'allow-uri-read': '' },
+      })
+      assert.match(output, /<svg /)
+      assert.match(output, /<rect /)
+    })
+
+    test('uses the format attribute to determine the mimetype of the data URI of a remote image', async () => {
+      const input = `:data-uri:\n\nimage::${baseUri}/fixtures/square-svg[Square,format=svg]`
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { 'allow-uri-read': '' },
+      })
+      assert.match(output, /<img src="data:image\/svg\+xml;base64,PHN2Zy/)
     })
 
     test('embeds base64-encoded data uri for remote image when data-uri attribute is set', async () => {

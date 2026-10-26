@@ -133,6 +133,35 @@ image::circle.svg[Tiger,100]
       assert.doesNotMatch(output, /<svg\s[^>]*style="[^>]*>/)
     })
 
+    test('converts to inline SVG image when inline option is set on block and format attribute is SVG', async () => {
+      const input = `\
+:imagesdir: fixtures
+
+[%inline]
+image::square-svg[Square,format=svg]
+`
+      const output = await convertStringToEmbedded(input, {
+        safe: 'server',
+        attributes: { docdir: __dirname },
+      })
+      assert.match(output, /<svg /)
+      assert.match(output, /<rect /)
+    })
+
+    test('uses the format attribute to determine the mimetype of the data URI when data-uri is set on document', async () => {
+      const input = `\
+:imagesdir: fixtures
+:data-uri:
+
+image::square-svg[Square,format=svg]
+`
+      const output = await convertStringToEmbedded(input, {
+        safe: 'server',
+        attributes: { docdir: __dirname },
+      })
+      assert.match(output, /<img src="data:image\/svg\+xml;base64,PHN2Zy/)
+    })
+
     test('ignore link attribute if value is self and image target is inline SVG', async () => {
       const input = `\
 :imagesdir: fixtures
