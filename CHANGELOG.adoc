@@ -37,6 +37,7 @@ Bug Fixes::
 * Don't select an extra empty line at the end of an included file that ends with a newline when selecting lines (e.g., `lines=2..`) or tags, which ended the enclosing paragraph (#1898)
 * Report the line number of the first item as the line number of a callout list when the `sourcemap` option is enabled, instead of the line after the list (https://github.com/asciidoctor/asciidoctor/issues/4892[asciidoctor#4892])
 * Use the `format` attribute of an image, when set, to determine the MIME type of the data URI generated for that image (e.g., `image::diagram[format=svg]` with `data-uri` set), instead of the file extension or the `Content-Type` header of a remote image (https://github.com/asciidoctor/asciidoctor/issues/4894[asciidoctor#4894])
+* Treat a file name that ends with a dot (e.g., `image.`) as having no file extension, like Asciidoctor (https://github.com/asciidoctor/asciidoctor/commit/c43a6442[asciidoctor@c43a6442])
 
 Improvements::
 
