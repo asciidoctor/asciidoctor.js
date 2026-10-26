@@ -218,6 +218,8 @@ export function configure (context) {
 }
 ----
 
+The `configure` function can also be `async` (or return a `Promise`), in which case Asciidoctor.js waits for it to resolve before using the templates.
+
 The `context` object will contain an <<isolated-environment,isolated environment>> (if supported) template engine keyed by template engine name:
 
 `handlebars.environment`::

@@ -344,6 +344,18 @@ image::b.png[]
     )
   })
 
+  test('should wait for an asynchronous configure function in the helpers file', async () => {
+    const result = await convert('content', {
+      safe: 'safe',
+      backend: 'html5',
+      template_dir: join(TEMPLATES_DIR, 'nunjucks-async-helpers'),
+    })
+    assert.ok(
+      result.includes('<p class="paragraph-async-helpers">content!</p>'),
+      `Unexpected output:\n${result}`
+    )
+  })
+
   test('should allow to use different template engines inside the same directory', async () => {
     const result = await convert(
       `This a paragraph with an inline image image:b.png[].
