@@ -18,4 +18,4 @@ Key highlights:
 
 Head to the xref:setup:install.adoc[Install guide] to get started.
 
-TIP: Curious about the upcoming release? Discover the new semantic HTML5 backend and build-time syntax highlighting on the xref:whats-new.adoc[What's New] page.
+TIP: Curious about the latest releases? Discover asynchronous templates, the new semantic HTML5 backend and build-time syntax highlighting on the xref:whats-new.adoc[What's New] page.

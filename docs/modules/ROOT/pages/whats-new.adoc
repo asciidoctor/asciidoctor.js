@@ -1,14 +1,67 @@
-= What's New in Asciidoctor.js {page-component-version}
-:description: The new features included in Asciidoctor.js {page-component-version}: a semantic HTML5 backend and asynchronous, build-time syntax highlighting.
+= What's New in Asciidoctor.js 4
+:description: The new features included in the Asciidoctor.js 4.x releases: asynchronous templates and custom template engines, a semantic HTML5 backend and asynchronous, build-time syntax highlighting.
 :url-repo: https://github.com/asciidoctor/asciidoctor.js
 :url-devdocs: {url-repo}/blob/main/devdocs
 :url-changelog: {url-repo}/blob/main/CHANGELOG.adoc
 
-This page introduces the highlights of the upcoming Asciidoctor.js release.
+This page introduces the highlights of the Asciidoctor.js 4.x releases, starting with the most recent one.
 For the complete list of changes, including bug fixes, see the {url-changelog}[changelog].
 
+[#v4-2]
+== Asciidoctor.js 4.2
+
+[#async-templates]
+=== Asynchronous templates and custom template engines
+
+The template converter now supports template engines that compile or render asynchronously.
+A plain JavaScript template can return a `Promise`, and the `configure` function of the xref:extend:converter/template-converter.adoc#helpers-js-file[helpers file] can be `async`: Asciidoctor.js waits for them to resolve.
+
+The `TemplateEngine` registry is now exported from `@asciidoctor/core`, so you can plug in the template engine of your choice, keyed by file extension.
+For instance, to use https://vento.js.org[Vento] templates:
+
+[source,js]
+----
+import { TemplateEngine } from '@asciidoctor/core'
+import vento from 'ventojs' // npm install ventojs
+
+const env = vento()
+TemplateEngine.register('vto', {
+  async compile (file, _name) { // <1>
+    const template = await env.load(file)
+    return {
+      async render (context) { // <2>
+        return (await template(context)).content
+      }
+    }
+  }
+})
+----
+<1> `compile()` can return a `Promise`.
+<2> So can `render()`, which receives the xref:extend:converter/template-converter.adoc#template-context[template context].
+
+Once registered, the templates with the `.vto` extension found in the template directories (e.g., _paragraph.vto_) are used like the built-in ones.
+See xref:extend:converter/template-converter.adoc#_custom_template_engines[Custom template engines] for details.
+
+[#default-stylesheet]
+=== Default stylesheet in sync with Asciidoctor
+
+The default stylesheet of the `html5` backend (`asciidoctor-default.css`) was still based on the one of Asciidoctor 2.0.x.
+It is now the stylesheet of Asciidoctor `main`, which will ship in the next Asciidoctor release.
+Among other changes, table stripes only apply to the rows of the table body, and only actual parts are italicized in the table of contents.
+
+[#compat-mode]
+=== `compat-mode` in the document header only
+
+The `compat-mode` attribute is now only honored when it is set in the document header, or through the API and CLI.
+An attribute entry that sets or unsets `compat-mode` in the document body is ignored and logs a warning.
+If your documents set `compat-mode` in the header, nothing changes.
+This anticipates the same behavior planned for the next minor release of Asciidoctor (https://github.com/asciidoctor/asciidoctor/issues/4898[asciidoctor#4898]).
+
+[#v4-1]
+== Asciidoctor.js 4.1
+
 [#semantic-html5]
-== A semantic HTML5 backend
+=== A semantic HTML5 backend
 
 The default `html5` backend reproduces the markup of AsciiDoc.py, byte for byte where possible, for compatibility.
 The output works, but it is a pile of wrapper ``<div>``s: `div.sect1 > div.sectionbody > div.paragraph > p`, admonitions laid out with a `<table>`, captions in a `div.title`...
@@ -40,11 +93,11 @@ Its markup, class names and stylesheet may change in any release, and it does no
 Try it out and {url-repo}/issues[tell us what you think]: the decisions that work in real projects will be ported back to Asciidoctor (Ruby).
 ====
 
-=== Before and after
+==== Before and after
 
 The following examples compare the output of the built-in `html5` backend with the output of the `semantic-html5` backend.
 
-==== Sections and paragraphs
+===== Sections and paragraphs
 
 [source,asciidoc]
 ----
@@ -77,7 +130,7 @@ Install the package.
 </section>
 ----
 
-==== Admonitions
+===== Admonitions
 
 [source,asciidoc]
 ----
@@ -110,7 +163,7 @@ Asciidoctor.js runs in the browser too.
 </aside>
 ----
 
-==== Images and code listings
+===== Images and code listings
 
 A captioned block becomes a `<figure>` with a `<figcaption>`, and a callout list is a plain ordered list.
 
@@ -169,7 +222,7 @@ const html = await convert(input) // <1>
 </ol>
 ----
 
-==== Quotes and collapsible blocks
+===== Quotes and collapsible blocks
 
 [source,asciidoc]
 ----
@@ -219,7 +272,7 @@ Imagination is more important than knowledge.
 </details>
 ----
 
-=== More than markup
+==== More than markup
 
 A standalone page::
 A standalone document is laid out as `<header>`, `<main>` and `<footer>`.
@@ -235,7 +288,7 @@ Like the `html5` stylesheet, it is embedded by default, linked with `:linkcss:`,
 XML output on demand::
 Set `htmlsyntax=xml` to get well-formed XHTML that you can process with an XML parser, XPath or XSLT.
 
-=== Details
+==== Details
 
 * Class names are consistently kebab-case: `sect-num`, `no-wrap`, `menu-seq`, `callout-num`... instead of the condensed `sectnum`, `nowrap`, `menuseq` and `conum` spellings of the `html5` backend.
 * Tables drop the `tableblock` classes; alignment classes (`halign-*`, `valign-*`) are only added when they are not the default.
@@ -250,12 +303,12 @@ The element produced for every AsciiDoc node, and the reasoning behind each choi
 To compare both backends on a larger document, open {url-devdocs}/semantic-html5-reference.adoc[the reference document] and its output with {url-devdocs}/semantic-html5-reference.html[`semantic-html5`] and {url-devdocs}/semantic-html5-reference-legacy.html[`html5`].
 
 [#build-time-highlighting]
-== Syntax highlighting at build time
+=== Syntax highlighting at build time
 
 Until now, the built-in highlight.js adapter shipped the highlight.js runtime with the page, and the browser colorized source blocks when the page loaded.
 Syntax highlighters can now run at conversion time, *asynchronously*: the colors are baked into the HTML, and your page needs no JavaScript at all.
 
-=== With highlight.js
+==== With highlight.js
 
 Install highlight.js, then add one attribute:
 
@@ -286,7 +339,7 @@ The source block is now delivered already colorized:
 Callouts, line numbers (`linenums`), line emphasis (`highlight=`) and `start=` all work, and the theme stylesheet is embedded in the page.
 See xref:extend:syntax-highlighter/syntax-highlighting.adoc#build-time-highlighting[Build-time highlighting] for all the options.
 
-=== With the highlighter of your choice
+==== With the highlighter of your choice
 
 The `highlight()` method of a syntax highlighter may now return a Promise.
 That opens the door to asynchronous highlighting engines, such as https://shiki.style[Shiki], which uses the same TextMate grammars and themes as VS Code:
