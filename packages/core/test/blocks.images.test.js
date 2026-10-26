@@ -826,7 +826,7 @@ image::unreadable.gif[Dot]
 :data-uri:
 :imagesdir: fixtures
 
-image::dot[Dot]
+image::dot-png[Dot]
 `
       const doc = await documentFromString(input, {
         safe: 'safe',
@@ -839,6 +839,17 @@ image::dot[Dot]
         '//img[starts-with(@src,"data:application/octet-stream;base64,")]',
         1
       )
+    })
+
+    test('imageUri should return the target as-is if the target is already a data uri when data-uri attribute is set', async () => {
+      const target =
+        'data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGJhc2VQcm9maWxlPSJmdWxsIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjgwIiBmaWxsPSIjZTkxZTYzIiAvPjwvc3ZnPg=='
+      const doc = await documentFromString(`image::${target}[]`, {
+        safe: 'safe',
+        attributes: { 'data-uri': '', 'allow-uri-read': '' },
+      })
+      const image = doc.getBlocks()[0]
+      assert.equal(await image.imageUri(image.getAttribute('target')), target)
     })
 
     test('can handle embedded data uri images', async () => {
