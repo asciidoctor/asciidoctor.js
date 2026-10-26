@@ -8,7 +8,9 @@
 //   - Ruby File.directory?/File.file? → fsp.stat().isDirectory()/isFile() (async).
 //   - Ruby File.basename / File.expand_path → node:path basename / resolve.
 //   - PathResolver.system_path → pathResolver.systemPath().
-//   - template.render(node, opts) → template.render({node, opts, helpers}).//   - Helpers loaded from helpers.js/helpers.cjs/helpers.mjs; can export configure(enginesContext).
+//   - template.render(node, opts) → template.render({node, opts, helpers}).
+//   - Helpers loaded from helpers.js/helpers.cjs/helpers.mjs; can export configure(enginesContext),
+//     which may return a Promise.
 //   - Custom engines registered via TemplateEngine.register(ext, adapter) (also exposed as
 //     TemplateConverter.TemplateEngine); compile() and render() may return a Promise.
 //   - Thread safety / Mutex → not needed (single-threaded JS).
@@ -371,7 +373,7 @@ export class TemplateConverter extends ConverterBase {
     if (helpersFile) {
       const helpersExt = helpersFile.slice(helpersFile.lastIndexOf('.') + 1)
       const ctx = await _loadModule(helpersFile, helpersExt)
-      if (typeof ctx.configure === 'function') ctx.configure(enginesCtx)
+      if (typeof ctx.configure === 'function') await ctx.configure(enginesCtx)
       result['helpers.js'] = { file: helpersFile, ctx }
     }
 
