@@ -469,3 +469,20 @@ describeNode('PathResolver constructor — relative workingDir', () => {
     )
   })
 })
+
+// ── webPath() ─────────────────────────────────────────────────────────────────
+
+describe('PathResolver#webPath()', () => {
+  test('target with relative path appended to start path', () => {
+    const resolver = posix()
+    assert.equal(resolver.webPath('images', 'assets'), 'assets/images')
+    assert.equal(resolver.webPath('images', '/assets'), '/assets/images')
+    assert.equal(
+      resolver.webPath('tiger.png', '/assets//images'),
+      '/assets//images/tiger.png'
+    )
+    assert.equal(resolver.webPath('images', './assets'), './assets/images')
+    assert.equal(resolver.webPath('theme.css', '/'), '/theme.css')
+    assert.equal(resolver.webPath('theme.css', '/css/'), '/css/theme.css')
+  })
+})
