@@ -3,11 +3,13 @@ import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
 import { readFileSync } from 'node:fs'
+import { readFile } from 'node:fs/promises'
 import nunjucks from 'nunjucks'
 import dot from 'dot'
 
 import { load } from '../src/load.js'
 import { TemplateConverter } from '../src/converter/template.js'
+import { TemplateEngine } from '../src/index.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const TEMPLATES_DIR = join(__dirname, 'fixtures', 'templates')
@@ -114,46 +116,37 @@ describe('Using a template converter', () => {
     )
   })
 
-  test('should use a JavaScript template that returns a promise (CJS)', async () => {
-    const result = await convert('*bold* statement', {
-      safe: 'safe',
-      backend: 'html5',
-      template_dir: join(TEMPLATES_DIR, 'js-promises-cjs'),
+  test('should use a custom template engine that compiles and renders asynchronously', async () => {
+    TemplateEngine.register('tpl', {
+      async compile(file, _name) {
+        const source = await readFile(file, 'utf8')
+        return {
+          async render({ node }) {
+            return source.replace('{{content}}', node.getContent())
+          },
+        }
+      },
     })
-    assert.ok(
-      result.includes(
-        '<p class="paragraph-promises-cjs"><strong>bold</strong> statement</p>'
-      ),
-      `Unexpected output:\n${result}`
-    )
+    try {
+      const result = await convert('*bold* statement', {
+        safe: 'safe',
+        backend: 'html5',
+        template_dir: join(TEMPLATES_DIR, 'async-engine'),
+        template_engine: 'tpl',
+      })
+      assert.ok(
+        result.includes(
+          '<p class="paragraph-async-engine"><strong>bold</strong> statement</p>'
+        ),
+        `Unexpected output:\n${result}`
+      )
+    } finally {
+      delete TemplateEngine.registry.tpl
+    }
   })
 
-  test('should use a JavaScript template that returns a promise (ESM)', async () => {
-    const result = await convert('*bold* statement', {
-      safe: 'safe',
-      backend: 'html5',
-      template_dir: join(TEMPLATES_DIR, 'js-promises-esm'),
-    })
-    assert.ok(
-      result.includes(
-        '<p class="paragraph-promises-esm"><strong>bold</strong> statement</p>'
-      ),
-      `Unexpected output:\n${result}`
-    )
-  })
-
-  test('should use a JavaScript template that returns a promise (ESM)', async () => {
-    const result = await convert('*bold* statement', {
-      safe: 'safe',
-      backend: 'html5',
-      template_dir: join(TEMPLATES_DIR, 'js-promises-esm'),
-    })
-    assert.ok(
-      result.includes(
-        '<p class="paragraph-promises-esm"><strong>bold</strong> statement</p>'
-      ),
-      `Unexpected output:\n${result}`
-    )
+  test('should expose the TemplateEngine registry on the TemplateConverter class', () => {
+    assert.equal(TemplateConverter.TemplateEngine, TemplateEngine)
   })
 
   // https://github.com/asciidoctor/asciidoctor.js/issues/1841

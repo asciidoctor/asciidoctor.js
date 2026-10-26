@@ -47,6 +47,13 @@ export default ({ node }) => `<p class="paragraph">${node.getContent()}</p>`
 
 This function will be called with a <<template-context>> as argument.
 
+The function can also return a `Promise` (for instance, an `async` function), in which case Asciidoctor.js waits for it to resolve:
+
+[source,js]
+----
+export default async ({ node }) => `<p class="paragraph">${node.getContent()}</p>`
+----
+
 [#file-extensions-and-module-formats]
 === File extensions and module formats
 
@@ -165,6 +172,32 @@ const options = { template_dirs: ['template-b', 'template-a'] }
 Then _template-a/paragraph.njk_ will win!
 
 Please note that it's not a recommended practice, and you should try to avoid conflicts upstream.
+
+== Custom template engines
+
+You can plug in any other template engine by registering an adapter with `TemplateEngine.register()`, keyed by file extension.
+An adapter must implement a `compile(file, name)` function that returns an object with a `render(context)` function, where `context` is the <<template-context>>.
+Both `compile` and `render` can return a `Promise`:
+
+[source,js]
+----
+import { TemplateEngine } from '@asciidoctor/core'
+import vento from 'ventojs'
+
+const env = vento()
+TemplateEngine.register('vto', {
+  async compile (file, _name) {
+    const template = await env.load(file)
+    return {
+      async render (context) {
+        return (await template(context)).content
+      }
+    }
+  }
+})
+----
+
+Once registered, the templates with the `.vto` extension found in the template directories are used like the built-in ones (e.g., _paragraph.vto_).
 
 [[helpers-js-file]]
 === helpers.js file

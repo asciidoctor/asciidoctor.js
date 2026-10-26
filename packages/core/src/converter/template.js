@@ -9,15 +9,16 @@
 //   - Ruby File.basename / File.expand_path → node:path basename / resolve.
 //   - PathResolver.system_path → pathResolver.systemPath().
 //   - template.render(node, opts) → template.render({node, opts, helpers}).//   - Helpers loaded from helpers.js/helpers.cjs/helpers.mjs; can export configure(enginesContext).
-//   - Custom engines registered via TemplateConverter.TemplateEngine.register(ext, adapter).
+//   - Custom engines registered via TemplateEngine.register(ext, adapter) (also exposed as
+//     TemplateConverter.TemplateEngine); compile() and render() may return a Promise.
 //   - Thread safety / Mutex → not needed (single-threaded JS).
 //   - load_eruby / eRuby support → not applicable in JS environment.
 //   - require_library → _nodeRequire() with a user-friendly IOError on missing module.
 //   - Constructor is sync; use TemplateConverter.create() factory for async _scan().
 
-import { TemplateEngine } from '../template_engine.js'
 import { ConverterBase } from '../converter.js'
 import { PathResolver } from '../path_resolver.js'
+import { TemplateEngine } from '../template_engine.js'
 import { createRequire } from 'node:module'
 import { pathToFileURL } from 'node:url'
 import { promises as fsp } from 'node:fs'
@@ -30,6 +31,7 @@ export class TemplateConverter extends ConverterBase {
   static _caches = { scans: {}, templates: {} }
 
   // Expose the TemplateEngine registry on the class for external registration.
+  /** @type {typeof TemplateEngine} */
   static TemplateEngine = TemplateEngine
 
   static clearCaches() {
