@@ -38,6 +38,7 @@ Bug Fixes::
 
 Improvements::
 
+* Add `Table.Cell#getBackgroundColor()` (alias `backgroundColor`), which returns the `cellbgcolor` value captured for the cell, including a value set by `{set:cellbgcolor:...}` in the text of the cell or a preceding cell, so that converters outside the core can support it (#1917)
 * Propagate the role on the document to the `<h1>` tag of the embedded (non-standalone) HTML output of the `html5` backend, for regular documents and manual pages (https://github.com/asciidoctor/asciidoctor/issues/4837[asciidoctor#4837])
 * Support the `link` attribute (including `link=self`) on the block image macro when converting to DocBook, wrapping the `<mediaobject>` in a `<link>` as already done for inline images (https://github.com/asciidoctor/asciidoctor/issues/4870[asciidoctor#4870])
 * Include the document keywords in the `<info>` element of the DocBook output, as a `<keywordset>`, and add `Document#keywords()` (alias `getKeywords()`), which returns the trimmed, non-blank entries of the comma-separated `keywords` attribute (https://github.com/asciidoctor/asciidoctor/issues/4866[asciidoctor#4866])

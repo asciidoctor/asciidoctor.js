@@ -867,13 +867,7 @@ ${title}${equation}
             const cellRowspanAttr = cell.rowspan
               ? ` rowspan="${cell.rowspan}"`
               : ''
-            // Use the per-cell captured cellbgcolor (set by {set:cellbgcolor:...}
-            // in cell text). Fall back to the current document attribute if not
-            // captured (null means captured while unset).
-            const cellbgcolor =
-              cell._cellbgcolor !== undefined
-                ? cell._cellbgcolor
-                : node.document.attributes.cellbgcolor
+            const cellbgcolor = cell.getBackgroundColor()
             const cellStyleAttr =
               cellbgcolor != null
                 ? ` style="background-color: ${cellbgcolor};"`
