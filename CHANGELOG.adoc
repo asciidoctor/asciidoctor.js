@@ -35,6 +35,7 @@ Bug Fixes::
 * Don't apply any substitutions to a block when the `subs` attribute is empty (e.g., `[subs=]`) instead of applying its default substitutions, and don't warn about an invalid substitution type when the `subs` attribute only contains spaces or ends with a comma (#1899)
 * Return a `Cursor` instead of a plain object from the `getSourceLocation()` method of a table cell when the `sourcemap` option is enabled (https://github.com/asciidoctor/asciidoctor.js/issues/1900[#1900])
 * Don't select an extra empty line at the end of an included file that ends with a newline when selecting lines (e.g., `lines=2..`) or tags, which ended the enclosing paragraph (#1898)
+* Report the line number of the first item as the line number of a callout list when the `sourcemap` option is enabled, instead of the line after the list (https://github.com/asciidoctor/asciidoctor/issues/4892[asciidoctor#4892])
 
 Improvements::
 

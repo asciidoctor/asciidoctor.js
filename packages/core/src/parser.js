@@ -1807,6 +1807,7 @@ export class Parser {
     const listBlock = new List(parent, 'colist')
     let nextIndex = 1
     let autonum = 0
+    const listMark = reader.mark()
 
     while (true) {
       if (!match) {
@@ -1851,6 +1852,7 @@ export class Parser {
       match = null
     }
 
+    reader.restoreMark(listMark)
     callouts.nextList()
     return listBlock
   }
