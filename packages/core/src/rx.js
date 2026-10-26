@@ -788,11 +788,12 @@ export const ExtLayoutBreakRx = /^(?:'{3,}|<{3,}|([-*_])( *)\1\2\1)$/
 export const BlankLineRx = /\n{2,}/
 
 /**
- * Matches a Base64-encoded image data URI.
+ * Matches an image target defined using a Base64-encoded data URI.
  * @example
- * data:image/png;base64,iVBORw0KGgo=
+ * data:image/png;base64,
+ * data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=
  */
-export const DataUriRx =
+export const ImageDataUriRx =
   /^data:image\/(?:png|jpe?g|gif|bmp|tiff|svg\+xml|webp);base64,/
 
 /**

@@ -25,7 +25,6 @@
 
 import { SafeMode, LF } from './constants.js'
 import {
-  isDataUri,
   isUriish,
   encodeSpacesInUri,
   isExtname,
@@ -34,6 +33,7 @@ import {
 } from './helpers.js'
 import { fetchUri } from './http_cache.js'
 import { isReadable, requireFs } from './node_fs.js'
+import { ImageDataUriRx } from './rx.js'
 
 /**
  * An abstract base class that provides state and methods for managing a node of AsciiDoc content.
@@ -548,7 +548,8 @@ export class AbstractNode {
    * @returns {Promise<string>} a Promise resolving to a String data URI.
    */
   async generateDataUriFromUri(imageUri) {
-    if (isDataUri(imageUri)) return imageUri
+    if (imageUri.startsWith('data:') && ImageDataUriRx.test(imageUri))
+      return imageUri
     try {
       const doc = this.document
       const response = await fetchUri(imageUri, doc)
