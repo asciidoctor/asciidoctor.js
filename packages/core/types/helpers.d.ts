@@ -33,13 +33,6 @@ export function prepareSourceString(data: string, trimEnd?: boolean): string[];
  */
 export function isUriish(str: string): boolean;
 /**
- * Check whether the specified String is a Base64-encoded image data URI.
- *
- * @param {string} str - the String to check
- * @returns {boolean} true if the String is an image data URI, false otherwise
- */
-export function isDataUri(str: string): boolean;
-/**
  * Encode a URI component String for safe inclusion in a URI.
  *
  * Encodes all characters that are not unreserved per RFC-3986. Specifically,

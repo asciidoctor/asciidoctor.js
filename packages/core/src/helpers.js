@@ -12,7 +12,7 @@
 //   - String#succ (nextval) is implemented for the ASCII alphanumeric subset
 //     used by Asciidoctor list-numbering sequences.
 
-import { DataUriRx, UriSniffRx } from './rx.js'
+import { UriSniffRx } from './rx.js'
 
 // ── BOM ──────────────────────────────────────────────────────────────────────
 // Unicode byte-order mark (U+FEFF). In a JS string (already decoded to UTF-16)
@@ -99,16 +99,6 @@ export function prepareSourceString(data, trimEnd = true) {
  */
 export function isUriish(str) {
   return str.includes(':') && UriSniffRx.test(str)
-}
-
-/**
- * Check whether the specified String is a Base64-encoded image data URI.
- *
- * @param {string} str - the String to check
- * @returns {boolean} true if the String is an image data URI, false otherwise
- */
-export function isDataUri(str) {
-  return str.startsWith('data:') && DataUriRx.test(str)
 }
 
 /**

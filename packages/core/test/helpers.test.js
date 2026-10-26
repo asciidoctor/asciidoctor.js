@@ -3,24 +3,23 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { isDataUri } from '../src/helpers.js'
+import { ImageDataUriRx } from '../src/rx.js'
 
 describe('Helpers', () => {
   describe('API', () => {
-    test('isDataUri should recognize an empty data URI', () => {
-      assert.ok(isDataUri('data:image/png;base64,'))
+    test('ImageDataUriRx should recognize an empty data URI', () => {
+      assert.match('data:image/png;base64,', ImageDataUriRx)
     })
 
-    test('isDataUri should recognize a valid data URI', () => {
-      assert.ok(
-        isDataUri(
-          'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='
-        )
+    test('ImageDataUriRx should recognize a valid data URI', () => {
+      assert.match(
+        'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=',
+        ImageDataUriRx
       )
     })
 
-    test('isDataUri should not recognize an invalid data URI', () => {
-      assert.ok(!isDataUri('data:image/ppm;base64,yadayadayada'))
+    test('ImageDataUriRx should not recognize an invalid data URI', () => {
+      assert.doesNotMatch('data:image/ppm;base64,yadayadayada', ImageDataUriRx)
     })
   })
 })
