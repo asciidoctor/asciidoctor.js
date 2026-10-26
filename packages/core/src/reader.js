@@ -581,8 +581,20 @@ export class Reader {
     return new Cursor(this.file, this._dir, this.path, this.lineno - 1)
   }
 
+  /**
+   * Mark the current position of the reader.
+   * @returns {[string|null, string, string, number]} the mark (file, dir, path and line number).
+   */
   mark() {
-    this.#mark = [this.file, this._dir, this.path, this.lineno]
+    return (this.#mark = [this.file, this._dir, this.path, this.lineno])
+  }
+
+  /**
+   * Restore a mark previously returned by {@link Reader#mark}.
+   * @param {[string|null, string, string, number]|null} mark - the mark to restore.
+   */
+  restoreMark(mark) {
+    this.#mark = mark
   }
 
   lineInfo() {

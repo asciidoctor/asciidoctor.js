@@ -2,7 +2,7 @@ import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
-import { dirname, join, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
 
 import { getVersion, SafeMode, load, loadFile } from '../src/index.js'
 
@@ -364,5 +364,29 @@ describe('loadFile', () => {
     assert.equal(doc.getAttribute('docdir'), dirname(resolve(samplePath)))
     assert.equal(doc.getAttribute('docfilesuffix'), '.adoc')
     assert.equal(doc.getAttribute('docname'), 'sample')
+  })
+
+  test('track file and line information of lists if sourcemap option is set', async () => {
+    const doc = await loadFile(join(FIXTURES_DIR, 'sample.adoc'), {
+      sourcemap: true,
+      safe: 'safe',
+    })
+
+    const ulistBlock = doc.findBy({ context: 'ulist' })[0]
+    assert.equal(basename(ulistBlock.getFile()), 'sample.adoc')
+    assert.equal(ulistBlock.getLineNumber(), 28)
+    assert.deepEqual(
+      ulistBlock.getBlocks().map((item) => item.getLineNumber()),
+      [28, 29, 30]
+    )
+
+    const colistBlock = doc.getSections()[1].getBlocks().at(-1)
+    assert.equal(colistBlock.getContext(), 'colist')
+    assert.equal(basename(colistBlock.getFile()), 'sample.adoc')
+    assert.equal(colistBlock.getLineNumber(), 37)
+    assert.deepEqual(
+      colistBlock.getBlocks().map((item) => item.getLineNumber()),
+      [37, 38, 39]
+    )
   })
 })

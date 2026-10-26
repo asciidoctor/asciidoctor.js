@@ -129,7 +129,16 @@ export class Reader {
     cursorAtMark(): Cursor;
     cursorBeforeMark(): Cursor;
     cursorAtPrevLine(): Cursor;
-    mark(): void;
+    /**
+     * Mark the current position of the reader.
+     * @returns {[string|null, string, string, number]} the mark (file, dir, path and line number).
+     */
+    mark(): [string | null, string, string, number];
+    /**
+     * Restore a mark previously returned by {@link Reader#mark}.
+     * @param {[string|null, string, string, number]|null} mark - the mark to restore.
+     */
+    restoreMark(mark: [string | null, string, string, number] | null): void;
     lineInfo(): string;
     /**
      * Returns the remaining lines in forward order (first remaining line at index 0).
