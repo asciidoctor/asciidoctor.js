@@ -86,6 +86,39 @@ describe('Table', () => {
       assert.equal(cell.getLineNumber(), null)
     })
 
+    test('getBackgroundColor() returns null when cellbgcolor is unset', async () => {
+      const doc = await documentFromString('|===\n|cell\n|===')
+      const cell = doc.blocks[0].rows.body[0][0]
+      assert.equal(cell.getBackgroundColor(), null)
+    })
+
+    test('getBackgroundColor() returns the cellbgcolor document attribute', async () => {
+      const doc = await documentFromString(
+        ':cellbgcolor: #abcdef\n\n|===\n|cell a|AsciiDoc cell\n|==='
+      )
+      const [cell, asciidocCell] = doc.blocks[0].rows.body[0]
+      assert.equal(cell.getBackgroundColor(), '#abcdef')
+      assert.equal(asciidocCell.getBackgroundColor(), '#abcdef')
+    })
+
+    test('getBackgroundColor() returns the cellbgcolor set in the text of the cell or a preceding cell', async () => {
+      const doc = await documentFromString(`|===
+|{set:cellbgcolor:red}red a|AsciiDoc cell
+|{set:cellbgcolor!}plain a|AsciiDoc cell
+|===`)
+      const [row1, row2] = doc.blocks[0].rows.body
+      assert.deepEqual(
+        row1.map((cell) => cell.getBackgroundColor()),
+        ['red', 'red']
+      )
+      assert.deepEqual(
+        row2.map((cell) => cell.getBackgroundColor()),
+        [null, null]
+      )
+      // the {set:...} assignments in the cells don't leak into the document
+      assert.equal(doc.hasAttribute('cellbgcolor'), false)
+    })
+
     test('getSourceLocation() returns a Cursor when sourcemap is enabled', async () => {
       const doc = await documentFromString('|===\n|cell\n|===', {
         sourcemap: true,

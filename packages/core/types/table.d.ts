@@ -173,6 +173,8 @@ declare class Cell extends AbstractBlock<string | string[]> {
     source(): any;
     get innerDocument(): any;
     get file(): any;
+    /** @returns {string|null} */
+    get backgroundColor(): string | null;
     /**
      * Get the text with substitutions applied.
      * @returns {string|null}
@@ -188,6 +190,16 @@ declare class Cell extends AbstractBlock<string | string[]> {
      * @returns {import('./document.js').Document|null}
      */
     getInnerDocument(): import("./document.js").Document | null;
+    /**
+     * Get the background color of this cell, from the `cellbgcolor` document attribute.
+     *
+     * Since `{set:cellbgcolor:...}` in the text of a cell changes the attribute for this cell
+     * and the cells after it, and the text of a cell is substituted while the document is
+     * parsed, the value is captured for each cell at that time. Until then (e.g. in a tree
+     * processor), the current value of the document attribute is returned.
+     * @returns {string|null} the background color, or null if `cellbgcolor` is unset.
+     */
+    getBackgroundColor(): string | null;
 }
 declare class ParserContext {
     static get FORMATS(): Set<string>;
