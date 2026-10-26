@@ -505,20 +505,24 @@ export class AbstractNode {
    * @returns {Promise<string>} a Promise resolving to a String data URI.
    */
   async generateDataUri(targetImage, assetDirKey = null) {
-    const ext = extname(targetImage, null)
-    const mimetype = ext
-      ? ext === '.svg'
-        ? 'image/svg+xml'
-        : `image/${ext.slice(1)}`
-      : 'application/octet-stream'
-    const imagePath = assetDirKey
-      ? this.normalizeSystemPath(
-          targetImage,
-          this.getAttribute(assetDirKey, null, true),
-          null,
-          { targetName: 'image' }
-        )
-      : this.normalizeSystemPath(targetImage)
+    const imagePath = this.normalizeSystemPath(
+      targetImage,
+      assetDirKey ? this.getAttribute(assetDirKey, null, true) : null,
+      null,
+      { targetName: 'image' }
+    )
+    const format = this.getAttribute('format')
+    let mimetype
+    if (format) {
+      mimetype = format === 'svg' ? 'image/svg+xml' : `image/${format}`
+    } else {
+      const ext = extname(targetImage, null)
+      mimetype = ext
+        ? ext === '.svg'
+          ? 'image/svg+xml'
+          : `image/${ext.slice(1)}`
+        : 'application/octet-stream'
+    }
     if (isUriish(imagePath)) {
       return await this.generateDataUriFromUri(imagePath)
     }
@@ -549,11 +553,14 @@ export class AbstractNode {
       const doc = this.document
       const response = await fetchUri(imageUri, doc)
       if (response.ok) {
-        const mimetype = (
-          response.headers.get('content-type') || 'application/octet-stream'
-        )
-          .split(';')[0]
-          .trim()
+        const format = this.getAttribute('format')
+        const mimetype = format
+          ? format === 'svg'
+            ? 'image/svg+xml'
+            : `image/${format}`
+          : (response.headers.get('content-type') || 'application/octet-stream')
+              .split(';')[0]
+              .trim()
         const buffer = await response.arrayBuffer()
         const base64 = btoa(
           Array.from(new Uint8Array(buffer), (b) =>
