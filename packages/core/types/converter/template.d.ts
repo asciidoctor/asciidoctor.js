@@ -3,10 +3,8 @@ export class TemplateConverter extends ConverterBase {
         scans: {};
         templates: {};
     };
-    static TemplateEngine: {
-        registry: {};
-        register(names: any, adapter: any): void;
-    };
+    /** @type {typeof TemplateEngine} */
+    static TemplateEngine: typeof TemplateEngine;
     static clearCaches(): void;
     /** Alias for clearCaches() — matches the Ruby/core API name. */
     static clearCache(): void;
@@ -81,3 +79,4 @@ export class TemplateConverter extends ConverterBase {
 }
 export default TemplateConverter;
 import { ConverterBase } from '../converter.js';
+import { TemplateEngine } from '../template_engine.js';
