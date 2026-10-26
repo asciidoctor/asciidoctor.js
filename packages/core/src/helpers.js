@@ -144,11 +144,9 @@ export function encodeSpacesInUri(str) {
  * // => "part1/chapter1"
  */
 export function rootname(filename) {
-  const lastDotIdx = filename.lastIndexOf('.')
-  if (lastDotIdx < 0) return filename
-  return filename.indexOf('/', lastDotIdx) >= 0
-    ? filename
-    : filename.slice(0, lastDotIdx)
+  const idx = filename.lastIndexOf('.')
+  if (idx < 0 || idx + 1 === filename.length) return filename
+  return filename.indexOf('/', idx + 1) >= 0 ? filename : filename.slice(0, idx)
 }
 
 /**
@@ -184,8 +182,8 @@ export function basename(filename, dropExt = null) {
  * @returns {boolean} true if the path has a file extension, false otherwise
  */
 export function isExtname(path) {
-  const lastDotIdx = path.lastIndexOf('.')
-  return lastDotIdx >= 0 && path.indexOf('/', lastDotIdx) < 0
+  const idx = path.lastIndexOf('.')
+  return idx >= 0 && idx + 1 < path.length && path.indexOf('/', idx + 1) < 0
 }
 
 /**
@@ -200,12 +198,12 @@ export function isExtname(path) {
  * @returns {string} the String file extension (with the leading dot) or fallback
  */
 export function extname(path, fallback = '') {
-  const lastDotIdx = path.lastIndexOf('.')
-  if (lastDotIdx < 0) return fallback
+  const idx = path.lastIndexOf('.')
+  if (idx < 0 || idx + 1 === path.length) return fallback
   // treat both '/' and '\\' as path separators (Windows support)
-  if (path.indexOf('/', lastDotIdx) >= 0 || path.indexOf('\\', lastDotIdx) >= 0)
+  if (path.indexOf('/', idx + 1) >= 0 || path.indexOf('\\', idx + 1) >= 0)
     return fallback
-  return path.slice(lastDotIdx)
+  return path.slice(idx)
 }
 
 /**
