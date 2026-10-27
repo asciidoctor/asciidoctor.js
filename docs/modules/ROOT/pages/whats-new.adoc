@@ -40,7 +40,7 @@ TemplateEngine.register('vto', {
 <2> So can `render()`, which receives the xref:extend:converter/template-converter.adoc#template-context[template context].
 
 Once registered, the templates with the `.vto` extension found in the template directories (e.g., _paragraph.vto_) are used like the built-in ones.
-See xref:extend:converter/template-converter.adoc#_custom_template_engines[Custom template engines] for details.
+See xref:extend:converter/template-converter.adoc#custom-template-engines[Custom template engines] for details.
 
 [#default-stylesheet]
 === Default stylesheet in sync with Asciidoctor
