@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.2.1 (2026-11-02)
+
 Improvements::
 
 * Add `Table.Cell#getBackgroundColor()` (alias `backgroundColor`), which returns the `cellbgcolor` value captured for the cell, including a value set by `{set:cellbgcolor:...}` in the text of the cell or a preceding cell, so that converters outside the core can support it (#1917)
