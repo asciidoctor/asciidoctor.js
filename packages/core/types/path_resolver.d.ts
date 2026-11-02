@@ -61,7 +61,9 @@ export class PathResolver {
      */
     expandPath(path: string): string;
     /**
-     * Partition the path into segments and a root prefix.
+     * Partition the path into segments and a root prefix, removing any empty or
+     * self reference (.) segments. Prior to partitioning, the path is converted
+     * to a posix path.
      * @param {string} path - The path to partition.
      * @param {boolean} [web=false] - Treat as web path.
      * @returns {[string[], string|null]} A 2-item array [segments, root] where root may be null.
