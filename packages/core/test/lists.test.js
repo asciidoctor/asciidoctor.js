@@ -2148,6 +2148,17 @@ describe('Ordered lists (olist)', () => {
       assertCss(output, '.olist.lowerroman .olist.loweralpha .olist.arabic', 1)
     })
 
+    test('should allow list style to be implied when using markers with implicit style', async () => {
+      const input = `i) 1
+ii) 2
+iii) 3
+`
+      const output = await convertStringToEmbedded(input)
+      assertCss(output, '.olist', 1)
+      assertCss(output, '.olist.lowerroman', 1)
+      assertCss(output, '.olist.lowerroman ol.lowerroman[type=i]', 1)
+    })
+
     test('should allow list style to be specified explicitly when using markers with implicit style', async () => {
       const input = `[loweralpha]
 i) 1
@@ -2374,6 +2385,7 @@ more text
       await usingMemoryLogger(async (logger) => {
         const output = await convertStringToEmbedded(input)
         assertCss(output, 'ol[start=7]', 1)
+        assertCss(output, 'ol[type]', 0)
         assertCss(output, 'ol.arabic', 1)
         assertCss(output, 'ol li', 2)
         assert.equal(logger.messages.length, 0)
@@ -2404,6 +2416,7 @@ V) item 5
       await usingMemoryLogger(async (logger) => {
         const output = await convertStringToEmbedded(input)
         assertCss(output, 'ol[start=4]', 1)
+        assertCss(output, 'ol[type=I]', 1)
         assertCss(output, 'ol.upperroman', 1)
         assertCss(output, 'ol li', 2)
         assert.equal(logger.messages.length, 0)
