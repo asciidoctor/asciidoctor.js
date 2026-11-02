@@ -1,9 +1,9 @@
 name: asciidoctor.js
 title: Asciidoctor.js
-version: '4.1'
+version: '4.2'
 asciidoc:
   attributes:
-    url-jsdoc: 'https://asciidoctor.github.io/asciidoctor.js/4.1/'
+    url-jsdoc: 'https://asciidoctor.github.io/asciidoctor.js/4.2/'
 nav:
 - modules/ROOT/nav.adoc
 - modules/setup/nav.adoc

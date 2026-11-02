@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.2.0 (2026-11-02)
+
 Bug Fixes::
 
 * Derive the `authorinitials` attribute from an `author` attribute entry in a header that has a document title but no author line (e.g., `:author: Doc Writer` gives `DW`), like Asciidoctor, instead of leaving it unset
