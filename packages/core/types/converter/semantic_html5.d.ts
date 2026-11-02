@@ -69,8 +69,8 @@ export default class SemanticHtml5Converter extends ConverterBase {
     convert_outline(node: any, opts?: {}): Promise<string>;
     convert_video(node: any): Promise<string>;
     convert_audio(node: any): Promise<string>;
-    convert_image(node: any): Promise<any>;
-    convert_inline_image(node: any): Promise<any>;
+    convert_image(node: any): Promise<string>;
+    convert_inline_image(node: any): Promise<string>;
     convert_inline_anchor(node: any): Promise<string>;
     convert_inline_callout(node: any): Promise<string>;
     convert_inline_footnote(node: any): Promise<string>;
@@ -87,7 +87,9 @@ export default class SemanticHtml5Converter extends ConverterBase {
     _generateRevision(node: any): string;
     _formatAuthor(node: any, author: any): Promise<any>;
     _inContext(name: any, callback: any): Promise<any>;
-    readSvgContents: (node: any, target: any) => Promise<any>;
+    readSvgContents: (node: AbstractNode, target: string, resolved?: boolean) => Promise<string | null>;
+    _readInlineSvg: (node: any, target: any, src: any) => Promise<string>;
     _decodeDataUri: (target: any) => any;
 }
 import { ConverterBase } from '../converter.js';
+import { AbstractNode } from '../abstract_node.js';

@@ -43,12 +43,49 @@ describe('Blocks', () => {
             body: readFileSync(path.join(FIXTURES_DIR, 'circle.svg'), 'utf8'),
           },
         ],
+        [
+          '/text-plain/circle.svg',
+          {
+            contentType: 'text/plain',
+            body: readFileSync(path.join(FIXTURES_DIR, 'circle.svg'), 'utf8'),
+          },
+        ],
       ])
       ;({ server, baseUri } = await startServer(routes))
     })
 
     after(() => {
       server.close()
+    })
+
+    test('converts to inline SVG image when remote SVG is not served as image/svg+xml and data-uri is set', async () => {
+      const input = `image::${baseUri}/text-plain/circle.svg[circle,opts=inline]`
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { 'data-uri': '', 'allow-uri-read': '' },
+      })
+      assert.ok(output.includes('<svg'))
+      assert.ok(!output.includes('<img'))
+    })
+
+    test('does not convert to inline SVG image when format of remote image cannot be determined and data-uri is set', async () => {
+      const input = `image::${baseUri}/fixtures/square-svg[square,opts=inline]`
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { 'data-uri': '', 'allow-uri-read': '' },
+      })
+      assert.ok(
+        output.includes('<img src="data:application/octet-stream;base64,')
+      )
+    })
+
+    test('uses format derived from image target instead of content type sent by server', async () => {
+      const input = `image::${baseUri}/text-plain/circle.svg[circle]`
+      const output = await convertStringToEmbedded(input, {
+        safe: 'safe',
+        attributes: { 'data-uri': '', 'allow-uri-read': '' },
+      })
+      assert.ok(output.includes('<img src="data:image/svg+xml;base64,'))
     })
 
     test('embeds remote SVG to inline when inline option is set on block and allow-uri-read is set on document', async () => {

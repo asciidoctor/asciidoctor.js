@@ -919,6 +919,122 @@ image::data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=[Do
       })
     })
 
+    test('converts to inline SVG image when target is a base64-encoded data URI', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const svg =
+          '<svg xmlns="http://www.w3.org/2000/svg"><circle r="1"/></svg>'
+        const dataUri = `data:image/svg+xml;base64,${btoa(svg)}`
+        const output = await convertStringToEmbedded(
+          `image::${dataUri}[Circle,100,opts=inline]`,
+          { safe: 'safe' }
+        )
+        assert.equal(logger.messages.length, 0)
+        assert.match(output, /<svg\s[^>]*width="100"[^>]*>/)
+        assert.ok(output.includes('<circle r="1"/>'))
+        assert.ok(!output.includes('<img'))
+      })
+    })
+
+    test('decodes UTF-8 characters when creating inline SVG image when target is a base64-encoded data URI', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const svg =
+          '<svg xmlns="http://www.w3.org/2000/svg"><text>Café</text></svg>'
+        const base64 = btoa(
+          String.fromCharCode(...new TextEncoder().encode(svg))
+        )
+        const output = await convertStringToEmbedded(
+          `image::data:image/svg+xml;base64,${base64}[Circle,100,opts=inline]`,
+          { safe: 'safe' }
+        )
+        assert.equal(logger.messages.length, 0)
+        assert.ok(output.includes('<svg '))
+        assert.ok(output.includes('<text>Café</text>'))
+        assert.ok(!output.includes('<span class="alt">'))
+      })
+    })
+
+    test('converts to alt text when SVG image is an invalid base64-encoded data URI', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const target = 'data:image/svg+xml;base64,invalid'
+        const output = await convertStringToEmbedded(
+          `image::${target}[svg,opts=inline]`,
+          { safe: 'safe' }
+        )
+        assertMessage(
+          logger,
+          'WARN',
+          `could not decode contents of SVG data URI: ${target}`
+        )
+        assert.ok(!output.includes('<svg'))
+        assert.ok(output.includes('<span class="alt">svg</span>'))
+      })
+    })
+
+    test('imageFormat() determines the format of an image', async () => {
+      const doc = await documentFromString('image::tiger.png[]')
+      const block = doc.blocks[0]
+      assert.equal(block.imageFormat('tiger.png'), 'png')
+      assert.equal(block.imageFormat('tiger.jpg'), 'jpg')
+      assert.equal(block.imageFormat('tiger.svg'), 'svg')
+      assert.equal(block.imageFormat('http://example.org/tiger.svg?v=1'), 'svg')
+      assert.equal(block.imageFormat('http://example.org/tiger.svg#top'), 'svg')
+      assert.equal(block.imageFormat('tiger'), null)
+      assert.equal(block.imageFormat('tiger.'), null)
+      assert.equal(block.imageFormat('data:image/svg+xml;base64,AAAA'), 'svg')
+      assert.equal(block.imageFormat('data:image/gif;base64,AAAA'), 'gif')
+      assert.equal(block.imageFormat('data:image/svg+xml,<svg/>'), 'svg')
+    })
+
+    test('imageFormat() prefers the format attribute and normalizes jpg to jpeg', async () => {
+      const doc = await documentFromString(
+        'image::tiger.png[format=jpg]\n\nimage::tiger.png[format=]'
+      )
+      assert.equal(doc.blocks[0].imageFormat('tiger.png'), 'jpeg')
+      assert.equal(doc.blocks[1].imageFormat('tiger.png'), 'png')
+    })
+
+    test('should not read inline SVG relative to imagesdir twice', async () => {
+      await usingMemoryLogger(async (logger) => {
+        const output = await convertStringToEmbedded(
+          ':imagesdir: fixtures\n\nimage::circle.svg[Circle,opts=inline]',
+          { safe: 'safe', base_dir: __dirname }
+        )
+        assert.equal(logger.messages.length, 0)
+        assert.ok(output.includes('<svg'))
+      })
+    })
+
+    for (const backend of ['html5', 'semantic-html5']) {
+      test(`converts inline image macro to inline SVG when target is a data URI using ${backend}`, async () => {
+        const svg =
+          '<svg xmlns="http://www.w3.org/2000/svg"><circle r="1"/></svg>'
+        const output = await convertStringToEmbedded(
+          `image:data:image/svg+xml;base64,${btoa(svg)}[Circle,opts=inline]`,
+          { safe: 'safe', backend }
+        )
+        assert.ok(output.includes('<circle r="1"/>'))
+        assert.ok(!output.includes('<img'))
+      })
+
+      test(`reads inline SVG whose target contains spaces using ${backend}`, async () => {
+        const output = await convertStringToEmbedded(
+          ':imagesdir: fixtures\n\nimage::circle with spaces.svg[Circle,opts=inline]\n\nimage:circle with spaces.svg[Circle,opts=inline]',
+          { safe: 'safe', base_dir: __dirname, backend }
+        )
+        assert.equal(output.match(/<svg /g)?.length, 2)
+      })
+    }
+
+    test('uses resolved source as link target of inline SVG when link attribute is self', async () => {
+      const output = await convertStringToEmbedded(
+        ':imagesdir: fixtures\n\nimage::circle.svg[Circle,opts=inline,link=self]',
+        { safe: 'safe', base_dir: __dirname }
+      )
+      assert.ok(
+        output.includes('<a class="image" href="fixtures/circle.svg"><svg')
+      )
+    })
+
     test('encodes spaces in an embedded data uri image target', async () => {
       const input =
         "image::data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text>a b</text></svg>[Dot]"

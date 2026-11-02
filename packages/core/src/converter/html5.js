@@ -29,7 +29,7 @@ import {
   INLINE_MATH_DELIMITERS,
 } from '../constants.js'
 import { XmlSanitizeRx } from '../rx.js'
-import { extname, splitOnce, toInt } from '../helpers.js'
+import { extname, isUriish, splitOnce, toInt } from '../helpers.js'
 import { Stylesheets } from '../stylesheets.js'
 
 // ── Local regex constants ─────────────────────────────────────────────────────
@@ -833,29 +833,25 @@ ${await node.content()}
       ? ` height="${node.getAttribute('height')}"`
       : ''
     const slash = this._voidSlash
-    let img, src
+    const src = await node.imageUri(target)
+    let img
     if (
-      (node.hasAttribute('format', 'svg') ||
-        target.includes('.svg') ||
-        target.startsWith('data:image/svg+xml')) &&
+      node.imageFormat(src) === 'svg' &&
       node.document.safe < SafeMode.SECURE
     ) {
       if (node.hasOption('inline')) {
         img =
-          (await this.readSvgContents(node, target)) ||
+          (await this._readInlineSvg(node, target, src)) ||
           `<span class="alt">${node.getAlt()}</span>`
       } else if (node.hasOption('interactive')) {
         const fallback = node.hasAttribute('fallback')
           ? `<img src="${await node.imageUri(node.getAttribute('fallback'))}" alt="${this._encodeAttrValue(node.getAlt())}"${widthAttr}${heightAttr}${slash}>`
           : `<span class="alt">${node.getAlt()}</span>`
-        src = await node.imageUri(target)
         img = `<object type="image/svg+xml" data="${src}"${widthAttr}${heightAttr}>${fallback}</object>`
       } else {
-        src = await node.imageUri(target)
         img = `<img src="${src}" alt="${this._encodeAttrValue(node.getAlt())}"${widthAttr}${heightAttr}${slash}>`
       }
     } else {
-      src = await node.imageUri(target)
       img = `<img src="${src}" alt="${this._encodeAttrValue(node.getAlt())}"${widthAttr}${heightAttr}${slash}>`
     }
 
@@ -1672,6 +1668,7 @@ Your browser does not support the video tag.
         img = `[${node.getAlt()}&#93;`
       }
     } else {
+      src = await node.imageUri(target)
       let attrs = node.hasAttribute('width')
         ? ` width="${node.getAttribute('width')}"`
         : ''
@@ -1680,27 +1677,22 @@ Your browser does not support the video tag.
       if (node.hasAttribute('title'))
         attrs += ` title="${node.getAttribute('title')}"`
       if (
-        (node.hasAttribute('format', 'svg') ||
-          target.includes('.svg') ||
-          target.startsWith('data:image/svg+xml')) &&
+        node.imageFormat(src) === 'svg' &&
         node.document.safe < SafeMode.SECURE
       ) {
         if (node.hasOption('inline')) {
           img =
-            (await this.readSvgContents(node, target)) ||
+            (await this._readInlineSvg(node, target, src)) ||
             `<span class="alt">${node.getAlt()}</span>`
         } else if (node.hasOption('interactive')) {
           const fallback = node.hasAttribute('fallback')
             ? `<img src="${await node.imageUri(node.getAttribute('fallback'))}" alt="${this._encodeAttrValue(node.getAlt())}"${attrs}${this._voidSlash}>`
             : `<span class="alt">${node.getAlt()}</span>`
-          src = await node.imageUri(target)
           img = `<object type="image/svg+xml" data="${src}"${attrs}>${fallback}</object>`
         } else {
-          src = await node.imageUri(target)
           img = `<img src="${src}" alt="${this._encodeAttrValue(node.getAlt())}"${attrs}${this._voidSlash}>`
         }
       } else {
-        src = await node.imageUri(target)
         img = `<img src="${src}" alt="${this._encodeAttrValue(node.getAlt())}"${attrs}${this._voidSlash}>`
       }
     }
@@ -1773,19 +1765,35 @@ Your browser does not support the video tag.
     return `${open}${node.text}${close}`
   }
 
+  /**
+   * Read the contents of an SVG image.
+   *
+   * @param {AbstractNode} node - The image node.
+   * @param {string} target - The target of the image, or its URI if resolved is true.
+   * @param {boolean} [resolved=false] - Whether the target has already been
+   * resolved (i.e., by {@link AbstractNode#imageUri}) and thus must not be
+   * resolved relative to the imagesdir attribute.
+   * @returns {Promise<string|null>} the SVG, or null if not available.
+   */
   // NOTE expose readSvgContents for Bespoke converter
-  async readSvgContents(node, target) {
-    // A data-URI carries the SVG in the target itself (e.g. an embedded diagram
+  async readSvgContents(node, target, resolved = false) {
+    // A data URI carries the SVG in the target itself (e.g. an embedded diagram
     // produced with `:data-uri:`), so decode it directly rather than trying to
     // read it as a file or remote URI.
-    let svg = target.startsWith('data:')
-      ? this._decodeDataUri(target)
-      : await node.readContents(target, {
-          start: node.document.getAttribute('imagesdir'),
-          normalize: true,
-          label: 'SVG',
-          warnIfEmpty: true,
-        })
+    let svg
+    if (target.startsWith('data:')) {
+      svg = this._decodeDataUri(target)?.trimEnd()
+      if (svg == null) {
+        this.logger.warn(`could not decode contents of SVG data URI: ${target}`)
+      }
+    } else {
+      svg = await node.readContents(target, {
+        ...(resolved ? {} : { start: node.document.getAttribute('imagesdir') }),
+        normalize: true,
+        label: 'SVG',
+        warnIfEmpty: true,
+      })
+    }
     if (!svg) return null
     if (!svg.startsWith('<svg')) svg = svg.replace(SvgPreambleRx, '')
     // Fix incomplete SVG start tag (missing closing >) by inserting > before the first child element.
@@ -1818,10 +1826,24 @@ Your browser does not support the video tag.
   // ── Private helpers ─────────────────────────────────────────────────────────
 
   /**
+   * Read the SVG to inline. Only use the resolved source if it's a URI since
+   * spaces in a local path are encoded in it, which would prevent the file from
+   * being found.
+   *
+   * @internal
+   * @private
+   */
+  _readInlineSvg(node, target, src) {
+    return isUriish(src)
+      ? this.readSvgContents(node, src, true)
+      : this.readSvgContents(node, target)
+  }
+
+  /**
    * Decode an inline `data:` URI to its text contents (e.g. an SVG document) so
    * an image whose target is a data-URI can be embedded inline. Supports both
    * Base64 (`;base64,`) and percent-encoded payloads. Returns null when the
-   * payload is missing.
+   * payload is missing or cannot be decoded.
    *
    * @internal
    * @private
@@ -1831,11 +1853,15 @@ Your browser does not support the video tag.
     if (comma === -1) return null
     const meta = target.slice('data:'.length, comma)
     const data = target.slice(comma + 1)
-    if (/;base64\b/i.test(meta)) {
-      const bytes = Uint8Array.from(atob(data), (c) => c.charCodeAt(0))
-      return new TextDecoder('utf-8').decode(bytes)
+    try {
+      if (/;base64\b/i.test(meta)) {
+        const bytes = Uint8Array.from(atob(data), (c) => c.charCodeAt(0))
+        return new TextDecoder('utf-8', { fatal: true }).decode(bytes)
+      }
+      return decodeURIComponent(data)
+    } catch {
+      return null
     }
-    return decodeURIComponent(data)
   }
 
   /**

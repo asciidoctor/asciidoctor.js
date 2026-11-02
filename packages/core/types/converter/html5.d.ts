@@ -46,6 +46,17 @@ export default class Html5Converter extends ConverterBase {
     convert_inline_kbd(node: any): Promise<string>;
     convert_inline_menu(node: any): Promise<string>;
     convert_inline_quoted(node: any): Promise<string>;
-    readSvgContents(node: any, target: any): Promise<any>;
+    /**
+     * Read the contents of an SVG image.
+     *
+     * @param {AbstractNode} node - The image node.
+     * @param {string} target - The target of the image, or its URI if resolved is true.
+     * @param {boolean} [resolved=false] - Whether the target has already been
+     * resolved (i.e., by {@link AbstractNode#imageUri}) and thus must not be
+     * resolved relative to the imagesdir attribute.
+     * @returns {Promise<string|null>} the SVG, or null if not available.
+     */
+    readSvgContents(node: AbstractNode, target: string, resolved?: boolean): Promise<string | null>;
 }
 import { ConverterBase } from '../converter.js';
+import { AbstractNode } from '../abstract_node.js';
