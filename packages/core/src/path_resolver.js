@@ -19,6 +19,10 @@ const DOUBLE_SLASH = '//'
 const URI_CLASSLOADER = 'uri:classloader:'
 const WINDOWS_ROOT_RX = /^(?:[a-zA-Z]:)?[\\/]/
 
+/** Replace each run of forward slashes with a single forward slash. */
+const _squeezeSlashes = (path) =>
+  path.includes(DOUBLE_SLASH) ? path.replace(/\/{2,}/g, SLASH) : path
+
 /** Handles all operations for resolving, cleaning and joining paths. */
 export class PathResolver {
   /**
@@ -141,7 +145,9 @@ export class PathResolver {
   }
 
   /**
-   * Partition the path into segments and a root prefix.
+   * Partition the path into segments and a root prefix, removing any empty or
+   * self reference (.) segments. Prior to partitioning, the path is converted
+   * to a posix path.
    * @param {string} path - The path to partition.
    * @param {boolean} [web=false] - Treat as web path.
    * @returns {[string[], string|null]} A 2-item array [segments, root] where root may be null.
@@ -150,33 +156,46 @@ export class PathResolver {
     const cache = web ? this._partitionPathWeb : this._partitionPathSys
     if (cache[path]) return cache[path]
 
-    const posixPath = this.posixify(path)
+    const rawPosixPath = this.posixify(path)
+    const posixPath = _squeezeSlashes(rawPosixPath)
     let root = null
+    let relative = null
 
     if (web) {
-      if (this.webRoot(posixPath)) {
+      // NOTE unlike Ruby main, keep the root of a protocol-relative URL
+      if (this.unc(rawPosixPath)) {
+        root = DOUBLE_SLASH
+        relative = posixPath.slice(1)
+      } else if (this.webRoot(posixPath)) {
         root = SLASH
       } else if (posixPath.startsWith(DOT_SLASH)) {
         root = DOT_SLASH
       }
     } else if (this.root(posixPath)) {
-      if (this.unc(posixPath)) {
+      if (this.unc(rawPosixPath)) {
+        // the root is 2 slashes, but only 1 slash remains once squeezed
         root = DOUBLE_SLASH
+        relative = posixPath.slice(1)
       } else if (posixPath.startsWith(SLASH)) {
         root = SLASH
       } else if (posixPath.startsWith(URI_CLASSLOADER)) {
         root = URI_CLASSLOADER
       } else {
-        const extracted = this._extractUriPrefix(posixPath)
-        root = Array.isArray(extracted)
-          ? extracted[1] // URL scheme, e.g. 'http://'
-          : posixPath.slice(0, posixPath.indexOf(SLASH) + 1) // Windows drive, e.g. 'C:/'
+        // NOTE look for the URL scheme in the raw path since squeezing the
+        // slashes would alter it (unlike Ruby, a URI is an absolute path here)
+        const extracted = this._extractUriPrefix(rawPosixPath)
+        if (Array.isArray(extracted)) {
+          root = extracted[1] // URL scheme, e.g. 'http://'
+          relative = _squeezeSlashes(extracted[0])
+        } else {
+          root = posixPath.slice(0, posixPath.indexOf(SLASH) + 1) // Windows drive, e.g. 'C:/'
+        }
       }
     } else if (posixPath.startsWith(DOT_SLASH)) {
       root = DOT_SLASH
     }
 
-    const relative = root ? posixPath.slice(root.length) : posixPath
+    relative ??= root ? posixPath.slice(root.length) : posixPath
     // Mirror Ruby's String#split('/'), which drops only *trailing* empty
     // strings. A leading empty segment must be kept: it's what reconstructs
     // the missing slash for URI roots that under-consume it, e.g. root

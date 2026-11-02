@@ -479,10 +479,69 @@ describe('PathResolver#webPath()', () => {
     assert.equal(resolver.webPath('images', '/assets'), '/assets/images')
     assert.equal(
       resolver.webPath('tiger.png', '/assets//images'),
-      '/assets//images/tiger.png'
+      '/assets/images/tiger.png'
     )
     assert.equal(resolver.webPath('images', './assets'), './assets/images')
+    assert.equal(resolver.webPath('images', './/assets'), './assets/images')
     assert.equal(resolver.webPath('theme.css', '/'), '/theme.css')
     assert.equal(resolver.webPath('theme.css', '/css/'), '/css/theme.css')
+  })
+
+  test('keeps root of protocol-relative URL', () => {
+    assert.equal(
+      posix().webPath('//cdn.example.org//images/tiger.png'),
+      '//cdn.example.org/images/tiger.png'
+    )
+  })
+
+  test('normalize target with repeat slashes', () => {
+    assert.equal(posix().webPath('../images//../images'), '../images')
+  })
+
+  test('removes repeat slashes after the URL scheme of the start path', () => {
+    assert.equal(
+      posix().webPath('tiger.png', 'https://example.org//images'),
+      'https://example.org/images/tiger.png'
+    )
+    assert.equal(
+      posix().webPath('tiger.png', 'file:///images'),
+      'file:///images/tiger.png'
+    )
+  })
+})
+
+describe('PathResolver#systemPath() with repeat slashes', () => {
+  test('expands parent references in absolute path that contains repeat slashes', () => {
+    assert.equal(
+      posix().systemPath('/usr/share//../../etc//stylesheet.css'),
+      '/etc/stylesheet.css'
+    )
+  })
+
+  test('resolves relative target that contains repeat slashes', () => {
+    const resolver = posix()
+    assert.equal(
+      resolver.systemPath('.//images/tiger.png'),
+      `${resolver.workingDir}/images/tiger.png`
+    )
+  })
+
+  test('keeps root of UNC path', () => {
+    assert.equal(
+      posix().systemPath('//server//share/file.adoc'),
+      '//server/share/file.adoc'
+    )
+  })
+
+  test('keeps slashes of URL scheme', () => {
+    const resolver = posix()
+    assert.equal(
+      resolver.expandPath('file:///home//user/a.adoc'),
+      'file:///home/user/a.adoc'
+    )
+    assert.equal(
+      resolver.expandPath('https://example.org//a//b.adoc'),
+      'https://example.org/a/b.adoc'
+    )
   })
 })
