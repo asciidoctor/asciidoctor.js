@@ -40,7 +40,7 @@ import { isUriish } from '../helpers.js'
 function _linkReplacement(reader, target, attrlist) {
   const doc = reader._document
   const lt = target.includes(' ') ? `pass:c[${target}]` : target
-  const la = doc.hasAttribute('compat-mode')
+  const la = doc.compatMode
     ? (attrlist ?? '')
     : `role=include${attrlist ? `,${attrlist}` : ''}`
   return `link:${lt}[${la}]`

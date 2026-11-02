@@ -1371,7 +1371,7 @@ export class PreprocessorReader extends Reader {
       const lt = expandedTarget.includes(' ')
         ? `pass:c[${expandedTarget}]`
         : expandedTarget
-      const la = doc.hasAttribute('compat-mode')
+      const la = doc.compatMode
         ? (attrlist ?? '')
         : `role=include${attrlist ? `,${attrlist}` : ''}`
       return this.replaceNextLine(`link:${lt}[${la}]`)
@@ -1586,7 +1586,7 @@ export class PreprocessorReader extends Reader {
           { sourceLocation: this.cursor }
         )
         const lt = target.includes(' ') ? `pass:c[${target}]` : target
-        const la = doc.hasAttribute('compat-mode')
+        const la = doc.compatMode
           ? (attrlist ?? '')
           : `role=include${attrlist ? `,${attrlist}` : ''}`
         return this.replaceNextLine(`link:${lt}[${la}]`)

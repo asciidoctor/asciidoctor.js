@@ -234,6 +234,38 @@ describe('Structure', () => {
     assert.ok(!inAttr(doc, 'compat-mode'))
   })
 
+  test('does not enable compat mode in header if unset from API', async () => {
+    const input = "= Document Title\n:name: pass:n['quoted string']\n\n{name}"
+    const doc = await load(input, { attributes: { 'compat-mode': null } })
+    assert.equal(doc.compatMode, false)
+    assert.ok(doc.isAttributeLocked('compat-mode'))
+    assert.equal(doc.getAttribute('compat-mode'), null)
+    assert.ok((await doc.convert()).includes("<p>'quoted string'</p>"))
+  })
+
+  test('enables compat mode if set to an empty value or soft set from API', async () => {
+    for (const val of ['', '@']) {
+      const doc = await load('content', { attributes: { 'compat-mode': val } })
+      assert.equal(doc.compatMode, true)
+    }
+  })
+
+  test('compat mode can be soft unset from API and enabled in header', async () => {
+    const doc = await load('= Title\n:compat-mode:\n\ncontent', {
+      attributes: { 'compat-mode': false },
+    })
+    assert.equal(doc.compatMode, true)
+  })
+
+  test('tracks a change to compat-mode in header only', async () => {
+    const doc = await load(':compat-mode!:\n\ncontent\n\n:foo!:\n\nmore', {
+      attributes: { 'compat-mode': '@' },
+    })
+    assert.equal(doc.compatMode, false)
+    assert.ok(doc._attributesModified.has('compat-mode'))
+    assert.ok(!doc._attributesModified.has('foo'))
+  })
+
   test('subtitle partitioning via doctitle(partition)', async () => {
     const input = '= Main Title: Subtitle\nAuthor Name\n\ncontent'
     const doc = await parse(input)

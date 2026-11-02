@@ -10,7 +10,7 @@ import {
   convertStringToEmbedded,
   blockFromString,
 } from './harness.js'
-import { usingMemoryLogger } from './helpers.js'
+import { assertXpath, usingMemoryLogger } from './helpers.js'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -942,6 +942,35 @@ describe('Attributes', () => {
       assert.ok(
         output.includes('{foo}') || !output.includes('Belly up to the bar.')
       )
+    })
+
+    test('does not allow compat-mode soft set from API to be changed in middle of document', async () => {
+      const input = `:foo: bar
+
+[#paragraph-a]
+\`{foo}\`
+
+:compat-mode!:
+
+[#paragraph-b]
+\`{foo}\`
+
+:compat-mode:
+
+[#paragraph-c]
+\`{foo}\``
+      await usingMemoryLogger(async () => {
+        const result = await convertStringToEmbedded(input, {
+          attributes: { 'compat-mode': '@' },
+        })
+        for (const id of ['a', 'b', 'c']) {
+          assertXpath(
+            result,
+            `/*[@id="paragraph-${id}"]//code[text()="{foo}"]`,
+            1
+          )
+        }
+      })
     })
 
     test('does not allow compat-mode to be set in middle of document', async () => {

@@ -22,12 +22,12 @@ function makeDoc({
   return {
     baseDir,
     pathResolver,
+    compatMode,
     getAttribute: (name) => {
       if (name === 'allow-uri-read') return allowUriRead ? true : null
       return null
     },
     hasAttribute: (name) => {
-      if (name === 'compat-mode') return compatMode
       if (name === 'allow-uri-read') return allowUriRead
       return false
     },

@@ -213,9 +213,7 @@ export class Parser {
         document.header.sourceLocation = sourceLocation
       }
 
-      if (!atx && !document.isAttributeLocked('compat-mode')) {
-        docAttrs['compat-mode'] = ''
-      }
+      if (!atx) document.setAttribute('compat-mode')
       if (
         blockAttrs.separator != null &&
         !document.isAttributeLocked('title-separator')
