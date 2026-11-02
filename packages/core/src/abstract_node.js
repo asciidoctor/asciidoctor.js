@@ -35,6 +35,10 @@ import { fetchUri } from './http_cache.js'
 import { isReadable, requireFs } from './node_fs.js'
 import { ImageDataUriRx } from './rx.js'
 
+/** Get the mimetype for the specified image format. */
+const _imageMimetype = (format) =>
+  format === 'svg' ? 'image/svg+xml' : `image/${format}`
+
 /**
  * An abstract base class that provides state and methods for managing a node of AsciiDoc content.
  * The state and methods on this class are common to all content segments in an AsciiDoc document.
@@ -479,6 +483,40 @@ export class AbstractNode {
   }
 
   /**
+   * Determine the format of the image URI.
+   *
+   * The format is the value that follows `image/` in the mimetype, except for
+   * an SVG, which is `svg`.
+   *
+   * If the `format` attribute is specified on this node and non-empty, use that
+   * value. Otherwise, if the image is a data URI, derive the format from the
+   * mimetype in the URI. Otherwise, derive the format from the file extension of
+   * the URI, if it has one (tolerating a query string or fragment in the case of
+   * SVG).
+   *
+   * @param {string} uri - The String URI (or path) of the image.
+   * @returns {string|null} the String format, or null if it cannot be determined.
+   */
+  imageFormat(uri) {
+    const attrFormat = this.getAttribute('format')
+    if (attrFormat) return attrFormat === 'jpg' ? 'jpeg' : attrFormat
+    if (uri.startsWith('data:')) {
+      if (ImageDataUriRx.test(uri)) {
+        const format = uri.slice(11, uri.indexOf(';'))
+        return format === 'svg+xml' ? 'svg' : format
+      }
+      // NOTE JS only; Asciidoctor only handles a base64-encoded data URI
+      if (uri.startsWith('data:image/svg+xml,')) return 'svg'
+    }
+    const ext = extname(uri, null)
+    if (!ext) return null
+    return ext === '.svg' ||
+      (ext.startsWith('.svg') && (ext[4] === '?' || ext[4] === '#'))
+      ? 'svg'
+      : ext.slice(1)
+  }
+
+  /**
    * Construct a URI reference to the target media.
    *
    * @param {string} target - A String reference to the target media.
@@ -511,18 +549,10 @@ export class AbstractNode {
       null,
       { targetName: 'image' }
     )
-    const format = this.getAttribute('format')
-    let mimetype
-    if (format) {
-      mimetype = format === 'svg' ? 'image/svg+xml' : `image/${format}`
-    } else {
-      const ext = extname(targetImage, null)
-      mimetype = ext
-        ? ext === '.svg'
-          ? 'image/svg+xml'
-          : `image/${ext.slice(1)}`
-        : 'application/octet-stream'
-    }
+    const format = this.imageFormat(imagePath)
+    const mimetype = format
+      ? _imageMimetype(format)
+      : 'application/octet-stream'
     if (isUriish(imagePath)) {
       return await this.generateDataUriFromUri(imagePath)
     }
@@ -538,8 +568,9 @@ export class AbstractNode {
   /**
    * Read the image data from the specified URI and generate a data URI.
    *
-   * The image data is fetched and Base64-encoded. The MIME type is taken from
-   * the Content-Type response header.
+   * The image data is fetched and Base64-encoded. The MIME type is determined
+   * from the image format, if known (see {@link imageFormat}). Otherwise, it's
+   * taken from the Content-Type response header.
    *
    * NOTE: This method is async in JS (the Fetch API is async). When called from
    * imageUri, the caller must await the returned Promise.
@@ -553,12 +584,10 @@ export class AbstractNode {
     try {
       const doc = this.document
       const response = await fetchUri(imageUri, doc)
+      const format = this.imageFormat(imageUri)
       if (response.ok) {
-        const format = this.getAttribute('format')
         const mimetype = format
-          ? format === 'svg'
-            ? 'image/svg+xml'
-            : `image/${format}`
+          ? _imageMimetype(format)
           : (response.headers.get('content-type') || 'application/octet-stream')
               .split(';')[0]
               .trim()
@@ -570,11 +599,8 @@ export class AbstractNode {
         )
         return `data:${mimetype};base64,${base64}`
       } else {
-        const ext = extname(imageUri, null)
-        const mimetype = ext
-          ? ext === '.svg'
-            ? 'image/svg+xml'
-            : `image/${ext.slice(1)}`
+        const mimetype = format
+          ? _imageMimetype(format)
           : 'application/octet-stream'
         this.logger.warn(
           `image to embed not found or not readable: ${imageUri}`

@@ -249,6 +249,22 @@ export abstract class AbstractNode {
      */
     imageUri(targetImage: string, assetDirKey?: string): Promise<string>;
     /**
+     * Determine the format of the image URI.
+     *
+     * The format is the value that follows `image/` in the mimetype, except for
+     * an SVG, which is `svg`.
+     *
+     * If the `format` attribute is specified on this node and non-empty, use that
+     * value. Otherwise, if the image is a data URI, derive the format from the
+     * mimetype in the URI. Otherwise, derive the format from the file extension of
+     * the URI, if it has one (tolerating a query string or fragment in the case of
+     * SVG).
+     *
+     * @param {string} uri - The String URI (or path) of the image.
+     * @returns {string|null} the String format, or null if it cannot be determined.
+     */
+    imageFormat(uri: string): string | null;
+    /**
      * Construct a URI reference to the target media.
      *
      * @param {string} target - A String reference to the target media.
@@ -272,8 +288,9 @@ export abstract class AbstractNode {
     /**
      * Read the image data from the specified URI and generate a data URI.
      *
-     * The image data is fetched and Base64-encoded. The MIME type is taken from
-     * the Content-Type response header.
+     * The image data is fetched and Base64-encoded. The MIME type is determined
+     * from the image format, if known (see {@link imageFormat}). Otherwise, it's
+     * taken from the Content-Type response header.
      *
      * NOTE: This method is async in JS (the Fetch API is async). When called from
      * imageUri, the caller must await the returned Promise.

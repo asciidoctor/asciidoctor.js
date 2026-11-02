@@ -1152,29 +1152,25 @@ ${element}
     const target = node.getAttribute('target')
     // when the image is wrapped in a <figure>, the id/roles go on the figure
     const imgAttrs = node.hasTitle() ? size : `${attributes}${size}`
-    let img, src
+    const src = await node.imageUri(target)
+    let img
     if (
-      (node.hasAttribute('format', 'svg') ||
-        target.includes('.svg') ||
-        target.startsWith('data:image/svg+xml')) &&
+      node.imageFormat(src) === 'svg' &&
       node.document.safe < SafeMode.SECURE
     ) {
       if (node.hasOption('inline')) {
         img =
-          (await this.readSvgContents(node, target)) ||
+          (await this._readInlineSvg(node, target, src)) ||
           `<span class="alt">${node.alt()}</span>`
       } else if (node.hasOption('interactive')) {
         const fallback = node.hasAttribute('fallback')
           ? `<img src="${await node.imageUri(node.getAttribute('fallback'))}" alt="${this._encodeAttributeValue(node.alt())}"${size}${slash}>`
           : `<span class="alt">${node.alt()}</span>`
-        src = await node.imageUri(target)
         img = `<object type="image/svg+xml" data="${src}"${imgAttrs}>${fallback}</object>`
       } else {
-        src = await node.imageUri(target)
         img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${imgAttrs}${slash}>`
       }
     } else {
-      src = await node.imageUri(target)
       img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt())}"${imgAttrs}${slash}>`
     }
 
@@ -1247,29 +1243,27 @@ ${img}
       } else {
         img = `[${iconAlt}&#93;`
       }
-    } else if (
-      (node.hasAttribute('format', 'svg') ||
-        target.includes('.svg') ||
-        target.startsWith('data:image/svg+xml')) &&
-      node.document.safe < SafeMode.SECURE
-    ) {
-      if (node.hasOption('inline')) {
-        img =
-          (await this.readSvgContents(node, target)) ||
-          `<span class="alt">${node.alt}</span>`
-      } else if (node.hasOption('interactive')) {
-        const fallback = node.hasAttribute('fallback')
-          ? `<img src="${await node.imageUri(node.getAttribute('fallback'))}" alt="${this._encodeAttributeValue(node.alt)}"${size}${slash}>`
-          : `<span class="alt">${node.alt}</span>`
-        src = await node.imageUri(target)
-        img = `<object type="image/svg+xml" data="${src}"${titleAttr}${attributes}${size}>${fallback}</object>`
-      } else {
-        src = await node.imageUri(target)
-        img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt)}"${titleAttr}${attributes}${size}${slash}>`
-      }
     } else {
       src = await node.imageUri(target)
-      img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt)}"${titleAttr}${attributes}${size}${slash}>`
+      if (
+        node.imageFormat(src) === 'svg' &&
+        node.document.safe < SafeMode.SECURE
+      ) {
+        if (node.hasOption('inline')) {
+          img =
+            (await this._readInlineSvg(node, target, src)) ||
+            `<span class="alt">${node.alt}</span>`
+        } else if (node.hasOption('interactive')) {
+          const fallback = node.hasAttribute('fallback')
+            ? `<img src="${await node.imageUri(node.getAttribute('fallback'))}" alt="${this._encodeAttributeValue(node.alt)}"${size}${slash}>`
+            : `<span class="alt">${node.alt}</span>`
+          img = `<object type="image/svg+xml" data="${src}"${titleAttr}${attributes}${size}>${fallback}</object>`
+        } else {
+          img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt)}"${titleAttr}${attributes}${size}${slash}>`
+        }
+      } else {
+        img = `<img src="${src}" alt="${this._encodeAttributeValue(node.alt)}"${titleAttr}${attributes}${size}${slash}>`
+      }
     }
 
     if (node.hasAttribute('link')) {
@@ -1823,6 +1817,8 @@ ${outline}
 // Reuse the SVG-embedding machinery from the html5 converter (identical behavior)
 SemanticHtml5Converter.prototype.readSvgContents =
   Html5Converter.prototype.readSvgContents
+SemanticHtml5Converter.prototype._readInlineSvg =
+  Html5Converter.prototype._readInlineSvg
 SemanticHtml5Converter.prototype._decodeDataUri =
   Html5Converter.prototype._decodeDataUri
 

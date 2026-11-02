@@ -39,6 +39,7 @@ Bug Fixes::
 * Use the `format` attribute of an image, when set, to determine the MIME type of the data URI generated for that image (e.g., `image::diagram[format=svg]` with `data-uri` set), instead of the file extension or the `Content-Type` header of a remote image (https://github.com/asciidoctor/asciidoctor/issues/4894[asciidoctor#4894])
 * Treat a file name that ends with a dot (e.g., `image.`) as having no file extension, like Asciidoctor (https://github.com/asciidoctor/asciidoctor/commit/c43a6442[asciidoctor@c43a6442])
 * Remove repeat forward slashes when cleaning a path, in both system and web paths (e.g., `/assets//images` becomes `/assets/images`), while preserving the root of a UNC path and the URL scheme (https://github.com/asciidoctor/asciidoctor/issues/4419[asciidoctor#4419])
+* Only use the content type sent by the server to determine the MIME type of the data URI generated for a remote image if it cannot be determined from the image target (https://github.com/asciidoctor/asciidoctor/issues/3791[asciidoctor#3791])
 
 Improvements::
 
@@ -52,6 +53,7 @@ Improvements::
 * Set the height of the image-based admonition icon to `2.5em` in the default stylesheet to match the height of the font-based icon (https://github.com/asciidoctor/asciidoctor/issues/4822[asciidoctor#4822])
 * Track where the `halign` and `valign` attributes of a table cell come from in the `halign-source` and `valign-source` attributes (`default`, `column` or `cell`) (https://github.com/asciidoctor/asciidoctor/issues/3335[asciidoctor#3335])
 * Update the default stylesheet (`asciidoctor-default.css`) of the `html5` backend to the one of Asciidoctor `main`, which was still based on the 2.0.x stylesheet. Among other changes, table stripes only apply to rows in the table body (https://github.com/asciidoctor/asciidoctor/issues/3881[asciidoctor#3881]), only actual parts are italicized at the part level of the TOC (https://github.com/asciidoctor/asciidoctor/issues/2262[asciidoctor#2262]), browser prefixes are managed by autoprefixer, unused form, embed and gist styles are removed, and `break-*` properties replace the legacy `page-break-*` ones
+* Add full support for an image target defined as a Base64-encoded data URI, and add `AbstractNode#imageFormat()` to determine the format of an image. An inline SVG is now read from the resolved image URI, so it honors the `data-uri` attribute and `link=self` (https://github.com/asciidoctor/asciidoctor/issues/3791[asciidoctor#3791])
 
 Changes::
 
