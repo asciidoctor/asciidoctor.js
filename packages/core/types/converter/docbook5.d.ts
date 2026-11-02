@@ -25,7 +25,7 @@ export class DocBook5Converter extends ConverterBase {
     convert_toc(_node: any): Promise<string>;
     convert_ulist(node: any): Promise<string>;
     convert_verse(node: any): Promise<string>;
-    convert_video(_node: any): Promise<string>;
+    convert_video(node: any): Promise<string>;
     convert_inline_anchor(node: any): Promise<string>;
     convert_inline_break(node: any): Promise<string>;
     convert_inline_button(node: any): Promise<string>;

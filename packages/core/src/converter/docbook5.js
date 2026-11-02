@@ -612,8 +612,31 @@ export class DocBook5Converter extends ConverterBase {
     )
   }
 
-  async convert_video(_node) {
-    return ''
+  async convert_video(node) {
+    const poster = node.getAttribute('poster')
+    // NOTE videos hosted by a third-party service are not supported
+    if (poster === 'vimeo' || poster === 'youtube' || poster === 'wistia') {
+      return ''
+    }
+    const startT = node.getAttribute('start')
+    const endT = node.getAttribute('end')
+    const timeAnchor =
+      startT != null || endT != null
+        ? `#t=${startT ?? ''}${endT != null ? `,${endT}` : ''}`
+        : ''
+    const alignAttribute = node.hasAttribute('align')
+      ? ` align="${node.getAttribute('align')}"`
+      : ''
+    const imageSizeAttrs = this._imageSizeAttributes(node.attributes)
+    const posterObject = poster
+      ? `\n<imageobject>\n<imagedata fileref="${node.mediaUri(poster)}"${imageSizeAttrs}${alignAttribute}/>\n</imageobject>`
+      : ''
+    const mediaobject = `<mediaobject>\n<videoobject>\n<videodata fileref="${node.mediaUri(node.getAttribute('target'))}${timeAnchor}"${imageSizeAttrs}${alignAttribute}/>\n</videoobject>${posterObject}\n</mediaobject>`
+    const commonAttrs = this._commonAttributes(node.id, node.role, node.reftext)
+    if (node.hasTitle()) {
+      return `<figure${commonAttrs}>\n<title>${node.title}</title>\n${mediaobject}\n</figure>`
+    }
+    return `<informalfigure${commonAttrs}>\n${mediaobject}\n</informalfigure>`
   }
 
   async convert_inline_anchor(node) {
