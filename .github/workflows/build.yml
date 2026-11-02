@@ -36,10 +36,8 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.ref }}
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
+      - name: Set up tools
+        uses: jdx/mise-action@v5
       - name: Install dependencies
         run: npm ci
       - name: Check and build
@@ -69,14 +67,16 @@ jobs:
           - os: macos-15
             node-version: 24
     runs-on: ${{ matrix.os }}
+    env:
+      MISE_NODE_VERSION: ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.ref }}
-      - name: Set up Node
-        uses: actions/setup-node@v6
+      - name: Set up tools
+        uses: jdx/mise-action@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          cache_key_prefix: mise-v1-node${{ matrix.node-version }}
       - name: Install dependencies
         run: |
           npm ci
@@ -94,15 +94,8 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.ref }}
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-      - name: Set up Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-          cache: true
+      - name: Set up tools
+        uses: jdx/mise-action@v5
       - name: Install dependencies
         run: npm ci
       - name: Test (Deno)
@@ -124,10 +117,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v6
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
+      - name: Set up tools
+        uses: jdx/mise-action@v5
       - name: Install dependencies
         run: |
           npm ci

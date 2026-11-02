@@ -6,7 +6,7 @@
 :toc: preamble
 // URIs:
 :uri-nodejs: https://nodejs.org
-:uri-volta: https://volta.sh
+:uri-mise: https://mise.jdx.dev
 :uri-asciidoctor: https://asciidoctor.org
 :uri-asciidoctor-rb: https://github.com/asciidoctor/asciidoctor
 :uri-repo: https://github.com/asciidoctor/asciidoctor.js
@@ -31,7 +31,7 @@ Each source file under `packages/core/src/` corresponds to a Ruby file in the up
 
 To work on Asciidoctor.js you need:
 
-* {uri-nodejs}[Node.js] >= 24 and npm (we recommend {uri-volta}[Volta] to manage Node.js versions — the repository already pins the correct version via `volta` in `package.json`)
+* {uri-nodejs}[Node.js] >= 24 and npm (we recommend {uri-mise}[mise] to manage Node.js and Deno versions — the repository already pins the correct versions in `mise.toml`, run `mise install` to install them)
 
 Clone the repository and install dependencies:
 
@@ -113,7 +113,7 @@ A small number of test files are excluded from the browser run because they requ
 === Running the Deno test suite
 
 {uri-deno}[Deno] must be installed on your system before running these commands.
-See the {uri-deno}[Deno website] for installation instructions.
+`mise install` installs the version pinned in `mise.toml`, otherwise see the {uri-deno}[Deno website] for installation instructions.
 
 To run the core test suite under Deno:
 
