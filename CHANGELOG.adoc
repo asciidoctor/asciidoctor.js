@@ -40,6 +40,7 @@ Bug Fixes::
 * Treat a file name that ends with a dot (e.g., `image.`) as having no file extension, like Asciidoctor (https://github.com/asciidoctor/asciidoctor/commit/c43a6442[asciidoctor@c43a6442])
 * Remove repeat forward slashes when cleaning a path, in both system and web paths (e.g., `/assets//images` becomes `/assets/images`), while preserving the root of a UNC path and the URL scheme (https://github.com/asciidoctor/asciidoctor/issues/4419[asciidoctor#4419])
 * Only use the content type sent by the server to determine the MIME type of the data URI generated for a remote image if it cannot be determined from the image target (https://github.com/asciidoctor/asciidoctor/issues/3791[asciidoctor#3791])
+* Set compat mode correctly in the document header when the `compat-mode` attribute is unset from the API or CLI, base the link generated for an include directive on the compat mode of the document, and don't track an attribute unset from the document body as a modified header attribute (https://github.com/asciidoctor/asciidoctor/issues/4898[asciidoctor#4898])
 
 Improvements::
 

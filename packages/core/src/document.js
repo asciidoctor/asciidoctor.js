@@ -282,6 +282,8 @@ export class Document extends AbstractBlock {
       }
       const attrOverrides = this._attributeOverrides
       delete attrOverrides['compat-mode']
+      this.compatMode = parentDoc.compatMode
+      if (this.compatMode) this.attributes['compat-mode'] = ''
       const parentDoctype = attrOverrides.doctype
       delete attrOverrides.doctype
       delete attrOverrides.notitle
@@ -293,8 +295,6 @@ export class Document extends AbstractBlock {
       delete attrOverrides['toc-position']
 
       this.safe = parentDoc.safe
-      this.compatMode = parentDoc.compatMode
-      if (this.compatMode) this.attributes['compat-mode'] = ''
       this.outfilesuffix = parentDoc.outfilesuffix
       this.sourcemap = parentDoc.sourcemap
       this._timings = null
@@ -360,7 +360,8 @@ export class Document extends AbstractBlock {
 
       this._inputMtime = options.input_mtime ?? null
       delete options.input_mtime
-      this.compatMode = 'compat-mode' in attrOverrides
+      // NOTE a null or false value means the attribute is unset
+      this.compatMode = (attrOverrides['compat-mode'] ?? false) !== false
       this.sourcemap = options.sourcemap ?? false
       this._timings = options.timings ?? null
       delete options.timings
@@ -1120,7 +1121,11 @@ export class Document extends AbstractBlock {
   deleteAttribute(name) {
     if (this.isAttributeLocked(name)) return false
     delete this.attributes[name]
-    this._attributesModified.add(name)
+    // NOTE if _headerAttributes is set, we're beyond the document header
+    if (!this._headerAttributes) {
+      this._attributesModified.add(name)
+      if (name === 'compat-mode') this.compatMode = false
+    }
     return true
   }
 
@@ -1723,6 +1728,10 @@ export class Document extends AbstractBlock {
               value === this.backend
           )
           break
+        case 'compat-mode':
+          this.compatMode = true
+          this.attributes[name] = value
+          break
         case 'doctype':
           this._updateDoctypeAttributes(value)
           break
@@ -2043,7 +2052,6 @@ export class Document extends AbstractBlock {
       }
     }
 
-    this.compatMode = 'compat-mode' in attrs
     if (this.compatMode && 'language' in attrs) {
       attrs['source-language'] = attrs.language
     }
