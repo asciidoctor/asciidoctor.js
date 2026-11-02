@@ -55,6 +55,7 @@ Improvements::
 * Track where the `halign` and `valign` attributes of a table cell come from in the `halign-source` and `valign-source` attributes (`default`, `column` or `cell`) (https://github.com/asciidoctor/asciidoctor/issues/3335[asciidoctor#3335])
 * Update the default stylesheet (`asciidoctor-default.css`) of the `html5` backend to the one of Asciidoctor `main`, which was still based on the 2.0.x stylesheet. Among other changes, table stripes only apply to rows in the table body (https://github.com/asciidoctor/asciidoctor/issues/3881[asciidoctor#3881]), only actual parts are italicized at the part level of the TOC (https://github.com/asciidoctor/asciidoctor/issues/2262[asciidoctor#2262]), browser prefixes are managed by autoprefixer, unused form, embed and gist styles are removed, and `break-*` properties replace the legacy `page-break-*` ones
 * Add full support for an image target defined as a Base64-encoded data URI, and add `AbstractNode#imageFormat()` to determine the format of an image. An inline SVG is now read from the resolved image URI, so it honors the `data-uri` attribute and `link=self` (https://github.com/asciidoctor/asciidoctor/issues/3791[asciidoctor#3791])
+* Convert a video block to a `<videoobject>` in the DocBook converter when the video is a local file or URL, including its poster, dimensions, alignment and time range (https://github.com/asciidoctor/asciidoctor/issues/3607[asciidoctor#3607])
 
 Changes::
 

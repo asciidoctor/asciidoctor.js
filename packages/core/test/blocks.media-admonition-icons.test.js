@@ -28,6 +28,85 @@ describe('Blocks', () => {
       assertCss(output, 'video[src="cats-vs-dogs.avi"]', 1)
     })
 
+    test('should convert video macro to videoobject in DocBook', async () => {
+      const input = 'video::cats-vs-dogs.avi[]'
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
+      assertXpath(
+        output,
+        '/informalfigure/mediaobject/videoobject/videodata[@fileref="cats-vs-dogs.avi"]',
+        1
+      )
+      assertXpath(output, '//imageobject', 0)
+    })
+
+    test('should convert video macro with title, id, dimensions, align, poster, and imagesdir to videoobject in DocBook', async () => {
+      const input = `:imagesdir: assets
+[#cats-vs-dogs]
+.Cats vs Dogs
+video::cats-vs-dogs.avi[poster=cats-vs-dogs.jpg,width=200,height=300,align=center]`
+      const output = await convertStringToEmbedded(input, {
+        backend: 'docbook',
+      })
+      assert.ok(output.startsWith('<figure xml:id="cats-vs-dogs">'))
+      assertXpath(output, '/figure/title[text()="Cats vs Dogs"]', 1)
+      assertXpath(
+        output,
+        '/figure/mediaobject/videoobject/videodata[@fileref="assets/cats-vs-dogs.avi"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//videodata[@contentwidth="200"][@contentdepth="300"][@align="center"]',
+        1
+      )
+      assertXpath(
+        output,
+        '/figure/mediaobject/imageobject/imagedata[@fileref="assets/cats-vs-dogs.jpg"]',
+        1
+      )
+      assertXpath(
+        output,
+        '//imagedata[@contentwidth="200"][@contentdepth="300"][@align="center"]',
+        1
+      )
+    })
+
+    test('should append time anchor to fileref of videodata in DocBook if start attribute is set', async () => {
+      const output = await convertStringToEmbedded(
+        'video::cats-vs-dogs.avi[start=10]',
+        { backend: 'docbook' }
+      )
+      assertXpath(output, '//videodata[@fileref="cats-vs-dogs.avi#t=10"]', 1)
+    })
+
+    test('should append time anchor to fileref of videodata in DocBook if end attribute is set', async () => {
+      const output = await convertStringToEmbedded(
+        'video::cats-vs-dogs.avi[end=20]',
+        { backend: 'docbook' }
+      )
+      assertXpath(output, '//videodata[@fileref="cats-vs-dogs.avi#t=,20"]', 1)
+    })
+
+    test('should append time anchor to fileref of videodata in DocBook if start and end attributes are set', async () => {
+      const output = await convertStringToEmbedded(
+        'video::cats-vs-dogs.avi[start=10,end=20]',
+        { backend: 'docbook' }
+      )
+      assertXpath(output, '//videodata[@fileref="cats-vs-dogs.avi#t=10,20"]', 1)
+    })
+
+    test('should not convert video hosted by a third-party service in DocBook', async () => {
+      for (const service of ['youtube', 'vimeo', 'wistia']) {
+        const output = await convertStringToEmbedded(
+          `video::abc123[${service}]`,
+          { backend: 'docbook' }
+        )
+        assert.equal(output, '')
+      }
+    })
+
     test('should detect and convert video macro with positional attributes for poster and dimensions', async () => {
       const input = 'video::cats-vs-dogs.avi[cats-and-dogs.png, 200, 300]'
       const output = await convertStringToEmbedded(input)
