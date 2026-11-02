@@ -832,7 +832,9 @@ export const TrailingDigitsRx = /\d+$/
  * @example
  * http://domain    https://domain    file:///path    data:info
  */
-export const UriSniffRx = ru(String.raw`^${CG_ALPHA}[${CC_ALNUM}.+\-]+:\/{0,2}`)
+export const UriSniffRx = ru(
+  String.raw`^(?:https:\/\/|http:\/\/|file:\/\/|data:|${CG_ALPHA}[${CC_ALNUM}.+\-]+:\/{0,2})`
+)
 
 /**
  * Detects XML tags. Global: every call site sanitizes with `gsub` in Ruby, and
