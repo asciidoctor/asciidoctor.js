@@ -71,8 +71,5 @@
     "nunjucks": "^3.2.4",
     "postject": "^1.0.0-alpha.6",
     "pug": "^3.0.3"
-  },
-  "volta": {
-    "node": "24.21.0"
   }
 }

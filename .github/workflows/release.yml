@@ -20,7 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: jdx/mise-action@v5
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
       - name: Install dependencies
         run: npm ci
       - name: Bump version and update changelog
@@ -49,7 +51,9 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: v${{ inputs.version }}
-      - uses: jdx/mise-action@v5
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
       - name: Install dependencies
         run: npm ci
       - name: Build core
@@ -70,7 +74,9 @@ jobs:
         with:
           ref: v${{ inputs.version }}
           fetch-depth: 0
-      - uses: jdx/mise-action@v5
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
       - name: Install dependencies
         run: npm ci
       - name: Generate release notes
@@ -118,7 +124,9 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: v${{ inputs.version }}
-      - uses: jdx/mise-action@v5
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
       - name: Install dependencies
         run: npm ci
       - name: Generate API documentation

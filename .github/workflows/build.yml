@@ -37,7 +37,9 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
       - name: Set up tools
-        uses: jdx/mise-action@v5
+        uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
       - name: Install dependencies
         run: npm ci
       - name: Check and build
@@ -68,15 +70,18 @@ jobs:
             node-version: 24
     runs-on: ${{ matrix.os }}
     env:
-      MISE_NODE_VERSION: ${{ matrix.node-version }}
+      # overrides the version pinned in .prototools
+      PROTO_NODE_VERSION: ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ inputs.ref }}
       - name: Set up tools
-        uses: jdx/mise-action@v5
+        uses: moonrepo/setup-toolchain@v0
         with:
-          cache_key_prefix: mise-v1-node${{ matrix.node-version }}
+          cache-version: node${{ matrix.node-version }}
+      - name: Install Node.js
+        run: proto install node
       - name: Install dependencies
         run: |
           npm ci
@@ -95,7 +100,9 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
       - name: Set up tools
-        uses: jdx/mise-action@v5
+        uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
       - name: Install dependencies
         run: npm ci
       - name: Test (Deno)
@@ -118,7 +125,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Set up tools
-        uses: jdx/mise-action@v5
+        uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
       - name: Install dependencies
         run: |
           npm ci

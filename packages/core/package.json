@@ -66,9 +66,6 @@
     "url": "https://github.com/asciidoctor/asciidoctor.js/issues"
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor.js",
-  "volta": {
-    "node": "24.21.0"
-  },
   "peerDependencies": {
     "highlight.js": "^11.0.0"
   },
