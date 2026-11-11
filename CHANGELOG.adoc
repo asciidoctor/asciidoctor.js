@@ -10,7 +10,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 Deprecations::
 
-* Deprecate `getCoreVersion()`: Asciidoctor.js is no longer transpiled from Asciidoctor (Ruby), so the returned value is meaningless; use `getVersion()` instead
+* Deprecate `getCoreVersion()`, use `getVersion()` instead: Asciidoctor.js is no longer transpiled from Asciidoctor (Ruby) but tracks its unreleased `main` branch, so `getCoreVersion()` now returns `2.1.0-alpha.0` (the version declared on Ruby `main`, in semver format) instead of `2.0.26`
 * Remove the Asciidoctor (Ruby) version from the output of `asciidoctor --version`
 
 == v4.2.1 (2026-11-02)

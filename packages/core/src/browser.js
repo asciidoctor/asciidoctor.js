@@ -66,7 +66,7 @@ import {
   DefaultFactory as DefaultSyntaxHighlighterFactory,
 } from './syntax_highlighter.js'
 
-const ASCIIDOCTOR_CORE_VERSION = '2.0.26'
+const ASCIIDOCTOR_CORE_VERSION = '2.1.0-alpha.0'
 
 /**
  * Get the version of Asciidoctor.js.
@@ -80,9 +80,11 @@ export function getVersion() {
 /**
  * Get Asciidoctor core version number.
  *
- * @deprecated Asciidoctor.js is no longer transpiled from Asciidoctor (Ruby), so this value is meaningless.
- * Use {@link getVersion} instead. This function will be removed in a future major version.
- * @returns {string} - the version of Asciidoctor core (Ruby) that Asciidoctor.js was historically based on
+ * Asciidoctor.js is no longer transpiled from Asciidoctor (Ruby) but tracks its unreleased `main` branch,
+ * so this value is only approximate (`2.1.0-alpha.0`, the version declared on Ruby `main`, in semver format).
+ *
+ * @deprecated Use {@link getVersion} instead. This function will be removed in a future major version.
+ * @returns {string} - the version of Asciidoctor (Ruby) that Asciidoctor.js tracks
  */
 export function getCoreVersion() {
   return ASCIIDOCTOR_CORE_VERSION
