@@ -87,7 +87,9 @@ export function getVersion() {
 /**
  * Get Asciidoctor core version number.
  *
- * @returns {string} - the version of Asciidoctor core (Ruby)
+ * @deprecated Asciidoctor.js is no longer transpiled from Asciidoctor (Ruby), so this value is meaningless.
+ * Use {@link getVersion} instead. This function will be removed in a future major version.
+ * @returns {string} - the version of Asciidoctor core (Ruby) that Asciidoctor.js was historically based on
  */
 export function getCoreVersion() {
   return ASCIIDOCTOR_CORE_VERSION

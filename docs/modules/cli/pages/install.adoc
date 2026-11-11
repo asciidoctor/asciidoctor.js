@@ -27,7 +27,7 @@ To confirm that Asciidoctor.js CLI is available, execute:
 You should see information about the Asciidoctor.js CLI version printed in the terminal.
 
 ....
-Asciidoctor.js 4.0.0-alpha.0 (Asciidoctor 2.0.26) [https://asciidoctor.org]
+Asciidoctor.js 4.0.0-alpha.0 [https://asciidoctor.org]
 Runtime Environment (node v24.14.1 on darwin)
 CLI version 4.0.0-alpha.0
 ....
