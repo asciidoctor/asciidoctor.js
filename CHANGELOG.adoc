@@ -8,6 +8,11 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Deprecations::
+
+* Deprecate `getCoreVersion()`: Asciidoctor.js is no longer transpiled from Asciidoctor (Ruby), so the returned value is meaningless; use `getVersion()` instead
+* Remove the Asciidoctor (Ruby) version from the output of `asciidoctor --version`
+
 == v4.2.1 (2026-11-02)
 
 Improvements::

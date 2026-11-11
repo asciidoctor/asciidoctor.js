@@ -275,7 +275,7 @@ Every public member is available as a named export.
 .Functions
 [source,javascript]
 ----
-import { load, convert, loadFile, convertFile, getVersion, getCoreVersion } from '@asciidoctor/core'
+import { load, convert, loadFile, convertFile, getVersion } from '@asciidoctor/core'
 ----
 
 .Document and AST nodes

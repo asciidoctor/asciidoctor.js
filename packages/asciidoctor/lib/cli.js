@@ -4,7 +4,6 @@ import { createRequire } from 'node:module'
 import { join, resolve, isAbsolute, dirname, sep } from 'node:path'
 import {
   getVersion as _getVersion,
-  getCoreVersion,
   Timings,
   Extensions,
   LoggerManager,
@@ -429,7 +428,7 @@ export class Invoker {
     const pkg = JSON.parse(
       readFileSync(join(import.meta.dirname, '..', 'package.json'), 'utf8')
     )
-    return `Asciidoctor.js ${_getVersion()} (Asciidoctor ${getCoreVersion()}) [https://asciidoctor.org]
+    return `Asciidoctor.js ${_getVersion()} [https://asciidoctor.org]
 Runtime Environment (node ${process.version} on ${process.platform})
 CLI version ${pkg.version}`
   }

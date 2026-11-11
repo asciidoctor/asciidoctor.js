@@ -7,7 +7,6 @@ TODO Describe the following functions in detailed :
 .load
 .loadFile
 
-.getCoreVersion
 .getVersion
 
 ////
