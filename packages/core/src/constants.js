@@ -6,8 +6,10 @@
 // Omissions vs. the Ruby source
 //   - Ruby-encoding constants (UTF_8, BOM_BYTES_*) – JS strings are always UTF-16.
 //   - File-mode strings (FILE_READ_MODE, …) – Ruby open(2) semantics, no JS equivalent.
-//   - ROOT_DIR / LIB_DIR / DATA_DIR / USER_HOME – computed via import.meta.url below
-//     for Node.js; silently empty in environments where the URL API is unavailable.
+//   - ROOT_DIR / LIB_DIR / DATA_DIR – not needed (the stylesheet is a JS module), and
+//     computing them relative to the module URL makes bundlers emit a copy
+//     of the library as an asset.
+//   - USER_HOME – read from the environment below; empty when `process` is unavailable.
 //   - const_missing / autoload – Ruby metaprogramming, not applicable in JS.
 //   - Compliance – defined in ./compliance.js (imported separately by substitutors.js).
 //   - RUBY_ENGINE / RUBY_ENGINE_OPAL – not applicable in JS.
@@ -148,17 +150,12 @@ export const ContentModel = {
   EMPTY: 'empty',
 }
 
-// ── File-system paths (Node.js only) ─────────────────────────────────────────
-// In a browser / Deno / Opal-compiled context these will be empty strings.
-let ROOT_DIR = ''
-let LIB_DIR = ''
-let DATA_DIR = ''
+// ── User home directory (Node.js only) ───────────────────────────────────────
+// Prefer $HOME; fall back to $USERPROFILE (Windows) then process.cwd().
+// In a browser this is an empty string.
+// Reading the environment may throw (e.g. Deno without --allow-env).
 let USER_HOME = ''
 try {
-  LIB_DIR = new URL('.', import.meta.url).pathname.replace(/\/$/, '')
-  ROOT_DIR = new URL('../../', import.meta.url).pathname.replace(/\/$/, '')
-  DATA_DIR = new URL('../../data', import.meta.url).pathname
-  // Prefer $HOME; fall back to $USERPROFILE (Windows) then process.cwd()
   if (typeof process !== 'undefined') {
     USER_HOME =
       process.env.HOME ||
@@ -166,7 +163,7 @@ try {
       (process.cwd ? process.cwd() : '')
   }
 } catch {}
-export { ROOT_DIR, LIB_DIR, DATA_DIR, USER_HOME }
+export { USER_HOME }
 
 // ── Primitive constants ───────────────────────────────────────────────────────
 // The newline character used for output.

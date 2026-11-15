@@ -271,9 +271,6 @@ export namespace QUOTE_SUBS {
 export const REPLACEMENTS: (string | RegExp)[][];
 export const BASIC_SUBS: readonly string[];
 export const NORMAL_SUBS: readonly string[];
-export let ROOT_DIR: string;
-export let LIB_DIR: string;
-export let DATA_DIR: string;
 export let USER_HOME: string;
 declare const _normalQuoteSubs: (string | RegExp)[][];
 declare const _compatQuoteSubs: (string | RegExp)[][];
