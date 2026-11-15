@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Bug Fixes::
+
+* Remove the unused `ROOT_DIR`, `LIB_DIR` and `DATA_DIR` constants, which were computed with `new URL(..., import.meta.url)`, so bundlers such as Vite no longer emit an extra, unminified copy of the browser build as an asset (#1930)
+
 Deprecations::
 
 * Deprecate `getCoreVersion()`, use `getVersion()` instead: Asciidoctor.js is no longer transpiled from Asciidoctor (Ruby) but tracks its unreleased `main` branch, so `getCoreVersion()` now returns `2.1.0-alpha.0` (the version declared on Ruby `main`, in semver format) instead of `2.0.26`
