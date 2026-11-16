@@ -6,7 +6,10 @@
   "main": "index.js",
   "types": "types",
   "exports": {
-    ".": "./index.js",
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./index.js"
+    },
     "./cli": {
       "types": "./types/cli.d.ts",
       "default": "./lib/cli.js"
