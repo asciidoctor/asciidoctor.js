@@ -22,6 +22,7 @@
   "scripts": {
     "test": "node --test test/cli.test.js",
     "build:types": "tsc",
+    "test:types": "node tasks/copy-types.js && tsc -p test/types/tsconfig.json",
     "docs": "typedoc --tsconfig tsconfig.docs.json",
     "test:deno": "deno test --allow-env --no-check --allow-read --allow-sys --allow-write --allow-run --allow-net test/cli.test.js",
     "lint": "biome lint bin lib tasks index.js rollup.config.js",
