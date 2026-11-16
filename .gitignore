@@ -3,3 +3,6 @@ npm-debug.log
 /.idea/
 /.claude/*
 /RELEASE_NOTES.md
+/packages/asciidoctor/types/*
+!/packages/asciidoctor/types/README.adoc
+!/packages/asciidoctor/types/cli.d.ts
