@@ -1358,6 +1358,18 @@ describe('Substitutions', () => {
       }
     })
 
+    test('should use attrlist as primary term if no primary term is specified', async () => {
+      const output = await convertStringToEmbedded(
+        'Flashindexterm:[see-also=HTML 5]',
+        { backend: 'docbook' }
+      )
+      assert.ok(
+        output.includes(
+          '<indexterm>\n<primary>see-also=HTML 5</primary>\n</indexterm>'
+        )
+      )
+    })
+
     test('a single-line index term macro with primary and secondary terms should be registered as an index reference', async () => {
       const sentence =
         'The tiger (Panthera tigris) is the largest cat species.\n'
