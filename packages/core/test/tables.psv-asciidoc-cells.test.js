@@ -28,6 +28,16 @@ const __dirname = import.meta.url.startsWith('http')
 
 describe('Tables', () => {
   describe('PSV', () => {
+    test('should assign parent cell to nested document of AsciiDoc table cell', async () => {
+      const doc = await documentFromString('|===\na|content\n|===')
+      await doc.convert()
+      const cell = doc.blocks[0].rows.body[0][0]
+      assert.ok(cell.innerDocument)
+      assert.equal(cell.innerDocument.parentCell, cell)
+      assert.equal(cell.innerDocument.getParentCell(), cell)
+      assert.equal(doc.parentCell, null)
+    })
+
     test('basic AsciiDoc cell', async () => {
       const input = `|===
 a|--

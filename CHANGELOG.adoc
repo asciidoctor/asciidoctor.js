@@ -11,6 +11,7 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 Improvements::
 
 * Document in the extensions guide that the `process` function of every extension can be `async`, and which functions must stay synchronous
+* Add `Document#parentCell` (and `getParentCell()`) to get the table cell that contains a nested AsciiDoc document (https://github.com/asciidoctor/asciidoctor/issues/4380[asciidoctor#4380])
 
 Bug Fixes::
 

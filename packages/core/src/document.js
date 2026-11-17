@@ -269,6 +269,8 @@ export class Document extends AbstractBlock {
     // ── Nested document setup ─────────────────────────────────────────────────
     if (parentDoc) {
       this.parentDocument = parentDoc
+      this.parentCell = options.parent_cell ?? null
+      delete options.parent_cell
       options.base_dir ??= parentDoc.baseDir
       if (parentDoc.options.catalog_assets) options.catalog_assets = true
       if (parentDoc.options.to_dir) options.to_dir = parentDoc.options.to_dir
@@ -309,6 +311,7 @@ export class Document extends AbstractBlock {
     } else {
       // ── Root document setup ───────────────────────────────────────────────
       this.parentDocument = null
+      this.parentCell = null
       this.catalog = {
         ids: {}, // deprecated
         refs: {},
@@ -1569,6 +1572,11 @@ export class Document extends AbstractBlock {
   /** @returns {Object|null} The extensions registry. */
   getExtensions() {
     return this.extensions
+  }
+
+  /** @returns {Object|undefined} The parent table cell of this nested document, or undefined if not nested in an AsciiDoc table cell. */
+  getParentCell() {
+    return this.parentCell ?? undefined
   }
 
   /** @returns {Document|undefined} The parent document, or undefined for root documents. */
