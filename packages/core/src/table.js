@@ -439,6 +439,7 @@ class Cell extends AbstractBlock {
           backend: parentDoc.backend,
           header_footer: false,
           parent: parentDoc,
+          parent_cell: this,
           cursor: innerDocumentCursor,
         },
       }
