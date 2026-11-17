@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* Document in the extensions guide that the `process` function of every extension can be `async`, and which functions must stay synchronous
+
 Bug Fixes::
 
 * Wait for asynchronous inline macro processors, and for an asynchronous syntax highlighter `docinfo()` with the `semantic-html5` backend: the returned promise was not awaited (the latter inserted `[object Promise]` in the output) (https://github.com/asciidoctor/asciidoctor.js/issues/1934[#1934])
