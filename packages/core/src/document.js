@@ -598,7 +598,8 @@ export class Document extends AbstractBlock {
 
     if (!this.parentDocument && this.extensions?.hasPreprocessors?.()) {
       for (const ext of this.extensions.preprocessors()) {
-        this.reader = ext.processMethod(this, this.reader) ?? this.reader
+        this.reader =
+          (await ext.processMethod(this, this.reader)) ?? this.reader
       }
     }
 
@@ -609,7 +610,7 @@ export class Document extends AbstractBlock {
 
     if (!this.parentDocument && this.extensions?.hasTreeProcessors?.()) {
       for (const ext of this.extensions.treeProcessors()) {
-        const result = ext.processMethod(this)
+        const result = await ext.processMethod(this)
         if (result instanceof Document && result !== this) {
           return result
         }
@@ -1230,7 +1231,7 @@ export class Document extends AbstractBlock {
 
       if (!this.parentDocument && this.extensions?.hasPostprocessors?.()) {
         for (const ext of this.extensions.postprocessors()) {
-          output = ext.processMethod(this, output)
+          output = await ext.processMethod(this, output)
         }
       }
 
@@ -1360,9 +1361,11 @@ export class Document extends AbstractBlock {
     }
 
     if (this.extensions && this.hasDocinfoProcessors(location)) {
-      const extContent = this._docinfoProcessorExtensions[location]
-        .map((ext) => ext.processMethod(this))
-        .filter((c) => c != null)
+      const extContent = []
+      for (const ext of this._docinfoProcessorExtensions[location]) {
+        const result = await ext.processMethod(this)
+        if (result != null) extContent.push(result)
+      }
       return (content ?? []).concat(extContent).join(LF)
     }
     return content ? content.join(LF) : ''
