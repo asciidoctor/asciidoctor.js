@@ -20,6 +20,7 @@ Bug Fixes::
 * Add the `types` condition to the root `exports` of the `asciidoctor` package so that TypeScript with `node16`, `nodenext` or `bundler` module resolution can find the type definitions (#1932)
 * Record the `imagesdir` of an image block or macro, if specified on the node, when registering the image in the catalog (https://github.com/asciidoctor/asciidoctor/issues/4910[asciidoctor#4910])
 * Don't include the enclosure for a TOC level in the HTML output (`html5` and `semantic-html5` backends) if the level has no entries (https://github.com/asciidoctor/asciidoctor/issues/4908[asciidoctor#4908])
+* Use the attribute list as the primary term of an `indexterm` macro if no primary term is specified (https://github.com/asciidoctor/asciidoctor/commit/8def42eb[asciidoctor@8def42eb])
 
 Deprecations::
 

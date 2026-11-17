@@ -740,7 +740,7 @@ export const Substitutors = {
                       : [seeAlso]
                   }
                 } else {
-                  attrs = { terms: attrlist }
+                  attrs = { terms: [attrlist] }
                 }
               } else {
                 attrs = { terms: this.splitSimpleCsv(attrlist) }
