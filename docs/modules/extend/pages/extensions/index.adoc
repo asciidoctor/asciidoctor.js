@@ -9,3 +9,41 @@ WARNING: The extension API in Asciidoctor is stable with the exception of inline
 Since inline content is not parsed until the convert phase, the inline macro processor must return converted text (e.g., HTML) rather than an AST node.
 Once Asciidoctor is changed to https://github.com/asciidoctor/asciidoctor/issues/61[process inline content during the parse phase^], the inline macro processor will need to return an inline node.
 When that switch occurs, there will either be some sort of adapter or required migration for inline macro processors, but that has yet to be determined.
+
+== Asynchronous extensions
+
+Loading and converting a document are asynchronous operations (`load()` and `convert()` return a `Promise`), so the `process` function of every extension can be `async` (or return a `Promise`).
+Asciidoctor.js waits for the promise to resolve before it continues.
+
+[source,js]
+----
+import * as asciidoctor from 'asciidoctor'
+
+asciidoctor.Extensions.register(function () {
+  this.treeProcessor(function () {
+    this.process(async function (document) {
+      const title = await fetchTitle() // <1>
+      document.setAttribute('fetched-title', title)
+    })
+  })
+})
+----
+<1> The conversion waits for the tree processor to complete, so the attribute is available to the rest of the document.
+
+This applies to the `process` function of the following extensions:
+
+* xref:extensions/preprocessor.adoc[Preprocessor]
+* xref:extensions/tree-processor.adoc[Tree Processor]
+* xref:extensions/postprocessor.adoc[Postprocessor]
+* xref:extensions/docinfo-processor.adoc[Docinfo Processor]
+* xref:extensions/block-processor.adoc[Block Processor]
+* xref:extensions/block-macro-processor.adoc[Block Macro Processor]
+* xref:extensions/inline-macro-processor.adoc[Inline Macro Processor]
+* xref:extensions/include-processor.adoc[Include Processor]
+
+A few functions are synchronous and must not return a `Promise`:
+
+* the `handles` predicate of an include processor (used to select the processor that will process a target)
+* the function passed to `Extensions.register`, which declares the extensions (do the asynchronous work in `process` instead)
+
+NOTE: Up to Asciidoctor.js 4.2.1, the promise returned by a preprocessor, tree processor, postprocessor, docinfo processor or inline macro was ignored: the conversion did not wait for it.

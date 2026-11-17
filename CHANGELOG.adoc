@@ -8,6 +8,10 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+Improvements::
+
+* Document in the extensions guide that the `process` function of every extension can be `async`, and which functions must stay synchronous
+
 Bug Fixes::
 
 * Remove the unused `ROOT_DIR`, `LIB_DIR` and `DATA_DIR` constants, which were computed with `new URL(..., import.meta.url)`, so bundlers such as Vite no longer emit an extra, unminified copy of the browser build as an asset (#1930)
