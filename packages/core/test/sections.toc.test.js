@@ -1,6 +1,7 @@
 // ESM conversion of sections_test.rb — context 'Table of Contents'
 
 import { test, describe } from 'node:test'
+import assert from 'node:assert/strict'
 
 import { assertXpath, assertCss } from './helpers.js'
 import { convertString, convertStringToEmbedded } from './harness.js'
@@ -9,6 +10,26 @@ import { convertString, convertStringToEmbedded } from './harness.js'
 
 describe('Sections', () => {
   describe('Table of Contents', () => {
+    test('should not include enclosure for TOC level if level has no entries', async () => {
+      const input = `= Book
+:doctype: book
+:toc:
+
+== Chapter
+
+[appendix#app1]
+== Lorem Ipsum
+
+[#app1-s1,toclevels=1]
+=== Appendix Section`
+      const output = await convertString(input)
+      assertCss(output, '#toc a[href="#app1"]', 1)
+      assertCss(output, '#toc a[href="#app1-s1"]', 0)
+      assert.ok(
+        output.includes('<li><a href="#app1">Appendix A: Lorem Ipsum</a></li>')
+      )
+    })
+
     test('should output unnumbered table of contents in header if toc attribute is set', async () => {
       const input = `= Article
 :toc:

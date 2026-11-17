@@ -534,6 +534,7 @@ ${await node.converter.convert(node, 'outline')}
       }
       result.push(`${otag}<a href="#${section.id ?? ''}">${stitle}</a></li>`)
     }
+    if (result.length === 1) return ''
     result.push('</ul>')
     return result.join(LF)
   }

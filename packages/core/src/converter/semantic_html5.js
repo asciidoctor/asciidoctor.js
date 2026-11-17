@@ -972,6 +972,7 @@ ${title}${equation}
       }
       result.push(`<li><a href="#${section.id ?? ''}">${stitle}</a></li>`)
     }
+    if (result.length === 1) return ''
     result.push('</ol>')
     return result.join(LF)
   }
