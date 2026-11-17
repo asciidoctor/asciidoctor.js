@@ -17,6 +17,7 @@ Bug Fixes::
 * Wait for asynchronous inline macro processors, and for an asynchronous syntax highlighter `docinfo()` with the `semantic-html5` backend: the returned promise was not awaited (the latter inserted `[object Promise]` in the output) (https://github.com/asciidoctor/asciidoctor.js/issues/1934[#1934])
 * Remove the unused `ROOT_DIR`, `LIB_DIR` and `DATA_DIR` constants, which were computed with `new URL(..., import.meta.url)`, so bundlers such as Vite no longer emit an extra, unminified copy of the browser build as an asset (#1930)
 * Add the `types` condition to the root `exports` of the `asciidoctor` package so that TypeScript with `node16`, `nodenext` or `bundler` module resolution can find the type definitions (#1932)
+* Record the `imagesdir` of an image block or macro, if specified on the node, when registering the image in the catalog (https://github.com/asciidoctor/asciidoctor/issues/4910[asciidoctor#4910])
 
 Deprecations::
 

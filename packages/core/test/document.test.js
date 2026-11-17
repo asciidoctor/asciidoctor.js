@@ -975,6 +975,35 @@ describe('Compat get* API', () => {
     assert.equal(images[1].target, 'ocean.jpg')
   })
 
+  test('should record imagesdir from document when image is registered in catalog using legacy arguments', async () => {
+    const doc = await parse('', {
+      attributes: { imagesdir: 'img' },
+      catalog_assets: true,
+    })
+    doc.register('images', 'diagram.svg')
+    assert.equal(doc.catalog.images.length, 1)
+    assert.equal(doc.catalog.images[0].target, 'diagram.svg')
+    assert.equal(doc.catalog.images[0].imagesdir, 'img')
+  })
+
+  test('should record imagesdir as specified when image is registered in catalog', async () => {
+    const doc = await parse('', {
+      attributes: { imagesdir: 'images@' },
+      catalog_assets: true,
+    })
+    doc.register('images', ['diagram.svg', 'img'])
+    assert.equal(doc.catalog.images[0].imagesdir, 'img')
+  })
+
+  test('should record imagesdir from image macro when parsed', async () => {
+    const doc = await parse(
+      ':imagesdir: img\n\nimage::picture.png[imagesdir=i]\n\nimage::other.png[]',
+      { catalog_assets: true }
+    )
+    assert.equal(doc.catalog.images[0].imagesdir, 'i')
+    assert.equal(doc.catalog.images[1].imagesdir, 'img')
+  })
+
   test('getImages returns empty array when catalog_assets is not enabled', async () => {
     const input = '= Title\n\nimage::sunset.jpg[Sunset]'
     const doc = await parse(input)
