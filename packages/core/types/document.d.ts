@@ -82,6 +82,7 @@ export class Document extends AbstractBlock<string> {
     /** Override AbstractNode's getter so Document can own its converter directly. */
     get converter(): any;
     parentDocument: any;
+    parentCell: any;
     catalog: any;
     outfilesuffix: any;
     sourcemap: any;
@@ -412,6 +413,8 @@ export class Document extends AbstractBlock<string> {
     getRevisionInfo(): RevisionInfo;
     /** @returns {Object|null} The extensions registry. */
     getExtensions(): any | null;
+    /** @returns {Object|undefined} The parent table cell of this nested document, or undefined if not nested in an AsciiDoc table cell. */
+    getParentCell(): any | undefined;
     /** @returns {Document|undefined} The parent document, or undefined for root documents. */
     getParentDocument(): Document | undefined;
     /**

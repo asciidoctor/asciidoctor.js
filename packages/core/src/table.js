@@ -319,7 +319,10 @@ class Cell extends AbstractBlock {
   /** @internal */
   _reinitializeArgs
 
-  /** @internal */
+  /**
+   * @internal
+   * @type {{ lines: string[], parentDoc: any, parentDoctitle: any, options: Record<string, any> } | null}
+   */
   _innerDocSetup
 
   /** @internal */
