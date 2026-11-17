@@ -529,7 +529,7 @@ export const Substitutors = {
               target = target ?? (extConfig.format === 'short' ? content : null)
             }
 
-            const replacement = extension.processMethod(
+            const replacement = await extension.processMethod(
               this,
               target,
               attributes
