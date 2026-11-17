@@ -4,7 +4,12 @@
 import { test, describe } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { assertXpath } from './helpers.js'
+import {
+  assertXpath,
+  assertCss,
+  assertMessage,
+  usingMemoryLogger,
+} from './helpers.js'
 import {
   documentFromString,
   convertString,
@@ -20,6 +25,29 @@ function decodeChar(code) {
 
 describe('Sections', () => {
   describe('Links and anchors', () => {
+    test('demote abstract section to level 1 in article if defined at level 0', async () => {
+      const input = `= Article
+
+[abstract]
+= Abstract Title
+
+Abstract content
+
+== Section Title
+
+Section content`
+      await usingMemoryLogger(async (logger) => {
+        const output = await convertString(input)
+        assertCss(output, 'h2#_abstract_title', 1)
+        assertCss(output, 'h2#_section_title', 1)
+        assertMessage(
+          logger,
+          'ERROR',
+          '<stdin>: line 4: level 0 sections can only be used when doctype is book'
+        )
+      })
+    })
+
     test('should include anchor if sectanchors document attribute is set', async () => {
       const input = `== Installation
 
