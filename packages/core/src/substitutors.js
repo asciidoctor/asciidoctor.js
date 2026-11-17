@@ -688,8 +688,8 @@ export const Substitutors = {
           let id
           if (type !== 'icon') {
             id = attrs.id
-            doc.register('images', target)
             attrs.imagesdir = attrs.imagesdir ?? docAttrs.imagesdir
+            doc.register('images', [target, attrs.imagesdir])
           }
           attrs.alt =
             attrs.alt ??

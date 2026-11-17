@@ -825,8 +825,8 @@ export class Parser {
                   target = expanded
                 }
                 if (blkCtx === 'image') {
-                  document.register('images', target)
                   attributes.imagesdir ??= docAttrs.imagesdir
+                  document.register('images', [target, attributes.imagesdir])
                   attributes.alt ??=
                     style ??
                     (attributes['default-alt'] = basename(target, true).replace(

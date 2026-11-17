@@ -845,14 +845,16 @@ export class Document extends AbstractBlock {
       case 'footnotes':
         this.catalog.footnotes.push(value)
         return
-      default:
+      case 'images':
         if (this.options.catalog_assets) {
-          const entry =
-            type === 'images'
-              ? new ImageReference(value, this.attributes.imagesdir)
-              : value
-          this.catalog[type]?.push(entry)
+          const [target, imagesdir] = Array.isArray(value)
+            ? value
+            : [value, this.attributes.imagesdir]
+          this.catalog.images.push(new ImageReference(target, imagesdir))
         }
+        return
+      default:
+        if (this.options.catalog_assets) this.catalog[type]?.push(value)
     }
   }
 
