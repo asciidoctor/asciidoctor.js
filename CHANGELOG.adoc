@@ -8,6 +8,8 @@ For a detailed view of what has changed, refer to the {uri-repo}/commits/main[co
 
 == Unreleased
 
+== v4.3.0 (2026-11-17)
+
 Improvements::
 
 * Document in the extensions guide that the `process` function of every extension can be `async`, and which functions must stay synchronous
